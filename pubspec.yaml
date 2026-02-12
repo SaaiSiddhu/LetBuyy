@@ -1,0 +1,111 @@
+name: letbuyy_workspace
+description: LetBuyy Monorepo - E-commerce Platform for Marketplace, Seller, and Admin apps
+
+publish_to: none
+
+environment:
+  sdk: '^3.10.0'
+
+# ✅ MELOS 7.x: Workspace definition (replaces melos.yaml packages)
+# New structure: apps/flutter/*, packages/dart/*
+workspace:
+  - apps/flutter/builder
+  - apps/flutter/team
+  - apps/flutter/super_admin
+  - packages/dart/core
+  - packages/dart/models
+  - packages/dart/services
+  - packages/dart/ui_kit
+
+
+
+# ✅ MELOS 7.x: Configuration (moved from melos.yaml)
+melos:
+  repository: https://github.com/letbuyy/letbuyy
+  
+  command:
+    bootstrap:
+      usePubspecOverrides: true
+  
+  scripts:
+    # Run apps
+    run:builder:
+      run: cd apps/flutter/builder && flutter run
+      description: Run the Builder (Store Builder) app
+    
+    run:team:
+      run: cd apps/flutter/team && flutter run
+      description: Run the Team (Employee) app
+    
+    run:super_admin:
+      run: cd apps/flutter/super_admin && flutter run
+      description: Run the Super Admin app
+
+    # Build commands
+    build:android:
+      run: flutter build apk --release
+      exec:
+        concurrency: 1
+      packageFilters:
+        scope: "letbuyy_*"
+        fileExists: "android/app/build.gradle"
+      description: Build Android APK for all apps
+
+    build:ios:
+      run: flutter build ios --release
+      exec:
+        concurrency: 1
+      packageFilters:
+        scope: "letbuyy_*"
+        fileExists: "ios/Runner.xcodeproj"
+      description: Build iOS for all apps
+
+    build:web:
+      run: flutter build web --release
+      exec:
+        concurrency: 1
+      packageFilters:
+        scope: "letbuyy_*"
+        fileExists: "web/index.html"
+      description: Build Web for all apps
+
+    # Clean
+    clean:
+      run: flutter clean
+      exec:
+        concurrency: 6
+      description: Clean all packages
+
+    # Analyze
+    analyze:
+      run: flutter analyze
+      exec:
+        concurrency: 1
+      description: Analyze all packages
+
+    # Test
+    test:
+      run: flutter test
+      exec:
+        concurrency: 6
+      packageFilters:
+        dirExists: test
+      description: Run tests for all packages
+
+    # Format
+    format:
+      run: dart format .
+      exec:
+        concurrency: 6
+      description: Format all packages
+
+    # Get dependencies
+    get:
+      run: flutter pub get
+      exec:
+        concurrency: 6
+      description: Get dependencies for all packages
+
+dev_dependencies:
+  melos: ^7.0.0
+  flutter_lints: ^5.0.0

@@ -1,0 +1,39 @@
+name: letbuyy_core
+description: Core utilities, constants, and extensions for LetBuyy apps
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.10.0'
+  flutter: '>=3.16.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  
+  # Note: Core should NOT depend on other internal packages
+  # to avoid circular dependencies. It is the foundation layer.
+  
+  # Utilities
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  equatable: ^2.0.7
+  logger: ^2.4.0
+  connectivity_plus: ^6.1.1
+  package_info_plus: ^8.1.2
+  device_info_plus: ^10.1.2
+  path_provider: ^2.1.4
+  url_launcher: ^6.3.1
+  image_picker: ^1.1.2
+  
+  # Local Storage
+  shared_preferences: ^2.5.3
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
+  letbuyy_ui_kit: any
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0

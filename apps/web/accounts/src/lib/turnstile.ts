@@ -1,0 +1,41 @@
+/**
+ * Server-side Cloudflare Turnstile token verification.
+ * Call this in API routes before processing form submissions.
+ * Automatically bypasses in development (localhost).
+ */
+export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
+    // Always bypass in development — Turnstile can't work on localhost
+    // due to HTTP/HTTPS protocol mismatch with Cloudflare's iframe
+    if (process.env.NODE_ENV === 'development') {
+        return true
+    }
+
+    // Also bypass if dev-bypass-token is sent (from TurnstileWidget in dev)
+    if (token === 'dev-bypass-token') {
+        return true
+    }
+
+    const secretKey = process.env.TURNSTILE_SECRET_KEY
+    if (!secretKey) {
+        console.warn('TURNSTILE_SECRET_KEY not set — skipping bot verification')
+        return true
+    }
+
+    try {
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                secret: secretKey,
+                response: token,
+                remoteip: ip,
+            }),
+        })
+
+        const data = await response.json()
+        return data.success === true
+    } catch (error) {
+        console.error('Turnstile verification failed:', error)
+        return false
+    }
+}

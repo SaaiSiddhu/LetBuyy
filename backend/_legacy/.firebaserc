@@ -1,0 +1,28 @@
+{
+  "projects": {
+    "default": "letbuy-y",
+    "letbuyy": "letbuy-y"
+  },
+  "targets": {
+    "letbuy-y": {
+      "hosting": {
+        "seller": [
+          "seller-letbuy-y"
+        ],
+        "letbuyy-store": [
+          "store"
+        ],
+        "admin-web": [
+          "admin-letbuy-y"
+        ],
+        "marketplace": [
+          "letbuy-y"
+        ],
+        "store": [
+          "store-letbuy-y"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

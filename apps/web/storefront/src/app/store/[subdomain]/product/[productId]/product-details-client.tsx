@@ -1,0 +1,451 @@
+'use client';
+
+import { motion, AnimatePresence } from 'framer-motion';
+import { ProductModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
+import { useCart } from '@/context/cart-context';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import {
+    ArrowLeft, Minus, Plus, ShoppingBag, Heart, Share2,
+    Zap, Truck, ShieldCheck, RefreshCcw, Package, ChevronDown, ChevronUp, Check, Star
+} from 'lucide-react';
+
+interface Props {
+    product: ProductModel;
+    subdomain: string;
+    theme?: ThemeSettings;
+}
+
+export default function ProductDetailsClient({ product, subdomain, theme }: Props) {
+    const colors = theme || DEFAULT_THEME_SETTINGS;
+    const router = useRouter();
+    const { addToCart } = useCart();
+
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [quantity, setQuantity] = useState(1);
+    const [specsOpen, setSpecsOpen] = useState(false);
+    const [addedToCart, setAddedToCart] = useState(false);
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
+    // Variant selection state
+    const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
+
+    // Calculate discount
+    const discount = product.compareAtPrice && product.compareAtPrice > product.price
+        ? Math.round((1 - product.price / product.compareAtPrice) * 100)
+        : 0;
+
+    // Get variant options from variantOptions field (primary) or parse from variants
+    const getVariantGroups = (): Record<string, string[]> => {
+        const groups: Record<string, string[]> = {};
+
+        // Primary: Use variantOptions if available (e.g., { name: "Size", values: ["S", "M", "L"] })
+        const variantOptions = product.variantOptions || [];
+        if (variantOptions.length > 0) {
+            console.log('[ProductDetails] Using variantOptions:', variantOptions);
+            variantOptions.forEach((opt: any) => {
+                if (opt.name && opt.values && Array.isArray(opt.values)) {
+                    groups[opt.name] = opt.values;
+                }
+            });
+            return groups;
+        }
+
+        // Fallback: Parse from variants array
+        const variants = product.variants || [];
+        console.log('[ProductDetails] Parsing from variants:', variants);
+
+        variants.forEach((v: any) => {
+            if (v.options && typeof v.options === 'object') {
+                Object.entries(v.options).forEach(([key, value]) => {
+                    if (!groups[key]) groups[key] = [];
+                    if (!groups[key].includes(value as string)) {
+                        groups[key].push(value as string);
+                    }
+                });
+            } else if (v.name && !v.options) {
+                // Simple variant format
+                if (!groups['Option']) groups['Option'] = [];
+                if (!groups['Option'].includes(v.name)) {
+                    groups['Option'].push(v.name);
+                }
+            }
+        });
+
+        return groups;
+    };
+
+    const variantGroups = getVariantGroups();
+    const hasVariants = Object.keys(variantGroups).length > 0;
+
+    console.log('[ProductDetails] Variant groups:', variantGroups);
+
+    // Initialize selected variants with first option
+    useEffect(() => {
+        const initial: Record<string, string> = {};
+        Object.entries(variantGroups).forEach(([group, options]) => {
+            if (options.length > 0) initial[group] = options[0];
+        });
+        setSelectedVariants(initial);
+    }, []);
+
+    const handleQuantity = (delta: number) => {
+        const newQty = quantity + delta;
+        if (newQty >= 1 && newQty <= product.stock) {
+            setQuantity(newQty);
+        }
+    };
+
+    const handleAddToCart = () => {
+        for (let i = 0; i < quantity; i++) {
+            addToCart(product);
+        }
+        setAddedToCart(true);
+        setTimeout(() => setAddedToCart(false), 2000);
+    };
+
+    const handleBuyNow = () => {
+        for (let i = 0; i < quantity; i++) {
+            addToCart(product);
+        }
+        router.push(`/cart`);
+    };
+
+    const specs = product.specifications || {};
+    const hasSpecs = Object.keys(specs).length > 0;
+
+    const selectVariant = (group: string, value: string) => {
+        setSelectedVariants(prev => ({ ...prev, [group]: value }));
+    };
+
+    // Only show rating if it exists and is > 0
+    const showRating = product.rating && product.rating > 0;
+
+    return (
+        <div className="min-h-screen" style={{ backgroundColor: colors.backgroundColor }}>
+            {/* Spacer for fixed header */}
+            <div className="h-16 md:h-20" />
+
+            <div className="max-w-5xl mx-auto px-4 pb-8">
+                {/* Breadcrumb */}
+                <div className="py-4">
+                    <Link
+                        href={`/`}
+                        className="inline-flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
+                        style={{ color: colors.primaryColor }}
+                    >
+                        <ArrowLeft size={16} />
+                        <span>Back to Store</span>
+                    </Link>
+                </div>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10">
+                    {/* Image Gallery */}
+                    <div className="space-y-3">
+                        {/* Main Image */}
+                        <motion.div
+                            className="relative aspect-square overflow-hidden shadow-lg"
+                            style={{ backgroundColor: 'var(--card-bg-secondary)', borderRadius: `${colors.borderRadius}px` }}
+                        >
+                            <AnimatePresence mode="wait">
+                                <motion.img
+                                    key={selectedImage}
+                                    src={product.images[selectedImage]}
+                                    alt={product.name}
+                                    initial={{ opacity: 0, scale: 1.02 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.98 }}
+                                    transition={{ duration: 0.3 }}
+                                    className="w-full h-full object-cover"
+                                />
+                            </AnimatePresence>
+
+                            {/* Badges */}
+                            <div className="absolute top-3 left-3 flex flex-col gap-2">
+                                {discount > 0 && (
+                                    <span
+                                        className="text-white text-xs font-bold px-2.5 py-1 rounded-md shadow"
+                                        style={{ backgroundColor: colors.accentColor || '#ff4757' }}
+                                    >
+                                        {discount}% OFF
+                                    </span>
+                                )}
+                                {product.isNew && (
+                                    <span className="bg-blue-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow">
+                                        NEW
+                                    </span>
+                                )}
+                                {product.isTrending && (
+                                    <span className="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow">
+                                        🔥 HOT
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Wishlist & Share */}
+                            <div className="absolute top-3 right-3 flex flex-col gap-2">
+                                <button
+                                    onClick={() => setIsWishlisted(!isWishlisted)}
+                                    className={`p-2 rounded-full shadow transition-all ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
+                                >
+                                    <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
+                                </button>
+                                <button className="p-2 card-theme rounded-full shadow text-theme-secondary">
+                                    <Share2 size={18} />
+                                </button>
+                            </div>
+                        </motion.div>
+
+                        {/* Thumbnails */}
+                        {product.images.length > 1 && (
+                            <div className="flex gap-2 overflow-x-auto pb-1">
+                                {product.images.map((img, i) => (
+                                    <button
+                                        key={i}
+                                        onClick={() => setSelectedImage(i)}
+                                        className={`flex-shrink-0 w-16 h-16 overflow-hidden transition-all border-2 shadow-sm ${selectedImage === i
+                                            ? 'opacity-100'
+                                            : 'opacity-60 hover:opacity-100 border-transparent'
+                                            }`}
+                                        style={{
+                                            borderRadius: `${colors.borderRadius / 2}px`,
+                                            borderColor: selectedImage === i ? colors.primaryColor : 'transparent'
+                                        }}
+                                    >
+                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Product Info */}
+                    <div className="space-y-4">
+                        {/* Title */}
+                        <h1
+                            className="text-xl md:text-2xl font-bold leading-tight"
+                            style={{ color: colors.textColor }}
+                        >
+                            {product.name}
+                        </h1>
+
+                        {/* Rating - Only show if exists and > 0 */}
+                        {showRating && (
+                            <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1 px-2 py-1 bg-green-50 rounded">
+                                    <Star size={14} className="text-green-600 fill-green-600" />
+                                    <span className="text-sm font-semibold text-green-700">{product.rating}</span>
+                                </div>
+                                {product.reviewCount && product.reviewCount > 0 && (
+                                    <span className="text-sm text-theme-secondary">({product.reviewCount} reviews)</span>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Price */}
+                        <div className="flex items-baseline gap-3 flex-wrap">
+                            <span
+                                className="text-2xl md:text-3xl font-bold"
+                                style={{ color: colors.primaryColor }}
+                            >
+                                ₹{product.price.toLocaleString('en-IN')}
+                            </span>
+                            {product.compareAtPrice && product.compareAtPrice > product.price && (
+                                <>
+                                    <span className="text-lg text-theme-muted line-through">
+                                        ₹{product.compareAtPrice.toLocaleString('en-IN')}
+                                    </span>
+                                    <span className="text-sm font-semibold text-green-600 bg-green-50 px-2 py-0.5 rounded">
+                                        Save ₹{(product.compareAtPrice - product.price).toLocaleString('en-IN')}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+
+                        {/* Description */}
+                        {product.description && (
+                            <p className="text-theme-secondary text-sm leading-relaxed">
+                                {product.description}
+                            </p>
+                        )}
+
+                        {/* Stock Status */}
+                        <div className="flex items-center gap-2 text-sm">
+                            <div
+                                className={`w-2 h-2 rounded-full ${product.stock > 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                            />
+                            <span className={product.stock > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
+                                {product.stock > 0 ? 'In Stock' : 'Out of Stock'}
+                            </span>
+                            {product.stock > 0 && product.stock < 10 && (
+                                <span className="text-orange-500 text-xs">• Hurry! Only {product.stock} left</span>
+                            )}
+                        </div>
+
+                        {/* Variants Selection */}
+                        {hasVariants && (
+                            <div className="space-y-4 pt-2 border-t" style={{ borderColor: `${colors.primaryColor}15` }}>
+                                <h3 className="font-semibold text-sm" style={{ color: colors.textColor }}>
+                                    Select Options
+                                </h3>
+                                {Object.entries(variantGroups).map(([groupName, options]) => (
+                                    <div key={groupName}>
+                                        <label className="text-sm font-medium mb-2 block" style={{ color: colors.textColor }}>
+                                            {groupName}: <span className="font-semibold" style={{ color: colors.primaryColor }}>{selectedVariants[groupName]}</span>
+                                        </label>
+                                        <div className="flex flex-wrap gap-2">
+                                            {options.map((option) => {
+                                                const isSelected = selectedVariants[groupName] === option;
+                                                return (
+                                                    <motion.button
+                                                        key={option}
+                                                        onClick={() => selectVariant(groupName, option)}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        className={`px-3 py-2 text-sm rounded-lg border-2 transition-all flex items-center gap-1 font-medium ${isSelected
+                                                            ? 'text-white shadow-md'
+                                                            : 'card-theme hover:opacity-80'
+                                                            }`}
+                                                        style={{
+                                                            backgroundColor: isSelected ? colors.primaryColor : undefined,
+                                                            borderColor: isSelected ? colors.primaryColor : '#e5e7eb'
+                                                        }}
+                                                    >
+                                                        {isSelected && <Check size={14} />}
+                                                        {option}
+                                                    </motion.button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* Specifications */}
+                        {hasSpecs && (
+                            <div
+                                className="border rounded-xl overflow-hidden"
+                                style={{ borderColor: `${colors.primaryColor}20` }}
+                            >
+                                <button
+                                    onClick={() => setSpecsOpen(!specsOpen)}
+                                    className="w-full flex items-center justify-between p-3 bg-surface hover:bg-surface-hover transition-colors"
+                                >
+                                    <span className="font-medium text-sm" style={{ color: colors.textColor }}>
+                                        Specifications ({Object.keys(specs).length})
+                                    </span>
+                                    {specsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                                </button>
+                                <AnimatePresence>
+                                    {specsOpen && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden"
+                                        >
+                                            <div className="p-3 space-y-2">
+                                                {Object.entries(specs).map(([key, value]) => (
+                                                    <div key={key} className="flex justify-between items-center py-1.5 border-b border-card last:border-0">
+                                                        <span className="text-sm text-theme-muted">{key}</span>
+                                                        <span className="text-sm font-medium" style={{ color: colors.textColor }}>{value}</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+                        )}
+
+                        {/* Quantity Selector */}
+                        <div className="flex items-center gap-4 pt-2">
+                            <span className="text-sm font-medium" style={{ color: colors.textColor }}>Quantity:</span>
+                            <div
+                                className="flex items-center border rounded-lg overflow-hidden"
+                                style={{ borderColor: `${colors.primaryColor}30` }}
+                            >
+                                <button
+                                    onClick={() => handleQuantity(-1)}
+                                    disabled={quantity <= 1}
+                                    className="p-2 hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <Minus size={16} />
+                                </button>
+                                <span
+                                    className="px-5 py-1.5 font-semibold min-w-[48px] text-center card-theme-secondary"
+                                    style={{ color: colors.textColor }}
+                                >
+                                    {quantity}
+                                </span>
+                                <button
+                                    onClick={() => handleQuantity(1)}
+                                    disabled={quantity >= product.stock}
+                                    className="p-2 hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                >
+                                    <Plus size={16} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex gap-3 pt-3">
+                            <motion.button
+                                onClick={handleAddToCart}
+                                whileTap={{ scale: 0.98 }}
+                                disabled={product.stock === 0}
+                                className={`flex-1 py-3.5 font-semibold rounded-xl border-2 flex items-center justify-center gap-2 transition-all disabled:opacity-50 ${addedToCart
+                                    ? 'bg-green-500 border-green-500 text-white'
+                                    : 'hover:bg-surface-hover'
+                                    }`}
+                                style={{
+                                    borderColor: addedToCart ? undefined : colors.primaryColor,
+                                    color: addedToCart ? undefined : colors.primaryColor
+                                }}
+                            >
+                                <ShoppingBag size={18} />
+                                {addedToCart ? 'Added!' : 'Add to Cart'}
+                            </motion.button>
+
+                            <motion.button
+                                onClick={handleBuyNow}
+                                whileTap={{ scale: 0.98 }}
+                                disabled={product.stock === 0}
+                                className="flex-1 py-3.5 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                                style={{ backgroundColor: colors.primaryColor }}
+                            >
+                                <Zap size={18} />
+                                Buy Now
+                            </motion.button>
+                        </div>
+
+                        {/* Trust Badges */}
+                        <div className="grid grid-cols-2 gap-2 p-3 bg-surface rounded-xl">
+                            {[
+                                { icon: Truck, title: 'Free Delivery', sub: 'Above ₹999' },
+                                { icon: ShieldCheck, title: 'Authentic', sub: 'Verified' },
+                                { icon: RefreshCcw, title: 'Easy Returns', sub: '7 Days' },
+                                { icon: Package, title: 'Secure Pack', sub: 'Safe delivery' },
+                            ].map(({ icon: Icon, title, sub }) => (
+                                <div key={title} className="flex items-center gap-2">
+                                    <div
+                                        className="p-1.5 rounded-lg"
+                                        style={{ backgroundColor: `${colors.primaryColor}15` }}
+                                    >
+                                        <Icon size={14} style={{ color: colors.primaryColor }} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs font-semibold" style={{ color: colors.textColor }}>{title}</p>
+                                        <p className="text-[10px] text-theme-muted">{sub}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
