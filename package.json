@@ -2,6 +2,7 @@
     "name": "letbuyy-store",
     "private": true,
     "scripts": {
+        "preinstall": "rm -rf apps/web/storefront/node_modules/next apps/web/admin/node_modules/next apps/web/accounts/node_modules/next apps/web/landing/node_modules/next 2>/dev/null || true",
         "build": "turbo build",
         "dev": "turbo dev",
         "lint": "turbo lint",
