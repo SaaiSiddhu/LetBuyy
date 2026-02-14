@@ -7,6 +7,7 @@ import CartIcon from '@/components/cart-icon';
 import Link from 'next/link';
 import DynamicHeader from '@/components/layout/dynamic-header';
 import DynamicFooter from '@/components/layout/dynamic-footer';
+import ComingSoon from '@/components/coming-soon';
 import { HeaderSettings, FooterSettings, ProductModel, THEME_PRESETS } from '@/types/store';
 
 // ============= THEME FONT MAPPING =============
@@ -34,9 +35,16 @@ type Props = {
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
     const { subdomain } = await params;
-    const store = await StoreService.getStoreBySubdomain(subdomain);
+    const store = await StoreService.getStoreBySubdomainAnyStatus(subdomain);
 
     if (!store) return { title: 'Store Not Found' };
+
+    if (store.status !== 'published') {
+        return {
+            title: `${store.name} — Coming Soon`,
+            description: `${store.name} is launching soon on LetBuyy!`,
+        };
+    }
 
     return {
         title: store.seoTitle || store.name,
@@ -49,10 +57,21 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
 
 export default async function StoreLayout({ children, params }: Props) {
     const { subdomain } = await params;
-    const store = await StoreService.getStoreBySubdomain(subdomain);
+    const store = await StoreService.getStoreBySubdomainAnyStatus(subdomain);
 
     if (!store) {
         return notFound();
+    }
+
+    // Show Coming Soon page for draft/suspended stores
+    if (store.status !== 'published') {
+        return (
+            <ComingSoon
+                storeName={store.name}
+                tagline={store.tagline}
+                logoUrl={store.logoUrl}
+            />
+        );
     }
 
     // Fetch products for search — only for store-type sites

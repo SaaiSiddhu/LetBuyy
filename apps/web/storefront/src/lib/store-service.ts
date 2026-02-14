@@ -33,6 +33,27 @@ export const StoreService = {
         }
     },
 
+    async getStoreBySubdomainAnyStatus(subdomain: string): Promise<StoreModel | null> {
+        if (subdomain === 'demo' || subdomain === 'localhost') {
+            return getMockStore(subdomain);
+        }
+
+        try {
+            const { data, error } = await db
+                .from('stores')
+                .select('*')
+                .eq('subdomain', subdomain)
+                .limit(1)
+                .single();
+
+            if (error || !data) return null;
+            return mapSupabaseToStore(data);
+        } catch (error) {
+            console.error('[StoreService] Error fetching store (any status):', error);
+            return null;
+        }
+    },
+
     async getStoreById(storeId: string): Promise<StoreModel | null> {
         try {
             const { data, error } = await db
