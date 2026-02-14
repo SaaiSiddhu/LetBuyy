@@ -1,4 +1,4 @@
-import { db } from './supabase';
+import { getDb, db } from './supabase';
 import { ProductModel } from '@/types/store';
 
 // Mock Data for demo store

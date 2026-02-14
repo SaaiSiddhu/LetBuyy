@@ -3,6 +3,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { createSession, destroySession } from '@/lib/auth/session'
 import { getSessionCookie, setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
+import { validateCsrf } from '@/lib/auth/csrf'
 
 /**
  * POST /api/auth/switch
@@ -12,6 +13,11 @@ import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
  */
 export async function POST(request: NextRequest) {
     try {
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
+        }
+
         const { email } = await request.json()
 
         if (!email) {
@@ -43,7 +49,7 @@ export async function POST(request: NextRequest) {
         const ip = request.headers.get('x-forwarded-for') || 'unknown'
         const fingerprint = generateDeviceFingerprint(request.headers, ip)
         const userAgent = request.headers.get('user-agent') || ''
-        const deviceId = await getOrCreateDevice(user.id, fingerprint, userAgent)
+        const { deviceId } = await getOrCreateDevice(user.id, fingerprint, userAgent)
         const sessionToken = await createSession(user.id, deviceId)
 
         // Update cookies
@@ -55,10 +61,20 @@ export async function POST(request: NextRequest) {
             lastLogin: new Date().toISOString(),
         })
 
-        return NextResponse.json({
-            success: true,
-            redirectTo: process.env.NEXT_PUBLIC_ADMIN_URL || '/onboarding',
-        })
+        // Check if user has a store → redirect appropriately
+        const { data: store } = await supabase
+            .from('sites')
+            .select('subdomain')
+            .eq('custom_user_id', user.id)
+            .limit(1)
+            .single()
+
+        const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3001'
+        const redirectTo = store?.subdomain
+            ? `${adminUrl}/${store.subdomain}/dashboard`
+            : '/onboarding'
+
+        return NextResponse.json({ success: true, redirectTo })
     } catch (error) {
         console.error('Account switch error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

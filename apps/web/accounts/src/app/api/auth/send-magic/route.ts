@@ -4,6 +4,7 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createVerificationToken } from '@/lib/auth/tokens'
 import { sendMagicLinkEmail } from '@/lib/email/resend'
+import { validateCsrf } from '@/lib/auth/csrf'
 
 /**
  * POST /api/auth/send-magic
@@ -21,6 +22,11 @@ export async function POST(request: NextRequest) {
                 { error: 'Too many requests. Please try again later.', retryAfter: rl.retryAfter },
                 { status: 429 }
             )
+        }
+
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
         const { email, turnstileToken } = await request.json()
@@ -45,7 +51,15 @@ export async function POST(request: NextRequest) {
             .single()
 
         // Always return success (don't reveal if email exists)
-        if (!user || !user.email_verified) {
+        if (!user) {
+            return NextResponse.json({ success: true })
+        }
+
+        // If user hasn't verified yet, re-send verification email instead
+        if (!user.email_verified) {
+            const token = await createVerificationToken(normalizedEmail, 'email_verify', user.id)
+            const { sendVerificationEmail } = await import('@/lib/email/resend')
+            await sendVerificationEmail(normalizedEmail, token)
             return NextResponse.json({ success: true })
         }
 

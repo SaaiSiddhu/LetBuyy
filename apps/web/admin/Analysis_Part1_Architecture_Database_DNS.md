@@ -1,8 +1,24 @@
 # LetBuyy Multi-Tenant Store Platform — Comprehensive Analysis
 
-> **Part 1 of 3** | Architecture, Database Schema, DNS/SSL & Domain Topology
+> **Part 1 of 7** | Architecture, Database Schema, DNS/SSL & Domain Topology
 >
-> **Date:** February 12, 2026 | **Continues in:** Part 2 (Implementation & Onboarding UI)
+> **Date:** February 13, 2026 | **Version:** 3.0 (Blog-Integrated)
+>
+> **Continues in:** Part 2 (Implementation & Onboarding UI)
+
+---
+
+## Table of Contents — Complete Series
+
+| Part | File | Content |
+|------|------|--------|
+| **1** (this) | Architecture & Database | System Architecture, Database Schema, DNS/SSL, Tech Stack |
+| 2 | [Implementation & Onboarding](./Analysis_Part2_Implementation_Onboarding_Email.md) | CSS System, Onboarding UI Wireframes, Email Templates |
+| 3 | [Admin & Storefront](./Analysis_Part3_Admin_Storefront_Deploy.md) | Admin Dashboard, Storefront, Dark Mode, Deployment |
+| 4 | [Blog System](./Analysis_Part4_Blog_Database_AdminCRUD.md) | Blog Database Schema, Admin CRUD Wireframes |
+| 5 | [Enhanced Admin](./Analysis_Part5_Enhanced_Admin_Features.md) | Bulk Actions, Command Palette, Activity Logs, Notifications |
+| 6 | [E-commerce](./Analysis_Part6_Ecommerce_Enhancements.md) | Inventory, Multi-Currency, Tax, Shipping, Discounts |
+| 7 | [Analytics & Deploy](./Analysis_Part7_Analytics_Performance_Deploy.md) | Analytics Dashboard, CI/CD, Performance, Security, Scaling |
 
 ---
 
@@ -10,7 +26,7 @@
 
 ### 1.1 What We're Building
 
-LetBuyy is a **multi-tenant SaaS platform** where users sign up, complete onboarding, and instantly get a live subdomain (`username.letbuyy.store`). The platform supports 4 site types: **E-commerce**, **Portfolio**, **Resume/CV**, and **Landing Page**.
+LetBuyy is a **multi-tenant SaaS platform** where users sign up, complete onboarding, and instantly get a live subdomain (`username.letbuyy.store`). The platform supports **5 site types**: **E-commerce**, **Portfolio**, **Resume/CV**, **Landing Page**, and **Blogger**.
 
 ### 1.2 Current State vs Target State
 
@@ -34,6 +50,15 @@ LetBuyy is a **multi-tenant SaaS platform** where users sign up, complete onboar
 │    for new stores            │    page with store info                   │
 ├─────────────────────────────┼────────────────────────────────────────────┤
 │ ❌ Single language (English) │ ✅ Multi-language: English, Hindi, Tamil   │
+├─────────────────────────────┼────────────────────────────────────────────┤
+│ ❌ No blog/CMS system       │ ✅ Full blogger with posts, categories,    │
+│                             │    tags, comments, media, SEO & analytics │
+├─────────────────────────────┼────────────────────────────────────────────┤
+│ ❌ Basic admin panel         │ ✅ Shopify-grade admin with bulk actions,  │
+│                             │    command palette, activity logs          │
+├─────────────────────────────┼────────────────────────────────────────────┤
+│ ❌ No analytics dashboard   │ ✅ Full analytics: traffic, content,       │
+│                             │    revenue, SEO, real-time dashboard      │
 └─────────────────────────────┴────────────────────────────────────────────┘
 ```
 
@@ -96,12 +121,23 @@ LetBuyy is a **multi-tenant SaaS platform** where users sign up, complete onboar
 │         │  │    onboarding_attempts      │                                │
 │         │  │    (Failure tracking)       │                                │
 │         │  └─────────────────────────────┘                                │
+│         │                                                                  │
+│         │  ┌─── BLOGGER SYSTEM (NEW) ──────────────────────────────────┐  │
+│         │  │                                                            │  │
+│         │  │  blogs → blog_posts → blog_post_tags ← blog_tags          │  │
+│         │  │              ↓                                             │  │
+│         │  │         blog_comments     blog_categories                  │  │
+│         │  │         media_library     content_versions                 │  │
+│         │  │         activity_logs     analytics_events                 │  │
+│         │  │                                                            │  │
+│         │  └────────────────────────────────────────────────────────────┘  │
 │                                                                             │
 │  ┌──────────────────────────────────────────────────────────────────────┐  │
 │  │                    ROW LEVEL SECURITY (RLS)                           │  │
 │  │  • Users can only read/write their OWN stores                       │  │
 │  │  • Users can only read their OWN email logs                         │  │
 │  │  • Users can only read/write their OWN onboarding attempts          │  │
+│  │  • Blog data scoped to site_id via RLS (see Part 4 for details)    │  │
 │  └──────────────────────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -304,9 +340,19 @@ LetBuyy is a **multi-tenant SaaS platform** where users sign up, complete onboar
 │ email_logs     │ Own rows │ ❌ Server │ ❌ Server │ ❌ Not allowed       │
 │ onboarding_    │ Own rows │ Own rows │ ❌ N/A    │ ❌ Not allowed       │
 │ attempts       │          │          │          │                     │
+├────────────────┼──────────┼──────────┼──────────┼─────────────────────┤
+│ blogs          │ Own site │ Own site │ Own site │ ❌ Not allowed       │
+│ blog_posts     │ Own site │ Own site │ Own site │ Own site            │
+│ blog_categories│ Own site │ Own site │ Own site │ Own site            │
+│ blog_tags      │ Own site │ Own site │ Own site │ Own site            │
+│ blog_comments  │ Public*  │ Public*  │ Own site │ Own site            │
+│ media_library  │ Own site │ Own site │ Own site │ Own site            │
+│ activity_logs  │ Own site │ Auto     │ ❌ N/A    │ ❌ Not allowed       │
 └────────────────┴──────────┴──────────┴──────────┴─────────────────────┘
-  All policies use: auth.uid() = user_id
-  Email logs INSERT/UPDATE handled by server-side API routes only
+  Core tables: auth.uid() = user_id
+  Blog tables: site_id scoped via user's store ownership
+  * blog_comments: Public SELECT/INSERT for visitor comments
+  Full blog RLS policies detailed in Part 4
 ```
 
 ---
@@ -398,11 +444,36 @@ LetBuyy is a **multi-tenant SaaS platform** where users sign up, complete onboar
 │  │ Vercel Analytics     │          │                          │         │
 │  └──────────────────────┘          └──────────────────────────┘         │
 │                                                                          │
+│  BLOG SYSTEM (NEW)                 ADMIN ENHANCEMENTS (NEW)              │
+│  ┌──────────────────────┐          ┌──────────────────────────┐         │
+│  │ @tiptap/react        │          │ @dnd-kit/core            │         │
+│  │ @tiptap/starter-kit  │          │ @dnd-kit/sortable        │         │
+│  │ @tiptap/extension-*  │          │ recharts                 │         │
+│  │ (image, link, table, │          │ cmdk (Command Palette)   │         │
+│  │  code-block, etc.)   │          │ html2pdf.js              │         │
+│  │ DOMPurify            │          │ xlsx (Excel export)      │         │
+│  │ reading-time         │          │ Sentry (Error tracking)  │         │
+│  └──────────────────────┘          └──────────────────────────┘         │
+│                                                                          │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 > **→ Continues in [Part 2](./Analysis_Part2_Implementation_Onboarding_Email.md):**
-> Implementation Code Analysis, Onboarding UI Wireframes (all states), Email Template Wireframes
+> CSS Design System, Onboarding UI Wireframes (All States), Email Templates
+
+---
+
+> **Complete Series Navigation**
+>
+> | Part | Content |
+> |------|--------|
+> | **Part 1** (this) | Architecture, Database Schema, DNS/SSL, Tech Stack |
+> | [Part 2](./Analysis_Part2_Implementation_Onboarding_Email.md) | CSS System, Onboarding UI Wireframes, Email Templates |
+> | [Part 3](./Analysis_Part3_Admin_Storefront_Deploy.md) | Admin Dashboard, Storefront, Dark Mode, Deployment |
+> | [Part 4](./Analysis_Part4_Blog_Database_AdminCRUD.md) | Blog Database Schema, Admin CRUD Wireframes |
+> | [Part 5](./Analysis_Part5_Enhanced_Admin_Features.md) | Bulk Actions, Command Palette, Activity Logs, Notifications |
+> | [Part 6](./Analysis_Part6_Ecommerce_Enhancements.md) | Inventory, Multi-Currency, Tax, Shipping, Discounts |
+> | [Part 7](./Analysis_Part7_Analytics_Performance_Deploy.md) | Analytics Dashboard, CI/CD, Performance, Security, Scaling |
 

@@ -43,13 +43,13 @@ export function parseDeviceName(userAgent: string): string {
 
 /**
  * Get or create a device record for a user.
- * Returns the device ID.
+ * Returns the device ID and whether the device is new.
  */
 export async function getOrCreateDevice(
     userId: string,
     fingerprint: string,
     userAgent: string
-): Promise<string> {
+): Promise<{ deviceId: string; isNew: boolean }> {
     const supabase = await createServerClient()
     const deviceName = parseDeviceName(userAgent)
 
@@ -67,7 +67,7 @@ export async function getOrCreateDevice(
             .from('devices')
             .update({ last_used: new Date().toISOString(), name: deviceName })
             .eq('id', existing.id)
-        return existing.id
+        return { deviceId: existing.id, isNew: false }
     }
 
     // Create new device
@@ -85,7 +85,7 @@ export async function getOrCreateDevice(
         throw new Error(`Failed to create device: ${error?.message}`)
     }
 
-    return newDevice.id
+    return { deviceId: newDevice.id, isNew: true }
 }
 
 /**

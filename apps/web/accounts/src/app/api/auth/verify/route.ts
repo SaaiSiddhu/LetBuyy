@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
             if (result.user_id) {
                 const fingerprint = generateDeviceFingerprint(request.headers, ip)
                 const userAgent = request.headers.get('user-agent') || ''
-                const deviceId = await getOrCreateDevice(result.user_id, fingerprint, userAgent)
+                const { deviceId } = await getOrCreateDevice(result.user_id, fingerprint, userAgent)
                 const sessionToken = await createSession(result.user_id, deviceId)
                 await setSessionCookie(sessionToken)
             }
@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
             // Create session
             const fingerprint = generateDeviceFingerprint(request.headers, ip)
             const userAgent = request.headers.get('user-agent') || ''
-            const deviceId = await getOrCreateDevice(user.id, fingerprint, userAgent)
+            const { deviceId } = await getOrCreateDevice(user.id, fingerprint, userAgent)
             const sessionToken = await createSession(user.id, deviceId)
 
             // Set cookies
@@ -92,7 +92,20 @@ export async function GET(request: NextRequest) {
                 lastLogin: new Date().toISOString(),
             })
 
-            return NextResponse.redirect(new URL(process.env.NEXT_PUBLIC_ADMIN_URL || '/onboarding', request.url))
+            // Check if user has a store → redirect appropriately
+            const { data: store } = await supabase
+                .from('sites')
+                .select('subdomain')
+                .eq('custom_user_id', user.id)
+                .limit(1)
+                .single()
+
+            const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3001'
+            const redirectTo = store?.subdomain
+                ? `${adminUrl}/${store.subdomain}/dashboard`
+                : '/onboarding'
+
+            return NextResponse.redirect(new URL(redirectTo, request.url))
         }
 
         return NextResponse.redirect(new URL('/lookup', request.url))

@@ -270,3 +270,98 @@ export async function sendStoreCreationFailedEmail(
   })
 }
 
+/**
+ * Send a security alert when a user logs in from a new device.
+ */
+export async function sendNewDeviceLoginEmail(
+  email: string,
+  deviceInfo: { device: string; ip: string; location?: string },
+  timestamp: Date = new Date()
+) {
+  const formattedTime = timestamp.toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+
+  return sendEmail({
+    to: email,
+    subject: '🔐 New sign-in to your LetBuyy account',
+    html: `
+      <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #8b5cf6, #a78bfa); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
+        </div>
+
+        <h2 style="font-size: 20px; font-weight: 600; color: #111; margin: 0 0 8px; text-align: center;">New Sign-In Detected</h2>
+        <p style="font-size: 15px; color: #555; line-height: 1.5; margin: 0 0 24px; text-align: center;">
+          Your account was signed into from a new device.
+        </p>
+
+        <div style="background: #f8f9fa; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 24px;">
+          <table style="width: 100%; font-size: 14px; color: #333;">
+            <tr><td style="padding: 4px 0; font-weight: 600;">Device</td><td style="padding: 4px 0; text-align: right;">${deviceInfo.device || 'Unknown'}</td></tr>
+            <tr><td style="padding: 4px 0; font-weight: 600;">IP Address</td><td style="padding: 4px 0; text-align: right; font-family: monospace;">${deviceInfo.ip || 'Unknown'}</td></tr>
+            ${deviceInfo.location ? '<tr><td style="padding: 4px 0; font-weight: 600;">Location</td><td style="padding: 4px 0; text-align: right;">' + deviceInfo.location + '</td></tr>' : ''}
+            <tr><td style="padding: 4px 0; font-weight: 600;">Time</td><td style="padding: 4px 0; text-align: right;">${formattedTime}</td></tr>
+          </table>
+        </div>
+
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+          <p style="font-size: 14px; color: #92400e; margin: 0;">
+            <strong>Wasn't you?</strong> Change your password immediately and contact support.
+          </p>
+        </div>
+
+        <p style="font-size: 13px; color: #999; margin: 24px 0 0; text-align: center;">
+          You received this because a new device signed into your LetBuyy account.
+        </p>
+      </div>
+    `,
+  })
+}
+
+/**
+ * Send a notification when the user's password has been changed.
+ */
+export async function sendPasswordChangedEmail(
+  email: string,
+  timestamp: Date = new Date()
+) {
+  const formattedTime = timestamp.toLocaleString('en-US', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+
+  return sendEmail({
+    to: email,
+    subject: '🔑 Your LetBuyy password was changed',
+    html: `
+      <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
+        <div style="text-align: center; margin-bottom: 32px;">
+          <div style="display: inline-block; width: 48px; height: 48px; background: linear-gradient(135deg, #8b5cf6, #a78bfa); border-radius: 12px; line-height: 48px; font-size: 24px; color: white; font-weight: 700;">L</div>
+        </div>
+
+        <h2 style="font-size: 20px; font-weight: 600; color: #111; margin: 0 0 8px; text-align: center;">Password Changed</h2>
+        <p style="font-size: 15px; color: #555; line-height: 1.5; margin: 0 0 24px; text-align: center;">
+          Your account password was successfully changed on ${formattedTime}.
+        </p>
+
+        <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+          <p style="font-size: 14px; color: #166534; margin: 0;">
+            All other sessions have been signed out for security.
+          </p>
+        </div>
+
+        <div style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px; margin-bottom: 24px;">
+          <p style="font-size: 14px; color: #92400e; margin: 0;">
+            <strong>Didn't change your password?</strong> Contact support immediately.
+          </p>
+        </div>
+
+        <p style="font-size: 13px; color: #999; margin: 24px 0 0; text-align: center;">
+          This is an automated security notification from LetBuyy.
+        </p>
+      </div>
+    `,
+  })
+}

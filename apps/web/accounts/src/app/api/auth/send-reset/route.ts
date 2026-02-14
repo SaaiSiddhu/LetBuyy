@@ -4,6 +4,7 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createVerificationToken } from '@/lib/auth/tokens'
 import { sendPasswordResetEmail } from '@/lib/email/resend'
+import { validateCsrf } from '@/lib/auth/csrf'
 
 /**
  * POST /api/auth/send-reset
@@ -21,6 +22,11 @@ export async function POST(request: NextRequest) {
                 { error: 'Too many requests. Please try again later.', retryAfter: rl.retryAfter },
                 { status: 429 }
             )
+        }
+
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
         const { email, turnstileToken } = await request.json()

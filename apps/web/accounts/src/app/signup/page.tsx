@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
+import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget from '@/components/TurnstileWidget'
 
@@ -9,7 +10,7 @@ type Lang = 'en' | 'hi' | 'ta'
 const translations: Record<Lang, Record<string, string>> = {
     en: {
         title: 'Start your free trial',
-        subtitle: '3 days free, then ₹20/month',
+        subtitle: '14 days free, then ₹20/month',
         email: 'Email',
         emailPlaceholder: 'you@example.com',
         createAccount: 'Create account',
@@ -27,7 +28,7 @@ const translations: Record<Lang, Record<string, string>> = {
     },
     hi: {
         title: 'अपना मुफ़्त ट्रायल शुरू करें',
-        subtitle: '3 दिन मुफ़्त, फिर ₹20/माह',
+        subtitle: '14 दिन मुफ़्त, फिर ₹20/माह',
         email: 'ईमेल',
         emailPlaceholder: 'you@example.com',
         createAccount: 'अकाउंट बनाएं',
@@ -45,7 +46,7 @@ const translations: Record<Lang, Record<string, string>> = {
     },
     ta: {
         title: 'உங்கள் இலவச சோதனையைத் தொடங்குங்கள்',
-        subtitle: '3 நாட்கள் இலவசம், பின்னர் ₹20/மாதம்',
+        subtitle: '14 நாட்கள் இலவசம், பின்னர் ₹20/மாதம்',
         email: 'மின்னஞ்சல்',
         emailPlaceholder: 'you@example.com',
         createAccount: 'கணக்கை உருவாக்கவும்',
@@ -114,7 +115,7 @@ function SignupContent() {
         try {
             const res = await fetch('/api/auth/signup', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,

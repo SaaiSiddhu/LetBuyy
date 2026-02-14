@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { getAuthHeaders } from '@/lib/csrf-client'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -99,7 +100,7 @@ function CheckEmailContent() {
             const endpoint = type === 'magic_link' ? '/api/auth/send-magic' : '/api/auth/signup'
             await fetch(endpoint, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ email, turnstileToken: 'resend-bypass' }),
             })
 

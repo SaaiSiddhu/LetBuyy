@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useMemo } from 'react'
+import { getAuthHeaders } from '@/lib/csrf-client'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -117,7 +118,7 @@ export default function SetPasswordPage() {
         try {
             const res = await fetch('/api/auth/set-password', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ password }),
             })
 

@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { getAuthHeaders } from '@/lib/csrf-client'
 
 /* ——————————————————————————————————————
    Types
@@ -16,7 +17,7 @@ interface SessionUser {
     avatarUrl: string | null
 }
 
-type SiteType = 'ecommerce' | 'portfolio' | 'resume' | 'landing_page'
+type SiteType = 'store' | 'portfolio' | 'resume' | 'landing' | 'blog'
 type Lang = 'en' | 'hi' | 'ta'
 
 interface ValidationResult {
@@ -45,14 +46,56 @@ const translations: Record<Lang, Record<string, string>> = {
         allSet: "You're all set!",
         redirecting: 'Redirecting to your dashboard...',
         logOut: 'Log out',
-        ecommerce: 'Online Store',
-        ecommerceDesc: 'Sell products online',
+        store: 'Online Store',
+        storeDesc: 'Sell products online',
         portfolio: 'Portfolio',
         portfolioDesc: 'Showcase your work',
         resume: 'Resume / CV',
         resumeDesc: 'Professional profile',
-        landingPage: 'Landing Page',
-        landingPageDesc: 'Marketing & leads',
+        landing: 'Landing Page',
+        landingDesc: 'Marketing & leads',
+        blog: 'Blog',
+        blogDesc: 'Publish articles & stories',
+        // Step 3: Template
+        pickTemplate: 'Choose a template',
+        pickTemplateDesc: 'Start with a professional design you can customize later',
+        blankTemplate: 'Blank Canvas',
+        blankTemplateDesc: 'Start from scratch',
+        modernTemplate: 'Modern',
+        modernTemplateDesc: 'Clean & minimal',
+        boldTemplate: 'Bold',
+        boldTemplateDesc: 'Strong & vibrant',
+        classicTemplate: 'Classic',
+        classicTemplateDesc: 'Timeless & elegant',
+        skip: 'Skip for now',
+        next: 'Next',
+        // Step 4: Survey
+        tellUsMore: 'Tell us about your business',
+        surveyDesc: 'Help us tailor your experience',
+        businessGoal: 'What is your primary goal?',
+        goalSell: 'Sell products or services',
+        goalShowcase: 'Showcase my work',
+        goalGenerate: 'Generate leads',
+        goalBlog: 'Publish content',
+        teamSize: 'Team size',
+        teamSolo: 'Just me',
+        teamSmall: '2–10 people',
+        teamMedium: '11–50 people',
+        teamLarge: '50+ people',
+        // Step 5: AI Setup
+        aiSetup: 'AI-Powered Setup',
+        aiSetupDesc: 'Let AI help generate your initial content',
+        aiDescription: 'Describe your business in a few words',
+        aiPlaceholder: 'e.g. A boutique coffee roaster in Chennai',
+        aiGenerate: 'Generate with AI',
+        aiSkip: 'Skip AI setup',
+        // Step 6: Confirmation
+        confirmTitle: 'Review & Create',
+        confirmDesc: 'Everything looks good? Let\'s launch!',
+        siteTypeLabel: 'Site Type',
+        templateLabel: 'Template',
+        subdomainLabel: 'URL',
+        confirm: 'Create My Site',
     },
     hi: {
         whatBuild: 'आप क्या बनाना चाहते हैं?',
@@ -69,14 +112,52 @@ const translations: Record<Lang, Record<string, string>> = {
         allSet: 'सब तैयार है!',
         redirecting: 'आपके डैशबोर्ड पर जा रहे हैं...',
         logOut: 'लॉग आउट',
-        ecommerce: 'ऑनलाइन स्टोर',
-        ecommerceDesc: 'ऑनलाइन उत्पाद बेचें',
+        store: 'ऑनलाइन स्टोर',
+        storeDesc: 'ऑनलाइन उत्पाद बेचें',
         portfolio: 'पोर्टफोलियो',
         portfolioDesc: 'अपना काम दिखाएं',
         resume: 'रिज्यूमे / CV',
         resumeDesc: 'पेशेवर प्रोफाइल',
-        landingPage: 'लैंडिंग पेज',
-        landingPageDesc: 'मार्केटिंग और लीड्स',
+        landing: 'लैंडिंग पेज',
+        landingDesc: 'मार्केटिंग और लीड्स',
+        blog: 'ब्लॉग',
+        blogDesc: 'लेख और कहानियाँ प्रकाशित करें',
+        pickTemplate: 'टेम्पलेट चुनें',
+        pickTemplateDesc: 'एक पेशेवर डिज़ाइन से शुरू करें',
+        blankTemplate: 'खाली कैनवस',
+        blankTemplateDesc: 'शून्य से शुरू करें',
+        modernTemplate: 'आधुनिक',
+        modernTemplateDesc: 'साफ़ और न्यूनतम',
+        boldTemplate: 'बोल्ड',
+        boldTemplateDesc: 'मज़बूत और जीवंत',
+        classicTemplate: 'क्लासिक',
+        classicTemplateDesc: 'शाश्वत और सुंदर',
+        skip: 'अभी छोड़ें',
+        next: 'अगला',
+        tellUsMore: 'अपने व्यवसाय के बारे में बताएं',
+        surveyDesc: 'हमें आपका अनुभव तैयार करने में मदद करें',
+        businessGoal: 'आपका मुख्य लक्ष्य क्या है?',
+        goalSell: 'उत्पाद या सेवाएं बेचें',
+        goalShowcase: 'अपना काम दिखाएं',
+        goalGenerate: 'लीड्स उत्पन्न करें',
+        goalBlog: 'सामग्री प्रकाशित करें',
+        teamSize: 'टीम का आकार',
+        teamSolo: 'सिर्फ़ मैं',
+        teamSmall: '2–10 लोग',
+        teamMedium: '11–50 लोग',
+        teamLarge: '50+ लोग',
+        aiSetup: 'AI-संचालित सेटअप',
+        aiSetupDesc: 'AI को आपकी प्रारंभिक सामग्री बनाने दें',
+        aiDescription: 'अपने व्यवसाय का वर्णन करें',
+        aiPlaceholder: 'जैसे: चेन्नई में एक कॉफी रोस्टर',
+        aiGenerate: 'AI से बनाएं',
+        aiSkip: 'AI सेटअप छोड़ें',
+        confirmTitle: 'समीक्षा करें और बनाएं',
+        confirmDesc: 'सब ठीक लग रहा है? चलिए शुरू करते हैं!',
+        siteTypeLabel: 'साइट प्रकार',
+        templateLabel: 'टेम्पलेट',
+        subdomainLabel: 'URL',
+        confirm: 'मेरी साइट बनाएं',
     },
     ta: {
         whatBuild: 'நீங்கள் என்ன உருவாக்க விரும்புகிறீர்கள்?',
@@ -93,14 +174,52 @@ const translations: Record<Lang, Record<string, string>> = {
         allSet: 'எல்லாம் தயார்!',
         redirecting: 'உங்கள் டாஷ்போர்டுக்கு செல்கிறது...',
         logOut: 'வெளியேறு',
-        ecommerce: 'ஆன்லைன் கடை',
-        ecommerceDesc: 'ஆன்லைனில் பொருட்கள் விற்கவும்',
+        store: 'ஆன்லைன் கடை',
+        storeDesc: 'ஆன்லைனில் பொருட்கள் விற்கவும்',
         portfolio: 'போர்ட்ஃபோலியோ',
         portfolioDesc: 'உங்கள் வேலையை காட்டுங்கள்',
         resume: 'ரெஸ்யூம் / CV',
         resumeDesc: 'தொழில்முறை சுயவிவரம்',
-        landingPage: 'லேண்டிங் பேஜ்',
-        landingPageDesc: 'மார்க்கெட்டிங் & லீட்ஸ்',
+        landing: 'லேண்டிங் பேஜ்',
+        landingDesc: 'மார்க்கெட்டிங் & லீட்ஸ்',
+        blog: 'வலைப்பதிவு',
+        blogDesc: 'கட்டுரைகள் மற்றும் கதைகளை வெளியிடுங்கள்',
+        pickTemplate: 'டெம்ப்ளேட்டை தேர்ந்தெடுக்கவும்',
+        pickTemplateDesc: 'தொழில்முறை வடிவமைப்புடன் தொடங்குங்கள்',
+        blankTemplate: 'காலி கேன்வாஸ்',
+        blankTemplateDesc: 'முதலில் இருந்து தொடங்குங்கள்',
+        modernTemplate: 'நவீனம்',
+        modernTemplateDesc: 'சுத்தமான & குறைந்த',
+        boldTemplate: 'தைரியமான',
+        boldTemplateDesc: 'வலுவான & உயிர்ப்பான',
+        classicTemplate: 'க்ளாசிக்',
+        classicTemplateDesc: 'காலம் கடந்த & அழகான',
+        skip: 'இப்போது விடுங்கள்',
+        next: 'அடுத்தது',
+        tellUsMore: 'உங்கள் வணிகத்தைப் பற்றி சொல்லுங்கள்',
+        surveyDesc: 'உங்கள் அனுபவத்தை தனிப்பயானதாக உதவுங்கள்',
+        businessGoal: 'உங்கள் முதன்மை இலக்கு என்ன?',
+        goalSell: 'பொருட்கள் அல்லது சேவைகளை விற்க',
+        goalShowcase: 'என் வேலையை காட்ட',
+        goalGenerate: 'லீட்களை உருவாக்க',
+        goalBlog: 'உள்ளடக்கத்தை வெளியிட',
+        teamSize: 'குழு அளவு',
+        teamSolo: 'நான் மட்டும்',
+        teamSmall: '2–10 பேர்',
+        teamMedium: '11–50 பேர்',
+        teamLarge: '50+ பேர்',
+        aiSetup: 'AI-செயற்கை அமைப்பு',
+        aiSetupDesc: 'தொடக்க உள்ளடக்கத்தை AI உருவாக்கட்டும்',
+        aiDescription: 'உங்கள் வணிகத்தை விவரிக்கவும்',
+        aiPlaceholder: 'உதா: சென்னையில் ஒரு காபி ரோஸ்டர்',
+        aiGenerate: 'AI மூலம் உருவாக்கு',
+        aiSkip: 'AI அமைப்பை விடு',
+        confirmTitle: 'சரிபார்க்கவும் மற்றும் உருவாக்கவும்',
+        confirmDesc: 'எல்லாம் சரியாக உள்ளதா? தொடங்குவோம்!',
+        siteTypeLabel: 'தள வகை',
+        templateLabel: 'டெம்ப்ளேட்',
+        subdomainLabel: 'URL',
+        confirm: 'என் தளத்தை உருவாக்கு',
     },
 }
 
@@ -109,10 +228,11 @@ const translations: Record<Lang, Record<string, string>> = {
    —————————————————————————————————————— */
 
 const SITE_TYPES: { id: SiteType; nameKey: string; icon: string; descKey: string }[] = [
-    { id: 'ecommerce', nameKey: 'ecommerce', icon: 'shopping_cart', descKey: 'ecommerceDesc' },
+    { id: 'store', nameKey: 'store', icon: 'shopping_cart', descKey: 'storeDesc' },
     { id: 'portfolio', nameKey: 'portfolio', icon: 'work', descKey: 'portfolioDesc' },
     { id: 'resume', nameKey: 'resume', icon: 'article', descKey: 'resumeDesc' },
-    { id: 'landing_page', nameKey: 'landingPage', icon: 'rocket_launch', descKey: 'landingPageDesc' },
+    { id: 'landing', nameKey: 'landing', icon: 'rocket_launch', descKey: 'landingDesc' },
+    { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc' },
 ]
 
 const ADMIN_URL =
@@ -120,6 +240,17 @@ const ADMIN_URL =
     (typeof window !== 'undefined' && window.location.hostname === 'localhost'
         ? 'http://localhost:3001'
         : 'https://admin.letbuyy.store')
+
+type TemplateId = 'blank' | 'modern' | 'bold' | 'classic'
+
+const TEMPLATES: { id: TemplateId; nameKey: string; descKey: string; icon: string }[] = [
+    { id: 'blank', nameKey: 'blankTemplate', icon: 'dashboard_customize', descKey: 'blankTemplateDesc' },
+    { id: 'modern', nameKey: 'modernTemplate', icon: 'auto_awesome', descKey: 'modernTemplateDesc' },
+    { id: 'bold', nameKey: 'boldTemplate', icon: 'flash_on', descKey: 'boldTemplateDesc' },
+    { id: 'classic', nameKey: 'classicTemplate', icon: 'menu_book', descKey: 'classicTemplateDesc' },
+]
+
+const TOTAL_STEPS = 6
 
 /* ——————————————————————————————————————
    Component
@@ -130,6 +261,14 @@ export default function OnboardingPage() {
     const [siteType, setSiteType] = useState<SiteType | null>(null)
     const [subdomain, setSubdomain] = useState('')
     const [storeName, setStoreName] = useState('')
+
+    // Step 3
+    const [template, setTemplate] = useState<TemplateId>('blank')
+    // Step 4
+    const [goal, setGoal] = useState<string>('')
+    const [teamSize, setTeamSize] = useState<string>('')
+    // Step 5
+    const [aiDescription, setAiDescription] = useState('')
 
     const [validation, setValidation] = useState<ValidationResult | null>(null)
     const [validating, setValidating] = useState(false)
@@ -298,7 +437,7 @@ export default function OnboardingPage() {
                 // Log failure
                 await fetch('/api/email/store-creation-failure', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: getAuthHeaders(),
                     body: JSON.stringify({
                         email: user.email,
                         storeName: name,
@@ -314,7 +453,7 @@ export default function OnboardingPage() {
             // Send success email
             await fetch('/api/email/store-creation-success', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: user.email,
                     storeName: name,
@@ -419,8 +558,9 @@ export default function OnboardingPage() {
 
                 {/* Progress bar */}
                 <div className="onboard-progress">
-                    <div className={`onboard-progress-step ${step >= 1 ? 'active' : ''}`} />
-                    <div className={`onboard-progress-step ${step >= 2 ? 'active' : ''}`} />
+                    {Array.from({ length: TOTAL_STEPS }, (_, i) => (
+                        <div key={i} className={`onboard-progress-step ${step >= i + 1 ? 'active' : ''}`} />
+                    ))}
                 </div>
 
                 {/* Error banner */}
@@ -544,8 +684,190 @@ export default function OnboardingPage() {
                             </button>
                             <button
                                 className="auth-btn"
+                                onClick={() => validation?.valid && setStep(3)}
+                                disabled={!validation?.valid}
+                            >
+                                {t.next}
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>
+                                    arrow_forward
+                                </span>
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {/* ——— STEP 3: Template picker ——— */}
+                {step === 3 && (
+                    <>
+                        <h1 className="auth-title">{t.pickTemplate}</h1>
+                        <p className="auth-subtitle">{t.pickTemplateDesc}</p>
+
+                        <div className="onboard-type-grid">
+                            {TEMPLATES.map((tmpl) => (
+                                <button
+                                    key={tmpl.id}
+                                    className={`onboard-type-card ${template === tmpl.id ? 'selected' : ''}`}
+                                    onClick={() => setTemplate(tmpl.id)}
+                                >
+                                    <span className="onboard-type-icon">
+                                        <span className="material-symbols-outlined">{tmpl.icon}</span>
+                                    </span>
+                                    <span className="onboard-type-name">{t[tmpl.nameKey]}</span>
+                                    <span className="onboard-type-desc">{t[tmpl.descKey]}</span>
+                                </button>
+                            ))}
+                        </div>
+
+                        <div className="onboard-btn-row">
+                            <button className="auth-btn-secondary" onClick={() => setStep(2)}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                {t.back}
+                            </button>
+                            <button className="auth-btn" onClick={() => setStep(4)}>
+                                {t.next}
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>arrow_forward</span>
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {/* ——— STEP 4: Business survey ——— */}
+                {step === 4 && (
+                    <>
+                        <h1 className="auth-title">{t.tellUsMore}</h1>
+                        <p className="auth-subtitle">{t.surveyDesc}</p>
+
+                        {/* Goal */}
+                        <div style={{ marginBottom: 20 }}>
+                            <label className="auth-label">{t.businessGoal}</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                {[
+                                    { id: 'sell', label: t.goalSell, icon: 'shopping_cart' },
+                                    { id: 'showcase', label: t.goalShowcase, icon: 'visibility' },
+                                    { id: 'leads', label: t.goalGenerate, icon: 'contact_page' },
+                                    { id: 'blog', label: t.goalBlog, icon: 'edit_note' },
+                                ].map((g) => (
+                                    <button
+                                        key={g.id}
+                                        className={`onboard-type-card ${goal === g.id ? 'selected' : ''}`}
+                                        onClick={() => setGoal(g.id)}
+                                        style={{ padding: '12px 16px', textAlign: 'left' }}
+                                    >
+                                        <span className="material-symbols-outlined" style={{ fontSize: 20, marginRight: 8, verticalAlign: 'middle' }}>{g.icon}</span>
+                                        <span style={{ fontSize: 13 }}>{g.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Team size */}
+                        <div style={{ marginBottom: 20 }}>
+                            <label className="auth-label">{t.teamSize}</label>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                                {[
+                                    { id: 'solo', label: t.teamSolo },
+                                    { id: 'small', label: t.teamSmall },
+                                    { id: 'medium', label: t.teamMedium },
+                                    { id: 'large', label: t.teamLarge },
+                                ].map((ts) => (
+                                    <button
+                                        key={ts.id}
+                                        className={`onboard-type-card ${teamSize === ts.id ? 'selected' : ''}`}
+                                        onClick={() => setTeamSize(ts.id)}
+                                        style={{ padding: '10px 16px', fontSize: 13 }}
+                                    >
+                                        {ts.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="onboard-btn-row">
+                            <button className="auth-btn-secondary" onClick={() => setStep(3)}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                {t.back}
+                            </button>
+                            <button className="auth-btn" onClick={() => setStep(5)}>
+                                {t.next}
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>arrow_forward</span>
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {/* ——— STEP 5: AI Setup ——— */}
+                {step === 5 && (
+                    <>
+                        <h1 className="auth-title">{t.aiSetup}</h1>
+                        <p className="auth-subtitle">{t.aiSetupDesc}</p>
+
+                        <div style={{ marginBottom: 20 }}>
+                            <label className="auth-label">{t.aiDescription}</label>
+                            <textarea
+                                className="auth-input"
+                                placeholder={t.aiPlaceholder}
+                                value={aiDescription}
+                                onChange={(e) => setAiDescription(e.target.value)}
+                                rows={3}
+                                style={{ resize: 'none', minHeight: 80 }}
+                            />
+                        </div>
+
+                        <div className="onboard-btn-row">
+                            <button className="auth-btn-secondary" onClick={() => setStep(4)}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                {t.back}
+                            </button>
+                            <button className="auth-btn-secondary" onClick={() => setStep(6)}>
+                                {t.aiSkip}
+                            </button>
+                            <button className="auth-btn" onClick={() => setStep(6)} disabled={!aiDescription.trim()}>
+                                {t.aiGenerate}
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>auto_awesome</span>
+                            </button>
+                        </div>
+                    </>
+                )}
+
+                {/* ——— STEP 6: Review & Confirm ——— */}
+                {step === 6 && (
+                    <>
+                        <h1 className="auth-title">{t.confirmTitle}</h1>
+                        <p className="auth-subtitle">{t.confirmDesc}</p>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
+                            {/* Site Type */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                                <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{t.siteTypeLabel}</span>
+                                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+                                    {siteType ? t[SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}
+                                </span>
+                            </div>
+                            {/* Template */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                                <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{t.templateLabel}</span>
+                                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)' }}>
+                                    {t[TEMPLATES.find(tp => tp.id === template)?.nameKey || 'blankTemplate']}
+                                </span>
+                            </div>
+                            {/* URL */}
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--bg-secondary)', borderRadius: 10, border: '1px solid var(--border)' }}>
+                                <span style={{ fontSize: 13, color: 'var(--text-tertiary)' }}>{t.subdomainLabel}</span>
+                                <span style={{ fontSize: 14, fontWeight: 600, color: 'var(--primary)' }}>
+                                    {subdomain}.letbuyy.store
+                                </span>
+                            </div>
+                        </div>
+
+                        <div className="onboard-btn-row">
+                            <button className="auth-btn-secondary" onClick={() => setStep(5)}>
+                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                {t.back}
+                            </button>
+                            <button
+                                className="auth-btn"
                                 onClick={handleSubmit}
-                                disabled={!validation?.valid || loading}
+                                disabled={loading}
                             >
                                 {loading ? (
                                     <>
@@ -554,9 +876,9 @@ export default function OnboardingPage() {
                                     </>
                                 ) : (
                                     <>
-                                        {t.createSite}
+                                        {t.confirm}
                                         <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>
-                                            arrow_forward
+                                            rocket_launch
                                         </span>
                                     </>
                                 )}

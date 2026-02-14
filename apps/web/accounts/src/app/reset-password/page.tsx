@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
+import { getAuthHeaders } from '@/lib/csrf-client'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -103,7 +104,7 @@ function ResetPasswordContent() {
         try {
             const res = await fetch('/api/auth/reset-password', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ token, password }),
             })
 

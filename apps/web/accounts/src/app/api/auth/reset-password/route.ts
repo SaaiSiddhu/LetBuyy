@@ -6,6 +6,8 @@ import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
 import { createSession, destroyAllUserSessions } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
+import { validateCsrf } from '@/lib/auth/csrf'
+import { sendPasswordChangedEmail } from '@/lib/email/resend'
 
 /**
  * POST /api/auth/reset-password
@@ -23,6 +25,11 @@ export async function POST(request: NextRequest) {
                 { error: 'Too many attempts.', retryAfter: rl.retryAfter },
                 { status: 429 }
             )
+        }
+
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
         const { token, password } = await request.json()
@@ -69,7 +76,7 @@ export async function POST(request: NextRequest) {
         // Create new session on this device
         const fingerprint = generateDeviceFingerprint(request.headers, ip)
         const userAgent = request.headers.get('user-agent') || ''
-        const deviceId = await getOrCreateDevice(user.id, fingerprint, userAgent)
+        const { deviceId } = await getOrCreateDevice(user.id, fingerprint, userAgent)
         const sessionToken = await createSession(user.id, deviceId)
 
         // Set cookies
@@ -81,10 +88,23 @@ export async function POST(request: NextRequest) {
             lastLogin: new Date().toISOString(),
         })
 
-        return NextResponse.json({
-            success: true,
-            redirectTo: process.env.NEXT_PUBLIC_ADMIN_URL || '/onboarding',
-        })
+        // Security alert: password changed (fire-and-forget)
+        sendPasswordChangedEmail(user.email).catch(() => { })
+
+        // Check if user has a store → redirect appropriately
+        const { data: store } = await supabase
+            .from('sites')
+            .select('subdomain')
+            .eq('custom_user_id', user.id)
+            .limit(1)
+            .single()
+
+        const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3001'
+        const redirectTo = store?.subdomain
+            ? `${adminUrl}/${store.subdomain}/dashboard`
+            : '/onboarding'
+
+        return NextResponse.json({ success: true, redirectTo })
     } catch (error) {
         console.error('Reset password error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

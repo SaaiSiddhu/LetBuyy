@@ -10,56 +10,69 @@ interface SidebarProps {
 }
 
 const navItems = {
-    ecommerce: [
-        { href: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { href: 'products', label: 'Products', icon: '📦' },
-        { href: 'orders', label: 'Orders', icon: '🛒' },
-        { href: 'customers', label: 'Customers', icon: '👥' },
-        { href: 'coupons', label: 'Coupons', icon: '🏷️' },
-        { href: 'analytics', label: 'Analytics', icon: '📈' },
-        { href: 'pages', label: 'Pages', icon: '📄' },
-        { href: 'settings', label: 'Settings', icon: '⚙️' },
+    store: [
+        { href: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { href: 'products', label: 'Products', icon: 'inventory_2' },
+        { href: 'orders', label: 'Orders', icon: 'shopping_cart' },
+        { href: 'customers', label: 'Customers', icon: 'group' },
+        { href: 'coupons', label: 'Coupons', icon: 'sell' },
+        { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+        { href: 'pages', label: 'Pages', icon: 'article' },
+        { href: 'appearance', label: 'Appearance', icon: 'palette' },
+        { href: 'ai', label: 'AI Studio', icon: 'smart_toy' },
+        { href: 'settings', label: 'Settings', icon: 'settings' },
     ],
     portfolio: [
-        { href: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { href: 'projects', label: 'Projects', icon: '🎨' },
-        { href: 'skills', label: 'Skills', icon: '⭐' },
-        { href: 'analytics', label: 'Analytics', icon: '📈' },
-        { href: 'pages', label: 'Pages', icon: '📄' },
-        { href: 'settings', label: 'Settings', icon: '⚙️' },
+        { href: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { href: 'projects', label: 'Projects', icon: 'work' },
+        { href: 'gallery', label: 'Gallery', icon: 'image' },
+        { href: 'skills', label: 'Skills', icon: 'star' },
+        { href: 'education', label: 'Education', icon: 'school' },
+        { href: 'testimonials', label: 'Testimonials', icon: 'chat' },
+        { href: 'contact', label: 'Contact Form', icon: 'mail' },
+        { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+        { href: 'pages', label: 'Pages', icon: 'article' },
+        { href: 'appearance', label: 'Appearance', icon: 'palette' },
+        { href: 'ai', label: 'AI Studio', icon: 'smart_toy' },
+        { href: 'settings', label: 'Settings', icon: 'settings' },
     ],
     resume: [
-        { href: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { href: 'editor', label: 'Editor', icon: '✏️' },
-        { href: 'versions', label: 'Versions', icon: '📋' },
-        { href: 'analytics', label: 'Analytics', icon: '📈' },
-        { href: 'settings', label: 'Settings', icon: '⚙️' },
-    ],
-    landing_page: [
-        { href: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { href: 'analytics', label: 'Analytics', icon: '📈' },
-        { href: 'pages', label: 'Pages', icon: '📄' },
-        { href: 'settings', label: 'Settings', icon: '⚙️' },
-    ],
-    // Legacy alias
-    store: [
-        { href: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { href: 'products', label: 'Products', icon: '📦' },
-        { href: 'orders', label: 'Orders', icon: '🛒' },
-        { href: 'analytics', label: 'Analytics', icon: '📈' },
-        { href: 'settings', label: 'Settings', icon: '⚙️' },
+        { href: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { href: 'experience', label: 'Experience', icon: 'work' },
+        { href: 'education', label: 'Education', icon: 'school' },
+        { href: 'skills', label: 'Skills', icon: 'star' },
+        { href: 'certifications', label: 'Certifications', icon: 'verified' },
+        { href: 'export', label: 'PDF Export', icon: 'picture_as_pdf' },
+        { href: 'ats-score', label: 'ATS Score', icon: 'analytics' },
+        { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+        { href: 'appearance', label: 'Appearance', icon: 'palette' },
+        { href: 'settings', label: 'Settings', icon: 'settings' },
     ],
     landing: [
-        { href: 'dashboard', label: 'Dashboard', icon: '📊' },
-        { href: 'analytics', label: 'Analytics', icon: '📈' },
-        { href: 'pages', label: 'Pages', icon: '📄' },
-        { href: 'settings', label: 'Settings', icon: '⚙️' },
+        { href: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { href: 'pages', label: 'Pages', icon: 'article' },
+        { href: 'leads', label: 'Leads', icon: 'contact_page' },
+        { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+        { href: 'appearance', label: 'Appearance', icon: 'palette' },
+        { href: 'ai', label: 'AI Studio', icon: 'smart_toy' },
+        { href: 'settings', label: 'Settings', icon: 'settings' },
+    ],
+    blog: [
+        { href: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
+        { href: 'posts', label: 'Posts', icon: 'edit_note' },
+        { href: 'categories', label: 'Categories', icon: 'category' },
+        { href: 'comments', label: 'Comments', icon: 'comment' },
+        { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+        { href: 'pages', label: 'Pages', icon: 'article' },
+        { href: 'appearance', label: 'Appearance', icon: 'palette' },
+        { href: 'ai', label: 'AI Studio', icon: 'smart_toy' },
+        { href: 'settings', label: 'Settings', icon: 'settings' },
     ],
 }
 
 export default function Sidebar({ store }: SidebarProps) {
     const pathname = usePathname()
-    const [siteType, setSiteType] = useState<string>('ecommerce')
+    const [siteType, setSiteType] = useState<string>('store')
     const [userName, setUserName] = useState<string>('')
     const supabase = createClient()
 
@@ -88,7 +101,7 @@ export default function Sidebar({ store }: SidebarProps) {
         loadStoreInfo()
     }, [store, supabase])
 
-    const items = navItems[siteType as keyof typeof navItems] || navItems.ecommerce
+    const items = navItems[siteType as keyof typeof navItems] || navItems.store
 
     const handleSignOut = async () => {
         // Sign out via the accounts app's logout endpoint
@@ -123,7 +136,7 @@ export default function Sidebar({ store }: SidebarProps) {
                             href={href}
                             className={`admin-nav-item ${isActive ? 'active' : ''}`}
                         >
-                            <span>{item.icon}</span>
+                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>{item.icon}</span>
                             {item.label}
                         </Link>
                     )

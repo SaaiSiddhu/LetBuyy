@@ -5,11 +5,25 @@
 import 'server-only';
 import Stripe from 'stripe';
 
-if (!process.env.STRIPE_SECRET_KEY) {
-    console.warn('[Stripe] STRIPE_SECRET_KEY not set — Stripe payments will fail');
+// Lazy-initialize to prevent build-time crashes when env vars are missing
+let _stripe: Stripe | null = null;
+export function getStripe(): Stripe {
+    if (!_stripe) {
+        const key = process.env.STRIPE_SECRET_KEY;
+        if (!key) {
+            console.warn('[Stripe] STRIPE_SECRET_KEY not set — Stripe payments will fail');
+        }
+        _stripe = new Stripe(key || 'sk_test_placeholder');
+    }
+    return _stripe;
 }
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
+// Backward-compatible export (lazy)
+export const stripe = new Proxy({} as Stripe, {
+    get(_target, prop) {
+        return (getStripe() as unknown as Record<string | symbol, unknown>)[prop];
+    },
+});
 
 /**
  * Create a Stripe Checkout Session for an order.

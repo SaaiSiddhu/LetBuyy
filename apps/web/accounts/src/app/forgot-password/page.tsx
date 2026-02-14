@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import TurnstileWidget from '@/components/TurnstileWidget'
+import { getAuthHeaders } from '@/lib/csrf-client'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -81,7 +82,7 @@ export default function ForgotPasswordPage() {
         try {
             const res = await fetch('/api/auth/send-reset', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,

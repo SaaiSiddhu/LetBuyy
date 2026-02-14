@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
 import { getSessionUser } from '@/lib/auth/session'
 
 /**
@@ -10,9 +11,16 @@ export default async function AdminRootPage() {
   const user = await getSessionUser()
 
   if (!user) {
+    // Clear any stale session cookie to prevent redirect loops
+    // (accounts middleware sees the cookie and bounces back here)
+    const cookieStore = await cookies()
+    if (cookieStore.get('lb_session')) {
+      cookieStore.delete('lb_session')
+    }
+
     const accountsUrl =
       process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000'
-    redirect(`${accountsUrl}/login`)
+    redirect(`${accountsUrl}/lookup`)
   }
 
   // User is logged in — try to find their store

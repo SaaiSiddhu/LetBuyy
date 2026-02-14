@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback, Suspense } from 'react'
+import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { features } from '@/lib/config/features'
@@ -181,7 +182,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/lookup', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ email: email.trim() }),
             })
 
@@ -220,7 +221,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     password,
@@ -233,7 +234,8 @@ function LookupContent() {
             if (!res.ok) {
                 if (res.status === 429) setError(t.rateLimited)
                 else if (res.status === 403 && data.error?.includes('Bot')) setError(t.botFailed)
-                else if (res.status === 403) setError(t.verifyEmail)
+                else if (res.status === 403 && data.error?.toLowerCase().includes('verify')) setError(t.verifyEmail)
+                else if (res.status === 403) setError(data.error || 'Request failed. Please refresh the page.')
                 else setError(t.invalidCredentials)
                 return
             }
@@ -255,7 +257,7 @@ function LookupContent() {
         try {
             await fetch('/api/auth/send-magic', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     turnstileToken,
@@ -275,7 +277,7 @@ function LookupContent() {
         try {
             const res = await fetch('/api/auth/switch', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: getAuthHeaders(),
                 body: JSON.stringify({ email: account.email }),
             })
 

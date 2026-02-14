@@ -1,13 +1,19 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 import { destroySession } from '@/lib/auth/session'
 import { getSessionCookie, clearSessionCookie } from '@/lib/auth/cookies'
+import { validateCsrf } from '@/lib/auth/csrf'
 
 /**
  * POST /api/auth/logout
  * Destroy the current session and clear cookies.
  */
-export async function POST() {
+export async function POST(request: NextRequest) {
     try {
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
+        }
+
         const sessionToken = await getSessionCookie()
 
         if (sessionToken) {

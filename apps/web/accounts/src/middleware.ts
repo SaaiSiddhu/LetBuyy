@@ -18,6 +18,14 @@ export function middleware(request: NextRequest) {
         return NextResponse.redirect(new URL('/lookup', request.url))
     }
 
+    // Root path redirect
+    if (pathname === '/') {
+        if (sessionToken) {
+            return NextResponse.redirect(new URL(process.env.NEXT_PUBLIC_ADMIN_URL || '/onboarding', request.url))
+        }
+        return NextResponse.redirect(new URL('/lookup', request.url))
+    }
+
     // Skip middleware for API routes and static files
     if (pathname.startsWith('/api/') || pathname.startsWith('/_next/') || pathname.startsWith('/icons/')) {
         return NextResponse.next()
@@ -50,20 +58,24 @@ export function middleware(request: NextRequest) {
     const existingCsrf = request.cookies.get('lb_csrf')?.value
 
     if (!existingCsrf) {
-        // Generate a simple random token for CSRF (Edge-compatible)
+        // Generate a random CSRF token (Edge-compatible)
         const array = new Uint8Array(32)
         crypto.getRandomValues(array)
         const csrfToken = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('')
 
         response.cookies.set('lb_csrf', csrfToken, {
-            httpOnly: true,
+            httpOnly: false, // Client JS must read this to send in X-CSRF-Token header
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',
             path: '/',
             maxAge: 60 * 60, // 1 hour
         })
-        response.headers.set('X-CSRF-Token', csrfToken)
     }
+
+    // Security headers
+    response.headers.set('X-Frame-Options', 'DENY')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
 
     return response
 }

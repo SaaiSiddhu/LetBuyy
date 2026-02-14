@@ -80,13 +80,15 @@ export async function getStoreForUser(
     subdomain: string
     site_type: string
     status: string
+    trial_ends_at: string | null
+    trial_status: string | null
 } | null> {
     try {
         const supabase = await createClient()
 
         const { data } = await supabase
             .from('sites')
-            .select('id, name, store_name, subdomain, site_type, status, custom_user_id')
+            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status')
             .or(`store_name.eq.${storeName},subdomain.eq.${storeName}`)
             .single()
 
@@ -102,6 +104,8 @@ export async function getStoreForUser(
             subdomain: data.subdomain,
             site_type: data.site_type,
             status: data.status,
+            trial_ends_at: data.trial_ends_at || null,
+            trial_status: data.trial_status || null,
         }
     } catch {
         return null

@@ -1,7 +1,6 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  output: 'standalone',
   compress: true, // Enable gzip compression for cost savings
 
   // === COST OPTIMIZATION: Image Formats ===

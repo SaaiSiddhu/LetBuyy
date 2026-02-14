@@ -4,6 +4,7 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
 import { validateSession } from '@/lib/auth/session'
 import { getSessionCookie, addAccount } from '@/lib/auth/cookies'
+import { validateCsrf } from '@/lib/auth/csrf'
 
 /**
  * POST /api/auth/set-password
@@ -21,6 +22,11 @@ export async function POST(request: NextRequest) {
                 { error: 'Too many attempts. Please try again later.', retryAfter: rl.retryAfter },
                 { status: 429 }
             )
+        }
+
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
         // Verify session (user must be logged in from email verification)

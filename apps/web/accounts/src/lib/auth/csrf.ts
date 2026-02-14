@@ -1,37 +1,25 @@
-import { createHmac, randomBytes, timingSafeEqual } from 'crypto'
-
-const CSRF_SECRET = process.env.CSRF_SECRET || ''
+import { NextRequest } from 'next/server'
 
 /**
- * Generate a CSRF token using HMAC.
- * The token is: random_nonce.hmac(nonce)
- * This allows server-side verification without database storage.
- */
-export function generateCsrfToken(): string {
-    const nonce = randomBytes(16).toString('hex')
-    const hmac = createHmac('sha256', CSRF_SECRET).update(nonce).digest('hex')
-    return `${nonce}.${hmac}`
-}
-
-/**
- * Validate a CSRF token by re-computing the HMAC and comparing.
- * Uses timing-safe comparison to prevent timing attacks.
+ * Validate a CSRF token by comparing the cookie value with the header value.
+ * 
+ * Security model: The lb_csrf cookie is set with SameSite=strict,
+ * so it's only sent on same-origin requests. The client reads it via JS
+ * and sends it in the X-CSRF-Token header. An attacker on a different
+ * origin cannot read the cookie, so they can't forge the header.
  */
 export function validateCsrfToken(cookieToken: string, headerToken: string): boolean {
     if (!cookieToken || !headerToken) return false
-    if (cookieToken !== headerToken) return false
+    if (cookieToken.length < 16) return false // sanity check
+    return cookieToken === headerToken
+}
 
-    const parts = cookieToken.split('.')
-    if (parts.length !== 2) return false
-
-    const [nonce, providedHmac] = parts
-    const expectedHmac = createHmac('sha256', CSRF_SECRET).update(nonce).digest('hex')
-
-    try {
-        const a = Buffer.from(providedHmac, 'hex')
-        const b = Buffer.from(expectedHmac, 'hex')
-        return a.length === b.length && timingSafeEqual(a, b)
-    } catch {
-        return false
-    }
+/**
+ * Convenience: validate CSRF from a NextRequest.
+ * Reads the lb_csrf cookie and the X-CSRF-Token header.
+ */
+export function validateCsrf(request: NextRequest): boolean {
+    const cookieToken = request.cookies.get('lb_csrf')?.value || ''
+    const headerToken = request.headers.get('X-CSRF-Token') || ''
+    return validateCsrfToken(cookieToken, headerToken)
 }

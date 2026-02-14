@@ -1,8 +1,10 @@
 # LetBuyy Multi-Tenant Store Platform — Comprehensive Analysis
 
-> **Part 2 of 3** | Implementation Flow, Onboarding UI Wireframes & Email System
+> **Part 2 of 7** | Implementation Flow, Onboarding UI Wireframes & Email System
 >
-> **Date:** February 12, 2026 | **Prev:** Part 1 (Architecture) | **Next:** Part 3 (Admin, Storefront, Deploy)
+> **Date:** February 13, 2026 | **Version:** 3.0 (Blog-Integrated)
+>
+> **Prev:** [Part 1](./Analysis_Part1_Architecture_Database_DNS.md) (Architecture) | **Next:** [Part 3](./Analysis_Part3_Admin_Storefront_Deploy.md) (Admin, Storefront, Deploy)
 
 ---
 
@@ -42,13 +44,15 @@
 │ .onboarding-progress-step│ Step bar (4px height, rounded, bg: border)│
 │ .onboarding-progress-    │ Active step: bg changed to --primary      │
 │  step.active             │                                            │
-│ .onboarding-grid         │ 2×2 grid layout (12px gap)                │
+│ .onboarding-grid         │ 3×2 grid layout (12px gap) — 5 site types │
 │ .onboarding-type-card    │ Card with border, rounded, hover effects  │
 │ .onboarding-type-card    │ Purple ring + tinted bg when selected     │
 │  .selected               │                                            │
 │ .onboarding-type-icon    │ 24px emoji icon block                     │
 │ .onboarding-type-name    │ 14px bold card title                      │
 │ .onboarding-type-desc    │ 12px muted description text               │
+│ .onboarding-type-card    │ Centered in last row when 5th card        │
+│  .blogger                │ (grid-column: span 2, max-width: 50%)     │
 │ .onboarding-url-display  │ Compound input: text + .letbuyy.store     │
 │ .onboarding-url-suffix   │ Monospace suffix badge (Fira Code font)   │
 │ .onboarding-btn-row      │ Back + Create button row (flex, 12px gap) │
@@ -130,7 +134,12 @@
 │                │  │  Professional│  Marketing   ││                  │
 │                │  │  profile     │  campaign    ││                  │
 │                │  │              │              ││                  │
-│                │  └──────────────┴──────────────┘│                  │
+│                │  ├──────────────┴──────────────┤│                  │
+│                │  │       📝 Blogger             ││  ← NEW 5th type │
+│                │  │       Write & publish        ││                  │
+│                │  │       blog posts             ││                  │
+│                │  │    (centered, spans 2 cols)  ││                  │
+│                │  └──────────────────────────────┘│                  │
 │                │                                 │                  │
 │                │  ┌─────────────────────────────┐│                  │
 │                │  │          Next  →             ││ ← DISABLED      │
@@ -560,4 +569,18 @@
 
 > **→ Continues in [Part 3](./Analysis_Part3_Admin_Storefront_Deploy.md):**
 > Admin Dashboard Wireframes, Storefront / "Launching Soon" Page, Dark Mode, Deployment Checklist & Testing Plan
+
+---
+
+> **Complete Series Navigation**
+>
+> | Part | Content |
+> |------|--------|
+> | [Part 1](./Analysis_Part1_Architecture_Database_DNS.md) | Architecture, Database Schema, DNS/SSL, Tech Stack |
+> | **Part 2** (this) | CSS System, Onboarding UI Wireframes, Email Templates |
+> | [Part 3](./Analysis_Part3_Admin_Storefront_Deploy.md) | Admin Dashboard, Storefront, Dark Mode, Deployment |
+> | [Part 4](./Analysis_Part4_Blog_Database_AdminCRUD.md) | Blog Database Schema, Admin CRUD Wireframes |
+> | [Part 5](./Analysis_Part5_Enhanced_Admin_Features.md) | Bulk Actions, Command Palette, Activity Logs, Notifications |
+> | [Part 6](./Analysis_Part6_Ecommerce_Enhancements.md) | Inventory, Multi-Currency, Tax, Shipping, Discounts |
+> | [Part 7](./Analysis_Part7_Analytics_Performance_Deploy.md) | Analytics Dashboard, CI/CD, Performance, Security, Scaling |
 

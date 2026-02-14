@@ -5,7 +5,9 @@ import { verifyTurnstileToken } from '@/lib/turnstile'
 import { verifyPassword } from '@/lib/auth/password'
 import { createSession } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
-import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
+import { generateDeviceFingerprint, getOrCreateDevice, parseDeviceName } from '@/lib/auth/device'
+import { validateCsrf } from '@/lib/auth/csrf'
+import { sendNewDeviceLoginEmail } from '@/lib/email/resend'
 
 /**
  * POST /api/auth/login
@@ -23,6 +25,11 @@ export async function POST(request: NextRequest) {
                 { error: 'Too many login attempts. Please try again later.', retryAfter: rl.retryAfter },
                 { status: 429 }
             )
+        }
+
+        // CSRF validation
+        if (!validateCsrf(request)) {
+            return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
         const { email, password, turnstileToken } = await request.json()
@@ -63,7 +70,7 @@ export async function POST(request: NextRequest) {
         // Create device fingerprint and session
         const fingerprint = generateDeviceFingerprint(request.headers, ip)
         const userAgent = request.headers.get('user-agent') || ''
-        const deviceId = await getOrCreateDevice(user.id, fingerprint, userAgent)
+        const { deviceId, isNew: isNewDevice } = await getOrCreateDevice(user.id, fingerprint, userAgent)
         const sessionToken = await createSession(user.id, deviceId)
 
         // Set cookies
@@ -74,6 +81,14 @@ export async function POST(request: NextRequest) {
             avatar: user.avatar_url,
             lastLogin: new Date().toISOString(),
         })
+
+        // Security alert: new device login (fire-and-forget)
+        if (isNewDevice) {
+            sendNewDeviceLoginEmail(user.email, {
+                device: parseDeviceName(userAgent),
+                ip: ip || 'Unknown',
+            }).catch(() => { }) // Don't fail login if email fails
+        }
 
         // CHECK IF USER HAS COMPLETED ONBOARDING (store exists?)
         const { data: store } = await supabase

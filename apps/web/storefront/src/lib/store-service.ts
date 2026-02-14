@@ -1,4 +1,4 @@
-import { db } from './supabase';
+import { getDb, db } from './supabase';
 import { StoreModel, DEFAULT_THEME_SETTINGS, ThemeSettings, SectionModel, SectionType, BlockModel, SiteType, PaymentGateway } from '@/types/store';
 
 export const StoreService = {
