@@ -1,4 +1,4 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "framework": null
+    "installCommand": "rm -rf apps/web/storefront/node_modules/next apps/web/admin/node_modules/next apps/web/accounts/node_modules/next apps/web/landing/node_modules/next 2>/dev/null; pnpm install"
 }
