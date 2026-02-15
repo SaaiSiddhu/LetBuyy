@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect, useCallback, Suspense } from 'react'
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
-import TurnstileWidget from '@/components/TurnstileWidget'
+import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
 import { features } from '@/lib/config/features'
 
 type Lang = 'en' | 'hi' | 'ta'
@@ -103,6 +103,8 @@ function LookupContent() {
     const [isDark, setIsDark] = useState(false)
     const [lang, setLang] = useState<Lang>('en')
     const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+    const turnstileTokenRef = useRef<string | null>(null)
+    const turnstileRef = useRef<TurnstileHandle>(null)
     const [savedAccounts, setSavedAccounts] = useState<SavedAccount[]>([])
     const [showPasswordVisible, setShowPasswordVisible] = useState(false)
     const [isFromSignup, setIsFromSignup] = useState(false)
@@ -219,19 +221,25 @@ function LookupContent() {
         setError(null)
 
         try {
+            // Use the ref value to get the latest token (avoids stale closures)
+            const currentToken = turnstileTokenRef.current || turnstileToken
+
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
                     email: email.trim(),
                     password,
-                    turnstileToken,
+                    turnstileToken: currentToken,
                 }),
             })
 
             const data = await res.json()
 
             if (!res.ok) {
+                // Reset Turnstile widget to get a fresh token for retry
+                turnstileRef.current?.reset()
+
                 if (res.status === 429) setError(t.rateLimited)
                 else if (res.status === 403 && data.error?.includes('Bot')) setError(t.botFailed)
                 else if (res.status === 403 && data.error?.toLowerCase().includes('verify')) setError(t.verifyEmail)
@@ -245,6 +253,8 @@ function LookupContent() {
             }
         } catch {
             setError('Something went wrong. Please try again.')
+            // Reset Turnstile on any error
+            turnstileRef.current?.reset()
         } finally {
             setLoading(false)
         }
@@ -299,6 +309,7 @@ function LookupContent() {
 
     const handleTurnstileVerify = useCallback((token: string) => {
         setTurnstileToken(token)
+        turnstileTokenRef.current = token
     }, [])
 
     const formatLastLogin = (date: string) => {
@@ -529,7 +540,7 @@ function LookupContent() {
                 )}
 
                 {/* Invisible Turnstile widget */}
-                <TurnstileWidget onVerify={handleTurnstileVerify} />
+                <TurnstileWidget ref={turnstileRef} onVerify={handleTurnstileVerify} />
             </div>
         </main>
     )

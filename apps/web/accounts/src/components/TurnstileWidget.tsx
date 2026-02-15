@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react'
 
 declare global {
     interface Window {
@@ -13,6 +13,10 @@ declare global {
     }
 }
 
+export interface TurnstileHandle {
+    reset: () => void
+}
+
 interface TurnstileWidgetProps {
     onVerify: (token: string) => void
     onExpire?: () => void
@@ -22,77 +26,115 @@ interface TurnstileWidgetProps {
  * Invisible Cloudflare Turnstile widget.
  * Runs silently in the background — no UI, no checkboxes, no puzzles.
  * Automatically bypasses on localhost (Turnstile requires HTTPS).
+ * 
+ * Use the ref handle to call .reset() after a failed login attempt
+ * or when the token expires.
  */
-export default function TurnstileWidget({ onVerify, onExpire }: TurnstileWidgetProps) {
-    const containerRef = useRef<HTMLDivElement>(null)
-    const widgetIdRef = useRef<string | null>(null)
-    const scriptLoaded = useRef(false)
+const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
+    function TurnstileWidget({ onVerify, onExpire }, ref) {
+        const containerRef = useRef<HTMLDivElement>(null)
+        const widgetIdRef = useRef<string | null>(null)
+        const scriptLoaded = useRef(false)
+        // Use refs to avoid re-render dependency issues
+        const onVerifyRef = useRef(onVerify)
+        const onExpireRef = useRef(onExpire)
+        onVerifyRef.current = onVerify
+        onExpireRef.current = onExpire
 
-    const renderWidget = useCallback(() => {
-        if (!containerRef.current || !window.turnstile) return
+        const renderWidget = useCallback(() => {
+            if (!containerRef.current || !window.turnstile) return
 
-        // Remove existing widget if any
-        if (widgetIdRef.current) {
-            try {
-                window.turnstile.remove(widgetIdRef.current)
-            } catch { /* ignore */ }
-        }
-
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-        if (!siteKey) {
-            onVerify('dev-bypass-token')
-            return
-        }
-
-        widgetIdRef.current = window.turnstile.render(containerRef.current, {
-            sitekey: siteKey,
-            size: 'invisible',
-            callback: onVerify,
-            'expired-callback': onExpire,
-            'error-callback': () => {
-                // On error (e.g. localhost protocol mismatch), auto-bypass in dev
-                if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-                    onVerify('dev-bypass-token')
-                }
-            },
-        })
-    }, [onVerify, onExpire])
-
-    useEffect(() => {
-        // Turnstile cannot work on localhost (HTTP vs HTTPS protocol mismatch)
-        // Skip entirely and auto-pass
-        if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-            onVerify('dev-bypass-token')
-            return
-        }
-
-        const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
-        if (!siteKey) {
-            onVerify('dev-bypass-token')
-            return
-        }
-
-        // Load Turnstile script if not already loaded
-        if (!scriptLoaded.current && !document.querySelector('script[src*="turnstile"]')) {
-            scriptLoaded.current = true
-            window.onTurnstileLoad = renderWidget
-
-            const script = document.createElement('script')
-            script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad'
-            script.async = true
-            document.head.appendChild(script)
-        } else if (window.turnstile) {
-            renderWidget()
-        }
-
-        return () => {
+            // Remove existing widget if any
             if (widgetIdRef.current) {
                 try {
-                    window.turnstile?.remove(widgetIdRef.current)
+                    window.turnstile.remove(widgetIdRef.current)
                 } catch { /* ignore */ }
+                widgetIdRef.current = null
             }
-        }
-    }, [renderWidget, onVerify])
 
-    return <div ref={containerRef} />
-}
+            const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+            if (!siteKey) {
+                onVerifyRef.current('dev-bypass-token')
+                return
+            }
+
+            widgetIdRef.current = window.turnstile.render(containerRef.current, {
+                sitekey: siteKey,
+                size: 'invisible',
+                callback: (token: string) => onVerifyRef.current(token),
+                'expired-callback': () => {
+                    // Token expired — clear it and reset widget for a fresh token
+                    onVerifyRef.current('')
+                    onExpireRef.current?.()
+                    // Auto-reset to get a new token
+                    if (widgetIdRef.current && window.turnstile) {
+                        try {
+                            window.turnstile.reset(widgetIdRef.current)
+                        } catch { /* ignore */ }
+                    }
+                },
+                'error-callback': () => {
+                    // On error (e.g. localhost protocol mismatch), auto-bypass in dev
+                    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+                        onVerifyRef.current('dev-bypass-token')
+                    }
+                },
+            })
+        }, []) // No dependencies — uses refs for callbacks
+
+        // Expose reset method to parent via ref
+        useImperativeHandle(ref, () => ({
+            reset: () => {
+                if (widgetIdRef.current && window.turnstile) {
+                    try {
+                        window.turnstile.reset(widgetIdRef.current)
+                    } catch {
+                        // If reset fails, re-render the widget entirely
+                        renderWidget()
+                    }
+                } else {
+                    renderWidget()
+                }
+            },
+        }), [renderWidget])
+
+        useEffect(() => {
+            // Turnstile cannot work on localhost (HTTP vs HTTPS)
+            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
+                onVerifyRef.current('dev-bypass-token')
+                return
+            }
+
+            const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
+            if (!siteKey) {
+                onVerifyRef.current('dev-bypass-token')
+                return
+            }
+
+            // Load Turnstile script if not already loaded
+            if (!scriptLoaded.current && !document.querySelector('script[src*="turnstile"]')) {
+                scriptLoaded.current = true
+                window.onTurnstileLoad = renderWidget
+
+                const script = document.createElement('script')
+                script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?onload=onTurnstileLoad'
+                script.async = true
+                document.head.appendChild(script)
+            } else if (window.turnstile) {
+                renderWidget()
+            }
+
+            return () => {
+                if (widgetIdRef.current) {
+                    try {
+                        window.turnstile?.remove(widgetIdRef.current)
+                    } catch { /* ignore */ }
+                }
+            }
+        }, [renderWidget])
+
+        return <div ref={containerRef} />
+    }
+)
+
+export default TurnstileWidget

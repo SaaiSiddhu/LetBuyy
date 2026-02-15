@@ -12,11 +12,24 @@ export const COOKIE_NAMES = {
     device: 'lb_device',
 } as const
 
+/**
+ * In production, set cookies on the parent domain (.letbuyy.store)
+ * so they are shared across all subdomains:
+ *   accounts.letbuyy.store  (sets the cookie)
+ *   admin.letbuyy.store     (reads the cookie)
+ *   *.letbuyy.store         (any future subdomains)
+ * 
+ * In development, omit domain so cookies work on localhost.
+ */
+const COOKIE_DOMAIN =
+    process.env.NODE_ENV === 'production' ? '.letbuyy.store' : undefined
+
 // Cookie options shared across all auth cookies
 const BASE_OPTIONS = {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
     path: '/',
+    ...(COOKIE_DOMAIN ? { domain: COOKIE_DOMAIN } : {}),
 } as const
 
 /**
