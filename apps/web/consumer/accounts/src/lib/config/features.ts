@@ -11,4 +11,7 @@ export const features = {
 
     /** Enable multi-account switching */
     multiAccount: process.env.FEATURE_MULTI_ACCOUNT === 'true',
+
+    /** Enable Cloudflare Turnstile bot protection */
+    turnstile: process.env.FEATURE_TURNSTILE === 'true',
 } as const

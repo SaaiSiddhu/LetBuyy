@@ -1,0 +1,532 @@
+/* ============================================================
+   COMING SOON PAGES — Global Styles
+   Premium, animated launch pages for all 5 LetBuyy site types
+   ============================================================ */
+
+/* ===== BASE RESET ===== */
+.cs-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  padding: 2rem;
+}
+
+/* ===== ANIMATED MESH GRADIENT BACKGROUNDS ===== */
+.cs-bg-store {
+  background: linear-gradient(135deg, #0a0a0a 0%, #0f0f23 30%, #1a0a2e 60%, #0a1628 100%);
+  color: #ffffff;
+}
+
+.cs-bg-portfolio {
+  background: linear-gradient(135deg, #fafafa 0%, #f0f0f0 50%, #e8e8e8 100%);
+  color: #111111;
+}
+
+.cs-bg-resume {
+  background: linear-gradient(160deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
+  color: #f8fafc;
+}
+
+.cs-bg-landing {
+  background: linear-gradient(135deg, #0c0c1d 0%, #1a1a3e 40%, #2d1b69 70%, #1a0a2e 100%);
+  color: #ffffff;
+}
+
+.cs-bg-blog {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 30%, #fff7ed 60%, #ffffff 100%);
+  color: #1c1917;
+}
+
+/* ===== ANIMATED GRADIENT ORB ===== */
+.cs-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.cs-orb-1 {
+  width: 500px;
+  height: 500px;
+  top: -10%;
+  left: -5%;
+  animation: cs-float-1 15s ease-in-out infinite;
+}
+
+.cs-orb-2 {
+  width: 400px;
+  height: 400px;
+  bottom: -5%;
+  right: -5%;
+  animation: cs-float-2 18s ease-in-out infinite;
+}
+
+.cs-orb-3 {
+  width: 300px;
+  height: 300px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: cs-float-3 20s ease-in-out infinite;
+}
+
+/* ===== STORE-SPECIFIC ORB COLORS ===== */
+.cs-bg-store .cs-orb-1 { background: radial-gradient(circle, rgba(99, 102, 241, 0.25) 0%, transparent 70%); }
+.cs-bg-store .cs-orb-2 { background: radial-gradient(circle, rgba(168, 85, 247, 0.2) 0%, transparent 70%); }
+.cs-bg-store .cs-orb-3 { background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%); }
+
+.cs-bg-portfolio .cs-orb-1 { background: radial-gradient(circle, rgba(0, 0, 0, 0.03) 0%, transparent 70%); }
+.cs-bg-portfolio .cs-orb-2 { background: radial-gradient(circle, rgba(0, 0, 0, 0.04) 0%, transparent 70%); }
+.cs-bg-portfolio .cs-orb-3 { background: radial-gradient(circle, rgba(0, 0, 0, 0.02) 0%, transparent 70%); }
+
+.cs-bg-resume .cs-orb-1 { background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, transparent 70%); }
+.cs-bg-resume .cs-orb-2 { background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, transparent 70%); }
+.cs-bg-resume .cs-orb-3 { background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%); }
+
+.cs-bg-landing .cs-orb-1 { background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%); }
+.cs-bg-landing .cs-orb-2 { background: radial-gradient(circle, rgba(236, 72, 153, 0.2) 0%, transparent 70%); }
+.cs-bg-landing .cs-orb-3 { background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%); }
+
+.cs-bg-blog .cs-orb-1 { background: radial-gradient(circle, rgba(251, 191, 36, 0.15) 0%, transparent 70%); }
+.cs-bg-blog .cs-orb-2 { background: radial-gradient(circle, rgba(245, 158, 11, 0.1) 0%, transparent 70%); }
+.cs-bg-blog .cs-orb-3 { background: radial-gradient(circle, rgba(234, 88, 12, 0.08) 0%, transparent 70%); }
+
+/* ===== CONTENT CONTAINER ===== */
+.cs-content {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 680px;
+  width: 100%;
+  animation: cs-fade-up 1s ease-out;
+}
+
+/* ===== LOGO ===== */
+.cs-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  object-fit: cover;
+  margin: 0 auto 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+  animation: cs-logo-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cs-logo-placeholder {
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.2rem;
+  font-weight: 800;
+  margin: 0 auto 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  animation: cs-logo-enter 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ===== BADGE ===== */
+.cs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  animation: cs-fade-up 1s ease-out 0.1s both;
+}
+
+.cs-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: cs-pulse 2s ease-in-out infinite;
+}
+
+/* ===== STORE NAME / HEADING ===== */
+.cs-heading {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.03em;
+  animation: cs-fade-up 1s ease-out 0.2s both;
+}
+
+/* ===== TAGLINE ===== */
+.cs-tagline {
+  font-size: 1.15rem;
+  line-height: 1.7;
+  margin-bottom: 2.5rem;
+  opacity: 0.65;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  animation: cs-fade-up 1s ease-out 0.3s both;
+}
+
+/* ===== GLASS CARD ===== */
+.cs-glass {
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 1.5rem 2rem;
+  margin-bottom: 2rem;
+  animation: cs-fade-up 1s ease-out 0.4s both;
+}
+
+/* ===== EMAIL FORM ===== */
+.cs-email-form {
+  display: flex;
+  gap: 0.5rem;
+  max-width: 440px;
+  margin: 0 auto 2rem;
+  animation: cs-fade-up 1s ease-out 0.5s both;
+}
+
+.cs-email-input {
+  flex: 1;
+  padding: 0.875rem 1.25rem;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.cs-email-input::placeholder {
+  opacity: 0.4;
+}
+
+.cs-email-input:focus {
+  border-color: rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.cs-email-btn {
+  padding: 0.875rem 1.75rem;
+  border-radius: 14px;
+  border: none;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.cs-email-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.cs-email-btn:active {
+  transform: translateY(0);
+}
+
+/* ===== FEATURE PILLS ===== */
+.cs-features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2.5rem;
+  animation: cs-fade-up 1s ease-out 0.5s both;
+}
+
+.cs-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.cs-pill:hover {
+  transform: translateY(-2px);
+}
+
+/* ===== SOCIAL LINKS ===== */
+.cs-socials {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  animation: cs-fade-up 1s ease-out 0.6s both;
+}
+
+.cs-social-link {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.cs-social-link:hover {
+  transform: translateY(-3px) scale(1.05);
+}
+
+/* ===== POWERED BY ===== */
+.cs-powered {
+  font-size: 0.78rem;
+  opacity: 0.35;
+  animation: cs-fade-up 1s ease-out 0.7s both;
+}
+
+.cs-powered a {
+  color: inherit;
+  text-decoration: none;
+  font-weight: 600;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.cs-powered a:hover {
+  opacity: 1;
+}
+
+/* ===== FLOATING GRID (Store) ===== */
+.cs-product-grid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cs-product-ghost {
+  position: absolute;
+  border-radius: 16px;
+  opacity: 0.04;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ===== COUNTDOWN ===== */
+.cs-countdown {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  animation: cs-fade-up 1s ease-out 0.4s both;
+}
+
+.cs-countdown-item {
+  text-align: center;
+  min-width: 72px;
+}
+
+.cs-countdown-value {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.cs-countdown-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.5;
+  font-weight: 500;
+}
+
+.cs-countdown-sep {
+  font-size: 2rem;
+  font-weight: 300;
+  opacity: 0.2;
+  align-self: flex-start;
+  margin-top: 0.3rem;
+}
+
+/* ===== PROGRESS BAR ===== */
+.cs-progress-wrap {
+  max-width: 320px;
+  margin: 0 auto 2rem;
+  animation: cs-fade-up 1s ease-out 0.45s both;
+}
+
+.cs-progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.cs-progress-bar {
+  height: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+
+.cs-progress-fill {
+  height: 100%;
+  border-radius: 3px;
+  position: relative;
+  transition: width 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cs-progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: cs-shimmer 2s linear infinite;
+}
+
+/* ===== PARTICLE FIELD ===== */
+.cs-particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cs-particle {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.15;
+}
+
+/* ===== GRID LINES (subtle) ===== */
+.cs-grid-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.03;
+  background-image:
+    linear-gradient(currentColor 1px, transparent 1px),
+    linear-gradient(90deg, currentColor 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* ===== STATS ROW ===== */
+.cs-stats {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  margin-bottom: 2.5rem;
+  animation: cs-fade-up 1s ease-out 0.45s both;
+}
+
+.cs-stat-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+
+.cs-stat-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.45;
+  font-weight: 500;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes cs-float-1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(30px, -40px) scale(1.05); }
+  50% { transform: translate(-20px, 20px) scale(0.95); }
+  75% { transform: translate(40px, 30px) scale(1.02); }
+}
+
+@keyframes cs-float-2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(1.08); }
+  66% { transform: translate(30px, -30px) scale(0.95); }
+}
+
+@keyframes cs-float-3 {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-50%, -55%) scale(1.1); }
+}
+
+@keyframes cs-fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes cs-logo-enter {
+  from { opacity: 0; transform: scale(0.7) translateY(20px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes cs-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.75); }
+}
+
+@keyframes cs-shimmer {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(200%); }
+}
+
+@keyframes cs-spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes cs-float-particle {
+  0%, 100% { transform: translateY(0); opacity: 0.15; }
+  50% { transform: translateY(-20px); opacity: 0.3; }
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .cs-page { padding: 1.5rem; }
+  .cs-heading { margin-bottom: 1rem; }
+  .cs-tagline { font-size: 1rem; margin-bottom: 2rem; }
+  .cs-email-form { flex-direction: column; }
+  .cs-email-btn { width: 100%; }
+  .cs-countdown { gap: 0.5rem; }
+  .cs-countdown-value { font-size: 1.75rem; }
+  .cs-countdown-item { min-width: 56px; }
+  .cs-stats { gap: 1.5rem; }
+  .cs-stat-value { font-size: 1.35rem; }
+  .cs-orb { display: none; }
+  .cs-glass { padding: 1.25rem 1.5rem; }
+}

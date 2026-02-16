@@ -7,7 +7,8 @@ import CartIcon from '@/components/cart-icon';
 import Link from 'next/link';
 import DynamicHeader from '@/components/layout/dynamic-header';
 import DynamicFooter from '@/components/layout/dynamic-footer';
-import ComingSoon from '@/components/coming-soon';
+import ComingSoonRouter from '../../../../consumer-storefront/coming-soon';
+import type { SiteType } from '../../../../consumer-storefront/coming-soon';
 import { HeaderSettings, FooterSettings, ProductModel, THEME_PRESETS } from '@/types/store';
 
 // ============= THEME FONT MAPPING =============
@@ -66,7 +67,8 @@ export default async function StoreLayout({ children, params }: Props) {
     // Show Coming Soon page for draft/suspended stores
     if (store.status !== 'published') {
         return (
-            <ComingSoon
+            <ComingSoonRouter
+                siteType={(store.siteType as SiteType) || 'store'}
                 storeName={store.name}
                 tagline={store.tagline}
                 logoUrl={store.logoUrl}
