@@ -14,6 +14,13 @@ import portfolioRouter from './routes/portfolio';
 import resumeRouter from './routes/resume';
 import employeeRouter from './routes/employee';
 import adminRouter from './routes/admin';
+import blogRouter from './routes/blog';
+import customersRouter from './routes/customers';
+import notificationsRouter from './routes/notifications';
+import mediaRouter from './routes/media';
+import aiRouter from './routes/ai';
+import appStoreRouter from './routes/app-store';
+import themesRouter from './routes/themes';
 
 // Environment bindings
 export interface Env {
@@ -80,6 +87,13 @@ api.route('/portfolio', portfolioRouter);
 api.route('/resume', resumeRouter);
 api.route('/employees', employeeRouter);
 api.route('/admin', adminRouter);
+api.route('/blog', blogRouter);
+api.route('/customers', customersRouter);
+api.route('/notifications', notificationsRouter);
+api.route('/media', mediaRouter);
+api.route('/ai', aiRouter);
+api.route('/app-store', appStoreRouter);
+api.route('/themes', themesRouter);
 
 // 404 handler
 app.notFound((c) => {

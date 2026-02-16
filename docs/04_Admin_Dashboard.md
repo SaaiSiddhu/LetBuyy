@@ -1,6 +1,6 @@
 # LetBuyy Platform — Admin Dashboard
 
-> **Doc 04 of 12** | Store Builder UI, Dynamic Navigation, Site-Type Dashboard Variants & Admin UX
+> **Doc 04 of 15** | Store Builder UI, Dynamic Navigation, Site-Type Dashboard Variants & Admin UX
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -3014,3 +3014,5 @@ test.describe('Admin Dashboard', () => {
 > **Next:** [05_Ecommerce_Engine.md](./05_Ecommerce_Engine.md) — Product management, cart, checkout, payment processing
 >
 > **Related:** [00_Overview.md](./00_Overview.md) | [01_Architecture.md](./01_Architecture.md) | [02_Authentication_and_Security.md](./02_Authentication_and_Security.md) | [03_Onboarding_and_Trial.md](./03_Onboarding_and_Trial.md)
+>
+> **See also:** [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) — Theme editor & app management in the admin

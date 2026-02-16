@@ -1,10 +1,10 @@
 # LetBuyy Platform — Implementation Roadmap
 
-> **Doc 12 of 12** | Phased Development Plan, Sprint Breakdown, Milestones, Deployment, Cost & Launch Strategy
+> **Doc 12 of 15** | Phased Development Plan, Sprint Breakdown, Milestones, Deployment, Cost & Launch Strategy
 >
 > **Version:** 6.0 | **Date:** February 15, 2026
 >
-> **Prev:** [11 Super Admin & Team](./11_Super_Admin_and_Team.md)
+> **Prev:** [11 Super Admin & Team](./11_Super_Admin_and_Team.md) | **Next:** [13 Plans & Pricing](./13_Plans_and_Pricing.md)
 
 ---
 
@@ -203,7 +203,7 @@ Letbuyy_Store/
 | 4-step onboarding wizard | 🔴 Critical | Site type → Store details → Design → Launch | ✅ Done |
 | Store creation API | 🔴 Critical | Create store, assign subdomain, initialize config | ✅ Done |
 | Subdomain provisioning | 🔴 Critical | `{store-name}.letbuyy.store` with Cloudflare wildcard DNS | ✅ Done |
-| Trial system | 🔴 Critical | 14-day free trial with feature access | ✅ Done |
+| Trial system | 🔴 Critical | 7-day free trial with feature access | ✅ Done |
 | `stores` table | 🔴 Critical | Full schema with `site_type`, `subdomain`, `theme_config`, `plan` | ✅ Done |
 | Store context middleware | 🔴 Critical | Extract store from subdomain/header on every request | ✅ Done |
 | "Launching Soon" page | 🟡 Medium | Placeholder storefront before setup complete | ✅ Done |
@@ -234,7 +234,7 @@ Letbuyy_Store/
 ├── Admin redirect — After login, redirects to admin dashboard shell
 ├── Store creation — 4-step wizard creates store + assigns subdomain
 ├── Database — Core tables created with RLS policies verified
-├── Trial system — 14-day countdown active on new stores
+├── Trial system — 7-day countdown active on new stores
 ├── CI/CD — Push to main → auto-deploys to Vercel + Cloudflare
 ├── Rate limiting — 429 returned after 60 requests/minute
 └── Monitoring — Sentry capturing errors, UptimeRobot pinging endpoints
@@ -1289,7 +1289,7 @@ Profitability Path:
 
 | Plan | Price (INR) | Price (USD) | Target User | Key Features |
 |---|---|---|---|---|
-| **Free** | ₹0 | $0 | Trial users | 14-day trial, all features, 1 store |
+| **Free** | ₹0 | $0 | Trial users | 7-day trial, all features, 1 store |
 | **Starter** | ₹499/mo | $5.99/mo | Freelancers, portfolios | 1 store, 100 products, 1K AI credits, letbuyy.store subdomain |
 | **Professional** | ₹999/mo | $11.99/mo | Small businesses | 3 stores, 5K products, 5K AI credits, custom domain, priority support |
 | **Business** | ₹1,999/mo | $23.99/mo | Growing businesses | 10 stores, unlimited products, 25K AI credits, API access, white-label |
@@ -1397,6 +1397,8 @@ Profitability Path:
 > | 10 | [Storefront & Themes](./10_Storefront_and_Themes.md) | 2,000+ | SSR, themes, page builder, SEO |
 > | 11 | [Super Admin & Team](./11_Super_Admin_and_Team.md) | 1,900+ | Console, moderation, analytics, security |
 > | 12 | [Implementation Roadmap](./12_Implementation_Roadmap.md) | 2,000+ | Phases, deployment, costs, launch |
+
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) — New features to integrate into the roadmap
 
 ---
 

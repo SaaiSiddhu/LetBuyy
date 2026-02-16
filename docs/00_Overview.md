@@ -1,6 +1,6 @@
 # LetBuyy Platform — Overview
 
-> **Doc 00 of 12** | Platform Vision, Domain Structure, Tech Stack, AI Engine, Onboarding & Site Types
+> **Doc 00 of 15** | Platform Vision, Domain Structure, Tech Stack, AI Engine, Onboarding & Site Types
 >
 > **Version:** 7.0 | **Date:** February 14, 2026
 >
@@ -512,7 +512,7 @@ This section describes the **entire flow** from when a new user first discovers 
  │  1. Validate subdomain (regex + reserved words + availability)        │
  │  2. INSERT INTO stores (user_id, subdomain, store_name, site_type)    │
  │  3. INSERT INTO onboarding_attempts (user_id, subdomain, success)     │
- │  4. Set trial_ends_at = NOW() + 14 days                               │
+ │  4. Set trial_ends_at = NOW() + 7 days                                │
  │  5. Create ai_credits record with tier defaults (10 free credits)     │
  │  6. Send "Store Created" email via Resend                             │
  │  7. Create audit log entry                                             │
@@ -586,7 +586,7 @@ This section describes the **entire flow** from when a new user first discovers 
  ┌───────────────────────────────────────────────────────────────────────┐
  │  7. ADMIN DASHBOARD  (admin.letbuyy.store/{store}/dashboard)          │
  │                                                                        │
- │  Trial countdown banner visible (14 days remaining)                   │
+ │  Trial countdown banner visible (7 days remaining)                    │
  │  Full feature access during trial                                     │
  │  AI Studio available with 10 trial credits                            │
  │  Dashboard layout adapts to site type                                  │
@@ -596,10 +596,10 @@ This section describes the **entire flow** from when a new user first discovers 
  ┌───────────────────────────────────────────────────────────────────────┐
  │  8. TRIAL / PAYMENT                                                    │
  │                                                                        │
- │  ├── Day 1-14: ACTIVE TRIAL (full access, countdown banner)          │
- │  ├── Day 14: Trial expires → choose plan or enter 3-day grace        │
- │  ├── Day 15-17: GRACE PERIOD (admin access, publishing disabled)     │
- │  ├── Day 18+: FROZEN (billing page only, storefront shows            │
+ │  ├── Day 1-7: ACTIVE TRIAL (full access, countdown banner)           │
+ │  ├── Day 7: Trial expires → choose plan or enter 3-day grace         │
+ │  ├── Day 8-10: GRACE PERIOD (admin access, publishing disabled)      │
+ │  ├── Day 11+: FROZEN (billing page only, storefront shows            │
  │  │            "Coming Soon", data preserved 90 days)                  │
  │  └── Payment: Razorpay (India) or Stripe (Global) → plan activated   │
  └────────┬──────────────────────────────────────────────────────────────┘
@@ -674,7 +674,7 @@ CREATE TABLE stores (
   template_id     UUID REFERENCES templates(id),
   status          TEXT DEFAULT 'draft' CHECK (status IN ('draft','published','frozen','suspended')),
   trial_started_at TIMESTAMPTZ DEFAULT NOW(),
-  trial_ends_at   TIMESTAMPTZ DEFAULT NOW() + INTERVAL '14 days',
+  trial_ends_at   TIMESTAMPTZ DEFAULT NOW() + INTERVAL '7 days',
   frozen_at       TIMESTAMPTZ,
   plan_id         UUID REFERENCES plans(id),
   custom_domain   TEXT,
@@ -723,13 +723,13 @@ CREATE TABLE ai_credits (
 ### 6.3 Trial Lifecycle
 
 ```
-ACTIVE TRIAL (Day 1-14)   → Full access, countdown banner (green)
-GRACE PERIOD (Day 15-17)  → Admin access, publishing disabled (amber)
-FROZEN (Day 18+)          → Billing page only, storefront shows "Coming Soon" (red)
+ACTIVE TRIAL (Day 1-7)    → Full access, countdown banner (green)
+GRACE PERIOD (Day 8-10)   → Admin access, publishing disabled (amber)
+FROZEN (Day 11+)          → Billing page only, storefront shows "Coming Soon" (red)
 CANCELLED (+90 days)      → Data purge, store removed
 
-Email Sequence: Day 0 welcome → Day 10 reminder → Day 13 last day →
-                Day 14 expired → Day 17 final warning → Day 18 frozen
+Email Sequence: Day 0 welcome → Day 4 reminder → Day 6 last day →
+                Day 7 expired → Day 10 final warning → Day 11 frozen
 ```
 
 ### 6.4 "Launching Soon" Page (Draft Storefronts)
@@ -923,7 +923,7 @@ FALLBACK: If primary model fails → auto-retry with next-cheapest model
 
 | Feature | Free (Trial) | Starter ($9/mo) | Business ($29/mo) | Enterprise ($99/mo) |
 |---|---|---|---|---|
-| Duration | 14 days | Monthly/Annual | Monthly/Annual | Monthly/Annual |
+| Duration | 7 days | Monthly/Annual | Monthly/Annual | Monthly/Annual |
 | Stores | 1 | 3 | 10 | Unlimited |
 | Products | 25 | 500 | Unlimited | Unlimited |
 | Blog Posts | 10 | 100 | Unlimited | Unlimited |
@@ -1142,4 +1142,6 @@ CREATE POLICY "Users can only access products in their stores"
 ---
 
 > **→ Next:** [01 Architecture](./01_Architecture.md)
-> **→ Full doc series:** 00_Overview → 01_Architecture → 02_Auth → 03_Onboarding → 04_Admin → 05_Storefront → 06_Team → 07_AI → 08_Payments → 09_Analytics → 10_Deployment → 11_Testing → 12_Scaling
+> **→ Full doc series:** 00_Overview → 01_Architecture → 02_Auth → 03_Onboarding → 04_Admin → 05_Ecommerce → 06_Portfolio → 07_AI → 08_Database → 09_API → 10_Storefront → 11_SuperAdmin → 12_Roadmap → 13_Plans → 14_Themes → 15_AppStore
+>
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md)

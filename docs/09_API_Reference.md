@@ -1,6 +1,6 @@
 # LetBuyy Platform — API Reference
 
-> **Doc 09 of 12** | Complete REST API Specification — Routes, Request/Response Schemas, Middleware, Webhooks & Error Handling
+> **Doc 09 of 15** | Complete REST API Specification — Routes, Request/Response Schemas, Middleware, Webhooks & Error Handling
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -2469,6 +2469,8 @@ const description = await client.ai.generate('product-description', {
 ---
 
 > **Next:** [10 Storefront & Themes](./10_Storefront_and_Themes.md) — Public storefront rendering and theme engine
+
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) — Additional API routes defined in these docs
 
 ---
 

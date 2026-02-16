@@ -1,6 +1,6 @@
 # LetBuyy Platform — Documentation
 
-> **Version:** 5.0 | **Date:** February 14, 2026 | **Status:** 🟢 Active
+> **Version:** 6.0 | **Date:** February 16, 2026 | **Status:** 🟢 Active
 
 ---
 
@@ -15,12 +15,32 @@
 | 04 | [Admin Dashboard](./04_Admin_Dashboard.md) | Store builder UI, dynamic navigation, all site-type dashboards |
 | 05 | [E-commerce Engine](./05_Ecommerce_Engine.md) | Products, orders, payments, shipping, coupons, inventory |
 | 06 | [Portfolio & Resume](./06_Portfolio_and_Resume.md) | Portfolio builder, resume builder, PDF export, templates |
-| 07 | [AI Features](./07_AI_Features.md) | AI-powered product descriptions, content generation, analytics, credits |
-| 08 | [Super Admin & Team](./08_Super_Admin_and_Team.md) | Super Admin Console + Employee Portal |
-| 09 | [Database Schema](./09_Database_Schema.md) | Complete PostgreSQL schema, indexes, RLS policies, AI tables |
-| 10 | [API Reference](./10_API_Reference.md) | All REST API routes organized by domain |
-| 11 | [Deployment & Operations](./11_Deployment_and_Operations.md) | Deployment strategy, DNS, CI/CD, monitoring, migration |
-| 12 | [Implementation Roadmap](./12_Implementation_Roadmap.md) | Phased plan with milestones, AI integration timeline |
+| 07 | [AI Features](./07_AI_Features.md) | AI-powered descriptions, content generation, credits & AI Studio |
+| 08 | [Database Schema](./08_Database_Schema.md) | Complete PostgreSQL schema, RLS policies, functions & triggers |
+| 09 | [API Reference](./09_API_Reference.md) | Complete REST API specification, middleware, webhooks |
+| 10 | [Storefront & Themes](./10_Storefront_and_Themes.md) | Public storefront rendering, theme engine, page builder |
+| 11 | [Super Admin & Team](./11_Super_Admin_and_Team.md) | Platform console, team management, RBAC, moderation |
+| 12 | [Implementation Roadmap](./12_Implementation_Roadmap.md) | Phased plan, sprint breakdown, milestones, deployment & costs |
+| 13 | [Plans & Pricing](./13_Plans_and_Pricing.md) | Revenue architecture, subscription tiers, billing & growth |
+| 14 | [Theme Implementation](./14_Theme_Implementation.md) | Theme engine, custom CSS, code editor, uploads, marketplace |
+| 15 | [App Store Implementation](./15_App_Store_Implementation.md) | App ecosystem, extensions, billing, developer portal |
+
+---
+
+## 📊 Analysis Documents
+
+Detailed implementation analysis files covering specific subsystems:
+
+| File | Description |
+|------|-------------|
+| [Part 1 — Architecture & Trial](./Part1_Architecture_and_Trial_System.md) | Architecture decisions, trial system analysis |
+| [Part 2 — Onboarding Flow](./Part2_Onboarding_Flow.md) | Step-by-step onboarding flow with question mapping |
+| [Part 3 — Store Management UI](./Part3_Store_Management_UI.md) | Admin store management interface analysis |
+| [Part 4 — Trial & Payment UI](./Part4_Trial_and_Payment_UI.md) | Trial countdown, payment activation UI |
+| [Part 5 — Database Schema](./Part5_Database_Schema.md) | Database schema deep-dive and migration notes |
+| [Part 6 — Admin Dashboard Variants](./Part6_Admin_Dashboard_Variants.md) | Site-type-specific dashboard variations |
+| [Part 7 — Deployment & Migration](./Part7_Deployment_and_Migration.md) | Deployment strategy and data migration |
+| [Part 8 — Implementation Roadmap](./Part8_Implementation_Roadmap.md) | Detailed implementation scheduling |
 
 ---
 
@@ -29,13 +49,19 @@
 **For new team members:**
 1. Start with [00 Overview](./00_Overview.md) for the big picture
 2. Read [01 Architecture](./01_Architecture.md) to understand the stack
-3. Pick the domain you're working on (03–08)
+3. Pick the domain you're working on (03–07)
 
 **For developers:**
-1. [09 Database Schema](./09_Database_Schema.md) → [10 API Reference](./10_API_Reference.md) → [11 Deployment](./11_Deployment_and_Operations.md)
+1. [08 Database Schema](./08_Database_Schema.md) → [09 API Reference](./09_API_Reference.md) → [12 Implementation Roadmap](./12_Implementation_Roadmap.md)
 
 **For AI features:**
 1. [07 AI Features](./07_AI_Features.md) covers all AI capabilities and the credit system
+
+**For business & monetization:**
+1. [13 Plans & Pricing](./13_Plans_and_Pricing.md) → revenue architecture, pricing tiers, billing
+
+**For theming & app ecosystem:**
+1. [10 Storefront & Themes](./10_Storefront_and_Themes.md) → [14 Theme Implementation](./14_Theme_Implementation.md) → [15 App Store](./15_App_Store_Implementation.md)
 
 ---
 
@@ -51,3 +77,4 @@
 ---
 
 *For questions or support: team@letbuyy.store*
+

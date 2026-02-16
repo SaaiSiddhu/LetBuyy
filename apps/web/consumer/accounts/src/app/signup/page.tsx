@@ -1,0 +1,671 @@
+'use client'
+
+import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
+import { getAuthHeaders } from '@/lib/csrf-client'
+import { useSearchParams } from 'next/navigation'
+import TurnstileWidget from '@/components/TurnstileWidget'
+
+type Lang = 'en' | 'hi' | 'ta'
+type Step = 'email' | 'otp' | 'password'
+
+const translations: Record<Lang, Record<string, string>> = {
+    en: {
+        title: 'Start your free trial',
+        subtitle: '14 days free, then ₹20/month',
+        email: 'Email',
+        emailPlaceholder: 'you@example.com',
+        continue: 'Continue',
+        or: 'or',
+        apple: 'Apple',
+        google: 'Google',
+        alreadyHave: 'Already have an account?',
+        logIn: 'Log in',
+        terms: 'By proceeding, you agree to the',
+        termsLink: 'Terms',
+        and: 'and',
+        privacyLink: 'Privacy Policy',
+        rateLimited: 'Too many signup attempts. Please try again later.',
+        // OTP step
+        otpTitle: 'Check your email',
+        otpSubtitle: 'We sent a 6-digit code to',
+        otpResend: 'Resend code',
+        otpResendIn: 'Resend in',
+        otpVerify: 'Verify',
+        otpInvalid: 'Invalid or expired code. Please try again.',
+        otpBack: '← Change email',
+        // Password step
+        pwTitle: 'Create your password',
+        pwSubtitle: 'Secure your LetBuyy account',
+        pwLabel: 'Password',
+        pwConfirmLabel: 'Confirm password',
+        pwPlaceholder: 'Enter password',
+        pwConfirmPlaceholder: 'Confirm password',
+        pwCreate: 'Create account',
+        pwRule8: 'At least 8 characters',
+        pwRuleUpper: 'One uppercase letter',
+        pwRuleNumber: 'One number',
+        pwMismatch: 'Passwords do not match',
+    },
+    hi: {
+        title: 'अपना मुफ़्त ट्रायल शुरू करें',
+        subtitle: '14 दिन मुफ़्त, फिर ₹20/माह',
+        email: 'ईमेल',
+        emailPlaceholder: 'you@example.com',
+        continue: 'जारी रखें',
+        or: 'या',
+        apple: 'Apple',
+        google: 'Google',
+        alreadyHave: 'पहले से अकाउंट है?',
+        logIn: 'लॉग इन',
+        terms: 'आगे बढ़कर, आप सहमत हैं',
+        termsLink: 'शर्तें',
+        and: 'और',
+        privacyLink: 'गोपनीयता नीति',
+        rateLimited: 'बहुत सारे प्रयास। कृपया बाद में पुनः प्रयास करें।',
+        otpTitle: 'अपना ईमेल जांचें',
+        otpSubtitle: 'हमने 6-अंकीय कोड भेजा',
+        otpResend: 'कोड पुनः भेजें',
+        otpResendIn: 'पुनः भेजें',
+        otpVerify: 'सत्यापित करें',
+        otpInvalid: 'अमान्य या समाप्त कोड। पुनः प्रयास करें।',
+        otpBack: '← ईमेल बदलें',
+        pwTitle: 'अपना पासवर्ड बनाएं',
+        pwSubtitle: 'अपने LetBuyy अकाउंट को सुरक्षित करें',
+        pwLabel: 'पासवर्ड',
+        pwConfirmLabel: 'पासवर्ड पुष्टि',
+        pwPlaceholder: 'पासवर्ड दर्ज करें',
+        pwConfirmPlaceholder: 'पासवर्ड पुष्टि करें',
+        pwCreate: 'अकाउंट बनाएं',
+        pwRule8: 'कम से कम 8 अक्षर',
+        pwRuleUpper: 'एक अपरकेस अक्षर',
+        pwRuleNumber: 'एक संख्या',
+        pwMismatch: 'पासवर्ड मेल नहीं खाते',
+    },
+    ta: {
+        title: 'உங்கள் இலவச சோதனையைத் தொடங்குங்கள்',
+        subtitle: '14 நாட்கள் இலவசம், பின்னர் ₹20/மாதம்',
+        email: 'மின்னஞ்சல்',
+        emailPlaceholder: 'you@example.com',
+        continue: 'தொடரவும்',
+        or: 'அல்லது',
+        apple: 'Apple',
+        google: 'Google',
+        alreadyHave: 'ஏற்கனவே கணக்கு உள்ளதா?',
+        logIn: 'உள்நுழை',
+        terms: 'தொடர்வதன் மூலம், நீங்கள் ஒப்புக்கொள்கிறீர்கள்',
+        termsLink: 'விதிமுறைகள்',
+        and: 'மற்றும்',
+        privacyLink: 'தனியுரிமைக் கொள்கை',
+        rateLimited: 'பல முயற்சிகள். பிறகு மீண்டும் முயற்சிக்கவும்.',
+        otpTitle: 'உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்',
+        otpSubtitle: '6-இலக்க குறியீட்டை அனுப்பினோம்',
+        otpResend: 'குறியீட்டை மீண்டும் அனுப்பு',
+        otpResendIn: 'மீண்டும் அனுப்பு',
+        otpVerify: 'சரிபார்',
+        otpInvalid: 'தவறான அல்லது காலாவதியான குறியீடு.',
+        otpBack: '← மின்னஞ்சலை மாற்று',
+        pwTitle: 'உங்கள் கடவுச்சொல்லை உருவாக்கவும்',
+        pwSubtitle: 'உங்கள் LetBuyy கணக்கைப் பாதுகாக்கவும்',
+        pwLabel: 'கடவுச்சொல்',
+        pwConfirmLabel: 'கடவுச்சொல் உறுதிப்படுத்தல்',
+        pwPlaceholder: 'கடவுச்சொல் உள்ளிடவும்',
+        pwConfirmPlaceholder: 'கடவுச்சொல் உறுதிப்படுத்தவும்',
+        pwCreate: 'கணக்கை உருவாக்கவும்',
+        pwRule8: 'குறைந்தது 8 எழுத்துக்கள்',
+        pwRuleUpper: 'ஒரு பெரிய எழுத்து',
+        pwRuleNumber: 'ஒரு எண்',
+        pwMismatch: 'கடவுச்சொற்கள் பொருந்தவில்லை',
+    },
+}
+
+function SignupContent() {
+    const searchParams = useSearchParams()
+    const [step, setStep] = useState<Step>('email')
+    const [email, setEmail] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [error, setError] = useState<string | null>(null)
+    const [isDark, setIsDark] = useState(false)
+    const [lang, setLang] = useState<Lang>('en')
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+
+    // OTP state
+    const [otp, setOtp] = useState(['', '', '', '', '', ''])
+    const [resendTimer, setResendTimer] = useState(60)
+    const [canResend, setCanResend] = useState(false)
+    const otpRefs = useRef<(HTMLInputElement | null)[]>([])
+
+    // Password state
+    const [userId, setUserId] = useState<string | null>(null)
+    const [password, setPassword] = useState('')
+    const [confirmPassword, setConfirmPassword] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+
+    const t = translations[lang]
+
+    useEffect(() => {
+        const savedTheme = localStorage.getItem('letbuyy_theme')
+        setIsDark(savedTheme === 'dark')
+        const savedLang = (localStorage.getItem('letbuyy_lang') as Lang) || 'en'
+        setLang(savedLang)
+
+        const emailParam = searchParams.get('email')
+        if (emailParam) setEmail(emailParam)
+
+        const urlError = searchParams.get('error')
+        if (urlError === 'expired_link') setError('Verification link expired. Please sign up again.')
+    }, [searchParams])
+
+    // Resend timer countdown
+    useEffect(() => {
+        if (step !== 'otp' || canResend) return
+        const interval = setInterval(() => {
+            setResendTimer(prev => {
+                if (prev <= 1) {
+                    setCanResend(true)
+                    return 0
+                }
+                return prev - 1
+            })
+        }, 1000)
+        return () => clearInterval(interval)
+    }, [step, canResend])
+
+    const toggleTheme = () => {
+        const newTheme = !isDark
+        setIsDark(newTheme)
+        localStorage.setItem('letbuyy_theme', newTheme ? 'dark' : 'light')
+        document.documentElement.classList.toggle('dark', newTheme)
+        document.documentElement.style.colorScheme = newTheme ? 'dark' : 'light'
+    }
+
+    const cycleLang = () => {
+        const langs: Lang[] = ['en', 'hi', 'ta']
+        const next = langs[(langs.indexOf(lang) + 1) % langs.length]
+        setLang(next)
+        localStorage.setItem('letbuyy_lang', next)
+    }
+
+    // Password validation rules
+    const pwRules = {
+        minLength: password.length >= 8,
+        hasUppercase: /[A-Z]/.test(password),
+        hasNumber: /[0-9]/.test(password),
+    }
+    const pwValid = Object.values(pwRules).every(Boolean)
+    const pwMatch = password === confirmPassword && confirmPassword.length > 0
+
+    // ——— Step 1: Email Submit ———
+    const handleEmailSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!email.trim()) return
+
+        setLoading(true)
+        setError(null)
+
+        try {
+            const res = await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    email: email.trim(),
+                    turnstileToken,
+                }),
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                if (res.status === 429) setError(t.rateLimited)
+                else if (res.status === 409) {
+                    window.location.href = `/lookup?email=${encodeURIComponent(email.trim())}&from=signup`
+                    return
+                }
+                else if (res.status === 403) setError(data.error || 'Verification failed')
+                else setError(data.error || 'Something went wrong')
+                return
+            }
+
+            if (data.needsVerification) {
+                setStep('otp')
+                setResendTimer(60)
+                setCanResend(false)
+                // Focus first OTP input after animation
+                setTimeout(() => otpRefs.current[0]?.focus(), 300)
+            }
+        } catch {
+            setError('Something went wrong. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    // ——— Step 2: OTP Input Handlers ———
+    const handleOtpChange = (index: number, value: string) => {
+        if (!/^\d*$/.test(value)) return // Only digits
+
+        const newOtp = [...otp]
+        newOtp[index] = value.slice(-1) // Single digit
+        setOtp(newOtp)
+
+        // Auto-focus next input
+        if (value && index < 5) {
+            otpRefs.current[index + 1]?.focus()
+        }
+
+        // Auto-submit when all 6 digits entered
+        if (value && index === 5) {
+            const fullOtp = newOtp.join('')
+            if (fullOtp.length === 6) {
+                handleOtpVerify(fullOtp)
+            }
+        }
+    }
+
+    const handleOtpKeyDown = (index: number, e: React.KeyboardEvent) => {
+        if (e.key === 'Backspace' && !otp[index] && index > 0) {
+            otpRefs.current[index - 1]?.focus()
+        }
+    }
+
+    const handleOtpPaste = (e: React.ClipboardEvent) => {
+        e.preventDefault()
+        const pastedData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
+        if (pastedData.length === 0) return
+
+        const newOtp = [...otp]
+        for (let i = 0; i < pastedData.length; i++) {
+            newOtp[i] = pastedData[i]
+        }
+        setOtp(newOtp)
+
+        // Focus appropriate input
+        const nextIndex = Math.min(pastedData.length, 5)
+        otpRefs.current[nextIndex]?.focus()
+
+        // Auto-submit if full
+        if (pastedData.length === 6) {
+            handleOtpVerify(pastedData)
+        }
+    }
+
+    const handleOtpVerify = async (code?: string) => {
+        const otpCode = code || otp.join('')
+        if (otpCode.length !== 6) return
+
+        setLoading(true)
+        setError(null)
+
+        try {
+            const res = await fetch('/api/auth/verify-otp', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    email: email.trim(),
+                    otp: otpCode,
+                }),
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error || t.otpInvalid)
+                setOtp(['', '', '', '', '', ''])
+                otpRefs.current[0]?.focus()
+                return
+            }
+
+            if (data.verified) {
+                setUserId(data.userId)
+                setStep('password')
+            }
+        } catch {
+            setError('Something went wrong. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleResendOtp = async () => {
+        if (!canResend) return
+        setCanResend(false)
+        setResendTimer(60)
+        setError(null)
+
+        try {
+            await fetch('/api/auth/signup', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    email: email.trim(),
+                    turnstileToken,
+                }),
+            })
+        } catch {
+            // silent
+        }
+    }
+
+    // ——— Step 3: Password Submit ———
+    const handlePasswordSubmit = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!pwValid || !pwMatch || !userId) return
+
+        setLoading(true)
+        setError(null)
+
+        try {
+            const res = await fetch('/api/auth/set-password', {
+                method: 'POST',
+                headers: getAuthHeaders(),
+                body: JSON.stringify({
+                    password,
+                    userId,
+                    email: email.trim(),
+                }),
+            })
+
+            const data = await res.json()
+
+            if (!res.ok) {
+                setError(data.error || 'Something went wrong')
+                return
+            }
+
+            if (data.redirectTo) {
+                window.location.href = data.redirectTo
+            }
+        } catch {
+            setError('Something went wrong. Please try again.')
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
+        try {
+            const { createClient } = await import('@/lib/supabase/client')
+            const supabase = createClient()
+
+            const redirectTo = `${window.location.origin}/auth/callback`
+
+            const { error } = await supabase.auth.signInWithOAuth({
+                provider,
+                options: {
+                    redirectTo,
+                    queryParams: provider === 'google' ? {
+                        access_type: 'offline',
+                        prompt: 'consent',
+                    } : undefined,
+                },
+            })
+
+            if (error) {
+                console.error('OAuth error:', error.message)
+            }
+        } catch (err) {
+            console.error('OAuth initiation failed:', err)
+        }
+    }, [])
+
+    const handleTurnstileVerify = useCallback((token: string) => {
+        setTurnstileToken(token)
+    }, [])
+
+    // ——— Step indicator ———
+    const stepNumber = step === 'email' ? 1 : step === 'otp' ? 2 : 3
+
+    return (
+        <main className="auth-container">
+            <div className="auth-top-bar">
+                <button onClick={cycleLang} className="auth-lang-btn">
+                    {lang.toUpperCase()}
+                </button>
+                <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
+                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                </button>
+            </div>
+
+            <div className="auth-card">
+                {/* Step indicator */}
+                <div className="auth-step-indicator">
+                    {[1, 2, 3].map(n => (
+                        <div key={n} className={`auth-step-dot ${n <= stepNumber ? 'active' : ''} ${n === stepNumber ? 'current' : ''}`} />
+                    ))}
+                </div>
+
+                {/* ——— STEP 1: EMAIL ——— */}
+                {step === 'email' && (
+                    <div className="auth-step-content" key="email">
+                        <div className="auth-logo">
+                            <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                        </div>
+
+                        <h1 className="auth-title">{t.title}</h1>
+                        <p className="auth-subtitle">{t.subtitle}</p>
+
+                        <form onSubmit={handleEmailSubmit} className="auth-form">
+                            <div className="auth-field">
+                                <label htmlFor="signupEmail">{t.email}</label>
+                                <input
+                                    id="signupEmail"
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder={t.emailPlaceholder}
+                                    autoComplete="email"
+                                    autoFocus
+                                    required
+                                />
+                            </div>
+
+                            {error && <div className="auth-error">{error}</div>}
+
+                            <button
+                                type="submit"
+                                className="auth-btn-primary"
+                                disabled={loading || !email.trim()}
+                            >
+                                {loading ? '...' : t.continue}
+                            </button>
+                        </form>
+
+                        <div className="auth-divider">
+                            <span>{t.or}</span>
+                        </div>
+
+                        <div className="auth-oauth-row">
+                            <button className="auth-btn-oauth" onClick={() => handleOAuth('apple')}>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                                </svg>
+                                {t.apple}
+                            </button>
+                            <button className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
+                                <svg width="18" height="18" viewBox="0 0 24 24">
+                                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4" />
+                                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                                </svg>
+                                {t.google}
+                            </button>
+                        </div>
+
+                        <div className="auth-bottom-link">
+                            <span>{t.alreadyHave}</span>{' '}
+                            <a href="/lookup">{t.logIn}</a>
+                        </div>
+
+                        <p className="auth-terms">
+                            {t.terms} <a href="#">{t.termsLink}</a> {t.and} <a href="#">{t.privacyLink}</a>
+                        </p>
+
+                        <TurnstileWidget onVerify={handleTurnstileVerify} />
+                    </div>
+                )}
+
+                {/* ——— STEP 2: OTP ——— */}
+                {step === 'otp' && (
+                    <div className="auth-step-content" key="otp">
+                        <div className="auth-otp-icon">
+                            <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'var(--primary)' }}>mail</span>
+                        </div>
+
+                        <h1 className="auth-title">{t.otpTitle}</h1>
+                        <p className="auth-subtitle">
+                            {t.otpSubtitle}{' '}
+                            <strong>{email}</strong>
+                        </p>
+
+                        <div className="auth-otp-inputs" onPaste={handleOtpPaste}>
+                            {otp.map((digit, i) => (
+                                <input
+                                    key={i}
+                                    ref={el => { otpRefs.current[i] = el }}
+                                    type="text"
+                                    inputMode="numeric"
+                                    maxLength={1}
+                                    value={digit}
+                                    onChange={e => handleOtpChange(i, e.target.value)}
+                                    onKeyDown={e => handleOtpKeyDown(i, e)}
+                                    className="auth-otp-input"
+                                    autoFocus={i === 0}
+                                />
+                            ))}
+                        </div>
+
+                        {error && <div className="auth-error">{error}</div>}
+
+                        <button
+                            className="auth-btn-primary"
+                            disabled={loading || otp.join('').length !== 6}
+                            onClick={() => handleOtpVerify()}
+                        >
+                            {loading ? '...' : t.otpVerify}
+                        </button>
+
+                        <div className="auth-otp-actions">
+                            <button
+                                className="auth-btn-text"
+                                onClick={handleResendOtp}
+                                disabled={!canResend}
+                            >
+                                {canResend
+                                    ? t.otpResend
+                                    : `${t.otpResendIn} ${resendTimer}s`
+                                }
+                            </button>
+                            <button
+                                className="auth-btn-text"
+                                onClick={() => {
+                                    setStep('email')
+                                    setOtp(['', '', '', '', '', ''])
+                                    setError(null)
+                                }}
+                            >
+                                {t.otpBack}
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* ——— STEP 3: PASSWORD ——— */}
+                {step === 'password' && (
+                    <div className="auth-step-content" key="password">
+                        <div className="auth-otp-icon">
+                            <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'var(--primary)' }}>lock</span>
+                        </div>
+
+                        <h1 className="auth-title">{t.pwTitle}</h1>
+                        <p className="auth-subtitle">{t.pwSubtitle}</p>
+
+                        <form onSubmit={handlePasswordSubmit} className="auth-form">
+                            <div className="auth-field">
+                                <label htmlFor="signupPassword">{t.pwLabel}</label>
+                                <div className="auth-password-wrapper">
+                                    <input
+                                        id="signupPassword"
+                                        type={showPassword ? 'text' : 'password'}
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        placeholder={t.pwPlaceholder}
+                                        autoComplete="new-password"
+                                        autoFocus
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        className="auth-password-toggle"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        tabIndex={-1}
+                                    >
+                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
+                                            {showPassword ? 'visibility_off' : 'visibility'}
+                                        </span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="auth-field">
+                                <label htmlFor="signupConfirmPassword">{t.pwConfirmLabel}</label>
+                                <input
+                                    id="signupConfirmPassword"
+                                    type={showPassword ? 'text' : 'password'}
+                                    value={confirmPassword}
+                                    onChange={e => setConfirmPassword(e.target.value)}
+                                    placeholder={t.pwConfirmPlaceholder}
+                                    autoComplete="new-password"
+                                    required
+                                />
+                            </div>
+
+                            {/* Password rules */}
+                            <div className="auth-pw-rules">
+                                <div className={`auth-pw-rule ${pwRules.minLength ? 'pass' : ''}`}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                                        {pwRules.minLength ? 'check_circle' : 'radio_button_unchecked'}
+                                    </span>
+                                    {t.pwRule8}
+                                </div>
+                                <div className={`auth-pw-rule ${pwRules.hasUppercase ? 'pass' : ''}`}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                                        {pwRules.hasUppercase ? 'check_circle' : 'radio_button_unchecked'}
+                                    </span>
+                                    {t.pwRuleUpper}
+                                </div>
+                                <div className={`auth-pw-rule ${pwRules.hasNumber ? 'pass' : ''}`}>
+                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
+                                        {pwRules.hasNumber ? 'check_circle' : 'radio_button_unchecked'}
+                                    </span>
+                                    {t.pwRuleNumber}
+                                </div>
+                            </div>
+
+                            {confirmPassword && !pwMatch && (
+                                <div className="auth-error">{t.pwMismatch}</div>
+                            )}
+
+                            {error && <div className="auth-error">{error}</div>}
+
+                            <button
+                                type="submit"
+                                className="auth-btn-primary"
+                                disabled={loading || !pwValid || !pwMatch}
+                            >
+                                {loading ? '...' : t.pwCreate}
+                            </button>
+                        </form>
+                    </div>
+                )}
+            </div>
+        </main>
+    )
+}
+
+export default function SignupPage() {
+    return (
+        <Suspense fallback={<div className="auth-container"><div className="auth-card" style={{ textAlign: 'center' }}><p style={{ color: 'var(--text-hint)' }}>Loading...</p></div></div>}>
+            <SignupContent />
+        </Suspense>
+    )
+}

@@ -1,6 +1,6 @@
 # LetBuyy Platform — Super Admin & Team
 
-> **Doc 11 of 12** | Platform Console, Team Management, RBAC, Moderation, Analytics & Operations
+> **Doc 11 of 15** | Platform Console, Team Management, RBAC, Moderation, Analytics & Operations
 >
 > **Version:** 6.0 | **Date:** February 15, 2026
 >

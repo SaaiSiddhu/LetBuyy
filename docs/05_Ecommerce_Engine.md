@@ -1,6 +1,6 @@
 # LetBuyy Platform — E-commerce Engine
 
-> **Doc 05 of 12** | Products, Orders, Payments, Shipping, Coupons, Inventory & Storefront
+> **Doc 05 of 15** | Products, Orders, Payments, Shipping, Coupons, Inventory & Storefront
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -2587,13 +2587,13 @@ export default async function ProductPage({ params }: Props) {
 
 | Feature | Model | Credits | Description |
 |---|---|---|---|
-| **Auto-descriptions** | GPT-4o Mini | 1 | Generate product descriptions from title + images |
-| **Smart pricing** | GPT-4o Mini | 1 | Suggest competitive pricing based on category analysis |
+| **Auto-descriptions** | Gemini 3 Flash | 1 | Generate product descriptions from title + images |
+| **Smart pricing** | Gemini 3 Flash | 1 | Suggest competitive pricing based on category analysis |
 | **Image enhancement** | Gemini Flash | 2 | Background removal, auto-crop, quality boost |
 | **Tag suggestions** | Gemini Flash | Free | Auto-categorize products based on title + description |
-| **SEO generation** | GPT-4o Mini | 1 | Meta titles + descriptions optimized for Google |
-| **Bulk generation** | GPT-4o Mini | 1/each | Generate descriptions for up to 50 products at once |
-| **Translation** | GPT-4o Mini | 1 | Translate product content to other languages |
+| **SEO generation** | Gemini 3 Flash | 1 | Meta titles + descriptions optimized for Google |
+| **Bulk generation** | Gemini 3 Flash | 1/each | Generate descriptions for up to 50 products at once |
+| **Translation** | Gemini 3 Flash | 1 | Translate product content to other languages |
 
 ### 15.2 AI Product Description Generator
 
@@ -2620,7 +2620,7 @@ Requirements:
 
 Return JSON: { "description": "...", "shortDescription": "...", "seoTitle": "...", "seoDescription": "...", "suggestedTags": [...] }`;
 
-  const result = await callAI(c.env, 'gpt-4o-mini', prompt, { responseFormat: 'json' });
+  const result = await callAI(c.env, 'gemini-3-flash', prompt, { responseFormat: 'json' });
   return c.json(result);
 });
 ```
@@ -3349,3 +3349,5 @@ test.describe('Complete Checkout Flow', () => {
 > **Next:** [06 Portfolio & Resume](./06_Portfolio_and_Resume.md) — Portfolio builder, resume builder, PDF export, templates
 >
 > **Related:** [00_Overview.md](./00_Overview.md) | [01_Architecture.md](./01_Architecture.md) | [02_Authentication_and_Security.md](./02_Authentication_and_Security.md) | [03_Onboarding_and_Trial.md](./03_Onboarding_and_Trial.md) | [04_Admin_Dashboard.md](./04_Admin_Dashboard.md)
+>
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) — Store plans, transaction fees & billing architecture

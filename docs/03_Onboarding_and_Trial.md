@@ -1,6 +1,6 @@
 # LetBuyy Platform — Onboarding & Trial
 
-> **Doc 03 of 12** | Signup → Store Creation → Trial Countdown → Payment Activation
+> **Doc 03 of 15** | Signup → Store Creation → Trial Countdown → Payment Activation
 >
 > **Version:** 5.0 | **Date:** February 14, 2026
 >
@@ -60,7 +60,7 @@ accounts.letbuyy.store/onboarding
    → Email: "Store Created" via Resend
    → Redirect to admin
         │
-        ▼  Store created (14-day trial starts)
+        ▼  Store created (7-day trial starts)
 admin.letbuyy.store/{subdomain}/onboarding
    STEP 3: Admin Onboarding Survey (site-type-specific, 5 questions)
    → Saved to store_surveys (JSONB) for AI personalization
@@ -68,7 +68,7 @@ admin.letbuyy.store/{subdomain}/onboarding
         │
         ▼  Survey complete → dashboard
 admin.letbuyy.store/{subdomain}/dashboard
-   • Trial countdown banner visible (14 days remaining)
+   • Trial countdown banner visible (7 days remaining)
    • Full feature access during trial
    • AI Studio available with 10 trial credits
    • Dashboard layout adapts to site_type
@@ -771,7 +771,7 @@ app.post('/v1/stores/:storeId/survey', authMiddleware(), async (c) => {
 │  Store: "StyleHub Fashion"                         │
 │  URL: stylehub.letbuyy.store                      │
 │  Type: E-commerce Store                            │
-│  Trial: 14 days remaining                          │
+│  Trial: 7 days remaining                           │
 │                                                    │
 │  ┌──────────────────────────────────────────────┐ │
 │  │ Login Credentials (also emailed to you)       │ │
@@ -788,7 +788,7 @@ app.post('/v1/stores/:storeId/survey', authMiddleware(), async (c) => {
 | # | Action | Table/Service | On Failure |
 |---|---|---|---|
 | 1 | `INSERT INTO stores` (transaction) | `stores` | Rollback all, show error |
-| 2 | Set `trial_ends_at = NOW() + 14 days` | `stores` | Part of step 1 |
+| 2 | Set `trial_ends_at = NOW() + 7 days` | `stores` | Part of step 1 |
 | 3 | `INSERT INTO ai_credits` (10 free) | `ai_credits` | Non-critical, retry |
 | 4 | `INSERT INTO onboarding_attempts` | `onboarding_attempts` | Non-critical, log |
 | 5 | Send "Store Created" email | Resend API | Queue for retry |
@@ -806,7 +806,7 @@ app.post('/v1/stores/:storeId/survey', authMiddleware(), async (c) => {
 
 | Setting | Value | Rationale |
 |---|---|---|
-| **Trial duration** | 14 days | Industry standard; enough to build a functional site |
+| **Trial duration** | 7 days | Enough to build a functional site, creates urgency |
 | **Features during trial** | Full access (all plan features unlocked) | Let users experience the full platform before deciding |
 | **AI credits during trial** | 10 free credits | Allow meaningful AI usage without abuse |
 | **Store limit during trial** | 1 store | Prevent resource abuse |
@@ -868,7 +868,7 @@ CREATE TABLE stores (
   
   -- Trial timestamps
   trial_started_at  TIMESTAMPTZ NOT NULL DEFAULT now(),
-  trial_ends_at     TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '14 days'),
+  trial_ends_at     TIMESTAMPTZ NOT NULL DEFAULT (now() + INTERVAL '7 days'),
   grace_ends_at     TIMESTAMPTZ,  -- Set when trial expires → now() + 3 days
   frozen_at         TIMESTAMPTZ,  -- Set when grace period ends
   cancelled_at      TIMESTAMPTZ,  -- Set when 90 days frozen
@@ -1264,7 +1264,7 @@ export async function hydrateTrialStore(storeId: string, supabase: SupabaseClien
 | **AI Credits/month** | 10 | 50 | 200 | 1,000 |
 | **Custom Domain** | ❌ | ✅ | ✅ | ✅ |
 | **SSL Certificate** | Shared | Dedicated | Dedicated | Dedicated |
-| **Transaction Fee** | 2% | 1% | 0% | 0% |
+| **Transaction Fee** | — | 2% of GMV | 1.2% of GMV | 0.8% of GMV |
 | **Storage** | 500 MB | 5 GB | 25 GB | 100 GB |
 | **Team Members** | 1 | 3 | 10 | Unlimited |
 | **Priority Support** | ❌ | ❌ | ✅ | ✅ + Dedicated |
@@ -1283,25 +1283,25 @@ export const PLAN_LIMITS = {
   free: {
     stores: 1, products: 10, blogPosts: 5, aiCredits: 10,
     storage: 500 * 1024 * 1024,  // 500 MB
-    teamMembers: 1, customDomain: false, transactionFee: 0.02,
+    teamMembers: 1, customDomain: false, transactionFee: 0,
     apiAccess: false, whiteLabel: false,
   },
   starter: {
     stores: 3, products: 100, blogPosts: 50, aiCredits: 50,
     storage: 5 * 1024 * 1024 * 1024,  // 5 GB
-    teamMembers: 3, customDomain: true, transactionFee: 0.01,
+    teamMembers: 3, customDomain: true, transactionFee: 0.02,
     apiAccess: false, whiteLabel: false,
   },
   business: {
     stores: 10, products: 1000, blogPosts: 500, aiCredits: 200,
     storage: 25 * 1024 * 1024 * 1024,  // 25 GB
-    teamMembers: 10, customDomain: true, transactionFee: 0,
+    teamMembers: 10, customDomain: true, transactionFee: 0.012,
     apiAccess: true, whiteLabel: false,
   },
   enterprise: {
     stores: Infinity, products: Infinity, blogPosts: Infinity, aiCredits: 1000,
     storage: 100 * 1024 * 1024 * 1024,  // 100 GB
-    teamMembers: Infinity, customDomain: true, transactionFee: 0,
+    teamMembers: Infinity, customDomain: true, transactionFee: 0.008,
     apiAccess: true, whiteLabel: true,
   },
 } as const;
@@ -1322,7 +1322,7 @@ export type PlanSlug = keyof typeof PLAN_LIMITS;
 │  │ 1 site   │  │ 3 sites  │  │ 10 sites │  │Unlim │ │
 │  │ 10 prod  │  │ 100 prod │  │ 1K prod  │  │Unlim │ │
 │  │ 10 AI/mo │  │ 50 AI/mo │  │ 200AI/mo │  │1K AI │ │
-│  │ 2% fee   │  │ 1% fee   │  │ 0% fee   │  │0% fee│ │
+│  │ No fee  │  │ 2% GMV   │  │ 1.2% GMV │  │0.8%GM│ │
 │  │ No domain│  │ ✅ Domain │  │ ✅ Domain │  │✅ Dom │ │
 │  │          │  │          │  │          │  │      │ │
 │  │ [Select] │  │ [Select] │  │ [Select] │  │[Talk]│ │
@@ -2339,7 +2339,7 @@ describe('Trial Status Middleware', () => {
 |---|---|---|
 | **Happy path signup** | Signup → Create store → Survey → Dashboard | Successful onboarding |
 | **Duplicate subdomain** | Create store with taken subdomain | Error + suggestions |
-| **Trial expiry** | Fast-forward 14 days | Status → grace |
+| **Trial expiry** | Fast-forward 7 days | Status → grace |
 | **Grace → Frozen** | Fast-forward 3 more days | Status → frozen, admin restricted |
 | **Payment flow** | Select plan → Complete payment | Subscription active |
 | **Reactivation** | Frozen store → Pay → Reactivate | Store live again |
@@ -2417,7 +2417,7 @@ test('complete onboarding flow', async ({ page }) => {
 | Term | Definition |
 |---|---|
 | **Onboarding** | The process from signup to first store creation |
-| **Trial** | 14-day free access period with all features unlocked |
+| **Trial** | 7-day free access period with all features unlocked |
 | **Grace period** | 3 days after trial expiry; read-only admin access |
 | **Frozen** | Store suspended after grace period; billing page only |
 | **Cancelled** | Store marked for deletion after 90 days frozen |
@@ -2440,6 +2440,8 @@ test('complete onboarding flow', async ({ page }) => {
 ---
 
 > **Next:** [04 Admin Dashboard](./04_Admin_Dashboard.md) — Store builder UI, dynamic navigation, all site-type dashboards
+
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) — Trial → paid plan conversion, pricing tiers
 
 ---
 

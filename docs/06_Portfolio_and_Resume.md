@@ -1,6 +1,6 @@
 # LetBuyy Platform — Portfolio & Resume
 
-> **Doc 06 of 12** | Portfolio Builder, Resume Builder, PDF Export & Templates
+> **Doc 06 of 15** | Portfolio Builder, Resume Builder, PDF Export & Templates
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -2109,12 +2109,12 @@ app.put('/v1/stores/:storeId/appearance', authMiddleware(), storeOwnerMiddleware
 |---|---|---|---|
 | **Project description** | Generate compelling case study text from project details | Claude Sonnet 4.5 | 2 |
 | **Case study generator** | Create full problem / solution / results from brief | Claude Sonnet 4.5 | 3 |
-| **Skill suggestions** | Analyze projects and suggest skills to add | GPT-4.1 mini | Free |
-| **Tag generation** | Auto-tag projects with technologies used | GPT-4.1 mini | Free |
-| **SEO optimization** | Generate portfolio meta tags and descriptions | GPT-4.1 mini | 1 |
+| **Skill suggestions** | Analyze projects and suggest skills to add | Gemini 3 Flash | Free |
+| **Tag generation** | Auto-tag projects with technologies used | Gemini 3 Flash | Free |
+| **SEO optimization** | Generate portfolio meta tags and descriptions | Gemini 3 Flash | 1 |
 | **Bio generation** | Create professional about-me text | Claude Sonnet 4.5 | 2 |
-| **Testimonial suggestions** | Draft testimonial request emails | GPT-4.1 mini | Free |
-| **Tech stack detection** | Analyze repo README to detect tech stack | GPT-4.1 mini | Free |
+| **Testimonial suggestions** | Draft testimonial request emails | Gemini 3 Flash | Free |
+| **Tech stack detection** | Analyze repo README to detect tech stack | Gemini 3 Flash | Free |
 
 ### 14.2 Resume AI Features
 
@@ -2122,9 +2122,9 @@ app.put('/v1/stores/:storeId/appearance', authMiddleware(), storeOwnerMiddleware
 |---|---|---|---|
 | **Bullet point improvement** | Make achievements quantified and impactful (XYZ formula) | Claude Sonnet 4.5 | 2 |
 | **Summary generation** | Create professional summary from experience data | Claude Sonnet 4.5 | 2 |
-| **ATS scoring** | Analyze resume against job description for ATS compatibility | GPT-4.1 | 2 |
-| **Keyword optimization** | Suggest keywords from target job descriptions | GPT-4.1 mini | 1 |
-| **Gap analysis** | Identify missing skills for target roles | GPT-4.1 | 2 |
+| **ATS scoring** | Analyze resume against job description for ATS compatibility | Gemini 3 Pro | 2 |
+| **Keyword optimization** | Suggest keywords from target job descriptions | Gemini 3 Flash | 1 |
+| **Gap analysis** | Identify missing skills for target roles | Gemini 3 Pro | 2 |
 | **Full resume rewrite** | Rewrite entire resume tailored to a specific role | Claude Sonnet 4.5 | 5 |
 | **Cover letter** | Generate tailored cover letter from resume + job description | Claude Sonnet 4.5 | 3 |
 
@@ -2189,7 +2189,7 @@ Return JSON:
   "matchedKeywords": ["keyword1", "keyword2", ...]
 }`;
 
-  const result: ATSResult = await callAI(c.env, 'gpt-4.1', prompt, { responseFormat: 'json' });
+  const result: ATSResult = await callAI(c.env, 'gemini-3-pro', prompt, { responseFormat: 'json' });
 
   // Store ATS score on version
   if (versionId) {

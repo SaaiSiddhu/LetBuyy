@@ -1,6 +1,6 @@
 # LetBuyy Platform — Authentication & Security
 
-> **Doc 02 of 12** | Auth Flows, Supabase Auth, RLS, 2FA, VPN & Security Policies
+> **Doc 02 of 15** | Auth Flows, Supabase Auth, RLS, 2FA, VPN & Security Policies
 >
 > **Version:** 5.0 | **Date:** February 14, 2026
 >
@@ -1694,7 +1694,7 @@ Store publishes content
 | API keys (Stripe, Razorpay) | Cloudflare Workers Secrets | Manual, quarterly |
 | Database credentials | Supabase dashboard | Auto-managed |
 | JWT secret | Supabase Auth | Auto-managed |
-| AI API keys (OpenAI, Anthropic) | Cloudflare Workers Secrets | Manual, quarterly |
+| AI API keys (Gemini, Anthropic) | Cloudflare Workers Secrets | Manual, quarterly |
 | 2FA seeds | Supabase encrypted column | Per-user |
 
 ### 10.3 Incident Response
@@ -2021,7 +2021,7 @@ export async function logAuditEvent(
 │  Manual (quarterly — 1st of Jan/Apr/Jul/Oct):        │
 │  ├── Stripe API keys → Dashboard + Worker secrets    │
 │  ├── Razorpay API keys → Dashboard + Worker secrets  │
-│  ├── OpenAI/Anthropic keys → Dashboard + Worker      │
+│  ├── Gemini/Anthropic keys → Dashboard + Worker      │
 │  ├── Resend API key → Dashboard + Worker secrets     │
 │  └── Turnstile secret key → CF Dashboard + Worker    │
 │                                                       │
@@ -2101,7 +2101,7 @@ User requests account deletion (Settings → Delete Account)
 | `STRIPE_SECRET_KEY` | Worker Secrets | Payment worker | Browser, Vercel |
 | `STRIPE_WEBHOOK_SECRET` | Worker Secrets | Webhook worker | Browser, Vercel |
 | `RAZORPAY_KEY_SECRET` | Worker Secrets | Payment worker | Browser, Vercel |
-| `OPENAI_API_KEY` | Worker Secrets | AI worker | Browser, Vercel |
+| `GEMINI_API_KEY` | Worker Secrets | AI worker | Browser, Vercel |
 | `ANTHROPIC_API_KEY` | Worker Secrets | AI worker | Browser, Vercel |
 | `RESEND_API_KEY` | Worker Secrets | Email worker | Browser, Vercel |
 | `TURNSTILE_SECRET_KEY` | Worker Secrets | Auth worker | Browser (site key only) |

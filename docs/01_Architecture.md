@@ -1,6 +1,6 @@
 # LetBuyy Platform — Architecture
 
-> **Doc 01 of 12** | System Architecture, Infrastructure Layers & Project Structure
+> **Doc 01 of 15** | System Architecture, Infrastructure Layers & Project Structure
 >
 > **Version:** 8.0 | **Date:** February 14, 2026
 >
@@ -374,7 +374,7 @@ CREATE TABLE stores (
   custom_domain   TEXT,                                -- e.g., 'www.myshop.com'
   settings        JSONB DEFAULT '{}'::jsonb,           -- theme, currency, locale, social links
   trial_started_at TIMESTAMPTZ DEFAULT NOW(),
-  trial_ends_at   TIMESTAMPTZ DEFAULT NOW() + INTERVAL '14 days',
+  trial_ends_at   TIMESTAMPTZ DEFAULT NOW() + INTERVAL '7 days',
   frozen_at       TIMESTAMPTZ,                         -- set when trial expires + grace period
   published_at    TIMESTAMPTZ,                         -- first publish timestamp
   created_at      TIMESTAMPTZ DEFAULT NOW(),
@@ -1819,9 +1819,9 @@ Failure at any stage:
 | Store Created | `store-created` | Immediate | Resend |
 | Survey Complete | `onboarding-complete` | Immediate | Resend |
 | Day 3 (no publish) | `reminder-publish` | Cron (scheduled) | Resend |
-| Day 10 (trial) | `trial-ending-soon` | Cron (scheduled) | Resend |
-| Day 13 (trial) | `trial-last-day` | Cron (scheduled) | Resend |
-| Day 14 (trial expired) | `trial-expired` | Cron (scheduled) | Resend |
+| Day 4 (trial) | `trial-ending-soon` | Cron (scheduled) | Resend |
+| Day 6 (trial) | `trial-last-day` | Cron (scheduled) | Resend |
+| Day 7 (trial expired) | `trial-expired` | Cron (scheduled) | Resend |
 
 ### 16.4 Subdomain Validation Rules
 
@@ -2103,8 +2103,8 @@ async function dispatchNotification(event: NotificationEvent) {
 | `onboarding-complete` | Survey done | Feature checklist, tips |
 | `order-confirmation` | Payment success | Order #, items, total, tracking |
 | `order-shipped` | Status → shipped | Tracking number, tracking URL |
-| `trial-ending-soon` | Day 10 | Days remaining, upgrade CTA |
-| `trial-expired` | Day 14 | Grace period info, pricing link |
+| `trial-ending-soon` | Day 4 | Days remaining, upgrade CTA |
+| `trial-expired` | Day 7 | Grace period info, pricing link |
 | `team-invite` | Team member added | Accept link, role description |
 | `low-stock-alert` | Inventory < threshold | Product name, current stock, reorder link |
 | `ai-credits-low` | Credits at 10% | Remaining credits, top-up link |
@@ -2120,7 +2120,7 @@ async function dispatchNotification(event: NotificationEvent) {
                     │               SUBSCRIPTION LIFECYCLE             │
                     └─────────────────────────────────────────────────┘
 
-    ┌──────────┐  14 days  ┌──────────┐  3 days   ┌──────────┐  7 days   ┌──────────┐
+    ┌──────────┐  7 days   ┌──────────┐  3 days   ┌──────────┐  7 days   ┌──────────┐
     │  TRIAL   │ ────────→ │  GRACE   │ ────────→ │  FROZEN  │ ────────→ │  PURGE   │
     │ (active) │           │ (warning)│           │ (locked) │           │ (deleted)│
     └────┬─────┘           └────┬─────┘           └────┬─────┘           └──────────┘
@@ -2150,16 +2150,16 @@ async function dispatchNotification(event: NotificationEvent) {
 
 | Day | Email | Subject | CTA |
 |---|---|---|---|
-| 0 | `welcome` | "Welcome to LetBuyy! Your 14-day trial starts now" | Explore Dashboard |
-| 3 | `getting-started` | "3 days in — here's what you can do next" | Complete Setup |
-| 7 | `mid-trial` | "Halfway through your trial — see what you've built" | View Analytics |
-| 10 | `trial-ending` | "4 days left on your trial" | Upgrade Now (10% discount) |
-| 13 | `trial-last-day` | "Your trial ends tomorrow" | Subscribe to Keep Your Store |
-| 14 | `trial-expired` | "Your trial has ended" | Reactivate Now |
-| 17 | `grace-ending` | "Your store will be frozen in 24 hours" | Subscribe to Prevent Freeze |
-| 21 | `frozen` | "Your store has been frozen" | Reactivate Your Store |
-| 28 | `purge-warning` | "Your data will be deleted in 7 days" | Save Your Data |
-| 35 | `purged` | "Your store data has been deleted" | Start Fresh |
+| 0 | `welcome` | "Welcome to LetBuyy! Your 7-day trial starts now" | Explore Dashboard |
+| 2 | `getting-started` | "2 days in — here's what you can do next" | Complete Setup |
+| 4 | `mid-trial` | "Halfway through your trial — see what you've built" | View Analytics |
+| 5 | `trial-ending` | "2 days left on your trial" | Upgrade Now (10% discount) |
+| 6 | `trial-last-day` | "Your trial ends tomorrow" | Subscribe to Keep Your Store |
+| 7 | `trial-expired` | "Your trial has ended" | Reactivate Now |
+| 10 | `grace-ending` | "Your store will be frozen in 24 hours" | Subscribe to Prevent Freeze |
+| 11 | `frozen` | "Your store has been frozen" | Reactivate Your Store |
+| 18 | `purge-warning` | "Your data will be deleted in 7 days" | Save Your Data |
+| 25 | `purged` | "Your store data has been deleted" | Start Fresh |
 
 ### 19.3 Plan Features & Limits
 
@@ -2363,4 +2363,6 @@ Every log entry from the API Worker follows this JSON schema for consistent pars
 
 ---
 
-> **→ Full doc series:** 00_Overview → **01_Architecture** → 02_Auth → 03_Onboarding → 04_Admin → 05_Storefront → 06_Team → 07_AI → 08_Payments → 09_Analytics → 10_Deployment → 11_Testing → 12_Scaling
+> **→ Full doc series:** 00_Overview → **01_Architecture** → 02_Auth → 03_Onboarding → 04_Admin → 05_Ecommerce → 06_Portfolio → 07_AI → 08_Database → 09_API → 10_Storefront → 11_SuperAdmin → 12_Roadmap → 13_Plans → 14_Themes → 15_AppStore
+>
+> **See also:** [15 App Store Implementation](./15_App_Store_Implementation.md) — App ecosystem extends the platform architecture

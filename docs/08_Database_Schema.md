@@ -1,6 +1,6 @@
 # LetBuyy Platform — Database Schema
 
-> **Doc 08 of 12** | Complete Supabase PostgreSQL Schema — Tables, RLS Policies, Functions, Triggers & Migrations
+> **Doc 08 of 15** | Complete Supabase PostgreSQL Schema — Tables, RLS Policies, Functions, Triggers & Migrations
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -248,7 +248,7 @@ CREATE TABLE stores (
   
   -- Trial
   trial_started_at  TIMESTAMPTZ DEFAULT NOW(),
-  trial_ends_at     TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '14 days'),
+  trial_ends_at     TIMESTAMPTZ DEFAULT (NOW() + INTERVAL '7 days'),
   trial_status      TEXT DEFAULT 'active'
     CHECK (trial_status IN ('active','grace','frozen','cancelled','paid')),
   frozen_at         TIMESTAMPTZ,
@@ -3030,6 +3030,8 @@ INSERT INTO themes (name, slug, site_type, category, is_premium) VALUES
 ---
 
 > **Next:** [09 API Reference](./09_API_Reference.md) — Complete REST API documentation
+
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) — Additional schema defined in these docs
 
 ---
 
