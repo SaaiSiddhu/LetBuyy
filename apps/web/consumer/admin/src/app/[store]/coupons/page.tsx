@@ -29,7 +29,7 @@ export default function CouponsPage() {
     const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({
-        code: '', type: 'percentage' as const, value: '', min_purchase: '', max_uses: '',
+        code: '', type: 'percentage' as Coupon['type'], value: '', min_purchase: '', max_uses: '',
         starts_at: '', expires_at: '', is_active: true
     })
 
