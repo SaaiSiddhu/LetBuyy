@@ -20,7 +20,7 @@ export default function PostsPage() {
     const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [filter, setFilter] = useState<string>('all')
-    const [formData, setFormData] = useState({ title: '', slug: '', excerpt: '', content: '', status: 'draft' as const })
+    const [formData, setFormData] = useState({ title: '', slug: '', excerpt: '', content: '', status: 'draft' as Post['status'] })
 
     const load = useCallback(async () => {
         const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
