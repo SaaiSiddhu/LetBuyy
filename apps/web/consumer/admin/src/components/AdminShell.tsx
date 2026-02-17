@@ -48,7 +48,7 @@ export default function AdminShell({ store, storeData, user, userStores, childre
 
     const isDraft = storeData.status === 'draft'
     const isSettingsPage = pathname?.includes('/settings')
-    const isFullScreenFlow = pathname?.includes('/access_account/checkout') || pathname?.includes('/subscribe/checkout')
+    const isFullScreenFlow = pathname?.includes('/access_account/checkout') || pathname?.includes('/subscribe/checkout') || pathname?.includes('/editor')
 
     // Full-screen flows bypass the admin shell entirely
     if (isFullScreenFlow) {

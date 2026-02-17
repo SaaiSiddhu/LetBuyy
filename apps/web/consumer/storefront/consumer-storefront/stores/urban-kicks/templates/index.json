@@ -65,6 +65,29 @@
             }
         },
         {
+            "id": "brand-marquee-1",
+            "type": "brandMarquee",
+            "order": 0.5,
+            "isVisible": true,
+            "settings": {
+                "title": "Trusted by top brands worldwide",
+                "speed": 25,
+                "pauseOnHover": true,
+                "brands": [
+                    "NIKE",
+                    "ADIDAS",
+                    "PUMA",
+                    "JORDAN",
+                    "NEW BALANCE",
+                    "CONVERSE",
+                    "REEBOK",
+                    "VANS",
+                    "ASICS",
+                    "UNDER ARMOUR"
+                ]
+            }
+        },
+        {
             "id": "grid-1",
             "type": "productGrid",
             "order": 1,
@@ -79,6 +102,18 @@
                 "showRating": true,
                 "showAddToCart": true,
                 "cardStyle": "minimal"
+            }
+        },
+        {
+            "id": "category-grid-1",
+            "type": "categoryGrid",
+            "order": 1.5,
+            "isVisible": true,
+            "settings": {
+                "title": "Shop by Category",
+                "subtitle": "Find exactly what you're looking for",
+                "columns": 3,
+                "cardStyle": "overlay"
             }
         },
         {
@@ -128,6 +163,36 @@
                     }
                 }
             ]
+        },
+        {
+            "id": "trust-badges-1",
+            "type": "trustBadges",
+            "order": 2.5,
+            "isVisible": true,
+            "settings": {
+                "badges": [
+                    {
+                        "icon": "truck",
+                        "label": "Free Shipping",
+                        "description": "On orders above ₹999"
+                    },
+                    {
+                        "icon": "shield-check",
+                        "label": "100% Authentic",
+                        "description": "Guaranteed genuine products"
+                    },
+                    {
+                        "icon": "rotate-ccw",
+                        "label": "Easy Returns",
+                        "description": "7-day hassle-free returns"
+                    },
+                    {
+                        "icon": "headphones",
+                        "label": "24/7 Support",
+                        "description": "We're here to help"
+                    }
+                ]
+            }
         },
         {
             "id": "newsletter-1",

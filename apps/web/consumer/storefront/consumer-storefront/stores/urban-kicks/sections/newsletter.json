@@ -1,0 +1,64 @@
+{
+    "name": "Newsletter",
+    "type": "newsletter",
+    "description": "Email signup section with heading, subtext, and subscribe button",
+    "defaults": {
+        "title": "Stay in the Loop",
+        "subtitle": "Get early access to new drops and exclusive discounts.",
+        "buttonText": "Subscribe",
+        "placeholder": "Enter your email",
+        "backgroundColor": "transparent",
+        "successMessage": "Thanks for subscribing!"
+    },
+    "presets": [
+        {
+            "name": "Default",
+            "settings": {
+                "title": "Stay in the Loop",
+                "subtitle": "Get early access to new drops and exclusive discounts.",
+                "buttonText": "Subscribe",
+                "placeholder": "Enter your email"
+            }
+        },
+        {
+            "name": "Minimal",
+            "settings": {
+                "title": "Join the Club",
+                "subtitle": "No spam, just drops.",
+                "buttonText": "Sign Up",
+                "placeholder": "Your email"
+            }
+        }
+    ],
+    "settings_schema": {
+        "title": {
+            "type": "text",
+            "label": "Heading",
+            "maxLength": 80
+        },
+        "subtitle": {
+            "type": "text",
+            "label": "Subheading",
+            "maxLength": 200
+        },
+        "buttonText": {
+            "type": "text",
+            "label": "Button Text",
+            "maxLength": 30
+        },
+        "placeholder": {
+            "type": "text",
+            "label": "Placeholder Text",
+            "maxLength": 40
+        },
+        "backgroundColor": {
+            "type": "color",
+            "label": "Background Color"
+        },
+        "successMessage": {
+            "type": "text",
+            "label": "Success Message",
+            "maxLength": 100
+        }
+    }
+}

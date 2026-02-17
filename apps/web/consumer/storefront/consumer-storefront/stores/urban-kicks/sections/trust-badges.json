@@ -1,0 +1,74 @@
+{
+    "name": "Trust Badges",
+    "type": "trustBadges",
+    "description": "Horizontal row of trust/feature badges with icons",
+    "defaults": {
+        "title": "",
+        "badges": [
+            {
+                "icon": "truck",
+                "label": "Free Shipping",
+                "description": "On orders above ₹999"
+            },
+            {
+                "icon": "shield-check",
+                "label": "100% Authentic",
+                "description": "Guaranteed genuine products"
+            },
+            {
+                "icon": "rotate-ccw",
+                "label": "Easy Returns",
+                "description": "7-day hassle-free returns"
+            },
+            {
+                "icon": "headphones",
+                "label": "24/7 Support",
+                "description": "We're here to help"
+            }
+        ]
+    },
+    "settings_schema": {
+        "title": {
+            "type": "text",
+            "label": "Section Heading (optional)",
+            "maxLength": 60
+        }
+    },
+    "blocks_schema": {
+        "badge": {
+            "name": "Badge",
+            "fields": {
+                "icon": {
+                    "type": "select",
+                    "label": "Icon",
+                    "options": [
+                        "truck",
+                        "shield-check",
+                        "rotate-ccw",
+                        "headphones",
+                        "award",
+                        "star",
+                        "heart",
+                        "zap",
+                        "lock",
+                        "clock",
+                        "globe",
+                        "check-circle",
+                        "package",
+                        "credit-card"
+                    ]
+                },
+                "label": {
+                    "type": "text",
+                    "label": "Label",
+                    "maxLength": 30
+                },
+                "description": {
+                    "type": "text",
+                    "label": "Description",
+                    "maxLength": 60
+                }
+            }
+        }
+    }
+}

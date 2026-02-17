@@ -211,6 +211,180 @@ export const MOCK_ORDERS: MockOrder[] = [
 
 export const CATEGORIES = ['All', 'Sneakers', 'Apparel', 'Accessories'] as const;
 
+// ============= SHIPPING METHODS =============
+
+export interface ShippingMethod {
+    id: 'standard' | 'express' | 'free';
+    label: string;
+    price: number;
+    eta: string;
+    minOrder?: number;
+    badge?: string;
+}
+
+export const SHIPPING_METHODS: ShippingMethod[] = [
+    { id: 'standard', label: 'Standard Delivery', price: 40, eta: '5-7 business days' },
+    { id: 'express', label: 'Express Delivery', price: 99, eta: '2-3 business days', badge: '★ Popular' },
+    { id: 'free', label: 'Free Delivery', price: 0, eta: '7-10 business days', minOrder: 2000, badge: '🎉 FREE' },
+];
+
+// ============= PAYMENT METHODS =============
+
+export interface PaymentMethod {
+    id: 'razorpay' | 'cod';
+    label: string;
+    description: string;
+    extraFee?: number;
+}
+
+export const PAYMENT_METHODS: PaymentMethod[] = [
+    { id: 'razorpay', label: 'Razorpay', description: 'UPI, Cards, Wallets, NetBanking' },
+    { id: 'cod', label: 'Cash on Delivery', description: 'Pay when you receive', extraFee: 49 },
+];
+
+// ============= INDIAN STATES =============
+
+export const INDIAN_STATES = [
+    'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+    'Delhi', 'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh',
+    'Jharkhand', 'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra',
+    'Manipur', 'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha',
+    'Punjab', 'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana',
+    'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+    'Andaman & Nicobar Islands', 'Chandigarh', 'Dadra & Nagar Haveli',
+    'Jammu & Kashmir', 'Ladakh', 'Lakshadweep', 'Puducherry',
+] as const;
+
+// ============= BRAND GALLERY / STORYTELLING =============
+
+export interface BrandGalleryFeature {
+    icon: string; // lucide icon name
+    title: string;
+    description: string;
+}
+
+export interface BrandGallerySplitPanel {
+    image: string;
+    title: string;
+    description: string;
+}
+
+export interface BrandGalleryData {
+    heroBanner: { image: string; title: string; subtitle: string };
+    features: BrandGalleryFeature[];
+    splitPanels: BrandGallerySplitPanel[];
+    video?: { thumbnail: string; url: string; title: string };
+    showcaseImages: string[];
+}
+
+export const BRAND_GALLERY: Record<string, BrandGalleryData> = {
+    Sneakers: {
+        heroBanner: {
+            image: 'https://images.unsplash.com/photo-1556906781-9a412961c28c?q=80&w=1200',
+            title: 'ENGINEERED FOR MOVEMENT',
+            subtitle: 'Premium materials. Bold design. Built for the streets and beyond.',
+        },
+        features: [
+            { icon: 'Zap', title: 'Lightweight', description: 'Ultra-light cushioning for all-day comfort' },
+            { icon: 'Shield', title: 'Durable', description: 'Built to last with reinforced stitching' },
+            { icon: 'Leaf', title: 'Sustainable', description: 'Made with recycled materials' },
+            { icon: 'Gem', title: 'Handcrafted', description: 'Attention to detail in every pair' },
+        ],
+        splitPanels: [
+            {
+                image: 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?q=80&w=800',
+                title: 'Premium Leather Upper',
+                description: 'Full-grain leather that develops a natural patina over time. Each pair tells its own story as the leather ages gracefully with every wear.',
+            },
+            {
+                image: 'https://images.unsplash.com/photo-1491553895911-0055eca6402d?q=80&w=800',
+                title: 'Visible Air Cushioning',
+                description: 'Responsive Air Max unit returns energy with every step. The visible cushioning system provides superior impact absorption for all-day comfort.',
+            },
+        ],
+        video: {
+            thumbnail: 'https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?q=80&w=1200',
+            url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            title: 'The Making of Air Max',
+        },
+        showcaseImages: [
+            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=800',
+            'https://images.unsplash.com/photo-1600269452121-4f2416e55c28?q=80&w=600',
+            'https://images.unsplash.com/photo-1584735175315-9d5df23860e6?q=80&w=600',
+            'https://images.unsplash.com/photo-1543508282-6319a3e2621f?q=80&w=600',
+            'https://images.unsplash.com/photo-1605348532760-6753d2c43329?q=80&w=800',
+        ],
+    },
+    Apparel: {
+        heroBanner: {
+            image: 'https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?q=80&w=1200',
+            title: 'WEAR YOUR IDENTITY',
+            subtitle: 'Streetwear essentials crafted from premium fabrics. Made for comfort, designed for culture.',
+        },
+        features: [
+            { icon: 'Zap', title: '400 GSM', description: 'Heavyweight premium cotton fabric' },
+            { icon: 'Shield', title: 'Pre-Shrunk', description: 'Washed and treated to hold its shape' },
+            { icon: 'Leaf', title: 'Organic Cotton', description: '100% GOTS certified organic cotton' },
+            { icon: 'Gem', title: 'Screen Printed', description: 'Hand-finished graphic prints' },
+        ],
+        splitPanels: [
+            {
+                image: 'https://images.unsplash.com/photo-1523381210434-271e8be1f52b?q=80&w=800',
+                title: 'Oversized Boxy Fit',
+                description: 'Relaxed silhouette with dropped shoulders for that effortless street style look. Designed to drape perfectly whether dressed up or down.',
+            },
+            {
+                image: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800',
+                title: 'Washed Vintage Finish',
+                description: 'Each piece is garment-dyed and enzyme-washed for a lived-in feel. The color softens beautifully wash after wash.',
+            },
+        ],
+        video: {
+            thumbnail: 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?q=80&w=1200',
+            url: 'https://www.w3schools.com/html/mov_bbb.mp4',
+            title: 'Behind the Collection',
+        },
+        showcaseImages: [
+            'https://images.unsplash.com/photo-1576566588028-4147f3842f27?q=80&w=800',
+            'https://images.unsplash.com/photo-1618354691373-d851c5c3a990?q=80&w=600',
+            'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=600',
+            'https://images.unsplash.com/photo-1503341504253-dff4815485f1?q=80&w=600',
+            'https://images.unsplash.com/photo-1556821840-3a63f95609a7?q=80&w=800',
+        ],
+    },
+    Accessories: {
+        heroBanner: {
+            image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=1200',
+            title: 'COMPLETE THE LOOK',
+            subtitle: 'Essential accessories that elevate every outfit. Functional meets fashionable.',
+        },
+        features: [
+            { icon: 'Zap', title: 'Lightweight', description: 'Carry essentials without the bulk' },
+            { icon: 'Shield', title: 'Water-Resistant', description: 'Coated nylon repels rain and spills' },
+            { icon: 'Leaf', title: 'Recycled Nylon', description: 'Made from post-consumer waste' },
+            { icon: 'Gem', title: 'YKK Zippers', description: 'Premium hardware that lasts' },
+        ],
+        splitPanels: [
+            {
+                image: 'https://images.unsplash.com/photo-1588850561407-ed78c334e67a?q=80&w=800',
+                title: 'Structured Design',
+                description: 'Six-panel construction with premium embroidery. Adjustable snap-back closure fits all head sizes comfortably.',
+            },
+            {
+                image: 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=800',
+                title: 'Compact & Organized',
+                description: 'Multiple compartments keep your essentials organized and accessible. Adjustable strap goes from crossbody to shoulder carry in seconds.',
+            },
+        ],
+        showcaseImages: [
+            'https://images.unsplash.com/photo-1588850561407-ed78c334e67a?q=80&w=800',
+            'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?q=80&w=600',
+            'https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?q=80&w=600',
+            'https://images.unsplash.com/photo-1556306535-0f09a537f0a3?q=80&w=800',
+        ],
+    },
+};
+
 // ============= HELPERS =============
 
 export function formatPrice(price: number): string {

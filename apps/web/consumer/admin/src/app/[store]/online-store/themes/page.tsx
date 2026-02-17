@@ -234,36 +234,103 @@ export default function ThemesPage() {
                                     </div>
                                     <div className="theme-mockup-url">{store}.letbuyy.store</div>
                                 </div>
-                                <div className="theme-mockup-content">
-                                    <div className="theme-mockup-nav">
-                                        <span className="theme-mockup-storename">{currentTheme?.name || store}</span>
-                                        <span>Home</span>
-                                        <span>Catalog</span>
-                                        <span>Contact</span>
-                                        <div className="theme-mockup-nav-icons">
-                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>search</span>
-                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>person</span>
-                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>shopping_bag</span>
+                                <div className="theme-mockup-content" style={{ background: '#fff', overflow: 'hidden' }}>
+                                    {/* Header */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 16px', background: '#000', color: '#fff' }}>
+                                        <span style={{ fontWeight: 700, fontSize: '11px', letterSpacing: '-0.02em' }}>URBAN KICKS</span>
+                                        <div style={{ display: 'flex', gap: '10px', fontSize: '9px', opacity: 0.85 }}>
+                                            <span>Home</span>
+                                            <span>Shop</span>
+                                            <span>New Arrivals</span>
+                                        </div>
+                                        <div style={{ display: 'flex', gap: '6px' }}>
+                                            <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>search</span>
+                                            <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>person</span>
+                                            <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>shopping_bag</span>
                                         </div>
                                     </div>
-                                    <div className="theme-mockup-hero" style={{
-                                        background: themeColors
-                                            ? `linear-gradient(135deg, ${themeColors.primary || '#6366f1'}, ${themeColors.secondary || '#8b5cf6'})`
-                                            : undefined
+
+                                    {/* Hero Banner */}
+                                    <div style={{
+                                        position: 'relative',
+                                        height: '120px',
+                                        background: 'url(https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=800) center/cover',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                     }}>
-                                        <div className="theme-mockup-hero-gradient" />
-                                        <div className="theme-mockup-hero-text">
-                                            <p>Welcome to our store</p>
-                                            <h3>Browse our latest products</h3>
-                                            <button className="theme-mockup-cta">Shop all</button>
+                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
+                                        <div style={{ position: 'relative', textAlign: 'center', color: '#fff', zIndex: 1 }}>
+                                            <div style={{ fontSize: '16px', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: '4px' }}>Streetwear 2026</div>
+                                            <div style={{ fontSize: '8px', opacity: 0.8, marginBottom: '6px' }}>The future of fashion is here.</div>
+                                            <div style={{ display: 'inline-block', background: '#fff', color: '#000', fontSize: '7px', fontWeight: 600, padding: '3px 10px', borderRadius: '3px' }}>Shop New Arrivals</div>
                                         </div>
                                     </div>
-                                    <div className="theme-mockup-products-label">Products</div>
-                                    <div className="theme-mockup-products">
-                                        <div className="theme-mockup-product" style={{ background: '#FEE2E2' }}><span className="material-symbols-outlined" style={{ fontSize: 16, color: '#DC2626' }}>steps</span></div>
-                                        <div className="theme-mockup-product" style={{ background: '#DBEAFE' }}><span className="material-symbols-outlined" style={{ fontSize: 16, color: '#2563EB' }}>deployed_code</span></div>
-                                        <div className="theme-mockup-product" style={{ background: '#D1FAE5' }}><span className="material-symbols-outlined" style={{ fontSize: 16, color: '#059669' }}>checkroom</span></div>
-                                        <div className="theme-mockup-product" style={{ background: '#FEF3C7' }}><span className="material-symbols-outlined" style={{ fontSize: 16, color: '#D97706' }}>shopping_bag</span></div>
+
+                                    {/* Brand Marquee */}
+                                    <div style={{ padding: '6px 0', borderBottom: '1px solid #f0f0f0', overflow: 'hidden' }}>
+                                        <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', fontSize: '7px', fontWeight: 700, color: '#999', letterSpacing: '0.08em' }}>
+                                            <span>NIKE</span><span>ADIDAS</span><span>PUMA</span><span>JORDAN</span><span>NEW BALANCE</span><span>CONVERSE</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Product Grid */}
+                                    <div style={{ padding: '10px 12px 6px' }}>
+                                        <div style={{ fontSize: '10px', fontWeight: 700, marginBottom: '2px', letterSpacing: '-0.02em' }}>Trending Drops</div>
+                                        <div style={{ fontSize: '7px', color: '#888', marginBottom: '6px' }}>Hottest picks this season</div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px' }}>
+                                            {[
+                                                { name: 'Air Max 90', price: '₹8,999', bg: '#f5f5f5' },
+                                                { name: 'Retro High OG', price: '₹12,499', bg: '#f0f0f0' },
+                                                { name: 'Ultra Boost', price: '₹11,999', bg: '#f5f5f5' },
+                                                { name: 'Classic Leather', price: '₹6,499', bg: '#f0f0f0' },
+                                            ].map((p, i) => (
+                                                <div key={i} style={{ borderRadius: '4px', overflow: 'hidden', border: '1px solid #eee' }}>
+                                                    <div style={{ height: '40px', background: p.bg, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: 16, color: '#bbb' }}>steps</span>
+                                                    </div>
+                                                    <div style={{ padding: '3px 4px' }}>
+                                                        <div style={{ fontSize: '6px', fontWeight: 600, overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{p.name}</div>
+                                                        <div style={{ fontSize: '6px', fontWeight: 700 }}>{p.price}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Trust Badges */}
+                                    <div style={{ display: 'flex', justifyContent: 'center', gap: '12px', padding: '6px 12px', borderTop: '1px solid #f0f0f0' }}>
+                                        {[
+                                            { icon: 'local_shipping', label: 'Free Shipping' },
+                                            { icon: 'verified_user', label: 'Authentic' },
+                                            { icon: 'autorenew', label: 'Easy Returns' },
+                                            { icon: 'headset_mic', label: '24/7 Support' },
+                                        ].map((b, i) => (
+                                            <div key={i} style={{ textAlign: 'center' }}>
+                                                <span className="material-symbols-outlined" style={{ fontSize: 10, color: '#666' }}>{b.icon}</span>
+                                                <div style={{ fontSize: '5px', color: '#888', marginTop: '1px' }}>{b.label}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+
+                                    {/* Newsletter */}
+                                    <div style={{ padding: '8px 16px', textAlign: 'center', background: '#fafafa', borderTop: '1px solid #f0f0f0' }}>
+                                        <div style={{ fontSize: '8px', fontWeight: 700, marginBottom: '3px' }}>Stay in the Loop</div>
+                                        <div style={{ display: 'flex', gap: '4px', maxWidth: '180px', margin: '0 auto' }}>
+                                            <div style={{ flex: 1, background: '#fff', border: '1px solid #e0e0e0', borderRadius: '3px', padding: '2px 6px', fontSize: '6px', color: '#aaa' }}>Enter your email</div>
+                                            <div style={{ background: '#000', color: '#fff', fontSize: '6px', padding: '2px 8px', borderRadius: '3px', fontWeight: 600 }}>Subscribe</div>
+                                        </div>
+                                    </div>
+
+                                    {/* Footer */}
+                                    <div style={{ background: '#0f172a', color: '#fff', padding: '8px 16px 6px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                        <div>
+                                            <div style={{ fontSize: '8px', fontWeight: 700, marginBottom: '3px' }}>Urban Kicks</div>
+                                            <div style={{ fontSize: '5px', color: 'rgba(255,255,255,0.5)', lineHeight: '1.4' }}>Your destination for<br />premium streetwear</div>
+                                        </div>
+                                        <div style={{ textAlign: 'right' }}>
+                                            <div style={{ fontSize: '5px', color: 'rgba(255,255,255,0.5)' }}>© 2026 Urban Kicks</div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -271,29 +338,63 @@ export default function ThemesPage() {
                             {/* Mobile Preview */}
                             <div className="theme-mockup-mobile">
                                 <div className="theme-mockup-mobile-notch" />
-                                <div className="theme-mockup-content theme-mockup-content-mobile">
-                                    <div className="theme-mockup-nav theme-mockup-nav-mobile">
-                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>menu</span>
-                                        <span className="theme-mockup-storename">{currentTheme?.name || store}</span>
-                                        <div className="theme-mockup-nav-icons">
-                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>shopping_bag</span>
-                                        </div>
+                                <div className="theme-mockup-content theme-mockup-content-mobile" style={{ background: '#fff', overflow: 'hidden' }}>
+                                    {/* Mobile Header */}
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '6px 10px', background: '#000', color: '#fff' }}>
+                                        <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>menu</span>
+                                        <span style={{ fontWeight: 700, fontSize: '10px', letterSpacing: '-0.02em' }}>URBAN KICKS</span>
+                                        <span className="material-symbols-outlined" style={{ fontSize: '12px' }}>shopping_bag</span>
                                     </div>
-                                    <div className="theme-mockup-hero theme-mockup-hero-mobile" style={{
-                                        background: themeColors
-                                            ? `linear-gradient(135deg, ${themeColors.primary || '#6366f1'}, ${themeColors.secondary || '#8b5cf6'})`
-                                            : undefined
+
+                                    {/* Mobile Hero */}
+                                    <div style={{
+                                        position: 'relative',
+                                        height: '90px',
+                                        background: 'url(https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=400) center/cover',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
                                     }}>
-                                        <div className="theme-mockup-hero-gradient" />
-                                        <div className="theme-mockup-hero-text">
-                                            <h3 style={{ fontSize: '13px' }}>Browse our latest products</h3>
-                                            <button className="theme-mockup-cta" style={{ fontSize: '10px', padding: '4px 10px' }}>Shop all</button>
+                                        <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)' }} />
+                                        <div style={{ position: 'relative', textAlign: 'center', color: '#fff', zIndex: 1 }}>
+                                            <div style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '-0.03em', marginBottom: '3px' }}>Streetwear 2026</div>
+                                            <div style={{ fontSize: '6px', opacity: 0.8, marginBottom: '4px' }}>The future of fashion is here.</div>
+                                            <div style={{ display: 'inline-block', background: '#fff', color: '#000', fontSize: '6px', fontWeight: 600, padding: '2px 8px', borderRadius: '2px' }}>Shop Now</div>
                                         </div>
                                     </div>
-                                    <div className="theme-mockup-products-label" style={{ fontSize: '11px' }}>Products</div>
-                                    <div className="theme-mockup-products theme-mockup-products-mobile">
-                                        <div className="theme-mockup-product" style={{ background: '#FEE2E2' }}><span className="material-symbols-outlined" style={{ fontSize: 14, color: '#DC2626' }}>steps</span></div>
-                                        <div className="theme-mockup-product" style={{ background: '#DBEAFE' }}><span className="material-symbols-outlined" style={{ fontSize: 14, color: '#2563EB' }}>deployed_code</span></div>
+
+                                    {/* Mobile Brands */}
+                                    <div style={{ padding: '4px 0', borderBottom: '1px solid #f0f0f0', overflow: 'hidden' }}>
+                                        <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', fontSize: '5px', fontWeight: 700, color: '#bbb', letterSpacing: '0.05em' }}>
+                                            <span>NIKE</span><span>ADIDAS</span><span>PUMA</span><span>JORDAN</span>
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile Products */}
+                                    <div style={{ padding: '6px 8px 4px' }}>
+                                        <div style={{ fontSize: '8px', fontWeight: 700, marginBottom: '4px', letterSpacing: '-0.02em' }}>Trending Drops</div>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4px' }}>
+                                            {[
+                                                { name: 'Air Max 90', price: '₹8,999' },
+                                                { name: 'Retro High OG', price: '₹12,499' },
+                                            ].map((p, i) => (
+                                                <div key={i} style={{ borderRadius: '3px', overflow: 'hidden', border: '1px solid #eee' }}>
+                                                    <div style={{ height: '32px', background: '#f5f5f5', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                        <span className="material-symbols-outlined" style={{ fontSize: 12, color: '#ccc' }}>steps</span>
+                                                    </div>
+                                                    <div style={{ padding: '2px 4px' }}>
+                                                        <div style={{ fontSize: '5px', fontWeight: 600 }}>{p.name}</div>
+                                                        <div style={{ fontSize: '5px', fontWeight: 700 }}>{p.price}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile Footer */}
+                                    <div style={{ background: '#0f172a', color: '#fff', padding: '5px 8px', marginTop: '2px' }}>
+                                        <div style={{ fontSize: '6px', fontWeight: 700 }}>Urban Kicks</div>
+                                        <div style={{ fontSize: '4px', color: 'rgba(255,255,255,0.5)', marginTop: '1px' }}>© 2026 Urban Kicks</div>
                                     </div>
                                 </div>
                             </div>
@@ -382,7 +483,7 @@ export default function ThemesPage() {
                                 <button className="os-btn-icon">
                                     <span className="material-symbols-outlined">more_horiz</span>
                                 </button>
-                                <button className="os-btn os-btn-primary">Edit theme</button>
+                                <button className="os-btn os-btn-primary" onClick={() => window.location.href = `/${store}/online-store/themes/${currentTheme?.slug || 'urban-kicks'}/editor`}>Edit theme</button>
                             </div>
                         </div>
                     </div>

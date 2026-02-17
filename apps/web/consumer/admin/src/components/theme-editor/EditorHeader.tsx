@@ -1,0 +1,95 @@
+'use client'
+
+import Link from 'next/link'
+
+interface EditorHeaderProps {
+    storeName: string
+    themeName: string
+    themeId: string
+    isDirty: boolean
+    isSaving: boolean
+    canUndo: boolean
+    canRedo: boolean
+    onSave: () => void
+    onUndo: () => void
+    onRedo: () => void
+}
+
+export default function EditorHeader({
+    storeName,
+    themeName,
+    isDirty,
+    isSaving,
+    canUndo,
+    canRedo,
+    onSave,
+    onUndo,
+    onRedo,
+}: EditorHeaderProps) {
+    return (
+        <header className="te-header">
+            {/* Left: Back + Theme name */}
+            <div className="te-header-left">
+                <Link
+                    href={`/${storeName}/online-store/themes`}
+                    className="te-header-back"
+                    title="Back to themes"
+                >
+                    <span className="material-symbols-outlined">arrow_back</span>
+                </Link>
+
+                <div className="te-header-theme-info">
+                    <span className="material-symbols-outlined te-header-theme-icon">palette</span>
+                    <div className="te-header-theme-text">
+                        <span className="te-header-theme-name">{themeName}</span>
+                        <span className="te-header-theme-subtitle">Editing theme</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Center: Page selector placeholder */}
+            <div className="te-header-center">
+                <div className="te-header-page-selector">
+                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>description</span>
+                    <span>Home page</span>
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>expand_more</span>
+                </div>
+            </div>
+
+            {/* Right: Undo, Redo, Save */}
+            <div className="te-header-right">
+                <button
+                    className="te-header-btn"
+                    onClick={onUndo}
+                    disabled={!canUndo}
+                    title="Undo (Ctrl+Z)"
+                >
+                    <span className="material-symbols-outlined">undo</span>
+                </button>
+                <button
+                    className="te-header-btn"
+                    onClick={onRedo}
+                    disabled={!canRedo}
+                    title="Redo (Ctrl+Shift+Z)"
+                >
+                    <span className="material-symbols-outlined">redo</span>
+                </button>
+
+                <button
+                    className={`te-header-save ${isDirty ? 'te-header-save--dirty' : ''}`}
+                    onClick={onSave}
+                    disabled={isSaving || !isDirty}
+                >
+                    {isSaving ? (
+                        <>
+                            <span className="te-spinner" />
+                            Saving…
+                        </>
+                    ) : (
+                        'Save'
+                    )}
+                </button>
+            </div>
+        </header>
+    )
+}

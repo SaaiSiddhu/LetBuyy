@@ -3,7 +3,9 @@
 import PreviewShell from '../_components/preview-shell';
 import { MOCK_PRODUCTS, CATEGORIES, formatPrice } from '../_lib/mock-data';
 import { useCart } from '@/context/cart-context';
-import { useState, useMemo } from 'react';
+import { usePreviewWishlist } from '../_context/wishlist-context';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import {
     SlidersHorizontal, ChevronDown, ShoppingBag, Heart, Star,
     Grid3X3, LayoutList, Sparkles
@@ -14,11 +16,14 @@ import Link from 'next/link';
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'rating' | 'newest';
 
 export default function ShopPage() {
-    const [category, setCategory] = useState<string>('All');
+    const searchParams = useSearchParams();
+    const initialCategory = searchParams.get('category') || 'All';
+    const [category, setCategory] = useState<string>(initialCategory);
     const [sort, setSort] = useState<SortOption>('featured');
     const [view, setView] = useState<'grid' | 'list'>('grid');
     const [sortOpen, setSortOpen] = useState(false);
     const { addToCart } = useCart();
+    const { isInWishlist, toggleWishlist } = usePreviewWishlist();
 
     const filtered = useMemo(() => {
         let items = category === 'All' ? [...MOCK_PRODUCTS] : MOCK_PRODUCTS.filter(p => p.category === category);
@@ -40,16 +45,6 @@ export default function ShopPage() {
 
     return (
         <PreviewShell>
-            {/* Page Header */}
-            <div className="bg-black text-white py-12 px-4">
-                <div className="max-w-screen-xl mx-auto">
-                    <h1 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">Shop All</h1>
-                    <p className="text-white/60 text-sm md:text-base">
-                        {MOCK_PRODUCTS.length} products across sneakers, apparel & accessories
-                    </p>
-                </div>
-            </div>
-
             <div className="max-w-screen-xl mx-auto px-4 py-8">
                 {/* Filters Bar */}
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
@@ -158,12 +153,15 @@ export default function ShopPage() {
                                     )}
                                 </div>
                                 {/* Actions on hover */}
-                                <div className="absolute bottom-2 right-2 flex gap-1.5 transition-opacity">
-                                    <button onClick={(e) => e.preventDefault()} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                                        <Heart size={14} />
+                                <div className="absolute bottom-2 right-2 flex gap-1.5 transition-opacity z-10">
+                                    <button
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleWishlist(product.id); }}
+                                        className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors"
+                                    >
+                                        <Heart size={14} className={isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''} />
                                     </button>
                                     <button
-                                        onClick={(e) => { e.preventDefault(); addToCart(product); }}
+                                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); addToCart(product); }}
                                         className="p-2 bg-black text-white rounded-full shadow-md hover:bg-black/80 transition-colors"
                                     >
                                         <ShoppingBag size={14} />

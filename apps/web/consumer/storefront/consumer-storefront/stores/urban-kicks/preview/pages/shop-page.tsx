@@ -3,6 +3,7 @@
 import PreviewShell from '../components/preview-shell';
 import { MOCK_PRODUCTS, CATEGORIES, formatPrice } from '../lib/mock-data';
 import { useCart } from '@/context/cart-context';
+import { usePreviewWishlist } from '../context/wishlist-context';
 import { useState, useMemo } from 'react';
 import {
     SlidersHorizontal, ChevronDown, ShoppingBag, Heart, Star,
@@ -19,6 +20,7 @@ export default function ShopPage() {
     const [view, setView] = useState<'grid' | 'list'>('grid');
     const [sortOpen, setSortOpen] = useState(false);
     const { addToCart } = useCart();
+    const { isInWishlist, toggleWishlist } = usePreviewWishlist();
 
     const filtered = useMemo(() => {
         let items = category === 'All' ? [...MOCK_PRODUCTS] : MOCK_PRODUCTS.filter(p => p.category === category);
@@ -159,8 +161,8 @@ export default function ShopPage() {
                                 </div>
                                 {/* Actions on hover */}
                                 <div className="absolute bottom-2 right-2 flex gap-1.5 transition-opacity">
-                                    <button onClick={(e) => e.preventDefault()} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
-                                        <Heart size={14} />
+                                    <button onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-50 transition-colors">
+                                        <Heart size={14} className={isInWishlist(product.id) ? 'fill-red-500 text-red-500' : ''} />
                                     </button>
                                     <button
                                         onClick={(e) => { e.preventDefault(); addToCart(product); }}

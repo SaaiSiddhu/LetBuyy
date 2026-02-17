@@ -26,6 +26,7 @@
 | 15 | [App Store Implementation](./15_App_Store_Implementation.md) | App ecosystem, extensions, billing, developer portal |
 | 16 | [Customer Management](./16_Customer_Management.md) | Customer accounts, auth, wishlists, order history, admin CRM |
 | 17 | [Storefront Landing](./17_Storefront_Landing.md) | Root landing page, store finder, community showcase, platform stats |
+| 18 | [Theme Editor](./18_Theme_Editor.md) | Theme editor UI, section customizer, marketplace integration, standalone themes |
 
 ---
 

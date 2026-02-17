@@ -6,7 +6,7 @@ import { ShoppingBag, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
-import { useState } from 'react';
+import { usePreviewWishlist } from '@/app/theme-preview/urban-kicks/_context/wishlist-context';
 
 interface Props {
     section: SectionModel;
@@ -19,7 +19,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
     const params = useParams();
     const subdomain = params.subdomain as string;
     const { addToCart } = useCart();
-    const [wishlist, setWishlist] = useState<Set<string>>(new Set());
+    const { isInWishlist, toggleWishlist: contextToggleWishlist } = usePreviewWishlist();
 
     const colors = theme || DEFAULT_THEME_SETTINGS;
     const title = settings.title || 'Our Products';
@@ -51,15 +51,10 @@ export default function ProductGrid({ section, products, theme }: Props) {
         addToCart(product);
     };
 
-    const toggleWishlist = (e: React.MouseEvent, productId: string) => {
+    const handleToggleWishlist = (e: React.MouseEvent, productId: string) => {
         e.preventDefault();
         e.stopPropagation();
-        setWishlist(prev => {
-            const next = new Set(prev);
-            if (next.has(productId)) next.delete(productId);
-            else next.add(productId);
-            return next;
-        });
+        contextToggleWishlist(productId);
     };
 
     const getDiscount = (product: ProductModel) => {
@@ -78,7 +73,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                         {title}
                     </h2>
                     <Link
-                        href={`/shop`}
+                        href={`/theme-preview/urban-kicks/shop`}
                         className="text-sm font-semibold hover:underline"
                         style={{ color: colors.secondaryColor }}
                     >
@@ -90,7 +85,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                     {displayProducts.map((product, i) => {
                         const discount = getDiscount(product);
-                        const isWishlisted = wishlist.has(product.id);
+                        const isWishlisted = isInWishlist(product.id);
 
                         return (
                             <motion.div
@@ -124,8 +119,8 @@ export default function ProductGrid({ section, products, theme }: Props) {
                                             )}
                                             {/* Heart icon - uses primaryColor */}
                                             <button
-                                                onClick={(e) => toggleWishlist(e, product.id)}
-                                                className="absolute top-1.5 right-1.5 p-1.5 rounded-full transition-all card-theme"
+                                                onClick={(e) => handleToggleWishlist(e, product.id)}
+                                                className="absolute top-1.5 right-1.5 p-1.5 rounded-full transition-all card-theme z-10"
                                                 style={{
                                                     color: isWishlisted ? colors.primaryColor : colors.primaryColor,
                                                     opacity: isWishlisted ? 1 : undefined

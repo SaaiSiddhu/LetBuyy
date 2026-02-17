@@ -68,11 +68,14 @@ The responsive layout adapts seamlessly from desktop to mobile, with touch-frien
                 },
                 {
                     id: 'testimonials-1', type: 'testimonials', isVisible: true, order: 2,
-                    settings: { title: 'What Our Customers Say', layout: 'carousel' },
+                    settings: { title: 'What Our Customers Say', subtitle: 'Real reviews from real sneakerheads', layout: 'carousel' },
                     blocks: [
-                        { id: 't1', type: 'testimonialCard', order: 0, settings: { name: 'Priya S.', text: 'Amazing quality! Best sneakers I\'ve ever owned.', rating: 5 }, isVisible: true },
-                        { id: 't2', type: 'testimonialCard', order: 1, settings: { name: 'Rahul K.', text: 'Fast delivery and excellent packaging.', rating: 5 }, isVisible: true },
-                        { id: 't3', type: 'testimonialCard', order: 2, settings: { name: 'Ananya M.', text: 'Love the designs! Will definitely order again.', rating: 4 }, isVisible: true },
+                        { id: 't1', type: 'testimonialCard', order: 0, settings: { name: 'Priya S.', text: 'Amazing quality! Best sneakers I\'ve ever owned. The comfort level is unreal and they look even better in person.', rating: 5, product: 'Air Max Pulse' }, isVisible: true },
+                        { id: 't2', type: 'testimonialCard', order: 1, settings: { name: 'Rahul K.', text: 'Fast delivery and excellent packaging. Got my shoes within 2 days and they came in pristine condition. 10/10 experience!', rating: 5, product: 'Retro Court Low' }, isVisible: true },
+                        { id: 't3', type: 'testimonialCard', order: 2, settings: { name: 'Ananya M.', text: 'Love the designs! Will definitely order again. The streetwear collection is fire and prices are super competitive.', rating: 4, product: 'Shadow Runner' }, isVisible: true },
+                        { id: 't4', type: 'testimonialCard', order: 3, settings: { name: 'Vikram D.', text: 'Urban Kicks never misses. Every drop is fresh and the customer support team is incredibly responsive. My go-to store now.', rating: 5, product: 'Boost 350 V2' }, isVisible: true },
+                        { id: 't5', type: 'testimonialCard', order: 4, settings: { name: 'Sneha R.', text: 'Bought matching pairs for me and my partner — the quality is consistent across all their products. Highly recommend!', rating: 5, product: 'Classic Platform' }, isVisible: true },
+                        { id: 't6', type: 'testimonialCard', order: 5, settings: { name: 'Arjun T.', text: 'The attention to detail is insane. From the stitching to the materials, everything screams premium. Worth every rupee.', rating: 5, product: 'NB 990v6' }, isVisible: true },
                     ]
                 }
             ]

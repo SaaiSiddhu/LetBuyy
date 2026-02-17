@@ -4,7 +4,7 @@
 >
 > **Version:** 1.0 | **Date:** February 17, 2026
 >
-> **Prev:** [16 Customer Management](./16_Customer_Management.md) | **Next:** —
+> **Prev:** [16 Customer Management](./16_Customer_Management.md) | **Next:** [18 Theme Editor](./18_Theme_Editor.md)
 
 ---
 

@@ -1,0 +1,82 @@
+{
+    "name": "Category Grid",
+    "type": "categoryGrid",
+    "description": "Visual category cards linking to filtered shop views",
+    "defaults": {
+        "title": "Shop by Category",
+        "subtitle": "Find exactly what you're looking for",
+        "columns": 3,
+        "cardStyle": "overlay"
+    },
+    "presets": [
+        {
+            "name": "3-Column Overlay",
+            "settings": {
+                "title": "Shop by Category",
+                "columns": 3,
+                "cardStyle": "overlay"
+            }
+        },
+        {
+            "name": "4-Column Minimal",
+            "settings": {
+                "title": "Categories",
+                "columns": 4,
+                "cardStyle": "minimal"
+            }
+        }
+    ],
+    "settings_schema": {
+        "title": {
+            "type": "text",
+            "label": "Heading",
+            "maxLength": 60
+        },
+        "subtitle": {
+            "type": "text",
+            "label": "Subheading",
+            "maxLength": 120
+        },
+        "columns": {
+            "type": "range",
+            "label": "Columns",
+            "min": 2,
+            "max": 4,
+            "step": 1
+        },
+        "cardStyle": {
+            "type": "select",
+            "label": "Card Style",
+            "options": [
+                "overlay",
+                "minimal",
+                "bordered"
+            ]
+        }
+    },
+    "blocks_schema": {
+        "category": {
+            "name": "Category Card",
+            "fields": {
+                "name": {
+                    "type": "text",
+                    "label": "Name",
+                    "maxLength": 30
+                },
+                "slug": {
+                    "type": "text",
+                    "label": "Slug"
+                },
+                "image": {
+                    "type": "image",
+                    "label": "Image"
+                },
+                "tagline": {
+                    "type": "text",
+                    "label": "Tagline",
+                    "maxLength": 50
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,74 @@
+{
+    "name": "Brand Marquee",
+    "type": "brandMarquee",
+    "description": "Auto-scrolling horizontal brand logo strip",
+    "defaults": {
+        "title": "Trusted by top brands worldwide",
+        "speed": 25,
+        "pauseOnHover": true,
+        "brands": [
+            "NIKE",
+            "ADIDAS",
+            "PUMA",
+            "JORDAN",
+            "NEW BALANCE",
+            "CONVERSE",
+            "REEBOK",
+            "VANS",
+            "ASICS",
+            "UNDER ARMOUR"
+        ]
+    },
+    "presets": [
+        {
+            "name": "Default Dark",
+            "settings": {
+                "title": "Trusted by top brands worldwide",
+                "speed": 25,
+                "pauseOnHover": true
+            }
+        },
+        {
+            "name": "Fast Scroll",
+            "settings": {
+                "title": "Our Partners",
+                "speed": 15,
+                "pauseOnHover": false
+            }
+        }
+    ],
+    "settings_schema": {
+        "title": {
+            "type": "text",
+            "label": "Heading",
+            "maxLength": 60
+        },
+        "speed": {
+            "type": "range",
+            "label": "Scroll Speed (seconds)",
+            "min": 10,
+            "max": 60,
+            "step": 5
+        },
+        "pauseOnHover": {
+            "type": "toggle",
+            "label": "Pause on Hover"
+        }
+    },
+    "blocks_schema": {
+        "brand": {
+            "name": "Brand",
+            "fields": {
+                "name": {
+                    "type": "text",
+                    "label": "Brand Name",
+                    "maxLength": 30
+                },
+                "logo": {
+                    "type": "image",
+                    "label": "Logo (optional)"
+                }
+            }
+        }
+    }
+}

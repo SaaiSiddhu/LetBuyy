@@ -32,7 +32,7 @@ export default function CartPage() {
     const suggested = MOCK_PRODUCTS.filter(p => !cartIds.has(p.id)).slice(0, 4);
 
     return (
-        <PreviewShell>
+        <PreviewShell hideFooter showWatermark>
             <div className="max-w-screen-xl mx-auto px-4 py-6 md:py-10">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-4">
@@ -235,9 +235,12 @@ export default function CartPage() {
                                 </div>
 
                                 {/* CTA */}
-                                <button className="w-full flex items-center justify-center gap-2 bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-black/90 active:scale-[0.98] transition-all">
+                                <Link
+                                    href="/theme-preview/urban-kicks/checkout"
+                                    className="w-full flex items-center justify-center gap-2 bg-black text-white py-3 rounded-xl text-sm font-semibold hover:bg-black/90 active:scale-[0.98] transition-all"
+                                >
                                     Checkout · {formatPrice(orderTotal)} <ArrowRight size={14} />
-                                </button>
+                                </Link>
 
                                 {/* Trust */}
                                 <div className="grid grid-cols-3 gap-1 pt-2">
@@ -315,18 +318,6 @@ export default function CartPage() {
                 )}
             </div>
 
-            {/* ═══ Mobile Sticky Checkout Bar ═══ */}
-            {items.length > 0 && (
-                <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex items-center justify-between z-50 lg:hidden">
-                    <div>
-                        <p className="text-[10px] text-gray-400 uppercase tracking-wider">Total</p>
-                        <p className="font-bold text-base">{formatPrice(orderTotal)}</p>
-                    </div>
-                    <button className="flex items-center gap-2 bg-black text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:bg-black/90 transition-colors">
-                        Checkout <ArrowRight size={14} />
-                    </button>
-                </div>
-            )}
         </PreviewShell>
     );
 }

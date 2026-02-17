@@ -3,6 +3,7 @@
 import PreviewShell from '../components/preview-shell';
 import { MOCK_PRODUCTS, formatPrice } from '../lib/mock-data';
 import { useCart } from '@/context/cart-context';
+import { usePreviewWishlist } from '../context/wishlist-context';
 import { useState, useMemo } from 'react';
 import {
     ChevronRight, Heart, Share2, Star, ShoppingBag, Minus, Plus,
@@ -23,6 +24,21 @@ const REVIEWS = [
     { name: 'Priya S.', rating: 4, date: '1 month ago', text: 'Great quality for the price. Shipping was fast. Would buy again!', verified: true },
     { name: 'Rahul K.', rating: 5, date: '1 month ago', text: 'These are my new daily drivers. Super comfy and the colorway is clean.', verified: false },
 ];
+
+function WishlistButton({ productId }: { productId: string }) {
+    const { isInWishlist, toggleWishlist } = usePreviewWishlist();
+    const inList = isInWishlist(productId);
+    return (
+        <button
+            onClick={() => toggleWishlist(productId)}
+            className={`flex items-center gap-2 px-4 py-2.5 border rounded-xl text-sm font-medium transition-colors ${inList ? 'border-red-200 bg-red-50 text-red-600' : 'border-gray-200 hover:bg-gray-50'
+                }`}
+        >
+            <Heart size={16} className={inList ? 'fill-red-500 text-red-500' : ''} />
+            {inList ? 'Wishlisted' : 'Wishlist'}
+        </button>
+    );
+}
 
 interface ProductDetailPageProps {
     productId: string;
@@ -164,7 +180,7 @@ export default function ProductDetailPage({ productId }: ProductDetailPageProps)
 
                         {/* Action buttons */}
                         <div className="flex gap-2 mb-6">
-                            <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"><Heart size={16} /> Wishlist</button>
+                            <WishlistButton productId={product.id} />
                             <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-medium hover:bg-gray-50 transition-colors"><Share2 size={16} /> Share</button>
                         </div>
 

@@ -5,6 +5,9 @@ import HeroSection from '@/components/sections/hero';
 import ProductGrid from '@/components/sections/product-grid';
 import TestimonialsSection from '@/components/sections/testimonials';
 import NewsletterSection from '@/components/sections/newsletter';
+import CategorySection from './_components/category-section';
+import BrandMarquee from './_components/brand-marquee';
+import TrustFeatures from './_components/trust-features';
 import { SectionModel } from '@/types/store';
 import PreviewShell from './_components/preview-shell';
 import { MOCK_PRODUCTS } from './_lib/mock-data';
@@ -28,20 +31,25 @@ export default function UrbanKicksPreview() {
                         );
                     case 'productGrid':
                         return (
-                            <ProductGrid
-                                key={section.id}
-                                section={section}
-                                products={MOCK_PRODUCTS.slice(0, 6)}
-                                theme={themeSettings}
-                            />
+                            <div key={section.id}>
+                                <ProductGrid
+                                    section={section}
+                                    products={MOCK_PRODUCTS.slice(0, 6)}
+                                    theme={themeSettings}
+                                />
+                                <CategorySection />
+                                <BrandMarquee />
+                            </div>
                         );
                     case 'testimonials':
                         return (
-                            <TestimonialsSection
-                                key={section.id}
-                                section={section}
-                                theme={themeSettings}
-                            />
+                            <div key={section.id}>
+                                <TestimonialsSection
+                                    section={section}
+                                    theme={themeSettings}
+                                />
+                                <TrustFeatures />
+                            </div>
                         );
                     case 'newsletter':
                         return (

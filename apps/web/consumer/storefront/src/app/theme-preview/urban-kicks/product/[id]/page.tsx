@@ -1,15 +1,16 @@
 'use client';
 
 import PreviewShell from '../../_components/preview-shell';
-import { MOCK_PRODUCTS, formatPrice } from '../../_lib/mock-data';
+import { MOCK_PRODUCTS, BRAND_GALLERY, formatPrice } from '../../_lib/mock-data';
 import { useCart } from '@/context/cart-context';
-import { useParams } from 'next/navigation';
+import { usePreviewWishlist } from '../../_context/wishlist-context';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import {
     ChevronRight, Star, Heart, ShoppingBag, Truck, Shield, RotateCcw,
     Minus, Plus, Share2, Check, Sparkles, ChevronDown, Ruler, Package,
-    Info, MessageSquare
+    Info, MessageSquare, Zap, Leaf, Gem, Play, Pause, Image as ImageIcon
 } from 'lucide-react';
 
 const SIZES_MAP: Record<string, string[]> = {
@@ -32,14 +33,22 @@ export default function ProductDetailPage() {
     const productId = params.id as string;
     const product = MOCK_PRODUCTS.find(p => p.id === productId);
     const { addToCart } = useCart();
+    const router = useRouter();
+    const { isInWishlist, toggleWishlist } = usePreviewWishlist();
 
     const [selectedSize, setSelectedSize] = useState<string | null>(null);
     const [selectedColor, setSelectedColor] = useState(COLORS[0].name);
     const [quantity, setQuantity] = useState(1);
-    const [wishlisted, setWishlisted] = useState(false);
+    const wishlisted = product ? isInWishlist(product.id) : false;
     const [activeTab, setActiveTab] = useState<TabKey>('details');
     const [addedToCart, setAddedToCart] = useState(false);
     const [mainImage, setMainImage] = useState(0);
+    const [toast, setToast] = useState<string | null>(null);
+    const [isVideoPlaying, setIsVideoPlaying] = useState(false);
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    const FEATURE_ICONS: Record<string, typeof Zap> = { Zap, Shield, Leaf, Gem };
+    const gallery = product ? BRAND_GALLERY[product.category ?? ''] : null;
 
     const sizes = product ? SIZES_MAP[product.category ?? ''] || ['One Size'] : [];
     const discount = product?.compareAtPrice
@@ -60,6 +69,11 @@ export default function ProductDetailPage() {
 
     const handleAddToCart = () => {
         if (!product) return;
+        if (sizes.length > 1 && !selectedSize) {
+            setToast('Please select a size before adding to cart');
+            setTimeout(() => setToast(null), 3000);
+            return;
+        }
         for (let i = 0; i < quantity; i++) {
             addToCart(product);
         }
@@ -67,9 +81,22 @@ export default function ProductDetailPage() {
         setTimeout(() => setAddedToCart(false), 2000);
     };
 
+    const handleBuyNow = () => {
+        if (!product) return;
+        if (sizes.length > 1 && !selectedSize) {
+            setToast('Please select a size before buying');
+            setTimeout(() => setToast(null), 3000);
+            return;
+        }
+        for (let i = 0; i < quantity; i++) {
+            addToCart(product);
+        }
+        router.push('/theme-preview/urban-kicks/checkout');
+    };
+
     if (!product) {
         return (
-            <PreviewShell>
+            <PreviewShell hideFooter showWatermark>
                 <div className="max-w-screen-xl mx-auto px-4 py-20 text-center">
                     <ShoppingBag size={48} className="mx-auto text-gray-300 mb-4" />
                     <h1 className="text-xl font-bold mb-2">Product not found</h1>
@@ -93,7 +120,7 @@ export default function ProductDetailPage() {
     ];
 
     return (
-        <PreviewShell>
+        <PreviewShell hideFooter showWatermark>
             <div className="max-w-screen-xl mx-auto px-4 py-6 md:py-10">
                 {/* Breadcrumb */}
                 <nav className="flex items-center gap-1.5 text-xs text-gray-400 mb-6">
@@ -272,31 +299,38 @@ export default function ProductDetailPage() {
                         </div>
 
                         {/* CTA Buttons */}
-                        <div className="flex gap-3 pt-1">
+                        <div className="space-y-2.5 pt-1">
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={handleAddToCart}
+                                    className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold border-2 transition-all active:scale-[0.98] ${addedToCart
+                                        ? 'bg-green-600 text-white border-green-600'
+                                        : sizes.length > 1 && !selectedSize
+                                            ? 'bg-gray-100 text-gray-400 border-gray-200'
+                                            : 'bg-white text-black border-black hover:bg-gray-50'
+                                        }`}
+                                >
+                                    {addedToCart ? (
+                                        <><Check size={16} /> Added to Cart</>
+                                    ) : (
+                                        <><ShoppingBag size={16} /> Add to Cart</>
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => product && toggleWishlist(product.id)}
+                                    className={`w-14 flex items-center justify-center rounded-xl border-2 transition-all ${wishlisted
+                                        ? 'border-red-200 bg-red-50 text-red-500'
+                                        : 'border-gray-200 hover:border-black text-gray-600'
+                                        }`}
+                                >
+                                    <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
+                                </button>
+                            </div>
                             <button
-                                onClick={handleAddToCart}
-                                disabled={sizes.length > 1 && !selectedSize}
-                                className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] ${addedToCart
-                                    ? 'bg-green-600 text-white'
-                                    : sizes.length > 1 && !selectedSize
-                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                                        : 'bg-black text-white hover:bg-black/90'
-                                    }`}
+                                onClick={handleBuyNow}
+                                className={`w-full flex items-center justify-center gap-2 py-3.5 rounded-xl text-sm font-semibold transition-all active:scale-[0.98] bg-black text-white hover:bg-black/90`}
                             >
-                                {addedToCart ? (
-                                    <><Check size={16} /> Added to Cart</>
-                                ) : (
-                                    <><ShoppingBag size={16} /> Add to Cart · {formatPrice(product.price * quantity)}</>
-                                )}
-                            </button>
-                            <button
-                                onClick={() => setWishlisted(!wishlisted)}
-                                className={`w-14 flex items-center justify-center rounded-xl border transition-all ${wishlisted
-                                    ? 'border-red-200 bg-red-50 text-red-500'
-                                    : 'border-gray-200 hover:border-black text-gray-600'
-                                    }`}
-                            >
-                                <Heart size={18} fill={wishlisted ? 'currentColor' : 'none'} />
+                                Buy Now · {formatPrice(product.price * quantity)}
                             </button>
                         </div>
 
@@ -317,22 +351,170 @@ export default function ProductDetailPage() {
                     </div>
                 </div>
 
+                {/* ═══ Brand Gallery / Storytelling Section ═══ */}
+                {gallery && (
+                    <div className="mt-14 space-y-10">
+
+                        {/* ── Section Header ── */}
+                        <div className="text-center">
+                            <p className="text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase mb-2">From the Brand</p>
+                            <h2 className="text-xl sm:text-2xl font-black tracking-tight">The Story Behind the Product</h2>
+                        </div>
+
+                        {/* ── 1. Hero Lifestyle Banner ── */}
+                        <div className="relative rounded-2xl overflow-hidden aspect-[16/9] sm:aspect-[21/9] group">
+                            <img
+                                src={gallery.heroBanner.image}
+                                alt={gallery.heroBanner.title}
+                                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+                            <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-8">
+                                <h3 className="text-white text-lg sm:text-2xl font-black tracking-wider mb-1">
+                                    {gallery.heroBanner.title}
+                                </h3>
+                                <p className="text-white/70 text-xs sm:text-sm max-w-md">
+                                    {gallery.heroBanner.subtitle}
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* ── 2. Feature Highlights Grid ── */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            {gallery.features.map((feat, i) => {
+                                const FeatureIcon = FEATURE_ICONS[feat.icon] || Zap;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="bg-gray-50 rounded-2xl p-4 sm:p-5 text-center hover:bg-gray-100 transition-colors group/feat"
+                                    >
+                                        <div className="w-10 h-10 mx-auto mb-3 bg-black rounded-xl flex items-center justify-center group-hover/feat:scale-110 transition-transform">
+                                            <FeatureIcon size={18} className="text-white" />
+                                        </div>
+                                        <p className="text-xs sm:text-sm font-bold mb-0.5">{feat.title}</p>
+                                        <p className="text-[10px] sm:text-xs text-gray-400 leading-relaxed">{feat.description}</p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* ── 3. Split Content Panels ── */}
+                        <div className="space-y-6">
+                            {gallery.splitPanels.map((panel, i) => (
+                                <div
+                                    key={i}
+                                    className={`flex flex-col ${i % 2 === 0 ? 'sm:flex-row' : 'sm:flex-row-reverse'} gap-5 items-center`}
+                                >
+                                    <div className="w-full sm:w-1/2 aspect-[4/3] rounded-2xl overflow-hidden">
+                                        <img
+                                            src={panel.image}
+                                            alt={panel.title}
+                                            className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                                        />
+                                    </div>
+                                    <div className="w-full sm:w-1/2 px-1 sm:px-6">
+                                        <h4 className="text-base sm:text-lg font-bold mb-2">{panel.title}</h4>
+                                        <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{panel.description}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* ── 4. Video Player ── */}
+                        {gallery.video && (
+                            <div className="relative rounded-2xl overflow-hidden aspect-video bg-black shadow-xl">
+                                {!isVideoPlaying ? (
+                                    <>
+                                        <img
+                                            src={gallery.video.thumbnail}
+                                            alt={gallery.video.title}
+                                            className="w-full h-full object-cover opacity-80"
+                                        />
+                                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+                                            <button
+                                                onClick={() => {
+                                                    setIsVideoPlaying(true);
+                                                    setTimeout(() => videoRef.current?.play(), 100);
+                                                }}
+                                                className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center border border-white/30 hover:bg-white/30 transition-all hover:scale-110 active:scale-95"
+                                            >
+                                                <Play size={28} className="text-white ml-1" fill="white" />
+                                            </button>
+                                            <p className="text-white/80 text-xs sm:text-sm font-medium">{gallery.video.title}</p>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <div className="relative w-full h-full">
+                                        <video
+                                            ref={videoRef}
+                                            src={gallery.video.url}
+                                            className="w-full h-full object-cover"
+                                            controls
+                                            onEnded={() => setIsVideoPlaying(false)}
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                videoRef.current?.pause();
+                                                setIsVideoPlaying(false);
+                                            }}
+                                            className="absolute top-3 right-3 w-8 h-8 bg-black/60 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-black/80 transition-colors"
+                                        >
+                                            <Pause size={14} />
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* ── 5. Image Showcase Grid (Bento) ── */}
+                        {gallery.showcaseImages.length > 0 && (
+                            <div>
+                                <div className="flex items-center gap-2 mb-4">
+                                    <ImageIcon size={16} className="text-gray-400" />
+                                    <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Gallery</p>
+                                </div>
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 auto-rows-[160px] sm:auto-rows-[200px]">
+                                    {gallery.showcaseImages.map((img, i) => {
+                                        // Bento: first and last images span 2 rows on desktop
+                                        const isLarge = i === 0 || i === gallery.showcaseImages.length - 1;
+                                        return (
+                                            <div
+                                                key={i}
+                                                className={`rounded-2xl overflow-hidden ${isLarge ? 'sm:col-span-2 sm:row-span-2' : ''} ${i === 0 ? 'col-span-2 sm:col-span-2' : ''}`}
+                                            >
+                                                <img
+                                                    src={img}
+                                                    alt={`Showcase ${i + 1}`}
+                                                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-500 cursor-pointer"
+                                                />
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                    </div>
+                )}
+
                 {/* ═══ Tabs Section ═══ */}
                 <div className="mt-12 border-t border-gray-100 pt-8">
                     {/* Tab Bar */}
-                    <div className="flex overflow-x-auto border-b border-gray-200 mb-6 -mx-4 px-4">
+                    <div className="bg-gray-100 rounded-2xl p-1 grid grid-cols-2 sm:grid-cols-4 gap-1 mb-6">
                         {TABS.map(tab => {
                             const Icon = tab.icon;
+                            const active = activeTab === tab.key;
                             return (
                                 <button
                                     key={tab.key}
                                     onClick={() => setActiveTab(tab.key)}
-                                    className={`flex items-center gap-1.5 px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${activeTab === tab.key
-                                        ? 'border-black text-black'
-                                        : 'border-transparent text-gray-400 hover:text-gray-700'
+                                    className={`relative flex items-center justify-center gap-1 sm:gap-1.5 px-1.5 py-2.5 text-[11px] sm:text-xs font-semibold rounded-xl transition-all duration-200 ${active
+                                        ? 'bg-black text-white shadow-md'
+                                        : 'text-gray-500 hover:text-black hover:bg-white/60'
                                         }`}
                                 >
-                                    <Icon size={14} /> {tab.label}
+                                    <Icon size={13} className="flex-shrink-0" />
+                                    <span className="truncate">{tab.label}</span>
                                 </button>
                             );
                         })}
@@ -567,25 +749,20 @@ export default function ProductDetailPage() {
                 )}
             </div>
 
-            {/* ═══ Mobile Sticky Add to Cart ═══ */}
-            <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-3 flex items-center justify-between z-50 lg:hidden">
-                <div>
-                    <p className="font-bold text-base">{formatPrice(product.price * quantity)}</p>
-                    {selectedSize && <p className="text-[10px] text-gray-400">{selectedColor} · {selectedSize}</p>}
+
+
+            {/* Toast Snackbar */}
+            {toast && (
+                <div className="fixed top-20 left-1/2 z-[60]" style={{ transform: 'translateX(-50%)', animation: 'toastSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards' }}>
+                    <div className="bg-gray-900 text-white text-sm font-medium px-5 py-3 rounded-xl shadow-2xl flex items-center gap-2.5 whitespace-nowrap">
+                        <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M12 3l9.66 16.59A1 1 0 0120.16 21H3.84a1 1 0 01-.86-1.41L12 3z" />
+                        </svg>
+                        {toast}
+                    </div>
                 </div>
-                <button
-                    onClick={handleAddToCart}
-                    disabled={sizes.length > 1 && !selectedSize}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold transition-all ${addedToCart
-                        ? 'bg-green-600 text-white'
-                        : sizes.length > 1 && !selectedSize
-                            ? 'bg-gray-200 text-gray-400'
-                            : 'bg-black text-white'
-                        }`}
-                >
-                    {addedToCart ? <><Check size={14} /> Added</> : <><ShoppingBag size={14} /> Add to Cart</>}
-                </button>
-            </div>
+            )}
+            <style>{`@keyframes toastSlideDown { from { opacity: 0; transform: translateX(-50%) translateY(-24px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }`}</style>
         </PreviewShell>
     );
 }

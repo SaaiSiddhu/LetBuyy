@@ -20,6 +20,8 @@ export type SectionType =
     | 'faqAccordion'
     | 'videoHero'
     | 'trustBadges'
+    | 'categoryGrid'
+    | 'brandMarquee'
     // Portfolio sections
     | 'portfolioGrid'
     | 'servicesGrid'

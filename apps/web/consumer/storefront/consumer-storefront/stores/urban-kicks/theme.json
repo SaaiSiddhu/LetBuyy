@@ -96,12 +96,17 @@
             "cta",
             "banner_carousel",
             "trust_badges",
+            "category_grid",
+            "brand_marquee",
             "faq"
         ],
         "default_order": [
             "hero",
+            "brand_marquee",
             "product_grid",
+            "category_grid",
             "testimonials",
+            "trust_badges",
             "newsletter"
         ]
     },

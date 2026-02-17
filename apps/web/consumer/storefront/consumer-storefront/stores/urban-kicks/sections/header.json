@@ -1,0 +1,100 @@
+{
+    "name": "Header",
+    "type": "header",
+    "description": "Sticky site header with logo, navigation, search, and cart icons",
+    "defaults": {
+        "behavior": "sticky",
+        "logoPlacement": "left",
+        "displayMode": "name",
+        "navPlacement": "right",
+        "showSearch": true,
+        "showCart": true,
+        "showAccount": false,
+        "navPages": [
+            {
+                "id": "home",
+                "label": "Home",
+                "href": "/",
+                "isVisible": true
+            },
+            {
+                "id": "shop",
+                "label": "Shop",
+                "href": "/shop",
+                "isVisible": true
+            },
+            {
+                "id": "new-arrivals",
+                "label": "New Arrivals",
+                "href": "/new-arrivals",
+                "isVisible": true
+            },
+            {
+                "id": "track-order",
+                "label": "Track Order",
+                "href": "/track-order",
+                "isVisible": true
+            }
+        ]
+    },
+    "settings_schema": {
+        "behavior": {
+            "type": "select",
+            "label": "Header Behavior",
+            "options": [
+                "sticky",
+                "scroll",
+                "hide-on-scroll"
+            ]
+        },
+        "logoPlacement": {
+            "type": "select",
+            "label": "Logo Position",
+            "options": [
+                "left",
+                "center"
+            ]
+        },
+        "displayMode": {
+            "type": "select",
+            "label": "Display Mode",
+            "options": [
+                "logo",
+                "name",
+                "both"
+            ]
+        },
+        "showSearch": {
+            "type": "toggle",
+            "label": "Show Search Icon"
+        },
+        "showCart": {
+            "type": "toggle",
+            "label": "Show Cart Icon"
+        },
+        "showAccount": {
+            "type": "toggle",
+            "label": "Show Account Icon"
+        }
+    },
+    "blocks_schema": {
+        "navPage": {
+            "name": "Navigation Link",
+            "fields": {
+                "label": {
+                    "type": "text",
+                    "label": "Label",
+                    "maxLength": 30
+                },
+                "href": {
+                    "type": "url",
+                    "label": "URL"
+                },
+                "isVisible": {
+                    "type": "toggle",
+                    "label": "Visible"
+                }
+            }
+        }
+    }
+}

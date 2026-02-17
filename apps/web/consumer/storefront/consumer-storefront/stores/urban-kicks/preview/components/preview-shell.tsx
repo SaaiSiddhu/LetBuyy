@@ -2,6 +2,8 @@
 
 import { urbanKicks } from '@/lib/themes/store/urban-kicks';
 import { useCart } from '@/context/cart-context';
+import { usePreviewWishlist, PreviewWishlistProvider } from '../context/wishlist-context';
+import SearchOverlay from './search-overlay';
 import {
     Search, ShoppingCart, User, Menu, X, Heart, Package,
     ChevronRight, Mail, Lock, Eye, EyeOff, ArrowLeft
@@ -187,17 +189,14 @@ function AuthBottomSheet({ open, onClose }: { open: boolean; onClose: () => void
     );
 }
 
-// ============= PREVIEW SHELL =============
+// ============= INNER SHELL (needs context) =============
 
-interface PreviewShellProps {
-    children: React.ReactNode;
-    hideFooter?: boolean;
-}
-
-export default function PreviewShell({ children, hideFooter }: PreviewShellProps) {
+function InnerShell({ children, hideFooter }: { children: React.ReactNode; hideFooter?: boolean }) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [authOpen, setAuthOpen] = useState(false);
+    const [searchOpen, setSearchOpen] = useState(false);
     const { cartCount } = useCart();
+    const { count: wishlistCount } = usePreviewWishlist();
     const pathname = usePathname();
 
     const isActive = (href: string) => pathname === href;
@@ -208,6 +207,9 @@ export default function PreviewShell({ children, hideFooter }: PreviewShellProps
 
             {/* ===== AUTH BOTTOM SHEET ===== */}
             <AuthBottomSheet open={authOpen} onClose={() => setAuthOpen(false)} />
+
+            {/* ===== SEARCH OVERLAY ===== */}
+            <SearchOverlay open={searchOpen} onClose={() => setSearchOpen(false)} />
 
             {/* ===== SIDEBAR / DRAWER ===== */}
             {sidebarOpen && (
@@ -248,12 +250,17 @@ export default function PreviewShell({ children, hideFooter }: PreviewShellProps
                         Login / Sign Up
                     </button>
                     <Link
-                        href="/theme-preview/urban-kicks/cart"
+                        href="/theme-preview/urban-kicks/wishlist"
                         onClick={() => setSidebarOpen(false)}
                         className="flex items-center gap-3 py-3 px-3 rounded-lg text-sm font-medium hover:bg-black/5 transition-colors"
                     >
                         <Heart size={18} className="opacity-60" />
                         Wishlist
+                        {wishlistCount > 0 && (
+                            <span className="ml-auto w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                                {wishlistCount > 9 ? '9+' : wishlistCount}
+                            </span>
+                        )}
                     </Link>
                     <Link
                         href="/theme-preview/urban-kicks/track-order"
@@ -307,9 +314,25 @@ export default function PreviewShell({ children, hideFooter }: PreviewShellProps
 
                         {/* Right: Icons */}
                         <div className="flex items-center gap-1" style={{ color: 'var(--text)' }}>
-                            <button className="p-2 rounded-lg hover:bg-black/5 transition-colors" aria-label="Search">
+                            <button
+                                onClick={() => setSearchOpen(true)}
+                                className="p-2 rounded-lg hover:bg-black/5 transition-colors"
+                                aria-label="Search"
+                            >
                                 <Search size={20} />
                             </button>
+                            <Link
+                                href="/theme-preview/urban-kicks/wishlist"
+                                className="p-2 rounded-lg hover:bg-black/5 transition-colors relative hidden sm:block"
+                                aria-label="Wishlist"
+                            >
+                                <Heart size={20} />
+                                {wishlistCount > 0 && (
+                                    <span className="absolute -top-0.5 -right-0.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">
+                                        {wishlistCount > 9 ? '9+' : wishlistCount}
+                                    </span>
+                                )}
+                            </Link>
                             <button
                                 onClick={() => setAuthOpen(true)}
                                 className="p-2 rounded-lg hover:bg-black/5 transition-colors hidden sm:block"
@@ -382,5 +405,20 @@ export default function PreviewShell({ children, hideFooter }: PreviewShellProps
                 )}
             </div>
         </>
+    );
+}
+
+// ============= PREVIEW SHELL (wraps with providers) =============
+
+interface PreviewShellProps {
+    children: React.ReactNode;
+    hideFooter?: boolean;
+}
+
+export default function PreviewShell({ children, hideFooter }: PreviewShellProps) {
+    return (
+        <PreviewWishlistProvider>
+            <InnerShell hideFooter={hideFooter}>{children}</InnerShell>
+        </PreviewWishlistProvider>
     );
 }
