@@ -1,10 +1,10 @@
 # LetBuyy App Store — Complete Implementation
 
-> **Doc 15 of 15** | App Ecosystem, Extensions, Billing, Developer Portal & Marketplace
+> **Doc 15 of 17** | App Ecosystem, Extensions, Billing, Developer Portal & Marketplace
 >
 > **Version:** 1.0 | **Date:** February 16, 2026
 >
-> **Prev:** [14 Theme Implementation](./14_Theme_Implementation.md)
+> **Prev:** [14 Theme Implementation](./14_Theme_Implementation.md) | **Next:** [16 Customer Management](./16_Customer_Management.md)
 
 ---
 

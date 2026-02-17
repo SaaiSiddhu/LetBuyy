@@ -1,0 +1,235 @@
+/* ============================================================
+   URBAN KICKS — Base Theme CSS
+   A bold, minimal streetwear theme for LetBuyy storefronts.
+   Uses CSS custom properties from the storefront layout engine.
+   ============================================================ */
+
+/* ===== GLOBAL TYPOGRAPHY ===== */
+
+h1,
+h2,
+h3 {
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+}
+
+h1 {
+    font-weight: 800;
+    font-size: clamp(2rem, 5vw, 4rem);
+}
+
+h2 {
+    font-weight: 700;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+h3 {
+    font-weight: 600;
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+}
+
+/* ===== HERO OVERRIDES ===== */
+
+.hero-section,
+section:first-of-type {
+    position: relative;
+}
+
+.hero-section h1 {
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+}
+
+/* ===== PRODUCT CARDS ===== */
+
+.product-card,
+.card-theme {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    overflow: hidden;
+}
+
+.product-card:hover,
+.card-theme:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.15);
+}
+
+/* Product image zoom on hover */
+.product-card img,
+.card-theme img {
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.product-card:hover img,
+.card-theme:hover img {
+    transform: scale(1.08);
+}
+
+/* Category label styling */
+.product-card .text-\[9px\] {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+}
+
+/* ===== BUTTONS ===== */
+
+button,
+[role="button"],
+.btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+/* Primary CTA style */
+.btn-primary,
+a>button {
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary::after,
+a>button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+    pointer-events: none;
+}
+
+/* ===== SECTION SPACING ===== */
+
+section {
+    scroll-margin-top: 80px;
+}
+
+/* ===== TESTIMONIALS ===== */
+
+.testimonial-card {
+    border-left: 3px solid var(--primary);
+    padding-left: 1.25rem;
+}
+
+/* ===== NEWSLETTER ===== */
+
+input[type="email"] {
+    border: 2px solid var(--border-color);
+    transition: border-color 0.2s ease;
+}
+
+input[type="email"]:focus {
+    border-color: var(--primary);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+
+/* ===== SCROLLBAR (for dark surfaces) ===== */
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.35);
+}
+
+/* ===== SELECTION ===== */
+
+::selection {
+    background: var(--primary);
+    color: var(--secondary, #fff);
+}
+
+/* ===== SMOOTH SCROLL ===== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+/* ===== RESPONSIVE REFINEMENTS ===== */
+
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+    }
+
+    h2 {
+        font-size: 1.5rem;
+    }
+
+    .product-card:hover {
+        transform: none;
+    }
+}
+
+/* ===== BADGE STYLES ===== */
+
+.badge-new,
+.badge-trending,
+.badge-sale {
+    display: inline-flex;
+    align-items: center;
+    padding: 2px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-radius: 4px;
+}
+
+.badge-new {
+    background: var(--primary);
+    color: var(--secondary, #fff);
+}
+
+.badge-trending {
+    background: var(--accent);
+    color: var(--text);
+}
+
+.badge-sale {
+    background: #E11D48;
+    color: #fff;
+}
+
+/* ===== LOADING SKELETON ===== */
+
+.skeleton {
+    background: linear-gradient(90deg,
+            var(--surface) 25%,
+            var(--surface-hover, rgba(0, 0, 0, 0.08)) 50%,
+            var(--surface) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+    border-radius: var(--radius);
+}
+
+@keyframes skeleton-pulse {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}

@@ -1,6 +1,6 @@
 # LetBuyy Platform — Overview
 
-> **Doc 00 of 15** | Platform Vision, Domain Structure, Tech Stack, AI Engine, Onboarding & Site Types
+> **Doc 00 of 17** | Platform Vision, Domain Structure, Tech Stack, AI Engine, Onboarding & Site Types
 >
 > **Version:** 7.0 | **Date:** February 14, 2026
 >
@@ -1142,6 +1142,6 @@ CREATE POLICY "Users can only access products in their stores"
 ---
 
 > **→ Next:** [01 Architecture](./01_Architecture.md)
-> **→ Full doc series:** 00_Overview → 01_Architecture → 02_Auth → 03_Onboarding → 04_Admin → 05_Ecommerce → 06_Portfolio → 07_AI → 08_Database → 09_API → 10_Storefront → 11_SuperAdmin → 12_Roadmap → 13_Plans → 14_Themes → 15_AppStore
+> **→ Full doc series:** 00_Overview → 01_Architecture → 02_Auth → 03_Onboarding → 04_Admin → 05_Ecommerce → 06_Portfolio → 07_AI → 08_Database → 09_API → 10_Storefront → 11_SuperAdmin → 12_Roadmap → 13_Plans → 14_Themes → 15_AppStore → 16_Customers
 >
-> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md)
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) · [16 Customer Management](./16_Customer_Management.md)

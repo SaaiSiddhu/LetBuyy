@@ -1,6 +1,6 @@
 # LetBuyy Platform — Database Schema
 
-> **Doc 08 of 15** | Complete Supabase PostgreSQL Schema — Tables, RLS Policies, Functions, Triggers & Migrations
+> **Doc 08 of 17** | Complete Supabase PostgreSQL Schema — Tables, RLS Policies, Functions, Triggers & Migrations
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -3031,7 +3031,7 @@ INSERT INTO themes (name, slug, site_type, category, is_premium) VALUES
 
 > **Next:** [09 API Reference](./09_API_Reference.md) — Complete REST API documentation
 
-> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) — Additional schema defined in these docs
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) · [16 Customer Management](./16_Customer_Management.md) — Additional schema defined in these docs
 
 ---
 

@@ -1,0 +1,101 @@
+{
+    "name": "Hero Banner",
+    "type": "heroBanner",
+    "description": "Full-screen hero section with cinematic overlay and centered text",
+    "defaults": {
+        "heading": "Streetwear 2026",
+        "subheading": "The future of fashion is here.",
+        "ctaText": "Shop New Arrivals",
+        "ctaLink": "#products",
+        "image": "https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2000",
+        "overlay": 0.4,
+        "height": "full",
+        "textAlign": "center"
+    },
+    "presets": [
+        {
+            "name": "Centered Hero",
+            "settings": {
+                "heading": "Streetwear 2026",
+                "subheading": "The future of fashion is here.",
+                "ctaText": "Shop New Arrivals",
+                "overlay": 0.4,
+                "height": "full",
+                "textAlign": "center"
+            }
+        },
+        {
+            "name": "Left-Aligned Hero",
+            "settings": {
+                "heading": "New Season",
+                "subheading": "Explore the latest drops from top brands.",
+                "ctaText": "Browse Collection",
+                "overlay": 0.5,
+                "height": "large",
+                "textAlign": "left"
+            }
+        },
+        {
+            "name": "Minimal Hero",
+            "settings": {
+                "heading": "URBAN KICKS",
+                "subheading": "Premium streetwear delivered to your door.",
+                "ctaText": "Shop Now",
+                "overlay": 0.6,
+                "height": "medium",
+                "textAlign": "center"
+            }
+        }
+    ],
+    "settings_schema": {
+        "heading": {
+            "type": "text",
+            "label": "Heading",
+            "maxLength": 100
+        },
+        "subheading": {
+            "type": "text",
+            "label": "Subheading",
+            "maxLength": 200
+        },
+        "ctaText": {
+            "type": "text",
+            "label": "Button Text",
+            "maxLength": 40
+        },
+        "ctaLink": {
+            "type": "url",
+            "label": "Button Link"
+        },
+        "image": {
+            "type": "image",
+            "label": "Background Image"
+        },
+        "overlay": {
+            "type": "range",
+            "label": "Overlay Opacity",
+            "min": 0,
+            "max": 1,
+            "step": 0.1
+        },
+        "height": {
+            "type": "select",
+            "label": "Height",
+            "options": [
+                "full",
+                "large",
+                "medium",
+                "small"
+            ]
+        },
+        "textAlign": {
+            "type": "select",
+            "label": "Text Alignment",
+            "options": [
+                "left",
+                "center",
+                "right"
+            ]
+        }
+    }
+}

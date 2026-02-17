@@ -1,54 +1,30 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/supabase';
-import { DEFAULT_THEME_SETTINGS } from '@/types/store';
+import { urbanKicks } from '@/lib/themes/store/urban-kicks';
 
+/**
+ * GET /api/seed — Seeds the Urban Kicks demo store
+ * Uses the theme entry's demoConfig for full-fidelity seeding.
+ */
 export async function GET() {
     try {
+        const demo = urbanKicks.demoConfig;
+
         const demoStore = {
-            name: 'Urban Kicks Demo',
+            name: demo.name,
             store_name: 'urban-kicks-demo',
-            subdomain: 'demo',
-            site_type: 'store',
-            status: 'published',
-            theme_id: 'modern',
-            theme_settings: {
-                ...DEFAULT_THEME_SETTINGS,
-                primaryColor: '#EC4899',
-                secondaryColor: '#8B5CF6',
-            },
+            subdomain: demo.subdomain,
+            tagline: demo.tagline,
+            site_type: demo.siteType,
+            status: demo.status,
+            theme_id: demo.themeId,
+            selected_product_ids: demo.selectedProductIds,
+            payment_gateways: demo.paymentGateways,
             template_config: {
-                themeId: 'modern',
-                themeSettings: {
-                    ...DEFAULT_THEME_SETTINGS,
-                    primaryColor: '#EC4899',
-                    secondaryColor: '#8B5CF6',
-                },
-                sections: [
-                    {
-                        id: 'hero-1',
-                        type: 'heroBanner',
-                        isVisible: true,
-                        order: 0,
-                        settings: {
-                            heading: 'Summer Collection',
-                            subheading: 'Up to 50% Off',
-                            ctaText: 'Shop Now',
-                            image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2000',
-                            overlay: 0.4,
-                        }
-                    },
-                    {
-                        id: 'grid-1',
-                        type: 'productGrid',
-                        isVisible: true,
-                        order: 1,
-                        settings: {
-                            title: 'Featured Products',
-                            columns: 4,
-                        }
-                    }
-                ]
-            }
+                themeId: demo.templateConfig.themeId,
+                themeSettings: demo.templateConfig.themeSettings,
+                sections: demo.templateConfig.sections,
+            },
         };
 
         const { data, error } = await db
@@ -58,12 +34,29 @@ export async function GET() {
             .single();
 
         if (error) {
-            return NextResponse.json({ success: false, error: error.message }, { status: 500 });
+            return NextResponse.json(
+                { success: false, error: error.message },
+                { status: 500 }
+            );
         }
 
-        return NextResponse.json({ success: true, message: 'Demo store seeded', store: data });
+        return NextResponse.json({
+            success: true,
+            message: 'Urban Kicks demo store seeded successfully',
+            store: data,
+            theme: {
+                name: urbanKicks.name,
+                slug: urbanKicks.slug,
+                themeId: urbanKicks.themeId,
+                preset: 'minimal_modern',
+                colors: demo.templateConfig.themeSettings,
+            },
+        });
     } catch (error) {
         console.error('Seed error:', error);
-        return NextResponse.json({ success: false, error: 'Failed to seed' }, { status: 500 });
+        return NextResponse.json(
+            { success: false, error: 'Failed to seed Urban Kicks demo' },
+            { status: 500 }
+        );
     }
 }

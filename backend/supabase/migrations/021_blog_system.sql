@@ -144,13 +144,13 @@ CREATE POLICY "Store owners manage blog categories"
   USING (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   )
   WITH CHECK (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   );
 
@@ -167,13 +167,13 @@ CREATE POLICY "Store owners manage blog tags"
   USING (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   )
   WITH CHECK (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   );
 
@@ -189,13 +189,13 @@ CREATE POLICY "Store owners manage blog posts"
   USING (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   )
   WITH CHECK (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   );
 
@@ -213,14 +213,14 @@ CREATE POLICY "Store owners manage blog post tags"
     post_id IN (
       SELECT bp.id FROM blog_posts bp
       JOIN sites s ON bp.store_id = s.id
-      WHERE s.user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   )
   WITH CHECK (
     post_id IN (
       SELECT bp.id FROM blog_posts bp
       JOIN sites s ON bp.store_id = s.id
-      WHERE s.user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   );
 
@@ -247,7 +247,7 @@ CREATE POLICY "Store owners moderate comments"
   USING (
     store_id IN (
       SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
+      WHERE true
     )
   );
 

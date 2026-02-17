@@ -1,6 +1,6 @@
 # LetBuyy Platform — AI Features
 
-> **Doc 07 of 15** | AI Architecture, Model Pricing, Credit System, Prompt Engineering, Streaming, Content Moderation & AI Studio
+> **Doc 07 of 17** | AI Architecture, Model Pricing, Credit System, Prompt Engineering, Streaming, Content Moderation & AI Studio
 >
 > **Version:** 7.0 | **Date:** February 14, 2026
 >

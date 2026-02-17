@@ -1,6 +1,6 @@
 # LetBuyy Platform — Plans & Pricing
 
-> **Doc 13 of 15** | Plans & Pricing — Revenue Architecture, Subscription Tiers, Billing & Growth Strategy
+> **Doc 13 of 17** | Plans & Pricing — Revenue Architecture, Subscription Tiers, Billing & Growth Strategy
 >
 > **Version:** 3.0 | **Date:** February 16, 2026
 >

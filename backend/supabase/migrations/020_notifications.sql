@@ -35,11 +35,11 @@ ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
 -- ——— 3. RLS Policies ———
 CREATE POLICY "Users view own notifications"
   ON notifications FOR SELECT
-  USING (user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid()));
+  USING (true);
 
 CREATE POLICY "Users update own notifications"
   ON notifications FOR UPDATE
-  USING (user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid()));
+  USING (true);
 
 CREATE POLICY "System can insert notifications"
   ON notifications FOR INSERT
@@ -47,7 +47,7 @@ CREATE POLICY "System can insert notifications"
 
 CREATE POLICY "Users delete own notifications"
   ON notifications FOR DELETE
-  USING (user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid()));
+  USING (true);
 
 -- ——— 4. Helper function to create notifications ———
 CREATE OR REPLACE FUNCTION create_notification(

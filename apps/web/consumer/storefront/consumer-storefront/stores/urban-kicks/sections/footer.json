@@ -1,0 +1,80 @@
+{
+    "name": "Footer",
+    "type": "footer",
+    "description": "Store footer with columns, social links, and payment icons",
+    "defaults": {
+        "columns": 3,
+        "showLogo": true,
+        "showNewsletter": true,
+        "showSocial": true,
+        "showPaymentIcons": true,
+        "copyrightText": "© 2026 Urban Kicks. All rights reserved.",
+        "instagramUrl": "https://instagram.com/urbankicks",
+        "twitterUrl": "https://twitter.com/urbankicks",
+        "contactEmail": "hello@urban-kicks.store"
+    },
+    "presets": [
+        {
+            "name": "Standard",
+            "settings": {
+                "columns": 3,
+                "showLogo": true,
+                "showNewsletter": true,
+                "showSocial": true,
+                "showPaymentIcons": true
+            }
+        },
+        {
+            "name": "Minimal",
+            "settings": {
+                "columns": 2,
+                "showLogo": true,
+                "showNewsletter": false,
+                "showSocial": true,
+                "showPaymentIcons": false
+            }
+        }
+    ],
+    "settings_schema": {
+        "columns": {
+            "type": "range",
+            "label": "Columns",
+            "min": 2,
+            "max": 4,
+            "step": 1
+        },
+        "showLogo": {
+            "type": "toggle",
+            "label": "Show Logo"
+        },
+        "showNewsletter": {
+            "type": "toggle",
+            "label": "Show Newsletter"
+        },
+        "showSocial": {
+            "type": "toggle",
+            "label": "Show Social Links"
+        },
+        "showPaymentIcons": {
+            "type": "toggle",
+            "label": "Show Payment Icons"
+        },
+        "copyrightText": {
+            "type": "text",
+            "label": "Copyright Text",
+            "maxLength": 100
+        },
+        "instagramUrl": {
+            "type": "url",
+            "label": "Instagram URL"
+        },
+        "twitterUrl": {
+            "type": "url",
+            "label": "Twitter/X URL"
+        },
+        "contactEmail": {
+            "type": "text",
+            "label": "Contact Email"
+        }
+    }
+}

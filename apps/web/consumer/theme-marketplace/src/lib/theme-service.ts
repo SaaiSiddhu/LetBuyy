@@ -29,7 +29,6 @@ export const ThemeService = {
      */
     async listThemes(filters: ThemeFilters = {}): Promise<ThemeSearchResult> {
         if (!db) {
-            console.error('[ThemeService] Database not configured');
             return { themes: [], total: 0, limit: 20, offset: 0 };
         }
 

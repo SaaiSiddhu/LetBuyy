@@ -5,8 +5,9 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, TrendingUp } from 'lucide-react';
+import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, TrendingUp, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
+import AccountBottomSheet from '@/components/account/account-bottom-sheet';
 import { HeaderSettings, NavPage, DEFAULT_NAV_PAGES, StoreModel, ThemeSettings, ProductModel, SiteType } from '@/types/store';
 
 interface DynamicHeaderProps {
@@ -32,6 +33,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
+    const [accountOpen, setAccountOpen] = useState(false);
     const [searchResults, setSearchResults] = useState<ProductModel[]>([]);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchContainerRef = useRef<HTMLDivElement>(null);
@@ -242,6 +244,15 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 className={`p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
                             >
                                 <Search size={20} strokeWidth={1.5} />
+                            </motion.button>
+                        )}
+                        {isStoreSite && (
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setAccountOpen(true)}
+                                className={`p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                            >
+                                <User size={20} strokeWidth={1.5} />
                             </motion.button>
                         )}
                         {showCart && (
@@ -476,6 +487,15 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            {/* Account Bottom Sheet */}
+            {isStoreSite && (
+                <AccountBottomSheet
+                    isOpen={accountOpen}
+                    onClose={() => setAccountOpen(false)}
+                    storeId={store.id}
+                />
+            )}
         </>
     );
 }

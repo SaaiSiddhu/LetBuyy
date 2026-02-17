@@ -3,6 +3,8 @@ import { StoreService } from '@/lib/store-service';
 import { ProductService } from '@/lib/product-service';
 import { Metadata } from 'next';
 import { CartProvider } from '@/context/cart-context';
+import { CustomerAuthProvider } from '@/context/customer-auth-context';
+import { WishlistProvider } from '@/context/wishlist-context';
 import CartIcon from '@/components/cart-icon';
 import Link from 'next/link';
 import DynamicHeader from '@/components/layout/dynamic-header';
@@ -222,27 +224,31 @@ export default async function StoreLayout({ children, params }: Props) {
       `}</style>
 
             {isStoreSite ? (
-                <CartProvider>
-                    <div className={`min-h-screen flex flex-col ${isDark ? 'dark' : ''}`} style={{ backgroundColor: 'var(--background)' }}>
-                        {/* Dynamic Header - reads settings from store */}
-                        <DynamicHeader
-                            store={store}
-                            settings={store.templateConfig.sections?.find(s => s.type === 'header')?.settings as HeaderSettings}
-                            products={products}
-                        />
+                <CustomerAuthProvider storeId={store.id}>
+                    <CartProvider>
+                        <WishlistProvider storeId={store.id}>
+                            <div className={`min-h-screen flex flex-col ${isDark ? 'dark' : ''}`} style={{ backgroundColor: 'var(--background)' }}>
+                                {/* Dynamic Header - reads settings from store */}
+                                <DynamicHeader
+                                    store={store}
+                                    settings={store.templateConfig.sections?.find(s => s.type === 'header')?.settings as HeaderSettings}
+                                    products={products}
+                                />
 
-                        {/* Main Content */}
-                        <main className="flex-grow">
-                            {children}
-                        </main>
+                                {/* Main Content */}
+                                <main className="flex-grow">
+                                    {children}
+                                </main>
 
-                        {/* Dynamic Footer - reads settings from store */}
-                        <DynamicFooter
-                            store={store}
-                            settings={store.templateConfig.sections?.find(s => s.type === 'footer')?.settings as FooterSettings}
-                        />
-                    </div>
-                </CartProvider>
+                                {/* Dynamic Footer - reads settings from store */}
+                                <DynamicFooter
+                                    store={store}
+                                    settings={store.templateConfig.sections?.find(s => s.type === 'footer')?.settings as FooterSettings}
+                                />
+                            </div>
+                        </WishlistProvider>
+                    </CartProvider>
+                </CustomerAuthProvider>
             ) : (
                 <div className={`min-h-screen flex flex-col ${isDark ? 'dark' : ''}`} style={{ backgroundColor: 'var(--background)' }}>
                     {/* Dynamic Header - reads settings from store */}

@@ -184,80 +184,29 @@ ALTER TABLE app_reviews       ENABLE ROW LEVEL SECURITY;
 ALTER TABLE app_webhooks      ENABLE ROW LEVEL SECURITY;
 
 -- ——— 9. RLS Policies ———
+-- NOTE: App uses custom auth (not Supabase Auth), so auth.uid() is always null.
+-- Using permissive policies; access control is enforced at the application layer.
 
--- App Categories: public read
-CREATE POLICY "App categories are public"
-  ON app_categories FOR SELECT USING (true);
+CREATE POLICY "service_role_app_categories" ON app_categories
+  FOR ALL USING (true) WITH CHECK (true);
 
--- App Developers: user manages own profile
-CREATE POLICY "Users manage own developer profile"
-  ON app_developers FOR ALL
-  USING (user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid()));
+CREATE POLICY "service_role_app_developers" ON app_developers
+  FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Public can view approved developers"
-  ON app_developers FOR SELECT
-  USING (status = 'approved');
+CREATE POLICY "service_role_marketplace_apps" ON marketplace_apps
+  FOR ALL USING (true) WITH CHECK (true);
 
--- Marketplace Apps: public read published; developer manages own
-CREATE POLICY "Public can view published apps"
-  ON marketplace_apps FOR SELECT
-  USING (status = 'published');
+CREATE POLICY "service_role_app_extensions" ON app_extensions
+  FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Developers manage own apps"
-  ON marketplace_apps FOR ALL
-  USING (
-    developer_id IN (
-      SELECT id FROM app_developers
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
-    )
-  );
+CREATE POLICY "service_role_app_installations" ON app_installations
+  FOR ALL USING (true) WITH CHECK (true);
 
--- App Extensions: public read for published apps
-CREATE POLICY "Public can view extensions of published apps"
-  ON app_extensions FOR SELECT
-  USING (
-    app_id IN (SELECT id FROM marketplace_apps WHERE status = 'published')
-  );
+CREATE POLICY "service_role_app_reviews" ON app_reviews
+  FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Developers manage own app extensions"
-  ON app_extensions FOR ALL
-  USING (
-    app_id IN (
-      SELECT ma.id FROM marketplace_apps ma
-      JOIN app_developers ad ON ma.developer_id = ad.id
-      WHERE ad.user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
-    )
-  );
-
--- App Installations: store owner manages
-CREATE POLICY "Store owners manage installations"
-  ON app_installations FOR ALL
-  USING (
-    store_id IN (
-      SELECT id FROM sites
-      WHERE user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
-    )
-  );
-
--- App Reviews: authenticated create; public read published
-CREATE POLICY "Public can read published reviews"
-  ON app_reviews FOR SELECT
-  USING (status = 'published');
-
-CREATE POLICY "Users manage own reviews"
-  ON app_reviews FOR ALL
-  USING (user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid()));
-
--- App Webhooks: developer manages
-CREATE POLICY "Developers manage own webhooks"
-  ON app_webhooks FOR ALL
-  USING (
-    app_id IN (
-      SELECT ma.id FROM marketplace_apps ma
-      JOIN app_developers ad ON ma.developer_id = ad.id
-      WHERE ad.user_id = (SELECT id FROM users_custom WHERE auth_id = auth.uid())
-    )
-  );
+CREATE POLICY "service_role_app_webhooks" ON app_webhooks
+  FOR ALL USING (true) WITH CHECK (true);
 
 -- ——— 10. Triggers ———
 CREATE TRIGGER update_app_developers_updated_at

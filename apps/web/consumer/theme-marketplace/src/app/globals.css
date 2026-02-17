@@ -239,7 +239,7 @@ h6 {
 .container-main {
     max-width: var(--spacing-container);
     margin: 0 auto;
-    padding: 0 24px;
+    padding-inline: 24px;
 }
 
 /* ═══════════════════════════════════════════════════

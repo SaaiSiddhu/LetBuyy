@@ -63,9 +63,16 @@ export default async function middleware(req: NextRequest) {
     // 4. Vercel direct access (vercel.app domain): show root page or redirect
     else if (hostname.includes('vercel.app')) {
         if (path === '/' || path === '') {
-            console.log(`[Middleware] Vercel root access, showing placeholder`);
+            console.log(`[Middleware] Vercel root access, showing landing page`);
             return NextResponse.next();
         }
+    }
+
+    // If subdomain is 'storefront', show the landing page (don't rewrite to a store)
+    // storefront.letbuyy.store is the landing page URL
+    if (subdomain === 'storefront') {
+        console.log(`[Middleware] Storefront landing page subdomain, showing root`);
+        return NextResponse.next();
     }
 
     // If we have a store subdomain, rewrite to /store/[subdomain]/[path]
@@ -77,17 +84,18 @@ export default async function middleware(req: NextRequest) {
 
     // No store found
     // In development: rewrite bare store paths to /store/demo/...
+    // But NOT the root path — root shows the landing page
     if (hostname.includes('localhost')) {
         const storeRoutes = ['/cart', '/checkout', '/product', '/products', '/orders', '/shop', '/privacy', '/returns', '/shipping', '/terms'];
-        const isStoreRoute = path === '/' || storeRoutes.some(r => path === r || path.startsWith(r + '/'));
+        const isStoreRoute = storeRoutes.some(r => path === r || path.startsWith(r + '/'));
 
         if (isStoreRoute) {
-            const rewriteUrl = `/store/demo${path === '/' ? '' : path}`;
+            const rewriteUrl = `/store/demo${path}`;
             console.log(`[Middleware] Dev fallback → ${rewriteUrl}`);
             return NextResponse.rewrite(new URL(rewriteUrl, req.url));
         }
     }
 
-    console.log(`[Middleware] No store subdomain, showing root`);
+    console.log(`[Middleware] No store subdomain, showing landing page`);
     return NextResponse.next();
 }

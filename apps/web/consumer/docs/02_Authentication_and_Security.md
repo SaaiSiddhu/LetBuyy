@@ -1,6 +1,6 @@
 # LetBuyy Platform — Authentication & Security
 
-> **Doc 02 of 15** | Auth Flows, Supabase Auth, RLS, 2FA, VPN & Security Policies
+> **Doc 02 of 17** | Auth Flows, Supabase Auth, RLS, 2FA, VPN & Security Policies
 >
 > **Version:** 5.0 | **Date:** February 14, 2026
 >

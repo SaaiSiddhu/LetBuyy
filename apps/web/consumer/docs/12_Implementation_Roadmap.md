@@ -1,6 +1,6 @@
 # LetBuyy Platform — Implementation Roadmap
 
-> **Doc 12 of 15** | Phased Development Plan, Sprint Breakdown, Milestones, Deployment, Cost & Launch Strategy
+> **Doc 12 of 17** | Phased Development Plan, Sprint Breakdown, Milestones, Deployment, Cost & Launch Strategy
 >
 > **Version:** 6.0 | **Date:** February 15, 2026
 >
@@ -1398,7 +1398,7 @@ Profitability Path:
 > | 11 | [Super Admin & Team](./11_Super_Admin_and_Team.md) | 1,900+ | Console, moderation, analytics, security |
 > | 12 | [Implementation Roadmap](./12_Implementation_Roadmap.md) | 2,000+ | Phases, deployment, costs, launch |
 
-> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) — New features to integrate into the roadmap
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [14 Theme Implementation](./14_Theme_Implementation.md) · [15 App Store Implementation](./15_App_Store_Implementation.md) · [16 Customer Management](./16_Customer_Management.md) — New features to integrate into the roadmap
 
 ---
 

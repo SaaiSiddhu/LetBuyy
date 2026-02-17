@@ -71,6 +71,24 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const deliveryCharges = deliveryOption === 'express' ? 99 : 0;
     const totalAmount = cartTotal + deliveryCharges;
 
+    // Auto-create customer record after order
+    const autoCreateCustomer = async () => {
+        try {
+            await fetch('/api/customer/auto-create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: formData.email.toLowerCase(),
+                    fullName: formData.name,
+                    phone: formData.phone,
+                    storeId,
+                }),
+            });
+        } catch {
+            // Silently fail — customer creation should not block checkout success
+        }
+    };
+
     // Validate form
     const validateForm = (): boolean => {
         const newErrors: Partial<FormData> = {};
@@ -141,6 +159,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 setOrderNumber(result.order.orderNumber);
                 setIsSuccess(true);
                 clearCart();
+                autoCreateCustomer();
             } else {
                 console.error('Order creation failed:', result.error);
                 alert('Order creation failed. Please try again.');
@@ -217,6 +236,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                         setOrderNumber(result.order.orderNumber);
                         setIsSuccess(true);
                         clearCart();
+                        autoCreateCustomer();
                     } else {
                         console.error('Order creation failed:', result.error);
                         alert('Payment successful but order creation failed. Please contact support.');

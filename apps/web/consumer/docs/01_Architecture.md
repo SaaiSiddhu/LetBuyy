@@ -1,6 +1,6 @@
 # LetBuyy Platform — Architecture
 
-> **Doc 01 of 15** | System Architecture, Infrastructure Layers & Project Structure
+> **Doc 01 of 17** | System Architecture, Infrastructure Layers & Project Structure
 >
 > **Version:** 8.0 | **Date:** February 14, 2026
 >
@@ -2363,6 +2363,6 @@ Every log entry from the API Worker follows this JSON schema for consistent pars
 
 ---
 
-> **→ Full doc series:** 00_Overview → **01_Architecture** → 02_Auth → 03_Onboarding → 04_Admin → 05_Ecommerce → 06_Portfolio → 07_AI → 08_Database → 09_API → 10_Storefront → 11_SuperAdmin → 12_Roadmap → 13_Plans → 14_Themes → 15_AppStore
+> **→ Full doc series:** 00_Overview → **01_Architecture** → 02_Auth → 03_Onboarding → 04_Admin → 05_Ecommerce → 06_Portfolio → 07_AI → 08_Database → 09_API → 10_Storefront → 11_SuperAdmin → 12_Roadmap → 13_Plans → 14_Themes → 15_AppStore → 16_Customers
 >
 > **See also:** [15 App Store Implementation](./15_App_Store_Implementation.md) — App ecosystem extends the platform architecture

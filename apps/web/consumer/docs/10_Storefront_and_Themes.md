@@ -1,6 +1,6 @@
 # LetBuyy Platform — Storefront & Themes
 
-> **Doc 10 of 15** | Public Storefront Rendering, Theme Engine, Page Builder, Customer Experience & Performance
+> **Doc 10 of 17** | Public Storefront Rendering, Theme Engine, Page Builder, Customer Experience & Performance
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -2012,7 +2012,7 @@ Stored in session → attributed to orders if purchase occurs.
 
 > **Next:** [11 Super Admin & Team](./11_Super_Admin_and_Team.md) — Platform management, team tools, console
 
-> **See also:** [14 Theme Implementation](./14_Theme_Implementation.md) — Deep-dive theme system: custom CSS, code editor, theme uploads & marketplace
+> **See also:** [14 Theme Implementation](./14_Theme_Implementation.md) · [16 Customer Management](./16_Customer_Management.md) — Theme system & customer accounts, wishlists, auth gates
 
 ---
 

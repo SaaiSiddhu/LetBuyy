@@ -1,6 +1,6 @@
 # LetBuyy Platform — E-commerce Engine
 
-> **Doc 05 of 15** | Products, Orders, Payments, Shipping, Coupons, Inventory & Storefront
+> **Doc 05 of 17** | Products, Orders, Payments, Shipping, Coupons, Inventory & Storefront
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >
@@ -3350,4 +3350,4 @@ test.describe('Complete Checkout Flow', () => {
 >
 > **Related:** [00_Overview.md](./00_Overview.md) | [01_Architecture.md](./01_Architecture.md) | [02_Authentication_and_Security.md](./02_Authentication_and_Security.md) | [03_Onboarding_and_Trial.md](./03_Onboarding_and_Trial.md) | [04_Admin_Dashboard.md](./04_Admin_Dashboard.md)
 >
-> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) — Store plans, transaction fees & billing architecture
+> **See also:** [13 Plans & Pricing](./13_Plans_and_Pricing.md) · [16 Customer Management](./16_Customer_Management.md) — Store plans, billing & customer accounts system

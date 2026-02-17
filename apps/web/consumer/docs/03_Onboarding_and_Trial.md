@@ -1,6 +1,6 @@
 # LetBuyy Platform — Onboarding & Trial
 
-> **Doc 03 of 15** | Signup → Store Creation → Trial Countdown → Payment Activation
+> **Doc 03 of 17** | Signup → Store Creation → Trial Countdown → Payment Activation
 >
 > **Version:** 5.0 | **Date:** February 14, 2026
 >

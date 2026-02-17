@@ -1,6 +1,6 @@
 # LetBuyy Platform — Complete Theme System Implementation
 
-> **Doc 14 of 15** | Theme Engine, Custom CSS, Code Editor, Theme Uploads, Validation, Marketplace, SSO & Store Publishing
+> **Doc 14 of 17** | Theme Engine, Custom CSS, Code Editor, Theme Uploads, Validation, Marketplace, SSO & Store Publishing
 >
 > **Version:** 2.0 | **Date:** February 16, 2026
 >

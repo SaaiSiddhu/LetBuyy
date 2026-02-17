@@ -1,0 +1,177 @@
+{
+    "schema_version": "1.0",
+    "settings": {
+        "colors": {
+            "label": "Colors",
+            "description": "Customize the color palette for your store",
+            "fields": {
+                "primaryColor": {
+                    "type": "color",
+                    "label": "Primary Color",
+                    "default": "#000000",
+                    "description": "Main brand color used for buttons, links, and accents"
+                },
+                "secondaryColor": {
+                    "type": "color",
+                    "label": "Secondary Color",
+                    "default": "#FFFFFF",
+                    "description": "Secondary color for backgrounds and contrast elements"
+                },
+                "accentColor": {
+                    "type": "color",
+                    "label": "Accent Color",
+                    "default": "#E5E5E5",
+                    "description": "Accent color for badges, highlights, and decorative elements"
+                },
+                "backgroundColor": {
+                    "type": "color",
+                    "label": "Background Color",
+                    "default": "#FFFFFF",
+                    "description": "Main page background color"
+                },
+                "textColor": {
+                    "type": "color",
+                    "label": "Text Color",
+                    "default": "#1A1A2E",
+                    "description": "Primary text color"
+                }
+            }
+        },
+        "typography": {
+            "label": "Typography",
+            "description": "Choose fonts for your store",
+            "fields": {
+                "fontFamily": {
+                    "type": "select",
+                    "label": "Body Font",
+                    "default": "Inter",
+                    "options": [
+                        "Inter",
+                        "Outfit",
+                        "Poppins",
+                        "DM Sans",
+                        "Open Sans",
+                        "Montserrat",
+                        "Nunito",
+                        "Space Grotesk"
+                    ]
+                },
+                "headingFontFamily": {
+                    "type": "select",
+                    "label": "Heading Font",
+                    "default": "Inter",
+                    "options": [
+                        "Inter",
+                        "Outfit",
+                        "Poppins",
+                        "Space Grotesk",
+                        "Montserrat",
+                        "DM Sans",
+                        "Playfair Display"
+                    ]
+                }
+            }
+        },
+        "layout": {
+            "label": "Layout",
+            "description": "Customize the layout and spacing",
+            "fields": {
+                "borderRadius": {
+                    "type": "range",
+                    "label": "Border Radius",
+                    "default": 12,
+                    "min": 0,
+                    "max": 24,
+                    "step": 2,
+                    "unit": "px"
+                },
+                "enableAnimations": {
+                    "type": "toggle",
+                    "label": "Enable Animations",
+                    "default": true,
+                    "description": "Smooth hover effects and scroll-reveal animations"
+                },
+                "enableShadows": {
+                    "type": "toggle",
+                    "label": "Enable Shadows",
+                    "default": true,
+                    "description": "Subtle shadows on cards and buttons"
+                }
+            }
+        },
+        "header": {
+            "label": "Header",
+            "description": "Customize the store header",
+            "fields": {
+                "behavior": {
+                    "type": "select",
+                    "label": "Header Behavior",
+                    "default": "sticky",
+                    "options": [
+                        "sticky",
+                        "scroll",
+                        "hide-on-scroll"
+                    ]
+                },
+                "logoPlacement": {
+                    "type": "select",
+                    "label": "Logo Position",
+                    "default": "left",
+                    "options": [
+                        "left",
+                        "center"
+                    ]
+                },
+                "displayMode": {
+                    "type": "select",
+                    "label": "Display Mode",
+                    "default": "name",
+                    "options": [
+                        "logo",
+                        "name",
+                        "both"
+                    ]
+                },
+                "showSearch": {
+                    "type": "toggle",
+                    "label": "Show Search",
+                    "default": true
+                },
+                "showCart": {
+                    "type": "toggle",
+                    "label": "Show Cart",
+                    "default": true
+                }
+            }
+        },
+        "footer": {
+            "label": "Footer",
+            "description": "Customize the store footer",
+            "fields": {
+                "columns": {
+                    "type": "range",
+                    "label": "Footer Columns",
+                    "default": 3,
+                    "min": 2,
+                    "max": 4,
+                    "step": 1
+                },
+                "showNewsletter": {
+                    "type": "toggle",
+                    "label": "Show Newsletter Signup",
+                    "default": true
+                },
+                "showSocial": {
+                    "type": "toggle",
+                    "label": "Show Social Links",
+                    "default": true
+                },
+                "showPaymentIcons": {
+                    "type": "toggle",
+                    "label": "Show Payment Icons",
+                    "default": true
+                }
+            }
+        }
+    }
+}

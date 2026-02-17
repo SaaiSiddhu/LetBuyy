@@ -33,9 +33,9 @@ export default function CustomersPage() {
 
         if (!storeData) { setLoading(false); return }
 
-        // Using the contacts table which stores customer data for each store
+        // Using the store_customers table which stores customer data for each store
         const { data } = await supabase
-            .from('contacts')
+            .from('store_customers')
             .select('id, full_name, email, phone, total_orders, total_spent, status, created_at, last_order_at')
             .eq('store_id', storeData.id)
             .order('created_at', { ascending: false })

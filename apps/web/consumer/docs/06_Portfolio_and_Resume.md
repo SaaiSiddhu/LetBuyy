@@ -1,6 +1,6 @@
 # LetBuyy Platform — Portfolio & Resume
 
-> **Doc 06 of 15** | Portfolio Builder, Resume Builder, PDF Export & Templates
+> **Doc 06 of 17** | Portfolio Builder, Resume Builder, PDF Export & Templates
 >
 > **Version:** 6.0 | **Date:** February 14, 2026
 >

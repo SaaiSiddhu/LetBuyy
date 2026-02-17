@@ -100,7 +100,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.03 }}
                             >
-                                <Link href={`/product/${product.id}`} className="group block">
+                                <Link href={`/theme-preview/urban-kicks/product/${product.id}`} className="group block">
                                     <div
                                         className="card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                                         style={{ borderRadius: `${colors.borderRadius}px` }}
@@ -117,10 +117,9 @@ export default function ProductGrid({ section, products, theme }: Props) {
                                             />
                                             {discount > 0 && (
                                                 <span
-                                                    className="absolute top-1.5 left-1.5 text-white text-[9px] font-bold px-1.5 py-0.5 rounded"
-                                                    style={{ backgroundColor: colors.accentColor || colors.primaryColor }}
+                                                    className="absolute top-2 left-2 text-white text-[11px] font-bold px-2.5 py-1 rounded-md shadow-lg bg-black"
                                                 >
-                                                    {discount}%
+                                                    {discount}% OFF
                                                 </span>
                                             )}
                                             {/* Heart icon - uses primaryColor */}
@@ -137,7 +136,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                                             {showAddToCart && (
                                                 <button
                                                     onClick={(e) => handleQuickAdd(e, product)}
-                                                    className="absolute bottom-1.5 left-1.5 right-1.5 py-1.5 text-white text-xs font-semibold rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1"
+                                                    className="absolute bottom-1.5 left-1.5 right-1.5 py-1.5 text-white text-xs font-semibold rounded transition-opacity flex items-center justify-center gap-1"
                                                     style={{ backgroundColor: colors.primaryColor }}
                                                 >
                                                     <ShoppingBag size={11} /> Add

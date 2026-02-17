@@ -1,6 +1,6 @@
 # LetBuyy Platform — Documentation
 
-> **Version:** 6.0 | **Date:** February 16, 2026 | **Status:** 🟢 Active
+> **Version:** 7.0 | **Date:** February 17, 2026 | **Status:** 🟢 Active
 
 ---
 
@@ -24,6 +24,8 @@
 | 13 | [Plans & Pricing](./13_Plans_and_Pricing.md) | Revenue architecture, subscription tiers, billing & growth |
 | 14 | [Theme Implementation](./14_Theme_Implementation.md) | Theme engine, custom CSS, code editor, uploads, marketplace |
 | 15 | [App Store Implementation](./15_App_Store_Implementation.md) | App ecosystem, extensions, billing, developer portal |
+| 16 | [Customer Management](./16_Customer_Management.md) | Customer accounts, auth, wishlists, order history, admin CRM |
+| 17 | [Storefront Landing](./17_Storefront_Landing.md) | Root landing page, store finder, community showcase, platform stats |
 
 ---
 
@@ -62,6 +64,12 @@ Detailed implementation analysis files covering specific subsystems:
 
 **For theming & app ecosystem:**
 1. [10 Storefront & Themes](./10_Storefront_and_Themes.md) → [14 Theme Implementation](./14_Theme_Implementation.md) → [15 App Store](./15_App_Store_Implementation.md)
+
+**For storefront customer experience:**
+1. [16 Customer Management](./16_Customer_Management.md) → accounts, wishlists, order history, auth gates
+
+**For root landing page & community hub:**
+1. [17 Storefront Landing](./17_Storefront_Landing.md) → store finder, community showcase, platform stats
 
 ---
 

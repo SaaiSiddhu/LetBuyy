@@ -1,0 +1,68 @@
+{
+    "locale": "en",
+    "name": "English",
+    "translations": {
+        "general": {
+            "store_name": "Urban Kicks",
+            "tagline": "Premium Streetwear & Sneakers",
+            "currency_symbol": "₹",
+            "add_to_cart": "Add to Cart",
+            "buy_now": "Buy Now",
+            "view_all": "View All",
+            "search_placeholder": "Search sneakers, apparel...",
+            "back_to_top": "Back to Top",
+            "loading": "Loading..."
+        },
+        "hero": {
+            "heading": "Streetwear 2026",
+            "subheading": "The future of fashion is here.",
+            "cta": "Shop New Arrivals"
+        },
+        "products": {
+            "section_title": "Trending Drops",
+            "section_subtitle": "Hottest picks this season",
+            "out_of_stock": "Sold Out",
+            "in_stock": "In Stock",
+            "add_to_wishlist": "Add to Wishlist",
+            "quick_add": "Quick Add",
+            "view_details": "View Details",
+            "free_shipping": "Free Shipping",
+            "new_arrival": "New",
+            "trending": "Trending",
+            "sale": "Sale"
+        },
+        "testimonials": {
+            "section_title": "What Our Customers Say",
+            "section_subtitle": "Real reviews from real sneakerheads"
+        },
+        "newsletter": {
+            "title": "Stay in the Loop",
+            "subtitle": "Get early access to new drops and exclusive discounts.",
+            "placeholder": "Enter your email",
+            "button": "Subscribe",
+            "success": "You're in! Watch your inbox.",
+            "error": "Something went wrong. Try again."
+        },
+        "cart": {
+            "title": "Your Cart",
+            "empty": "Your cart is empty",
+            "subtotal": "Subtotal",
+            "shipping": "Shipping",
+            "total": "Total",
+            "checkout": "Proceed to Checkout",
+            "continue_shopping": "Continue Shopping",
+            "remove": "Remove",
+            "quantity": "Qty"
+        },
+        "footer": {
+            "copyright": "© 2026 Urban Kicks. All rights reserved.",
+            "quick_links": "Quick Links",
+            "contact": "Contact Us",
+            "follow_us": "Follow Us",
+            "privacy": "Privacy Policy",
+            "terms": "Terms of Service",
+            "shipping_policy": "Shipping Policy",
+            "returns": "Returns & Refunds"
+        }
+    }
+}
