@@ -4,18 +4,25 @@ import PreviewShell from '../_components/preview-shell';
 import { MOCK_PRODUCTS, CATEGORIES, formatPrice } from '../_lib/mock-data';
 import { useCart } from '@/context/cart-context';
 import { usePreviewWishlist } from '../_context/wishlist-context';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
     SlidersHorizontal, ChevronDown, ShoppingBag, Heart, Star,
     Grid3X3, LayoutList, Sparkles
 } from 'lucide-react';
-import Image from 'next/image';
 import Link from 'next/link';
 
 type SortOption = 'featured' | 'price-asc' | 'price-desc' | 'rating' | 'newest';
 
 export default function ShopPage() {
+    return (
+        <Suspense fallback={<PreviewShell><div className="flex items-center justify-center py-20"><div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent rounded-full" /></div></PreviewShell>}>
+            <ShopPageInner />
+        </Suspense>
+    );
+}
+
+function ShopPageInner() {
     const searchParams = useSearchParams();
     const initialCategory = searchParams.get('category') || 'All';
     const [category, setCategory] = useState<string>(initialCategory);
