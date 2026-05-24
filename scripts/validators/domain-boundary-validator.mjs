@@ -14,11 +14,15 @@ const domainPackages = {
   },
   "packages/tenant-core": {
     packageName: "@letbuyy/tenant-core",
-    requiredExports: ["SiteTypeSchema", "SubdomainSchema", "CreateStoreSchema", "StoreModel", "TenantContext"],
+    requiredExports: ["SiteTypeSchema", "SubdomainSchema", "CreateStoreSchema", "RuntimeTenantContext", "StoreModel", "TenantContext", "validateSubdomainFormat"],
+  },
+  "packages/app-engine": {
+    packageName: "@letbuyy/app-engine",
+    requiredExports: ["GenerateContentSchema", "GenerateImageSchema", "AiChatSchema", "CheckCreditsSchema"],
   },
   "packages/commerce-core": {
     packageName: "@letbuyy/commerce-core",
-    requiredExports: ["CreateProductSchema", "UpdateProductSchema", "CreateCustomerSchema", "Product", "ProductModel"],
+    requiredExports: ["CreateProductSchema", "UpdateProductSchema", "CreateCategorySchema", "CreateLocationSchema", "CreateCustomerSchema", "Product", "ProductModel"],
   },
   "packages/checkout-core": {
     packageName: "@letbuyy/checkout-core",
@@ -50,7 +54,7 @@ const domainPackages = {
   },
   "packages/billing-core": {
     packageName: "@letbuyy/billing-core",
-    requiredExports: ["BillingPlanSchema", "CreateSubscriptionSchema", "SubscriptionContract", "InvoiceDto"],
+    requiredExports: ["BillingPlanSchema", "CreateSubscriptionSchema", "CreateSubscriptionOrderSchema", "SubscriptionContract", "InvoiceDto"],
   },
 };
 
@@ -79,8 +83,14 @@ const extractedSchemaFacades = {
   "services/api-gateway/src/schemas/shipping.schema.ts": "@letbuyy/checkout-core",
   "services/api-gateway/src/schemas/coupon.schema.ts": "@letbuyy/checkout-core",
   "services/api-gateway/src/schemas/store.schema.ts": "@letbuyy/tenant-core",
+  "services/api-gateway/src/schemas/onboarding.schema.ts": "@letbuyy/tenant-core",
   "services/api-gateway/src/schemas/auth.schema.ts": "@letbuyy/auth-core",
   "services/api-gateway/src/schemas/page.schema.ts": "@letbuyy/cms-core",
+  "services/api-gateway/src/schemas/blog.schema.ts": "@letbuyy/cms-core",
+  "services/api-gateway/src/schemas/form-submission.schema.ts": "@letbuyy/cms-core",
+  "services/api-gateway/src/schemas/media.schema.ts": "@letbuyy/cms-core",
+  "services/api-gateway/src/schemas/review.schema.ts": "@letbuyy/commerce-core",
+  "services/api-gateway/src/schemas/ai.schema.ts": "@letbuyy/app-engine",
   "services/api-gateway/src/schemas/theme.schema.ts": "@letbuyy/theme-engine",
   "services/api-gateway/src/schemas/operations.schema.ts": "@letbuyy/event-core",
 };
@@ -113,5 +123,58 @@ reporter.assert(
 const apiThemeRegistryFacade = readFile("packages/typescript/api-types/src/theme-registry.ts");
 reporter.assert(apiThemeRegistryFacade.includes("@letbuyy/theme-engine"), "API theme registry facade must point to @letbuyy/theme-engine");
 reporter.assert(!apiThemeRegistryFacade.includes("SECTION_SCHEMAS:") && !apiThemeRegistryFacade.includes("const heroBanner"), "API theme registry facade must not duplicate theme registry data");
+
+const runtimeRouteSchemaAuthorities = [
+  "services/api-gateway/src/routes/categories.ts",
+  "services/api-gateway/src/routes/inventory.ts",
+  "services/api-gateway/src/routes/payments.ts",
+  "services/api-gateway/src/routes/products.ts",
+];
+
+for (const file of runtimeRouteSchemaAuthorities) {
+  const content = readFile(file);
+  reporter.assert(
+    !/\b(?:const|let|var)\s+\w+Schema\s*=\s*z(?:od)?\.(?:object|enum)\b/.test(content),
+    `Runtime route must not define reusable domain schemas locally: ${file}`,
+  );
+}
+
+const productService = readFile("services/api-gateway/src/services/product.service.ts");
+reporter.assert(productService.includes("@letbuyy/commerce-core"), "Product service command contracts must come from @letbuyy/commerce-core");
+reporter.assert(!/\binterface\s+CreateProductInput\b|\binterface\s+ProductVariantInput\b|\binterface\s+ProductOptionInput\b/.test(productService), "Product service must not own commerce command interfaces locally");
+
+const orderService = readFile("services/api-gateway/src/services/order.service.ts");
+reporter.assert(orderService.includes("@letbuyy/checkout-core"), "Order service command contracts must come from @letbuyy/checkout-core");
+reporter.assert(!/\binterface\s+(CreateOrderInput|FulfillOrderInput|RefundOrderInput|CompleteRefundInput|OrderItem|RefundLine|FulfillmentLine)\b/.test(orderService), "Order service must not own checkout command interfaces locally");
+
+const tenantContext = readFile("services/api-gateway/src/lib/tenant-context.ts");
+reporter.assert(tenantContext.includes("@letbuyy/tenant-core"), "Tenant runtime context contract must come from @letbuyy/tenant-core");
+reporter.assert(!/\bexport\s+interface\s+TenantContext\b/.test(tenantContext), "API gateway must not redefine the runtime tenant context contract");
+
+const authRoute = readFile("services/api-gateway/src/routes/auth.ts");
+reporter.assert(authRoute.includes("@letbuyy/tenant-core"), "Auth route must consume tenant-core subdomain governance");
+reporter.assert(!/\bRESERVED_SUBDOMAINS\b|\bSUBDOMAIN_REGEX\b|\bfunction\s+validateSubdomainFormat\b/.test(authRoute), "Auth route must not redefine tenant subdomain validation");
+
+const themeMarketplaceTypes = readFile("apps/theme-marketplace/src/types/index.ts");
+reporter.assert(themeMarketplaceTypes.includes("@letbuyy/theme-engine"), "Theme marketplace type facade must consume theme-engine contracts");
+reporter.assert(!/\bexport\s+(interface|type)\s+\w+/.test(themeMarketplaceTypes), "Theme marketplace must not own theme DTOs locally");
+
+const themeMarketplaceService = readFile("apps/theme-marketplace/src/lib/theme-service.ts");
+reporter.assert(themeMarketplaceService.includes("@letbuyy/theme-engine"), "Theme marketplace service query contracts must consume theme-engine contracts");
+reporter.assert(!/\bexport\s+interface\s+Theme(SearchResult|Filters)\b/.test(themeMarketplaceService), "Theme marketplace service must not define reusable theme query DTOs locally");
+
+const mobileMerchantModelFacades = [
+  "apps/mobile/merchant-app/lib/models/order_model.dart",
+  "apps/mobile/merchant-app/lib/models/store_auth_request_model.dart",
+  "apps/mobile/merchant-app/lib/models/store_model.dart",
+  "apps/mobile/merchant-app/lib/models/store_theme_model.dart",
+  "apps/mobile/merchant-app/lib/models/theme_editor_models.dart",
+];
+
+for (const file of mobileMerchantModelFacades) {
+  const content = readFile(file);
+  reporter.assert(content.includes("package:letbuyy_models/merchant_contracts.dart"), `Mobile merchant model file must be a shared package facade: ${file}`);
+  reporter.assert(!/\b(class|enum)\s+\w+/.test(content), `Mobile merchant app must not define shared model classes locally: ${file}`);
+}
 
 reporter.finish(`${Object.keys(domainPackages).length} domain packages and ${Object.keys(extractedSchemaFacades).length} schema facades checked`);

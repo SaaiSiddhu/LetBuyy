@@ -8,122 +8,28 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { IdempotencyService } from '../services/idempotency.service';
-import { z } from 'zod';
-import { UuidSchema, PaginationQuery } from '../schemas/common.schema';
+import {
+    AdjustInventorySchema,
+    BulkAdjustSchema,
+    CreateLocationSchema,
+    CreatePurchaseOrderSchema,
+    CreateSupplierSchema,
+    CreateTransferSchema,
+    ReceivePurchaseOrderSchema,
+    ReceiveTransferSchema,
+    ShipTransferSchema,
+    type BulkAdjustInput,
+    type CreateLocationInput,
+    type CreatePurchaseOrderInput,
+    type CreateSupplierInput,
+    type CreateTransferInput,
+    type InventoryAdjustmentInput,
+    type ReceivePurchaseOrderInput,
+    type ReceiveTransferInput,
+    type ShipTransferInput,
+} from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-
-// ── Schemas ─────────────────────────────────────────────────
-
-const CreateLocationSchema = z.object({
-    store_id: UuidSchema,
-    name: z.string().min(1).max(200).trim(),
-    address: z.string().max(500).optional(),
-    city: z.string().max(100).optional(),
-    state: z.string().max(100).optional(),
-    country: z.string().length(2).toUpperCase().default('IN'),
-    is_default: z.boolean().default(false),
-});
-
-const AdjustInventorySchema = z.object({
-    product_id: UuidSchema,
-    variant_id: UuidSchema.optional().nullable(),
-    location_id: UuidSchema.optional(),
-    adjustment: z.number().int().min(-99999).max(99999),
-    reason: z.enum([
-        'received',
-        'sold',
-        'returned',
-        'damaged',
-        'correction',
-        'transfer',
-        'sale',
-        'return',
-        'adjustment',
-        'recount',
-    ]),
-    notes: z.string().max(500).optional(),
-});
-
-const BulkAdjustSchema = z.object({
-    store_id: UuidSchema,
-    adjustments: z.array(AdjustInventorySchema).min(1).max(100),
-});
-
-const CreateSupplierSchema = z.object({
-    store_id: UuidSchema,
-    name: z.string().min(1).max(200).trim(),
-    contact_name: z.string().max(200).optional(),
-    email: z.string().email().optional(),
-    phone: z.string().max(30).optional(),
-    address: z.record(z.string(), z.unknown()).optional(),
-});
-
-const PurchaseOrderLineSchema = z.object({
-    product_id: UuidSchema,
-    variant_id: UuidSchema.optional().nullable(),
-    quantity: z.number().int().min(1).max(999999),
-    unit_cost: z.number().min(0).max(999999).default(0),
-});
-
-const CreatePurchaseOrderSchema = z.object({
-    store_id: UuidSchema,
-    supplier_id: UuidSchema.optional().nullable(),
-    location_id: UuidSchema,
-    expected_at: z.coerce.date().optional(),
-    notes: z.string().max(1000).optional(),
-    lines: z.array(PurchaseOrderLineSchema).min(1).max(200),
-    idempotency_key: z.string().min(8).max(200),
-});
-
-const ReceivePurchaseOrderLineSchema = z.object({
-    purchase_order_line_id: UuidSchema,
-    quantity: z.number().int().min(1).max(999999),
-});
-
-const ReceivePurchaseOrderSchema = z.object({
-    lines: z.array(ReceivePurchaseOrderLineSchema).min(1).max(200).optional(),
-    idempotency_key: z.string().min(8).max(200),
-});
-
-const TransferLineSchema = z.object({
-    product_id: UuidSchema,
-    variant_id: UuidSchema.optional().nullable(),
-    quantity: z.number().int().min(1).max(999999),
-});
-
-const CreateTransferSchema = z.object({
-    store_id: UuidSchema,
-    source_location_id: UuidSchema,
-    destination_location_id: UuidSchema,
-    notes: z.string().max(1000).optional(),
-    lines: z.array(TransferLineSchema).min(1).max(200),
-    idempotency_key: z.string().min(8).max(200),
-});
-
-const ReceiveTransferLineSchema = z.object({
-    transfer_line_id: UuidSchema,
-    quantity: z.number().int().min(1).max(999999),
-});
-
-const ReceiveTransferSchema = z.object({
-    lines: z.array(ReceiveTransferLineSchema).min(1).max(200).optional(),
-    idempotency_key: z.string().min(8).max(200),
-});
-
-const ShipTransferSchema = z.object({
-    idempotency_key: z.string().min(8).max(200),
-});
-
-type InventoryAdjustmentInput = z.infer<typeof AdjustInventorySchema>;
-type BulkAdjustInput = z.infer<typeof BulkAdjustSchema>;
-type CreateLocationInput = z.infer<typeof CreateLocationSchema>;
-type CreateSupplierInput = z.infer<typeof CreateSupplierSchema>;
-type CreatePurchaseOrderInput = z.infer<typeof CreatePurchaseOrderSchema>;
-type ReceivePurchaseOrderInput = z.infer<typeof ReceivePurchaseOrderSchema>;
-type CreateTransferInput = z.infer<typeof CreateTransferSchema>;
-type ReceiveTransferInput = z.infer<typeof ReceiveTransferSchema>;
-type ShipTransferInput = z.infer<typeof ShipTransferSchema>;
 
 type InventoryLevelRow = {
     id: string;

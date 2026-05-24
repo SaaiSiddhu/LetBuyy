@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { PaginationQuery, SlugSchema, UuidSchema } from '@letbuyy/shared-types';
+import { PaginationQuery, SeoSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
 
@@ -85,6 +85,117 @@ export const ReplaceNavigationSchema = z.object({
   location: NavigationLocationSchema.default('main'),
   name: z.string().min(1).max(120).optional(),
   items: z.array(NavigationItemSchema).max(100).default([]),
+});
+
+export const CreateBlogPostSchema = z.object({
+  store_id: UuidSchema,
+  title: z.string().min(1).max(300).trim(),
+  slug: SlugSchema.optional(),
+  excerpt: z.string().max(500).optional(),
+  content: z.string().max(100000),
+  content_html: z.string().max(150000).optional(),
+  featured_image: UrlSchema.optional().nullable(),
+  category_id: UuidSchema.optional().nullable(),
+  tag_ids: z.array(UuidSchema).max(20).default([]),
+  status: z.enum(['draft', 'published', 'scheduled']).default('draft'),
+  scheduled_at: z.coerce.date().optional().nullable(),
+  allow_comments: z.boolean().default(true),
+  is_featured: z.boolean().default(false),
+  is_pinned: z.boolean().default(false),
+  reading_time_min: z.number().int().min(0).max(1000).optional().nullable(),
+  ...SeoSchema.shape,
+});
+
+export const UpdateBlogPostSchema = z.object({
+  title: z.string().min(1).max(300).trim().optional(),
+  slug: SlugSchema.optional(),
+  excerpt: z.string().max(500).optional(),
+  content: z.string().max(100000).optional(),
+  content_html: z.string().max(150000).optional(),
+  featured_image: UrlSchema.optional().nullable(),
+  category_id: UuidSchema.optional().nullable(),
+  tag_ids: z.array(UuidSchema).max(20).optional(),
+  status: z.enum(['draft', 'published', 'scheduled', 'archived']).optional(),
+  scheduled_at: z.coerce.date().optional().nullable(),
+  allow_comments: z.boolean().optional(),
+  is_featured: z.boolean().optional(),
+  is_pinned: z.boolean().optional(),
+  reading_time_min: z.number().int().min(0).max(1000).optional().nullable(),
+  version: z.number().int().positive('Version required').optional(),
+  ...SeoSchema.shape,
+});
+
+export const CreateBlogCategorySchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100).trim(),
+  slug: SlugSchema.optional(),
+  description: z.string().max(500).optional(),
+  parent_id: UuidSchema.optional().nullable(),
+});
+
+export const CreateBlogTagSchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(50).trim(),
+});
+
+export const ListBlogPostsQuery = PaginationQuery.extend({
+  store_id: UuidSchema.optional(),
+  status: z.enum(['draft', 'published', 'scheduled', 'archived']).optional(),
+  category_id: UuidSchema.optional(),
+  search: z.string().max(200).optional(),
+});
+
+export const ListBlogCommentsQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  status: z.enum(['all', 'pending', 'approved', 'spam', 'rejected']).default('all'),
+});
+
+export const UpdateBlogCommentSchema = z.object({
+  status: z.enum(['pending', 'approved', 'spam', 'rejected']),
+});
+
+export const FormSubmissionStatusSchema = z.enum([
+  'new',
+  'read',
+  'replied',
+  'contacted',
+  'converted',
+  'archived',
+  'spam',
+]);
+
+export const ListFormSubmissionsQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  type: z.enum(['all', 'contact', 'lead']).default('all'),
+  status: z.enum(['all', 'new', 'read', 'replied', 'contacted', 'converted', 'archived', 'spam']).default('all'),
+});
+
+export const UpdateFormSubmissionSchema = z.object({
+  status: FormSubmissionStatusSchema,
+});
+
+export const UploadMediaSchema = z.object({
+  store_id: UuidSchema,
+  alt_text: z.string().max(500).optional(),
+  folder: z.string().max(200).optional(),
+  tags: z.array(z.string().max(50)).max(20).default([]),
+});
+
+export const UpdateMediaSchema = z.object({
+  alt_text: z.string().max(500).optional(),
+  folder: z.string().max(200).optional(),
+  tags: z.array(z.string().max(50)).max(20).optional(),
+});
+
+export const ListMediaQuery = PaginationQuery.extend({
+  store_id: UuidSchema.optional(),
+  folder: z.string().max(200).optional(),
+  type: z.enum(['image', 'video', 'document', 'all']).default('all'),
+  search: z.string().max(200).optional(),
+});
+
+export const BulkDeleteMediaSchema = z.object({
+  ids: z.array(UuidSchema).min(1).max(100),
 });
 
 export interface PortfolioProject {
@@ -187,3 +298,15 @@ export type UpdatePageInput = z.infer<typeof UpdatePageSchema>;
 export type CreatePolicyInput = z.infer<typeof CreatePolicySchema>;
 export type UpdatePolicyInput = z.infer<typeof UpdatePolicySchema>;
 export type ReplaceNavigationInput = z.infer<typeof ReplaceNavigationSchema>;
+export type CreateBlogPostInput = z.infer<typeof CreateBlogPostSchema>;
+export type UpdateBlogPostInput = z.infer<typeof UpdateBlogPostSchema>;
+export type ListBlogPostsInput = z.infer<typeof ListBlogPostsQuery>;
+export type ListBlogCommentsInput = z.infer<typeof ListBlogCommentsQuery>;
+export type UpdateBlogCommentInput = z.infer<typeof UpdateBlogCommentSchema>;
+export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
+export type ListFormSubmissionsInput = z.infer<typeof ListFormSubmissionsQuery>;
+export type UpdateFormSubmissionInput = z.infer<typeof UpdateFormSubmissionSchema>;
+export type UploadMediaInput = z.infer<typeof UploadMediaSchema>;
+export type UpdateMediaInput = z.infer<typeof UpdateMediaSchema>;
+export type ListMediaInput = z.infer<typeof ListMediaQuery>;
+export type BulkDeleteMediaInput = z.infer<typeof BulkDeleteMediaSchema>;

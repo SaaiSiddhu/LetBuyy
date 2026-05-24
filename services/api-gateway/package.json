@@ -9,7 +9,9 @@
     },
     "dependencies": {
         "@letbuyy/api-types": "workspace:*",
+        "@letbuyy/app-engine": "workspace:*",
         "@letbuyy/auth-core": "workspace:*",
+        "@letbuyy/billing-core": "workspace:*",
         "@letbuyy/checkout-core": "workspace:*",
         "@letbuyy/cms-core": "workspace:*",
         "@letbuyy/commerce-core": "workspace:*",

@@ -3,6 +3,7 @@ import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
 
 export type SubscriptionTier = 'free' | 'starter' | 'business' | 'enterprise';
 export type BillingCycle = 'monthly' | 'annual';
+export type SubscriptionBillingPeriod = 'monthly' | 'yearly';
 export type InvoiceStatus = 'draft' | 'open' | 'paid' | 'void' | 'uncollectible';
 
 export const BillingPlanSchema = z.object({
@@ -19,6 +20,37 @@ export const CreateSubscriptionSchema = z.object({
   plan_id: z.string().min(1).max(120),
   billing_cycle: z.enum(['monthly', 'annual']).default('monthly'),
   idempotency_key: z.string().min(8).max(200),
+});
+
+export const StoreSubscriptionQuerySchema = z.object({
+  store_id: z.string().uuid(),
+});
+
+export const PlanListQuerySchema = z.object({
+  site_type: z.string().min(1),
+  slug: z.string().min(1).optional(),
+});
+
+export const CancelSubscriptionSchema = z.object({
+  store_id: z.string().uuid(),
+  reason: z.string().max(500).optional(),
+});
+
+export const CreateSubscriptionOrderSchema = z.object({
+  store_id: z.string().uuid(),
+  plan_slug: z.string().min(1),
+  billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+  site_type: z.string().min(1),
+});
+
+export const VerifySubscriptionSchema = z.object({
+  store_id: z.string().uuid(),
+  plan_slug: z.string().min(1),
+  billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
+  site_type: z.string().min(1),
+  razorpay_order_id: z.string().min(1),
+  razorpay_payment_id: z.string().min(1),
+  razorpay_signature: z.string().min(1),
 });
 
 export interface BillingPlan {
@@ -63,3 +95,8 @@ export type BillingEvent = RuntimeEventEnvelope<{
 
 export type BillingPlanInput = z.infer<typeof BillingPlanSchema>;
 export type CreateSubscriptionInput = z.infer<typeof CreateSubscriptionSchema>;
+export type StoreSubscriptionQueryInput = z.infer<typeof StoreSubscriptionQuerySchema>;
+export type PlanListQueryInput = z.infer<typeof PlanListQuerySchema>;
+export type CancelSubscriptionInput = z.infer<typeof CancelSubscriptionSchema>;
+export type CreateSubscriptionOrderInput = z.infer<typeof CreateSubscriptionOrderSchema>;
+export type VerifySubscriptionInput = z.infer<typeof VerifySubscriptionSchema>;

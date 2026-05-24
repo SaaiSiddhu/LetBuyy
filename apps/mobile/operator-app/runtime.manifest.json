@@ -11,7 +11,7 @@
     "governanceDocs": ["docs/governance/mobile-governance.md", "docs/governance/platform-operations-governance.md"]
   },
   "allowedDependencies": {
-    "workspacePackages": ["letbuyy_core", "letbuyy_models", "letbuyy_services", "letbuyy_ui_kit"],
+    "workspacePackages": [],
     "runtimeImports": []
   },
   "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],

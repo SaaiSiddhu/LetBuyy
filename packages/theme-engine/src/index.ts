@@ -408,3 +408,124 @@ export type PreviewTokenInput = z.infer<typeof PreviewTokenSchema>;
 export type RollbackThemeReleaseInput = z.infer<typeof RollbackThemeReleaseSchema>;
 export type ThemePurchaseOrderInput = z.infer<typeof ThemePurchaseOrderSchema>;
 export type ThemePurchaseVerifyInput = z.infer<typeof ThemePurchaseVerifySchema>;
+
+export type ThemeCategory = 'store' | 'portfolio' | 'resume' | 'landing' | 'saas';
+export type ThemePricingType = 'free' | 'one_time' | 'subscription';
+
+export interface Theme {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  long_description: string;
+  category: ThemeCategory;
+  industry: string[];
+  theme_preset_id: string;
+  version: string;
+  is_active: boolean;
+  letbuyy_pricing_type: ThemePricingType;
+  letbuyy_price_usd: number;
+  letbuyy_price_inr: number;
+  wordpress_price_usd: number;
+  shopify_price_usd: number;
+  html_price_usd: number;
+  react_price_usd: number;
+  thumbnail_url: string;
+  preview_url: string;
+  screenshots: string[];
+  demo_url: string;
+  customizable_sections: Record<string, unknown>;
+  color_presets: Array<{ name: string; colors: Record<string, string> }>;
+  font_options: string[];
+  author_id: string | null;
+  author_name: string;
+  tags: string[];
+  features: string[];
+  supported_platforms: string[];
+  rating: number;
+  review_count: number;
+  install_count: number;
+  download_count: number;
+  purchase_count: number;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ThemePurchase {
+  id: string;
+  user_id: string;
+  theme_id: string;
+  payment_provider: 'stripe' | 'razorpay';
+  payment_id: string;
+  amount_usd: number;
+  amount_inr: number;
+  currency: string;
+  license_key: string;
+  license_type: 'single' | 'multi' | 'unlimited';
+  status: 'completed' | 'refunded' | 'pending';
+  created_at: string;
+}
+
+export interface ThemeInstallation {
+  id: string;
+  site_id: string;
+  theme_id: string;
+  user_id: string;
+  purchase_id: string | null;
+  is_active: boolean;
+  customizations: Record<string, unknown>;
+  version_installed: string;
+  installed_at: string;
+  updated_at: string;
+}
+
+export interface ThemeReview {
+  id: string;
+  user_id: string;
+  theme_id: string;
+  rating: number;
+  title: string;
+  content: string;
+  is_verified_purchase: boolean;
+  status: 'published' | 'pending' | 'rejected';
+  created_at: string;
+  user_name?: string;
+  user_avatar?: string;
+}
+
+export interface ThemeFilters {
+  category?: ThemeCategory;
+  pricing?: ThemePricingType | 'paid';
+  sort?: 'popular' | 'newest' | 'rating' | 'price_low' | 'price_high';
+  search?: string;
+  tags?: string[];
+  page?: number;
+  limit?: number;
+}
+
+export interface ThemeSearchFilters {
+  category?: string;
+  pricingType?: string;
+  siteType?: string;
+  industry?: string;
+  search?: string;
+  sort?: 'popular' | 'rating' | 'recent' | 'name' | 'price_low' | 'price_high';
+  limit?: number;
+  offset?: number;
+}
+
+export interface ThemeSearchResult {
+  themes: Record<string, unknown>[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface PaginatedResult<T> {
+  data: T[];
+  total: number;
+  page: number;
+  totalPages: number;
+  hasMore: boolean;
+}

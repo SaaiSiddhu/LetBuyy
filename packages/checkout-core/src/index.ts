@@ -119,6 +119,61 @@ export const CompleteRefundSchema = z.object({
   provider_event_id: z.string().max(200).optional(),
 });
 
+export interface CheckoutOrderItemCommand {
+  product_id: string;
+  variant_id?: string | null;
+  quantity: number;
+}
+
+export interface CreateCheckoutOrderCommand {
+  customer_name: string;
+  customer_email: string;
+  customer_phone?: string;
+  shipping_address?: Record<string, unknown>;
+  items: CheckoutOrderItemCommand[];
+  payment_method: string;
+  shipping_method?: 'standard' | 'express';
+  notes?: string;
+  coupon_code?: string;
+  gift_card_code?: string;
+  idempotency_key: string;
+}
+
+export interface FulfillmentLineCommand {
+  order_item_id: string;
+  quantity: number;
+}
+
+export interface FulfillOrderCommand {
+  idempotency_key: string;
+  location_id?: string | null;
+  lines?: FulfillmentLineCommand[];
+  carrier?: string;
+  tracking_number?: string;
+  tracking_url?: string;
+}
+
+export interface RefundLineCommand {
+  order_item_id: string;
+  quantity: number;
+  restock_quantity?: number;
+}
+
+export interface RefundOrderCommand {
+  idempotency_key: string;
+  lines?: RefundLineCommand[];
+  reason?: string;
+  refund_method: 'original_payment' | 'gift_card' | 'manual';
+  restock: boolean;
+}
+
+export interface CompleteRefundCommand {
+  idempotency_key: string;
+  refund_id: string;
+  provider_refund_id?: string;
+  provider_event_id?: string;
+}
+
 export const ListOrdersQuery = z.object({
   store_id: UuidSchema.optional(),
   status: z

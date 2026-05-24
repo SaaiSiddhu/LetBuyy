@@ -11,7 +11,7 @@
     "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/theme-runtime-governance.md"]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/utils"],
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/theme-engine", "@letbuyy/utils"],
     "runtimeImports": []
   },
   "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],

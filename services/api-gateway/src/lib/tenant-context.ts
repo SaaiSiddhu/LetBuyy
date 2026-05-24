@@ -5,17 +5,9 @@ import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership } from './auth-user';
 import { getSupabaseAdmin } from './supabase';
 import { SaasService } from '../services/saas.service';
+import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 
-export interface TenantContext {
-    siteId: string;
-    userId: string | null;
-    membershipId: string | null;
-    roles: string[];
-    permissions: string[];
-    plan: string;
-    entitlements: Record<string, unknown>;
-    requestId: string;
-}
+export type TenantContext = RuntimeTenantContext;
 
 type AppContext = Context<{ Bindings: Env }>;
 

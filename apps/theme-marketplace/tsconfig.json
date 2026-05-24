@@ -23,6 +23,12 @@
             }
         ],
         "paths": {
+            "@letbuyy/theme-engine": [
+                "../../packages/theme-engine/src/index.ts"
+            ],
+            "@letbuyy/shared-types": [
+                "../../packages/shared-types/src/index.ts"
+            ],
             "@/*": [
                 "./src/*"
             ]

@@ -14,6 +14,7 @@ import {
     PasswordResetRequestSchema,
     PasswordUpdateSchema,
 } from '../schemas/auth.schema';
+import { validateSubdomainFormat } from '@letbuyy/tenant-core';
 
 const auth = new Hono<{ Bindings: import('../index').Env }>();
 
@@ -27,18 +28,6 @@ const TOKEN_EXPIRY_MS: Record<TokenType, number> = {
 
 const OTP_EXPIRY_MS = 10 * 60 * 1000;
 const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
-const RESERVED_SUBDOMAINS = new Set([
-    'accounts', 'admin', 'console', 'team', 'api', 'webhooks',
-    'www', 'mail', 'ftp', 'localhost', 'letbuyy',
-    'seller', 'buyer', 'customer', 'support', 'help', 'contact',
-    'about', 'terms', 'privacy', 'policy', 'faq', 'blog', 'press',
-    'careers', 'investors', 'partners', 'affiliates', 'legal',
-    'store', 'stores', 'shop', 'app', 'dashboard', 'billing',
-    'auth', 'login', 'signup', 'register', 'onboarding',
-    'static', 'assets', 'cdn', 'media', 'images', 'files',
-    'null', 'undefined', 'test', 'demo', 'example', 'staging',
-]);
-const SUBDOMAIN_REGEX = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
 const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
 
 async function requireAccountsInternal(c: Context<{ Bindings: import('../index').Env }>) {
@@ -75,38 +64,6 @@ function parseDeviceName(userAgent: string): string {
     else if (ua.includes('linux')) os = 'Linux';
 
     return `${browser} on ${os}`;
-}
-
-function validateSubdomainFormat(subdomain: string): { valid: true } | { valid: false; reason: string; message: string } {
-    if (!subdomain) {
-        return { valid: false, reason: 'missing', message: 'Subdomain is required' };
-    }
-
-    if (subdomain.length < 3) {
-        return { valid: false, reason: 'too_short', message: 'Must be at least 3 characters' };
-    }
-
-    if (subdomain.length > 63) {
-        return { valid: false, reason: 'too_long', message: 'Must be at most 63 characters' };
-    }
-
-    if (!SUBDOMAIN_REGEX.test(subdomain)) {
-        return {
-            valid: false,
-            reason: 'invalid_format',
-            message: 'Only lowercase letters, numbers, and hyphens. Must start and end with a letter or number.',
-        };
-    }
-
-    if (subdomain.includes('--')) {
-        return { valid: false, reason: 'double_hyphen', message: 'Cannot contain consecutive hyphens' };
-    }
-
-    if (RESERVED_SUBDOMAINS.has(subdomain)) {
-        return { valid: false, reason: 'reserved', message: 'This name is reserved' };
-    }
-
-    return { valid: true };
 }
 
 async function getOrCreateDevice(db: ReturnType<typeof getSupabaseAdmin>, userId: string, fingerprint: string, userAgent: string) {

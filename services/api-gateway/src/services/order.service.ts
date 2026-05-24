@@ -7,61 +7,12 @@ import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { VALID_TRANSITIONS } from '../schemas/order.schema';
 import type { TenantContext } from '../lib/tenant-context';
 import { SaasService } from './saas.service';
-
-interface OrderItem {
-    product_id: string;
-    variant_id?: string | null;
-    quantity: number;
-}
-
-interface FulfillmentLine {
-    order_item_id: string;
-    quantity: number;
-}
-
-interface FulfillOrderInput {
-    idempotency_key: string;
-    location_id?: string | null;
-    lines?: FulfillmentLine[];
-    carrier?: string;
-    tracking_number?: string;
-    tracking_url?: string;
-}
-
-interface RefundLine {
-    order_item_id: string;
-    quantity: number;
-    restock_quantity?: number;
-}
-
-interface RefundOrderInput {
-    idempotency_key: string;
-    lines?: RefundLine[];
-    reason?: string;
-    refund_method: 'original_payment' | 'gift_card' | 'manual';
-    restock: boolean;
-}
-
-interface CompleteRefundInput {
-    idempotency_key: string;
-    refund_id: string;
-    provider_refund_id?: string;
-    provider_event_id?: string;
-}
-
-interface CreateOrderInput {
-    customer_name: string;
-    customer_email: string;
-    customer_phone?: string;
-    shipping_address?: Record<string, unknown>;
-    items: OrderItem[];
-    payment_method: string;
-    shipping_method?: 'standard' | 'express';
-    notes?: string;
-    coupon_code?: string;
-    gift_card_code?: string;
-    idempotency_key: string;
-}
+import type {
+    CompleteRefundCommand,
+    CreateCheckoutOrderCommand,
+    FulfillOrderCommand,
+    RefundOrderCommand,
+} from '@letbuyy/checkout-core';
 
 interface OrderRow {
     id: string;
@@ -85,7 +36,7 @@ export class OrderService {
      * 4. Generate collision-free order number
      * 5. Insert order + items atomically through the inventory RPC
      */
-    async createOrder(input: CreateOrderInput, tenant: TenantContext) {
+    async createOrder(input: CreateCheckoutOrderCommand, tenant: TenantContext) {
         await this.assertOrderQuota(tenant.siteId);
 
         const { data, error } = await this.db.rpc('create_checkout_order', {
@@ -245,7 +196,7 @@ export class OrderService {
         return data;
     }
 
-    async fulfillOrder(orderId: string, tenant: TenantContext, input: FulfillOrderInput) {
+    async fulfillOrder(orderId: string, tenant: TenantContext, input: FulfillOrderCommand) {
         const { data, error } = await this.db.rpc('create_order_fulfillment', {
             p_order_id: orderId,
             p_lines: input.lines || null,
@@ -265,7 +216,7 @@ export class OrderService {
         return data;
     }
 
-    async createRefund(orderId: string, tenant: TenantContext, input: RefundOrderInput) {
+    async createRefund(orderId: string, tenant: TenantContext, input: RefundOrderCommand) {
         const { data, error } = await this.db.rpc('create_order_return_and_refund', {
             p_order_id: orderId,
             p_lines: input.lines || null,
@@ -284,7 +235,7 @@ export class OrderService {
         return data;
     }
 
-    async completeRefund(orderId: string, tenant: TenantContext, input: CompleteRefundInput) {
+    async completeRefund(orderId: string, tenant: TenantContext, input: CompleteRefundCommand) {
         const { data, error } = await this.db.rpc('complete_order_refund', {
             p_refund_id: input.refund_id,
             p_provider_refund_id: input.provider_refund_id || null,

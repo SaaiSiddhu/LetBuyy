@@ -12,41 +12,21 @@ import {
     RazorpayVerifySchema,
     StripeCheckoutSchema,
 } from '../schemas/order.schema';
-import { z } from 'zod';
+import {
+    CancelSubscriptionSchema,
+    CreateSubscriptionOrderSchema,
+    PlanListQuerySchema,
+    StoreSubscriptionQuerySchema,
+    VerifySubscriptionSchema,
+    type CancelSubscriptionInput,
+    type CreateSubscriptionOrderInput,
+    type PlanListQueryInput,
+    type StoreSubscriptionQueryInput,
+    type VerifySubscriptionInput,
+} from '@letbuyy/billing-core';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
-
-const StoreSubscriptionQuerySchema = z.object({
-    store_id: z.string().uuid(),
-});
-
-const PlanListQuerySchema = z.object({
-    site_type: z.string().min(1),
-    slug: z.string().min(1).optional(),
-});
-
-const CancelSubscriptionSchema = z.object({
-    store_id: z.string().uuid(),
-    reason: z.string().max(500).optional(),
-});
-
-const CreateSubscriptionOrderSchema = z.object({
-    store_id: z.string().uuid(),
-    plan_slug: z.string().min(1),
-    billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
-    site_type: z.string().min(1),
-});
-
-const VerifySubscriptionSchema = z.object({
-    store_id: z.string().uuid(),
-    plan_slug: z.string().min(1),
-    billing_period: z.enum(['monthly', 'yearly']).default('monthly'),
-    site_type: z.string().min(1),
-    razorpay_order_id: z.string().min(1),
-    razorpay_payment_id: z.string().min(1),
-    razorpay_signature: z.string().min(1),
-});
 
 type PayableOrder = {
     id: string;
@@ -66,7 +46,7 @@ type RazorpayOrderCreateResponse = {
 
 // GET /payments/plans — Fetch active subscription plans through the worker boundary
 router.get('/plans', validate('query', PlanListQuerySchema), async (c) => {
-    const query = c.get('validatedQuery') as z.infer<typeof PlanListQuerySchema>;
+    const query = c.get('validatedQuery') as PlanListQueryInput;
     const db = getSupabaseAdmin(c);
 
     let request = db
@@ -138,7 +118,7 @@ async function loadPayableOrder(
 // GET /payments/subscription — Store-scoped billing state for merchant admin
 router.get('/subscription', validate('query', StoreSubscriptionQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const { store_id } = c.get('validatedQuery') as z.infer<typeof StoreSubscriptionQuerySchema>;
+    const { store_id } = c.get('validatedQuery') as StoreSubscriptionQueryInput;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -183,7 +163,7 @@ router.get('/subscription', validate('query', StoreSubscriptionQuerySchema), asy
 // GET /payments/subscription/history — Store-scoped billing/invoice history for merchant admin
 router.get('/subscription/history', validate('query', StoreSubscriptionQuerySchema), async (c) => {
     const auth = c.get('auth');
-    const { store_id } = c.get('validatedQuery') as z.infer<typeof StoreSubscriptionQuerySchema>;
+    const { store_id } = c.get('validatedQuery') as StoreSubscriptionQueryInput;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -208,7 +188,7 @@ router.get('/subscription/history', validate('query', StoreSubscriptionQuerySche
 // POST /payments/subscription/cancel — Cancel active store subscription
 router.post('/subscription/cancel', validate('json', CancelSubscriptionSchema), async (c) => {
     const auth = c.get('auth');
-    const body = c.get('validatedBody') as z.infer<typeof CancelSubscriptionSchema>;
+    const body = c.get('validatedBody') as CancelSubscriptionInput;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -238,7 +218,7 @@ router.post('/subscription/cancel', validate('json', CancelSubscriptionSchema), 
 // POST /payments/subscription/order — Create a Razorpay order for merchant subscription checkout
 router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchema), async (c) => {
     const auth = c.get('auth');
-    const body = c.get('validatedBody') as z.infer<typeof CreateSubscriptionOrderSchema>;
+    const body = c.get('validatedBody') as CreateSubscriptionOrderInput;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -329,7 +309,7 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
 // POST /payments/subscription/verify — Verify Razorpay and activate a merchant subscription
 router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), async (c) => {
     const auth = c.get('auth');
-    const body = c.get('validatedBody') as z.infer<typeof VerifySubscriptionSchema>;
+    const body = c.get('validatedBody') as VerifySubscriptionInput;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 

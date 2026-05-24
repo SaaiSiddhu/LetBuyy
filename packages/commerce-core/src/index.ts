@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EmailSchema, MoneySchema, PaginationQuery, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+import { EmailSchema, MoneySchema, PaginationQuery, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -150,6 +150,171 @@ export const ListCustomersQuery = PaginationQuery.extend({
   has_orders: z.coerce.boolean().optional(),
 });
 
+export const StoreScopedQuerySchema = z.object({
+  store_id: UuidSchema,
+});
+
+export const CreateCategorySchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100).trim(),
+  slug: SlugSchema.optional(),
+  description: z.string().max(500).optional(),
+  image_url: z.string().url().optional(),
+  parent_id: UuidSchema.optional().nullable(),
+  display_order: z.number().int().min(0).default(0),
+  is_visible: z.boolean().default(true),
+});
+
+export const UpdateCategorySchema = z.object({
+  name: z.string().min(1).max(100).trim().optional(),
+  slug: SlugSchema.optional(),
+  description: z.string().max(500).optional(),
+  image_url: z.string().url().optional().nullable(),
+  parent_id: UuidSchema.optional().nullable(),
+  display_order: z.number().int().min(0).optional(),
+  is_visible: z.boolean().optional(),
+});
+
+export const CreateCollectionSchema = z.object({
+  store_id: UuidSchema,
+  title: z.string().min(1).max(160).trim(),
+  description: z.string().max(1000).optional().nullable(),
+  image_url: z.string().url().optional().nullable(),
+});
+
+export const CreateGiftCardSchema = z.object({
+  store_id: UuidSchema,
+  initial_value: z.coerce.number().positive().max(999999),
+  expires_at: z.string().datetime().optional().nullable(),
+});
+
+export const CreateLocationSchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(200).trim(),
+  address: z.string().max(500).optional(),
+  city: z.string().max(100).optional(),
+  state: z.string().max(100).optional(),
+  country: z.string().length(2).toUpperCase().default('IN'),
+  is_default: z.boolean().default(false),
+});
+
+export const AdjustInventorySchema = z.object({
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema.optional(),
+  adjustment: z.number().int().min(-99999).max(99999),
+  reason: z.enum([
+    'received',
+    'sold',
+    'returned',
+    'damaged',
+    'correction',
+    'transfer',
+    'sale',
+    'return',
+    'adjustment',
+    'recount',
+  ]),
+  notes: z.string().max(500).optional(),
+});
+
+export const BulkAdjustSchema = z.object({
+  store_id: UuidSchema,
+  adjustments: z.array(AdjustInventorySchema).min(1).max(100),
+});
+
+export const CreateSupplierSchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(200).trim(),
+  contact_name: z.string().max(200).optional(),
+  email: EmailSchema.optional(),
+  phone: z.string().max(30).optional(),
+  address: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const PurchaseOrderLineSchema = z.object({
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().min(1).max(999999),
+  unit_cost: z.number().min(0).max(999999).default(0),
+});
+
+export const CreatePurchaseOrderSchema = z.object({
+  store_id: UuidSchema,
+  supplier_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema,
+  expected_at: z.coerce.date().optional(),
+  notes: z.string().max(1000).optional(),
+  lines: z.array(PurchaseOrderLineSchema).min(1).max(200),
+  idempotency_key: z.string().min(8).max(200),
+});
+
+export const ReceivePurchaseOrderLineSchema = z.object({
+  purchase_order_line_id: UuidSchema,
+  quantity: z.number().int().min(1).max(999999),
+});
+
+export const ReceivePurchaseOrderSchema = z.object({
+  lines: z.array(ReceivePurchaseOrderLineSchema).min(1).max(200).optional(),
+  idempotency_key: z.string().min(8).max(200),
+});
+
+export const TransferLineSchema = z.object({
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  quantity: z.number().int().min(1).max(999999),
+});
+
+export const CreateTransferSchema = z.object({
+  store_id: UuidSchema,
+  source_location_id: UuidSchema,
+  destination_location_id: UuidSchema,
+  notes: z.string().max(1000).optional(),
+  lines: z.array(TransferLineSchema).min(1).max(200),
+  idempotency_key: z.string().min(8).max(200),
+});
+
+export const ReceiveTransferLineSchema = z.object({
+  transfer_line_id: UuidSchema,
+  quantity: z.number().int().min(1).max(999999),
+});
+
+export const ReceiveTransferSchema = z.object({
+  lines: z.array(ReceiveTransferLineSchema).min(1).max(200).optional(),
+  idempotency_key: z.string().min(8).max(200),
+});
+
+export const ShipTransferSchema = z.object({
+  idempotency_key: z.string().min(8).max(200),
+});
+
+export const ReviewModerationStatusSchema = z.enum(['pending', 'approved', 'rejected']);
+
+export const ListProductReviewsQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  status: z.enum(['all', 'pending', 'approved', 'rejected']).default('all'),
+});
+
+export const UpdateProductReviewSchema = z.object({
+  status: ReviewModerationStatusSchema,
+});
+
+export const StorefrontProductReviewsQuery = z.object({
+  product_id: UuidSchema,
+  store_id: UuidSchema,
+});
+
+export const CreateStorefrontProductReviewSchema = z.object({
+  product_id: UuidSchema,
+  store_id: UuidSchema,
+  rating: z.coerce.number().int().min(1).max(5),
+  title: z.string().trim().max(120).optional().nullable(),
+  body: z.string().trim().max(2000).optional().nullable(),
+  customer_name: z.string().trim().max(120).optional().nullable(),
+  customer_email: EmailSchema.optional().nullable(),
+  is_verified: z.boolean().default(false),
+});
+
 export interface Product {
   id: string;
   store_id: string;
@@ -281,6 +446,9 @@ export interface ProductModel {
 }
 
 export type CreateProductInput = z.infer<typeof CreateProductSchema>;
+export type CreateProductCommand = z.input<typeof CreateProductSchema>;
+export type ProductOptionInput = z.input<typeof ProductOptionSchema>;
+export type ProductVariantInput = z.input<typeof ProductVariantSchema>;
 export type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
 export type ListProductsInput = z.infer<typeof ListProductsQuery>;
 export type BulkProductActionInput = z.infer<typeof BulkProductActionSchema>;
@@ -288,3 +456,20 @@ export type CreateCustomerInput = z.infer<typeof CreateCustomerSchema>;
 export type UpdateCustomerInput = z.infer<typeof UpdateCustomerSchema>;
 export type CreateCustomerAddressInput = z.infer<typeof CreateCustomerAddressSchema>;
 export type ListCustomersInput = z.infer<typeof ListCustomersQuery>;
+export type StoreScopedQueryInput = z.infer<typeof StoreScopedQuerySchema>;
+export type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
+export type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
+export type CreateCollectionInput = z.infer<typeof CreateCollectionSchema>;
+export type CreateGiftCardInput = z.infer<typeof CreateGiftCardSchema>;
+export type InventoryAdjustmentInput = z.infer<typeof AdjustInventorySchema>;
+export type BulkAdjustInput = z.infer<typeof BulkAdjustSchema>;
+export type CreateLocationInput = z.infer<typeof CreateLocationSchema>;
+export type CreateSupplierInput = z.infer<typeof CreateSupplierSchema>;
+export type CreatePurchaseOrderInput = z.infer<typeof CreatePurchaseOrderSchema>;
+export type ReceivePurchaseOrderInput = z.infer<typeof ReceivePurchaseOrderSchema>;
+export type CreateTransferInput = z.infer<typeof CreateTransferSchema>;
+export type ReceiveTransferInput = z.infer<typeof ReceiveTransferSchema>;
+export type ShipTransferInput = z.infer<typeof ShipTransferSchema>;
+export type ReviewModerationStatus = z.infer<typeof ReviewModerationStatusSchema>;
+export type StorefrontProductReviewsQueryInput = z.infer<typeof StorefrontProductReviewsQuery>;
+export type CreateStorefrontProductReviewInput = z.infer<typeof CreateStorefrontProductReviewSchema>;

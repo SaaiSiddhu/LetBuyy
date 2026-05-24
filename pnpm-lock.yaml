@@ -453,6 +453,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../../packages/theme-engine
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
@@ -513,6 +516,19 @@ importers:
         version: 4.1.18
       typescript:
         specifier: ^5
+        version: 5.9.3
+
+  packages/app-engine:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
         version: 5.9.3
 
   packages/auth-core:
@@ -669,6 +685,9 @@ importers:
 
   packages/typescript/api-types:
     dependencies:
+      '@letbuyy/app-engine':
+        specifier: workspace:*
+        version: link:../../app-engine
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../auth-core
@@ -741,9 +760,15 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/app-engine':
+        specifier: workspace:*
+        version: link:../../packages/app-engine
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
+      '@letbuyy/billing-core':
+        specifier: workspace:*
+        version: link:../../packages/billing-core
       '@letbuyy/checkout-core':
         specifier: workspace:*
         version: link:../../packages/checkout-core

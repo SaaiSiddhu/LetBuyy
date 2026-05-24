@@ -6,56 +6,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasService } from './saas.service';
-
-interface ProductOptionInput {
-    name: string;
-    position: number;
-    values: string[];
-}
-
-interface ProductVariantInput {
-    sku?: string | null;
-    title: string;
-    price?: number | null;
-    price_override?: number | null;
-    compare_price?: number | null;
-    stock: number;
-    options: Record<string, string>;
-}
-
-interface CreateProductInput {
-    store_id: string;
-    name: string;
-    description?: string;
-    price: number;
-    compare_price?: number | null;
-    cost_price?: number | null;
-    cost_per_item?: number | null;
-    images?: string[];
-    category?: string;
-    product_type?: string | null;
-    vendor?: string | null;
-    tags?: string[];
-    variants?: ProductVariantInput[];
-    product_options?: ProductOptionInput[];
-    stock?: number;
-    track_inventory?: boolean;
-    sku?: string | null;
-    barcode?: string | null;
-    sell_when_oos?: boolean;
-    is_physical?: boolean;
-    weight?: number | null;
-    weight_unit?: string;
-    country_of_origin?: string | null;
-    hs_code?: string | null;
-    url_handle?: string | null;
-    seo_title?: string | null;
-    seo_description?: string | null;
-    charge_tax?: boolean;
-    is_active?: boolean;
-    is_featured?: boolean;
-    display_order?: number;
-}
+import type { CreateProductCommand, ProductOptionInput, ProductVariantInput } from '@letbuyy/commerce-core';
 
 interface OwnedProductRow {
     id: string;
@@ -75,7 +26,7 @@ export class ProductService {
      * Create a product with store ownership verification.
      * Generates a URL-safe slug from the product name.
      */
-    async createProduct(input: CreateProductInput, userId: string, sessionStoreId?: string) {
+    async createProduct(input: CreateProductCommand, userId: string, sessionStoreId?: string) {
         await this.assertStoreOwnership(input.store_id, userId, sessionStoreId, 'You do not own this store');
         await this.assertProductQuota(input.store_id);
 
@@ -442,7 +393,7 @@ export class ProductService {
                     price: variant.price ?? variant.price_override ?? basePrice,
                     compare_price: variant.compare_price ?? null,
                     sku: variant.sku || null,
-                    inventory_qty: variant.stock,
+                    inventory_qty: variant.stock ?? 0,
                     option1: Object.values(variant.options || {})[0] || null,
                     option2: Object.values(variant.options || {})[1] || null,
                     option3: Object.values(variant.options || {})[2] || null,

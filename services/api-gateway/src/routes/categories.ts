@@ -7,34 +7,14 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { z } from 'zod';
-import { UuidSchema, SlugSchema } from '../schemas/common.schema';
+import {
+    CreateCategorySchema,
+    UpdateCategorySchema,
+    type CreateCategoryInput,
+    type UpdateCategoryInput,
+} from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-
-const CreateCategorySchema = z.object({
-    store_id: UuidSchema,
-    name: z.string().min(1).max(100).trim(),
-    slug: SlugSchema.optional(),
-    description: z.string().max(500).optional(),
-    image_url: z.string().url().optional(),
-    parent_id: UuidSchema.optional().nullable(),
-    display_order: z.number().int().min(0).default(0),
-    is_visible: z.boolean().default(true),
-});
-
-const UpdateCategorySchema = z.object({
-    name: z.string().min(1).max(100).trim().optional(),
-    slug: SlugSchema.optional(),
-    description: z.string().max(500).optional(),
-    image_url: z.string().url().optional().nullable(),
-    parent_id: UuidSchema.optional().nullable(),
-    display_order: z.number().int().min(0).optional(),
-    is_visible: z.boolean().optional(),
-});
-
-type CreateCategoryInput = z.infer<typeof CreateCategorySchema>;
-type UpdateCategoryInput = z.infer<typeof UpdateCategorySchema>;
 
 interface CategoryTreeRow {
     id: string;

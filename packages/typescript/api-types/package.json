@@ -9,6 +9,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@letbuyy/app-engine": "workspace:*",
         "@letbuyy/auth-core": "workspace:*",
         "@letbuyy/billing-core": "workspace:*",
         "@letbuyy/checkout-core": "workspace:*",

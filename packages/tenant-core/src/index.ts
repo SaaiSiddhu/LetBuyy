@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SeoSchema } from '@letbuyy/shared-types';
+import { SeoSchema, UuidSchema } from '@letbuyy/shared-types';
 import type { StoreTemplateConfig } from '@letbuyy/theme-engine';
 
 export type SiteType = 'store' | 'portfolio' | 'resume' | 'blog' | 'landing';
@@ -7,11 +7,19 @@ export type StoreStatus = 'draft' | 'published' | 'frozen' | 'suspended';
 export type PaymentGateway = 'razorpay' | 'stripe' | 'paypal';
 
 export const RESERVED_SUBDOMAINS = [
-  'www', 'api', 'admin', 'auth', 'cdn', 'mail', 'ftp', 'app',
-  'staging', 'dev', 'test', 'console', 'team', 'accounts',
-  'status', 'help', 'docs', 'support', 'billing', 'store',
-  'dashboard', 'login', 'signup', 'register', 'blog', 'shop',
+  'accounts', 'admin', 'console', 'team', 'api', 'webhooks',
+  'www', 'mail', 'ftp', 'localhost', 'letbuyy',
+  'seller', 'buyer', 'customer', 'support', 'help', 'contact',
+  'about', 'terms', 'privacy', 'policy', 'faq', 'blog', 'press',
+  'careers', 'investors', 'partners', 'affiliates', 'legal',
+  'store', 'stores', 'shop', 'app', 'dashboard', 'billing',
+  'auth', 'login', 'signup', 'register', 'onboarding',
+  'static', 'assets', 'cdn', 'media', 'images', 'files',
+  'status', 'docs', 'dev',
+  'null', 'undefined', 'test', 'demo', 'example', 'staging',
 ] as const;
+
+export const SUBDOMAIN_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
 
 export const SiteTypeSchema = z.enum([
   'store', 'portfolio', 'resume', 'blog', 'landing',
@@ -21,14 +29,47 @@ export const SubdomainSchema = z
   .string()
   .min(3, 'Subdomain must be at least 3 characters')
   .max(63, 'Subdomain cannot exceed 63 characters')
-  .regex(
-    /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/,
-    'Subdomain must be lowercase alphanumeric, may contain hyphens (not at start/end)',
-  )
+  .regex(SUBDOMAIN_PATTERN, 'Subdomain must be lowercase alphanumeric, may contain hyphens (not at start/end)')
   .refine(
     (subdomain) => !RESERVED_SUBDOMAINS.includes(subdomain as typeof RESERVED_SUBDOMAINS[number]),
     'This subdomain is reserved',
   );
+
+export type SubdomainValidationResult =
+  | { valid: true }
+  | { valid: false; reason: string; message: string };
+
+export function validateSubdomainFormat(subdomain: string): SubdomainValidationResult {
+  if (!subdomain) {
+    return { valid: false, reason: 'missing', message: 'Subdomain is required' };
+  }
+
+  if (subdomain.length < 3) {
+    return { valid: false, reason: 'too_short', message: 'Must be at least 3 characters' };
+  }
+
+  if (subdomain.length > 63) {
+    return { valid: false, reason: 'too_long', message: 'Must be at most 63 characters' };
+  }
+
+  if (!SUBDOMAIN_PATTERN.test(subdomain)) {
+    return {
+      valid: false,
+      reason: 'invalid_format',
+      message: 'Only lowercase letters, numbers, and hyphens. Must start and end with a letter or number.',
+    };
+  }
+
+  if (subdomain.includes('--')) {
+    return { valid: false, reason: 'double_hyphen', message: 'Cannot contain consecutive hyphens' };
+  }
+
+  if (RESERVED_SUBDOMAINS.includes(subdomain as typeof RESERVED_SUBDOMAINS[number])) {
+    return { valid: false, reason: 'reserved', message: 'This name is reserved' };
+  }
+
+  return { valid: true };
+}
 
 export const CreateStoreSchema = z.object({
   name: z.string().min(1).max(100).trim(),
@@ -70,6 +111,55 @@ export const PaymentConfigSchema = z.object({
   key_secret: z.string().min(10).max(256),
   test_mode: z.boolean().default(false),
 });
+
+export const StartOnboardingSchema = z.object({
+  site_type: SiteTypeSchema,
+});
+
+export const Step1Schema = z.object({
+  site_type: SiteTypeSchema,
+});
+
+export const Step2Schema = z.object({
+  store_name: z.string().min(2).max(100).trim(),
+  subdomain: SubdomainSchema,
+});
+
+export const Step3Schema = z.object({
+  template_id: UuidSchema,
+});
+
+export const Step4Schema = z.object({
+  industry: z.string().max(100).optional(),
+  target_audience: z.enum(['B2C', 'B2B', 'Both']).optional(),
+  business_goal: z.enum(['sell_products', 'showcase_work', 'build_brand', 'grow_audience', 'other']).optional(),
+  brand_tone: z.enum(['professional', 'casual', 'luxury', 'playful', 'formal']).optional(),
+  team_size: z.enum(['solo', '2-5', '6-20', '20+']).optional(),
+  revenue_range: z.enum(['pre-revenue', '<1L', '1-10L', '10L+']).optional(),
+});
+
+export const Step5Schema = z.object({
+  logo_url: z.string().url().optional(),
+  brand_color: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
+  tagline: z.string().max(200).optional(),
+});
+
+export const Step6Schema = z.object({
+  publish_immediately: z.boolean().default(false),
+});
+
+export const CheckSubdomainSchema = z.object({
+  subdomain: SubdomainSchema,
+});
+
+export const STEP_SCHEMAS: Record<number, z.ZodType> = {
+  1: Step1Schema,
+  2: Step2Schema,
+  3: Step3Schema,
+  4: Step4Schema,
+  5: Step5Schema,
+  6: Step6Schema,
+};
 
 export interface Store {
   id: string;
@@ -172,6 +262,25 @@ export interface TenantContext {
   actor_id?: string;
 }
 
+export interface RuntimeTenantContext {
+  siteId: string;
+  userId: string | null;
+  membershipId: string | null;
+  roles: string[];
+  permissions: string[];
+  plan: string;
+  entitlements: Record<string, unknown>;
+  requestId: string;
+}
+
 export type CreateStoreInput = z.infer<typeof CreateStoreSchema>;
 export type UpdateStoreInput = z.infer<typeof UpdateStoreSchema>;
 export type PaymentConfigInput = z.infer<typeof PaymentConfigSchema>;
+export type StartOnboardingInput = z.infer<typeof StartOnboardingSchema>;
+export type Step1Input = z.infer<typeof Step1Schema>;
+export type Step2Input = z.infer<typeof Step2Schema>;
+export type Step3Input = z.infer<typeof Step3Schema>;
+export type Step4Input = z.infer<typeof Step4Schema>;
+export type Step5Input = z.infer<typeof Step5Schema>;
+export type Step6Input = z.infer<typeof Step6Schema>;
+export type CheckSubdomainInput = z.infer<typeof CheckSubdomainSchema>;

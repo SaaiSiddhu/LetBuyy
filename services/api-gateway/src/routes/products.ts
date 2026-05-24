@@ -9,37 +9,20 @@ import {
     UpdateProductSchema,
     ListProductsQuery,
     BulkProductActionSchema,
-} from '../schemas/product.schema';
-import type { z } from 'zod';
-import { z as zod } from 'zod';
+    StoreScopedQuerySchema,
+    CreateCollectionSchema,
+    CreateGiftCardSchema,
+    type CreateProductInput,
+    type UpdateProductInput,
+    type BulkProductActionInput,
+    type ListProductsInput,
+    type StoreScopedQueryInput,
+    type CreateCollectionInput,
+    type CreateGiftCardInput,
+} from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-
-type CreateProductInput = z.infer<typeof CreateProductSchema>;
-type UpdateProductInput = z.infer<typeof UpdateProductSchema>;
-type BulkProductActionInput = z.infer<typeof BulkProductActionSchema>;
-type ListProductsQueryInput = z.infer<typeof ListProductsQuery>;
-
-const StoreScopedQuerySchema = zod.object({
-    store_id: zod.string().uuid(),
-});
-
-const CreateCollectionSchema = zod.object({
-    store_id: zod.string().uuid(),
-    title: zod.string().min(1).max(160).trim(),
-    description: zod.string().max(1000).optional().nullable(),
-    image_url: zod.string().url().optional().nullable(),
-});
-
-const CreateGiftCardSchema = zod.object({
-    store_id: zod.string().uuid(),
-    initial_value: zod.coerce.number().positive().max(999999),
-    expires_at: zod.string().datetime().optional().nullable(),
-});
-
-type StoreScopedQueryInput = z.infer<typeof StoreScopedQuerySchema>;
-type CreateCollectionInput = z.infer<typeof CreateCollectionSchema>;
-type CreateGiftCardInput = z.infer<typeof CreateGiftCardSchema>;
+type ListProductsQueryInput = ListProductsInput;
 
 type DatabaseErrorLike = {
     message?: string;

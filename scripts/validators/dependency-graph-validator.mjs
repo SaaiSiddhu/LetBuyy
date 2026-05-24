@@ -4,6 +4,7 @@ import {
   createReporter,
   extractSpecifiers,
   getTrackedFiles,
+  listWorkspaceFiles,
   packageRootForManifest,
   readFile,
   readJson,
@@ -16,7 +17,7 @@ import {
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Dependency graph validator");
-const trackedFiles = getTrackedFiles();
+const trackedFiles = [...new Set([...getTrackedFiles(), ...listWorkspaceFiles()])].sort();
 const governedRoots = new Set([...canonicalRuntimeRoots, ...workspacePackageRoots]);
 const packageNameToRoot = new Map();
 
@@ -82,6 +83,7 @@ function validateDirection(fromRoot, toRoot, reason) {
 
   const allowedPackageEdges = {
     "packages/typescript/api-types": [
+      "packages/app-engine",
       "packages/auth-core",
       "packages/billing-core",
       "packages/checkout-core",
@@ -96,6 +98,7 @@ function validateDirection(fromRoot, toRoot, reason) {
     ],
     "packages/typescript/ui": ["packages/typescript/api-types", "packages/typescript/utils"],
     "packages/typescript/utils": ["packages/typescript/api-types"],
+    "packages/app-engine": ["packages/shared-types"],
     "packages/auth-core": ["packages/shared-types"],
     "packages/billing-core": ["packages/event-core", "packages/shared-types"],
     "packages/checkout-core": ["packages/commerce-core", "packages/shared-types"],

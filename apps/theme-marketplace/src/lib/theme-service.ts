@@ -1,22 +1,5 @@
 import { themeWorkerFetch } from '@/lib/api/worker-client';
-
-export interface ThemeFilters {
-    category?: string;
-    pricingType?: string;
-    siteType?: string;
-    industry?: string;
-    search?: string;
-    sort?: 'popular' | 'rating' | 'recent' | 'name' | 'price_low' | 'price_high';
-    limit?: number;
-    offset?: number;
-}
-
-export interface ThemeSearchResult {
-    themes: Record<string, unknown>[];
-    total: number;
-    limit: number;
-    offset: number;
-}
+import type { ThemeSearchFilters, ThemeSearchResult } from '@letbuyy/theme-engine';
 
 interface WorkerEnvelope<T> {
     success?: boolean;
@@ -47,7 +30,7 @@ function appendIfPresent(params: URLSearchParams, key: string, value: string | n
 }
 
 export const ThemeService = {
-    async listThemes(filters: ThemeFilters = {}): Promise<ThemeSearchResult> {
+    async listThemes(filters: ThemeSearchFilters = {}): Promise<ThemeSearchResult> {
         const limit = filters.limit ?? 20;
         const offset = filters.offset ?? 0;
         const page = Math.floor(offset / limit) + 1;
