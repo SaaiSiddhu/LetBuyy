@@ -36,5 +36,4 @@ database migrations -> generated app artifacts
 
 ## Validation
 
-Dependency validation is enforced by `scripts/validate-architecture.mjs`. The validator scans tracked source files, package manifests, governance files, and known runtime roots for topology and import-boundary violations.
-
+Dependency validation is enforced by `scripts/validate-governance.mjs`, especially `scripts/validators/import-validator.mjs` and `scripts/validators/package-ownership-validator.mjs`. The validators scan tracked source files, package manifests, governance files, and known runtime roots for topology and import-boundary violations.

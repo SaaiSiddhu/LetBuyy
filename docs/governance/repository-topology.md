@@ -69,6 +69,11 @@ infrastructure/
   security/
   ci-cd/
 
+config/
+  env/
+    templates/
+    schemas/
+
 legacy/
   firebase/
 
@@ -105,7 +110,7 @@ docs/
 - Shared code lives under `packages/`.
 - Database state lives under `database/`.
 - Provider, deployment, DNS, security, monitoring, and CI config live under `infrastructure/`.
+- Environment templates, schemas, and runtime env ownership rules live under `config/env/`.
 - Deprecated systems live under `legacy/`.
 - Generated or lifecycle-owned docs live under explicit `docs/` lifecycle directories.
 - Compatibility aliases are temporary and must not receive source code.
-

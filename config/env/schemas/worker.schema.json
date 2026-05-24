@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Worker Environment",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["SUPABASE_URL", "SUPABASE_SERVICE_ROLE_KEY"],
+  "properties": {
+    "SUPABASE_URL": { "type": "string", "format": "uri" },
+    "SUPABASE_ANON_KEY": { "type": "string" },
+    "SUPABASE_SERVICE_ROLE_KEY": { "type": "string" },
+    "AUTH_SECRET": { "type": "string" },
+    "INTERNAL_API_SECRET": { "type": "string" },
+    "LETBUYY_INTERNAL_API_SECRET": { "type": "string" },
+    "ENVIRONMENT": { "enum": ["local", "staging", "production"] },
+    "RAZORPAY_KEY_ID": { "type": "string" },
+    "RAZORPAY_KEY_SECRET": { "type": "string" },
+    "RAZORPAY_WEBHOOK_SECRET": { "type": "string" },
+    "STRIPE_SECRET_KEY": { "type": "string" },
+    "STRIPE_WEBHOOK_SECRET": { "type": "string" },
+    "RESEND_API_KEY": { "type": "string" },
+    "RESEND_FROM_EMAIL": { "type": "string" },
+    "UPSTASH_REDIS_REST_URL": { "type": "string", "format": "uri" },
+    "UPSTASH_REDIS_REST_TOKEN": { "type": "string" },
+    "PAYMENT_CONFIG_ENCRYPTION_KEY": { "type": "string" },
+    "R2_BUCKET": { "type": "string" }
+  }
+}
+

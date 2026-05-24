@@ -316,6 +316,19 @@ function isGeneratedIntelligenceOutput(file) {
   return false;
 }
 
+function isLocalEnvironmentFile(file) {
+  if (file.startsWith("config/env/templates/")) return false;
+  const base = path.basename(file);
+  return (
+    base === ".env" ||
+    base.startsWith(".env.") ||
+    base.endsWith(".env") ||
+    base.includes(".env.") ||
+    base === ".dev.vars" ||
+    base === "all.env"
+  );
+}
+
 function readText(abs) {
   if (!isTextFile(abs)) return "";
   const stat = fs.statSync(abs);
@@ -584,7 +597,7 @@ function countBy(files, fn) {
 
 const allAbsFiles = walk(root);
 const allFiles = allAbsFiles.map(rel).sort();
-const textFiles = allFiles.filter((file) => isTextFile(path.join(root, file)) && !isGeneratedIntelligenceOutput(file));
+const textFiles = allFiles.filter((file) => isTextFile(path.join(root, file)) && !isGeneratedIntelligenceOutput(file) && !isLocalEnvironmentFile(file));
 const sourceFiles = textFiles.filter((file) => sourceExtensions.has(path.extname(file)) || sourceExtensions.has(path.basename(file)));
 
 const fileSummaries = sourceFiles.map((file) => summarizeFile(file, readText(path.join(root, file))));
@@ -629,7 +642,7 @@ const sqlTotals = migrationFiles.reduce(
 );
 for (const key of Object.keys(sqlTotals)) sqlTotals[key] = unique(sqlTotals[key]);
 
-const envFiles = allFiles.filter((file) => /(^|\/)\.env|\.env(\.|$)|all\.env/.test(file));
+const envFiles = allFiles.filter((file) => !isLocalEnvironmentFile(file) && /(^|\/)\.env|\.env(\.|$)|all\.env/.test(file));
 const trackedGeneratedArtifacts = [];
 for (const file of ["services/api-gateway/dist/index.js", "services/api-gateway/dist/index.js.map", "services/api-gateway/dist/README.md"]) {
   if (allFiles.includes(file)) trackedGeneratedArtifacts.push(file);
@@ -772,6 +785,155 @@ function buildRootAgents() {
   lines.push("- Do not add new `any` types without an explicit local type. The scan found " + anyCount + " files using `any`.");
   lines.push("- Do not hardcode payment provider key ids. The scan found " + hardcodedPaymentKeyFiles.length + " files with hardcoded Razorpay/Stripe-style key identifiers.");
   lines.push("- Do not add generated build artifacts to git. `services/api-gateway/dist/*` must remain untracked generated output.");
+  lines.push("");
+  lines.push("## Repository Mission");
+  lines.push("");
+  lines.push("- Build LetBuyy as a governed, Shopify-class, multi-tenant commerce operating system.");
+  lines.push("- Keep runtime ownership, tenant isolation, and source authority visible from the repository tree.");
+  lines.push("- Prefer enforceable contracts over tribal knowledge: validators, docs, schemas, and ownership files must move with topology changes.");
+  lines.push("");
+  lines.push("## Runtime Segmentation Rules");
+  lines.push("");
+  lines.push("- Apps live under `apps/` and own user-facing workflow adaptation only.");
+  lines.push("- Services live under `services/` and own API protocols, auth enforcement, tenant context, idempotency, provider integrations, and orchestration.");
+  lines.push("- Shared domain and UI contracts live under `packages/`.");
+  lines.push("- Schema, RLS, seeds, and verification live under `database/`.");
+  lines.push("- Provider, DNS, deployment, monitoring, security, and CI config live under `infrastructure/`.");
+  lines.push("- Deprecated runtime code lives under `legacy/` and must not leak into active runtimes.");
+  lines.push("");
+  lines.push("## Actor Segmentation Rules");
+  lines.push("");
+  lines.push("- Shoppers use storefront and customer-account surfaces only.");
+  lines.push("- Merchants use identity and merchant control-plane surfaces.");
+  lines.push("- Partners use app and theme marketplace surfaces.");
+  lines.push("- Platform operators use console and operations portal surfaces with stronger access controls.");
+  lines.push("- Provider callbacks enter through webhook/service boundaries, never UI routes without documented ownership.");
+  lines.push("");
+  lines.push("## Domain Ownership Rules");
+  lines.push("");
+  lines.push("- Commerce, checkout, auth, tenant, CMS, theme, app, analytics, event, search, notification, billing, UI, shared type, shared utility, and mobile domains have governed package boundaries.");
+  lines.push("- Incubating domain package directories reserve ownership and must receive extracted logic before cross-runtime reuse.");
+  lines.push("- App-local business logic is tolerated only as a transitional boundary and must not be reused by import from another runtime.");
+  lines.push("");
+  lines.push("## Import Governance Rules");
+  lines.push("");
+  lines.push("- Apps may never import apps.");
+  lines.push("- Services may never import apps.");
+  lines.push("- Packages may never import apps or services.");
+  lines.push("- Active runtimes may never import `legacy/*` or `infrastructure/*`.");
+  lines.push("- Cross-runtime behavior moves through HTTP/API contracts, event contracts, or shared package exports.");
+  lines.push("");
+  lines.push("## Package Governance Rules");
+  lines.push("");
+  lines.push("- TypeScript packages require `package.json`, `src/index.ts`, `AGENTS.md`, and a `typecheck` script.");
+  lines.push("- Dart packages require `pubspec.yaml`, `lib/`, and `AGENTS.md`.");
+  lines.push("- Shared packages expose intentional public contracts only; implementation internals are not cross-runtime APIs.");
+  lines.push("- UI packages must not depend on data clients, provider SDKs, secrets, or service internals.");
+  lines.push("");
+  lines.push("## Build Artifact Governance");
+  lines.push("");
+  lines.push("- `.next`, `dist`, `build`, `coverage`, `.turbo`, `.cache`, `.dart_tool`, `.wrangler`, `.vercel`, `Pods`, `.symlinks`, `*.tsbuildinfo`, `*.dill`, APK/AAB/IPA files, and `*.tar.zst` caches are generated outputs.");
+  lines.push("- Generated outputs must remain ignored, untracked, and excluded from architecture intelligence.");
+  lines.push("- Raw validation logs and local scan maps must not become source authority; summarize findings in `docs/governance` instead.");
+  lines.push("");
+  lines.push("## Environment Governance");
+  lines.push("");
+  lines.push("- Environment contracts live under `config/env/` with templates and schemas.");
+  lines.push("- Runtime env files are local-only and must not be tracked.");
+  lines.push("- `NEXT_PUBLIC_*` values are public and must never contain secrets.");
+  lines.push("- Server secrets belong in Vercel, Cloudflare, CI secret stores, or operator shell sessions, not the repository.");
+  lines.push("");
+  lines.push("## Runtime Isolation Rules");
+  lines.push("");
+  lines.push("- Runtime roots must have local `AGENTS.md` files.");
+  lines.push("- Compatibility alias roots may contain only `AGENTS.md`.");
+  lines.push("- Runtime code must not rely on generated output as source input.");
+  lines.push("- Storefront customer auth must remain separate from merchant/admin auth.");
+  lines.push("");
+  lines.push("## Service Isolation Rules");
+  lines.push("");
+  lines.push("- Services own server-side enforcement and must remain UI-independent.");
+  lines.push("- Worker bindings and provider SDK use must stay inside service boundaries or server-only adapters.");
+  lines.push("- Webhook side effects require signature verification and idempotency before mutation.");
+  lines.push("");
+  lines.push("## Infrastructure Ownership");
+  lines.push("");
+  lines.push("- Cloudflare configuration belongs under `infrastructure/cloudflare` and service `wrangler.toml` files.");
+  lines.push("- DNS belongs under `infrastructure/dns`.");
+  lines.push("- Deployment, monitoring, observability, security, and CI policy belong under their matching `infrastructure/` directories.");
+  lines.push("- Infrastructure code may reference runtime paths for deployment, but runtime code may not import infrastructure modules.");
+  lines.push("");
+  lines.push("## Naming Conventions");
+  lines.push("");
+  lines.push("- Database tables use `sites`; UI and URLs may say store.");
+  lines.push("- API worker surfaces use `/v1`; app-exposed API boundaries should use `/api/v1` when proxying versioned contracts.");
+  lines.push("- Trigger function name is `update_updated_at()` only.");
+  lines.push("- Runtime names describe operational ownership, not implementation fashion.");
+  lines.push("");
+  lines.push("## Folder Conventions");
+  lines.push("");
+  lines.push("- `apps/*` for user-facing runtimes.");
+  lines.push("- `services/*` for independently deployable backends and workers.");
+  lines.push("- `packages/*` for reusable contracts, domain logic, utilities, and UI.");
+  lines.push("- `config/env/*` for environment templates and schemas.");
+  lines.push("- `docs/governance/*` for persistent human-authored governance memory.");
+  lines.push("- `legacy/*` for isolated historical systems.");
+  lines.push("");
+  lines.push("## Generated Artifact Rules");
+  lines.push("");
+  lines.push("- Generated artifacts must not be tracked, imported, documented as source, or used as ownership evidence.");
+  lines.push("- If generated output appears in Git history, document remediation and prevent recurrence before attempting coordinated history rewrite.");
+  lines.push("- Local generated pollution must be cleaned before final handoff.");
+  lines.push("");
+  lines.push("## Git Hygiene Rules");
+  lines.push("");
+  lines.push("- Use selective staging and atomic commits.");
+  lines.push("- Use commit format `type(scope): concise summary`.");
+  lines.push("- Do not rewrite history or remove user-owned changes without explicit instruction.");
+  lines.push("- Large object remediation requires a planned BFG or `git filter-repo` maintenance window.");
+  lines.push("");
+  lines.push("## Dependency Governance");
+  lines.push("");
+  lines.push("- Dependency direction is `apps -> packages`, `apps -> services by API`, `services -> packages`, and `packages -> packages` only.");
+  lines.push("- Database and infrastructure do not import runtime code.");
+  lines.push("- Shared logic graduates into packages before reuse.");
+  lines.push("");
+  lines.push("## CI/CD Governance");
+  lines.push("");
+  lines.push("- CI must run `node scripts/validate-governance.mjs` for topology-sensitive changes.");
+  lines.push("- CI must fail on app-to-app imports, package-to-runtime imports, tracked generated artifacts, tracked env files, invalid runtime roots, and legacy leakage.");
+  lines.push("- Build, lint, typecheck, and test jobs should be added per runtime as blockers are retired.");
+  lines.push("");
+  lines.push("## Documentation Governance");
+  lines.push("");
+  lines.push("- `docs/governance` is persistent operational memory.");
+  lines.push("- Generated intelligence must stay marked as generated and source-derived.");
+  lines.push("- Architecture, routing, schema, infrastructure, and package-boundary changes require docs and intelligence refresh.");
+  lines.push("- Docs must distinguish built behavior from planned or aspirational behavior.");
+  lines.push("");
+  lines.push("## AI Agent Rules");
+  lines.push("");
+  lines.push("- Read root and local `AGENTS.md`, `memory/lessons.md`, and `tasks/todo.md` before edits.");
+  lines.push("- Inspect source before architecture decisions.");
+  lines.push("- Preserve tenant isolation and runtime boundaries.");
+  lines.push("- Run governance validation before handoff.");
+  lines.push("");
+  lines.push("## Forbidden Architectural Patterns");
+  lines.push("");
+  lines.push("- App-to-app imports.");
+  lines.push("- Package imports from apps or services.");
+  lines.push("- Active runtime imports from `legacy/*` or `infrastructure/*`.");
+  lines.push("- Runtime dependence on `.next`, `dist`, `.wrangler`, `.turbo`, Flutter build output, or generated logs.");
+  lines.push("- Tracked runtime env files or committed secrets.");
+  lines.push("- Duplicated auth ownership across apps and services without documented canonical owner.");
+  lines.push("");
+  lines.push("## Approved Architectural Patterns");
+  lines.push("");
+  lines.push("- App boundary adapters calling versioned service APIs.");
+  lines.push("- Service-layer orchestration with Zod validation and sanitized `AppError` responses.");
+  lines.push("- Shared types and pure utilities through package public exports.");
+  lines.push("- Tenant-aware database access using `site_id` or explicit ownership checks.");
+  lines.push("- Human-authored governance docs backed by automated validators.");
   lines.push("");
   lines.push("## Architecture Boundaries");
   lines.push("");
