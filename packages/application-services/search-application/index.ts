@@ -56,7 +56,7 @@ export const SEARCH_EXECUTION_PIPELINES = defineExecutionPipelines({
     observabilityBoundary: 'trace-required',
     steps: [
       { name: 'load-index-source', stage: 'load', ownsTransaction: false, emitsEvent: false, requiresIdempotency: false },
-      { name: 'build-search-projection', stage: 'plan', ownsTransaction: false, emitsEvent: false, requiresIdempotency: false },
+      { name: 'delegate-search-index-plan', stage: 'plan', ownsTransaction: false, emitsEvent: false, requiresIdempotency: false },
       { name: 'persist-search-document', stage: 'mutate', ownsTransaction: true, emitsEvent: true, requiresIdempotency: true },
     ],
   },

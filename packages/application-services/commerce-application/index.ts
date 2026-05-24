@@ -44,8 +44,8 @@ export const COMMERCE_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
     emitsEvents: true,
     coordinatesDomains: ['commerce', 'search'],
   },
-  inventoryProjection: {
-    name: 'commerce.inventory-projection',
+  inventoryLedgerSync: {
+    name: 'commerce.inventory-ledger-sync',
     owner: 'commerce-application',
     version: '1.0.0',
     requiresTenantScope: true,
@@ -99,8 +99,8 @@ export const COMMERCE_EXECUTION_PIPELINES = defineExecutionPipelines({
       { name: 'record-product-metering-delta', stage: 'audit', ownsTransaction: false, emitsEvent: true, requiresIdempotency: true },
     ],
   },
-  inventoryProjection: {
-    workflow: COMMERCE_APPLICATION_WORKFLOWS.inventoryProjection,
+  inventoryLedgerSync: {
+    workflow: COMMERCE_APPLICATION_WORKFLOWS.inventoryLedgerSync,
     executionBoundary: 'application-service',
     transactionBoundary: 'database-rpc',
     retryBoundary: 'orchestration-runtime',
