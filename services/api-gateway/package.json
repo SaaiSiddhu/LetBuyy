@@ -1,5 +1,5 @@
 {
-    "name": "@letbuyy/api",
+    "name": "@letbuyy/api-gateway",
     "version": "0.0.1",
     "private": true,
     "scripts": {

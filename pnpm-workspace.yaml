@@ -2,7 +2,7 @@ packages:
   - "apps/*"
   - "apps/mobile/*"
   - "packages/typescript/*"
-  - "backend/workers/*"
+  - "services/*"
 
 onlyBuiltDependencies:
   - esbuild

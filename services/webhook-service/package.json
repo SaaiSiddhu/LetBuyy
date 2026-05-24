@@ -1,5 +1,5 @@
 {
-    "name": "@letbuyy/webhooks",
+    "name": "@letbuyy/webhook-service",
     "version": "0.1.0",
     "private": true,
     "scripts": {

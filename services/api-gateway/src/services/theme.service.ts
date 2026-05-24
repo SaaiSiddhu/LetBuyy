@@ -340,7 +340,8 @@ function validateThemeSettings(
     settings: DbRecord,
     issues: string[]
 ) {
-    const fields = Object.values(settingsSchema.settings || {}).reduce<Record<string, SchemaField>>((acc, group) => {
+    const settingsGroups = settingsSchema.settings ?? {};
+    const fields = Object.values(settingsGroups).reduce<Record<string, SchemaField>>((acc, group) => {
         return { ...acc, ...(group.fields || {}) };
     }, {});
 
