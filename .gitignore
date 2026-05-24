@@ -67,14 +67,27 @@ functions/lib/
 .env
 .env.*
 *.env
+all.env
 .dev.vars
 **/.dev.vars
 
 # Node
 node_modules/
 .next/
+**/.next/
 .turbo/
+**/.turbo/
+**/.cache/
+**/coverage/
+coverage/
+dist/
+**/dist/
+out/
+**/out/
+.pnpm-store/
+*.tsbuildinfo
 **/.wrangler/tmp/
+**/.wrangler/
 **/supabase/.temp/
 packages/typescript/*/dist/
 
@@ -85,10 +98,12 @@ key.jks
 **/build/
 *.dill
 *.dill.track.dill
+*.track.dill
 
 # Build artifacts (APKs, etc.)
 *.apk
 *.aab
 *.ipa
 .vercel
+**/.vercel/
 .env*.local

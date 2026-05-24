@@ -5,6 +5,8 @@
 
 * @saai-sidd
 
+/.gitattributes @saai-sidd
+/.gitignore @saai-sidd
 /apps/storefront-runtime/ @saai-sidd
 /apps/merchant-control-plane/ @saai-sidd
 /apps/identity-platform/ @saai-sidd
@@ -19,5 +21,8 @@
 /packages/ @saai-sidd
 /database/ @saai-sidd
 /infrastructure/ @saai-sidd
+/config/env/ @saai-sidd
 /docs/governance/ @saai-sidd
 /scripts/validate-architecture.mjs @saai-sidd
+/scripts/validate-governance.mjs @saai-sidd
+/scripts/validators/ @saai-sidd

@@ -7,8 +7,11 @@ on:
       - "services/**"
       - "packages/**"
       - "database/**"
+      - "config/env/**"
       - "infrastructure/**"
       - "docs/governance/**"
+      - "scripts/validators/**"
+      - "scripts/validate-governance.mjs"
       - "scripts/validate-architecture.mjs"
       - "package.json"
       - "pnpm-workspace.yaml"
@@ -32,5 +35,5 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate architecture
-        run: node scripts/validate-architecture.mjs
+      - name: Validate governance
+        run: node scripts/validate-governance.mjs
