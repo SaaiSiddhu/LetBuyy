@@ -365,6 +365,24 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../../packages/checkout-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../../packages/cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../../packages/commerce-core
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../../packages/tenant-core
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../../packages/theme-engine
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
@@ -497,7 +515,193 @@ importers:
         specifier: ^5
         version: 5.9.3
 
+  packages/auth-core:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/billing-core:
+    dependencies:
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../event-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/checkout-core:
+    dependencies:
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../commerce-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/cms-core:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/commerce-core:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/event-core:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/notification-core:
+    dependencies:
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../event-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/search-core:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/shared-types:
+    dependencies:
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/tenant-core:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../theme-engine
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/theme-engine:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      zod:
+        specifier: ^4.3.6
+        version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/typescript/api-types:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../auth-core
+      '@letbuyy/billing-core':
+        specifier: workspace:*
+        version: link:../../billing-core
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../../checkout-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../../cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../../commerce-core
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../../event-core
+      '@letbuyy/notification-core':
+        specifier: workspace:*
+        version: link:../../notification-core
+      '@letbuyy/search-core':
+        specifier: workspace:*
+        version: link:../../search-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../../tenant-core
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../../theme-engine
     devDependencies:
       typescript:
         specifier: ^5.7.0
@@ -537,6 +741,30 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../../packages/checkout-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../../packages/cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../../packages/commerce-core
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../../packages/event-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../../packages/tenant-core
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../../packages/theme-engine
       '@supabase/supabase-js':
         specifier: ^2.47.0
         version: 2.95.3

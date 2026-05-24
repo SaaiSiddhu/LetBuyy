@@ -10,6 +10,12 @@
   },
   "dependencies": {
     "@letbuyy/api-types": "workspace:*",
+    "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/checkout-core": "workspace:*",
+    "@letbuyy/cms-core": "workspace:*",
+    "@letbuyy/commerce-core": "workspace:*",
+    "@letbuyy/tenant-core": "workspace:*",
+    "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@vercel/speed-insights": "^1.3.1",

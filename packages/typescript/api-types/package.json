@@ -5,8 +5,21 @@
     "main": "./src/index.ts",
     "types": "./src/index.ts",
     "scripts": {
-        "build": "tsc",
+        "build": "tsc --noEmit",
         "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@letbuyy/auth-core": "workspace:*",
+        "@letbuyy/billing-core": "workspace:*",
+        "@letbuyy/checkout-core": "workspace:*",
+        "@letbuyy/cms-core": "workspace:*",
+        "@letbuyy/commerce-core": "workspace:*",
+        "@letbuyy/event-core": "workspace:*",
+        "@letbuyy/notification-core": "workspace:*",
+        "@letbuyy/search-core": "workspace:*",
+        "@letbuyy/shared-types": "workspace:*",
+        "@letbuyy/tenant-core": "workspace:*",
+        "@letbuyy/theme-engine": "workspace:*"
     },
     "devDependencies": {
         "typescript": "^5.7.0"

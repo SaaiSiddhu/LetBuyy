@@ -1,6 +1,17 @@
 packages:
   - "apps/*"
   - "apps/mobile/*"
+  - "packages/shared-types"
+  - "packages/tenant-core"
+  - "packages/commerce-core"
+  - "packages/checkout-core"
+  - "packages/auth-core"
+  - "packages/theme-engine"
+  - "packages/cms-core"
+  - "packages/event-core"
+  - "packages/notification-core"
+  - "packages/search-core"
+  - "packages/billing-core"
   - "packages/typescript/*"
   - "services/*"
 
