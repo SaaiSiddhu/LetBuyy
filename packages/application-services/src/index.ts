@@ -1,3 +1,4 @@
+export * from './workflow-descriptor';
 export * from '../auth-application/index';
 export * from '../commerce-application/index';
 export * from '../checkout-application/index';

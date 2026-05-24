@@ -1,6 +1,7 @@
 import type { ActorIdentity, SessionContract, SignInInput, SignUpInput } from '@letbuyy/auth-core';
 import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 import type { CorrelatedCommand } from '@letbuyy/orchestration';
+import { defineApplicationWorkflows } from '../src/workflow-descriptor';
 
 export interface AuthApplicationPorts {
   resolveActorSession(command: CorrelatedCommand<{ token: string }>): Promise<SessionContract | null>;
@@ -14,3 +15,33 @@ export interface AuthApplicationPolicy {
   requiresOtpForUnknownDevice: boolean;
   privilegedActorsRequireMfa: boolean;
 }
+
+export const AUTH_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
+  resolveActorSession: {
+    name: 'auth.resolve-actor-session',
+    owner: 'auth-application',
+    version: '1.0.0',
+    requiresTenantScope: false,
+    requiresIdempotency: false,
+    emitsEvents: false,
+    coordinatesDomains: ['auth', 'tenant'],
+  },
+  evaluatePermissions: {
+    name: 'auth.evaluate-permissions',
+    owner: 'auth-application',
+    version: '1.0.0',
+    requiresTenantScope: false,
+    requiresIdempotency: false,
+    emitsEvents: false,
+    coordinatesDomains: ['auth', 'tenant'],
+  },
+  executeIdempotentCommand: {
+    name: 'auth.execute-idempotent-command',
+    owner: 'auth-application',
+    version: '1.0.0',
+    requiresTenantScope: false,
+    requiresIdempotency: true,
+    emitsEvents: false,
+    coordinatesDomains: ['auth', 'event'],
+  },
+});

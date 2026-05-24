@@ -1,6 +1,7 @@
 import type { NotificationDispatchInput, NotificationTemplate } from '@letbuyy/notification-core';
 import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 import type { CorrelatedCommand } from '@letbuyy/orchestration';
+import { defineApplicationWorkflows } from '../src/workflow-descriptor';
 
 export interface NotificationApplicationPorts {
   dispatch(command: CorrelatedCommand<{ tenant?: RuntimeTenantContext; input: NotificationDispatchInput }>): Promise<{ providerMessageId?: string; status: 'queued' | 'sent' | 'skipped' }>;
@@ -12,3 +13,24 @@ export interface NotificationExecutionPolicy {
   redactSecretsInPayloads: true;
   retainProviderReferences: true;
 }
+
+export const NOTIFICATION_APPLICATION_WORKFLOWS = defineApplicationWorkflows({
+  emitDomainEvent: {
+    name: 'notification.emit-domain-event',
+    owner: 'notification-application',
+    version: '1.0.0',
+    requiresTenantScope: false,
+    requiresIdempotency: true,
+    emitsEvents: true,
+    coordinatesDomains: ['event', 'notification'],
+  },
+  dispatchWebhook: {
+    name: 'notification.dispatch-webhook',
+    owner: 'notification-application',
+    version: '1.0.0',
+    requiresTenantScope: true,
+    requiresIdempotency: true,
+    emitsEvents: true,
+    coordinatesDomains: ['event', 'notification'],
+  },
+});
