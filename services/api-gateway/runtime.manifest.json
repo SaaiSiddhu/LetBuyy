@@ -78,5 +78,8 @@
   "providerOwnership": "May bind packages/infrastructure adapters to deployment secrets and runtime bindings; direct provider SDK imports are forbidden outside packages/infrastructure.",
   "executionBoundaries": "Execution-container boundary: APIs, workers, queues, schedulers, webhooks, runtime bootstrapping, and execution adapters only.",
   "asyncExecutionOwnership": "Owns runtime async containers only: queue consumers, webhook handlers, schedulers, and event workers while workflow policy delegates to application-services/orchestration.",
-  "observabilityOwnership": "Propagates request, correlation, trace, and audit metadata across API, queue, webhook, scheduler, and execution adapter boundaries."
+  "observabilityOwnership": "Propagates request, correlation, trace, and audit metadata across API, queue, webhook, scheduler, and execution adapter boundaries.",
+  "workflowRecoveryOwnership": "Owns execution-container checkpoint and recovery wiring only; workflow recovery policy delegates to packages/application-services and packages/orchestration.",
+  "replayOwnership": "Owns replay execution containers when worker, scheduler, webhook, or API runtime requires them; replay policy and contracts delegate to packages/orchestration.",
+  "projectionOwnership": "No local projection policy ownership; service-side read models and projections use packages/runtime-composition contracts."
 }

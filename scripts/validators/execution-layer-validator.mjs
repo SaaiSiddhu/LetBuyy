@@ -39,7 +39,10 @@ const requiredExecutionRoots = [
   "packages/orchestration/src/replay-runtime.ts",
   "packages/orchestration/src/workflow-recovery-runtime.ts",
   "packages/orchestration/src/async-execution-runtime.ts",
+  "packages/orchestration/src/reliability-runtime.ts",
+  "packages/orchestration/src/workflow-checkpoint-runtime.ts",
   "packages/runtime-composition/src/query-runtime.ts",
+  "packages/runtime-composition/src/projection-execution-runtime.ts",
   "packages/runtime-composition/src/composition-runtime.ts",
   "packages/runtime-composition/src/search-projection-runtime.ts",
   "packages/runtime-composition/storefront-query-layer/index.ts",
@@ -60,6 +63,32 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
   reporter.assert(
     Boolean(manifest?.executionAuthority),
     `Runtime manifest missing executionAuthority: ${runtimeRoot}/runtime.manifest.json`,
+  );
+  for (const field of ["workflowRecoveryOwnership", "replayOwnership", "projectionOwnership"]) {
+    reporter.assert(
+      typeof manifest?.[field] === "string" && manifest[field].trim().length > 0,
+      `Runtime manifest missing final execution ownership field ${field}: ${runtimeRoot}/runtime.manifest.json`,
+    );
+  }
+}
+
+const applicationServiceWorkflowFiles = [
+  "packages/application-services/auth-application/index.ts",
+  "packages/application-services/commerce-application/index.ts",
+  "packages/application-services/checkout-application/index.ts",
+  "packages/application-services/tenant-application/index.ts",
+  "packages/application-services/cms-application/index.ts",
+  "packages/application-services/theme-application/index.ts",
+  "packages/application-services/billing-application/index.ts",
+  "packages/application-services/notification-application/index.ts",
+  "packages/application-services/search-application/index.ts",
+];
+
+for (const file of applicationServiceWorkflowFiles) {
+  const content = readFile(file);
+  reporter.assert(
+    /defineApplicationWorkflows\s*\(/.test(content) && /defineExecutionPipelines\s*\(/.test(content),
+    `Application-service workflow file must declare authoritative workflows and execution pipelines: ${file}`,
   );
 }
 
@@ -110,6 +139,15 @@ for (const file of executionAdapters) {
   reporter.assert(
     !/function\s+(?:generateSlug|stableJson|retryDelaySeconds|queueNamesForEvent|eventMatchesSubscription|buildEventEnvelope|textParts|rollupDate)\b/.test(content),
     `Execution adapter contains workflow policy helpers that belong in application-services/orchestration/runtime-composition: ${file}`,
+  );
+  reporter.assert(
+    !/\b(?:buildSearchProjectionDocument|analyticsRollupDate|project\w*SearchDocument|markSearchDocumentDeleted)\b/.test(content),
+    `Execution adapter contains projection or aggregation ownership that belongs in packages/runtime-composition: ${file}`,
+  );
+  reporter.assert(
+    !/\b(?:queueNamesForEvent|eventMatchesSubscription|eventRetryDelaySeconds|buildDomainEventEnvelope)\b/.test(content) ||
+      content.includes("@letbuyy/orchestration"),
+    `Execution adapter event routing, retry, and envelope helpers must come from packages/orchestration: ${file}`,
   );
 }
 
@@ -162,7 +200,7 @@ for (const file of workspaceFiles.filter((candidate) =>
 )) {
   const content = readFile(file);
   reporter.assert(
-    !/\b(RuntimeAggregationPipeline|executeRuntimeAggregation|executeRuntimeQuery|composeRuntimeResponse|buildSearchProjectionDocument)\b/.test(content),
+    !/\b(RuntimeAggregationPipeline|executeRuntimeAggregation|executeRuntimeQuery|composeRuntimeResponse|buildSearchProjectionDocument|ProjectionExecutionRuntime|ProjectionAssembler)\b/.test(content),
     `Application services may not own query aggregation or projection assembly: ${file}`,
   );
 }

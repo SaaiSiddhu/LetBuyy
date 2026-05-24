@@ -63,5 +63,8 @@
   "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved runtime-composition or service API boundaries.",
   "executionBoundaries": "Thin runtime boundary: routing, rendering, presentation adapters, runtime transport, and runtime hooks only.",
   "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, replay, and retries delegate to services, application-services, and orchestration runtimes.",
-  "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers."
+  "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers.",
+  "workflowRecoveryOwnership": "No workflow recovery ownership; recovery planning delegates to packages/application-services and packages/orchestration through service APIs.",
+  "replayOwnership": "No event replay ownership; replay lifecycle delegates to service execution containers and packages/orchestration.",
+  "projectionOwnership": "No projection assembly ownership; read projections, aggregation, and response shaping delegate to packages/runtime-composition."
 }

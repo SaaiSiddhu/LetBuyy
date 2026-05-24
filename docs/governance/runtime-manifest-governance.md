@@ -23,6 +23,12 @@ Required fields:
 - `compositionAuthority`
 - `executionOwnership`
 - `providerOwnership`
+- `executionBoundaries`
+- `asyncExecutionOwnership`
+- `observabilityOwnership`
+- `workflowRecoveryOwnership`
+- `replayOwnership`
+- `projectionOwnership`
 - `deploymentAuthority`
 - `environmentAuthority`
 - `observabilityAuthority`
@@ -33,6 +39,7 @@ Required fields:
 - Mobile apps under `apps/mobile/` own native actor surfaces.
 - Services under `services/` own backend execution containers: APIs, workers, schedulers, queues, webhooks, event handlers, and runtime bootstrapping.
 - Application workflow authority belongs to `packages/application-services`; event execution primitives belong to `packages/orchestration`; query aggregation belongs to `packages/runtime-composition`; provider SDK execution belongs to `packages/infrastructure`.
+- Recovery, replay, async, observability, and projection ownership fields must match actual runtime behavior. Apps must delegate these authorities; services may execute containers only when package-owned policy describes the work.
 - Runtime manifests do not create runtime source authority by themselves; they describe and constrain existing canonical roots.
 
 ## Enforcement

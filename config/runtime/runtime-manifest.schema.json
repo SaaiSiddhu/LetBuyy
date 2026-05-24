@@ -23,6 +23,9 @@
     "executionBoundaries",
     "asyncExecutionOwnership",
     "observabilityOwnership",
+    "workflowRecoveryOwnership",
+    "replayOwnership",
+    "projectionOwnership",
     "executionAuthority",
     "deploymentAuthority",
     "environmentAuthority",
@@ -88,6 +91,9 @@
     "executionBoundaries": { "type": "string", "minLength": 1 },
     "asyncExecutionOwnership": { "type": "string", "minLength": 1 },
     "observabilityOwnership": { "type": "string", "minLength": 1 },
+    "workflowRecoveryOwnership": { "type": "string", "minLength": 1 },
+    "replayOwnership": { "type": "string", "minLength": 1 },
+    "projectionOwnership": { "type": "string", "minLength": 1 },
     "executionAuthority": {
       "type": "object",
       "required": [

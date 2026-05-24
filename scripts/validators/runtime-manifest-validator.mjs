@@ -26,6 +26,9 @@ const requiredStringFields = [
   "executionBoundaries",
   "asyncExecutionOwnership",
   "observabilityOwnership",
+  "workflowRecoveryOwnership",
+  "replayOwnership",
+  "projectionOwnership",
 ];
 
 const requiredObjectFields = [
@@ -150,6 +153,18 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /none|delegate|service|queue/i.test(manifest.asyncExecutionOwnership),
       `App manifest asyncExecutionOwnership must delegate durable async ownership: ${manifestPath}`,
     );
+    reporter.assert(
+      /none|delegate|application-services|orchestration|service/i.test(manifest.workflowRecoveryOwnership),
+      `App manifest workflowRecoveryOwnership must delegate recovery ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|orchestration/i.test(manifest.replayOwnership),
+      `App manifest replayOwnership must delegate event replay ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /runtime-composition|delegate|none/i.test(manifest.projectionOwnership),
+      `App manifest projectionOwnership must delegate projections to runtime-composition: ${manifestPath}`,
+    );
   }
 
   if (runtimeRoot.startsWith("services/")) {
@@ -169,7 +184,24 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /queue|worker|webhook|scheduler|event|delegate|runtime/i.test(manifest.asyncExecutionOwnership),
       `Service manifest asyncExecutionOwnership must describe async execution-container ownership: ${manifestPath}`,
     );
+    reporter.assert(
+      /checkpoint|recovery|application-services|orchestration|delegate|runtime/i.test(manifest.workflowRecoveryOwnership),
+      `Service manifest workflowRecoveryOwnership must describe recovery execution-container ownership with delegated policy: ${manifestPath}`,
+    );
+    reporter.assert(
+      /replay|event|orchestration|worker|scheduler|delegate|runtime/i.test(manifest.replayOwnership),
+      `Service manifest replayOwnership must describe replay execution-container ownership with orchestration policy: ${manifestPath}`,
+    );
+    reporter.assert(
+      /runtime-composition|delegate|none|projection/i.test(manifest.projectionOwnership),
+      `Service manifest projectionOwnership must delegate projection policy to runtime-composition: ${manifestPath}`,
+    );
   }
+
+  reporter.assert(
+    /runtime-composition|delegate|none|projection/i.test(manifest.projectionOwnership),
+    `Runtime manifest projectionOwnership must describe runtime-composition projection ownership or explicit absence: ${manifestPath}`,
+  );
 
   reporter.assert(
     /correlation|trace|audit|telemetry|observability|request/i.test(manifest.observabilityOwnership),

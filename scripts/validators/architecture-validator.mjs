@@ -47,6 +47,8 @@ const mandatoryGovernanceFiles = [
   "docs/governance/event-replay-governance.md",
   "docs/governance/execution-context-governance.md",
   "docs/governance/query-execution-governance.md",
+  "docs/governance/workflow-recovery-governance.md",
+  "docs/governance/async-execution-governance.md",
   "docs/governance/storefront-execution-governance.md",
   "docs/governance/provider-isolation-governance.md",
   "docs/governance/tooling-governance.md",
