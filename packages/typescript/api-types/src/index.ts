@@ -3,6 +3,8 @@
 // Shared TypeScript types for API requests/responses
 // =============================================
 
+export * from './theme-registry';
+
 // =============================================
 // STORES
 // =============================================
@@ -20,6 +22,8 @@ export interface Store {
   site_type: SiteType;
   status: StoreStatus;
   theme_id?: string;
+  current_theme_release_id?: string;
+  storefront_release_version?: number;
   theme_config: Record<string, unknown>;
   settings: Record<string, unknown>;
   meta_title?: string;
@@ -29,6 +33,128 @@ export interface Store {
   created_at: string;
   updated_at: string;
   published_at?: string;
+}
+
+// =============================================
+// THEMES, RELEASES, PREVIEW, EVENTS
+// =============================================
+
+export interface ThemeRelease {
+  id: string;
+  store_id: string;
+  theme_id: string;
+  release_version: number;
+  release_status: 'published' | 'superseded' | 'rolled_back';
+  is_current: boolean;
+  release_config: Record<string, unknown>;
+  source_draft_id?: string | null;
+  source_draft_version?: number | null;
+  publish_message?: string | null;
+  published_by?: string | null;
+  published_at: string;
+  rollback_of_release_id?: string | null;
+}
+
+export interface ThemeEditorPayload {
+  store: {
+    id: string;
+    name?: string;
+    subdomain?: string;
+    status?: string;
+  };
+  theme: {
+    id: string;
+    slug: string;
+    name: string;
+    renderer_key: string;
+  };
+  template_config: Record<string, unknown>;
+  draft: {
+    exists: boolean;
+    updated_at: string | null;
+    version: number;
+  };
+  release: {
+    id: string;
+    version: number;
+    published_at: string;
+  } | null;
+  schemas: {
+    sections: Record<string, unknown>;
+    settings: Record<string, unknown>;
+  };
+  version: number;
+}
+
+export interface ThemeDraftSaveResult {
+  saved_at: string;
+  version: number;
+  draft: {
+    id: string;
+    version: number;
+    auto_saved_at: string;
+  };
+}
+
+export interface ThemePublishResult {
+  store: {
+    id: string;
+    status: string;
+    theme_id: string;
+    current_theme_release_id?: string;
+    storefront_release_version?: number;
+    updated_at?: string;
+  } | null;
+  theme: {
+    id: string;
+    slug: string;
+    name: string;
+  };
+  release: {
+    release_id: string;
+    release_version: number;
+    published_at: string;
+  };
+  published_at: string;
+}
+
+export interface ThemePreviewSessionResult {
+  preview_session_id: string;
+  preview_token: string;
+  expires_at: string;
+  draft_version: number;
+}
+
+export interface DomainOutboxEvent {
+  id: string;
+  store_id?: string | null;
+  aggregate_type: string;
+  aggregate_id: string;
+  event_type: string;
+  payload: Record<string, unknown>;
+  idempotency_key: string;
+  status: 'queued' | 'processing' | 'processed' | 'failed' | 'dead';
+  attempts: number;
+  available_at: string;
+  request_id?: string | null;
+  actor_id?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AuditActivityEvent {
+  id: string;
+  store_id?: string | null;
+  actor_id?: string | null;
+  actor_type: 'user' | 'customer' | 'employee' | 'system' | 'webhook';
+  action: string;
+  resource_type: string;
+  resource_id?: string | null;
+  request_id?: string | null;
+  before_state?: Record<string, unknown> | null;
+  after_state?: Record<string, unknown> | null;
+  metadata: Record<string, unknown>;
+  created_at: string;
 }
 
 export interface CreateStoreRequest {
@@ -59,17 +185,27 @@ export interface Product {
   slug: string;
   description?: string;
   price: number;
-  compare_at_price?: number;
+  compare_price?: number | null;
+  compare_at_price?: number | null;
   cost_price?: number;
+  cost_per_item?: number | null;
   sku?: string;
   barcode?: string;
-  stock_quantity: number;
+  stock?: number;
+  stock_quantity?: number;
   track_inventory: boolean;
-  status: ProductStatus;
+  is_active?: boolean;
+  is_featured?: boolean;
+  status?: ProductStatus;
   images: string[];
   variants: ProductVariant[];
+  product_options?: ProductOption[];
   tags: string[];
-  categories: string[];
+  category?: string | null;
+  categories?: string[];
+  product_type?: string | null;
+  vendor?: string | null;
+  url_handle?: string | null;
   seo_title?: string;
   seo_description?: string;
   created_at: string;
@@ -78,21 +214,66 @@ export interface Product {
 
 export interface ProductVariant {
   id: string;
-  name: string;
+  product_id?: string;
+  name?: string;
+  title?: string;
   price: number;
-  sku?: string;
-  stock_quantity: number;
+  compare_price?: number | null;
+  sku?: string | null;
+  stock?: number;
+  stock_quantity?: number;
+  inventory_qty?: number;
   options: Record<string, string>;
 }
 
+export interface ProductOption {
+  id?: string;
+  product_id?: string;
+  name: string;
+  position: number;
+  values: string[];
+}
+
 export interface CreateProductRequest {
+  store_id?: string;
   name: string;
   price: number;
   description?: string;
+  compare_price?: number | null;
+  cost_per_item?: number | null;
   images?: string[];
-  variants?: Omit<ProductVariant, 'id'>[];
+  stock?: number;
+  track_inventory?: boolean;
+  sku?: string | null;
+  barcode?: string | null;
+  category?: string | null;
+  product_type?: string | null;
+  vendor?: string | null;
+  product_options?: ProductOption[];
+  variants?: Omit<ProductVariant, 'id' | 'product_id'>[];
   tags?: string[];
-  categories?: string[];
+  is_active?: boolean;
+  seo_title?: string | null;
+  seo_description?: string | null;
+}
+
+export interface InventoryLevel {
+  id: string;
+  product_id: string;
+  variant_id?: string | null;
+  location_id: string;
+  product_name: string;
+  variant_title?: string | null;
+  sku?: string | null;
+  images: string[];
+  location_name: string;
+  available: number;
+  reserved: number;
+  incoming: number;
+  on_hand: number;
+  sellable: number;
+  track_inventory: boolean;
+  updated_at?: string | null;
 }
 
 // =============================================
