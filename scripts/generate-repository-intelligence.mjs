@@ -888,7 +888,7 @@ function buildRootAgents() {
   lines.push("- Event routing, retry, outbox, replay, dead-letter, and correlation primitives belong in `packages/orchestration`.");
   lines.push("- Read aggregation, projection assembly, cache policy, and runtime response shaping belong in `packages/runtime-composition`.");
   lines.push("- Provider APIs, SDK clients, retries, and provider normalization belong in `packages/infrastructure`.");
-  lines.push("- Runtime manifests must declare orchestration, event, workflow, query, composition, execution, distributed execution, queue, checkpoint, projection, observability, cache, resilience, regional, tenant scaling, and provider ownership.");
+  lines.push("- Runtime manifests must declare orchestration, event, workflow, query, CQRS, composition, execution, distributed execution, queue, checkpoint, projection, observability, telemetry, cache, resilience, coordination, recovery, audit, regional, tenant scaling, and provider ownership.");
   lines.push("");
   lines.push("## Infrastructure Ownership");
   lines.push("");

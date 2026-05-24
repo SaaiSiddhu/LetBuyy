@@ -48,8 +48,12 @@ const requiredFiles = [
   "packages/projection-runtime/src/read-model-hydration-runtime.ts",
   "packages/projection-runtime/src/projection-invalidation-runtime.ts",
   "packages/projection-runtime/src/projection-lifecycle-runtime.ts",
+  "packages/projection-runtime/src/projection-checkpoint-runtime.ts",
+  "packages/projection-runtime/src/projection-consistency-runtime.ts",
+  "packages/orchestration/src/workflow-continuation-runtime.ts",
   "packages/infrastructure/provider-resilience-adapter/index.ts",
   "database/supabase/migrations/059_distributed_runtime_operations_foundation.sql",
+  "database/supabase/migrations/060_operational_runtime_finalization.sql",
 ];
 
 for (const file of requiredFiles) {
@@ -69,9 +73,14 @@ const phase3ManifestFields = [
   "queueOwnership",
   "checkpointOwnership",
   "cacheOwnership",
+  "telemetryOwnership",
   "resilienceOwnership",
   "regionalOwnership",
   "tenantScalingOwnership",
+  "auditOwnership",
+  "recoveryOwnership",
+  "coordinationOwnership",
+  "cqrsOwnership",
 ];
 
 for (const runtimeRoot of canonicalRuntimeRoots) {
@@ -107,6 +116,46 @@ for (const tableName of [
   );
 }
 
+const finalMigration = readFile("database/supabase/migrations/060_operational_runtime_finalization.sql");
+for (const tableName of [
+  "runtime_command_journal",
+  "event_stream_snapshots",
+  "projection_checkpoints",
+  "query_snapshots",
+  "workflow_lifecycle",
+  "workflow_heartbeats",
+  "distributed_queue_heartbeats",
+  "runtime_telemetry_spans",
+  "runtime_telemetry_metrics",
+  "runtime_structured_logs",
+  "runtime_health_projections",
+  "provider_outage_events",
+  "runtime_control_commands",
+]) {
+  reporter.assert(
+    finalMigration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    `Phase 3 finalization migration must create ${tableName}`,
+  );
+  reporter.assert(
+    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(finalMigration),
+    `Phase 3 finalization table must enable RLS: ${tableName}`,
+  );
+}
+
+for (const functionName of [
+  "claim_distributed_queue_messages",
+  "heartbeat_distributed_queue_message",
+  "complete_distributed_queue_message",
+  "retry_distributed_queue_message",
+  "dead_letter_distributed_queue_message",
+  "claim_runtime_lease",
+]) {
+  reporter.assert(
+    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(finalMigration),
+    `Phase 3 finalization migration must create durable helper function ${functionName}`,
+  );
+}
+
 const sourceFiles = workspaceFiles.filter((file) => sourceExtensions.has(path.extname(file)));
 
 for (const file of sourceFiles) {
@@ -134,6 +183,27 @@ for (const file of sourceFiles) {
     reporter.assert(
       !/\b(?:interface|class)\s+\w*(?:ProjectionStore|ProjectionRebuild|ProjectionReplay|QuerySnapshot|ReadModelHydration)\b/.test(content),
       `Projection persistence/rebuild/replay contracts must live in packages/projection-runtime: ${file}`,
+    );
+  }
+
+  if (root !== "packages/distributed-runtime" && root !== "packages/infrastructure") {
+    reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:CircuitBreaker|ProviderHealth|ResilienceRuntime|TelemetryPipeline|RuntimeAudit)\b/.test(content),
+      `Resilience, telemetry, and audit runtime contracts must live in distributed-runtime or infrastructure adapters: ${file}`,
+    );
+  }
+
+  if (root !== "packages/distributed-runtime") {
+    reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:DistributedCoordination|ExecutionLease|ExecutionHeartbeat|TenantScalability|CacheOrchestration)\b/.test(content),
+      `Coordination, tenant scalability, and cache orchestration contracts must live in packages/distributed-runtime: ${file}`,
+    );
+  }
+
+  if (root !== "packages/orchestration") {
+    reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:WorkflowContinuation|WorkflowHeartbeat|WorkflowLifecycle)\b/.test(content),
+      `Workflow recovery and continuation contracts must live in packages/orchestration: ${file}`,
     );
   }
 

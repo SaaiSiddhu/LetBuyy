@@ -62,12 +62,17 @@
   "executionBoundaries": "Thin runtime boundary: routing, rendering, presentation adapters, runtime transport, and runtime hooks only.",
   "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, replay, and retries delegate to services, application-services, and orchestration runtimes.",
   "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers.",
+  "telemetryOwnership": "No durable telemetry pipeline ownership; propagates request and correlation metadata while trace, metric, log, and span persistence delegate to service runtimes and packages/distributed-runtime.",
   "workflowRecoveryOwnership": "No workflow recovery ownership; recovery planning delegates to packages/application-services and packages/orchestration through service APIs.",
+  "recoveryOwnership": "No runtime recovery ownership; workflow, replay, queue, and projection recovery delegate to services, packages/application-services, packages/orchestration, and packages/distributed-runtime.",
   "replayOwnership": "No event replay ownership; replay lifecycle delegates to service execution containers and packages/orchestration.",
   "checkpointOwnership": "No checkpoint ownership; workflow, replay, queue, and projection checkpoints delegate to service runtimes using packages/distributed-runtime and packages/projection-runtime.",
   "projectionOwnership": "No projection assembly ownership; read projections, aggregation, and response shaping delegate to packages/runtime-composition.",
+  "cqrsOwnership": "No CQRS command or projection persistence ownership; command sequencing delegates to application-services and read models delegate to runtime-composition/projection-runtime.",
   "cacheOwnership": "No durable cache coordination ownership; app fetch/cache hints delegate invalidation and projection cache policy to runtime-composition, projection-runtime, and service execution containers.",
+  "coordinationOwnership": "No distributed coordination ownership; leases, locks, fencing tokens, heartbeats, and leader election delegate to service runtimes using packages/distributed-runtime.",
   "resilienceOwnership": "No resilience policy ownership; provider retries, circuit breakers, fallback execution, and degradation handling delegate to service runtimes, packages/distributed-runtime, and packages/infrastructure.",
   "regionalOwnership": "No regional execution ownership; region-aware routing, tenant affinity, and failover delegate to Cloudflare/service runtime boundaries and packages/distributed-runtime.",
-  "tenantScalingOwnership": "No tenant workload governance ownership; quotas, partitioning, noisy-neighbor protection, and runtime metrics delegate to service execution containers and packages/distributed-runtime."
+  "tenantScalingOwnership": "No tenant workload governance ownership; quotas, partitioning, noisy-neighbor protection, and runtime metrics delegate to service execution containers and packages/distributed-runtime.",
+  "auditOwnership": "No execution audit ownership; privileged actions and durable execution audit trails delegate to service runtimes and packages/distributed-runtime."
 }

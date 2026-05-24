@@ -65,12 +65,17 @@
   "executionBoundaries": "Execution-container boundary: APIs, workers, queues, schedulers, webhooks, runtime bootstrapping, and execution adapters only.",
   "asyncExecutionOwnership": "Owns runtime async containers only: queue consumers, webhook handlers, schedulers, and event workers while workflow policy delegates to application-services/orchestration.",
   "observabilityOwnership": "Propagates request, correlation, trace, and audit metadata across API, queue, webhook, scheduler, and execution adapter boundaries.",
+  "telemetryOwnership": "Owns execution-container telemetry emission for traces, queue/workflow/replay spans, metrics, structured logs, and correlation propagation using packages/distributed-runtime contracts.",
   "workflowRecoveryOwnership": "Owns execution-container checkpoint and recovery wiring only; workflow recovery policy delegates to packages/application-services and packages/orchestration.",
+  "recoveryOwnership": "Owns runtime recovery wiring for queue retries, workflow continuation, replay checkpoints, projection rebuilds, and dead-letter redrive while policy delegates to application-services/orchestration/distributed-runtime.",
   "replayOwnership": "Owns replay execution containers when worker, scheduler, webhook, or API runtime requires them; replay policy and contracts delegate to packages/orchestration.",
   "checkpointOwnership": "Owns runtime checkpoint persistence wiring for workflows, queue consumers, replays, and projections while checkpoint contracts live in packages/distributed-runtime and projection-runtime.",
   "projectionOwnership": "No local projection policy ownership; service-side read models and projections use packages/runtime-composition contracts.",
+  "cqrsOwnership": "Owns execution-container command/query wiring only; command authority delegates to application-services and read-model/projection consistency delegates to runtime-composition/projection-runtime.",
   "cacheOwnership": "Owns service-side cache invalidation and projection cache coordination for declared runtime responsibilities; cache policy contracts live in runtime-composition, projection-runtime, and distributed-runtime.",
+  "coordinationOwnership": "Owns runtime coordination wiring for worker leases, execution locks, fencing tokens, heartbeats, leader election metadata, and ownership failover using packages/distributed-runtime.",
   "resilienceOwnership": "Owns runtime resilience wiring for retries, circuit breakers, provider fallback, degradation handling, and provider health telemetry through packages/distributed-runtime and packages/infrastructure.",
   "regionalOwnership": "Owns runtime region-aware execution wiring, Cloudflare deployment locality, tenant affinity, and failover metadata while global routing contracts live in packages/distributed-runtime.",
-  "tenantScalingOwnership": "Owns tenant-aware execution wiring for quotas, rate governance, queue partitioning, noisy-neighbor protection, and tenant runtime metrics using packages/distributed-runtime contracts."
+  "tenantScalingOwnership": "Owns tenant-aware execution wiring for quotas, rate governance, queue partitioning, noisy-neighbor protection, and tenant runtime metrics using packages/distributed-runtime contracts.",
+  "auditOwnership": "Owns execution audit emission for privileged runtime operations, replay authorization, provider execution, queue redrive, and workflow recovery using packages/distributed-runtime security contracts."
 }

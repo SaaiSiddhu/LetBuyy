@@ -28,14 +28,19 @@ const requiredStringFields = [
   "executionBoundaries",
   "asyncExecutionOwnership",
   "observabilityOwnership",
+  "telemetryOwnership",
   "workflowRecoveryOwnership",
+  "recoveryOwnership",
   "replayOwnership",
   "checkpointOwnership",
   "projectionOwnership",
+  "cqrsOwnership",
   "cacheOwnership",
+  "coordinationOwnership",
   "resilienceOwnership",
   "regionalOwnership",
   "tenantScalingOwnership",
+  "auditOwnership",
 ];
 
 const requiredObjectFields = [
@@ -173,6 +178,14 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       `App manifest workflowRecoveryOwnership must delegate recovery ownership out of the app: ${manifestPath}`,
     );
     reporter.assert(
+      /none|delegate|service|telemetry|observability|distributed-runtime/i.test(manifest.telemetryOwnership),
+      `App manifest telemetryOwnership must delegate durable telemetry ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|application-services|orchestration|service/i.test(manifest.recoveryOwnership),
+      `App manifest recoveryOwnership must delegate runtime recovery ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
       /none|delegate|service|orchestration/i.test(manifest.replayOwnership),
       `App manifest replayOwnership must delegate event replay ownership out of the app: ${manifestPath}`,
     );
@@ -181,12 +194,20 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       `App manifest projectionOwnership must delegate projections to runtime-composition: ${manifestPath}`,
     );
     reporter.assert(
+      /runtime-composition|application-services|delegate|none|service/i.test(manifest.cqrsOwnership),
+      `App manifest cqrsOwnership must delegate command/query ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
       /none|delegate|service|distributed-runtime|projection-runtime/i.test(manifest.checkpointOwnership),
       `App manifest checkpointOwnership must delegate checkpoint ownership out of the app: ${manifestPath}`,
     );
     reporter.assert(
       /none|delegate|service|runtime-composition|distributed-runtime/i.test(manifest.cacheOwnership),
       `App manifest cacheOwnership must delegate durable cache coordination out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|distributed-runtime|coordination/i.test(manifest.coordinationOwnership),
+      `App manifest coordinationOwnership must delegate distributed coordination out of the app: ${manifestPath}`,
     );
     reporter.assert(
       /none|delegate|service|infrastructure|distributed-runtime/i.test(manifest.resilienceOwnership),
@@ -199,6 +220,10 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
     reporter.assert(
       /none|delegate|service|tenant|distributed-runtime/i.test(manifest.tenantScalingOwnership),
       `App manifest tenantScalingOwnership must delegate tenant workload governance out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|audit|telemetry|distributed-runtime/i.test(manifest.auditOwnership),
+      `App manifest auditOwnership must delegate execution audit ownership out of the app: ${manifestPath}`,
     );
   }
 
@@ -232,6 +257,14 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       `Service manifest workflowRecoveryOwnership must describe recovery execution-container ownership with delegated policy: ${manifestPath}`,
     );
     reporter.assert(
+      /telemetry|trace|metric|log|observability|distributed-runtime|runtime/i.test(manifest.telemetryOwnership),
+      `Service manifest telemetryOwnership must describe telemetry execution ownership: ${manifestPath}`,
+    );
+    reporter.assert(
+      /recovery|checkpoint|workflow|queue|replay|distributed-runtime|orchestration|runtime/i.test(manifest.recoveryOwnership),
+      `Service manifest recoveryOwnership must describe runtime recovery execution ownership: ${manifestPath}`,
+    );
+    reporter.assert(
       /replay|event|orchestration|worker|scheduler|delegate|runtime/i.test(manifest.replayOwnership),
       `Service manifest replayOwnership must describe replay execution-container ownership with orchestration policy: ${manifestPath}`,
     );
@@ -240,12 +273,20 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       `Service manifest projectionOwnership must delegate projection policy to runtime-composition: ${manifestPath}`,
     );
     reporter.assert(
+      /cqrs|command|query|runtime-composition|application-services|projection|distributed-runtime/i.test(manifest.cqrsOwnership),
+      `Service manifest cqrsOwnership must describe command/query execution ownership: ${manifestPath}`,
+    );
+    reporter.assert(
       /checkpoint|distributed-runtime|projection-runtime|workflow|runtime/i.test(manifest.checkpointOwnership),
       `Service manifest checkpointOwnership must describe checkpoint execution ownership: ${manifestPath}`,
     );
     reporter.assert(
       /cache|invalidation|runtime-composition|distributed-runtime|projection/i.test(manifest.cacheOwnership),
       `Service manifest cacheOwnership must describe cache coordination or invalidation ownership: ${manifestPath}`,
+    );
+    reporter.assert(
+      /coordination|lease|lock|fencing|leader|distributed-runtime|runtime/i.test(manifest.coordinationOwnership),
+      `Service manifest coordinationOwnership must describe distributed coordination ownership: ${manifestPath}`,
     );
     reporter.assert(
       /resilience|circuit|retry|provider|fallback|distributed-runtime|infrastructure/i.test(manifest.resilienceOwnership),
@@ -258,6 +299,10 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
     reporter.assert(
       /tenant|quota|noisy|partition|scaling|distributed-runtime/i.test(manifest.tenantScalingOwnership),
       `Service manifest tenantScalingOwnership must describe tenant workload governance: ${manifestPath}`,
+    );
+    reporter.assert(
+      /audit|execution|security|telemetry|distributed-runtime|runtime/i.test(manifest.auditOwnership),
+      `Service manifest auditOwnership must describe execution audit ownership: ${manifestPath}`,
     );
   }
 
@@ -274,6 +319,16 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
   reporter.assert(
     /correlation|trace|audit|telemetry|observability|request/i.test(manifest.observabilityOwnership),
     `Runtime manifest observabilityOwnership must describe correlation, trace, audit, or telemetry ownership: ${manifestPath}`,
+  );
+
+  reporter.assert(
+    /telemetry|trace|metric|log|delegate|none|runtime/i.test(manifest.telemetryOwnership),
+    `Runtime manifest telemetryOwnership must describe telemetry ownership or explicit delegation: ${manifestPath}`,
+  );
+
+  reporter.assert(
+    /audit|security|execution|delegate|none|runtime/i.test(manifest.auditOwnership),
+    `Runtime manifest auditOwnership must describe audit ownership or explicit delegation: ${manifestPath}`,
   );
 
   const schema = manifest.environmentAuthority?.schema;
