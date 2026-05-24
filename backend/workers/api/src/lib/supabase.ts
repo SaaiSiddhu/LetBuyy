@@ -5,10 +5,14 @@ import type { Context } from 'hono';
 /**
  * Create a Supabase Admin client (service role — bypasses RLS)
  */
-export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient {
-    return createClient(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY, {
+export function getSupabaseAdminFromEnv(env: Env): SupabaseClient {
+    return createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
         auth: { autoRefreshToken: false, persistSession: false },
     });
+}
+
+export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient {
+    return getSupabaseAdminFromEnv(c.env);
 }
 
 /**
@@ -20,26 +24,66 @@ export function getSupabaseUser(c: Context<{ Bindings: Env }>, token: string): S
     });
 }
 
+// ── Response Envelope (matches Doc 09 § 1.3) ──────────────────
+
 /**
- * Standard API response helpers
+ * Standard success response with `success: true` field.
  */
 export function success<T>(data: T, meta?: Record<string, unknown>) {
-    return { data, ...meta };
+    return { success: true as const, data, ...meta };
 }
 
+/**
+ * Paginated success response with navigation metadata.
+ */
 export function paginated<T>(data: T[], total: number, page: number, limit: number) {
+    const totalPages = Math.ceil(total / limit);
     return {
+        success: true as const,
         data,
-        total,
-        page,
-        limit,
-        has_more: page * limit < total,
+        meta: {
+            page,
+            per_page: limit,
+            total,
+            total_pages: totalPages,
+            has_next: page < totalPages,
+            has_prev: page > 1,
+        },
     };
 }
 
+/**
+ * Standard error response factory.
+ */
 export function apiError(code: string, message: string, status: number = 400) {
     return {
-        body: { error: { code, message } },
+        body: {
+            success: false as const,
+            error: { code, message, status },
+        },
         status,
     };
+}
+
+export const DATABASE_ERROR_MESSAGE = 'Database operation failed';
+
+export function errorBody(code: string, message: string) {
+    return {
+        error: { code, message },
+    };
+}
+
+export function failureBody(code: string, message: string) {
+    return {
+        success: false as const,
+        error: { code, message },
+    };
+}
+
+export function dbErrorBody(message = DATABASE_ERROR_MESSAGE) {
+    return errorBody('DB_ERROR', message);
+}
+
+export function dbFailureBody(message = DATABASE_ERROR_MESSAGE) {
+    return failureBody('DB_ERROR', message);
 }

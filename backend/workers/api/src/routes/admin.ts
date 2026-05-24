@@ -1,25 +1,12 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
+import { requireSuperAdmin } from '../middleware/rbac';
 
 const router = new Hono<{ Bindings: Env }>();
 
-// ============================================================
-// SUPER ADMIN MIDDLEWARE — Verify super admin for all routes
-// ============================================================
-
-async function verifySuperAdmin(c: any): Promise<boolean> {
-    const auth = c.get('auth');
-    const db = getSupabaseAdmin(c);
-
-    const { data } = await db
-        .from('super_admin_allowlist')
-        .select('id')
-        .eq('user_id', auth.user.id)
-        .single();
-
-    return !!data;
-}
+// All admin routes require super admin access
+router.use('*', requireSuperAdmin);
 
 // ============================================================
 // DASHBOARD
@@ -27,14 +14,11 @@ async function verifySuperAdmin(c: any): Promise<boolean> {
 
 // GET /admin/dashboard — Platform metrics
 router.get('/dashboard', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
 
     const [storesResult, products, orders, users, employees] = await Promise.all([
-        db.from('stores').select('id', { count: 'exact', head: true }),
+        db.from('sites').select('id', { count: 'exact', head: true }),
         db.from('products').select('id', { count: 'exact', head: true }),
         db.from('orders').select('id', { count: 'exact', head: true }),
         db.from('user_profiles').select('id', { count: 'exact', head: true }),
@@ -67,9 +51,6 @@ router.get('/dashboard', async (c) => {
 
 // GET /admin/users — List all platform users
 router.get('/users', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
     const page = parseInt(c.req.query('page') || '1');
@@ -95,9 +76,6 @@ router.get('/users', async (c) => {
 
 // GET /admin/stores — List all platform stores
 router.get('/stores', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
     const page = parseInt(c.req.query('page') || '1');
@@ -106,8 +84,8 @@ router.get('/stores', async (c) => {
     const status = c.req.query('status');
 
     let query = db
-        .from('stores')
-        .select('*, user_profiles!inner(email, full_name)', { count: 'exact' })
+        .from('sites')
+        .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
 
@@ -124,9 +102,6 @@ router.get('/stores', async (c) => {
 
 // PATCH /admin/stores/:id/status — Suspend/unsuspend a store
 router.patch('/stores/:id/status', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const storeId = c.req.param('id');
     const { status } = await c.req.json();
@@ -137,7 +112,7 @@ router.patch('/stores/:id/status', async (c) => {
     }
 
     const { data, error } = await db
-        .from('stores')
+        .from('sites')
         .update({ status })
         .eq('id', storeId)
         .select()
@@ -162,15 +137,12 @@ router.patch('/stores/:id/status', async (c) => {
 
 // DELETE /admin/stores/:id — Hard delete a store
 router.delete('/stores/:id', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const storeId = c.req.param('id');
     const db = getSupabaseAdmin(c);
 
     // Cascade delete: products, orders, etc. are handled by FK constraints
-    const { error } = await db.from('stores').delete().eq('id', storeId);
+    const { error } = await db.from('sites').delete().eq('id', storeId);
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
@@ -194,9 +166,6 @@ router.delete('/stores/:id', async (c) => {
 
 // GET /admin/subscriptions — Billing & revenue overview
 router.get('/subscriptions', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
 
@@ -215,9 +184,6 @@ router.get('/subscriptions', async (c) => {
 
 // GET /admin/analytics — Platform-wide analytics
 router.get('/analytics', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
 
@@ -225,7 +191,7 @@ router.get('/analytics', async (c) => {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
 
     const [newStores, newOrders, newUsers] = await Promise.all([
-        db.from('stores').select('id, created_at').gte('created_at', thirtyDaysAgo),
+        db.from('sites').select('id, created_at').gte('created_at', thirtyDaysAgo),
         db.from('orders').select('id, total, created_at').gte('created_at', thirtyDaysAgo),
         db.from('user_profiles').select('id, created_at').gte('created_at', thirtyDaysAgo),
     ]);
@@ -245,9 +211,6 @@ router.get('/analytics', async (c) => {
 
 // GET /admin/audit-logs — All audit logs
 router.get('/audit-logs', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
     const page = parseInt(c.req.query('page') || '1');
@@ -273,15 +236,12 @@ router.get('/audit-logs', async (c) => {
 
 // GET /admin/employees — List all employees
 router.get('/employees', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const db = getSupabaseAdmin(c);
 
     const { data, error } = await db
         .from('employees')
-        .select('*, stores(name, subdomain)')
+        .select('*, sites(store_name, subdomain)')
         .order('created_at', { ascending: false });
 
     if (error) {
@@ -293,9 +253,6 @@ router.get('/employees', async (c) => {
 
 // POST /admin/employees/invite — Invite an employee (Super Admin)
 router.post('/employees/invite', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const auth = c.get('auth');
     const { email, store_id, role } = await c.req.json();
@@ -330,9 +287,6 @@ router.post('/employees/invite', async (c) => {
 
 // PATCH /admin/employees/:id/deactivate — Deactivate an employee
 router.patch('/employees/:id/deactivate', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const employeeId = c.req.param('id');
     const db = getSupabaseAdmin(c);
@@ -362,9 +316,6 @@ router.patch('/employees/:id/deactivate', async (c) => {
 
 // DELETE /admin/employees/:id — Remove an employee
 router.delete('/employees/:id', async (c) => {
-    if (!(await verifySuperAdmin(c))) {
-        return c.json({ error: { code: 'FORBIDDEN', message: 'Super admin access required' } }, 403);
-    }
 
     const employeeId = c.req.param('id');
     const db = getSupabaseAdmin(c);

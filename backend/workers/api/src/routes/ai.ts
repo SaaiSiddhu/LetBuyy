@@ -1,8 +1,22 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { validate } from '../middleware/validation';
+import { GenerateContentSchema, CheckCreditsSchema } from '../schemas/ai.schema';
 
 const router = new Hono<{ Bindings: Env }>();
+
+async function resolveAuthorizedUser(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    authUser: WorkerAuthUser,
+    storeId: string
+) {
+    const customUser = await resolveCustomUser(db, authUser);
+    if (!customUser) return null;
+    const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, authUser.storeId);
+    return ownsStore ? customUser : null;
+}
 
 // GET /ai/credits — Get current AI credit balance for a store
 router.get('/credits', async (c) => {
@@ -14,15 +28,8 @@ router.get('/credits', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
     }
 
-    // Verify store ownership
-    const { data: store } = await db
-        .from('stores')
-        .select('id')
-        .eq('id', storeId)
-        .eq('user_id', auth.user.id)
-        .single();
-
-    if (!store) {
+    const customUser = await resolveAuthorizedUser(db, auth.user, storeId);
+    if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
@@ -61,11 +68,14 @@ router.get('/usage', async (c) => {
     if (!storeId) {
         return c.json({ error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
     }
+    const customUser = await resolveAuthorizedUser(db, auth.user, storeId);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
 
     let query = db
         .from('ai_usage')
-        .select('*, stores!inner(user_id)', { count: 'exact' })
-        .eq('stores.user_id', auth.user.id)
+        .select('*', { count: 'exact' })
         .eq('store_id', storeId)
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
@@ -81,7 +91,7 @@ router.get('/usage', async (c) => {
     return c.json(paginated(data || [], count || 0, page, limit));
 });
 
-// POST /ai/generate — Generate AI content (stub — logs usage, returns placeholder)
+// POST /ai/generate — Generate AI content
 router.post('/generate', async (c) => {
     const auth = c.get('auth');
     const body = await c.req.json();
@@ -91,15 +101,8 @@ router.post('/generate', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'store_id, feature, and prompt are required' } }, 400);
     }
 
-    // Verify store ownership
-    const { data: store } = await db
-        .from('stores')
-        .select('id')
-        .eq('id', body.store_id)
-        .eq('user_id', auth.user.id)
-        .single();
-
-    if (!store) {
+    const customUser = await resolveAuthorizedUser(db, auth.user, body.store_id);
+    if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
@@ -115,40 +118,34 @@ router.post('/generate', async (c) => {
         return c.json({ error: { code: 'INSUFFICIENT_CREDITS', message: 'No AI credits remaining. Please purchase more credits.' } }, 402);
     }
 
-    // Stub: log the usage and return a placeholder
-    const placeholderOutput = `[AI Generation Placeholder]\n\nFeature: ${body.feature}\nPrompt: "${body.prompt}"\n\nThis is a placeholder response. AI generation will be available once the OpenAI API integration is configured.`;
-
-    const { data: usage, error } = await db
+    const { error } = await db
         .from('ai_usage')
         .insert({
             store_id: body.store_id,
-            user_id: auth.user.id,
+            user_id: customUser.id,
             feature: body.feature,
             prompt: body.prompt,
-            output: placeholderOutput,
+            output: null,
             tokens_input: 0,
             tokens_output: 0,
-            credits_used: 0, // Don't charge for stubs
-            model: 'stub',
+            credits_used: 0,
+            model: null,
             provider: 'none',
             latency_ms: 0,
-            status: 'completed',
+            status: 'failed',
+            error_message: 'AI provider is not configured for this environment',
         })
-        .select()
+        .select('id')
         .single();
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success({
-        id: usage.id,
-        output: placeholderOutput,
-        credits_used: 0,
-        credits_remaining: balance,
-        is_stub: true,
-        message: 'AI generation is coming soon. This is a placeholder response.',
-    }), 201);
+    return c.json(
+        { error: { code: 'AI_PROVIDER_UNCONFIGURED', message: 'AI generation is not configured for this environment' } },
+        503
+    );
 });
 
 // POST /ai/usage/:id/rate — Rate an AI generation
@@ -157,9 +154,13 @@ router.post('/usage/:id/rate', async (c) => {
     const usageId = c.req.param('id');
     const body = await c.req.json();
     const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
 
     if (!body.rating || body.rating < 1 || body.rating > 5) {
         return c.json({ error: { code: 'VALIDATION', message: 'rating must be between 1 and 5' } }, 400);
+    }
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
     const { data, error } = await db
@@ -169,7 +170,7 @@ router.post('/usage/:id/rate', async (c) => {
             user_feedback: body.feedback || null,
         })
         .eq('id', usageId)
-        .eq('user_id', auth.user.id)
+        .eq('user_id', customUser.id)
         .select()
         .single();
 
@@ -180,24 +181,24 @@ router.post('/usage/:id/rate', async (c) => {
     return c.json(success(data));
 });
 
-// POST /ai/credits/purchase — Purchase additional credits (stub)
+// POST /ai/credits/purchase — Purchase additional credits
 router.post('/credits/purchase', async (c) => {
     const auth = c.get('auth');
     const body = await c.req.json();
+    const db = getSupabaseAdmin(c);
 
     if (!body.store_id || !body.amount) {
         return c.json({ error: { code: 'VALIDATION', message: 'store_id and amount are required' } }, 400);
     }
+    const customUser = await resolveAuthorizedUser(db, auth.user, body.store_id);
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
 
-    // Stub: return a message about payment integration
-    return c.json({
-        data: {
-            message: 'Credit purchases will be available once payment integration is configured.',
-            store_id: body.store_id,
-            requested_amount: body.amount,
-            is_stub: true,
-        },
-    });
+    return c.json(
+        { error: { code: 'AI_CREDIT_PURCHASE_UNAVAILABLE', message: 'AI credit purchases are not configured' } },
+        503
+    );
 });
 
 export default router;

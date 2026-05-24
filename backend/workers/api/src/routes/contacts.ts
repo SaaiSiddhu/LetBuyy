@@ -1,5 +1,6 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -14,6 +15,17 @@ router.post('/', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
+    const { data: store } = await db
+        .from('sites')
+        .select('id')
+        .eq('id', store_id)
+        .eq('status', 'published')
+        .is('deleted_at', null)
+        .maybeSingle();
+
+    if (!store) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    }
 
     const { data, error } = await db
         .from('contact_submissions')
@@ -42,11 +54,29 @@ router.post('/', async (c) => {
 router.get('/', async (c) => {
     const auth = c.get('auth');
     const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: sites, error: sitesError } = await db
+        .from('sites')
+        .select('id')
+        .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`)
+        .is('deleted_at', null);
+
+    if (sitesError) {
+        return c.json({ error: { code: 'DB_ERROR', message: sitesError.message } }, 500);
+    }
+
+    const siteIds = (sites || []).map((site) => site.id as string);
+    if (siteIds.length === 0) return c.json(success([]));
 
     const { data, error } = await db
         .from('contact_submissions')
-        .select('*, stores!inner(user_id)')
-        .eq('stores.user_id', auth.user.id)
+        .select('*')
+        .in('store_id', siteIds)
         .order('created_at', { ascending: false });
 
     if (error) {

@@ -1,42 +1,56 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
+import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { validate } from '../middleware/validation';
+import { ListMediaQuery } from '../schemas/media.schema';
+import type { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
 
+type ListMediaQueryInput = z.infer<typeof ListMediaQuery>;
+
+interface MediaOwnerRow {
+    store_id?: string | null;
+    url?: string | null;
+}
+
 // GET /media — List media files for a store
-router.get('/', async (c) => {
+router.get('/', validate('query', ListMediaQuery), async (c) => {
     const auth = c.get('auth');
-    const storeId = c.req.query('store_id');
-    const folder = c.req.query('folder');
-    const mediaType = c.req.query('type');
-    const page = parseInt(c.req.query('page') || '1');
-    const limit = Math.min(parseInt(c.req.query('limit') || '30'), 100);
-    const offset = (page - 1) * limit;
+    const q = c.get('validatedQuery') as ListMediaQueryInput;
+    const offset = (q.page - 1) * q.limit;
+    const storeId = q.store_id;
     const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
 
     if (!storeId) {
-        return c.json({ error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
+    }
+    if (!customUser) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+    if (!(await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId))) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
     let query = db
         .from('media')
-        .select('*, stores!inner(user_id)', { count: 'exact' })
-        .eq('stores.user_id', auth.user.id)
+        .select('*', { count: 'exact' })
         .eq('store_id', storeId)
         .order('created_at', { ascending: false })
-        .range(offset, offset + limit - 1);
+        .range(offset, offset + q.limit - 1);
 
-    if (folder) query = query.eq('folder', folder);
-    if (mediaType) query = query.eq('media_type', mediaType);
+    if (q.folder) query = query.eq('folder', q.folder);
+    if (q.type && q.type !== 'all') query = query.eq('media_type', q.type);
 
     const { data, error, count } = await query;
 
     if (error) {
-        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+        return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated(data || [], count || 0, page, limit));
+    return c.json(paginated(data || [], count || 0, q.page, q.limit));
 });
 
 // POST /media — Create media record (metadata registration after upload via R2)
@@ -44,20 +58,16 @@ router.post('/', async (c) => {
     const auth = c.get('auth');
     const body = await c.req.json();
     const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
 
     if (!body.store_id || !body.filename || !body.url || !body.mime_type) {
         return c.json({ error: { code: 'VALIDATION', message: 'store_id, filename, url, and mime_type are required' } }, 400);
     }
 
-    // Verify store ownership
-    const { data: store } = await db
-        .from('stores')
-        .select('id')
-        .eq('id', body.store_id)
-        .eq('user_id', auth.user.id)
-        .single();
-
-    if (!store) {
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+    if (!(await verifySiteOwnership(db, body.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
@@ -72,7 +82,7 @@ router.post('/', async (c) => {
         .from('media')
         .insert({
             store_id: body.store_id,
-            uploaded_by: auth.user.id,
+            uploaded_by: customUser.id,
             filename: body.filename,
             original_name: body.original_name || body.filename,
             url: body.url,
@@ -103,15 +113,16 @@ router.patch('/:id', async (c) => {
     const mediaId = c.req.param('id');
     const body = await c.req.json();
     const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
 
-    // Verify ownership
     const { data: existing } = await db
         .from('media')
-        .select('store_id, stores!inner(user_id)')
+        .select('store_id')
         .eq('id', mediaId)
         .single();
 
-    if (!existing || (existing as any).stores?.user_id !== auth.user.id) {
+    const ownedMedia = existing as MediaOwnerRow | null;
+    if (!customUser || !ownedMedia?.store_id || !(await verifySiteOwnership(db, ownedMedia.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
@@ -144,14 +155,16 @@ router.delete('/:id', async (c) => {
     const auth = c.get('auth');
     const mediaId = c.req.param('id');
     const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
 
     const { data: existing } = await db
         .from('media')
-        .select('store_id, url, stores!inner(user_id)')
+        .select('store_id, url')
         .eq('id', mediaId)
         .single();
 
-    if (!existing || (existing as any).stores?.user_id !== auth.user.id) {
+    const ownedMedia = existing as MediaOwnerRow | null;
+    if (!customUser || !ownedMedia?.store_id || !(await verifySiteOwnership(db, ownedMedia.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
