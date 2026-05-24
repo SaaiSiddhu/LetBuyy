@@ -27,8 +27,13 @@ class ApiClient extends ChangeNotifier {
 
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
+        'X-Client': 'flutter-builder',
+        'X-Request-ID': _requestId(),
         if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
       };
+
+  String _requestId() =>
+      'flutter-builder-${DateTime.now().microsecondsSinceEpoch}';
 
   Uri _uri(String path, [Map<String, dynamic>? queryParams]) {
     final cleanPath = path.startsWith('/') ? path.substring(1) : path;
@@ -79,6 +84,15 @@ class ApiClient extends ChangeNotifier {
     return _handleResponse(res);
   }
 
+  Future<dynamic> put(String path, {Object? body}) async {
+    final res = await _http.put(
+      _uri(path),
+      headers: _headers,
+      body: body != null ? jsonEncode(body) : null,
+    );
+    return _handleResponse(res);
+  }
+
   Future<dynamic> delete(String path) async {
     final res = await _http.delete(_uri(path), headers: _headers);
     return _handleResponse(res);
@@ -90,6 +104,8 @@ class ApiClient extends ChangeNotifier {
   Future<String> uploadFile(File file, {String folder = 'uploads'}) async {
     final request = http.MultipartRequest('POST', _uri('upload'));
     request.headers.addAll({
+      'X-Client': 'flutter-builder',
+      'X-Request-ID': _requestId(),
       if (_accessToken != null) 'Authorization': 'Bearer $_accessToken',
     });
     request.fields['folder'] = folder;

@@ -1,8 +1,11 @@
 class ApiConstants {
   // Base URLs
-  static const String baseUrl = 'https://api.agrimate.com';
+  static const String baseUrl = String.fromEnvironment(
+    'API_BASE_URL',
+    defaultValue: 'https://api.letbuyy.store/v1',
+  );
   static const String apiVersion = 'v1';
-  static const String apiBaseUrl = '$baseUrl/api/$apiVersion';
+  static const String apiBaseUrl = baseUrl;
 
   // Authentication Endpoints
   static const String loginEndpoint = '$apiBaseUrl/auth/login';
@@ -62,8 +65,8 @@ class ApiConstants {
   static const String createPaymentEndpoint = '$apiBaseUrl/payment/create';
   static const String verifyPaymentEndpoint = '$apiBaseUrl/payment/verify';
   static const String paymentStatusEndpoint = '$apiBaseUrl/payment/{id}/status';
-  static const String razorpayOrderEndpoint = '$apiBaseUrl/payment/razorpay/order';
-  static const String razorpayVerifyEndpoint = '$apiBaseUrl/payment/razorpay/verify';
+  static const String razorpayOrderEndpoint = '$apiBaseUrl/payments/razorpay/order';
+  static const String razorpayVerifyEndpoint = '$apiBaseUrl/payments/razorpay/verify';
 
   // Coupon Endpoints
   static const String couponsEndpoint = '$apiBaseUrl/coupons';

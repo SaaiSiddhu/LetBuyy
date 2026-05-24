@@ -47,7 +47,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBx7A1UywuzGJL380a7KAWry4uqoJyhHzM',
+    apiKey: String.fromEnvironment('FIREBASE_WEB_API_KEY'),
     appId: '1:468123057306:web:c28cc6e3c1a59bdf187323',
     messagingSenderId: '468123057306',
     projectId: 'letbuy-y',
@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC4yrYvhINIP07b4EBadEs_R-T77z-rPvo',
+    apiKey: String.fromEnvironment('FIREBASE_ANDROID_API_KEY'),
     appId: '1:468123057306:android:32511ab8bc4e0508187323',
     messagingSenderId: '468123057306',
     projectId: 'letbuy-y',
@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBfHrl5hvhDOjtRI3cWUS7GT-vIX6m0RdU',
+    apiKey: String.fromEnvironment('FIREBASE_IOS_API_KEY'),
     appId: '1:468123057306:ios:6cbf4562ae5ae6e0187323',
     messagingSenderId: '468123057306',
     projectId: 'letbuy-y',

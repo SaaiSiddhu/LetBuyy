@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import '../config/supabase_config.dart';
 import '../models/store_model.dart';
 
 /// Device type for preview
@@ -96,8 +97,7 @@ class PreviewConfig {
 
 /// Service for managing store preview functionality
 class PreviewService {
-  static const String _baseFirebaseUrl = 'https://stores-letbuy-y.web.app';
-  static const String _baseProdUrl = 'https://stores.letbuyy.store';
+  static const String _productionStoreHost = 'letbuyy.store';
 
   /// Generate preview URL for a store
   PreviewConfig getPreviewConfig({
@@ -108,11 +108,9 @@ class PreviewService {
     String baseUrl;
     
     if (useProductionUrl && store.subdomain.isNotEmpty) {
-      // Production subdomain URL
-      baseUrl = 'https://${store.subdomain}.letbuyy.store';
+      baseUrl = 'https://${store.subdomain}.$_productionStoreHost';
     } else {
-      // Firebase hosting URL with store ID
-      baseUrl = '$_baseFirebaseUrl/${store.id}';
+      baseUrl = _storefrontPathUrl(store);
     }
 
     return PreviewConfig(
@@ -125,9 +123,9 @@ class PreviewService {
   /// Get live store URL
   String getLiveUrl(StoreModel store) {
     if (store.subdomain.isNotEmpty) {
-      return 'https://${store.subdomain}.letbuyy.store';
+      return 'https://${store.subdomain}.$_productionStoreHost';
     }
-    return '$_baseFirebaseUrl/${store.id}';
+    return _storefrontPathUrl(store);
   }
 
   /// Get draft preview URL (unpublished changes)
@@ -139,10 +137,9 @@ class PreviewService {
   /// Get shareable store URL
   String getShareableUrl(StoreModel store) {
     if (store.subdomain.isNotEmpty) {
-      return 'https://${store.subdomain}.letbuyy.store';
+      return 'https://${store.subdomain}.$_productionStoreHost';
     }
-    // Fallback to Firebase URL
-    return '$_baseFirebaseUrl/${store.id}';
+    return _storefrontPathUrl(store);
   }
 
   /// Get QR code URL for the store
@@ -219,5 +216,16 @@ class PreviewService {
   /// Copy store URL to clipboard (utility method - actual clipboard access done in UI)
   String getUrlForClipboard(StoreModel store) {
     return getShareableUrl(store);
+  }
+
+  String _storefrontPathUrl(StoreModel store) {
+    final base = AppConfig.storefrontBaseUrl.endsWith('/')
+        ? AppConfig.storefrontBaseUrl.substring(
+            0,
+            AppConfig.storefrontBaseUrl.length - 1,
+          )
+        : AppConfig.storefrontBaseUrl;
+    final identifier = store.subdomain.isNotEmpty ? store.subdomain : store.id;
+    return '$base/store/$identifier';
   }
 }

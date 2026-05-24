@@ -40,58 +40,9 @@ class ReturnService {
     required ReturnStatus status,
     String? exchangeOrderId,
   }) async {
-    // Map return status to order status
-    String orderStatus;
-    switch (status) {
-      case ReturnStatus.requested:
-        orderStatus = type == ReturnType.exchange ? 'exchange_requested' : 'return_requested';
-        break;
-      case ReturnStatus.approved:
-        orderStatus = type == ReturnType.exchange ? 'exchange_approved' : 'return_approved';
-        break;
-      case ReturnStatus.pickupScheduled:
-      case ReturnStatus.pickupInProgress:
-        orderStatus = 'pickup_pending';
-        break;
-      case ReturnStatus.pickupCompleted:
-        orderStatus = 'pickup_completed';
-        break;
-      case ReturnStatus.qcFailed:
-        orderStatus = 'delivered'; // Revert to delivered
-        break;
-      case ReturnStatus.refundInitiated:
-        orderStatus = 'refund_initiated';
-        break;
-      case ReturnStatus.refundCompleted:
-        orderStatus = 'returned';
-        break;
-      case ReturnStatus.exchangeShipped:
-        orderStatus = 'exchange_shipped';
-        break;
-      case ReturnStatus.exchangeDelivered:
-        orderStatus = 'exchanged';
-        break;
-      case ReturnStatus.rejected:
-        orderStatus = 'delivered'; // Revert to delivered
-        break;
-      case ReturnStatus.cancelled:
-      case ReturnStatus.closed:
-        orderStatus = 'delivered'; // Revert to delivered
-        break;
-    }
-
-    await _firestore.collection('orders').doc(orderId).update({
-      'hasReturnRequest': status != ReturnStatus.cancelled && status != ReturnStatus.closed,
-      'hasExchangeRequest': type == ReturnType.exchange && status != ReturnStatus.cancelled,
-      'returnRequestId': returnId,
-      'returnStatus': status.toJson(),
-      'returnType': type.toJson(),
-      'orderStatus': orderStatus,
-      if (exchangeOrderId != null) 'exchangeOrderId': exchangeOrderId,
-      'updatedAt': FieldValue.serverTimestamp(),
-    });
-
-    debugPrint('🔄 Synced order $orderId with return status: $orderStatus');
+    throw UnsupportedError(
+      'Return/order synchronization must use the backend returns workflow.',
+    );
   }
 
   /// Get all active return reasons

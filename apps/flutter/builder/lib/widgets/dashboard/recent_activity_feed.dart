@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_theme_colors.dart';
 
 class RecentActivityFeed extends StatelessWidget {
   const RecentActivityFeed({super.key});

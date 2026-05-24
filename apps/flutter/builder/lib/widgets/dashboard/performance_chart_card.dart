@@ -1,5 +1,4 @@
 import 'package:fl_chart/fl_chart.dart';
-import '../../theme/app_theme_colors.dart';
 import 'package:flutter/material.dart';
 
 class PerformanceChartCard extends StatefulWidget {
@@ -24,9 +23,7 @@ class _PerformanceChartCardState extends State<PerformanceChartCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      // ...
-      child: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
@@ -87,7 +84,6 @@ class _PerformanceChartCardState extends State<PerformanceChartCard> {
             ),
           ),
         ],
-      ),
     );
   }
 

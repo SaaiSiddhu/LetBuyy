@@ -22,6 +22,7 @@ class PaymentService {
 
   // Open Razorpay checkout
   Future<void> openCheckout({
+    required String keyId,
     required double amount,
     required String orderId,
     required String name,
@@ -29,11 +30,18 @@ class PaymentService {
     required String phone,
     String? description,
   }) async {
+    if (keyId.isEmpty || orderId.isEmpty || amount <= 0) {
+      throw PaymentException(
+        'Backend-created payment order data is required before opening checkout',
+        code: 'PAYMENT_ORDER_REQUIRED',
+      );
+    }
+
     try {
       final options = {
-        'key': 'YOUR_RAZORPAY_KEY_ID', // Replace with your key
+        'key': keyId,
         'amount': (amount * 100).toInt(), // Amount in paise
-        'name': 'Agrimate',
+        'name': RazorpayConfig.appName,
         'order_id': orderId,
         'description': description ?? 'Payment for order $orderId',
         'timeout': 300, // 5 minutes in seconds
@@ -43,7 +51,7 @@ class PaymentService {
           'name': name,
         },
         'theme': {
-          'color': '#2E7D32', // Primary color
+          'color': RazorpayConfig.themeColor,
         },
         'modal': {
           'ondismiss': () {
@@ -80,13 +88,10 @@ class PaymentService {
     required String signature,
     required String secret,
   }) {
-    try {
-      // Implement signature verification logic
-      // This should be done on the backend for security
-      return true;
-    } catch (e) {
-      return false;
-    }
+    throw PaymentException(
+      'Payment signatures must be verified by the backend',
+      code: 'BACKEND_VERIFICATION_REQUIRED',
+    );
   }
 
   // Process COD order
@@ -94,17 +99,10 @@ class PaymentService {
     required String orderId,
     required double amount,
   }) async {
-    try {
-      // Process COD order logic
-      return {
-        'success': true,
-        'orderId': orderId,
-        'paymentMethod': 'COD',
-        'amount': amount,
-      };
-    } catch (e) {
-      throw PaymentException('Failed to process COD order: ${e.toString()}');
-    }
+    throw PaymentException(
+      'COD orders must be created through the backend checkout workflow',
+      code: 'BACKEND_CHECKOUT_REQUIRED',
+    );
   }
 
   // Create Razorpay order (backend integration required)
@@ -112,15 +110,10 @@ class PaymentService {
     required double amount,
     required String currency,
   }) async {
-    try {
-      // This should call your backend API to create Razorpay order
-      // Backend will use Razorpay API with secret key
-      
-      // Example response from backend
-      return 'order_${DateTime.now().millisecondsSinceEpoch}';
-    } catch (e) {
-      throw PaymentException('Failed to create order: ${e.toString()}');
-    }
+    throw PaymentException(
+      'Razorpay orders must be created through the backend checkout workflow',
+      code: 'BACKEND_PAYMENT_ORDER_REQUIRED',
+    );
   }
 
   // Dispose Razorpay

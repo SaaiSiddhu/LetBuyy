@@ -29,10 +29,20 @@ void main() async {
 
   // ── Firebase (FCM push notifications only) ───────────────
   try {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
-    if (kDebugMode) print('✅ Firebase initialized (FCM only)');
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+      if (kDebugMode) print('✅ Firebase initialized (FCM only)');
+    } else if (kDebugMode) {
+      print('✅ Firebase already initialized (FCM only)');
+    }
+  } on FirebaseException catch (e) {
+    if (e.code == 'duplicate-app') {
+      if (kDebugMode) print('✅ Firebase already initialized (FCM only)');
+    } else if (kDebugMode) {
+      print('⚠️ Firebase init error: $e');
+    }
   } catch (e) {
     if (kDebugMode) print('⚠️ Firebase init error: $e');
   }
@@ -47,10 +57,12 @@ void main() async {
       providers: [
         // Theme & language
         ChangeNotifierProvider(create: (_) => ThemeProvider()..loadTheme()),
-        ChangeNotifierProvider(create: (_) => LanguageService()..loadLanguage()),
+        ChangeNotifierProvider(
+          create: (_) => LanguageService()..loadLanguage(),
+        ),
 
         // API client (shared singleton)
-        Provider<ApiClient>.value(value: apiClient),
+        ChangeNotifierProvider<ApiClient>.value(value: apiClient),
 
         // Auth
         ChangeNotifierProvider<StoreAuthService>(
@@ -72,9 +84,7 @@ void main() async {
         ),
 
         // Storage
-        Provider<StorageService>(
-          create: (_) => StorageService(api: apiClient),
-        ),
+        Provider<StorageService>(create: (_) => StorageService(api: apiClient)),
       ],
       child: const StoreBuilderApp(),
     ),
