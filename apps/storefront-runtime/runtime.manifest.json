@@ -67,11 +67,18 @@
   "queryAuthority": "Consumes packages/runtime-composition query layers and service API responses; does not own aggregation pipelines or projection assembly.",
   "compositionAuthority": "Owns actor-specific rendering, routing, presentation adapters, and runtime composition only.",
   "executionOwnership": "Routing, rendering, runtime adapters, presentation transport, and runtime hooks only.",
+  "distributedExecutionOwnership": "No distributed execution ownership; durable event persistence, queues, checkpoints, replay, and coordination delegate to service execution containers and packages/distributed-runtime.",
+  "queueOwnership": "No queue execution ownership; durable queue production and consumption delegate to service execution containers and queue workers.",
   "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved runtime-composition or service API boundaries.",
   "executionBoundaries": "Thin runtime boundary: routing, rendering, presentation adapters, runtime transport, and runtime hooks only.",
   "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, replay, and retries delegate to services, application-services, and orchestration runtimes.",
   "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers.",
   "workflowRecoveryOwnership": "No workflow recovery ownership; recovery planning delegates to packages/application-services and packages/orchestration through service APIs.",
   "replayOwnership": "No event replay ownership; replay lifecycle delegates to service execution containers and packages/orchestration.",
-  "projectionOwnership": "No projection assembly ownership; read projections, aggregation, and response shaping delegate to packages/runtime-composition."
+  "checkpointOwnership": "No checkpoint ownership; workflow, replay, queue, and projection checkpoints delegate to service runtimes using packages/distributed-runtime and packages/projection-runtime.",
+  "projectionOwnership": "No projection assembly ownership; read projections, aggregation, and response shaping delegate to packages/runtime-composition.",
+  "cacheOwnership": "No durable cache coordination ownership; app fetch/cache hints delegate invalidation and projection cache policy to runtime-composition, projection-runtime, and service execution containers.",
+  "resilienceOwnership": "No resilience policy ownership; provider retries, circuit breakers, fallback execution, and degradation handling delegate to service runtimes, packages/distributed-runtime, and packages/infrastructure.",
+  "regionalOwnership": "No regional execution ownership; region-aware routing, tenant affinity, and failover delegate to Cloudflare/service runtime boundaries and packages/distributed-runtime.",
+  "tenantScalingOwnership": "No tenant workload governance ownership; quotas, partitioning, noisy-neighbor protection, and runtime metrics delegate to service execution containers and packages/distributed-runtime."
 }

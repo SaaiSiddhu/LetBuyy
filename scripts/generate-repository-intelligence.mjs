@@ -233,6 +233,12 @@ const packageTargets = [
   { output: "packages/notification-core/AGENTS.md", name: "Notification Core", actual: "packages/notification-core", purpose: "Notification templates, recipients, channels, and event-to-notification mapping contracts." },
   { output: "packages/search-core/AGENTS.md", name: "Search Core", actual: "packages/search-core", purpose: "Search documents, indexing jobs, ranking policy, query DTOs, and provider-neutral search contracts." },
   { output: "packages/billing-core/AGENTS.md", name: "Billing Core", actual: "packages/billing-core", purpose: "Plans, subscriptions, invoices, billing events, entitlements, and usage billing contracts." },
+  { output: "packages/application-services/AGENTS.md", name: "Application Services", actual: "packages/application-services", purpose: "Application workflow sequencing, use-case contracts, execution policy inputs, transaction boundaries, and cross-domain coordination contracts." },
+  { output: "packages/distributed-runtime/AGENTS.md", name: "Distributed Runtime", actual: "packages/distributed-runtime", purpose: "Durable event persistence, distributed queues, CQRS, checkpoints, replay, worker coordination, resilience, telemetry, cache, tenant scaling, regional execution, and operations contracts." },
+  { output: "packages/orchestration/AGENTS.md", name: "Orchestration", actual: "packages/orchestration", purpose: "Workflow, event, outbox, replay, async execution, recovery, checkpoint, saga, retry, and orchestration coordination contracts." },
+  { output: "packages/projection-runtime/AGENTS.md", name: "Projection Runtime", actual: "packages/projection-runtime", purpose: "Projection persistence, aggregation stores, cache-aware read models, rebuild/replay execution, snapshots, hydration, invalidation, and lifecycle contracts." },
+  { output: "packages/runtime-composition/AGENTS.md", name: "Runtime Composition", actual: "packages/runtime-composition", purpose: "Read orchestration, query aggregation, projection assembly, cache policy, hydration, and runtime response shaping contracts." },
+  { output: "packages/infrastructure/AGENTS.md", name: "Infrastructure", actual: "packages/infrastructure", purpose: "Provider SDKs, external APIs, storage, queue, cache, analytics, search, payment, provider resilience, retries, and adapter normalization contracts." },
   { output: "packages/typescript/ui/AGENTS.md", name: "TypeScript UI", actual: "packages/typescript/ui", purpose: "Shared Button, Input, DataTable package and design-system extraction point." },
   { output: "packages/typescript/utils/AGENTS.md", name: "TypeScript Utils", actual: "packages/typescript/utils", purpose: "Shared Supabase, API and auth utility package." },
   { output: "packages/typescript/api-types/AGENTS.md", name: "API Types", actual: "packages/typescript/api-types", purpose: "Shared TypeScript domain and API contract package." },
@@ -882,7 +888,7 @@ function buildRootAgents() {
   lines.push("- Event routing, retry, outbox, replay, dead-letter, and correlation primitives belong in `packages/orchestration`.");
   lines.push("- Read aggregation, projection assembly, cache policy, and runtime response shaping belong in `packages/runtime-composition`.");
   lines.push("- Provider APIs, SDK clients, retries, and provider normalization belong in `packages/infrastructure`.");
-  lines.push("- Runtime manifests must declare orchestration, event, workflow, query, composition, execution, and provider ownership.");
+  lines.push("- Runtime manifests must declare orchestration, event, workflow, query, composition, execution, distributed execution, queue, checkpoint, projection, observability, cache, resilience, regional, tenant scaling, and provider ownership.");
   lines.push("");
   lines.push("## Infrastructure Ownership");
   lines.push("");

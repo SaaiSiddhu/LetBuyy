@@ -22,13 +22,20 @@ const requiredStringFields = [
   "queryAuthority",
   "compositionAuthority",
   "executionOwnership",
+  "distributedExecutionOwnership",
+  "queueOwnership",
   "providerOwnership",
   "executionBoundaries",
   "asyncExecutionOwnership",
   "observabilityOwnership",
   "workflowRecoveryOwnership",
   "replayOwnership",
+  "checkpointOwnership",
   "projectionOwnership",
+  "cacheOwnership",
+  "resilienceOwnership",
+  "regionalOwnership",
+  "tenantScalingOwnership",
 ];
 
 const requiredObjectFields = [
@@ -154,6 +161,14 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       `App manifest asyncExecutionOwnership must delegate durable async ownership: ${manifestPath}`,
     );
     reporter.assert(
+      /none|delegate|service|distributed-runtime|runtime/i.test(manifest.distributedExecutionOwnership),
+      `App manifest distributedExecutionOwnership must delegate durable distributed execution out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|queue-workers|api/i.test(manifest.queueOwnership),
+      `App manifest queueOwnership must delegate queue execution ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
       /none|delegate|application-services|orchestration|service/i.test(manifest.workflowRecoveryOwnership),
       `App manifest workflowRecoveryOwnership must delegate recovery ownership out of the app: ${manifestPath}`,
     );
@@ -164,6 +179,26 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
     reporter.assert(
       /runtime-composition|delegate|none/i.test(manifest.projectionOwnership),
       `App manifest projectionOwnership must delegate projections to runtime-composition: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|distributed-runtime|projection-runtime/i.test(manifest.checkpointOwnership),
+      `App manifest checkpointOwnership must delegate checkpoint ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|runtime-composition|distributed-runtime/i.test(manifest.cacheOwnership),
+      `App manifest cacheOwnership must delegate durable cache coordination out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|infrastructure|distributed-runtime/i.test(manifest.resilienceOwnership),
+      `App manifest resilienceOwnership must delegate resilience policy out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|cloudflare|regional|distributed-runtime/i.test(manifest.regionalOwnership),
+      `App manifest regionalOwnership must delegate regional execution out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|tenant|distributed-runtime/i.test(manifest.tenantScalingOwnership),
+      `App manifest tenantScalingOwnership must delegate tenant workload governance out of the app: ${manifestPath}`,
     );
   }
 
@@ -185,6 +220,14 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       `Service manifest asyncExecutionOwnership must describe async execution-container ownership: ${manifestPath}`,
     );
     reporter.assert(
+      /distributed-runtime|execution|durable|runtime|delegate/i.test(manifest.distributedExecutionOwnership),
+      `Service manifest distributedExecutionOwnership must describe durable distributed execution ownership: ${manifestPath}`,
+    );
+    reporter.assert(
+      /queue|worker|dead-letter|retry|visibility|runtime/i.test(manifest.queueOwnership),
+      `Service manifest queueOwnership must describe queue execution, retry, or dead-letter ownership: ${manifestPath}`,
+    );
+    reporter.assert(
       /checkpoint|recovery|application-services|orchestration|delegate|runtime/i.test(manifest.workflowRecoveryOwnership),
       `Service manifest workflowRecoveryOwnership must describe recovery execution-container ownership with delegated policy: ${manifestPath}`,
     );
@@ -196,11 +239,36 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /runtime-composition|delegate|none|projection/i.test(manifest.projectionOwnership),
       `Service manifest projectionOwnership must delegate projection policy to runtime-composition: ${manifestPath}`,
     );
+    reporter.assert(
+      /checkpoint|distributed-runtime|projection-runtime|workflow|runtime/i.test(manifest.checkpointOwnership),
+      `Service manifest checkpointOwnership must describe checkpoint execution ownership: ${manifestPath}`,
+    );
+    reporter.assert(
+      /cache|invalidation|runtime-composition|distributed-runtime|projection/i.test(manifest.cacheOwnership),
+      `Service manifest cacheOwnership must describe cache coordination or invalidation ownership: ${manifestPath}`,
+    );
+    reporter.assert(
+      /resilience|circuit|retry|provider|fallback|distributed-runtime|infrastructure/i.test(manifest.resilienceOwnership),
+      `Service manifest resilienceOwnership must describe resilience, retry, circuit, provider, or fallback ownership: ${manifestPath}`,
+    );
+    reporter.assert(
+      /region|regional|cloudflare|failover|distributed-runtime|runtime/i.test(manifest.regionalOwnership),
+      `Service manifest regionalOwnership must describe region-aware execution or explicit runtime routing: ${manifestPath}`,
+    );
+    reporter.assert(
+      /tenant|quota|noisy|partition|scaling|distributed-runtime/i.test(manifest.tenantScalingOwnership),
+      `Service manifest tenantScalingOwnership must describe tenant workload governance: ${manifestPath}`,
+    );
   }
 
   reporter.assert(
     /runtime-composition|delegate|none|projection/i.test(manifest.projectionOwnership),
     `Runtime manifest projectionOwnership must describe runtime-composition projection ownership or explicit absence: ${manifestPath}`,
+  );
+
+  reporter.assert(
+    /distributed-runtime|delegate|none|service|runtime|durable/i.test(manifest.distributedExecutionOwnership),
+    `Runtime manifest distributedExecutionOwnership must describe distributed-runtime ownership or explicit delegation: ${manifestPath}`,
   );
 
   reporter.assert(

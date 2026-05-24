@@ -128,8 +128,10 @@ export const domainPackageRoots = [
 
 export const executionPackageRoots = [
   "packages/application-services",
+  "packages/distributed-runtime",
   "packages/infrastructure",
   "packages/orchestration",
+  "packages/projection-runtime",
   "packages/runtime-composition",
 ];
 
