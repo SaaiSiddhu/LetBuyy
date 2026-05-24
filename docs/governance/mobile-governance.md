@@ -21,6 +21,7 @@ LetBuyy mobile surfaces are Flutter runtimes backed by shared Dart packages. Mob
 
 - Flutter apps importing another Flutter app.
 - Dart packages importing mobile app source.
+- Mobile app `lib/models` files defining shared domain classes or enums directly.
 - Core/services packages depending on UI kit.
 - Provider secret keys embedded in Flutter source or tracked `.env` files.
 - Tracked `.dart_tool`, `build`, `ios/Pods`, `android/.gradle`, APK, AAB, IPA, `.dill`, or generated platform caches.
@@ -32,9 +33,16 @@ LetBuyy mobile surfaces are Flutter runtimes backed by shared Dart packages. Mob
 - Mobile CI or local dart-define values must not be committed.
 - Public endpoint and anon client values may be injected; provider secrets and service-role keys must stay backend-only.
 
+## Merchant App Model Authority
+
+`apps/mobile/merchant-app/lib/models/*.dart` is a compatibility layer only. Merchant order, store, auth request, theme catalog, and theme editor models are owned by `packages/dart/models/lib/merchant_contracts.dart` and implementation files under `packages/dart/models/lib/src/merchant_app`.
+
+New mobile DTOs that cross more than one screen, service, or runtime must be added to a shared Dart package first. Runtime-specific widget state may stay inside the app, but it must not become an API or domain contract.
+
 ## Enforcement
 
 - `runtime-manifest-validator` requires mobile runtime manifests.
 - `dependency-graph-validator` enforces Dart package layering and circular dependency prevention.
 - `stale-artifact-validator` detects local Flutter build pollution under app/package roots.
 - `generated-artifact-validator` blocks tracked Flutter artifacts.
+- `domain-boundary-validator` fails if merchant app model files define classes/enums instead of re-exporting package-owned contracts.

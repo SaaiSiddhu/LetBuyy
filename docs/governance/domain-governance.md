@@ -11,7 +11,7 @@
 | `packages/tenant-core` | Tenant context, `sites` mapping, store model, navigation, subdomain ownership contracts | Product/order mutation rules |
 | `packages/cms-core` | Pages, navigation, policies, portfolio/resume content, dynamic content contracts | Payment or provider logic |
 | `packages/theme-engine` | Theme schemas, section/block contracts, renderer keys, templates, releases, hydration contracts | Arbitrary tenant JavaScript execution |
-| `packages/app-engine` | App marketplace contracts, installs, app webhooks | Unscoped merchant data mutation |
+| `packages/app-engine` | App marketplace contracts, AI assistant payloads, installs, app webhooks | Unscoped merchant data mutation |
 | `packages/analytics-core` | Event schemas, metrics, dashboard contracts | Checkout or payment authority |
 | `packages/event-core` | Outbox, queues, event envelopes, idempotency contracts | UI rendering |
 | `packages/search-core` | Search document contracts and indexing policy | Source-of-truth product mutation |
@@ -29,12 +29,16 @@ API worker schema files under `services/api-gateway/src/schemas` are compatibili
 
 `packages/typescript/api-types` is now a backward-compatible aggregate. It must not regain source authority for commerce, checkout, auth, tenant, CMS, theme, event, notification, search, or billing contracts.
 
+Service route files must not define reusable Zod schemas inline. Billing, commerce, inventory, review, CMS, onboarding, AI, and theme payload schemas now live in package-owned surfaces and are consumed by the API gateway through package imports or schema facades.
+
+Mobile merchant model contracts that are reused across Flutter screens belong to `packages/dart/models`, not `apps/mobile/merchant-app/lib/models`. The app-local model files remain only as compatibility facades over `package:letbuyy_models/merchant_contracts.dart`.
+
 ## Database Naming Rule
 
 Database tables use `sites`. Merchant-facing URLs and UI may say `store`. Do not create a `stores` table.
 
 ## Enforcement
 
-- `scripts/validators/domain-boundary-validator.mjs` verifies domain package manifests, required exports, schema facades, and storefront type facade ownership.
+- `scripts/validators/domain-boundary-validator.mjs` verifies domain package manifests, required exports, service schema facades, route schema extraction, service command contract extraction, theme marketplace DTO authority, mobile model facades, tenant validation authority, and storefront type facade ownership.
 - `scripts/validators/dependency-graph-validator.mjs` prevents reverse dependencies, package-to-runtime imports, runtime coupling, and package cycles.
 - `scripts/validate-governance.mjs` runs domain validation in CI with the rest of the governance suite.

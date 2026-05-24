@@ -36,6 +36,7 @@ Required fields:
 - actor classification is missing
 - environment schema ownership is invalid
 - governance docs referenced by the manifest do not exist
+- declared internal workspace package dependencies do not match `allowedDependencies.workspacePackages`
 - platform console and platform operations portal actor boundaries blur
 
 ## Change Process

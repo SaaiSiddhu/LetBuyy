@@ -8,6 +8,8 @@ DTOs define transport and persistence-facing shapes. They must not be duplicated
 - App DTOs are allowed only for local view models that are not reused as API/domain authority.
 - Service DTOs are allowed only for provider adapter internals or database row mapping.
 - Zod schemas for inbound shared payloads live in domain packages and may be re-exported through service facades.
+- Route-local schemas are allowed only when they are private to a single provider adapter and not reusable domain input.
+- Mobile model DTOs shared across Flutter screens live in `packages/dart/models`; app-local model files must be package facades.
 - `@letbuyy/api-types` remains an aggregate compatibility package, not a place for new source DTOs.
 
 ## Naming

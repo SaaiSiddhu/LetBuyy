@@ -7,7 +7,8 @@
 - Theme contracts, section/block schemas, templates, releases, and hydration contracts: `packages/theme-engine`.
 - Live storefront rendering modules: `apps/storefront-runtime/src/lib/theme-engine`.
 - Section React components: `apps/storefront-runtime/src/components/sections`.
-- Theme discovery and acquisition: `apps/theme-marketplace`.
+- Theme marketplace DTOs, filters, purchases, reviews, and installation contracts: `packages/theme-engine`.
+- Theme discovery and acquisition runtime composition: `apps/theme-marketplace`.
 
 ## Rendering Authority Model
 
@@ -26,6 +27,7 @@ theme-engine contracts
 - Merchant config owns theme selection and settings, not arbitrary executable code.
 - CMS content supplies data; it does not own renderer lifecycle.
 - Hydration contracts must declare section id, renderer key, data dependencies, and client requirements.
+- Theme marketplace may own pages, data fetching, and checkout composition, but it must not define reusable theme DTOs locally.
 
 ## Migration Direction
 

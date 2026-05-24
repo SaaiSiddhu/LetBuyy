@@ -26,7 +26,11 @@ The governance validators must check:
 - Active-runtime imports from `legacy/` are forbidden.
 - Shared package manifests and ownership files exist.
 - Runtime manifests exist for every canonical app/service runtime.
+- Runtime manifests match declared internal package dependencies.
 - Dependency graph direction and circular dependency rules are enforced.
+- Service routes do not define reusable domain schemas inline.
+- Service command contracts come from package-owned domains.
+- Theme marketplace and mobile merchant app compatibility files do not own reusable DTO/model definitions.
 - Runtime env files are not tracked.
 - Secret-like values are not tracked outside allowed templates and governance docs.
 - Generated artifacts are not tracked.
@@ -41,7 +45,7 @@ The governance validators must check:
 |---|---|
 | `architecture-validator.mjs` | Root topology, mandatory governance memory, deprecated and forbidden runtime roots |
 | `runtime-validator.mjs` | Canonical app/service roots, forbidden alias roots, service activation requirements |
-| `runtime-manifest-validator.mjs` | Required runtime manifests, actor classification, environment schema references, platform console/operations boundary |
+| `runtime-manifest-validator.mjs` | Required runtime manifests, actor classification, environment schema references, declared internal dependency alignment, platform console/operations boundary |
 | `package-ownership-validator.mjs` | Package manifests, Dart manifests, ownership files, public export boundaries |
 | `import-validator.mjs` | App, service, package, legacy, and infrastructure import boundaries |
 | `dependency-graph-validator.mjs` | Internal dependency direction, package layering, runtime leakage, and circular dependency prevention |
@@ -52,4 +56,4 @@ The governance validators must check:
 
 ## CI Policy
 
-CI must run `node scripts/validate-governance.mjs` before accepting runtime topology changes. Typecheck, lint, and build checks should be added per runtime as existing blockers are removed. CI must fail if a deprecated runtime alias, nested storefront runtime, missing runtime manifest, invalid dependency direction, debug artifact, secret-like tracked value, local artifact directory, or generated output becomes present.
+CI must run `node scripts/validate-governance.mjs` before accepting runtime topology changes. Typecheck, lint, and build checks should be added per runtime as existing blockers are removed. CI must fail if a deprecated runtime alias, nested storefront runtime, missing runtime manifest, manifest/dependency mismatch, invalid dependency direction, duplicate contract authority, debug artifact, secret-like tracked value, local artifact directory, or generated output becomes present.
