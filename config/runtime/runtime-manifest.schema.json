@@ -20,6 +20,9 @@
     "compositionAuthority",
     "executionOwnership",
     "providerOwnership",
+    "executionBoundaries",
+    "asyncExecutionOwnership",
+    "observabilityOwnership",
     "executionAuthority",
     "deploymentAuthority",
     "environmentAuthority",
@@ -82,6 +85,9 @@
     "compositionAuthority": { "type": "string", "minLength": 1 },
     "executionOwnership": { "type": "string", "minLength": 1 },
     "providerOwnership": { "type": "string", "minLength": 1 },
+    "executionBoundaries": { "type": "string", "minLength": 1 },
+    "asyncExecutionOwnership": { "type": "string", "minLength": 1 },
+    "observabilityOwnership": { "type": "string", "minLength": 1 },
     "executionAuthority": {
       "type": "object",
       "required": [

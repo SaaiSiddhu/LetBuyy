@@ -23,6 +23,9 @@ const requiredStringFields = [
   "compositionAuthority",
   "executionOwnership",
   "providerOwnership",
+  "executionBoundaries",
+  "asyncExecutionOwnership",
+  "observabilityOwnership",
 ];
 
 const requiredObjectFields = [
@@ -139,6 +142,14 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /none|service|infrastructure adapter|provider/i.test(manifest.providerOwnership),
       `App manifest providerOwnership must make direct provider ownership unavailable: ${manifestPath}`,
     );
+    reporter.assert(
+      /routing|rendering|presentation|transport|runtime hooks|adapter/i.test(manifest.executionBoundaries),
+      `App manifest executionBoundaries must restrict authority to thin runtime composition: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|delegate|service|queue/i.test(manifest.asyncExecutionOwnership),
+      `App manifest asyncExecutionOwnership must delegate durable async ownership: ${manifestPath}`,
+    );
   }
 
   if (runtimeRoot.startsWith("services/")) {
@@ -150,7 +161,20 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /application-services|packages\/application-services|delegate/i.test(manifest.workflowAuthority),
       `Service manifest workflowAuthority must delegate workflows to application-services: ${manifestPath}`,
     );
+    reporter.assert(
+      /api|worker|queue|webhook|scheduler|transport|adapter|runtime/i.test(manifest.executionBoundaries),
+      `Service manifest executionBoundaries must describe execution-container boundaries: ${manifestPath}`,
+    );
+    reporter.assert(
+      /queue|worker|webhook|scheduler|event|delegate|runtime/i.test(manifest.asyncExecutionOwnership),
+      `Service manifest asyncExecutionOwnership must describe async execution-container ownership: ${manifestPath}`,
+    );
   }
+
+  reporter.assert(
+    /correlation|trace|audit|telemetry|observability|request/i.test(manifest.observabilityOwnership),
+    `Runtime manifest observabilityOwnership must describe correlation, trace, audit, or telemetry ownership: ${manifestPath}`,
+  );
 
   const schema = manifest.environmentAuthority?.schema;
   reporter.assert(

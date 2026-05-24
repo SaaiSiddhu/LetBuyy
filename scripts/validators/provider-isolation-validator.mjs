@@ -33,6 +33,7 @@ const providerPackagePrefixes = [
   "redis",
   "@aws-sdk/",
   "aws-sdk",
+  "cloudflare",
   "posthog",
   "mixpanel",
   "segment",
@@ -43,6 +44,9 @@ const providerUrlPatterns = [
   /https:\/\/api-m(?:\.sandbox)?\.paypal\.com\//,
   /https:\/\/api\.stripe\.com\//,
   /https:\/\/api\.resend\.com\//,
+  /https:\/\/api\.cloudflare\.com\//,
+  /https:\/\/[^"']*\.r2\.cloudflarestorage\.com\//,
+  /https:\/\/s3(?:[.-][a-z0-9-]+)?\.amazonaws\.com\//,
   /https:\/\/[^"']*supabase\.co\/rest\/v1\//,
 ];
 

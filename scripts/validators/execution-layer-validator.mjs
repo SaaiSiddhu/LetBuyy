@@ -21,6 +21,7 @@ const requiredExecutionRoots = [
   "packages/application-services/billing-application/index.ts",
   "packages/application-services/notification-application/index.ts",
   "packages/application-services/search-application/index.ts",
+  "packages/application-services/src/execution-pipeline.ts",
   "packages/infrastructure/stripe-adapter/index.ts",
   "packages/infrastructure/razorpay-adapter/index.ts",
   "packages/infrastructure/supabase-adapter/index.ts",
@@ -35,7 +36,12 @@ const requiredExecutionRoots = [
   "packages/orchestration/src/event-runtime.ts",
   "packages/orchestration/src/outbox-runtime.ts",
   "packages/orchestration/src/observability-runtime.ts",
+  "packages/orchestration/src/replay-runtime.ts",
+  "packages/orchestration/src/workflow-recovery-runtime.ts",
+  "packages/orchestration/src/async-execution-runtime.ts",
   "packages/runtime-composition/src/query-runtime.ts",
+  "packages/runtime-composition/src/composition-runtime.ts",
+  "packages/runtime-composition/src/search-projection-runtime.ts",
   "packages/runtime-composition/storefront-query-layer/index.ts",
   "packages/runtime-composition/merchant-query-layer/index.ts",
   "packages/runtime-composition/analytics-query-layer/index.ts",
@@ -92,6 +98,72 @@ for (const file of executionAdapters) {
   reporter.assert(
     content.includes("applicationWorkflows") || content.includes("correlationContract"),
     `Execution adapter must declare application-service or observability authority: ${file}`,
+  );
+  reporter.assert(
+    content.includes("runtimeBridge"),
+    `Execution adapter must declare a pure runtime bridge contract: ${file}`,
+  );
+  reporter.assert(
+    content.includes("executionPipelines") || content.includes("correlationContract"),
+    `Execution adapter must consume application-service execution pipelines or observability contracts: ${file}`,
+  );
+  reporter.assert(
+    !/function\s+(?:generateSlug|stableJson|retryDelaySeconds|queueNamesForEvent|eventMatchesSubscription|buildEventEnvelope|textParts|rollupDate)\b/.test(content),
+    `Execution adapter contains workflow policy helpers that belong in application-services/orchestration/runtime-composition: ${file}`,
+  );
+}
+
+const runtimeLeakageFiles = workspaceFiles.filter((file) =>
+  (file.startsWith("apps/") || file.startsWith("services/")) &&
+  file.includes("/src/") &&
+  /\.(ts|tsx|js|jsx|mjs|cjs)$/.test(file) &&
+  /(workflow|orchestr|aggregation|projection|pipeline)/i.test(file),
+);
+reporter.assert(
+  runtimeLeakageFiles.length === 0,
+  `Apps/services may not own workflow, orchestration, aggregation, projection, or pipeline modules: ${runtimeLeakageFiles.join(", ")}`,
+);
+
+const forbiddenRuntimeDefinitions = [
+  /\bdefineExecutionPipelines\s*\(/,
+  /\bdefineApplicationWorkflows\s*\(/,
+  /\bclass\s+\w*Workflow\w*\b/,
+  /\bclass\s+\w*Orchestr\w*\b/,
+  /\binterface\s+\w*Workflow\w*\b/,
+  /\binterface\s+\w*Aggregation\w*\b/,
+  /\bfunction\s+\w*(?:Workflow|Orchestrat|Aggregation|Projection|Pipeline)\w*\s*\(/,
+];
+
+for (const file of workspaceFiles.filter((candidate) =>
+  (candidate.startsWith("apps/") || candidate.startsWith("services/")) &&
+  candidate.includes("/src/") &&
+  /\.(ts|tsx)$/.test(candidate)
+)) {
+  const content = readFile(file);
+  for (const pattern of forbiddenRuntimeDefinitions) {
+    reporter.assert(
+      !pattern.test(content),
+      `Apps/services may not define workflow, orchestration, aggregation, projection, or pipeline authority: ${file}`,
+    );
+  }
+
+  if (file.startsWith("services/")) {
+    reporter.assert(
+      !/\b(RuntimeAggregationPipeline|executeRuntimeAggregation|executeRuntimeQuery|composeRuntimeResponse|buildSearchProjectionDocument)\b/.test(content) ||
+        content.includes("@letbuyy/runtime-composition"),
+      `Service-side query/projection helpers must come from packages/runtime-composition: ${file}`,
+    );
+  }
+}
+
+for (const file of workspaceFiles.filter((candidate) =>
+  candidate.startsWith("packages/application-services/") &&
+  /\.(ts|tsx)$/.test(candidate)
+)) {
+  const content = readFile(file);
+  reporter.assert(
+    !/\b(RuntimeAggregationPipeline|executeRuntimeAggregation|executeRuntimeQuery|composeRuntimeResponse|buildSearchProjectionDocument)\b/.test(content),
+    `Application services may not own query aggregation or projection assembly: ${file}`,
   );
 }
 

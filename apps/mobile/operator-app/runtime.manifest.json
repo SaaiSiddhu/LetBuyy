@@ -56,5 +56,8 @@
   "queryAuthority": "Consumes packages/runtime-composition query layers and service API responses; does not own aggregation pipelines or projection assembly.",
   "compositionAuthority": "Owns actor-specific rendering, routing, presentation adapters, and runtime composition only.",
   "executionOwnership": "Routing, rendering, runtime adapters, presentation transport, and runtime hooks only.",
-  "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved runtime-composition or service API boundaries."
+  "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved runtime-composition or service API boundaries.",
+  "executionBoundaries": "Thin runtime boundary: routing, rendering, presentation adapters, runtime transport, and runtime hooks only.",
+  "asyncExecutionOwnership": "No durable async ownership; async workflows, queues, replay, and retries delegate to services, application-services, and orchestration runtimes.",
+  "observabilityOwnership": "Propagates request and correlation IDs through rendering and transport adapters; durable trace, audit, and event telemetry are written by backend execution containers."
 }
