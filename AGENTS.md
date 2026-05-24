@@ -104,6 +104,17 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 - Apps are runtime composition layers: routing, rendering, orchestration, runtime adapters, runtime-specific UI, and transport only.
 - Services are runtime-isolated execution layers: validation facades, orchestration, worker bindings, queues, webhooks, provider adapters, and integration execution only.
 
+## Phase 2 Execution Architecture Rules
+
+- Application workflow ownership now lives under `packages/application-services`.
+- Provider SDK and external provider API ownership now lives under `packages/infrastructure`; TypeScript apps and services must not import provider SDKs directly.
+- Apps must not import `@letbuyy/infrastructure` directly. App-facing provider access must go through runtime-composition adapters or service API contracts.
+- Event, command, workflow, retry, dead-letter, saga, and async execution primitives live under `packages/orchestration`.
+- Runtime read/query projection contracts live under `packages/runtime-composition`.
+- Apps remain thin rendering and runtime-composition surfaces. Services remain execution containers for APIs, workers, schedulers, queues, webhooks, and bootstrapping.
+- Runtime manifests must declare `executionAuthority` with execution, orchestration, infrastructure, event, query, and composition ownership.
+- New payment, notification, cache, search, storage, analytics, Supabase, Cloudflare, Stripe, Razorpay, PayPal, Resend, or Upstash TypeScript integrations must start in `packages/infrastructure`.
+
 ## Import Governance Rules
 
 - Apps may never import apps.
