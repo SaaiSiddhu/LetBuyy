@@ -147,8 +147,7 @@ export const deployStore = functions.https.onCall(
  * Serve Store Site
  * 
  * HTTP endpoint to serve published stores
- * Supports both path-based (stores-letbuy-y.web.app/subdomain) and 
- * subdomain-based (subdomain-letbuy-y.web.app) routing
+ * Supports both path-based and subdomain-based routing.
  */
 export const serveStore = functions.https.onRequest(async (req, res) => {
     // Enable CORS
@@ -163,7 +162,7 @@ export const serveStore = functions.https.onRequest(async (req, res) => {
     const host = req.headers.host || "";
     let subdomain = "";
 
-    // Method 1: Path-based routing (e.g., stores-letbuy-y.web.app/check)
+    // Method 1: Path-based routing.
     const pathParts = req.path.split("/").filter(Boolean);
     if (pathParts.length > 0 && pathParts[0] !== "index.html") {
         subdomain = pathParts[0].toLowerCase();

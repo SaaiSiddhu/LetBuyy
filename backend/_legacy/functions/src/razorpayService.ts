@@ -12,13 +12,13 @@ const db = admin.firestore();
 // ============================================================
 // CONFIGURATION
 // Get from Firebase environment config or use defaults for testing
-// To set config: firebase functions:config:set razorpay.key_id="rzp_xxx" razorpay.key_secret="xxx"
+// To set config: firebase functions:config:set razorpay.key_id="public_key_id" razorpay.key_secret="secret"
 // ============================================================
 
 const getRazorpayConfig = () => {
     const config = functions.config().razorpay || {};
     return {
-        keyId: config.key_id || "rzp_test_1DP5mmOlF5G5ag",
+        keyId: config.key_id || "",
         keySecret: config.key_secret || "", // MUST be set in production
     };
 };
