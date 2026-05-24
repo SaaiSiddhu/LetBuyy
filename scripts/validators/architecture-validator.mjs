@@ -5,7 +5,10 @@ import {
   deprecatedTrackedPrefixes,
   domainPackageRoots,
   exists,
+  forbiddenRuntimeRoots,
+  forbiddenRuntimeSubtrees,
   getTrackedFiles,
+  startsWithPrefix,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Architecture validator");
@@ -24,6 +27,7 @@ const mandatoryGovernanceFiles = [
   "docs/governance/runtime-boundaries.md",
   "docs/governance/architecture-enforcement.md",
   "docs/governance/git-governance.md",
+  "docs/governance/topology-purification.md",
   "config/env/README.md",
   "config/env/environment-governance.md",
   "scripts/validate-governance.mjs",
@@ -51,6 +55,15 @@ for (const prefix of deprecatedTrackedPrefixes) {
   reporter.assert(
     offenders.length === 0,
     `Deprecated active root has tracked files: ${prefix} (${offenders.slice(0, 5).join(", ")})`,
+  );
+}
+
+for (const prefix of [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees]) {
+  const offenders = trackedFiles.filter((file) => startsWithPrefix(file, prefix));
+  reporter.assert(!exists(prefix), `Forbidden runtime topology path exists: ${prefix}`);
+  reporter.assert(
+    offenders.length === 0,
+    `Forbidden runtime topology path has tracked files: ${prefix} (${offenders.slice(0, 5).join(", ")})`,
   );
 }
 

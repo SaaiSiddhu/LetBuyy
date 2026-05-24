@@ -54,10 +54,20 @@ app.*.map.json
 # Firebase
 .firebase/
 firebase-debug.log
+**/firebase-debug.log
 firestore-debug.log
+**/firestore-debug.log
 ui-debug.log
 storage-debug.log
 pubsub-debug.log
+**/*debug*.log
+*.trace
+*.trace.json
+**/*.trace
+**/*.trace.json
+
+# Local governance/debug scan output
+docs/architecture/validation/
 
 # Cloud Functions
 functions/node_modules/

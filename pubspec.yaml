@@ -10,7 +10,6 @@ environment:
 # New structure: apps/mobile/*, packages/dart/*
 workspace:
   - apps/mobile/merchant-app
-  - apps/mobile/operator-team-app
   - apps/mobile/operator-app
   - packages/dart/core
   - packages/dart/models
@@ -32,10 +31,6 @@ melos:
     run:builder:
       run: cd apps/mobile/merchant-app && flutter run
       description: Run the Builder (Store Builder) app
-    
-    run:team:
-      run: cd apps/mobile/operator-team-app && flutter run
-      description: Run the Team (Employee) app
     
     run:super_admin:
       run: cd apps/mobile/operator-app && flutter run

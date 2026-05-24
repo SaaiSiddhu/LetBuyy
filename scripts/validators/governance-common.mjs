@@ -36,6 +36,9 @@ export const textExtensions = new Set([
 
 export const ignoredDirectoryNames = new Set([
   ".git",
+  ".codex",
+  ".analysis",
+  ".tmp",
   "node_modules",
   ".next",
   ".turbo",
@@ -48,6 +51,7 @@ export const ignoredDirectoryNames = new Set([
   ".vercel",
   ".symlinks",
   "Pods",
+  "temp",
 ]);
 
 export const canonicalAppRoots = [
@@ -62,10 +66,9 @@ export const canonicalAppRoots = [
   "apps/mobile/shopper-app",
   "apps/mobile/merchant-app",
   "apps/mobile/operator-app",
-  "apps/mobile/operator-team-app",
 ];
 
-export const aliasAppRoots = [
+export const deprecatedAppAliasRoots = [
   "apps/admin",
   "apps/analytics",
   "apps/auth",
@@ -73,6 +76,15 @@ export const aliasAppRoots = [
   "apps/internal",
   "apps/merchant",
   "apps/storefront",
+];
+
+export const forbiddenRuntimeRoots = [
+  ...deprecatedAppAliasRoots,
+  "apps/mobile/operator-team-app",
+];
+
+export const forbiddenRuntimeSubtrees = [
+  "apps/storefront-runtime/consumer-storefront",
 ];
 
 export const canonicalServiceRoots = [
@@ -127,6 +139,9 @@ export const deprecatedTrackedPrefixes = [
 export const generatedArtifactPattern =
   /(^|\/)(\.next|dist|build|coverage|\.turbo|\.cache|node_modules|\.dart_tool|\.wrangler|\.vercel|Pods|\.symlinks)(\/|$)|(^|\/)tsconfig\.tsbuildinfo$|\.tsbuildinfo$|\.dill$|\.track\.dill$|\.apk$|\.aab$|\.ipa$|\.tar\.zst$/;
 
+export const debugArtifactPattern =
+  /(^|\/)(firebase-debug|firestore-debug|ui-debug|storage-debug|pubsub-debug)\.log$|(^|\/)[^/]*debug[^/]*\.log$|\.trace(\.json)?$|^docs\/architecture\/validation(\/|$)/;
+
 export function execGit(args) {
   return execFileSync("git", args, { cwd: root }).toString("utf8");
 }
@@ -143,6 +158,44 @@ export function getUntrackedFiles() {
     .split("\0")
     .filter(Boolean)
     .sort();
+}
+
+export function startsWithPrefix(file, prefix) {
+  return file === prefix || file.startsWith(`${prefix}/`);
+}
+
+export function listWorkspaceFiles(startDirs = [
+  "apps",
+  "packages",
+  "services",
+  "database",
+  "infrastructure",
+  "legacy",
+  "docs",
+  "scripts",
+  "config",
+]) {
+  const files = [];
+
+  function walk(absDir, relDir) {
+    if (!fs.existsSync(absDir)) return;
+
+    for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
+      if (ignoredDirectoryNames.has(entry.name)) continue;
+
+      const relPath = relDir ? `${relDir}/${entry.name}` : entry.name;
+      const absPath = path.join(absDir, entry.name);
+
+      if (entry.isDirectory()) {
+        walk(absPath, relPath);
+      } else if (entry.isFile()) {
+        files.push(normalizePath(relPath));
+      }
+    }
+  }
+
+  for (const dir of startDirs) walk(path.join(root, dir), dir);
+  return files.sort();
 }
 
 export function exists(relPath) {

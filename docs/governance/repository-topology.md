@@ -20,7 +20,6 @@ apps/
     shopper-app/
     merchant-app/
     operator-app/
-    operator-team-app/
 
 services/
   api-gateway/
@@ -98,7 +97,10 @@ docs/
 | Theme marketplace | Partners and merchants | `apps/theme-marketplace` | Theme catalog, purchases, acquisition and install workflows |
 | Marketing site | Public visitors | `apps/marketing-site` | Public marketing and pricing surface |
 | Platform console | Platform operators | `apps/platform-console` | Super admin platform operations |
-| Platform operations portal | Platform operators | `apps/platform-operations-portal` | Employee support and operations portal |
+| Platform operations portal | Platform employees | `apps/platform-operations-portal` | Employee support, moderation, marketing operations, and invite workflows |
+| Mobile shopper app | Shoppers | `apps/mobile/shopper-app` | Reserved native shopper runtime |
+| Mobile merchant app | Merchants | `apps/mobile/merchant-app` | Flutter merchant builder and store management |
+| Mobile operator app | Platform operators | `apps/mobile/operator-app` | Reserved native operator companion |
 | API gateway | All actors through contracts | `services/api-gateway` | Hono `/v1` API, auth, tenant context, domain services |
 | Webhook service | Providers | `services/webhook-service` | Provider callbacks and reconciliation |
 | Supabase database | Platform-owned data layer | `database/supabase` | Migrations, seeds, verification, RLS policies |
@@ -113,4 +115,8 @@ docs/
 - Environment templates, schemas, and runtime env ownership rules live under `config/env/`.
 - Deprecated systems live under `legacy/`.
 - Generated or lifecycle-owned docs live under explicit `docs/` lifecycle directories.
-- Compatibility aliases are temporary and must not receive source code.
+- Deprecated runtime aliases are forbidden and must not coexist with canonical runtimes.
+- The forbidden app alias roots are `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.
+- `apps/mobile/operator-team-app` is retired; employee operations belong in `apps/platform-operations-portal`, and native operator work belongs in `apps/mobile/operator-app`.
+- `apps/storefront-runtime/consumer-storefront` is retired; storefront source authority belongs under `apps/storefront-runtime/src`.
+- New app roots require a governance doc update, validator update, CI enforcement, and an ownership decision before source is added.

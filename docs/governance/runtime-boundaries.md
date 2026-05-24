@@ -11,8 +11,7 @@
 - `apps/platform-console`: platform super admin.
 - `apps/platform-operations-portal`: employee support and operations.
 - `apps/mobile/merchant-app`: Flutter merchant builder and store management.
-- `apps/mobile/operator-app`: Flutter operator scaffold.
-- `apps/mobile/operator-team-app`: Flutter employee scaffold.
+- `apps/mobile/operator-app`: Flutter operator companion scaffold.
 - `apps/mobile/shopper-app`: reserved shopper mobile runtime.
 
 ## Service Boundaries
@@ -34,4 +33,6 @@
 - No active runtime may import from `legacy/`.
 - No package may import a runtime.
 - Cross-runtime work must go through HTTP contracts, event contracts, or package contracts.
-
+- Deprecated app aliases may not be recreated as placeholders or compatibility roots.
+- `apps/storefront-runtime/consumer-storefront` may not be used as a nested runtime or theme authority.
+- Platform console and platform operations portal are separate runtimes: console is super-admin governance, while operations portal is employee workflow execution.

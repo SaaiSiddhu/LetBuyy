@@ -2,6 +2,8 @@ import path from "node:path";
 import {
   createReporter,
   extractSpecifiers,
+  forbiddenRuntimeRoots,
+  forbiddenRuntimeSubtrees,
   getTrackedFiles,
   packageRootForManifest,
   readFile,
@@ -10,6 +12,7 @@ import {
   resolveRelativeImport,
   rootForFile,
   sourceExtensions,
+  startsWithPrefix,
   trackedTargetForResolvedImport,
 } from "./governance-common.mjs";
 
@@ -42,6 +45,7 @@ function resolvedTarget(file, specifier) {
 }
 
 const sourceFiles = trackedFiles.filter((file) => sourceExtensions.has(path.extname(file)));
+const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
 
 for (const file of sourceFiles) {
   const ownerRoot = rootForFile(file);
@@ -50,6 +54,10 @@ for (const file of sourceFiles) {
   for (const specifier of specifiers) {
     const target = resolvedTarget(file, specifier);
     const targetRoot = rootForFile(target);
+
+    if (forbiddenRuntimePrefixes.some((prefix) => startsWithPrefix(target, prefix)) || specifier.includes("consumer-storefront")) {
+      reporter.errors.push(`Imports may not target deprecated runtime topology: ${file} -> ${specifier}`);
+    }
 
     if (file.startsWith("apps/") && target.startsWith("apps/") && targetRoot !== ownerRoot) {
       reporter.errors.push(`Apps may not import apps: ${file} -> ${specifier}`);

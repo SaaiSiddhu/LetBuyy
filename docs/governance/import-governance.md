@@ -25,6 +25,8 @@ packages -> services
 active runtime -> legacy/*
 active runtime -> infrastructure/*
 generated artifact -> source/runtime import
+active runtime -> deprecated runtime alias
+nested storefront runtime -> source authority
 ```
 
 ## App Rules
@@ -32,6 +34,7 @@ generated artifact -> source/runtime import
 - Apps may import their own `@/` alias and shared packages.
 - Apps must not import sibling apps, app internals, app components, or app route handlers.
 - App-local API routes are app-boundary adapters. Durable business decisions belong in services or packages before reuse.
+- Apps must not import deprecated alias roots or `apps/storefront-runtime/consumer-storefront`.
 
 ## Package Rules
 
@@ -47,5 +50,4 @@ generated artifact -> source/runtime import
 
 ## Enforcement
 
-`scripts/validators/import-validator.mjs` scans tracked source imports and fails on app-to-app imports, package-to-runtime imports, service-to-app imports, legacy imports from active code, and infrastructure imports from active runtime code.
-
+`scripts/validators/import-validator.mjs` scans tracked source imports and fails on app-to-app imports, package-to-runtime imports, service-to-app imports, legacy imports from active code, infrastructure imports from active runtime code, and imports that target deprecated runtime topology.

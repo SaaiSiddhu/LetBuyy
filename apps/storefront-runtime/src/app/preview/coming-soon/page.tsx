@@ -1,8 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import ComingSoonRouter from '../../../../consumer-storefront/coming-soon';
-import type { SiteType } from '../../../../consumer-storefront/coming-soon';
+import ComingSoonRouter from '@/components/coming-soon';
+import type { SiteType } from '@/components/coming-soon';
 
 const SITE_TYPES: { type: SiteType; label: string; color: string }[] = [
     { type: 'store', label: '🛍️ Store', color: '#6366f1' },

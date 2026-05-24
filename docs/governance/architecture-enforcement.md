@@ -18,7 +18,8 @@ LetBuyy enforces architecture through:
 The governance validators must check:
 
 - Canonical runtime roots exist.
-- Deprecated active roots are absent or contain no active source.
+- Deprecated active roots are absent.
+- Deprecated app aliases, duplicate operator roots, and nested storefront runtime trees are absent.
 - Mandatory governance files exist.
 - App-to-app imports are forbidden.
 - Package-to-runtime imports are forbidden.
@@ -26,7 +27,7 @@ The governance validators must check:
 - Shared package manifests and ownership files exist.
 - Runtime env files are not tracked.
 - Generated artifacts are not tracked.
-- Local governance scan scratch files are not left as untracked source candidates.
+- Debug logs, trace files, and local governance scan scratch files are not left as source candidates.
 - Database migrations live under `database/supabase/migrations`.
 - Workers live under `services/`.
 
@@ -34,14 +35,14 @@ The governance validators must check:
 
 | Validator | Scope |
 |---|---|
-| `architecture-validator.mjs` | Root topology, mandatory governance memory, deprecated tracked roots |
-| `runtime-validator.mjs` | App aliases, canonical app/service roots, service activation requirements |
+| `architecture-validator.mjs` | Root topology, mandatory governance memory, deprecated and forbidden runtime roots |
+| `runtime-validator.mjs` | Canonical app/service roots, forbidden alias roots, service activation requirements |
 | `package-ownership-validator.mjs` | Package manifests, Dart manifests, ownership files, public export boundaries |
 | `import-validator.mjs` | App, service, package, legacy, and infrastructure import boundaries |
 | `environment-validator.mjs` | Env docs/templates/schemas, tracked env file prevention, ignore rules |
-| `generated-artifact-validator.mjs` | Tracked `.next`, `dist`, `build`, cache, Worker, Flutter, and binary output prevention |
-| `stale-artifact-validator.mjs` | Untracked non-ignored local governance scan artifact detection |
+| `generated-artifact-validator.mjs` | Tracked `.next`, `dist`, `build`, cache, Worker, Flutter, binary, debug, and forbidden topology artifact prevention |
+| `stale-artifact-validator.mjs` | Untracked non-ignored local governance scan artifact, debug artifact, and forbidden topology detection |
 
 ## CI Policy
 
-CI must run `node scripts/validate-governance.mjs` before accepting runtime topology changes. Typecheck, lint, and build checks should be added per runtime as existing blockers are removed.
+CI must run `node scripts/validate-governance.mjs` before accepting runtime topology changes. Typecheck, lint, and build checks should be added per runtime as existing blockers are removed. CI must fail if a deprecated runtime alias, nested storefront runtime, debug artifact, or generated output becomes tracked.

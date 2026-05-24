@@ -1,21 +1,32 @@
 import fs from "node:fs";
 import path from "node:path";
 import {
-  aliasAppRoots,
   canonicalAppRoots,
   canonicalServiceRoots,
   createReporter,
   exists,
+  forbiddenRuntimeRoots,
+  forbiddenRuntimeSubtrees,
   getTrackedFiles,
-  hasOnlyOwnershipFile,
   root,
+  startsWithPrefix,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Runtime validator");
 const trackedFiles = getTrackedFiles();
 
-const allowedAppRoots = new Set([...canonicalAppRoots, ...aliasAppRoots]);
+const allowedAppRoots = new Set(canonicalAppRoots);
 const appEntries = fs.readdirSync(path.join(root, "apps"), { withFileTypes: true });
+const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
+
+for (const forbiddenRoot of forbiddenRuntimePrefixes) {
+  const trackedOffenders = trackedFiles.filter((file) => startsWithPrefix(file, forbiddenRoot));
+  reporter.assert(!exists(forbiddenRoot), `Forbidden runtime topology path exists: ${forbiddenRoot}`);
+  reporter.assert(
+    trackedOffenders.length === 0,
+    `Forbidden runtime topology path has tracked files: ${forbiddenRoot} (${trackedOffenders.slice(0, 5).join(", ")})`,
+  );
+}
 
 for (const entry of appEntries) {
   if (!entry.isDirectory()) continue;
@@ -32,13 +43,10 @@ for (const entry of appEntries) {
   }
 
   reporter.assert(allowedAppRoots.has(appRoot), `Unexpected app runtime root: ${appRoot}`);
-
-  if (aliasAppRoots.includes(appRoot)) {
-    reporter.assert(hasOnlyOwnershipFile(appRoot, trackedFiles), `Alias app root must contain only AGENTS.md: ${appRoot}`);
-  }
 }
 
-for (const appRoot of canonicalAppRoots.filter((candidate) => !candidate.includes("/shopper-app"))) {
+for (const appRoot of canonicalAppRoots) {
+  reporter.assert(exists(appRoot), `Missing app runtime root: ${appRoot}`);
   reporter.assert(exists(`${appRoot}/AGENTS.md`), `Missing app runtime AGENTS.md: ${appRoot}`);
 }
 
