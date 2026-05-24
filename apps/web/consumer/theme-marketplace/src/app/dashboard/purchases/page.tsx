@@ -1,24 +1,13 @@
 import Link from 'next/link';
 import { ShoppingBag, ExternalLink, Download, Star, Calendar, CreditCard } from 'lucide-react';
-import { db } from '@/lib/supabase/server';
+import { ThemeService } from '@/lib/theme-service';
 import { formatPrice } from '@/lib/utils';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'My Purchases' };
 
 export default async function PurchasesPage() {
-    let purchases: any[] = [];
-
-    try {
-        const { data } = await db
-            .from('theme_purchases')
-            .select('*, themes(*)')
-            .order('created_at', { ascending: false });
-
-        purchases = data || [];
-    } catch (err) {
-        console.error('Purchases fetch error:', err);
-    }
+    const purchases = await ThemeService.getUserPurchases();
 
     return (
         <div>
@@ -46,7 +35,7 @@ export default async function PurchasesPage() {
                 <div className="space-y-4">
                     {purchases.map((purchase: any) => {
                         const theme = purchase.themes || {};
-                        const pricePaid = purchase.amount_usd ?? 0;
+                        const pricePaid = purchase.price_paid_usd ?? purchase.amount_usd ?? 0;
                         const rating = theme.rating_avg ?? theme.rating ?? 0;
 
                         return (

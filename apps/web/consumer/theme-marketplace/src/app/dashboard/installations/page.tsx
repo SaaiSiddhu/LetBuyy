@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
-import { db } from '@/lib/supabase/server';
+import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 
@@ -11,25 +11,43 @@ const STATUS_CONFIG: Record<string, { label: string; icon: typeof CheckCircle; c
     update_available: { label: 'Update Available', icon: AlertCircle, className: 'text-warning bg-warning/15 border-warning/20' },
 };
 
+type ThemeRecord = Record<string, unknown> & {
+    name?: string;
+    slug?: string;
+    thumbnail_url?: string;
+    version?: string;
+};
+
+type InstallationRecord = Record<string, unknown> & {
+    id?: string;
+    themes: ThemeRecord;
+    store_url: string;
+    status: string;
+    version_installed?: string;
+    installed_at?: string;
+};
+
 export default async function InstallationsPage() {
-    let installations: any[] = [];
+    const installations: InstallationRecord[] = (await ThemeService.getUserInstallations()).map((inst: Record<string, unknown>) => {
+        const site = (inst.sites && typeof inst.sites === 'object' ? inst.sites : {}) as Record<string, unknown>;
+        const theme = (inst.themes && typeof inst.themes === 'object' ? inst.themes : {}) as ThemeRecord;
+        const customDomain = typeof site.custom_domain === 'string' ? site.custom_domain : '';
+        const subdomain = typeof site.subdomain === 'string' ? site.subdomain : 'unknown';
+        const versionInstalled = typeof inst.version_installed === 'string' ? inst.version_installed : undefined;
+        const installedAt = typeof inst.installed_at === 'string' ? inst.installed_at : undefined;
+        const storeHost = customDomain || `${subdomain}.letbuyy.store`;
 
-    try {
-        const { data } = await db
-            .from('theme_installations')
-            .select('*, themes(*), sites(subdomain, domain)')
-            .order('installed_at', { ascending: false });
-
-        installations = (data || []).map((inst: any) => ({
+        return {
             ...inst,
-            store_url: `${inst.sites?.subdomain || 'unknown'}.letbuyy.store`,
-            status: inst.themes?.version && inst.version_installed && inst.version_installed !== inst.themes.version
+            themes: theme,
+            store_url: storeHost,
+            status: theme.version && versionInstalled && versionInstalled !== theme.version
                 ? 'update_available'
                 : 'active',
-        }));
-    } catch (err) {
-        console.error('Installations fetch error:', err);
-    }
+            version_installed: versionInstalled,
+            installed_at: installedAt,
+        };
+    });
 
     return (
         <div>
@@ -49,8 +67,8 @@ export default async function InstallationsPage() {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {installations.map((inst: any) => {
-                        const theme = inst.themes || {};
+                    {installations.map((inst) => {
+                        const theme = inst.themes;
                         const statusConfig = STATUS_CONFIG[inst.status] || STATUS_CONFIG.active;
                         const StatusIcon = statusConfig.icon;
 

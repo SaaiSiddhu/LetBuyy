@@ -1,9 +1,4 @@
-import { db } from '@/lib/supabase/server';
-
-/**
- * Theme Service — Supabase-backed queries for the Theme Marketplace
- * Replaces the mock data helpers in theme-data.ts
- */
+import { themeWorkerFetch } from '@/lib/api/worker-client';
 
 export interface ThemeFilters {
     category?: string;
@@ -23,248 +18,128 @@ export interface ThemeSearchResult {
     offset: number;
 }
 
+interface WorkerEnvelope<T> {
+    success?: boolean;
+    data?: T;
+    meta?: {
+        page?: number;
+        per_page?: number;
+        total?: number;
+    };
+}
+
+async function readWorkerEnvelope<T>(response: Response): Promise<WorkerEnvelope<T> | null> {
+    return response.json().catch(() => null) as Promise<WorkerEnvelope<T> | null>;
+}
+
+async function safeThemeFetch(path: string, init?: Parameters<typeof themeWorkerFetch>[1]): Promise<Response | null> {
+    try {
+        return await themeWorkerFetch(path, init);
+    } catch {
+        return null;
+    }
+}
+
+function appendIfPresent(params: URLSearchParams, key: string, value: string | number | undefined) {
+    if (value !== undefined && value !== '') {
+        params.set(key, String(value));
+    }
+}
+
 export const ThemeService = {
-    /**
-     * List themes with filters, sorting, and pagination
-     */
     async listThemes(filters: ThemeFilters = {}): Promise<ThemeSearchResult> {
-        if (!db) {
-            return { themes: [], total: 0, limit: 20, offset: 0 };
-        }
+        const limit = filters.limit ?? 20;
+        const offset = filters.offset ?? 0;
+        const page = Math.floor(offset / limit) + 1;
+        const params = new URLSearchParams({
+            page: String(page),
+            limit: String(limit),
+            sort: filters.sort || 'popular',
+        });
 
-        const {
-            category,
-            pricingType,
-            siteType,
-            industry,
-            search,
-            sort = 'popular',
-            limit = 20,
-            offset = 0,
-        } = filters;
+        appendIfPresent(params, 'category', filters.category);
+        appendIfPresent(params, 'pricing', filters.pricingType);
+        appendIfPresent(params, 'site_type', filters.siteType);
+        appendIfPresent(params, 'industry', filters.industry);
+        appendIfPresent(params, 'search', filters.search);
 
-        let query = db
-            .from('themes')
-            .select('*', { count: 'exact' })
-            .eq('is_active', true);
-
-        // Filters
-        if (category) {
-            query = query.eq('category', category);
-        }
-        if (pricingType) {
-            query = query.eq('letbuyy_pricing_type', pricingType);
-        }
-        if (siteType) {
-            query = query.contains('supported_site_types', [siteType]);
-        }
-        if (industry) {
-            query = query.contains('industry', [industry]);
-        }
-        if (search) {
-            const pattern = `%${search}%`;
-            query = query.or(`name.ilike.${pattern},description.ilike.${pattern},tags.cs.{${search}}`);
-        }
-
-        // Sort
-        switch (sort) {
-            case 'rating':
-                query = query.order('rating_avg', { ascending: false });
-                break;
-            case 'recent':
-                query = query.order('created_at', { ascending: false });
-                break;
-            case 'name':
-                query = query.order('name', { ascending: true });
-                break;
-            case 'price_low':
-                query = query.order('letbuyy_price_inr', { ascending: true });
-                break;
-            case 'price_high':
-                query = query.order('letbuyy_price_inr', { ascending: false });
-                break;
-            case 'popular':
-            default:
-                query = query.order('install_count', { ascending: false });
-        }
-
-        query = query.range(offset, offset + limit - 1);
-
-        const { data, count, error } = await query;
-
-        if (error) {
-            console.error('[ThemeService] Error listing themes:', error.message);
+        const response = await safeThemeFetch(`/themes?${params.toString()}`);
+        if (!response?.ok) {
             return { themes: [], total: 0, limit, offset };
         }
 
+        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
+
         return {
-            themes: data || [],
-            total: count || 0,
-            limit,
+            themes: payload?.data || [],
+            total: payload?.meta?.total || 0,
+            limit: payload?.meta?.per_page || limit,
             offset,
         };
     },
 
-    /**
-     * Get a single theme by slug
-     */
     async getThemeBySlug(slug: string): Promise<Record<string, unknown> | null> {
-        if (!db) return null;
+        const response = await safeThemeFetch(`/themes/${encodeURIComponent(slug)}`);
+        if (!response?.ok) return null;
 
-        const { data, error } = await db
-            .from('themes')
-            .select('*')
-            .eq('slug', slug)
-            .eq('is_active', true)
-            .single();
-
-        if (error) {
-            console.error('[ThemeService] Error fetching theme:', error.message);
-            return null;
-        }
-
-        return data;
+        const payload = await readWorkerEnvelope<Record<string, unknown>>(response);
+        return payload?.data || null;
     },
 
-    /**
-     * Get reviews for a theme
-     */
-    async getThemeReviews(themeId: string, limit = 10, offset = 0) {
-        if (!db) return { reviews: [], total: 0 };
+    async getThemeReviews(themeId: string) {
+        const purchases = await this.getUserPurchases();
+        const purchasedTheme = purchases.find((purchase) => {
+            const theme = purchase.themes as Record<string, unknown> | undefined;
+            return theme?.id === themeId;
+        });
+        const theme = purchasedTheme?.themes as { reviews?: Record<string, unknown>[] } | undefined;
 
-        const { data, count, error } = await db
-            .from('theme_reviews')
-            .select('*', { count: 'exact' })
-            .eq('theme_id', themeId)
-            .eq('status', 'published')
-            .order('created_at', { ascending: false })
-            .range(offset, offset + limit - 1);
-
-        if (error) {
-            console.error('[ThemeService] Error fetching reviews:', error.message);
-            return { reviews: [], total: 0 };
-        }
-
-        return { reviews: data || [], total: count || 0 };
+        return { reviews: theme?.reviews || [], total: theme?.reviews?.length || 0 };
     },
 
-    /**
-     * Purchase a theme
-     */
-    async purchaseTheme(
-        userId: string,
-        themeId: string,
-        priceUsd: number,
-        priceInr: number,
-        paymentId?: string,
-        paymentMethod?: string
-    ) {
-        if (!db) return { success: false, error: 'Database not configured' };
-
-        const { data, error } = await db
-            .from('theme_purchases')
-            .insert({
-                user_id: userId,
-                theme_id: themeId,
-                price_paid_usd: priceUsd,
-                price_paid_inr: priceInr,
-                payment_id: paymentId,
-                payment_method: paymentMethod,
-                status: 'completed',
-            })
-            .select()
-            .single();
-
-        if (error) {
-            if (error.code === '23505') {
-                return { success: false, error: 'Theme already purchased' };
-            }
-            console.error('[ThemeService] Error purchasing theme:', error.message);
-            return { success: false, error: error.message };
-        }
-
-        return { success: true, purchase: data };
+    async hasUserPurchased(_userId: string, themeId: string): Promise<boolean> {
+        const purchases = await this.getUserPurchases();
+        return purchases.some((purchase) => {
+            const theme = purchase.themes as Record<string, unknown> | undefined;
+            return theme?.id === themeId && purchase.status === 'completed';
+        });
     },
 
-    /**
-     * Check if user owns a theme
-     */
-    async hasUserPurchased(userId: string, themeId: string): Promise<boolean> {
-        if (!db) return false;
+    async getUserPurchases(_userId?: string): Promise<Record<string, unknown>[]> {
+        const response = await safeThemeFetch('/themes/purchases/list', {
+            method: 'GET',
+            requireSession: true,
+        });
+        if (!response?.ok) return [];
 
-        const { data } = await db
-            .from('theme_purchases')
-            .select('id')
-            .eq('user_id', userId)
-            .eq('theme_id', themeId)
-            .eq('status', 'completed')
-            .single();
-
-        return !!data;
+        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
+        return payload?.data || [];
     },
 
-    /**
-     * Get themes purchased by a user
-     */
-    async getUserPurchases(userId: string) {
-        if (!db) return [];
+    async getUserInstallations(): Promise<Record<string, unknown>[]> {
+        const response = await safeThemeFetch('/themes/installations/list', {
+            method: 'GET',
+            requireSession: true,
+        });
+        if (!response?.ok) return [];
 
-        const { data, error } = await db
-            .from('theme_purchases')
-            .select('*, themes(*)')
-            .eq('user_id', userId)
-            .eq('status', 'completed')
-            .order('purchased_at', { ascending: false });
-
-        if (error) {
-            console.error('[ThemeService] Error fetching purchases:', error.message);
-            return [];
-        }
-
-        return data || [];
+        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
+        return payload?.data || [];
     },
 
-    /**
-     * Get unique categories from active themes
-     */
     async getCategories(): Promise<string[]> {
-        if (!db) return [];
+        const response = await safeThemeFetch('/themes/categories');
+        if (!response?.ok) return [];
 
-        const { data, error } = await db
-            .from('themes')
-            .select('category')
-            .eq('is_active', true)
-            .not('category', 'is', null);
-
-        if (error) {
-            console.error('[ThemeService] Error fetching categories:', error.message);
-            return [];
-        }
-
-        // Deduplicate
-        const categories: string[] = [...new Set((data || []).map((d: { category: string }) => d.category))] as string[];
-        return categories.sort();
+        const payload = await readWorkerEnvelope<string[]>(response);
+        return (payload?.data || []).sort();
     },
 
-    /**
-     * Get unique industries from active themes
-     */
     async getIndustries(): Promise<string[]> {
-        if (!db) return [];
+        const response = await safeThemeFetch('/themes/industries');
+        if (!response?.ok) return [];
 
-        const { data, error } = await db
-            .from('themes')
-            .select('industry')
-            .eq('is_active', true)
-            .not('industry', 'is', null);
-
-        if (error) {
-            console.error('[ThemeService] Error fetching industries:', error.message);
-            return [];
-        }
-
-        // Flatten and deduplicate
-        const industries: string[] = [...new Set((data || []).flatMap((d: { industry: string[] }) => d.industry || []))] as string[];
-        return industries.sort();
+        const payload = await readWorkerEnvelope<string[]>(response);
+        return (payload?.data || []).sort();
     },
 };

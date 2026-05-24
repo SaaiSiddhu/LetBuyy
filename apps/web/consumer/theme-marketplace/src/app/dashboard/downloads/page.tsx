@@ -1,5 +1,5 @@
 import { Download, Globe, Code, ShoppingBag, Monitor } from 'lucide-react';
-import { db } from '@/lib/supabase/server';
+import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 
@@ -14,18 +14,7 @@ const PLATFORM_ICONS: Record<string, typeof Globe> = {
 };
 
 export default async function DownloadsPage() {
-    let purchases: any[] = [];
-
-    try {
-        const { data } = await db
-            .from('theme_purchases')
-            .select('*, themes(*)')
-            .order('created_at', { ascending: false });
-
-        purchases = data || [];
-    } catch (err) {
-        console.error('Downloads fetch error:', err);
-    }
+    const purchases = await ThemeService.getUserPurchases();
 
     // Build download items from purchased themes
     const downloadItems = purchases.map((purchase: any) => {

@@ -1,38 +1,15 @@
 import Link from 'next/link';
 import { Palette, ShoppingBag, Package, Star, ArrowRight, Clock } from 'lucide-react';
 import { ThemeService } from '@/lib/theme-service';
-import { db } from '@/lib/supabase/server';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Dashboard' };
 
 export default async function DashboardOverview() {
-    // For now, dashboard shows data for any authenticated user
-    // In production, this would use cookie-based auth from @supabase/ssr
-    let purchases: any[] = [];
-    let installedThemes: any[] = [];
-
-    try {
-        // Fetch recent theme purchases (service role sees all; in production, filter by user)
-        const { data: recentPurchases } = await db
-            .from('theme_purchases')
-            .select('*, themes(*)')
-            .order('created_at', { ascending: false })
-            .limit(5);
-
-        purchases = recentPurchases || [];
-
-        // Fetch active installations
-        const { data: installations } = await db
-            .from('theme_installations')
-            .select('*, themes(*)')
-            .eq('is_active', true)
-            .limit(5);
-
-        installedThemes = installations || [];
-    } catch (err) {
-        console.error('Dashboard data fetch error:', err);
-    }
+    const purchases = (await ThemeService.getUserPurchases()).slice(0, 5);
+    const installedThemes = (await ThemeService.getUserInstallations())
+        .filter((installation: Record<string, unknown>) => installation.is_active !== false)
+        .slice(0, 5);
 
     const STATS = [
         { label: 'Installed Themes', value: String(installedThemes.length), icon: Package, color: 'text-primary-light bg-primary/15' },
