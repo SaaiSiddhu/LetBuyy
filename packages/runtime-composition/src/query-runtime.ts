@@ -44,6 +44,7 @@ export interface RuntimeQueryExecutionMetadata {
 export interface RuntimeQueryExecutionResult<TProjection> {
   projection: RuntimeProjection<TProjection>;
   metadata: RuntimeQueryExecutionMetadata;
+  boundary?: RuntimeQueryBoundaryContract;
 }
 
 export interface RuntimeCachePort {
@@ -54,9 +55,24 @@ export interface RuntimeCachePort {
 export interface RuntimeAggregationPipeline<TState, TProjection> {
   name: string;
   version: string;
+  boundary?: RuntimeQueryBoundaryContract;
   steps: RuntimeQueryStep<TState>[];
   project: (state: TState, context: RuntimeQueryContext) => RuntimeProjection<TProjection>;
 }
+
+export interface RuntimeQueryBoundaryContract {
+  queryAuthority: 'runtime-composition';
+  aggregationAuthority: 'runtime-composition';
+  projectionAuthority: 'runtime-composition';
+  forbiddenOwners: Array<'apps' | 'services' | 'application-services'>;
+}
+
+export const RUNTIME_QUERY_BOUNDARY: RuntimeQueryBoundaryContract = {
+  queryAuthority: 'runtime-composition',
+  aggregationAuthority: 'runtime-composition',
+  projectionAuthority: 'runtime-composition',
+  forbiddenOwners: ['apps', 'services', 'application-services'],
+};
 
 export async function executeRuntimeAggregation<TState, TProjection>(
   pipeline: RuntimeAggregationPipeline<TState, TProjection>,
@@ -97,6 +113,7 @@ export async function executeRuntimeQuery<TState, TProjection>(
   const projection = pipeline.project(state, context);
   return {
     projection: normalizeRuntimeProjection(projection, pipeline),
+    boundary: pipeline.boundary || RUNTIME_QUERY_BOUNDARY,
     metadata: {
       pipelineName: pipeline.name,
       pipelineVersion: pipeline.version,

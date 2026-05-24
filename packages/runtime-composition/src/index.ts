@@ -1,4 +1,5 @@
 export * from './projection';
+export * from './projection-execution-runtime';
 export * from './query-runtime';
 export * from './composition-runtime';
 export * from './search-projection-runtime';

@@ -6,11 +6,14 @@ import {
     defineRuntimeBridge,
 } from '@letbuyy/application-services';
 import {
-    analyticsRollupDate,
-    buildSearchProjectionDocument,
     normalizeQueueEnvelope,
-    queueRetryDelaySeconds,
+    planAnalyticsEventStreamRecord,
+    planAnalyticsRollupIncrements,
+    planDeletedSearchProjectionDocument,
+    planOrderSearchProjectionDocument,
+    planProductSearchProjectionDocument,
 } from '@letbuyy/runtime-composition';
+import { eventRetryDelaySeconds } from '@letbuyy/orchestration';
 
 type JsonObject = Record<string, unknown>;
 
@@ -175,28 +178,32 @@ export class QueueExecutionAdapter {
         const { error } = await this.db
             .from('analytics_event_stream')
             .upsert(
-                {
-                    site_id: siteId,
-                    event_id: eventId,
-                    event_type: eventType,
-                    aggregate_type: aggregateType,
-                    aggregate_id: aggregateId,
-                    occurred_at: occurredAt,
-                    request_id: envelope.request_id || job.request_id,
-                    trace_id: envelope.trace_id || job.trace_id,
-                    idempotency_key: envelope.idempotency_key || job.idempotency_key,
-                    schema_version: envelope.schema_version || job.schema_version,
+                planAnalyticsEventStreamRecord({
+                    siteId,
+                    eventId,
+                    eventType,
+                    aggregateType,
+                    aggregateId,
+                    occurredAt,
+                    requestId: envelope.request_id || job.request_id,
+                    traceId: envelope.trace_id || job.trace_id,
+                    idempotencyKey: envelope.idempotency_key || job.idempotency_key,
+                    schemaVersion: envelope.schema_version || job.schema_version,
                     properties: envelope.payload || {},
-                },
+                }),
                 { onConflict: 'event_id' }
             );
 
-        if (error) throw new Error(`Analytics event projection failed: ${error.message}`);
+        if (error) throw new Error(`Analytics event stream write failed: ${error.message}`);
 
-        await this.incrementRollup(siteId, 'events.total', analyticsRollupDate(occurredAt), {});
-        await this.incrementRollup(siteId, `events.${eventType}`, analyticsRollupDate(occurredAt), {
-            aggregate_type: aggregateType,
-        });
+        for (const rollup of planAnalyticsRollupIncrements({
+            siteId,
+            eventType,
+            occurredAt,
+            aggregateType,
+        })) {
+            await this.incrementRollup(rollup);
+        }
 
         return true;
     }
@@ -209,17 +216,17 @@ export class QueueExecutionAdapter {
         if (!aggregateId) return false;
 
         if (aggregateType === 'product' || job.job_type.startsWith('product.')) {
-            return this.projectProductSearchDocument(job, aggregateId);
+            return this.applyProductSearchIndex(job, aggregateId);
         }
 
         if (aggregateType === 'order' || job.job_type.startsWith('order.')) {
-            return this.projectOrderSearchDocument(job, aggregateId);
+            return this.applyOrderSearchIndex(job, aggregateId);
         }
 
         return false;
     }
 
-    private async projectProductSearchDocument(job: PlatformQueueJob, productId: string): Promise<boolean> {
+    private async applyProductSearchIndex(job: PlatformQueueJob, productId: string): Promise<boolean> {
         const { data, error } = await this.db
             .from('products')
             .select('id, store_id, name, description, sku, category, product_type, vendor, tags, status, is_active, price, deleted_at')
@@ -227,51 +234,20 @@ export class QueueExecutionAdapter {
             .maybeSingle();
 
         if (error) throw new Error(`Product search source lookup failed: ${error.message}`);
-        if (!data) return this.markSearchDocumentDeleted(job, 'product', productId);
-
-        const product = data as ProductSearchRow;
-        const status = product.deleted_at || product.is_active === false || product.status === 'draft'
-            ? 'hidden'
-            : 'active';
+        if (!data) return this.applyDeletedSearchIndex(job, 'product', productId);
 
         const { error: upsertError } = await this.db
             .from('search_documents')
             .upsert(
-                {
-                    ...buildSearchProjectionDocument({
-                        siteId: product.store_id,
-                        objectType: 'product',
-                        objectId: product.id,
-                        title: product.name || '',
-                        subtitle: product.sku || product.category || null,
-                        textParts: [
-                            product.name,
-                            product.description,
-                            product.sku,
-                            product.category,
-                            product.product_type,
-                            product.vendor,
-                            product.tags,
-                        ],
-                        attributes: {
-                            price: product.price,
-                            category: product.category,
-                            product_type: product.product_type,
-                            vendor: product.vendor,
-                            tags: product.tags || [],
-                        },
-                        sourceEventId: job.event_id,
-                        status,
-                    }),
-                },
+                planProductSearchProjectionDocument(data as ProductSearchRow, job.event_id),
                 { onConflict: 'site_id,object_type,object_id' }
             );
 
-        if (upsertError) throw new Error(`Product search projection failed: ${upsertError.message}`);
+        if (upsertError) throw new Error(`Product search index update failed: ${upsertError.message}`);
         return true;
     }
 
-    private async projectOrderSearchDocument(job: PlatformQueueJob, orderId: string): Promise<boolean> {
+    private async applyOrderSearchIndex(job: PlatformQueueJob, orderId: string): Promise<boolean> {
         const { data, error } = await this.db
             .from('orders')
             .select('id, store_id, order_number, customer_name, customer_email, status, total, deleted_at')
@@ -279,44 +255,20 @@ export class QueueExecutionAdapter {
             .maybeSingle();
 
         if (error) throw new Error(`Order search source lookup failed: ${error.message}`);
-        if (!data) return this.markSearchDocumentDeleted(job, 'order', orderId);
+        if (!data) return this.applyDeletedSearchIndex(job, 'order', orderId);
 
-        const order = data as OrderSearchRow;
         const { error: upsertError } = await this.db
             .from('search_documents')
             .upsert(
-                {
-                    ...buildSearchProjectionDocument({
-                        siteId: order.store_id,
-                        objectType: 'order',
-                        objectId: order.id,
-                        title: order.order_number || order.id,
-                        subtitle: order.customer_email || null,
-                        textParts: [
-                            order.order_number,
-                            order.customer_name,
-                            order.customer_email,
-                            order.status,
-                            order.total,
-                        ],
-                        attributes: {
-                            status: order.status,
-                            total: order.total,
-                            customer_email: order.customer_email,
-                        },
-                        sourceEventId: job.event_id,
-                        status: order.deleted_at ? 'deleted' : 'active',
-                        deletedAt: order.deleted_at || null,
-                    }),
-                },
+                planOrderSearchProjectionDocument(data as OrderSearchRow, job.event_id),
                 { onConflict: 'site_id,object_type,object_id' }
             );
 
-        if (upsertError) throw new Error(`Order search projection failed: ${upsertError.message}`);
+        if (upsertError) throw new Error(`Order search index update failed: ${upsertError.message}`);
         return true;
     }
 
-    private async markSearchDocumentDeleted(
+    private async applyDeletedSearchIndex(
         job: PlatformQueueJob,
         objectType: 'product' | 'order',
         objectId: string
@@ -326,36 +278,21 @@ export class QueueExecutionAdapter {
         const { error } = await this.db
             .from('search_documents')
             .upsert(
-                {
-                    site_id: job.site_id,
-                    object_type: objectType,
-                    object_id: objectId,
-                    title: objectId,
-                    searchable_text: objectId,
-                    source_event_id: job.event_id,
-                    status: 'deleted',
-                    indexed_at: new Date().toISOString(),
-                    deleted_at: new Date().toISOString(),
-                },
+                planDeletedSearchProjectionDocument(job.site_id, objectType, objectId, job.event_id),
                 { onConflict: 'site_id,object_type,object_id' }
             );
 
-        if (error) throw new Error(`Search deletion projection failed: ${error.message}`);
+        if (error) throw new Error(`Search deletion index update failed: ${error.message}`);
         return true;
     }
 
-    private async incrementRollup(
-        siteId: string,
-        metricName: string,
-        date: string,
-        dimensions: JsonObject
-    ): Promise<void> {
+    private async incrementRollup(plan: { siteId: string; metricName: string; date: string; dimensions: JsonObject; increment: number }): Promise<void> {
         const { error } = await this.db.rpc('increment_analytics_rollup', {
-            p_site_id: siteId,
-            p_metric_name: metricName,
-            p_rollup_date: date,
-            p_dimensions: dimensions,
-            p_increment: 1,
+            p_site_id: plan.siteId,
+            p_metric_name: plan.metricName,
+            p_rollup_date: plan.date,
+            p_dimensions: plan.dimensions,
+            p_increment: plan.increment,
         });
 
         if (error) throw new Error(`Analytics rollup increment failed: ${error.message}`);
@@ -376,7 +313,7 @@ export class QueueExecutionAdapter {
             p_job_id: job.id,
             p_worker_id: workerId,
             p_error_message: error instanceof Error ? error.message : 'Queue job failed',
-            p_retry_seconds: queueRetryDelaySeconds(job.attempts),
+            p_retry_seconds: eventRetryDelaySeconds(job.attempts, 60),
             p_result: {},
         });
 
