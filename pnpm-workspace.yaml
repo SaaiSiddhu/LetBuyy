@@ -1,6 +1,6 @@
 packages:
-  - "apps/web/administrative/*"
-  - "apps/web/consumer/*"
+  - "apps/*"
+  - "apps/mobile/*"
   - "packages/typescript/*"
   - "backend/workers/*"
 

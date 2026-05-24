@@ -7,11 +7,11 @@ environment:
   sdk: '^3.10.0'
 
 # ✅ MELOS 7.x: Workspace definition (replaces melos.yaml packages)
-# New structure: apps/flutter/*, packages/dart/*
+# New structure: apps/mobile/*, packages/dart/*
 workspace:
-  - apps/flutter/builder
-  - apps/flutter/team
-  - apps/flutter/super_admin
+  - apps/mobile/merchant-app
+  - apps/mobile/operator-team-app
+  - apps/mobile/operator-app
   - packages/dart/core
   - packages/dart/models
   - packages/dart/services
@@ -30,15 +30,15 @@ melos:
   scripts:
     # Run apps
     run:builder:
-      run: cd apps/flutter/builder && flutter run
+      run: cd apps/mobile/merchant-app && flutter run
       description: Run the Builder (Store Builder) app
     
     run:team:
-      run: cd apps/flutter/team && flutter run
+      run: cd apps/mobile/operator-team-app && flutter run
       description: Run the Team (Employee) app
     
     run:super_admin:
-      run: cd apps/flutter/super_admin && flutter run
+      run: cd apps/mobile/operator-app && flutter run
       description: Run the Super Admin app
 
     # Build commands
