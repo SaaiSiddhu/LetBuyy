@@ -1,7 +1,6 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { AppService } from '@/lib/app-service';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { appStoreWorkerFetch } from '@/lib/api/worker-client';
 import { Settings, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -10,25 +9,33 @@ export const metadata = {
     description: 'Manage your installed apps.',
 };
 
+interface InstalledApp {
+    id: string;
+    name?: string | null;
+    slug?: string | null;
+    icon_url?: string | null;
+    tagline?: string | null;
+    status?: string | null;
+    marketplace_apps?: {
+        id: string;
+        name?: string | null;
+        slug?: string | null;
+        icon_url?: string | null;
+        tagline?: string | null;
+    } | null;
+}
+
 export default async function MyAppsPage() {
-    const supabase = await createSupabaseServerClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const response = await appStoreWorkerFetch('/app-store/installations', {
+        method: 'GET',
+        requireSession: true,
+    });
 
-    let installedApps: any[] = [];
-
-    if (user) {
-        // Get first store for this user to look up installed apps
-        const { data: store } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('owner_id', user.id)
-            .limit(1)
-            .single();
-
-        if (store) {
-            installedApps = await AppService.getInstalledApps(store.id);
-        }
-    }
+    const isAuthenticated = response.status !== 401;
+    const payload = response.ok
+        ? await response.json() as { data?: InstalledApp[] }
+        : null;
+    const installedApps = payload?.data || [];
 
     return (
         <>
@@ -40,7 +47,7 @@ export default async function MyAppsPage() {
                         Manage the apps installed on your store.
                     </p>
 
-                    {!user ? (
+                    {!isAuthenticated ? (
                         <div className="empty-state">
                             <div className="empty-state-icon">🔑</div>
                             <h3>Sign in required</h3>
@@ -48,13 +55,13 @@ export default async function MyAppsPage() {
                         </div>
                     ) : installedApps.length > 0 ? (
                         <div className="my-apps-grid">
-                            {installedApps.map((installation: any) => {
+                            {installedApps.map((installation) => {
                                 const app = installation.marketplace_apps || installation;
                                 return (
                                     <div key={installation.id || app.id} className="installed-app-card">
                                         <div className="installed-app-icon">
                                             {app.icon_url ? (
-                                                <img src={app.icon_url} alt={app.name} style={{
+                                                <img src={app.icon_url} alt={app.name || 'Installed app'} style={{
                                                     width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover'
                                                 }} />
                                             ) : (
