@@ -28,6 +28,29 @@ export interface RuntimeQueryStep<TState> {
   execute: (state: TState, context: RuntimeQueryContext) => Promise<TState>;
 }
 
+export interface RuntimeQueryExecutionMetadata {
+  pipelineName: string;
+  pipelineVersion: string;
+  runtime: string;
+  route: string;
+  tenantId?: string | null;
+  cacheKeys: string[];
+  executedSteps: string[];
+  startedAt: string;
+  completedAt: string;
+  correlation: RuntimeQueryCorrelation;
+}
+
+export interface RuntimeQueryExecutionResult<TProjection> {
+  projection: RuntimeProjection<TProjection>;
+  metadata: RuntimeQueryExecutionMetadata;
+}
+
+export interface RuntimeCachePort {
+  read<TValue>(policy: RuntimeCachePolicy, context: RuntimeQueryContext): Promise<TValue | null>;
+  write<TValue>(policy: RuntimeCachePolicy, value: TValue, context: RuntimeQueryContext): Promise<void>;
+}
+
 export interface RuntimeAggregationPipeline<TState, TProjection> {
   name: string;
   version: string;
@@ -40,17 +63,87 @@ export async function executeRuntimeAggregation<TState, TProjection>(
   initialState: TState,
   context: RuntimeQueryContext,
 ): Promise<RuntimeProjection<TProjection>> {
+  return (await executeRuntimeQuery(pipeline, initialState, context)).projection;
+}
+
+export async function executeRuntimeQuery<TState, TProjection>(
+  pipeline: RuntimeAggregationPipeline<TState, TProjection>,
+  initialState: TState,
+  context: RuntimeQueryContext,
+  cache?: RuntimeCachePort,
+): Promise<RuntimeQueryExecutionResult<TProjection>> {
   let state = initialState;
+  const cacheKeys: string[] = [];
+  const executedSteps: string[] = [];
+  const startedAt = new Date().toISOString();
 
   for (const step of pipeline.steps) {
+    const policy = step.cache?.(state, context);
+    if (policy) {
+      cacheKeys.push(policy.key);
+      const cached = await cache?.read<TState>(policy, context);
+      if (cached) {
+        state = cached;
+        executedSteps.push(`${step.name}:cache-hit`);
+        continue;
+      }
+    }
+
     state = await step.execute(state, context);
+    executedSteps.push(step.name);
+    if (policy) await cache?.write(policy, state, context);
   }
 
   const projection = pipeline.project(state, context);
   return {
+    projection: normalizeRuntimeProjection(projection, pipeline),
+    metadata: {
+      pipelineName: pipeline.name,
+      pipelineVersion: pipeline.version,
+      runtime: context.runtime,
+      route: context.route,
+      tenantId: context.tenantId,
+      cacheKeys,
+      executedSteps,
+      startedAt,
+      completedAt: new Date().toISOString(),
+      correlation: context.correlation,
+    },
+  };
+}
+
+export function normalizeRuntimeProjection<TState, TProjection>(
+  projection: RuntimeProjection<TProjection>,
+  pipeline: RuntimeAggregationPipeline<TState, TProjection>,
+): RuntimeProjection<TProjection> {
+  return {
     ...projection,
     projectionName: projection.projectionName || pipeline.name,
     projectionVersion: projection.projectionVersion || Number(pipeline.version.split('.')[0] || 1),
+  };
+}
+
+export interface RuntimeResponseEnvelope<TData = Record<string, unknown>> {
+  data: TData;
+  projection: {
+    name: string;
+    version: number;
+  };
+  cache?: RuntimeCachePolicy | null;
+  execution: RuntimeQueryExecutionMetadata;
+}
+
+export function composeRuntimeResponse<TProjection>(
+  result: RuntimeQueryExecutionResult<TProjection>,
+): RuntimeResponseEnvelope<TProjection> {
+  return {
+    data: result.projection.data,
+    projection: {
+      name: result.projection.projectionName,
+      version: result.projection.projectionVersion,
+    },
+    cache: result.projection.cachePolicy || null,
+    execution: result.metadata,
   };
 }
 

@@ -94,3 +94,6 @@ export const DEFAULT_RETRY_POLICY: RetryPolicy = {
 export * from './event-runtime';
 export * from './outbox-runtime';
 export * from './observability-runtime';
+export * from './replay-runtime';
+export * from './workflow-recovery-runtime';
+export * from './async-execution-runtime';

@@ -10,12 +10,50 @@ export interface OutboxRecord<TPayload = Record<string, unknown>> {
   idempotencyKey: string;
 }
 
+export interface OutboxDeliveryGuarantee {
+  delivery: 'at-least-once';
+  ordering: 'aggregate-ordered' | 'best-effort';
+  idempotency: 'producer-key' | 'event-id';
+  replayable: true;
+}
+
+export interface OutboxPublishPlan<TPayload = Record<string, unknown>> {
+  event: RuntimeEventEnvelope<TPayload>;
+  context: CorrelationContext;
+  guarantee: OutboxDeliveryGuarantee;
+  sequenceKey: string;
+  dedupeKey: string;
+}
+
 export interface OutboxRuntimePort {
   append<TPayload = Record<string, unknown>>(event: RuntimeEventEnvelope<TPayload>, context: CorrelationContext): Promise<OutboxRecord<TPayload>>;
   claim(limit: number, workerId: string): Promise<OutboxRecord[]>;
   acknowledge(recordId: string): Promise<void>;
   retry(recordId: string, nextAvailableAt: string, reason: string): Promise<void>;
   deadLetter(recordId: string, reason: string): Promise<void>;
+}
+
+export function planOutboxPublish<TPayload = Record<string, unknown>>(
+  event: RuntimeEventEnvelope<TPayload>,
+  context: CorrelationContext,
+): OutboxPublishPlan<TPayload> {
+  const aggregate = [event.aggregate_type, event.aggregate_id].filter(Boolean).join(':') || event.event_id;
+  return {
+    event,
+    context: {
+      ...context,
+      requestId: event.request_id || context.requestId,
+      siteId: event.site_id || context.siteId,
+    },
+    guarantee: {
+      delivery: 'at-least-once',
+      ordering: event.aggregate_id ? 'aggregate-ordered' : 'best-effort',
+      idempotency: event.idempotency_key ? 'producer-key' : 'event-id',
+      replayable: true,
+    },
+    sequenceKey: aggregate,
+    dedupeKey: event.idempotency_key || event.event_id,
+  };
 }
 
 export interface OutboxProcessorHandler {

@@ -105,6 +105,34 @@ export interface RuntimeSectionInjection {
   section: SectionModel;
 }
 
+export interface ThemeSectionExecutionContext {
+  storeId: string;
+  sectionId: string;
+  sectionType: SectionType;
+  lifecycle: 'load' | 'hydrate' | 'render' | 'dispose';
+  requestId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RuntimeSectionExecutionResult {
+  section: SectionModel;
+  rendererKey?: string;
+  schemaVersion?: string;
+  lifecycle: ThemeSectionExecutionContext['lifecycle'];
+}
+
+export interface RuntimeTemplateExecutionInput {
+  context: ThemeEngineRenderContext;
+  template: StorefrontTemplateConfig;
+  storeTemplate: StoreTemplateConfig;
+  injections?: RuntimeSectionInjection[];
+}
+
+export interface RuntimeTemplateExecutionResult extends StorefrontCompositionResult {
+  templateId?: string;
+  executedSectionIds: string[];
+}
+
 export interface ThemeRuntimeOrchestrator {
   sectionRegistry: SectionRegistryRuntime;
   blockRegistry: BlockRegistryRuntime;
@@ -257,6 +285,46 @@ export function injectRuntimeSections(sections: SectionModel[], injections: Runt
   }
 
   return next.map((section, index) => ({ ...section, order: section.order ?? index }));
+}
+
+export function executeRuntimeSectionLifecycle(
+  orchestrator: Pick<ThemeRuntimeOrchestrator, 'sectionRegistry' | 'blockRegistry'>,
+  section: SectionModel,
+  context: Omit<ThemeSectionExecutionContext, 'sectionId' | 'sectionType'>,
+): RuntimeSectionExecutionResult {
+  const [hydrated] = hydrateSectionSchemas({
+    sections: [section],
+    sectionRegistry: orchestrator.sectionRegistry,
+    blockRegistry: orchestrator.blockRegistry,
+  });
+
+  return {
+    section: hydrated,
+    rendererKey: hydrated.rendererKey,
+    schemaVersion: hydrated.schemaVersion,
+    lifecycle: context.lifecycle,
+  };
+}
+
+export function executeRuntimeTemplate(
+  orchestrator: Pick<ThemeRuntimeOrchestrator, 'sectionRegistry' | 'blockRegistry'>,
+  input: RuntimeTemplateExecutionInput,
+): RuntimeTemplateExecutionResult {
+  const composition = hydrateAndComposeStorefrontTheme(
+    orchestrator,
+    {
+      context: input.context,
+      storeTemplate: input.storeTemplate,
+      routeTemplate: input.template,
+    },
+    input.injections || [],
+  );
+
+  return {
+    ...composition,
+    templateId: input.template.id,
+    executedSectionIds: composition.sections.map((section) => section.id),
+  };
 }
 
 export function hydrateAndComposeStorefrontTheme(
