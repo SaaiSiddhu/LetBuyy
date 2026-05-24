@@ -83,7 +83,7 @@ CREATE POLICY "Store owners can view their themes"
   ON store_themes FOR SELECT
   USING (
     store_id IN (
-      SELECT id FROM stores WHERE user_id = auth.uid()
+      SELECT id FROM sites WHERE user_id = auth.uid() OR custom_user_id = auth.uid()
     )
   );
 
@@ -91,7 +91,7 @@ CREATE POLICY "Store owners can install themes"
   ON store_themes FOR INSERT
   WITH CHECK (
     store_id IN (
-      SELECT id FROM stores WHERE user_id = auth.uid()
+      SELECT id FROM sites WHERE user_id = auth.uid() OR custom_user_id = auth.uid()
     )
   );
 
@@ -99,7 +99,7 @@ CREATE POLICY "Store owners can update their themes"
   ON store_themes FOR UPDATE
   USING (
     store_id IN (
-      SELECT id FROM stores WHERE user_id = auth.uid()
+      SELECT id FROM sites WHERE user_id = auth.uid() OR custom_user_id = auth.uid()
     )
   );
 
@@ -107,11 +107,11 @@ CREATE POLICY "Store owners can uninstall themes"
   ON store_themes FOR DELETE
   USING (
     store_id IN (
-      SELECT id FROM stores WHERE user_id = auth.uid()
+      SELECT id FROM sites WHERE user_id = auth.uid() OR custom_user_id = auth.uid()
     )
   );
 
--- 4. Seed default free themes
+-- 4. Seed the only production-ready store template.
 INSERT INTO themes (name, slug, site_type, category, description, config, author, sort_order) VALUES
 (
   'Urban Kicks',
@@ -127,80 +127,5 @@ INSERT INTO themes (name, slug, site_type, category, description, config, author
   }',
   'LetBuyy',
   1
-),
-(
-  'Aurora',
-  'aurora',
-  'store',
-  'modern',
-  'Modern, gradient-based with glassmorphism cards and smooth transitions.',
-  '{
-    "colors": {"primary": "#6366F1", "secondary": "#EC4899", "background": "#ffffff", "text": "#1f2937", "accent": "#8B5CF6"},
-    "fonts": {"heading": "Inter", "body": "Inter"},
-    "layout": {"headerStyle": "sticky", "footerStyle": "standard", "maxWidth": 1280},
-    "darkMode": false
-  }',
-  'LetBuyy',
-  2
-),
-(
-  'Zenith',
-  'zenith',
-  'store',
-  'minimal',
-  'Clean, professional theme with full-width imagery and sharp typography.',
-  '{
-    "colors": {"primary": "#0F172A", "secondary": "#64748B", "background": "#ffffff", "text": "#0F172A", "accent": "#3B82F6"},
-    "fonts": {"heading": "Inter", "body": "Inter"},
-    "layout": {"headerStyle": "sticky", "footerStyle": "standard", "maxWidth": 1280},
-    "darkMode": false
-  }',
-  'LetBuyy',
-  3
-),
-(
-  'Ember',
-  'ember',
-  'store',
-  'luxury',
-  'Luxury dark theme with gold accents and premium feel.',
-  '{
-    "colors": {"primary": "#1C1917", "secondary": "#D97706", "background": "#0C0A09", "text": "#FAFAF9", "accent": "#D97706"},
-    "fonts": {"heading": "Playfair Display", "body": "Inter"},
-    "layout": {"headerStyle": "sticky", "footerStyle": "standard", "maxWidth": 1280},
-    "darkMode": true
-  }',
-  'LetBuyy',
-  4
-),
-(
-  'Blossom',
-  'blossom',
-  'store',
-  'organic',
-  'Soft, organic theme with pastel palette and rounded elements.',
-  '{
-    "colors": {"primary": "#FDF2F8", "secondary": "#F9A8D4", "background": "#FFFBEB", "text": "#1f2937", "accent": "#EC4899"},
-    "fonts": {"heading": "Outfit", "body": "Inter"},
-    "layout": {"headerStyle": "sticky", "footerStyle": "standard", "maxWidth": 1280},
-    "darkMode": false
-  }',
-  'LetBuyy',
-  5
-),
-(
-  'Nova',
-  'nova',
-  'store',
-  'vibrant',
-  'Vibrant, energetic theme with neon gradients and bold layouts.',
-  '{
-    "colors": {"primary": "#7C3AED", "secondary": "#06B6D4", "background": "#ffffff", "text": "#1f2937", "accent": "#F59E0B"},
-    "fonts": {"heading": "Inter", "body": "Inter"},
-    "layout": {"headerStyle": "sticky", "footerStyle": "standard", "maxWidth": 1280},
-    "darkMode": false
-  }',
-  'LetBuyy',
-  6
 )
 ON CONFLICT (slug) DO NOTHING;

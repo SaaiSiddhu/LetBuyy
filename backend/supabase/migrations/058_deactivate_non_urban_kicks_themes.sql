@@ -1,5 +1,5 @@
 -- ============================================================
--- Migration: Deactivate non-Urban Kicks themes
+-- Migration: Deactivate unsupported storefront themes
 -- Date: 2026-02-17
 -- Purpose: Focus on Urban Kicks as the only active theme
 --          while we build out the isolated theme architecture.
@@ -11,7 +11,7 @@ FROM themes
 ORDER BY sort_order;
 
 -- ============================================================
--- 1. Deactivate all themes EXCEPT Urban Kicks
+-- 1. Deactivate all themes except the production-ready Urban Kicks template.
 -- ============================================================
 UPDATE themes
 SET is_active = false,
@@ -28,7 +28,7 @@ SET is_active = true,
 WHERE slug = 'urban-kicks';
 
 -- ============================================================
--- 3. Deactivate store_themes entries for non-Urban Kicks themes
+-- 3. Deactivate store_themes entries for unsupported themes.
 --    (these are per-store installations)
 -- ============================================================
 UPDATE store_themes
@@ -52,11 +52,4 @@ FROM themes t
 ORDER BY t.sort_order;
 
 -- Expected result:
--- | name         | slug         | is_active | category | active_installs |
--- |------------- |------------- |-----------|----------|-----------------|
--- | Urban Kicks  | urban-kicks  | true      | modern   | (varies)        |
--- | Aurora       | aurora       | false     | modern   | 0               |
--- | Zenith       | zenith       | false     | minimal  | 0               |
--- | Ember        | ember        | false     | luxury   | 0               |
--- | Blossom      | blossom      | false     | organic  | 0               |
--- | Nova         | nova         | false     | vibrant  | 0               |
+-- Expected result: Urban Kicks remains active; every unsupported template has no active installs.
