@@ -67,9 +67,16 @@ functions/lib/
 .env
 .env.*
 *.env
+.dev.vars
+**/.dev.vars
 
 # Node
 node_modules/
+.next/
+.turbo/
+**/.wrangler/tmp/
+**/supabase/.temp/
+packages/typescript/*/dist/
 
 # Gemini Agent artifacts (local only)
 .gemini/

@@ -4,7 +4,7 @@
     "scripts": {
         "preinstall": "if [ \"$VERCEL\" = \"1\" ]; then rm -rf apps/web/consumer/storefront/node_modules/next apps/web/consumer/admin/node_modules/next apps/web/consumer/accounts/node_modules/next apps/web/consumer/landing/node_modules/next 2>/dev/null || true; fi",
         "build": "turbo build",
-        "dev": "turbo dev",
+        "dev": "turbo dev --concurrency 15",
         "lint": "turbo lint",
         "typecheck": "turbo typecheck"
     },
