@@ -88,6 +88,18 @@ export interface ThemeHydrationManifest {
   rendererKeys: string[];
 }
 
+export interface ThemeRuntimeCompositionMetadata {
+  authority: 'theme-engine';
+  storeId: string;
+  path: string;
+  previewMode: boolean;
+  requestId?: string;
+  layoutKey: string;
+  sectionCount: number;
+  blockCount: number;
+  executedAt: string;
+}
+
 export interface RenderingPipelineContract {
   loadTheme(input: ThemeEngineRenderContext): Promise<StoreTemplateConfig | null>;
   compose(input: StorefrontCompositionInput): Promise<StorefrontCompositionResult>;
@@ -119,6 +131,55 @@ export interface RuntimeSectionExecutionResult {
   rendererKey?: string;
   schemaVersion?: string;
   lifecycle: ThemeSectionExecutionContext['lifecycle'];
+  metadata?: SectionExecutionMetadata;
+}
+
+export interface SectionExecutionMetadata {
+  authority: 'theme-engine';
+  storeId: string;
+  sectionId: string;
+  sectionType: SectionType;
+  lifecycle: ThemeSectionExecutionContext['lifecycle'];
+  rendererKey?: string;
+  schemaVersion?: string;
+  executedAt: string;
+}
+
+export interface RuntimeBlockExecutionContext {
+  storeId: string;
+  sectionId: string;
+  blockId: string;
+  blockType: string;
+  lifecycle: 'load' | 'hydrate' | 'render' | 'dispose';
+  requestId?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RuntimeBlockExecutionResult {
+  block: BlockModel;
+  rendererKey?: string;
+  schemaVersion?: string;
+  lifecycle: RuntimeBlockExecutionContext['lifecycle'];
+  metadata: {
+    authority: 'theme-engine';
+    storeId: string;
+    sectionId: string;
+    blockId: string;
+    blockType: string;
+    executedAt: string;
+  };
+}
+
+export interface LayoutRuntimeExecutionContext {
+  context: ThemeEngineRenderContext;
+  layoutKey: string;
+  sectionGroups: Record<string, StorefrontSectionGroupConfig>;
+}
+
+export interface LayoutRuntimeExecutionResult {
+  layoutKey: string;
+  sectionGroups: Record<string, StorefrontSectionGroupConfig>;
+  metadata: ThemeRuntimeCompositionMetadata;
 }
 
 export interface RuntimeTemplateExecutionInput {
@@ -131,6 +192,7 @@ export interface RuntimeTemplateExecutionInput {
 export interface RuntimeTemplateExecutionResult extends StorefrontCompositionResult {
   templateId?: string;
   executedSectionIds: string[];
+  metadata?: ThemeRuntimeCompositionMetadata;
 }
 
 export interface ThemeRuntimeOrchestrator {
@@ -292,17 +354,50 @@ export function executeRuntimeSectionLifecycle(
   section: SectionModel,
   context: Omit<ThemeSectionExecutionContext, 'sectionId' | 'sectionType'>,
 ): RuntimeSectionExecutionResult {
-  const [hydrated] = hydrateSectionSchemas({
+  const hydrated = hydrateSectionSchemas({
     sections: [section],
     sectionRegistry: orchestrator.sectionRegistry,
     blockRegistry: orchestrator.blockRegistry,
-  });
+  })[0] || section;
 
   return {
     section: hydrated,
     rendererKey: hydrated.rendererKey,
     schemaVersion: hydrated.schemaVersion,
     lifecycle: context.lifecycle,
+    metadata: {
+      authority: 'theme-engine',
+      storeId: context.storeId,
+      sectionId: hydrated.id,
+      sectionType: hydrated.type,
+      lifecycle: context.lifecycle,
+      rendererKey: hydrated.rendererKey,
+      schemaVersion: hydrated.schemaVersion,
+      executedAt: new Date().toISOString(),
+    },
+  };
+}
+
+export function executeRuntimeBlockLifecycle(
+  orchestrator: Pick<ThemeRuntimeOrchestrator, 'blockRegistry'>,
+  block: BlockModel,
+  context: RuntimeBlockExecutionContext,
+): RuntimeBlockExecutionResult {
+  const hydrated = hydrateBlockSchema(block, orchestrator.blockRegistry);
+
+  return {
+    block: hydrated,
+    rendererKey: hydrated.rendererKey,
+    schemaVersion: hydrated.schemaVersion,
+    lifecycle: context.lifecycle,
+    metadata: {
+      authority: 'theme-engine',
+      storeId: context.storeId,
+      sectionId: context.sectionId,
+      blockId: hydrated.id,
+      blockType: hydrated.type,
+      executedAt: new Date().toISOString(),
+    },
   };
 }
 
@@ -324,6 +419,41 @@ export function executeRuntimeTemplate(
     ...composition,
     templateId: input.template.id,
     executedSectionIds: composition.sections.map((section) => section.id),
+    metadata: createThemeRuntimeCompositionMetadata(composition),
+  };
+}
+
+export function executeLayoutRuntime(input: LayoutRuntimeExecutionContext): LayoutRuntimeExecutionResult {
+  return {
+    layoutKey: input.layoutKey,
+    sectionGroups: input.sectionGroups,
+    metadata: {
+      authority: 'theme-engine',
+      storeId: input.context.storeId,
+      path: input.context.path,
+      previewMode: input.context.previewMode,
+      requestId: input.context.requestId,
+      layoutKey: input.layoutKey,
+      sectionCount: Object.values(input.sectionGroups).flatMap((group) => group.sections).length,
+      blockCount: Object.values(input.sectionGroups).flatMap((group) => group.sections).flatMap((section) => section.blocks || []).length,
+      executedAt: new Date().toISOString(),
+    },
+  };
+}
+
+export function createThemeRuntimeCompositionMetadata(
+  composition: StorefrontCompositionResult,
+): ThemeRuntimeCompositionMetadata {
+  return {
+    authority: 'theme-engine',
+    storeId: composition.context.storeId,
+    path: composition.context.path,
+    previewMode: composition.context.previewMode,
+    requestId: composition.context.requestId,
+    layoutKey: composition.layoutKey,
+    sectionCount: composition.sections.length,
+    blockCount: composition.sections.flatMap((section) => section.blocks || []).length,
+    executedAt: new Date().toISOString(),
   };
 }
 
