@@ -1,29 +1,21 @@
-import { randomBytes, randomInt } from 'crypto'
-import { createServerClient } from '../supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 
 type TokenType = 'email_verify' | 'magic_link' | 'password_reset'
 
-const TOKEN_EXPIRY: Record<TokenType, number> = {
-    email_verify: 60 * 60 * 1000,       // 1 hour
-    magic_link: 15 * 60 * 1000,         // 15 minutes
-    password_reset: 60 * 60 * 1000,     // 1 hour
+interface TokenResponse {
+    data?: {
+        token: string
+    } | null
+    error?: {
+        message?: string
+    }
 }
 
-const OTP_EXPIRY = 10 * 60 * 1000 // 10 minutes
-const OTP_MAX_ATTEMPTS = 3
-
-/**
- * Generate a cryptographically secure random token (64 hex chars).
- */
-export function generateToken(): string {
-    return randomBytes(32).toString('hex')
-}
-
-/**
- * Generate a 6-digit OTP code.
- */
-export function generateOTP(): string {
-    return randomInt(100000, 999999).toString()
+interface TokenValidationResponse {
+    data?: {
+        email: string
+        user_id: string | null
+    } | null
 }
 
 /**
@@ -35,32 +27,22 @@ export async function createOTPToken(
     email: string,
     userId?: string
 ): Promise<string> {
-    const supabase = await createServerClient()
-    const otp = generateOTP()
-    const expiresAt = new Date(Date.now() + OTP_EXPIRY).toISOString()
-
-    // Invalidate existing unused OTP tokens for this email
-    await supabase
-        .from('verification_tokens')
-        .update({ used: true })
-        .eq('email', email)
-        .eq('type', 'email_verify')
-        .eq('used', false)
-
-    // Create new OTP token
-    const { error } = await supabase.from('verification_tokens').insert({
-        email,
-        token: otp,
-        type: 'email_verify',
-        user_id: userId || null,
-        expires_at: expiresAt,
+    const response = await accountWorkerFetch('/auth/custom/tokens/create', {
+        method: 'POST',
+        body: JSON.stringify({
+            email,
+            type: 'email_verify',
+            user_id: userId || null,
+            otp: true,
+        }),
     })
+    const payload = await response.json().catch(() => null) as TokenResponse | null
 
-    if (error) {
-        throw new Error(`Failed to create OTP token: ${error.message}`)
+    if (!response.ok || !payload?.data?.token) {
+        throw new Error(`Failed to create OTP token: ${payload?.error?.message || response.statusText}`)
     }
 
-    return otp
+    return payload.data.token
 }
 
 /**
@@ -75,30 +57,17 @@ export async function validateOTPToken(
     email: string
     user_id: string | null
 } | null> {
-    const supabase = await createServerClient()
-
-    const { data, error } = await supabase
-        .from('verification_tokens')
-        .select('id, email, user_id, expires_at, used')
-        .eq('email', email)
-        .eq('token', otp)
-        .eq('type', 'email_verify')
-        .eq('used', false)
-        .single()
-
-    if (error || !data) return null
-    if (new Date(data.expires_at) < new Date()) return null
-
-    // Mark as used
-    await supabase
-        .from('verification_tokens')
-        .update({ used: true })
-        .eq('id', data.id)
-
-    return {
-        email: data.email,
-        user_id: data.user_id,
-    }
+    const response = await accountWorkerFetch('/auth/custom/tokens/validate', {
+        method: 'POST',
+        body: JSON.stringify({
+            email,
+            token: otp,
+            type: 'email_verify',
+        }),
+    })
+    if (!response.ok) return null
+    const payload = await response.json().catch(() => null) as TokenValidationResponse | null
+    return payload?.data || null
 }
 
 /**
@@ -110,32 +79,21 @@ export async function createVerificationToken(
     type: TokenType,
     userId?: string
 ): Promise<string> {
-    const supabase = await createServerClient()
-    const token = generateToken()
-    const expiresAt = new Date(Date.now() + TOKEN_EXPIRY[type]).toISOString()
-
-    // Invalidate existing unused tokens of the same type for this email
-    await supabase
-        .from('verification_tokens')
-        .update({ used: true })
-        .eq('email', email)
-        .eq('type', type)
-        .eq('used', false)
-
-    // Create new token
-    const { error } = await supabase.from('verification_tokens').insert({
-        email,
-        token,
-        type,
-        user_id: userId || null,
-        expires_at: expiresAt,
+    const response = await accountWorkerFetch('/auth/custom/tokens/create', {
+        method: 'POST',
+        body: JSON.stringify({
+            email,
+            type,
+            user_id: userId || null,
+        }),
     })
+    const payload = await response.json().catch(() => null) as TokenResponse | null
 
-    if (error) {
-        throw new Error(`Failed to create verification token: ${error.message}`)
+    if (!response.ok || !payload?.data?.token) {
+        throw new Error(`Failed to create verification token: ${payload?.error?.message || response.statusText}`)
     }
 
-    return token
+    return payload.data.token
 }
 
 /**
@@ -150,27 +108,14 @@ export async function validateToken(
     email: string
     user_id: string | null
 } | null> {
-    const supabase = await createServerClient()
-
-    const { data, error } = await supabase
-        .from('verification_tokens')
-        .select('id, email, user_id, expires_at, used')
-        .eq('token', token)
-        .eq('type', type)
-        .single()
-
-    if (error || !data) return null
-    if (data.used) return null
-    if (new Date(data.expires_at) < new Date()) return null
-
-    // Mark as used (single-use token)
-    await supabase
-        .from('verification_tokens')
-        .update({ used: true })
-        .eq('id', data.id)
-
-    return {
-        email: data.email,
-        user_id: data.user_id,
-    }
+    const response = await accountWorkerFetch('/auth/custom/tokens/validate', {
+        method: 'POST',
+        body: JSON.stringify({
+            token,
+            type,
+        }),
+    })
+    if (!response.ok) return null
+    const payload = await response.json().catch(() => null) as TokenValidationResponse | null
+    return payload?.data || null
 }

@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { createServerClient } from '../supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 
 /**
  * Generate a device fingerprint from request headers.
@@ -50,42 +50,29 @@ export async function getOrCreateDevice(
     fingerprint: string,
     userAgent: string
 ): Promise<{ deviceId: string; isNew: boolean }> {
-    const supabase = await createServerClient()
-    const deviceName = parseDeviceName(userAgent)
-
-    // Try to find existing device
-    const { data: existing } = await supabase
-        .from('devices')
-        .select('id')
-        .eq('user_id', userId)
-        .eq('fingerprint', fingerprint)
-        .single()
-
-    if (existing) {
-        // Update last_used
-        await supabase
-            .from('devices')
-            .update({ last_used: new Date().toISOString(), name: deviceName })
-            .eq('id', existing.id)
-        return { deviceId: existing.id, isNew: false }
-    }
-
-    // Create new device
-    const { data: newDevice, error } = await supabase
-        .from('devices')
-        .insert({
+    const response = await accountWorkerFetch('/auth/custom/devices/get-or-create', {
+        method: 'POST',
+        body: JSON.stringify({
             user_id: userId,
             fingerprint,
-            name: deviceName,
-        })
-        .select('id')
-        .single()
+            user_agent: userAgent,
+        }),
+    })
+    const payload = await response.json().catch(() => null) as {
+        data?: {
+            device_id: string
+            is_new: boolean
+        }
+        error?: {
+            message?: string
+        }
+    } | null
 
-    if (error || !newDevice) {
-        throw new Error(`Failed to create device: ${error?.message}`)
+    if (!response.ok || !payload?.data) {
+        throw new Error(`Failed to create device: ${payload?.error?.message || response.statusText}`)
     }
 
-    return { deviceId: newDevice.id, isNew: true }
+    return { deviceId: payload.data.device_id, isNew: payload.data.is_new }
 }
 
 /**
@@ -95,14 +82,20 @@ export async function isDeviceTrusted(
     userId: string,
     fingerprint: string
 ): Promise<boolean> {
-    const supabase = await createServerClient()
+    const response = await accountWorkerFetch('/auth/custom/devices/trusted', {
+        method: 'POST',
+        body: JSON.stringify({
+            user_id: userId,
+            fingerprint,
+        }),
+    })
+    if (!response.ok) return false
 
-    const { data } = await supabase
-        .from('devices')
-        .select('trusted')
-        .eq('user_id', userId)
-        .eq('fingerprint', fingerprint)
-        .single()
+    const payload = await response.json().catch(() => null) as {
+        data?: {
+            trusted?: boolean
+        }
+    } | null
 
-    return data?.trusted ?? false
+    return Boolean(payload?.data?.trusted)
 }

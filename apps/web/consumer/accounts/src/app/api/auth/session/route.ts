@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { validateSession } from '@/lib/auth/session'
-import { getSessionCookie } from '@/lib/auth/cookies'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 
 /**
  * GET /api/auth/session
@@ -9,27 +8,17 @@ import { getSessionCookie } from '@/lib/auth/cookies'
  */
 export async function GET() {
     try {
-        const sessionToken = await getSessionCookie()
-
-        if (!sessionToken) {
-            return NextResponse.json({ authenticated: false })
-        }
-
-        const session = await validateSession(sessionToken)
-
-        if (!session) {
-            return NextResponse.json({ authenticated: false })
-        }
-
-        return NextResponse.json({
-            authenticated: true,
-            user: {
-                id: session.userId,
-                email: session.email,
-                fullName: session.fullName,
-                avatarUrl: session.avatarUrl,
-            },
+        const response = await accountWorkerFetch('/auth/custom/session', {
+            method: 'GET',
+            requireSession: true,
         })
+
+        if (!response.ok) {
+            return NextResponse.json({ authenticated: false })
+        }
+
+        const payload = await response.json()
+        return NextResponse.json(payload)
     } catch (error) {
         console.error('Session check error:', error)
         return NextResponse.json({ authenticated: false })

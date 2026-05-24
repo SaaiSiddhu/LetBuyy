@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
+import { AuthIcon } from '@/components/AuthIcon'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -132,11 +133,11 @@ function ResetPasswordContent() {
                 <div className="auth-top-bar">
                     <button onClick={cycleLang} className="auth-lang-btn">{lang.toUpperCase()}</button>
                     <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                        <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                        <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                     </button>
                 </div>
                 <div className="auth-card">
-                    <div className="auth-icon"><span className="material-symbols-outlined" style={{ fontSize: 36 }}>warning</span></div>
+                    <div className="auth-icon"><AuthIcon name="warning" size={36} /></div>
                     <h1 className="auth-title">{t.expired}</h1>
                     <a href="/forgot-password" className="auth-btn-primary" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
                         {t.requestNew}
@@ -153,7 +154,7 @@ function ResetPasswordContent() {
                     {lang.toUpperCase()}
                 </button>
                 <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </button>
             </div>
 
@@ -181,19 +182,19 @@ function ResetPasswordContent() {
                                 className="auth-toggle-password"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{showPassword ? 'visibility_off' : 'visibility'}</span>
+                                <AuthIcon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
                             </button>
                         </div>
 
                         <div className="auth-password-rules">
                             <div className={`auth-rule ${rules.minLength ? 'valid' : 'invalid'}`}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 14, verticalAlign: 'middle', marginRight: 4 }}>{rules.minLength ? 'check_circle' : 'cancel'}</span> {t.minLength}
+                                <AuthIcon name={rules.minLength ? 'check_circle' : 'cancel'} size={14} style={{ marginRight: 4 }} /> {t.minLength}
                             </div>
                             <div className={`auth-rule ${rules.hasUppercase ? 'valid' : 'invalid'}`}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 14, verticalAlign: 'middle', marginRight: 4 }}>{rules.hasUppercase ? 'check_circle' : 'cancel'}</span> {t.hasUppercase}
+                                <AuthIcon name={rules.hasUppercase ? 'check_circle' : 'cancel'} size={14} style={{ marginRight: 4 }} /> {t.hasUppercase}
                             </div>
                             <div className={`auth-rule ${rules.hasNumber ? 'valid' : 'invalid'}`}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 14, verticalAlign: 'middle', marginRight: 4 }}>{rules.hasNumber ? 'check_circle' : 'cancel'}</span> {t.hasNumber}
+                                <AuthIcon name={rules.hasNumber ? 'check_circle' : 'cancel'} size={14} style={{ marginRight: 4 }} /> {t.hasNumber}
                             </div>
                         </div>
                     </div>
@@ -214,7 +215,7 @@ function ResetPasswordContent() {
                                 className="auth-toggle-password"
                                 onClick={() => setShowConfirm(!showConfirm)}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{showConfirm ? 'visibility_off' : 'visibility'}</span>
+                                <AuthIcon name={showConfirm ? 'visibility_off' : 'visibility'} size={18} />
                             </button>
                         </div>
                         {confirmPassword && !passwordsMatch && (

@@ -5,6 +5,7 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWidget'
 import { features } from '@/lib/config/features'
+import { AuthIcon } from '@/components/AuthIcon'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -20,6 +21,7 @@ const translations: Record<Lang, Record<string, string>> = {
         signInWithPasskey: 'Sign in with passkey',
         apple: 'Apple',
         google: 'Google',
+        comingSoon: 'Soon',
         newToLetBuyy: 'New to LetBuyy?',
         getStarted: 'Get started',
         password: 'Password',
@@ -44,6 +46,7 @@ const translations: Record<Lang, Record<string, string>> = {
         signInWithPasskey: 'पासकी से साइन इन',
         apple: 'Apple',
         google: 'Google',
+        comingSoon: 'जल्द',
         newToLetBuyy: 'LetBuyy पर नए हैं?',
         getStarted: 'शुरू करें',
         password: 'पासवर्ड',
@@ -68,6 +71,7 @@ const translations: Record<Lang, Record<string, string>> = {
         signInWithPasskey: 'பாஸ்கீ மூலம் உள்நுழையவும்',
         apple: 'Apple',
         google: 'Google',
+        comingSoon: 'விரைவில்',
         newToLetBuyy: 'LetBuyy புதிதா?',
         getStarted: 'தொடங்குங்கள்',
         password: 'கடவுச்சொல்',
@@ -339,10 +343,10 @@ function LookupContent() {
             })
 
             if (error) {
-                console.error('OAuth error:', error.message)
+                setError(error.message || 'Failed to start sign in')
             }
-        } catch (err) {
-            console.error('OAuth initiation failed:', err)
+        } catch {
+            setError('Failed to start sign in')
         }
     }, [])
 
@@ -368,7 +372,7 @@ function LookupContent() {
                     {lang.toUpperCase()}
                 </button>
                 <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </button>
             </div>
 
@@ -444,7 +448,7 @@ function LookupContent() {
                                 />
                             </div>
 
-                            {error && <div className="auth-error">{error}</div>}
+                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
                             <button
                                 type="submit"
@@ -461,16 +465,17 @@ function LookupContent() {
 
                         {features.passkey && (
                             <button className="auth-btn-secondary" disabled>
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 6 }}>passkey</span> {t.signInWithPasskey}
+                                <AuthIcon name="passkey" size={18} style={{ marginRight: 6 }} /> {t.signInWithPasskey}
                             </button>
                         )}
 
                         <div className="auth-oauth-row">
-                            <button className="auth-btn-oauth" onClick={() => handleOAuth('apple')}>
+                            <button className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
                                 </svg>
                                 {t.apple}
+                                <span className="auth-coming-soon-badge">{t.comingSoon}</span>
                             </button>
                             <button className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
                                 <svg width="18" height="18" viewBox="0 0 24 24">
@@ -498,7 +503,7 @@ function LookupContent() {
 
                         {isFromSignup && (
                             <div className="auth-info">
-                                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>info</span>
+                                <AuthIcon name="info" size={16} />
                                 {t.accountFound}
                             </div>
                         )}
@@ -517,7 +522,7 @@ function LookupContent() {
                                             setError(null)
                                         }}
                                     >
-                                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span>
+                                        <AuthIcon name="edit" size={16} />
                                     </button>
                                 </div>
                             </div>
@@ -539,12 +544,12 @@ function LookupContent() {
                                         className="auth-toggle-password"
                                         onClick={() => setShowPasswordVisible(!showPasswordVisible)}
                                     >
-                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>{showPasswordVisible ? 'visibility_off' : 'visibility'}</span>
+                                        <AuthIcon name={showPasswordVisible ? 'visibility_off' : 'visibility'} size={18} />
                                     </button>
                                 </div>
                             </div>
 
-                            {error && <div className="auth-error">{error}</div>}
+                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
                             <button
                                 type="submit"
@@ -565,7 +570,7 @@ function LookupContent() {
                                 onClick={handleSendMagicLink}
                                 disabled={loading}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 6 }}>mail</span> {t.emailMeLink}
+                                <AuthIcon name="mail" size={18} style={{ marginRight: 6 }} /> {t.emailMeLink}
                             </button>
                         )}
 

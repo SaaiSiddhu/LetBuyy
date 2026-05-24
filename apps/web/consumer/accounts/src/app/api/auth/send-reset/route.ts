@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createVerificationToken } from '@/lib/auth/tokens'
@@ -43,12 +43,16 @@ export async function POST(request: NextRequest) {
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        const supabase = await createServerClient()
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id')
-            .eq('email', normalizedEmail)
-            .single()
+        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: normalizedEmail }),
+        })
+        const userPayload = await userResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+            } | null
+        } | null
+        const user = userPayload?.data || null
 
         // Always return success (don't reveal if email exists)
         if (!user) {

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
 import { createSession, destroySession } from '@/lib/auth/session'
 import { getSessionCookie, setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * POST /api/auth/switch
@@ -32,14 +33,21 @@ export async function POST(request: NextRequest) {
             await destroySession(currentToken)
         }
 
-        const supabase = await createServerClient()
-
         // Find the target user
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id, email, full_name, avatar_url, email_verified')
-            .eq('email', normalizedEmail)
-            .single()
+        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: normalizedEmail }),
+        })
+        const userPayload = await userResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email: string
+                full_name: string | null
+                avatar_url: string | null
+                email_verified: boolean | null
+            } | null
+        } | null
+        const user = userPayload?.data
 
         if (!user || !user.email_verified) {
             return NextResponse.json({ error: 'Account not found or not verified' }, { status: 404 })
@@ -62,16 +70,19 @@ export async function POST(request: NextRequest) {
         })
 
         // Check if user has a store → redirect appropriately
-        const { data: store } = await supabase
-            .from('sites')
-            .select('subdomain')
-            .eq('custom_user_id', user.id)
-            .limit(1)
-            .single()
+        const storeResponse = await accountWorkerFetch('/auth/custom/users/first-store', {
+            method: 'POST',
+            body: JSON.stringify({ user_id: user.id }),
+        })
+        const storePayload = await storeResponse.json().catch(() => null) as {
+            data?: {
+                subdomain?: string | null
+            } | null
+        } | null
+        const store = storeResponse.ok ? storePayload?.data : null
 
-        const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3000'
         const redirectTo = store?.subdomain
-            ? `${adminUrl}/${store.subdomain}/dashboard`
+            ? getAdminDashboardUrl(store.subdomain)
             : '/onboarding'
 
         return NextResponse.json({ success: true, redirectTo })

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
 import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
@@ -8,6 +8,7 @@ import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { sendPasswordChangedEmail } from '@/lib/email/resend'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * POST /api/auth/reset-password
@@ -50,14 +51,20 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid or expired reset link' }, { status: 400 })
         }
 
-        const supabase = await createServerClient()
-
         // Get user
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id, email, full_name, avatar_url')
-            .eq('email', result.email)
-            .single()
+        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: result.email }),
+        })
+        const userPayload = await userResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email: string
+                full_name: string | null
+                avatar_url: string | null
+            } | null
+        } | null
+        const user = userPayload?.data || null
 
         if (!user) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 })
@@ -65,10 +72,17 @@ export async function POST(request: NextRequest) {
 
         // Hash and update password
         const passwordHash = await hashPassword(password)
-        await supabase
-            .from('users_custom')
-            .update({ password_hash: passwordHash, updated_at: new Date().toISOString() })
-            .eq('id', user.id)
+        const passwordResponse = await accountWorkerFetch('/auth/custom/users/set-password', {
+            method: 'POST',
+            body: JSON.stringify({
+                user_id: user.id,
+                email: user.email,
+                password_hash: passwordHash,
+            }),
+        })
+        if (!passwordResponse.ok) {
+            return NextResponse.json({ error: 'Failed to update password' }, { status: 500 })
+        }
 
         // Invalidate all existing sessions (security: force re-login everywhere)
         await destroyAllUserSessions(user.id)
@@ -92,16 +106,18 @@ export async function POST(request: NextRequest) {
         sendPasswordChangedEmail(user.email).catch(() => { })
 
         // Check if user has a store → redirect appropriately
-        const { data: store } = await supabase
-            .from('sites')
-            .select('subdomain')
-            .eq('custom_user_id', user.id)
-            .limit(1)
-            .single()
+        const storesResponse = await accountWorkerFetch('/stores?limit=1', {
+            method: 'GET',
+            requireSession: true,
+            sessionToken,
+        })
+        const storesPayload = await storesResponse.json().catch(() => null) as {
+            data?: Array<{ subdomain: string }>
+        } | null
+        const store = storesResponse.ok ? storesPayload?.data?.[0] : null
 
-        const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3000'
         const redirectTo = store?.subdomain
-            ? `${adminUrl}/${store.subdomain}/dashboard`
+            ? getAdminDashboardUrl(store.subdomain)
             : '/onboarding'
 
         return NextResponse.json({ success: true, redirectTo })

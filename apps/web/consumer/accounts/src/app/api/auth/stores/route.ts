@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { validateSession } from '@/lib/auth/session'
 import { getSessionCookie } from '@/lib/auth/cookies'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 
 /**
  * GET /api/auth/stores
@@ -22,13 +22,20 @@ export async function GET() {
             return NextResponse.json({ authenticated: false })
         }
 
-        const supabase = await createServerClient()
-
-        const { data: stores } = await supabase
-            .from('sites')
-            .select('id, name, store_name, subdomain, site_type, status')
-            .eq('custom_user_id', session.userId)
-            .order('created_at', { ascending: false })
+        const storesResponse = await accountWorkerFetch('/stores?limit=50', {
+            method: 'GET',
+            requireSession: true,
+        })
+        const storesPayload = await storesResponse.json().catch(() => null) as {
+            data?: Array<{
+                id: string
+                name: string
+                store_name: string
+                subdomain: string
+                site_type: string
+                status: string
+            }>
+        } | null
 
         return NextResponse.json({
             authenticated: true,
@@ -37,7 +44,7 @@ export async function GET() {
                 email: session.email,
                 fullName: session.fullName,
             },
-            stores: stores || [],
+            stores: storesResponse.ok ? storesPayload?.data || [] : [],
         })
     } catch (error) {
         console.error('Stores fetch error:', error)

@@ -1,13 +1,8 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_ACCOUNTS_URL || "https://accounts.letbuyy.store"),
   title: "LetBuyy - Create Your Online Store",
   description: "Build beautiful online stores, portfolios, resumes, and landing pages with LetBuyy Store Builder",
   icons: {
@@ -51,12 +46,8 @@ export default function RootLayout({
           html { background: #FFFFFF; }
           html.dark { background: #0A0F1A; }
         `}} />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-          rel="stylesheet"
-        />
       </head>
-      <body className={`${inter.variable} antialiased`}>
+      <body className="antialiased">
         {children}
       </body>
     </html>

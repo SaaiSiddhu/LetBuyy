@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { verifyPassword } from '@/lib/auth/password'
@@ -8,6 +8,7 @@ import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice, parseDeviceName } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
 import { sendNewDeviceLoginEmail } from '@/lib/email/resend'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * POST /api/auth/login
@@ -46,12 +47,21 @@ export async function POST(request: NextRequest) {
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        const supabase = await createServerClient()
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id, email, password_hash, email_verified, full_name, avatar_url')
-            .eq('email', normalizedEmail)
-            .single()
+        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: normalizedEmail }),
+        })
+        const userPayload = await userResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email: string
+                password_hash: string | null
+                email_verified: boolean
+                full_name: string | null
+                avatar_url: string | null
+            } | null
+        } | null
+        const user = userPayload?.data || null
 
         if (!user || !user.password_hash) {
             return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
@@ -91,21 +101,22 @@ export async function POST(request: NextRequest) {
         }
 
         // CHECK IF USER HAS COMPLETED ONBOARDING (store exists?)
-        const { data: stores } = await supabase
-            .from('sites')
-            .select('subdomain')
-            .eq('custom_user_id', user.id)
-            .limit(2)
-
-        const adminUrl =
-            process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3000'
+        const storesResponse = await accountWorkerFetch('/stores?limit=2', {
+            method: 'GET',
+            requireSession: true,
+            sessionToken,
+        })
+        const storesPayload = await storesResponse.json().catch(() => null) as {
+            data?: Array<{ subdomain: string }>
+        } | null
+        const stores = storesResponse.ok ? storesPayload?.data || [] : []
 
         // Route based on store count: 0 → onboarding, 1 → admin, 2+ → store picker
         let redirectTo: string
         if (!stores || stores.length === 0) {
             redirectTo = '/onboarding'
         } else if (stores.length === 1) {
-            redirectTo = `${adminUrl}/${stores[0].subdomain}/dashboard`
+            redirectTo = getAdminDashboardUrl(stores[0].subdomain)
         } else {
             redirectTo = '/select'
         }
