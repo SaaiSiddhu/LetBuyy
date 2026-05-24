@@ -44,6 +44,11 @@ export interface TelemetryExporterPort {
   exportLog(record: StructuredLogRecord): Promise<void>;
 }
 
+export interface RuntimeTelemetryPipelineOptions {
+  runtime: string;
+  exporter: TelemetryExporterPort;
+}
+
 export function createTracePropagationContext(
   correlation: RuntimeCorrelationContext,
   spanId: string,
@@ -97,4 +102,78 @@ export function closeRuntimeSpan(
       ...(attributes || {}),
     },
   };
+}
+
+export function metricFromDuration(input: {
+  name: string;
+  startedAt: string;
+  endedAt: string;
+  attributes?: RuntimeMetric['attributes'];
+}): RuntimeMetric {
+  return {
+    name: input.name,
+    value: Math.max(0, new Date(input.endedAt).getTime() - new Date(input.startedAt).getTime()),
+    unit: 'milliseconds',
+    attributes: input.attributes || {},
+    recordedAt: input.endedAt,
+  };
+}
+
+export class RuntimeTelemetryPipeline {
+  constructor(private readonly options: RuntimeTelemetryPipelineOptions) {}
+
+  async withSpan<T>(input: {
+    name: string;
+    kind: RuntimeSpan['kind'];
+    trace: TracePropagationContext;
+    attributes?: RuntimeSpan['attributes'];
+    execute: (span: RuntimeSpan) => Promise<T>;
+  }): Promise<T> {
+    const started = startRuntimeSpan(input);
+    try {
+      const value = await input.execute(started);
+      const closed = closeRuntimeSpan(started, 'ok');
+      await this.options.exporter.exportSpan(closed);
+      await this.options.exporter.exportMetric(metricFromDuration({
+        name: `${input.name}.duration`,
+        startedAt: closed.startedAt,
+        endedAt: closed.endedAt || new Date().toISOString(),
+        attributes: input.attributes,
+      }));
+      return value;
+    } catch (error) {
+      const closed = closeRuntimeSpan(started, 'error', {
+        error: error instanceof Error ? error.name : 'UNKNOWN_ERROR',
+      });
+      await this.options.exporter.exportSpan(closed);
+      await this.log({
+        level: 'error',
+        message: error instanceof Error ? error.message : 'runtime span failed',
+        correlation: {
+          requestId: input.trace.baggage.requestId || input.trace.traceId,
+          correlationId: input.trace.baggage.correlationId || input.trace.traceId,
+          traceId: input.trace.traceId,
+          siteId: input.trace.baggage.siteId,
+          actorId: input.trace.baggage.actorId,
+        },
+        attributes: input.attributes,
+      });
+      throw error;
+    }
+  }
+
+  metric(metric: Omit<RuntimeMetric, 'recordedAt'>): Promise<void> {
+    return this.options.exporter.exportMetric({
+      ...metric,
+      recordedAt: new Date().toISOString(),
+    });
+  }
+
+  log(record: Omit<StructuredLogRecord, 'runtime' | 'recordedAt'>): Promise<void> {
+    return this.options.exporter.exportLog({
+      ...record,
+      runtime: this.options.runtime,
+      recordedAt: new Date().toISOString(),
+    });
+  }
 }

@@ -49,21 +49,53 @@ export class ProjectionRebuildRuntime<TReadModel = Record<string, unknown>> {
       correlation: context,
     });
 
-    const records = await this.rebuilder.rebuild(plan, context);
-    let updated = 0;
+    let records: Array<ProjectionStoreRecord<TReadModel>> = [];
+    try {
+      records = await this.rebuilder.rebuild(plan, context);
+    } catch (error) {
+      const failed: ProjectionRebuildResult = {
+        rebuildId: plan.rebuildId,
+        status: 'failed',
+        scanned: 0,
+        updated: 0,
+        skipped: 0,
+        failed: 1,
+      };
+      await this.checkpoint.record({
+        checkpointId: `${plan.rebuildId}:failed`,
+        ownerRuntime: plan.ownerRuntime,
+        kind: 'projection',
+        executionId: plan.rebuildId,
+        stepName: 'failed',
+        state: {
+          result: failed,
+          reason: error instanceof Error ? error.message : 'projection rebuild failed',
+        },
+        cursor: { ...plan.cursor },
+        attempt: 1,
+        correlation: context,
+      });
+      return failed;
+    }
 
+    let updated = 0;
+    let failed = 0;
     for (const record of records) {
-      await this.store.upsert(record);
-      updated += 1;
+      try {
+        await this.store.upsert(record);
+        updated += 1;
+      } catch {
+        failed += 1;
+      }
     }
 
     const result: ProjectionRebuildResult = {
       rebuildId: plan.rebuildId,
-      status: 'completed',
+      status: failed > 0 ? 'failed' : 'completed',
       scanned: records.length,
       updated,
       skipped: 0,
-      failed: 0,
+      failed,
     };
 
     await this.checkpoint.record({

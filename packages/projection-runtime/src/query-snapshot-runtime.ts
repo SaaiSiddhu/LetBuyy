@@ -36,11 +36,21 @@ export function querySnapshotKey(identity: QuerySnapshotIdentity): string {
 export class QuerySnapshotRuntime<TData = Record<string, unknown>> {
   constructor(private readonly store: QuerySnapshotStorePort<TData>) {}
 
-  read(identity: QuerySnapshotIdentity): Promise<QuerySnapshot<TData> | null> {
-    return this.store.read(identity);
+  async read(identity: QuerySnapshotIdentity, now = new Date()): Promise<QuerySnapshot<TData> | null> {
+    const snapshot = await this.store.read(identity);
+    if (!snapshot) return null;
+    if (snapshot.expiresAt && new Date(snapshot.expiresAt) <= now) {
+      await this.store.invalidate(identity, 'query snapshot expired');
+      return null;
+    }
+    return snapshot;
   }
 
   write(snapshot: QuerySnapshot<TData>): Promise<void> {
     return this.store.write(snapshot);
+  }
+
+  invalidate(identity: QuerySnapshotIdentity, reason: string): Promise<void> {
+    return this.store.invalidate(identity, reason);
   }
 }

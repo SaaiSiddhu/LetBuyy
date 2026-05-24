@@ -30,6 +30,10 @@ export interface RuntimeAuditTrailRecord {
   recordedAt: string;
 }
 
+export interface RuntimeAuditPort {
+  record(record: RuntimeAuditTrailRecord): Promise<void>;
+}
+
 export function assertRuntimePermission(claims: ExecutionTokenClaims, permission: RuntimePermission, now = new Date()): void {
   if (new Date(claims.expiresAt) <= now) {
     throw new Error(`Execution token ${claims.tokenId} is expired`);
@@ -51,4 +55,18 @@ export function createRuntimeAuditTrailRecord(input: Omit<RuntimeAuditTrailRecor
     ...input,
     recordedAt: new Date().toISOString(),
   };
+}
+
+export class RuntimeSecurityRuntime {
+  constructor(private readonly audit?: RuntimeAuditPort) {}
+
+  assertPermission(claims: ExecutionTokenClaims, permission: RuntimePermission): void {
+    assertRuntimePermission(claims, permission);
+  }
+
+  async auditAction(input: Omit<RuntimeAuditTrailRecord, 'recordedAt'>): Promise<RuntimeAuditTrailRecord> {
+    const record = createRuntimeAuditTrailRecord(input);
+    await this.audit?.record(record);
+    return record;
+  }
 }

@@ -7,3 +7,5 @@ export * from './query-snapshot-runtime';
 export * from './read-model-hydration-runtime';
 export * from './projection-invalidation-runtime';
 export * from './projection-lifecycle-runtime';
+export * from './projection-checkpoint-runtime';
+export * from './projection-consistency-runtime';

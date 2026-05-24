@@ -44,6 +44,14 @@ export interface CommandExecutionReceipt {
   reason?: string;
 }
 
+export interface CommandJournalRecord<TPayload = Record<string, unknown>> {
+  command: DistributedCommandEnvelope<TPayload>;
+  status: CommandExecutionReceipt['status'];
+  eventIds: string[];
+  checkpointId?: string | null;
+  recordedAt: string;
+}
+
 export interface QueryExecutionReceipt<TReadModel = Record<string, unknown>> {
   queryId: string;
   status: 'served' | 'stale' | 'rejected';
@@ -55,6 +63,11 @@ export interface QueryExecutionReceipt<TReadModel = Record<string, unknown>> {
 
 export interface CommandHandlerPort<TPayload = Record<string, unknown>> {
   execute(command: DistributedCommandEnvelope<TPayload>): Promise<CommandExecutionReceipt>;
+}
+
+export interface CommandJournalPort<TPayload = Record<string, unknown>> {
+  loadByIdempotencyKey(idempotencyKey: string): Promise<CommandJournalRecord<TPayload> | null>;
+  persist(record: CommandJournalRecord<TPayload>): Promise<void>;
 }
 
 export interface QueryHandlerPort<TParams = Record<string, unknown>, TReadModel = Record<string, unknown>> {
@@ -71,13 +84,38 @@ export function queryIsWithinStalenessBudget(lastUpdatedAt: string, contract: Qu
 }
 
 export class CommandRuntime<TPayload = Record<string, unknown>> {
-  constructor(private readonly handler: CommandHandlerPort<TPayload>) {}
+  constructor(
+    private readonly handler: CommandHandlerPort<TPayload>,
+    private readonly journal?: CommandJournalPort<TPayload>,
+  ) {}
 
-  execute(command: DistributedCommandEnvelope<TPayload>): Promise<CommandExecutionReceipt> {
+  async execute(command: DistributedCommandEnvelope<TPayload>): Promise<CommandExecutionReceipt> {
     if (!command.idempotencyKey && command.consistency.idempotencyRequired) {
       throw new Error(`Command ${command.commandName} requires an idempotency key`);
     }
-    return this.handler.execute(command);
+
+    if (this.journal) {
+      const existing = await this.journal.loadByIdempotencyKey(command.idempotencyKey);
+      if (existing) {
+        return {
+          commandId: existing.command.commandId,
+          status: existing.status,
+          eventIds: existing.eventIds,
+          checkpointId: existing.checkpointId,
+          completedAt: existing.recordedAt,
+        };
+      }
+    }
+
+    const receipt = await this.handler.execute(command);
+    await this.journal?.persist({
+      command,
+      status: receipt.status,
+      eventIds: receipt.eventIds,
+      checkpointId: receipt.checkpointId,
+      recordedAt: receipt.completedAt || new Date().toISOString(),
+    });
+    return receipt;
   }
 }
 

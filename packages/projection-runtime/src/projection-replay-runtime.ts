@@ -32,19 +32,23 @@ export class ProjectionReplayRuntime<TPayload = Record<string, unknown>, TReadMo
     };
 
     for (const event of batch.events) {
-      if (!this.projector.supports(event)) {
-        result.skipped += 1;
-        continue;
-      }
+      try {
+        if (!this.projector.supports(event)) {
+          result.skipped += 1;
+          continue;
+        }
 
-      const record = await this.projector.project(event, context);
-      if (!record) {
-        result.skipped += 1;
-        continue;
-      }
+        const record = await this.projector.project(event, context);
+        if (!record) {
+          result.skipped += 1;
+          continue;
+        }
 
-      await this.store.upsert(record);
-      result.projected += 1;
+        await this.store.upsert(record);
+        result.projected += 1;
+      } catch {
+        result.failed += 1;
+      }
     }
 
     await this.replay.record({

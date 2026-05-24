@@ -62,4 +62,23 @@ export class ProjectionStoreRuntime<TReadModel = Record<string, unknown>> {
     }
     return this.store.upsert(record);
   }
+
+  markStale(identity: ProjectionIdentity, reason: string): Promise<void> {
+    return this.store.markStale(identity, reason);
+  }
+
+  delete(identity: ProjectionIdentity, reason: string): Promise<void> {
+    return this.store.delete(identity, reason);
+  }
+
+  async loadFresh(identity: ProjectionIdentity, now = new Date()): Promise<ProjectionStoreRecord<TReadModel> | null> {
+    const record = await this.store.load(identity);
+    if (!record) return null;
+    if (record.lifecycleStatus !== 'active') return null;
+    if (record.freshness.staleAfter && new Date(record.freshness.staleAfter) <= now) {
+      await this.store.markStale(identity, 'projection stale_after elapsed');
+      return null;
+    }
+    return record;
+  }
 }

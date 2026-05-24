@@ -64,6 +64,31 @@ export interface QueueExecutionResult {
   output?: Record<string, unknown>;
 }
 
+export interface QueueExecutionMetrics {
+  queueName: string;
+  workerId: string;
+  claimed: number;
+  completed: number;
+  retried: number;
+  deadLettered: number;
+  cancelled: number;
+  failed: number;
+  startedAt: string;
+  finishedAt: string;
+}
+
+export interface QueueRecoveryPlan {
+  queueName: string;
+  messageId: string;
+  action: 'release-expired-lease' | 'retry' | 'dead-letter' | 'ignore';
+  availableAt?: string;
+  reason: string;
+}
+
+export interface QueueExecutionHandler<TPayload = Record<string, unknown>> {
+  handle(message: DistributedQueueMessage<TPayload>, lease: QueueLease): Promise<QueueExecutionResult>;
+}
+
 export interface QueueRuntimeStorePort<TPayload = Record<string, unknown>> {
   enqueue(message: DistributedQueueMessage<TPayload>, policy: QueueExecutionPolicy): Promise<void>;
   claim(queueName: string, workerId: string, limit: number, visibilitySeconds: number): Promise<Array<{ message: DistributedQueueMessage<TPayload>; lease: QueueLease }>>;
@@ -86,6 +111,43 @@ export function queueRetryDelayMs(attempt: number, policy: QueueRetryPolicy): nu
 
 export function queueRetryAvailableAt(attempt: number, policy: QueueRetryPolicy, now = Date.now()): string {
   return new Date(now + queueRetryDelayMs(attempt, policy)).toISOString();
+}
+
+export function planQueueRecovery<TPayload = Record<string, unknown>>(
+  message: DistributedQueueMessage<TPayload>,
+  policy: QueueExecutionPolicy,
+  now = new Date(),
+): QueueRecoveryPlan {
+  if (message.status === 'completed' || message.status === 'cancelled' || message.status === 'dead-lettered') {
+    return {
+      queueName: message.queueName,
+      messageId: message.messageId,
+      action: 'ignore',
+      reason: `queue message is already ${message.status}`,
+    };
+  }
+
+  if (message.attempts >= policy.retry.maxAttempts) {
+    return {
+      queueName: message.queueName,
+      messageId: message.messageId,
+      action: 'dead-letter',
+      reason: 'queue retry attempts exhausted',
+    };
+  }
+
+  return {
+    queueName: message.queueName,
+    messageId: message.messageId,
+    action: message.status === 'leased' ? 'release-expired-lease' : 'retry',
+    availableAt: queueRetryAvailableAt(message.attempts + 1, policy.retry, now.getTime()),
+    reason: message.status === 'leased' ? 'queue lease expired before completion' : 'queue message requires retry',
+  };
+}
+
+export function queueThroughputPerSecond(metrics: QueueExecutionMetrics): number {
+  const elapsedMs = Math.max(1, new Date(metrics.finishedAt).getTime() - new Date(metrics.startedAt).getTime());
+  return metrics.completed / (elapsedMs / 1000);
 }
 
 export function createQueueMessage<TPayload = Record<string, unknown>>(input: {
@@ -162,5 +224,49 @@ export class QueueRuntime<TPayload = Record<string, unknown>> {
     }
 
     return this.store.heartbeat(lease, this.policy.visibility.timeoutSeconds);
+  }
+
+  async executeBatch(
+    workerId: string,
+    limit: number,
+    handler: QueueExecutionHandler<TPayload>,
+  ): Promise<QueueExecutionMetrics> {
+    const startedAt = new Date().toISOString();
+    const claimed = await this.claim(workerId, limit);
+    const metrics: QueueExecutionMetrics = {
+      queueName: this.policy.queueName,
+      workerId,
+      claimed: claimed.length,
+      completed: 0,
+      retried: 0,
+      deadLettered: 0,
+      cancelled: 0,
+      failed: 0,
+      startedAt,
+      finishedAt: startedAt,
+    };
+
+    for (const { message, lease } of claimed) {
+      try {
+        const result = await handler.handle(message, lease);
+        await this.settle(lease, message, result);
+        if (result.status === 'completed') metrics.completed += 1;
+        if (result.status === 'retry') metrics.retried += 1;
+        if (result.status === 'dead-letter') metrics.deadLettered += 1;
+        if (result.status === 'cancelled') metrics.cancelled += 1;
+      } catch (error) {
+        metrics.failed += 1;
+        const result: QueueExecutionResult = {
+          status: message.attempts + 1 >= this.policy.retry.maxAttempts ? 'dead-letter' : 'retry',
+          reason: error instanceof Error ? error.message : 'queue handler failed',
+        };
+        await this.settle(lease, message, result);
+        if (result.status === 'dead-letter') metrics.deadLettered += 1;
+        if (result.status === 'retry') metrics.retried += 1;
+      }
+    }
+
+    metrics.finishedAt = new Date().toISOString();
+    return metrics;
   }
 }

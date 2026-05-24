@@ -26,6 +26,21 @@ export interface DistributedCoordinationPort {
   assertFence(resourceType: string, resourceId: string, fencingToken: string): Promise<boolean>;
 }
 
+export interface ExecutionHeartbeat {
+  leaseId: string;
+  ownerId: string;
+  resourceType: string;
+  resourceId: string;
+  fencingToken: string;
+  heartbeatAt: string;
+  expiresAt: string;
+}
+
+export interface ExecutionHeartbeatPort {
+  recordHeartbeat(heartbeat: ExecutionHeartbeat): Promise<void>;
+  latestHeartbeat(leaseId: string): Promise<ExecutionHeartbeat | null>;
+}
+
 export interface LeaderElectionCandidate {
   runtimeName: string;
   candidateId: string;
@@ -47,6 +62,29 @@ export function createFencingToken(input: {
   term: number;
 }): string {
   return [input.resourceType, input.resourceId, input.ownerId, input.term].map(encodeURIComponent).join(':');
+}
+
+export function electLeader(
+  candidates: LeaderElectionCandidate[],
+  input: { resourceType: string; resourceId: string; term: number },
+): LeaderElectionResult {
+  if (candidates.length === 0) throw new Error('Leader election requires at least one candidate');
+  const leader = [...candidates].sort((left, right) => {
+    if (right.priority !== left.priority) return right.priority - left.priority;
+    return left.candidateId.localeCompare(right.candidateId);
+  })[0];
+
+  return {
+    leaderId: leader.candidateId,
+    term: input.term,
+    fencingToken: createFencingToken({
+      resourceType: input.resourceType,
+      resourceId: input.resourceId,
+      ownerId: leader.candidateId,
+      term: input.term,
+    }),
+    electedAt: new Date().toISOString(),
+  };
 }
 
 export class DistributedCoordinationRuntime {
@@ -80,5 +118,29 @@ export class DistributedCoordinationRuntime {
     } finally {
       await this.coordination.release(lease);
     }
+  }
+}
+
+export class DistributedExecutionHeartbeatRuntime {
+  constructor(private readonly heartbeats: ExecutionHeartbeatPort) {}
+
+  async beat(lease: ExecutionLease): Promise<ExecutionHeartbeat> {
+    const heartbeat: ExecutionHeartbeat = {
+      leaseId: lease.leaseId,
+      ownerId: lease.ownerId,
+      resourceType: lease.resourceType,
+      resourceId: lease.resourceId,
+      fencingToken: lease.fencingToken,
+      heartbeatAt: new Date().toISOString(),
+      expiresAt: lease.expiresAt,
+    };
+    await this.heartbeats.recordHeartbeat(heartbeat);
+    return heartbeat;
+  }
+
+  async isExpired(leaseId: string, now = new Date()): Promise<boolean> {
+    const heartbeat = await this.heartbeats.latestHeartbeat(leaseId);
+    if (!heartbeat) return true;
+    return new Date(heartbeat.expiresAt) <= now;
   }
 }

@@ -26,6 +26,20 @@ export interface DistributedCachePort {
   invalidate(plan: CacheInvalidationPlan): Promise<void>;
 }
 
+export interface DistributedCacheEntry<TValue = Record<string, unknown>> {
+  value: TValue;
+  cachedAt: string;
+  expiresAt: string;
+  staleUntil: string;
+  consistency: DistributedCachePolicy['consistency'];
+}
+
+export interface CacheReadThroughResult<TValue = Record<string, unknown>> {
+  value: TValue;
+  source: 'cache' | 'origin' | 'stale-cache';
+  policy: DistributedCachePolicy;
+}
+
 export function tenantCacheKey(policy: DistributedCachePolicy): string {
   const tenantPart = policy.tenant?.tenantPartitionKey || 'global';
   return [policy.cacheName, tenantPart, policy.key].map(encodeURIComponent).join(':');
@@ -49,4 +63,48 @@ export function planCacheInvalidation(input: {
     replayAware: input.replayAware ?? true,
     reason: input.reason,
   };
+}
+
+export function cacheEntryState<TValue>(entry: DistributedCacheEntry<TValue>, now = new Date()): 'fresh' | 'stale' | 'expired' {
+  const current = now.getTime();
+  if (new Date(entry.expiresAt).getTime() > current) return 'fresh';
+  if (new Date(entry.staleUntil).getTime() > current) return 'stale';
+  return 'expired';
+}
+
+export class CacheOrchestrationRuntime {
+  constructor(private readonly cache: DistributedCachePort) {}
+
+  async readThrough<TValue>(input: {
+    policy: DistributedCachePolicy;
+    load: () => Promise<TValue>;
+    now?: Date;
+  }): Promise<CacheReadThroughResult<TValue>> {
+    const cached = await this.cache.read<DistributedCacheEntry<TValue>>(input.policy);
+    if (cached) {
+      const state = cacheEntryState(cached, input.now);
+      if (state === 'fresh') {
+        return { value: cached.value, source: 'cache', policy: input.policy };
+      }
+      if (state === 'stale' && input.policy.staleWhileRevalidateSeconds > 0) {
+        return { value: cached.value, source: 'stale-cache', policy: input.policy };
+      }
+    }
+
+    const value = await input.load();
+    const now = input.now || new Date();
+    await this.cache.write(input.policy, {
+      value,
+      cachedAt: now.toISOString(),
+      expiresAt: new Date(now.getTime() + input.policy.ttlSeconds * 1000).toISOString(),
+      staleUntil: new Date(now.getTime() + (input.policy.ttlSeconds + input.policy.staleWhileRevalidateSeconds) * 1000).toISOString(),
+      consistency: input.policy.consistency,
+    } satisfies DistributedCacheEntry<TValue>);
+
+    return { value, source: 'origin', policy: input.policy };
+  }
+
+  invalidate(plan: CacheInvalidationPlan): Promise<void> {
+    return this.cache.invalidate(plan);
+  }
 }

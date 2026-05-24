@@ -26,6 +26,19 @@ export interface TenantScalingDecision {
   partitionOverride?: string;
 }
 
+export interface TenantWorkloadRouterPolicy {
+  defaultQueueName: string;
+  isolatedQueuePrefix: string;
+  enterpriseQueueName?: string;
+}
+
+export interface TenantExecutionAdmission {
+  accepted: boolean;
+  queueName: string;
+  partitionKey: string;
+  decision: TenantScalingDecision;
+}
+
 export interface TenantResourceGovernance {
   tenant: RuntimeTenantScope;
   quota: TenantExecutionQuota;
@@ -74,4 +87,39 @@ export function decideTenantScaling(
 
 export function tenantScalingMetricKey(siteId: string, metricName: string): string {
   return ['tenant', encodeURIComponent(siteId), encodeURIComponent(metricName)].join(':');
+}
+
+export function routeTenantWorkload(
+  governance: TenantResourceGovernance,
+  metrics: TenantWorkloadMetrics,
+  policy: TenantWorkloadRouterPolicy,
+): TenantExecutionAdmission {
+  const decision = decideTenantScaling(governance, metrics);
+  const queueName =
+    governance.priorityClass === 'enterprise' && policy.enterpriseQueueName
+      ? policy.enterpriseQueueName
+      : decision.action === 'isolate'
+        ? `${policy.isolatedQueuePrefix}-${governance.tenant.siteId}`
+        : policy.defaultQueueName;
+
+  return {
+    accepted: decision.action === 'allow' || decision.action === 'isolate',
+    queueName,
+    partitionKey: decision.partitionOverride || governance.tenant.tenantPartitionKey,
+    decision,
+  };
+}
+
+export class TenantScalabilityRuntime {
+  decide(governance: TenantResourceGovernance, metrics: TenantWorkloadMetrics): TenantScalingDecision {
+    return decideTenantScaling(governance, metrics);
+  }
+
+  route(
+    governance: TenantResourceGovernance,
+    metrics: TenantWorkloadMetrics,
+    policy: TenantWorkloadRouterPolicy,
+  ): TenantExecutionAdmission {
+    return routeTenantWorkload(governance, metrics, policy);
+  }
 }
