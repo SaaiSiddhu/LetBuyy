@@ -5,7 +5,8 @@ The storefront runtime currently contains the active theme presentation authorit
 ## Current Source Authority
 
 - Storefront runtime: `apps/storefront-runtime`
-- Theme engine modules: `apps/storefront-runtime/src/lib/theme-engine`
+- Theme contracts and schema registry: `packages/theme-engine`
+- Live theme engine modules: `apps/storefront-runtime/src/lib/theme-engine`
 - Section renderer components: `apps/storefront-runtime/src/components/sections`
 - Theme marketplace: `apps/theme-marketplace`
 
@@ -28,9 +29,10 @@ The storefront runtime currently contains the active theme presentation authorit
 
 ## Migration Direction
 
-Future extraction may move reusable theme engine logic into `packages/theme-engine` after contracts stabilize. Until then:
+Contract extraction has begun in `packages/theme-engine`. Runtime rendering migration is still explicit future work. Until then:
 
 - keep live rendering inside `apps/storefront-runtime`
+- keep contracts, schemas, templates, releases, and hydration contracts in `packages/theme-engine`
 - keep marketplace acquisition inside `apps/theme-marketplace`
 - keep shared contracts typed before reuse
 - document new renderer contracts before extracting package code
@@ -40,3 +42,4 @@ Future extraction may move reusable theme engine logic into `packages/theme-engi
 - `runtime-validator` and `generated-artifact-validator` forbid nested `consumer-storefront` topology.
 - `import-validator` blocks runtime leakage through deprecated paths.
 - `dependency-graph-validator` prevents app-to-app theme coupling.
+- `domain-boundary-validator` prevents `@letbuyy/api-types` and storefront app type files from duplicating theme-engine authority.

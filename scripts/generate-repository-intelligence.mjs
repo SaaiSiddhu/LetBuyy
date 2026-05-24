@@ -214,14 +214,25 @@ const appTargets = [
 ];
 
 const packageTargets = [
-  { output: "packages/ui/AGENTS.md", name: "UI Alias", actual: "packages/typescript/ui", purpose: "Shared web UI component alias." },
-  { output: "packages/db/AGENTS.md", name: "Database Alias", actual: "database/supabase", purpose: "Database schema, migrations, RLS, seed and Supabase config ownership alias." },
-  { output: "packages/api/AGENTS.md", name: "API Alias", actual: "services/api-gateway", purpose: "Cloudflare Hono API worker ownership alias." },
-  { output: "packages/shared/AGENTS.md", name: "Shared Alias", actual: "packages", purpose: "Shared TypeScript and Dart contracts, utilities, services, and models." },
-  { output: "packages/config/AGENTS.md", name: "Config Alias", actual: ".", purpose: "Root workspace, Vercel, Turborepo, pnpm, Cloudflare, Supabase and Terraform config governance." },
-  { output: "packages/auth/AGENTS.md", name: "Auth Alias", actual: "packages/typescript/utils/src/auth.ts", purpose: "Shared auth helper and platform identity governance alias." },
-  { output: "packages/analytics/AGENTS.md", name: "Analytics Alias", actual: "services/api-gateway/src/routes/analytics.ts", purpose: "Shared analytics contract and event governance alias." },
-  { output: "packages/payments/AGENTS.md", name: "Payments Alias", actual: "services/api-gateway/src/routes/payments.ts", purpose: "Payment route, checkout provider and webhook governance alias." },
+  { output: "packages/ui/AGENTS.md", name: "UI Alias", actual: "packages/typescript/ui", purpose: "Shared web UI component alias.", alias: true },
+  { output: "packages/db/AGENTS.md", name: "Database Alias", actual: "database/supabase", purpose: "Database schema, migrations, RLS, seed and Supabase config ownership alias.", alias: true },
+  { output: "packages/api/AGENTS.md", name: "API Alias", actual: "services/api-gateway", purpose: "Cloudflare Hono API worker ownership alias.", alias: true },
+  { output: "packages/shared/AGENTS.md", name: "Shared Alias", actual: "packages", purpose: "Shared TypeScript and Dart contracts, utilities, services, and models.", alias: true },
+  { output: "packages/config/AGENTS.md", name: "Config Alias", actual: ".", purpose: "Root workspace, Vercel, Turborepo, pnpm, Cloudflare, Supabase and Terraform config governance.", alias: true },
+  { output: "packages/auth/AGENTS.md", name: "Auth Alias", actual: "packages/typescript/utils/src/auth.ts", purpose: "Shared auth helper and platform identity governance alias.", alias: true },
+  { output: "packages/analytics/AGENTS.md", name: "Analytics Alias", actual: "services/api-gateway/src/routes/analytics.ts", purpose: "Shared analytics contract and event governance alias.", alias: true },
+  { output: "packages/payments/AGENTS.md", name: "Payments Alias", actual: "services/api-gateway/src/routes/payments.ts", purpose: "Payment route, checkout provider and webhook governance alias.", alias: true },
+  { output: "packages/shared-types/AGENTS.md", name: "Shared Types", actual: "packages/shared-types", purpose: "Canonical cross-runtime primitives, pagination, address, SEO, money, and API response contracts." },
+  { output: "packages/tenant-core/AGENTS.md", name: "Tenant Core", actual: "packages/tenant-core", purpose: "Tenant resolution, site/store ownership, subdomain, store model, navigation, and tenant isolation contracts." },
+  { output: "packages/commerce-core/AGENTS.md", name: "Commerce Core", actual: "packages/commerce-core", purpose: "Product, catalog, inventory, customer, collection, and merchant commerce contracts." },
+  { output: "packages/checkout-core/AGENTS.md", name: "Checkout Core", actual: "packages/checkout-core", purpose: "Cart, order, checkout, fulfillment, refund, shipping, tax, coupon, and payment orchestration contracts." },
+  { output: "packages/auth-core/AGENTS.md", name: "Auth Core", actual: "packages/auth-core", purpose: "Identity, session, actor, RBAC, OTP, password, and auth validation contracts." },
+  { output: "packages/theme-engine/AGENTS.md", name: "Theme Engine", actual: "packages/theme-engine", purpose: "Theme registry, sections, blocks, templates, releases, hydration, and storefront composition contracts." },
+  { output: "packages/cms-core/AGENTS.md", name: "CMS Core", actual: "packages/cms-core", purpose: "Pages, policies, navigation, content, portfolio, resume, and dynamic section contracts." },
+  { output: "packages/event-core/AGENTS.md", name: "Event Core", actual: "packages/event-core", purpose: "Domain events, outbox, webhooks, audit events, queues, and usage event contracts." },
+  { output: "packages/notification-core/AGENTS.md", name: "Notification Core", actual: "packages/notification-core", purpose: "Notification templates, recipients, channels, and event-to-notification mapping contracts." },
+  { output: "packages/search-core/AGENTS.md", name: "Search Core", actual: "packages/search-core", purpose: "Search documents, indexing jobs, ranking policy, query DTOs, and provider-neutral search contracts." },
+  { output: "packages/billing-core/AGENTS.md", name: "Billing Core", actual: "packages/billing-core", purpose: "Plans, subscriptions, invoices, billing events, entitlements, and usage billing contracts." },
   { output: "packages/typescript/ui/AGENTS.md", name: "TypeScript UI", actual: "packages/typescript/ui", purpose: "Shared Button, Input, DataTable package and design-system extraction point." },
   { output: "packages/typescript/utils/AGENTS.md", name: "TypeScript Utils", actual: "packages/typescript/utils", purpose: "Shared Supabase, API and auth utility package." },
   { output: "packages/typescript/api-types/AGENTS.md", name: "API Types", actual: "packages/typescript/api-types", purpose: "Shared TypeScript domain and API contract package." },
@@ -362,6 +373,17 @@ function classifyArea(file) {
   if (file.startsWith("packages/typescript/ui")) return "shared web ui package";
   if (file.startsWith("packages/typescript/utils")) return "shared web utils package";
   if (file.startsWith("packages/typescript/api-types")) return "shared api types package";
+  if (file.startsWith("packages/shared-types")) return "shared types package";
+  if (file.startsWith("packages/tenant-core")) return "tenant core package";
+  if (file.startsWith("packages/commerce-core")) return "commerce core package";
+  if (file.startsWith("packages/checkout-core")) return "checkout core package";
+  if (file.startsWith("packages/auth-core")) return "auth core package";
+  if (file.startsWith("packages/theme-engine")) return "theme engine package";
+  if (file.startsWith("packages/cms-core")) return "cms core package";
+  if (file.startsWith("packages/event-core")) return "event core package";
+  if (file.startsWith("packages/notification-core")) return "notification core package";
+  if (file.startsWith("packages/search-core")) return "search core package";
+  if (file.startsWith("packages/billing-core")) return "billing core package";
   if (file.startsWith("packages/dart/core")) return "shared dart core package";
   if (file.startsWith("packages/dart/models")) return "shared dart models package";
   if (file.startsWith("packages/dart/services")) return "shared dart services package";
@@ -407,6 +429,17 @@ function appRootForFile(file) {
     "packages/typescript/ui",
     "packages/typescript/utils",
     "packages/typescript/api-types",
+    "packages/shared-types",
+    "packages/tenant-core",
+    "packages/commerce-core",
+    "packages/checkout-core",
+    "packages/auth-core",
+    "packages/theme-engine",
+    "packages/cms-core",
+    "packages/event-core",
+    "packages/notification-core",
+    "packages/search-core",
+    "packages/billing-core",
     "packages/dart/core",
     "packages/dart/models",
     "packages/dart/services",
@@ -733,7 +766,7 @@ function buildRootAgents() {
   lines.push("");
   lines.push("## Repository Packages");
   lines.push("");
-  for (const target of packageTargets.filter((target) => target.output.includes("packages/typescript") || target.output.includes("packages/dart"))) {
+  for (const target of packageTargets.filter((target) => !target.alias && target.output.startsWith("packages/"))) {
     const files = listFilesUnder(target.actual, sourceFiles);
     lines.push(`- ${target.name}: \`${target.actual}\` (${files.length} scanned files). ${target.purpose}`);
   }
@@ -743,7 +776,7 @@ function buildRootAgents() {
   lines.push("- Preserve tenant isolation. Every merchant-owned record must resolve through `site_id` or an explicit store ownership check.");
   lines.push("- Keep authentication centralized in the accounts app UI and API worker services. Landing must not host login/signup pages except redirects.");
   lines.push("- API routes must use `/v1` in the Hono worker and should use `/api/v1` at app boundaries when exposed through Next route handlers.");
-  lines.push("- Use Zod schemas for inbound API payloads. The API gateway already contains `services/api-gateway/src/schemas/*`; add new schemas there before adding handlers.");
+  lines.push("- Use Zod schemas for inbound API payloads. Canonical shared schemas belong in domain packages; API gateway `src/schemas/*` files are compatibility facades for worker imports.");
   lines.push("- Never expose Supabase service role keys to client components. Current service-role references are server/worker files only and must remain so.");
   lines.push("- Never store auth tokens in `localStorage`. Local storage is acceptable only for non-secret UI preferences or preview-only wishlist/search state.");
   lines.push("- Payment code must recalculate prices server-side, verify provider signatures, and require idempotency for mutation/payment endpoints.");
@@ -791,8 +824,9 @@ function buildRootAgents() {
   lines.push("## Domain Ownership Rules");
   lines.push("");
   lines.push("- Commerce, checkout, auth, tenant, CMS, theme, app, analytics, event, search, notification, billing, UI, shared type, shared utility, and mobile domains have governed package boundaries.");
-  lines.push("- Incubating domain package directories reserve ownership and must receive extracted logic before cross-runtime reuse.");
-  lines.push("- App-local business logic is tolerated only as a transitional boundary and must not be reused by import from another runtime.");
+  lines.push("- Core domain contracts belong in `packages/*-core`, `packages/theme-engine`, or `packages/shared-types`, not app pages or service route modules.");
+  lines.push("- Apps are runtime composition layers: routing, rendering, orchestration, runtime adapters, runtime-specific UI, and transport only.");
+  lines.push("- Services are runtime-isolated execution layers: validation facades, orchestration, worker bindings, queues, webhooks, provider adapters, and integration execution only.");
   lines.push("");
   lines.push("## Import Governance Rules");
   lines.push("");
@@ -884,6 +918,7 @@ function buildRootAgents() {
   lines.push("- Dependency direction is `apps -> packages`, `apps -> services by API`, `services -> packages`, and `packages -> packages` only.");
   lines.push("- Database and infrastructure do not import runtime code.");
   lines.push("- Shared logic graduates into packages before reuse.");
+  lines.push("- API contract aggregation through `@letbuyy/api-types` is backward compatibility only; new domain authority belongs in the domain package public export.");
   lines.push("- `scripts/validators/dependency-graph-validator.mjs` enforces dependency direction, package layering, and circular dependency prevention.");
   lines.push("");
   lines.push("## CI/CD Governance");
@@ -921,8 +956,8 @@ function buildRootAgents() {
   lines.push("## Approved Architectural Patterns");
   lines.push("");
   lines.push("- App boundary adapters calling versioned service APIs.");
-  lines.push("- Service-layer orchestration with Zod validation and sanitized `AppError` responses.");
-  lines.push("- Shared types and pure utilities through package public exports.");
+  lines.push("- Service-layer orchestration with package-owned Zod validation and sanitized `AppError` responses.");
+  lines.push("- Shared contracts, DTOs, schemas, and pure utilities through package public exports.");
   lines.push("- Tenant-aware database access using `site_id` or explicit ownership checks.");
   lines.push("- Human-authored governance docs backed by automated validators.");
   lines.push("");
@@ -963,7 +998,7 @@ function buildRootAgents() {
   lines.push("- Protected Hono surfaces currently mount: " + honoRouteFiles.map((summary) => path.basename(summary.file, ".ts")).sort().join(", ") + ".");
   lines.push("- Use `AppError` and `formatAppError` for known errors. Unexpected errors must log internally and return sanitized `INTERNAL_ERROR` responses.");
   lines.push("- All list endpoints require pagination; all mutation endpoints should require validation and idempotency where side effects can duplicate.");
-  lines.push("- Add business logic to services, not handlers. Existing service roots include `services/api-gateway/src/services` and app `src/lib/*service*` files.");
+  lines.push("- Add shared business contracts to domain packages and runtime execution logic to services, not page components or route handlers.");
   lines.push("");
   lines.push("## Auth and Session Governance");
   lines.push("");
@@ -1128,7 +1163,7 @@ function buildPackageAgents(target) {
   lines.push(`Purpose: ${target.purpose}`);
   lines.push("");
   lines.push(`Canonical source boundary: \`${target.actual}\`.`);
-  if (target.output.startsWith("packages/") && !target.output.startsWith("packages/typescript") && !target.output.startsWith("packages/dart")) {
+  if (target.alias) {
     lines.push("");
     lines.push("This is an alias package governance file. Do not add runtime package code here unless the workspace is intentionally migrated and `pnpm-workspace.yaml` is updated.");
   }
@@ -1150,7 +1185,7 @@ function buildPackageAgents(target) {
   lines.push("");
   lines.push("- Keep this boundary small, typed, and reusable. Do not import app-specific UI, env, or routing from shared packages.");
   lines.push("- Public exports must be intentional and documented in the local `src/index.ts` where present.");
-  lines.push("- Shared API/domain types belong in `packages/typescript/api-types` or Dart model packages, not app pages.");
+  lines.push("- Shared API/domain types belong in the owning domain package or Dart model package, not app pages. `packages/typescript/api-types` is a compatibility aggregate.");
   lines.push("- Shared UI must support light/dark themes, keyboard focus, disabled state, loading state, and error state.");
   lines.push("- Shared payment/auth utilities must not log secrets or expose provider details to the client.");
   lines.push("");
@@ -1173,8 +1208,8 @@ function buildPackageAgents(target) {
   lines.push("");
   lines.push("## Migration Notes");
   lines.push("");
-  lines.push("- Extract logic into this package only after at least two runtimes need the contract or the domain boundary is explicitly approved.");
-  lines.push("- Package promotion requires public exports, focused tests or type coverage, AGENTS updates, dependency graph validation, and regenerated repository intelligence.");
+  lines.push("- Extract reusable contracts and pure domain rules into the owning package before reuse by apps or services.");
+  lines.push("- Package changes require public exports, focused tests or type coverage where feasible, AGENTS updates, dependency graph validation, and regenerated repository intelligence.");
   lines.push("");
   lines.push("## Key Files");
   lines.push("");

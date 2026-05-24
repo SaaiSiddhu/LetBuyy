@@ -1,5 +1,23 @@
 # Package Governance
 
+## Extracted Domain Packages
+
+The following packages are active canonical contract boundaries and must keep public exports in `src/index.ts`:
+
+- `@letbuyy/shared-types`
+- `@letbuyy/tenant-core`
+- `@letbuyy/commerce-core`
+- `@letbuyy/checkout-core`
+- `@letbuyy/auth-core`
+- `@letbuyy/theme-engine`
+- `@letbuyy/cms-core`
+- `@letbuyy/event-core`
+- `@letbuyy/notification-core`
+- `@letbuyy/search-core`
+- `@letbuyy/billing-core`
+
+`@letbuyy/api-types` is an aggregate compatibility package. It must re-export domain contracts and must not become a second source of schemas, DTOs, or theme registry data.
+
 ## Ownership Requirements
 
 Every package must define:
@@ -35,14 +53,14 @@ Package `AGENTS.md` files are validated for purpose, ownership rules, forbidden 
 
 ## Layering
 
-- TypeScript API contracts belong in `packages/typescript/api-types`.
+- TypeScript API/domain contracts belong in their owning domain package; `packages/typescript/api-types` is an aggregate compatibility export.
 - TypeScript reusable UI belongs in `packages/typescript/ui`.
 - TypeScript utilities belong in `packages/typescript/utils`.
 - Dart foundation helpers belong in `packages/dart/core` and must not depend on other internal Dart packages.
 - Dart models belong in `packages/dart/models`.
 - Dart services may depend on core and models, but not UI kit.
 - Dart UI kit may depend on core and models.
-- Domain package directories under `packages/*-core`, `packages/*-engine`, and shared/mobile package roots reserve ownership until extracted source is introduced.
+- Domain package directories under `packages/*-core`, `packages/theme-engine`, and `packages/shared-types` are active contract authorities once they contain `package.json` and `src/index.ts`.
 
 ## Stability Levels
 

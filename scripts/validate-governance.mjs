@@ -8,6 +8,7 @@ const validators = [
   "package-ownership-validator.mjs",
   "import-validator.mjs",
   "dependency-graph-validator.mjs",
+  "domain-boundary-validator.mjs",
   "environment-validator.mjs",
   "generated-artifact-validator.mjs",
   "stale-artifact-validator.mjs",

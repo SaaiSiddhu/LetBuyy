@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-05-24T19:41:01.608Z",
-  "sourceFiles": 1175,
-  "packages": 15,
+  "generatedAt": "2026-05-24T20:19:30.299Z",
+  "sourceFiles": 1216,
+  "packages": 26,
   "migrations": 58,
   "nextRoutes": 270,
   "nextApiRoutes": 118,
@@ -10,5 +10,5 @@
   "duplicateMigrationNumbers": [],
   "topicDocs": 65,
   "appAgents": 11,
-  "packageAgents": 15
+  "packageAgents": 26
 }
