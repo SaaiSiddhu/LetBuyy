@@ -8,18 +8,23 @@ const PAYPAL_BASE_URL = process.env.PAYPAL_MODE === 'live'
     ? 'https://api-m.paypal.com'
     : 'https://api-m.sandbox.paypal.com';
 
-const PAYPAL_CLIENT_ID = process.env.PAYPAL_CLIENT_ID || '';
-const PAYPAL_CLIENT_SECRET = process.env.PAYPAL_CLIENT_SECRET || '';
+function getPayPalCredentials() {
+    const clientId = process.env.PAYPAL_CLIENT_ID;
+    const clientSecret = process.env.PAYPAL_CLIENT_SECRET;
 
-if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
-    console.warn('[PayPal] Client ID or Secret not set — PayPal payments will fail');
+    if (!clientId || !clientSecret) {
+        throw new Error('[PayPal] PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET must be configured before PayPal payments can be used.');
+    }
+
+    return { clientId, clientSecret };
 }
 
 /**
  * Get a PayPal access token using client credentials.
  */
 async function getAccessToken(): Promise<string> {
-    const auth = Buffer.from(`${PAYPAL_CLIENT_ID}:${PAYPAL_CLIENT_SECRET}`).toString('base64');
+    const { clientId, clientSecret } = getPayPalCredentials();
+    const auth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
 
     const res = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
         method: 'POST',
@@ -49,6 +54,7 @@ export async function createPayPalOrder(params: {
     currency: string;
     returnUrl: string;
     cancelUrl: string;
+    idempotencyKey: string;
 }): Promise<{ id: string; approvalUrl: string }> {
     const accessToken = await getAccessToken();
 
@@ -56,9 +62,9 @@ export async function createPayPalOrder(params: {
         intent: 'CAPTURE',
         purchase_units: [
             {
-                reference_id: params.orderId,
+                reference_id: params.storeId,
                 description: `Order #${params.orderId}`,
-                custom_id: params.storeId,
+                custom_id: params.orderId,
                 amount: {
                     currency_code: params.currency.toUpperCase(),
                     value: params.amount.toFixed(2),
@@ -79,6 +85,7 @@ export async function createPayPalOrder(params: {
         headers: {
             'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json',
+            'PayPal-Request-Id': params.idempotencyKey,
         },
         body: JSON.stringify(orderPayload),
     });
@@ -139,8 +146,7 @@ export async function verifyWebhookSignature(params: {
 }): Promise<boolean> {
     const webhookId = process.env.PAYPAL_WEBHOOK_ID;
     if (!webhookId) {
-        console.warn('[PayPal] PAYPAL_WEBHOOK_ID not set — skipping verification');
-        return true; // Skip verification in dev
+        throw new Error('[PayPal] PAYPAL_WEBHOOK_ID must be configured before PayPal webhooks can be used.');
     }
 
     const accessToken = await getAccessToken();

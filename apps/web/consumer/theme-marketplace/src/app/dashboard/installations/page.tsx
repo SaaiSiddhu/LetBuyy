@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
-import { db } from '@/lib/supabase/server';
+import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 
@@ -12,24 +12,18 @@ const STATUS_CONFIG: Record<string, { label: string; icon: typeof CheckCircle; c
 };
 
 export default async function InstallationsPage() {
-    let installations: any[] = [];
+    const installations = (await ThemeService.getUserInstallations()).map((inst: any) => {
+        const site = inst.sites || {};
+        const storeHost = site.custom_domain || `${site.subdomain || 'unknown'}.letbuyy.store`;
 
-    try {
-        const { data } = await db
-            .from('theme_installations')
-            .select('*, themes(*), sites(subdomain, domain)')
-            .order('installed_at', { ascending: false });
-
-        installations = (data || []).map((inst: any) => ({
+        return {
             ...inst,
-            store_url: `${inst.sites?.subdomain || 'unknown'}.letbuyy.store`,
+            store_url: storeHost,
             status: inst.themes?.version && inst.version_installed && inst.version_installed !== inst.themes.version
                 ? 'update_available'
                 : 'active',
-        }));
-    } catch (err) {
-        console.error('Installations fetch error:', err);
-    }
+        };
+    });
 
     return (
         <div>

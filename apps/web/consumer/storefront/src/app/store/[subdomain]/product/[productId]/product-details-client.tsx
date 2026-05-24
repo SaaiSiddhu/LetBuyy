@@ -17,10 +17,14 @@ interface Props {
     theme?: ThemeSettings;
 }
 
+const productImageFallback = '/images/banners/new-arrivals-1.png';
+
 export default function ProductDetailsClient({ product, subdomain, theme }: Props) {
     const colors = theme || DEFAULT_THEME_SETTINGS;
     const router = useRouter();
     const { addToCart } = useCart();
+    const basePath = `/store/${subdomain}`;
+    const productImages = product.images.length > 0 ? product.images : [productImageFallback];
 
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
@@ -43,8 +47,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
         // Primary: Use variantOptions if available (e.g., { name: "Size", values: ["S", "M", "L"] })
         const variantOptions = product.variantOptions || [];
         if (variantOptions.length > 0) {
-            console.log('[ProductDetails] Using variantOptions:', variantOptions);
-            variantOptions.forEach((opt: any) => {
+            variantOptions.forEach((opt) => {
                 if (opt.name && opt.values && Array.isArray(opt.values)) {
                     groups[opt.name] = opt.values;
                 }
@@ -54,9 +57,8 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
 
         // Fallback: Parse from variants array
         const variants = product.variants || [];
-        console.log('[ProductDetails] Parsing from variants:', variants);
 
-        variants.forEach((v: any) => {
+        variants.forEach((v) => {
             if (v.options && typeof v.options === 'object') {
                 Object.entries(v.options).forEach(([key, value]) => {
                     if (!groups[key]) groups[key] = [];
@@ -78,8 +80,6 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
 
     const variantGroups = getVariantGroups();
     const hasVariants = Object.keys(variantGroups).length > 0;
-
-    console.log('[ProductDetails] Variant groups:', variantGroups);
 
     // Initialize selected variants with first option
     useEffect(() => {
@@ -109,7 +109,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
         for (let i = 0; i < quantity; i++) {
             addToCart(product);
         }
-        router.push(`/cart`);
+        router.push(`${basePath}/cart`);
     };
 
     const specs = product.specifications || {};
@@ -131,7 +131,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                 {/* Breadcrumb */}
                 <div className="py-4">
                     <Link
-                        href={`/`}
+                        href={basePath}
                         className="inline-flex items-center gap-2 text-sm hover:opacity-70 transition-opacity"
                         style={{ color: colors.primaryColor }}
                     >
@@ -151,7 +151,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                             <AnimatePresence mode="wait">
                                 <motion.img
                                     key={selectedImage}
-                                    src={product.images[selectedImage]}
+                                    src={productImages[selectedImage] || productImageFallback}
                                     alt={product.name}
                                     initial={{ opacity: 0, scale: 1.02 }}
                                     animate={{ opacity: 1, scale: 1 }}
@@ -198,9 +198,9 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                         </motion.div>
 
                         {/* Thumbnails */}
-                        {product.images.length > 1 && (
+                        {productImages.length > 1 && (
                             <div className="flex gap-2 overflow-x-auto pb-1">
-                                {product.images.map((img, i) => (
+                                {productImages.map((img, i) => (
                                     <button
                                         key={i}
                                         onClick={() => setSelectedImage(i)}

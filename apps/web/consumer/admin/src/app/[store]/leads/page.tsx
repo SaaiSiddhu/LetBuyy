@@ -2,36 +2,45 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Lead {
     id: string; full_name: string; email: string; phone: string | null
-    source: string | null; status: string; data: any; created_at: string
+    source: string | null; status: string; data: Record<string, unknown>; created_at: string
 }
 
 export default function LeadsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Lead[]>([])
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState('all')
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        const { data } = await supabase.from('form_submissions').select('*').eq('store_id', s.id).neq('form_type', 'contact').order('created_at', { ascending: false })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions?type=lead&limit=100`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const updateStatus = async (id: string, status: string) => {
-        await supabase.from('form_submissions').update({ status }).eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status }),
+        })
         load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('form_submissions').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const fD = (d: string) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })
     const filtered = filter === 'all' ? items : items.filter(i => i.status === filter)
 

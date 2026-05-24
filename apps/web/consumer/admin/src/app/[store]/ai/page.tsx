@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface AiUsage { id: string; feature: string; input_tokens: number; output_tokens: number; credits_used: number; created_at: string }
 
@@ -17,22 +16,22 @@ const AI_FEATURES = [
 
 export default function AiStudioPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [credits, setCredits] = useState<{ total: number; used: number; remaining: number }>({ total: 0, used: 0, remaining: 0 })
     const [usage, setUsage] = useState<AiUsage[]>([])
     const [loading, setLoading] = useState(true)
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-
-        const { data: creditData } = await supabase.from('ai_credits').select('*').eq('store_id', s.id).single()
-        if (creditData) setCredits({ total: creditData.total_credits, used: creditData.used_credits, remaining: creditData.total_credits - creditData.used_credits })
-
-        const { data: usageData } = await supabase.from('ai_usage').select('*').eq('store_id', s.id).order('created_at', { ascending: false }).limit(20)
-        setUsage(usageData || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store' })
+        const payload = await response.json()
+        const creditData = payload.data?.credits
+        if (creditData) {
+            const total = Number(creditData.total_credits ?? creditData.plan_credits ?? creditData.balance ?? 0)
+            const used = Number(creditData.used_credits ?? creditData.total_used ?? 0)
+            setCredits({ total, used, remaining: Math.max(0, total - used) })
+        }
+        setUsage(payload.data?.usage || [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 

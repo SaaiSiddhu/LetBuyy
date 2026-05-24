@@ -18,14 +18,13 @@ export async function POST(request: NextRequest) {
         await findOrCreateCustomer(storeId, email, fullName, phone);
 
         // Update stats if order info is provided
-        if (orderTotal && orderId) {
-            await updateCustomerStats(storeId, email, parseFloat(orderTotal), orderId);
+        if (orderTotal !== undefined && orderTotal !== null && orderId) {
+            await updateCustomerStats(storeId, email, Number(orderTotal), orderId);
         }
 
         return NextResponse.json({ success: true });
-    } catch (error) {
+    } catch {
         // Don't fail — this is a best-effort operation
-        console.error('[API] /customer/auto-create error:', error);
         return NextResponse.json({ success: false });
     }
 }

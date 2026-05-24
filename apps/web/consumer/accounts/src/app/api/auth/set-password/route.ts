@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
 import { createSession } from '@/lib/auth/session'
@@ -46,38 +46,33 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Password does not meet requirements', rules: strength.rules }, { status: 400 })
         }
 
-        const supabase = await createServerClient()
-
-        // Verify the user exists and email is verified
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id, email, email_verified')
-            .eq('id', userId)
-            .eq('email', email.toLowerCase().trim())
-            .single()
-
-        if (!user) {
-            return NextResponse.json({ error: 'User not found' }, { status: 404 })
-        }
-
-        if (!user.email_verified) {
-            return NextResponse.json({ error: 'Email not verified. Please verify your email first.' }, { status: 403 })
-        }
-
         // Hash and store password
         const passwordHash = await hashPassword(password)
-
-        const { error } = await supabase
-            .from('users_custom')
-            .update({
+        const passwordResponse = await accountWorkerFetch('/auth/custom/users/set-password', {
+            method: 'POST',
+            body: JSON.stringify({
+                user_id: userId,
+                email: email.toLowerCase().trim(),
                 password_hash: passwordHash,
-                updated_at: new Date().toISOString(),
-            })
-            .eq('id', userId)
+            }),
+        })
+        const passwordPayload = await passwordResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email: string
+            }
+            error?: {
+                message?: string
+            }
+        } | null
 
-        if (error) {
-            return NextResponse.json({ error: 'Failed to set password' }, { status: 500 })
+        if (!passwordResponse.ok || !passwordPayload?.data) {
+            return NextResponse.json(
+                { error: passwordPayload?.error?.message || 'Failed to set password' },
+                { status: passwordResponse.status }
+            )
         }
+        const user = passwordPayload.data
 
         // Create device fingerprint + session
         const userAgent = request.headers.get('user-agent') || ''

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../../theme/app_theme_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import '../../theme/dark_theme_colors.dart';
 
 /// Side drawer showing sections in order for reordering
 class LayersDrawer extends StatelessWidget {

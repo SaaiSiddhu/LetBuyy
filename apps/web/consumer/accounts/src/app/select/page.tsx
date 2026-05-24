@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -46,8 +48,6 @@ export default function SelectPage() {
 
     const t = translations[lang]
 
-    const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3000'
-
     useEffect(() => {
         const savedTheme = localStorage.getItem('letbuyy_theme')
         setIsDark(savedTheme === 'dark')
@@ -77,7 +77,7 @@ export default function SelectPage() {
                 } else if (userStores.length === 1) {
                     // Single store — go directly to admin
                     redirecting = true
-                    window.location.href = `${adminUrl}/${userStores[0].subdomain}/dashboard`
+                    window.location.href = getAdminDashboardUrl(userStores[0].subdomain)
                 } else {
                     // Multiple stores — show picker
                     setStores(userStores)
@@ -90,7 +90,6 @@ export default function SelectPage() {
                     window.location.href = '/lookup'
                 }
             })
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const toggleTheme = () => {
@@ -110,10 +109,10 @@ export default function SelectPage() {
 
     const handleSelectStore = (store: UserStore) => {
         setLoading(store.id)
-        window.location.href = `${adminUrl}/${store.subdomain}/dashboard`
+        window.location.href = getAdminDashboardUrl(store.subdomain)
     }
 
-    const getSiteTypeIcon = (type: string) => {
+    const getSiteTypeIcon = (type: string): AuthIconName => {
         switch (type) {
             case 'store': return 'storefront'
             case 'portfolio': return 'palette'
@@ -131,7 +130,7 @@ export default function SelectPage() {
                     {lang.toUpperCase()}
                 </button>
                 <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </button>
             </div>
 
@@ -159,9 +158,7 @@ export default function SelectPage() {
                                     disabled={loading === store.id}
                                 >
                                     <div className="auth-account-avatar">
-                                        <span className="material-symbols-outlined" style={{ fontSize: 22 }}>
-                                            {getSiteTypeIcon(store.site_type)}
-                                        </span>
+                                        <AuthIcon name={getSiteTypeIcon(store.site_type)} size={22} />
                                     </div>
                                     <div className="auth-account-info">
                                         <span className="auth-account-name">{store.name}</span>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
  * PUT /api/themes/[themeId]/sections/reorder?store_name=xxx
@@ -33,23 +34,13 @@ export async function PUT(
             )
         }
 
-        const supabase = await createClient()
+        const resolved = await resolveOwnedStoreId(storeName)
+        if (resolved.error) return resolved.error
 
-        // Get store and current template config
-        const { data: store, error: storeError } = await supabase
-            .from('sites')
-            .select('id, template_config')
-            .eq('store_name', storeName)
-            .single()
-
-        if (storeError || !store) {
-            return NextResponse.json(
-                { error: 'Store not found' },
-                { status: 404 }
-            )
-        }
-
-        const config = (store.template_config || {}) as Record<string, unknown>
+        const { themeId } = await params
+        const editorResponse = await workerFetch(`/themes/${themeId}/editor?store_id=${resolved.storeId}`)
+        const editorPayload = await readWorkerJson(editorResponse)
+        const config = (editorPayload.data?.template_config || {}) as Record<string, unknown>
         const sections = (config.sections || {}) as Record<string, unknown>
         const templateSections = (sections.template || []) as Array<{ id: string;[key: string]: unknown }>
 
@@ -76,31 +67,21 @@ export async function PUT(
             },
         }
 
-        const { error: updateError } = await supabase
-            .from('sites')
-            .update({
+        const saveResponse = await workerFetch(`/themes/${themeId}/editor/draft`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                store_id: resolved.storeId,
                 template_config: updatedConfig,
-                updated_at: new Date().toISOString(),
-            })
-            .eq('id', store.id)
-
-        if (updateError) {
-            console.error('[API /themes/sections/reorder PUT] Update error:', updateError)
-            return NextResponse.json(
-                { error: 'Failed to reorder sections' },
-                { status: 500 }
-            )
-        }
+                client: 'admin-web',
+            }),
+        })
+        await readWorkerJson(saveResponse)
 
         return NextResponse.json({
             success: true,
             sectionOrder: reordered.map(s => s.id),
         })
     } catch (err) {
-        console.error('[API /themes/sections/reorder PUT] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }

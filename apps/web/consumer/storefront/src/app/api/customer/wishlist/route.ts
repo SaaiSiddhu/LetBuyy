@@ -51,7 +51,7 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'productId is required' }, { status: 400 });
         }
 
-        await removeFromWishlist(session.sub!, productId);
+        await removeFromWishlist(session.sub!, productId, session.storeId);
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === 'Authentication required') {

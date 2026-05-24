@@ -2,15 +2,16 @@
 
 import SchemaFormRenderer from './SchemaFormRenderer'
 import type { SectionEntry } from '@/hooks/useEditorHistory'
-import { SECTION_SCHEMAS } from '@/lib/theme-schemas'
+import type { SectionSchema } from '@/lib/theme-schemas'
 
 interface RightSidebarProps {
     section: SectionEntry | null
+    sectionSchemas: Record<string, SectionSchema>
     onSettingChange: (sectionId: string, key: string, value: unknown) => void
     onClose: () => void
 }
 
-export default function RightSidebar({ section, onSettingChange, onClose }: RightSidebarProps) {
+export default function RightSidebar({ section, sectionSchemas, onSettingChange, onClose }: RightSidebarProps) {
     if (!section) {
         return (
             <aside className="te-right-sidebar te-right-sidebar--empty">
@@ -22,7 +23,7 @@ export default function RightSidebar({ section, onSettingChange, onClose }: Righ
         )
     }
 
-    const schema = SECTION_SCHEMAS[section.type]
+    const schema = sectionSchemas[section.type]
 
     if (!schema) {
         return (

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface CheckoutSettings {
@@ -27,51 +26,44 @@ export default function CheckoutSettingsPage() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [success, setSuccess] = useState(false)
-    const [storeId, setStoreId] = useState('')
+    const [siteSettings, setSiteSettings] = useState<Record<string, unknown>>({})
     const [settings, setSettings] = useState<CheckoutSettings>(DEFAULTS)
-    const supabase = createClient()
 
     useEffect(() => {
         async function load() {
-            const { data } = await supabase
-                .from('sites')
-                .select('id, site_settings')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const data = payload.data
 
             if (data) {
-                setStoreId(data.id)
                 const siteSettings = (data.site_settings as Record<string, unknown>) || {}
+                setSiteSettings(siteSettings)
                 const checkout = (siteSettings.checkout as Partial<CheckoutSettings>) || {}
                 setSettings({ ...DEFAULTS, ...checkout })
             }
             setLoading(false)
         }
         load()
-    }, [store, supabase])
+    }, [store])
 
     const handleSave = useCallback(async () => {
         setSaving(true)
         setSuccess(false)
 
-        // Merge into existing site_settings
-        const { data: current } = await supabase
-            .from('sites')
-            .select('site_settings')
-            .eq('id', storeId)
-            .single()
-
-        const existing = (current?.site_settings as Record<string, unknown>) || {}
-
-        await supabase
-            .from('sites')
-            .update({ site_settings: { ...existing, checkout: settings } })
-            .eq('id', storeId)
+        const nextSettings = { ...siteSettings, checkout: settings }
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ site_settings: nextSettings }),
+        })
+        setSiteSettings(nextSettings)
 
         setSaving(false)
         setSuccess(true)
         setTimeout(() => setSuccess(false), 3000)
-    }, [storeId, settings, supabase])
+    }, [store, settings, siteSettings])
 
     const updateField = <K extends keyof CheckoutSettings>(key: K, value: CheckoutSettings[K]) => {
         setSettings(prev => ({ ...prev, [key]: value }))

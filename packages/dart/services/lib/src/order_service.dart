@@ -5,86 +5,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'loyalty_service.dart';
 import 'invoice_service.dart';
-import 'stock_service.dart';
-import 'seller_analytics_service.dart';
 
 class OrderService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final LoyaltyService _loyaltyService = LoyaltyService();
   final InvoiceService _invoiceService = InvoiceService();
-  final StockService _stockService = StockService();
   final FirebaseFunctions _functions = FirebaseFunctions.instance;
 
   // ============================================
   // CREATE ORDER WITH STOCK REDUCTION + TIMELINE + COMMISSION
   // ============================================
   Future<String?> createOrder(OrderModel order, {bool isAdOrder = false}) async {
-    try {
-      debugPrint('📦 Creating order: ${order.orderNumber}');
-
-      // 1️⃣ REDUCE STOCK ATOMICALLY (NEW)
-      debugPrint('📉 Reducing stock for ${order.items.length} items...');
-      final stockResult = await _stockService.reduceStock(order.items);
-      
-      if (!stockResult.success) {
-        debugPrint('❌ Stock reduction failed: ${stockResult.error}');
-        // Return null with error details (caller should show appropriate error)
-        throw Exception('Stock unavailable: ${stockResult.failedItems.map((i) => i.message).join(", ")}');
-      }
-      debugPrint('✅ Stock reduced successfully');
-
-      // 2️⃣ Create order document
-      final orderId = _firestore.collection('orders').doc().id;
-      
-      try {
-        await _firestore.collection('orders').doc(orderId).set(order.toMap());
-      } catch (orderError) {
-        // ROLLBACK: Restore stock if order creation fails
-        debugPrint('❌ Order creation failed, rolling back stock...');
-        await _stockService.restoreStock(order.items);
-        rethrow;
-      }
-
-      // 3️⃣ Create initial timeline entry
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .collection('timeline')
-          .add({
-        'status': 'pending',
-        'title': 'Order Placed',
-        'description': 'Your order has been placed successfully.',
-        'timestamp': FieldValue.serverTimestamp(),
-        'icon': 'shopping_bag',
-      });
-
-      // 4️⃣ Calculate and store commission snapshot
-      await _calculateOrderCommission(
-        orderId: orderId,
-        sellerId: order.sellerId ?? '',
-        productId: order.items.isNotEmpty ? order.items.first.productId : '',
-        orderTotal: order.total,
-        isAdOrder: isAdOrder,
-      );
-
-      // 5️⃣ Track seller analytics for each item
-      for (final item in order.items) {
-        await SellerAnalyticsService.trackOrder(
-          sellerId: order.sellerId ?? '',
-          productId: item.productId,
-          source: isAdOrder ? TrafficSource.ads : TrafficSource.organic,
-          userId: order.userId,
-          quantity: item.quantity,
-          revenue: item.price * item.quantity,
-        );
-      }
-
-      debugPrint('✅ Order created with ID: $orderId (stock reduced, analytics tracked)');
-      return orderId;
-    } catch (e) {
-      debugPrint('❌ Error creating order: $e');
-      return null;
-    }
+    throw UnsupportedError(
+      'Orders must be created through the backend checkout workflow.',
+    );
   }
 
   // ============================================
@@ -153,22 +87,9 @@ class OrderService {
     required String title,
     required String description,
   }) async {
-    try {
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .collection('timeline')
-          .add({
-        'status': status,
-        'title': title,
-        'description': description,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      debugPrint('✅ Timeline event added: $status');
-    } catch (e) {
-      debugPrint('❌ Error adding timeline event: $e');
-    }
+    throw UnsupportedError(
+      'Order timeline writes must use the backend order state machine.',
+    );
   }
 
   // ============================================
@@ -179,57 +100,9 @@ class OrderService {
     String newStatus, {
     String? description,
   }) async {
-    try {
-      final titleMap = {
-        'pending': 'Order Pending',
-        'confirmed': 'Order Confirmed',
-        'processing': 'Processing Order',
-        'shipped': 'Order Shipped',
-        'delivered': 'Order Delivered',
-        'cancelled': 'Order Cancelled',
-        'refunded': 'Refund Processed',
-      };
-
-      final descriptionMap = {
-        'pending': 'Your order has been placed and is awaiting confirmation.',
-        'confirmed': 'Your order has been confirmed by the seller.',
-        'processing': 'Your order is being prepared for shipment.',
-        'shipped': 'Your order has been shipped and is on the way.',
-        'delivered': 'Your order has been delivered successfully.',
-        'cancelled': 'Your order has been cancelled.',
-        'refunded': 'Your refund has been processed.',
-      };
-
-      // Update order status
-      await _firestore.collection('orders').doc(orderId).update({
-        'orderStatus': newStatus,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-
-      // Add timeline event
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .collection('timeline')
-          .add({
-        'status': newStatus,
-        'title': titleMap[newStatus] ?? 'Order Updated',
-        'description':
-            description ?? (descriptionMap[newStatus] ?? 'Order updated.'),
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      // 💰 Process when order is delivered
-      if (newStatus.toLowerCase() == 'delivered') {
-        await _processDeliveredOrderCommission(orderId);
-        await _awardLoyaltyPointsForOrder(orderId);
-        await _generateOrderInvoice(orderId); // ✅ NEW: Generate invoice
-      }
-
-      debugPrint('✅ Order status updated and timeline added');
-    } catch (e) {
-      debugPrint('❌ Error updating order status: $e');
-    }
+    throw UnsupportedError(
+      'Order status changes must use the backend order state machine.',
+    );
   }
 
   // ============================================

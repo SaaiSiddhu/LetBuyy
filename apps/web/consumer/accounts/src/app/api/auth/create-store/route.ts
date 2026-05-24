@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
 import { validateSession } from '@/lib/auth/session'
 import { getSessionCookie } from '@/lib/auth/cookies'
 import { validateCsrf } from '@/lib/auth/csrf'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * POST /api/auth/create-store
@@ -55,42 +56,40 @@ export async function POST(request: NextRequest) {
 
         const normalizedSubdomain = subdomain.toLowerCase().trim()
 
-        const supabase = await createServerClient()
-
-        // Check subdomain availability (race condition guard)
-        const { data: existing } = await supabase
-            .from('sites')
-            .select('id')
-            .or(`subdomain.eq.${normalizedSubdomain},store_name.eq.${normalizedSubdomain}`)
-            .limit(1)
-
-        if (existing && existing.length > 0) {
-            return NextResponse.json(
-                { error: 'This subdomain is already taken' },
-                { status: 409 }
-            )
-        }
-
-        const { data: site, error: siteError } = await supabase
-            .from('sites')
-            .insert({
-                custom_user_id: session.userId,
+        const storeResponse = await accountWorkerFetch('/stores', {
+            method: 'POST',
+            requireSession: true,
+            body: JSON.stringify({
                 name: storeName.trim(),
-                store_name: normalizedSubdomain,
                 subdomain: normalizedSubdomain,
                 site_type: siteType,
-                status: 'draft',
-            })
-            .select('id, subdomain, name, site_type, status')
-            .single()
+                theme_id: templateId || 'modern',
+                template_config: {
+                    templateId: templateId || null,
+                    survey: survey || null,
+                },
+            }),
+        })
+        const storePayload = await storeResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                subdomain: string
+                name: string
+                site_type: string
+                status: string
+            }
+            error?: { message?: string }
+        } | null
 
-        if (siteError) {
-            console.error('Store creation error:', siteError)
+        if (!storeResponse.ok || !storePayload?.data) {
+            console.error('Store creation error:', storePayload?.error?.message || storeResponse.statusText)
             return NextResponse.json(
-                { error: 'Failed to create store. Please try again.' },
-                { status: 500 }
+                { error: storePayload?.error?.message || 'Failed to create store. Please try again.' },
+                { status: storeResponse.status }
             )
         }
+
+        const site = storePayload.data
 
         // Send store creation success email (fire-and-forget)
         try {
@@ -101,8 +100,9 @@ export async function POST(request: NextRequest) {
                 body: JSON.stringify({
                     email: session.email,
                     storeName: storeName.trim(),
-                    subdomain: normalizedSubdomain,
-                    siteType,
+                    storeType: siteType,
+                    storeUrl: `https://${normalizedSubdomain}.letbuyy.store`,
+                    adminUrl: getAdminDashboardUrl(normalizedSubdomain),
                 }),
             })
         } catch {

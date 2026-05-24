@@ -1,0 +1,22 @@
+{
+  "generatedAt": "2026-05-22T11:07:13.830Z",
+  "sourceFiles": 1301,
+  "packages": 15,
+  "migrations": 55,
+  "nextRoutes": 276,
+  "nextApiRoutes": 114,
+  "honoRouteFiles": 30,
+  "envNames": 199,
+  "duplicateMigrationNumbers": [
+    [
+      "022",
+      [
+        "backend/supabase/migrations/022_media_and_forms.sql",
+        "backend/supabase/migrations/022a_deactivate_non_urban_kicks_themes.sql"
+      ]
+    ]
+  ],
+  "topicDocs": 61,
+  "appAgents": 18,
+  "packageAgents": 15
+}

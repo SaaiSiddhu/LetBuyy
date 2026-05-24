@@ -6,6 +6,7 @@ import 'dart:developer' as dev;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
+import 'package:letbuyy_core/letbuyy_core.dart';
 import 'package:uuid/uuid.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 // ✅ 1. IMPORT SHARED_PREFERENCES
@@ -295,7 +296,7 @@ class AIChatService {
     String msg,
     List<ChatMessage>? history,
   ) async {
-    final apiKey = 'AIzaSyDNtM3uIFUWmQ1234567890abcdefghijk';
+    final apiKey = GeminiConfig.apiKey;
     if (apiKey.trim().isEmpty) {
       dev.log('❌ API key missing');
       return ChatMessage.ai(
@@ -309,7 +310,7 @@ class AIChatService {
       final systemPrompt = await buildSystemPrompt();
 
       final model = GenerativeModel(
-        model: 'gemini-2.0-flash-exp', // Or your preferred model
+        model: GeminiConfig.modelName,
         apiKey: apiKey,
         tools: tools,
         systemInstruction: Content.text(systemPrompt),

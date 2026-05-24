@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AppService } from '@/lib/app-service';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
+import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -24,18 +24,8 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
     const { id } = await params;
 
     try {
-        const supabase = await createSupabaseServerClient();
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-            return NextResponse.json(
-                { error: 'Authentication required' },
-                { status: 401 }
-            );
-        }
-
         const body = await request.json();
-        const { rating, title, body: reviewBody } = body;
+        const { rating, title, body: reviewBody, store_id } = body;
 
         if (!rating || rating < 1 || rating > 5) {
             return NextResponse.json(
@@ -44,46 +34,18 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        // Look up user display name
-        const { data: userCustom } = await supabase
-            .from('users_custom')
-            .select('name')
-            .eq('id', user.id)
-            .single();
-
-        // Insert review into app_reviews
-        const { data: review, error } = await supabase
-            .from('app_reviews')
-            .insert({
-                app_id: id,
-                user_id: user.id,
-                user_name: userCustom?.name || user.email?.split('@')[0] || 'Anonymous',
+        const response = await appStoreWorkerFetch(`/app-store/apps/${id}/reviews`, {
+            method: 'POST',
+            requireSession: true,
+            body: JSON.stringify({
                 rating,
-                title: title || '',
+                title: title || null,
                 body: reviewBody || '',
-                status: 'published',
-            })
-            .select()
-            .single();
-
-        if (error) {
-            if (error.code === '23505') {
-                return NextResponse.json(
-                    { error: 'You have already reviewed this app' },
-                    { status: 409 }
-                );
-            }
-            console.error('[Reviews API] Insert error:', error.message);
-            return NextResponse.json(
-                { error: 'Failed to submit review' },
-                { status: 500 }
-            );
-        }
-
-        return NextResponse.json({
-            success: true,
-            review,
+                store_id,
+            }),
         });
+
+        return proxyWorkerJson(response);
     } catch {
         return NextResponse.json(
             { error: 'Invalid request body' },

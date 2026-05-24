@@ -7,6 +7,7 @@ const ALLOWED_ORIGINS = [
     'https://accounts.letbuyy.store',
     'http://localhost:3000',
     'http://localhost:3001',
+    'http://localhost:3002',
 ]
 
 function corsHeaders(request: NextRequest) {

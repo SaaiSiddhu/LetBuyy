@@ -79,6 +79,17 @@ const STATES = [
     'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
 ]
 
+function paymentErrorMessage(payload: unknown, fallback: string) {
+    if (!payload || typeof payload !== 'object') return fallback
+    const error = (payload as { error?: unknown }).error
+    if (typeof error === 'string') return error
+    if (error && typeof error === 'object') {
+        const message = (error as { message?: unknown }).message
+        if (typeof message === 'string' && message.length > 0) return message
+    }
+    return fallback
+}
+
 export default function SubscribeCheckoutClient({
     plan,
     billingPeriod: initialBillingPeriod,
@@ -176,28 +187,9 @@ export default function SubscribeCheckoutClient({
             })
 
             const orderData = await orderRes.json()
-            if (!orderRes.ok) throw new Error(orderData.error || 'Failed to create order')
-
-            // Test mode — skip Razorpay UI
-            if (orderData.test_mode) {
-                const verifyRes = await fetch('/api/subscribe/verify', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        razorpay_order_id: orderData.razorpay_order_id,
-                        razorpay_payment_id: `pay_test_${Date.now()}`,
-                        razorpay_signature: 'test_signature',
-                        store_id: storeId,
-                        plan_slug: plan.slug,
-                        billing_period: billingPeriod,
-                        site_type: siteType,
-                        test_mode: true,
-                    }),
-                })
-                const verifyData = await verifyRes.json()
-                if (!verifyRes.ok) throw new Error(verifyData.error || 'Payment verification failed')
-                router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
-                return
+            if (!orderRes.ok) throw new Error(paymentErrorMessage(orderData, 'Failed to create order'))
+            if (!orderData.key_id || !orderData.razorpay_order_id) {
+                throw new Error('Payment gateway is not configured for subscription checkout')
             }
 
             // Step 2: Load Razorpay checkout if needed
@@ -246,7 +238,7 @@ export default function SubscribeCheckoutClient({
                         })
                         const verifyData = await verifyRes.json()
                         if (!verifyRes.ok) {
-                            setError(verifyData.error || 'Payment verification failed')
+                            setError(paymentErrorMessage(verifyData, 'Payment verification failed'))
                             setIsProcessing(false)
                             return
                         }

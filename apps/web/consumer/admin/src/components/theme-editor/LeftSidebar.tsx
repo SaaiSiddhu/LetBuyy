@@ -3,12 +3,13 @@
 import { useState } from 'react'
 import SectionItem from './SectionItem'
 import type { SectionEntry } from '@/hooks/useEditorHistory'
-import { SECTION_SCHEMAS } from '@/lib/theme-schemas'
+import type { SectionSchema } from '@/lib/theme-schemas'
 
 interface LeftSidebarProps {
     headerSection: SectionEntry
     footerSection: SectionEntry
     templateSections: SectionEntry[]
+    sectionSchemas: Record<string, SectionSchema>
     selectedSectionId: string | null
     onSelectSection: (id: string) => void
     onToggleVisibility: (id: string) => void
@@ -20,6 +21,7 @@ export default function LeftSidebar({
     headerSection,
     footerSection,
     templateSections,
+    sectionSchemas,
     selectedSectionId,
     onSelectSection,
     onToggleVisibility,
@@ -29,7 +31,7 @@ export default function LeftSidebar({
     const [searchTerm, setSearchTerm] = useState('')
 
     const filteredSections = templateSections.filter((s) => {
-        const schema = SECTION_SCHEMAS[s.type]
+        const schema = sectionSchemas[s.type]
         const name = schema?.name || s.type
         return name.toLowerCase().includes(searchTerm.toLowerCase())
     })
@@ -57,7 +59,7 @@ export default function LeftSidebar({
                 <span className="te-left-sidebar-group-label">Header</span>
                 <SectionItem
                     section={headerSection}
-                    sectionName={SECTION_SCHEMAS[headerSection.type]?.name || 'Header'}
+                    sectionName={sectionSchemas[headerSection.type]?.name || 'Header'}
                     isSelected={selectedSectionId === headerSection.id}
                     isPinned
                     onSelect={() => onSelectSection(headerSection.id)}
@@ -76,7 +78,7 @@ export default function LeftSidebar({
                         <SectionItem
                             key={section.id}
                             section={section}
-                            sectionName={SECTION_SCHEMAS[section.type]?.name || section.type}
+                            sectionName={sectionSchemas[section.type]?.name || section.type}
                             isSelected={selectedSectionId === section.id}
                             isPinned={false}
                             onSelect={() => onSelectSection(section.id)}
@@ -97,7 +99,7 @@ export default function LeftSidebar({
                 <span className="te-left-sidebar-group-label">Footer</span>
                 <SectionItem
                     section={footerSection}
-                    sectionName={SECTION_SCHEMAS[footerSection.type]?.name || 'Footer'}
+                    sectionName={sectionSchemas[footerSection.type]?.name || 'Footer'}
                     isSelected={selectedSectionId === footerSection.id}
                     isPinned
                     onSelect={() => onSelectSection(footerSection.id)}

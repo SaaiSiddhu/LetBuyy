@@ -1,9 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, type FormEvent } from 'react';
 import {
     Package, Truck, CheckCircle, Clock, AlertCircle,
-    Mail, Phone, Lock, Eye, EyeOff, Search, ArrowLeft, MapPin
+    Mail, Lock, Eye, EyeOff, Search, ArrowLeft, MapPin
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -17,23 +17,39 @@ interface OrdersClientProps {
 const statusConfig: Record<OrderStatus, { color: string; icon: typeof Package; label: string }> = {
     pending: { color: '#f59e0b', icon: Clock, label: 'Pending' },
     confirmed: { color: '#3b82f6', icon: CheckCircle, label: 'Confirmed' },
+    processing: { color: '#0ea5e9', icon: Package, label: 'Processing' },
     shipped: { color: '#8b5cf6', icon: Truck, label: 'Shipped' },
     delivered: { color: '#10b981', icon: Package, label: 'Delivered' },
     cancelled: { color: '#ef4444', icon: AlertCircle, label: 'Cancelled' },
+    refunded: { color: '#64748b', icon: AlertCircle, label: 'Refunded' },
 };
 
-export default function OrdersClient({ subdomain, storeName }: OrdersClientProps) {
+const timelineStatuses: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
+const productImageFallback = '/images/banners/new-arrivals-1.png';
+
+export default function OrdersClient({ subdomain }: OrdersClientProps) {
+    const basePath = `/store/${subdomain}`;
     const [step, setStep] = useState<'login' | 'orders'>('login');
     const [emailOrPhone, setEmailOrPhone] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [isNewUser, setIsNewUser] = useState(false);
+    const [contactChecked, setContactChecked] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState('');
     const [orders, setOrders] = useState<OrderModel[]>([]);
     const [selectedOrder, setSelectedOrder] = useState<OrderModel | null>(null);
 
     const primaryColor = 'var(--primary, #6366f1)';
+
+    const handleFormSubmit = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (contactChecked) {
+            void handleSubmit();
+        } else {
+            void handleCheckContact();
+        }
+    };
 
     // Check if user has orders and if password is set
     const handleCheckContact = async () => {
@@ -51,10 +67,14 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
 
             if (data.hasOrders) {
                 setIsNewUser(!data.hasPassword);
+                setContactChecked(true);
+                setPassword('');
             } else {
+                setContactChecked(false);
                 setError('No orders found for this email/phone');
             }
         } catch {
+            setContactChecked(false);
             setError('Something went wrong. Please try again.');
         } finally {
             setIsLoading(false);
@@ -128,8 +148,8 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                         {/* Status Timeline */}
                         <div className="p-6 border-b border-card">
                             <div className="flex items-center justify-between">
-                                {(['pending', 'confirmed', 'shipped', 'delivered'] as OrderStatus[]).map((status, i) => {
-                                    const isActive = ['pending', 'confirmed', 'shipped', 'delivered'].indexOf(selectedOrder.status) >= i;
+                                {timelineStatuses.map((status, i) => {
+                                    const isActive = timelineStatuses.indexOf(selectedOrder.status) >= i;
                                     const Icon = statusConfig[status].icon;
                                     return (
                                         <div key={status} className="flex flex-col items-center gap-2">
@@ -167,7 +187,11 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                             <div className="space-y-3">
                                 {selectedOrder.items.map((item, i) => (
                                     <div key={i} className="flex gap-3">
-                                        <img src={item.image || '/placeholder.png'} className="w-16 h-16 rounded-lg object-cover" />
+                                        <img
+                                            src={item.image || productImageFallback}
+                                            alt={item.name || 'Product image'}
+                                            className="w-16 h-16 rounded-lg object-cover"
+                                        />
                                         <div className="flex-1">
                                             <p className="font-medium">{item.name}</p>
                                             <p className="text-sm text-theme-secondary">Qty: {item.quantity}</p>
@@ -221,7 +245,14 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                     <div className="flex items-center justify-between mb-6">
                         <h1 className="text-2xl font-bold">Your Orders</h1>
                         <button
-                            onClick={() => { setStep('login'); setOrders([]); setEmailOrPhone(''); setPassword(''); }}
+                            onClick={() => {
+                                setStep('login');
+                                setOrders([]);
+                                setEmailOrPhone('');
+                                setPassword('');
+                                setContactChecked(false);
+                                setIsNewUser(false);
+                            }}
                             className="text-sm text-theme-secondary hover:opacity-70"
                         >
                             Logout
@@ -262,7 +293,12 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                                         </div>
                                         <div className="flex items-center gap-2">
                                             {order.items.slice(0, 3).map((item, i) => (
-                                                <img key={i} src={item.image || '/placeholder.png'} className="w-12 h-12 rounded-lg object-cover" />
+                                                <img
+                                                    key={i}
+                                                    src={item.image || productImageFallback}
+                                                    alt={item.name || 'Product image'}
+                                                    className="w-12 h-12 rounded-lg object-cover"
+                                                />
                                             ))}
                                             {order.items.length > 3 && (
                                                 <span className="text-xs text-theme-secondary">+{order.items.length - 3} more</span>
@@ -281,7 +317,7 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                     )}
 
                     <Link
-                        href={`/`}
+                        href={basePath}
                         className="block text-center mt-6 font-medium"
                         style={{ color: primaryColor }}
                     >
@@ -308,7 +344,7 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                     <p className="text-theme-secondary text-sm mt-1">Enter your email or phone to view orders</p>
                 </div>
 
-                <div className="space-y-4">
+                <form className="space-y-4" onSubmit={handleFormSubmit}>
                     <div>
                         <label className="text-sm font-medium text-theme-secondary block mb-1">Email or Phone</label>
                         <div className="relative">
@@ -316,7 +352,13 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                             <input
                                 type="text"
                                 value={emailOrPhone}
-                                onChange={e => { setEmailOrPhone(e.target.value); setError(''); setIsNewUser(false); }}
+                                onChange={e => {
+                                    setEmailOrPhone(e.target.value);
+                                    setError('');
+                                    setIsNewUser(false);
+                                    setContactChecked(false);
+                                    setPassword('');
+                                }}
                                 placeholder="your@email.com or 9876543210"
                                 className="w-full pl-10 pr-4 py-3 input-theme rounded-xl text-sm outline-none focus:ring-2"
                                 style={{ '--tw-ring-color': primaryColor } as React.CSSProperties}
@@ -325,7 +367,7 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                     </div>
 
                     <AnimatePresence>
-                        {(isNewUser || password) && (
+                        {contactChecked && (
                             <motion.div
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
@@ -366,7 +408,7 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                     )}
 
                     <button
-                        onClick={isNewUser || password ? handleSubmit : handleCheckContact}
+                        type="submit"
                         disabled={isLoading}
                         className="w-full text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
                         style={{ backgroundColor: primaryColor }}
@@ -376,14 +418,14 @@ export default function OrdersClient({ subdomain, storeName }: OrdersClientProps
                         ) : (
                             <>
                                 <Search size={18} />
-                                {isNewUser ? 'Set Password & View Orders' : password ? 'View Orders' : 'Find Orders'}
+                                {isNewUser ? 'Set Password & View Orders' : contactChecked ? 'View Orders' : 'Find Orders'}
                             </>
                         )}
                     </button>
-                </div>
+                </form>
 
                 <Link
-                    href={`/`}
+                    href={basePath}
                     className="block text-center mt-6 text-sm text-theme-secondary hover:opacity-70"
                 >
                     ← Back to Store

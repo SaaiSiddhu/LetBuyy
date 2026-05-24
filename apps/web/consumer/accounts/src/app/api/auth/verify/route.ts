@@ -3,8 +3,9 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
 import { createSession } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * GET /api/auth/verify?token=xxx&type=email_verify|magic_link
@@ -36,14 +37,12 @@ export async function GET(request: NextRequest) {
             return NextResponse.redirect(new URL(`${errorPage}?error=expired_link`, request.url))
         }
 
-        const supabase = await createServerClient()
-
         if (type === 'email_verify') {
             // Mark user as verified
-            await supabase
-                .from('users_custom')
-                .update({ email_verified: true, updated_at: new Date().toISOString() })
-                .eq('email', result.email)
+            await accountWorkerFetch('/auth/custom/users/verify-email', {
+                method: 'POST',
+                body: JSON.stringify({ email: result.email }),
+            })
 
             // Create a temporary session for password setting
             if (result.user_id) {
@@ -59,11 +58,20 @@ export async function GET(request: NextRequest) {
 
         if (type === 'magic_link') {
             // Get user for magic link login
-            const { data: user } = await supabase
-                .from('users_custom')
-                .select('id, email, full_name, avatar_url, email_verified')
-                .eq('email', result.email)
-                .single()
+            const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+                method: 'POST',
+                body: JSON.stringify({ email: result.email }),
+            })
+            const userPayload = await userResponse.json().catch(() => null) as {
+                data?: {
+                    id: string
+                    email: string
+                    full_name: string | null
+                    avatar_url: string | null
+                    email_verified: boolean
+                } | null
+            } | null
+            const user = userPayload?.data || null
 
             if (!user) {
                 return NextResponse.redirect(new URL('/lookup?error=user_not_found', request.url))
@@ -71,10 +79,10 @@ export async function GET(request: NextRequest) {
 
             // Ensure email is verified
             if (!user.email_verified) {
-                await supabase
-                    .from('users_custom')
-                    .update({ email_verified: true })
-                    .eq('id', user.id)
+                await accountWorkerFetch('/auth/custom/users/verify-email', {
+                    method: 'POST',
+                    body: JSON.stringify({ user_id: user.id }),
+                })
             }
 
             // Create session
@@ -93,16 +101,18 @@ export async function GET(request: NextRequest) {
             })
 
             // Check if user has a store → redirect appropriately
-            const { data: store } = await supabase
-                .from('sites')
-                .select('subdomain')
-                .eq('custom_user_id', user.id)
-                .limit(1)
-                .single()
+            const storesResponse = await accountWorkerFetch('/stores?limit=1', {
+                method: 'GET',
+                requireSession: true,
+                sessionToken,
+            })
+            const storesPayload = await storesResponse.json().catch(() => null) as {
+                data?: Array<{ subdomain: string }>
+            } | null
+            const store = storesResponse.ok ? storesPayload?.data?.[0] : null
 
-            const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3000'
             const redirectTo = store?.subdomain
-                ? `${adminUrl}/${store.subdomain}/dashboard`
+                ? getAdminDashboardUrl(store.subdomain)
                 : '/onboarding'
 
             return NextResponse.redirect(new URL(redirectTo, request.url))

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Experience {
     id: string
@@ -19,43 +18,55 @@ interface Experience {
 
 export default function ExperiencePage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Experience[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({ company: '', role: '', description: '', location: '', start_date: '', end_date: '', is_current: false })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('work_experience').select('*').eq('site_id', s.id).order('display_order', { ascending: true })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/work_experience`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!storeId || !formData.company || !formData.role) return
+        if (!formData.company || !formData.role) return
         setSaving(true)
         const payload = {
-            site_id: storeId, company: formData.company, role: formData.role,
+            company: formData.company, role: formData.role,
             description: formData.description || null, location: formData.location || null,
             start_date: formData.start_date || null, end_date: formData.is_current ? null : (formData.end_date || null),
             is_current: formData.is_current,
         }
-        if (editingId) await supabase.from('work_experience').update(payload).eq('id', editingId)
-        else await supabase.from('work_experience').insert(payload)
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/content/work_experience/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/content/work_experience`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null)
         setFormData({ company: '', role: '', description: '', location: '', start_date: '', end_date: '', is_current: false })
         load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('work_experience').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/content/work_experience/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const startEdit = (e: Experience) => { setEditingId(e.id); setFormData({ company: e.company, role: e.role, description: e.description || '', location: e.location || '', start_date: e.start_date || '', end_date: e.end_date || '', is_current: e.is_current }); setShowForm(true) }
     const inputStyle: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
     const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : ''

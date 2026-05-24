@@ -142,6 +142,68 @@ router.put('/preferences', async (c) => {
     return c.json(success(data));
 });
 
+// POST /notifications/email-log — Record a transactional email delivery result
+router.post('/email-log', async (c) => {
+    const body = await c.req.json();
+    const db = getSupabaseAdmin(c);
+
+    if (!body.recipient_email || !body.email_type || !body.subject || !body.status) {
+        return c.json({ error: { code: 'VALIDATION', message: 'recipient_email, email_type, subject, and status are required' } }, 400);
+    }
+
+    const { data, error } = await db
+        .from('email_logs')
+        .insert({
+            recipient_email: body.recipient_email,
+            email_type: body.email_type,
+            subject: body.subject,
+            status: body.status,
+            error_message: body.error_message || null,
+            metadata: body.metadata || {},
+        })
+        .select('id')
+        .single();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success(data), 201);
+});
+
+// POST /notifications/onboarding-failure-log — Record failed onboarding attempt metadata
+router.post('/onboarding-failure-log', async (c) => {
+    const body = await c.req.json();
+    const db = getSupabaseAdmin(c);
+
+    if (!body.requested_name || !body.site_type || !body.failure_reason) {
+        return c.json({ error: { code: 'VALIDATION', message: 'requested_name, site_type, and failure_reason are required' } }, 400);
+    }
+
+    const requestedSubdomain = (body.requested_subdomain || body.requested_name)
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '');
+
+    const { data, error } = await db
+        .from('onboarding_attempts')
+        .insert({
+            requested_name: body.requested_name,
+            requested_subdomain: requestedSubdomain,
+            site_type: body.site_type,
+            status: 'failed',
+            failure_reason: body.failure_reason,
+            error_details: body.error_details || null,
+        })
+        .select('id')
+        .single();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    return c.json(success(data), 201);
+});
+
 // DELETE /notifications/:id — Delete a notification
 router.delete('/:id', async (c) => {
     const auth = c.get('auth');

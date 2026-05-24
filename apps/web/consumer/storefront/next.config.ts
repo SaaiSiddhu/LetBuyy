@@ -1,5 +1,15 @@
 import type { NextConfig } from "next";
 
+const frameAncestors = [
+  "'self'",
+  "http://localhost:*",
+  "http://127.0.0.1:*",
+  "https://admin.letbuyy.store",
+  "https://console.letbuyy.store",
+  process.env.NEXT_PUBLIC_ADMIN_URL,
+  process.env.ADMIN_ORIGIN,
+].filter((origin): origin is string => Boolean(origin)).join(" ");
+
 const nextConfig: NextConfig = {
   compress: true, // Enable gzip compression for cost savings
 
@@ -63,10 +73,16 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        // Cache pages for 5 minutes, serve stale for 1 hour
+        // All pages — security headers + short cache
         source: '/:path*',
         headers: [
           { key: 'Cache-Control', value: 'public, max-age=300, stale-while-revalidate=3600' },
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Content-Security-Policy', value: `frame-ancestors ${frameAncestors}` },
+          { key: 'X-XSS-Protection', value: '1; mode=block' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
       },
     ];
@@ -74,4 +90,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-

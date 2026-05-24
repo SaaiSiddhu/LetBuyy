@@ -1,9 +1,8 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
-import { Plus, Download, Star, DollarSign, Eye, ExternalLink, Pencil, BarChart3 } from 'lucide-react';
-import { createSupabaseServerClient } from '@/lib/supabase/server';
-import { verifySession } from '@/lib/auth/session';
+import { Plus, Download, Star, Eye, ExternalLink, Pencil, BarChart3 } from 'lucide-react';
+import { appStoreWorkerFetch } from '@/lib/api/worker-client';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
@@ -11,35 +10,55 @@ export const metadata = {
     description: 'Manage your published apps and view analytics.',
 };
 
+interface DeveloperProfile {
+    id: string;
+    company_name: string;
+    status: string;
+    verified: boolean;
+}
+
+interface DeveloperApp {
+    id: string;
+    name: string;
+    slug: string;
+    tagline?: string | null;
+    icon_url?: string | null;
+    status: string;
+    install_count?: number | null;
+    rating_avg?: number | string | null;
+    review_count?: number | null;
+}
+
+function getRating(app: DeveloperApp): number {
+    const rating = Number(app.rating_avg || 0);
+    return Number.isFinite(rating) ? rating : 0;
+}
+
 export default async function DeveloperDashboardPage() {
-    const session = await verifySession();
-    if (!session) redirect('/developers/register');
+    const response = await appStoreWorkerFetch('/app-store/developers/apps', {
+        method: 'GET',
+        requireSession: true,
+    });
 
-    const supabase = await createSupabaseServerClient();
+    if (response.status === 401 || response.status === 404) redirect('/developers/register');
 
-    // Fetch developer profile
-    const { data: developer } = await supabase
-        .from('app_developers')
-        .select('id, company_name, status, verified')
-        .eq('user_id', session.userId)
-        .single();
+    const payload = await response.json() as {
+        data?: {
+            developer: DeveloperProfile;
+            apps: DeveloperApp[];
+        };
+    };
 
-    if (!developer) redirect('/developers/register');
+    if (!response.ok || !payload.data?.developer) redirect('/developers/register');
 
-    // Fetch developer's apps with stats
-    const { data: apps } = await supabase
-        .from('marketplace_apps')
-        .select('id, name, slug, tagline, icon_url, status, install_count, rating_avg, review_count, pricing_model, price_inr, created_at')
-        .eq('developer_id', developer.id)
-        .order('created_at', { ascending: false });
-
-    const appList = apps || [];
+    const developer = payload.data.developer;
+    const appList = payload.data.apps || [];
 
     // Calculate aggregate stats
     const totalInstalls = appList.reduce((sum, app) => sum + (app.install_count || 0), 0);
-    const appsWithRatings = appList.filter(a => a.rating_avg > 0);
+    const appsWithRatings = appList.filter(a => getRating(a) > 0);
     const avgRating = appsWithRatings.length > 0
-        ? (appsWithRatings.reduce((sum, a) => sum + Number(a.rating_avg), 0) / appsWithRatings.length).toFixed(1)
+        ? (appsWithRatings.reduce((sum, a) => sum + getRating(a), 0) / appsWithRatings.length).toFixed(1)
         : '—';
     const totalReviews = appList.reduce((sum, app) => sum + (app.review_count || 0), 0);
     const publishedCount = appList.filter(a => a.status === 'published').length;
@@ -168,7 +187,7 @@ export default async function DeveloperDashboardPage() {
                                     {/* Stats */}
                                     <div style={{ display: 'flex', gap: 24, fontSize: 13, color: 'var(--text-secondary)', flexShrink: 0 }}>
                                         <span title="Installs"><Download size={14} style={{ display: 'inline', marginRight: 4 }} />{app.install_count || 0}</span>
-                                        <span title="Rating"><Star size={14} style={{ display: 'inline', marginRight: 4 }} />{app.rating_avg > 0 ? Number(app.rating_avg).toFixed(1) : '—'}</span>
+                                        <span title="Rating"><Star size={14} style={{ display: 'inline', marginRight: 4 }} />{getRating(app) > 0 ? getRating(app).toFixed(1) : '—'}</span>
                                     </div>
 
                                     {/* Actions */}

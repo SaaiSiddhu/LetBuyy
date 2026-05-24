@@ -14,12 +14,22 @@ router.post('/', async (c) => {
 
     try {
         const formData = await c.req.formData();
-        const file = formData.get('file') as File;
-        const folder = formData.get('folder') as string || 'uploads';
+        const fileEntry = formData.get('file');
+        const folderEntry = formData.get('folder');
 
-        if (!file) {
+        if (
+            !fileEntry ||
+            typeof fileEntry === 'string' ||
+            typeof (fileEntry as { stream?: unknown }).stream !== 'function'
+        ) {
             return c.json({ error: { code: 'VALIDATION', message: 'No file provided' } }, 400);
         }
+
+        const file = fileEntry as File;
+        const folder =
+            typeof folderEntry === 'string' && folderEntry.trim().length > 0
+                ? folderEntry.trim()
+                : 'uploads';
 
         // Validate file size (10MB max)
         if (file.size > 10 * 1024 * 1024) {

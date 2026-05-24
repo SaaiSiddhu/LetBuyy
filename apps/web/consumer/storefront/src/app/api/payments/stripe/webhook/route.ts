@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { constructWebhookEvent } from '@/lib/stripe';
-import { db } from '@/lib/supabase';
+import { markOrderPaid, markOrderPaymentFailed } from '@/lib/payment-order';
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,50 +16,44 @@ export async function POST(request: NextRequest) {
         switch (event.type) {
             case 'checkout.session.completed': {
                 const session = event.data.object;
-                const orderId = session.metadata?.orderId;
+                const orderId = session.metadata?.order_id || session.metadata?.orderId;
 
                 if (orderId) {
-                    // Update order payment status
-                    const { error } = await db
-                        .from('orders')
-                        .update({
-                            payment_status: 'paid',
-                            payment_id: session.payment_intent as string,
-                            status: 'confirmed',
-                        })
-                        .eq('id', orderId);
-
-                    if (error) {
-                        console.error('[Stripe Webhook] Order update failed:', error.message);
-                    } else {
-                        console.log(`[Stripe Webhook] Order ${orderId} marked as paid`);
-                    }
+                    await markOrderPaid({
+                        orderId,
+                        provider: 'stripe',
+                        paymentId: String(session.payment_intent || session.id),
+                        idempotencyKey: event.id,
+                    });
                 }
                 break;
             }
 
             case 'checkout.session.expired': {
                 const session = event.data.object;
-                const orderId = session.metadata?.orderId;
+                const orderId = session.metadata?.order_id || session.metadata?.orderId;
 
                 if (orderId) {
-                    await db
-                        .from('orders')
-                        .update({ payment_status: 'failed', status: 'cancelled' })
-                        .eq('id', orderId);
-
-                    console.log(`[Stripe Webhook] Order ${orderId} cancelled (session expired)`);
+                    await markOrderPaymentFailed({
+                        orderId,
+                        provider: 'stripe',
+                        providerEventId: event.id,
+                        paymentStatus: 'failed',
+                        orderStatus: 'cancelled',
+                        reason: 'Stripe checkout session expired',
+                        releaseInventory: true,
+                        idempotencyKey: event.id,
+                    });
                 }
                 break;
             }
 
             default:
-                console.log(`[Stripe Webhook] Unhandled event: ${event.type}`);
+                break;
         }
 
         return NextResponse.json({ received: true });
     } catch (error) {
-        console.error('[Stripe Webhook] Error:', error);
         return NextResponse.json(
             { error: 'Webhook processing failed' },
             { status: 400 }

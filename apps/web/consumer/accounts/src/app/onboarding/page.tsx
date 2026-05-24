@@ -5,6 +5,8 @@ export const dynamic = 'force-dynamic'
 import { useState, useEffect, useCallback } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { getAuthHeaders } from '@/lib/csrf-client'
+import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /* ——————————————————————————————————————
    Types
@@ -227,7 +229,7 @@ const translations: Record<Lang, Record<string, string>> = {
    Constants
    —————————————————————————————————————— */
 
-const SITE_TYPES: { id: SiteType; nameKey: string; icon: string; descKey: string }[] = [
+const SITE_TYPES: { id: SiteType; nameKey: string; icon: AuthIconName; descKey: string }[] = [
     { id: 'store', nameKey: 'store', icon: 'shopping_cart', descKey: 'storeDesc' },
     { id: 'portfolio', nameKey: 'portfolio', icon: 'work', descKey: 'portfolioDesc' },
     { id: 'resume', nameKey: 'resume', icon: 'article', descKey: 'resumeDesc' },
@@ -235,15 +237,9 @@ const SITE_TYPES: { id: SiteType; nameKey: string; icon: string; descKey: string
     { id: 'blog', nameKey: 'blog', icon: 'edit_note', descKey: 'blogDesc' },
 ]
 
-const ADMIN_URL =
-    process.env.NEXT_PUBLIC_ADMIN_URL ||
-    (typeof window !== 'undefined' && window.location.hostname === 'localhost'
-        ? 'http://localhost:3000'
-        : 'https://admin.letbuyy.store')
-
 type TemplateId = 'blank' | 'modern' | 'bold' | 'classic'
 
-const TEMPLATES: { id: TemplateId; nameKey: string; descKey: string; icon: string }[] = [
+const TEMPLATES: { id: TemplateId; nameKey: string; descKey: string; icon: AuthIconName }[] = [
     { id: 'blank', nameKey: 'blankTemplate', icon: 'dashboard_customize', descKey: 'blankTemplateDesc' },
     { id: 'modern', nameKey: 'modernTemplate', icon: 'auto_awesome', descKey: 'modernTemplateDesc' },
     { id: 'bold', nameKey: 'boldTemplate', icon: 'flash_on', descKey: 'boldTemplateDesc' },
@@ -447,7 +443,7 @@ export default function OnboardingPage() {
 
             // Redirect after a brief pause
             setTimeout(() => {
-                window.location.href = `${ADMIN_URL}/${subdomain}/dashboard`
+                window.location.href = getAdminDashboardUrl(subdomain)
             }, 2500)
         } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Something went wrong'
@@ -490,9 +486,7 @@ export default function OnboardingPage() {
                     </div>
                     <div className="onboard-success">
                         <div className="onboard-success-icon">
-                            <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--success, #22C55E)' }}>
-                                check_circle
-                            </span>
+                            <AuthIcon name="check_circle" size={48} style={{ color: 'var(--success, #22C55E)' }} />
                         </div>
                         <h1 className="auth-title">{t.allSet}</h1>
                         <p className="auth-subtitle">
@@ -501,9 +495,7 @@ export default function OnboardingPage() {
                                 : 'site'} has been created.
                         </p>
                         <div className="onboard-success-url">
-                            <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle', marginRight: 6 }}>
-                                link
-                            </span>
+                            <AuthIcon name="link" size={16} style={{ marginRight: 6 }} />
                             {subdomain}.letbuyy.store
                         </div>
                         <p style={{ color: 'var(--text-hint)', fontSize: 13, marginTop: 16 }}>
@@ -546,9 +538,7 @@ export default function OnboardingPage() {
                 {/* Error banner */}
                 {error && (
                     <div className="auth-error">
-                        <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle', marginRight: 6 }}>
-                            error
-                        </span>
+                        <AuthIcon name="error" size={16} style={{ marginRight: 6 }} />
                         {error}
                     </div>
                 )}
@@ -570,7 +560,7 @@ export default function OnboardingPage() {
                                     }}
                                 >
                                     <span className="onboard-type-icon">
-                                        <span className="material-symbols-outlined">{type.icon}</span>
+                                        <AuthIcon name={type.icon} size={28} />
                                     </span>
                                     <span className="onboard-type-name">{t[type.nameKey]}</span>
                                     <span className="onboard-type-desc">{t[type.descKey]}</span>
@@ -642,9 +632,7 @@ export default function OnboardingPage() {
                                 )}
                                 {!validating && validation && (
                                     <>
-                                        <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle', marginRight: 4 }}>
-                                            {validation.valid ? 'check_circle' : 'cancel'}
-                                        </span>
+                                        <AuthIcon name={validation.valid ? 'check_circle' : 'cancel'} size={16} style={{ marginRight: 4 }} />
                                         {validation.message}
                                     </>
                                 )}
@@ -657,9 +645,7 @@ export default function OnboardingPage() {
                                 className="auth-btn-secondary"
                                 onClick={() => setStep(1)}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>
-                                    arrow_back
-                                </span>
+                                <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
                             </button>
                             <button
@@ -668,9 +654,7 @@ export default function OnboardingPage() {
                                 disabled={!validation?.valid}
                             >
                                 {t.next}
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>
-                                    arrow_forward
-                                </span>
+                                <AuthIcon name="arrow_forward" size={18} style={{ marginLeft: 4 }} />
                             </button>
                         </div>
                     </>
@@ -690,7 +674,7 @@ export default function OnboardingPage() {
                                     onClick={() => setTemplate(tmpl.id)}
                                 >
                                     <span className="onboard-type-icon">
-                                        <span className="material-symbols-outlined">{tmpl.icon}</span>
+                                        <AuthIcon name={tmpl.icon} size={28} />
                                     </span>
                                     <span className="onboard-type-name">{t[tmpl.nameKey]}</span>
                                     <span className="onboard-type-desc">{t[tmpl.descKey]}</span>
@@ -700,12 +684,12 @@ export default function OnboardingPage() {
 
                         <div className="onboard-btn-row">
                             <button className="auth-btn-secondary" onClick={() => setStep(2)}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
                             </button>
                             <button className="auth-btn" onClick={() => setStep(4)}>
                                 {t.next}
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>arrow_forward</span>
+                                <AuthIcon name="arrow_forward" size={18} style={{ marginLeft: 4 }} />
                             </button>
                         </div>
                     </>
@@ -721,19 +705,19 @@ export default function OnboardingPage() {
                         <div style={{ marginBottom: 20 }}>
                             <label className="auth-label">{t.businessGoal}</label>
                             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                                {[
+                                {([
                                     { id: 'sell', label: t.goalSell, icon: 'shopping_cart' },
                                     { id: 'showcase', label: t.goalShowcase, icon: 'visibility' },
                                     { id: 'leads', label: t.goalGenerate, icon: 'contact_page' },
                                     { id: 'blog', label: t.goalBlog, icon: 'edit_note' },
-                                ].map((g) => (
+                                ] as { id: string; label: string; icon: AuthIconName }[]).map((g) => (
                                     <button
                                         key={g.id}
                                         className={`onboard-type-card ${goal === g.id ? 'selected' : ''}`}
                                         onClick={() => setGoal(g.id)}
                                         style={{ padding: '12px 16px', textAlign: 'left' }}
                                     >
-                                        <span className="material-symbols-outlined" style={{ fontSize: 20, marginRight: 8, verticalAlign: 'middle' }}>{g.icon}</span>
+                                        <AuthIcon name={g.icon} size={20} style={{ marginRight: 8 }} />
                                         <span style={{ fontSize: 13 }}>{g.label}</span>
                                     </button>
                                 ))}
@@ -764,12 +748,12 @@ export default function OnboardingPage() {
 
                         <div className="onboard-btn-row">
                             <button className="auth-btn-secondary" onClick={() => setStep(3)}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
                             </button>
                             <button className="auth-btn" onClick={() => setStep(5)}>
                                 {t.next}
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>arrow_forward</span>
+                                <AuthIcon name="arrow_forward" size={18} style={{ marginLeft: 4 }} />
                             </button>
                         </div>
                     </>
@@ -795,7 +779,7 @@ export default function OnboardingPage() {
 
                         <div className="onboard-btn-row">
                             <button className="auth-btn-secondary" onClick={() => setStep(4)}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
                             </button>
                             <button className="auth-btn-secondary" onClick={() => setStep(6)}>
@@ -803,7 +787,7 @@ export default function OnboardingPage() {
                             </button>
                             <button className="auth-btn" onClick={() => setStep(6)} disabled={!aiDescription.trim()}>
                                 {t.aiGenerate}
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>auto_awesome</span>
+                                <AuthIcon name="auto_awesome" size={18} style={{ marginLeft: 4 }} />
                             </button>
                         </div>
                     </>
@@ -841,7 +825,7 @@ export default function OnboardingPage() {
 
                         <div className="onboard-btn-row">
                             <button className="auth-btn-secondary" onClick={() => setStep(5)}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginRight: 4 }}>arrow_back</span>
+                                <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
                             </button>
                             <button
@@ -857,9 +841,7 @@ export default function OnboardingPage() {
                                 ) : (
                                     <>
                                         {t.confirm}
-                                        <span className="material-symbols-outlined" style={{ fontSize: 18, verticalAlign: 'middle', marginLeft: 4 }}>
-                                            rocket_launch
-                                        </span>
+                                        <AuthIcon name="rocket_launch" size={18} style={{ marginLeft: 4 }} />
                                     </>
                                 )}
                             </button>
@@ -893,24 +875,20 @@ function TopBar({ lang, isDark, user, showUserMenu, onCycleLang, onToggleTheme, 
                 {lang.toUpperCase()}
             </button>
             <button onClick={onToggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>
-                    {isDark ? 'light_mode' : 'dark_mode'}
-                </span>
+                <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
             </button>
             <div className="auth-user-container">
                 <button onClick={onToggleUserMenu} className="auth-user-btn" aria-label="User menu">
-                    <span className="material-symbols-outlined">
-                        account_circle
-                    </span>
+                    <AuthIcon name="account_circle" size={20} />
                 </button>
                 {showUserMenu && (
                     <div className="auth-user-dropdown">
                         <div className="auth-user-dropdown-email">
-                            <span className="material-symbols-outlined">mail</span>
+                            <AuthIcon name="mail" size={20} />
                             <span>{user.email}</span>
                         </div>
                         <button className="auth-user-dropdown-logout" onClick={onLogout}>
-                            <span className="material-symbols-outlined">logout</span>
+                            <AuthIcon name="logout" size={18} />
                             Log out
                         </button>
                     </div>

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
 
 /**
  * POST /api/themes/publish
@@ -26,34 +26,21 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const supabase = await createClient()
+        const response = action === 'publish'
+            ? await workerFetch(`/stores/${storeId}/publish`, { method: 'POST' })
+            : await workerFetch(`/stores/${storeId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ status: 'draft' }),
+            })
 
-        const newStatus = action === 'publish' ? 'published' : 'draft'
-
-        const { data, error } = await supabase
-            .from('sites')
-            .update({ status: newStatus })
-            .eq('id', storeId)
-            .select('id, status')
-            .single()
-
-        if (error) {
-            console.error('[API /themes/publish] Error updating store status:', error)
-            return NextResponse.json(
-                { error: 'Failed to update store status' },
-                { status: 500 }
-            )
-        }
+        const payload = await readWorkerJson(response)
+        const data = payload.data
 
         return NextResponse.json({
             success: true,
             status: data.status,
         })
     } catch (err) {
-        console.error('[API /themes/publish] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }

@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Set password
-        await setCustomerPassword(emailOrPhone, password);
+        await setCustomerPassword(emailOrPhone, password, undefined, subdomain);
 
         // Get orders
         const orders = await getOrdersByContact(subdomain, emailOrPhone);

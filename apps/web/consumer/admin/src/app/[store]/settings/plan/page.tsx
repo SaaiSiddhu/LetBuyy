@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -41,34 +40,23 @@ export default function PlanSettingsPage() {
     const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null)
     const [cancelling, setCancelling] = useState(false)
     const [confirmCancel, setConfirmCancel] = useState(false)
-    const [storeId, setStoreId] = useState('')
-    const supabase = createClient()
+    const [renderTime] = useState(() => Date.now())
+    const [renderDate] = useState(() => new Date())
 
     useEffect(() => {
         async function load() {
-            // Get store data
-            const { data: storeData } = await supabase
-                .from('stores')
-                .select('id, trial_status, trial_ends_at, site_type')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/plan`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const storeData = payload.data?.store
+            const sub = payload.data?.subscription
 
             if (storeData) {
-                setStoreId(storeData.id)
                 setTrialData({
                     trial_status: storeData.trial_status || 'active',
                     trial_ends_at: storeData.trial_ends_at || '',
                 })
-
-                // Get active subscription
-                const { data: sub } = await supabase
-                    .from('subscriptions')
-                    .select('plan, status, billing_period, current_period_end, promo_ends_at, amount_paid')
-                    .eq('store_id', storeData.id)
-                    .eq('status', 'active')
-                    .order('created_at', { ascending: false })
-                    .limit(1)
-                    .maybeSingle()
 
                 if (sub) {
                     // Fetch plan details
@@ -86,11 +74,11 @@ export default function PlanSettingsPage() {
             setLoading(false)
         }
         load()
-    }, [store, supabase])
+    }, [store])
 
     const trialEnds = trialData.trial_ends_at ? new Date(trialData.trial_ends_at) : null
-    const daysLeft = trialEnds ? Math.max(0, Math.ceil((trialEnds.getTime() - Date.now()) / (1000 * 60 * 60 * 24))) : 0
-    const isTrialExpired = trialData.trial_status === 'expired' || (trialEnds && trialEnds < new Date())
+    const daysLeft = trialEnds ? Math.max(0, Math.ceil((trialEnds.getTime() - renderTime) / (1000 * 60 * 60 * 24))) : 0
+    const isTrialExpired = trialData.trial_status === 'expired' || (trialEnds && trialEnds < renderDate)
     const hasSubscription = !!subscription
 
     if (loading) {
@@ -227,7 +215,11 @@ export default function PlanSettingsPage() {
                                 disabled={cancelling}
                                 onClick={async () => {
                                     setCancelling(true)
-                                    await supabase.from('subscriptions').update({ status: 'cancelled' }).eq('store_id', storeId).eq('status', 'active')
+                                    await fetch(`/api/stores/${encodeURIComponent(store)}/plan/cancel`, {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ reason: 'merchant_requested' }),
+                                    })
                                     setSubscription(null)
                                     setCancelling(false)
                                     setConfirmCancel(false)

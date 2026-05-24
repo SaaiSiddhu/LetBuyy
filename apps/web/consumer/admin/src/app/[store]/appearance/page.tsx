@@ -2,45 +2,46 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 export default function AppearancePage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [siteId, setSiteId] = useState<string | null>(null)
     const [form, setForm] = useState({
         primary_color: '#6366f1', font_family: 'Inter', border_radius: '8',
         logo_url: '', favicon_url: '', custom_css: ''
     })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id, site_settings').eq('store_name', store).single()
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        const s = payload.data
         if (!s) { setLoading(false); return }
-        setSiteId(s.id)
-        const settings = (s.site_settings as any) || {}
+        const settings = (s.site_settings || {}) as Record<string, unknown>
         setForm({
-            primary_color: settings.primary_color || '#6366f1',
-            font_family: settings.font_family || 'Inter',
-            border_radius: settings.border_radius || '8',
-            logo_url: settings.logo_url || '',
-            favicon_url: settings.favicon_url || '',
-            custom_css: settings.custom_css || '',
+            primary_color: String(settings.primary_color || '#6366f1'),
+            font_family: String(settings.font_family || 'Inter'),
+            border_radius: String(settings.border_radius || '8'),
+            logo_url: String(settings.logo_url || ''),
+            favicon_url: String(settings.favicon_url || ''),
+            custom_css: String(settings.custom_css || ''),
         })
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!siteId) return
         setSaving(true)
-        const { data: current } = await supabase.from('sites').select('site_settings').eq('id', siteId).single()
-        const existing = (current?.site_settings as any) || {}
-        await supabase.from('sites').update({
-            site_settings: { ...existing, ...form, border_radius: parseInt(form.border_radius) }
-        }).eq('id', siteId)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                site_settings: { ...form, border_radius: parseInt(form.border_radius) },
+            }),
+        })
         setSaving(false)
     }
 

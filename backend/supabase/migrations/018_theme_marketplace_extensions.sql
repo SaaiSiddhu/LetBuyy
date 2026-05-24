@@ -161,11 +161,11 @@ CREATE TRIGGER update_theme_install_count_on_change
   AFTER INSERT OR UPDATE OR DELETE ON store_themes
   FOR EACH ROW EXECUTE FUNCTION update_theme_install_count();
 
--- ——— 7. Seed extended theme data (update existing themes) ———
+-- ——— 7. Seed extended data for the production-ready template ———
 UPDATE themes SET
   long_description = 'Urban Kicks is a bold, minimal e-commerce theme built for streetwear brands, sneaker shops, and urban fashion labels. Features a full-screen hero with cinematic overlays, 4-column product grid with hover animations, and testimonial carousel.',
   industry = ARRAY['streetwear', 'sneakers', 'fashion'],
-  theme_preset_id = 'minimal_modern',
+  theme_preset_id = 'urban-kicks',
   features = ARRAY['Responsive Layout', 'Dark Mode', 'Product Quick View', 'Mega Menu', 'Wishlist', 'Ajax Cart'],
   supported_site_types = ARRAY['store'],
   supported_platforms = ARRAY['letbuyy'],
@@ -174,62 +174,3 @@ UPDATE themes SET
   font_pairings = '[{"heading":"Inter","body":"Inter"},{"heading":"Space Grotesk","body":"Inter"}]'::jsonb,
   updated_at = NOW()
 WHERE slug = 'urban-kicks';
-
-UPDATE themes SET
-  long_description = 'Aurora features a modern gradient-based design with glassmorphism cards, smooth transitions, and vibrant color palettes. Perfect for tech-forward brands and digital product stores.',
-  industry = ARRAY['tech', 'digital', 'saas'],
-  theme_preset_id = 'gradient_glass',
-  features = ARRAY['Glassmorphism Cards', 'Gradient Backgrounds', 'Smooth Animations', 'Responsive Grid', 'Dark Mode'],
-  supported_site_types = ARRAY['store', 'landing_page'],
-  supported_platforms = ARRAY['letbuyy'],
-  tags = ARRAY['modern', 'gradient', 'glassmorphism', 'tech'],
-  updated_at = NOW()
-WHERE slug = 'aurora';
-
-UPDATE themes SET
-  long_description = 'Zenith is a clean, professional theme built for businesses that value clarity and precision. Features sharp typography, full-width imagery, and a distraction-free shopping experience.',
-  industry = ARRAY['business', 'professional', 'consulting'],
-  theme_preset_id = 'clean_professional',
-  features = ARRAY['Full-Width Imagery', 'Sharp Typography', 'Minimal Design', 'Fast Loading', 'SEO Optimized'],
-  supported_site_types = ARRAY['store', 'portfolio'],
-  supported_platforms = ARRAY['letbuyy'],
-  tags = ARRAY['minimal', 'professional', 'clean', 'business'],
-  updated_at = NOW()
-WHERE slug = 'zenith';
-
-UPDATE themes SET
-  long_description = 'Ember is a luxury dark theme crafted for premium brands. Gold accents, rich typography with Playfair Display, and sophisticated animations create an exclusive shopping experience.',
-  industry = ARRAY['luxury', 'jewelry', 'watches', 'premium'],
-  theme_preset_id = 'luxury_dark',
-  features = ARRAY['Dark Mode Native', 'Gold Accents', 'Premium Typography', 'Luxury Animations', 'Video Hero'],
-  supported_site_types = ARRAY['store'],
-  supported_platforms = ARRAY['letbuyy'],
-  tags = ARRAY['luxury', 'dark', 'premium', 'gold'],
-  letbuyy_pricing_type = 'one_time',
-  letbuyy_price_usd = 29.00,
-  letbuyy_price_inr = 499.00,
-  is_premium = true,
-  updated_at = NOW()
-WHERE slug = 'ember';
-
-UPDATE themes SET
-  long_description = 'Blossom is a soft, organic theme designed for eco-friendly brands, artisan shops, and wellness stores. Features pastel palettes, rounded elements, and a warm, inviting aesthetic.',
-  industry = ARRAY['organic', 'wellness', 'artisan', 'handmade'],
-  theme_preset_id = 'soft_organic',
-  features = ARRAY['Pastel Palette', 'Rounded Elements', 'Warm Aesthetic', 'Instagram Feed', 'Blog Integration'],
-  supported_site_types = ARRAY['store', 'blog'],
-  supported_platforms = ARRAY['letbuyy'],
-  tags = ARRAY['organic', 'pastel', 'soft', 'wellness', 'handmade'],
-  updated_at = NOW()
-WHERE slug = 'blossom';
-
-UPDATE themes SET
-  long_description = 'Nova is a vibrant, high-energy theme perfect for youth brands, gaming stores, and creative businesses. Neon gradients, bold layouts, and dynamic animations make every page pop.',
-  industry = ARRAY['gaming', 'youth', 'creative', 'entertainment'],
-  theme_preset_id = 'vibrant_neon',
-  features = ARRAY['Neon Gradients', 'Bold Typography', 'Dynamic Animations', 'Parallax Scrolling', 'Video Backgrounds'],
-  supported_site_types = ARRAY['store', 'landing_page'],
-  supported_platforms = ARRAY['letbuyy'],
-  tags = ARRAY['vibrant', 'neon', 'gaming', 'youth', 'bold'],
-  updated_at = NOW()
-WHERE slug = 'nova';

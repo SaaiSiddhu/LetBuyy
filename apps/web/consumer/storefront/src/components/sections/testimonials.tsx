@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SectionModel, TestimonialsSettings, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
+import { SectionModel, TestimonialsSettings, ThemeSettings } from '@/types/store';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {
@@ -10,10 +10,17 @@ interface Props {
     theme?: ThemeSettings;
 }
 
+const textValue = (value: unknown, fallback = '') =>
+    typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+
+const numberValue = (value: unknown, fallback: number) => {
+    const parsed = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+};
+
 export default function TestimonialsSection({ section, theme }: Props) {
     const settings = section.settings as Partial<TestimonialsSettings>;
     const blocks = section.blocks || [];
-    const colors = theme || DEFAULT_THEME_SETTINGS;
 
     const title = settings.title || 'What Our Customers Say';
     const subtitle = settings.subtitle || '';
@@ -23,14 +30,12 @@ export default function TestimonialsSection({ section, theme }: Props) {
         .filter(b => b.type === 'testimonialCard' && b.isVisible !== false)
         .map(b => ({
             id: b.id,
-            name: b.settings.name || 'Customer',
-            text: b.settings.text || b.settings.content || '',
-            rating: b.settings.rating || 5,
-            image: b.settings.image || b.settings.avatar,
-            product: b.settings.product || '',
+            name: textValue(b.settings.name, 'Customer'),
+            text: textValue(b.settings.text, textValue(b.settings.content)),
+            rating: numberValue(b.settings.rating, 5),
+            image: textValue(b.settings.image, textValue(b.settings.avatar)),
+            product: textValue(b.settings.product),
         }));
-
-    if (testimonials.length === 0) return null;
 
     const [activeIndex, setActiveIndex] = useState(0);
     const [direction, setDirection] = useState(0);
@@ -43,26 +48,36 @@ export default function TestimonialsSection({ section, theme }: Props) {
     }, [activeIndex]);
 
     const goNext = useCallback(() => {
+        if (testimonials.length === 0) return;
         goTo((activeIndex + 1) % testimonials.length, 1);
     }, [activeIndex, testimonials.length, goTo]);
 
     const goPrev = useCallback(() => {
+        if (testimonials.length === 0) return;
         goTo((activeIndex - 1 + testimonials.length) % testimonials.length, -1);
     }, [activeIndex, testimonials.length, goTo]);
 
     useEffect(() => {
-        if (isPaused) return;
+        if (isPaused || testimonials.length === 0) return;
         timerRef.current = setInterval(goNext, 5000);
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
-    }, [goNext, isPaused]);
+    }, [goNext, isPaused, testimonials.length]);
 
     const touchStartX = useRef(0);
     const handleTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX; setIsPaused(true); };
     const handleTouchEnd = (e: React.TouchEvent) => {
         const diff = touchStartX.current - e.changedTouches[0].clientX;
-        if (Math.abs(diff) > 50) diff > 0 ? goNext() : goPrev();
+        if (Math.abs(diff) > 50) {
+            if (diff > 0) {
+                goNext();
+            } else {
+                goPrev();
+            }
+        }
         setIsPaused(false);
     };
+
+    if (testimonials.length === 0) return null;
 
     const active = testimonials[activeIndex];
 

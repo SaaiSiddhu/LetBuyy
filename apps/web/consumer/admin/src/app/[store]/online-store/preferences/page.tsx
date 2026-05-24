@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 export default function PreferencesPage() {
     const params = useParams()
@@ -28,18 +27,16 @@ export default function PreferencesPage() {
     // Favicon
     const [favicon, setFavicon] = useState('')
 
-    const supabase = createClient()
-
     useEffect(() => {
         const loadPrefs = async () => {
-            const { data: storeData } = await supabase
-                .from('sites')
-                .select('store_name, seo_title, seo_description')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const storeData = payload.data
 
             if (storeData) {
-                setSeoTitle(storeData.seo_title || storeData.store_name || '')
+                setSeoTitle(storeData.seo_title || storeData.store_name || storeData.name || '')
                 setSeoDescription(storeData.seo_description || '')
             }
         }
@@ -49,13 +46,14 @@ export default function PreferencesPage() {
     const handleSave = async () => {
         setSaving(true)
         try {
-            await supabase
-                .from('sites')
-                .update({
+            await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     seo_title: seoTitle,
                     seo_description: seoDescription,
-                })
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
+                }),
+            })
 
             setSaved(true)
             setTimeout(() => setSaved(false), 3000)

@@ -1,7 +1,4 @@
-import { randomBytes } from 'crypto'
-import { createServerClient } from '../supabase/server'
-
-const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000 // 30 days
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 
 /**
  * Create a new session for a user. Returns the session token.
@@ -11,22 +8,27 @@ export async function createSession(
     userId: string,
     deviceId?: string
 ): Promise<string> {
-    const supabase = await createServerClient()
-    const token = randomBytes(32).toString('hex')
-    const expiresAt = new Date(Date.now() + SESSION_DURATION_MS).toISOString()
-
-    const { error } = await supabase.from('sessions').insert({
-        user_id: userId,
-        device_id: deviceId || null,
-        token,
-        expires_at: expiresAt,
+    const response = await accountWorkerFetch('/auth/custom/sessions/create', {
+        method: 'POST',
+        body: JSON.stringify({
+            user_id: userId,
+            device_id: deviceId || null,
+        }),
     })
+    const payload = await response.json().catch(() => null) as {
+        data?: {
+            token: string
+        }
+        error?: {
+            message?: string
+        }
+    } | null
 
-    if (error) {
-        throw new Error(`Failed to create session: ${error.message}`)
+    if (!response.ok || !payload?.data?.token) {
+        throw new Error(`Failed to create session: ${payload?.error?.message || response.statusText}`)
     }
 
-    return token
+    return payload.data.token
 }
 
 /**
@@ -39,41 +41,28 @@ export async function validateSession(token: string): Promise<{
     fullName: string | null
     avatarUrl: string | null
 } | null> {
-    const supabase = await createServerClient()
+    const response = await accountWorkerFetch('/auth/custom/session', {
+        method: 'GET',
+        requireSession: true,
+        sessionToken: token,
+    })
+    if (!response.ok) return null
+    const payload = await response.json().catch(() => null) as {
+        authenticated?: boolean
+        user?: {
+            id: string
+            email: string
+            fullName: string | null
+        }
+    } | null
 
-    const { data: session, error } = await supabase
-        .from('sessions')
-        .select('id, user_id, expires_at')
-        .eq('token', token)
-        .single()
-
-    if (error || !session) return null
-    if (new Date(session.expires_at) < new Date()) {
-        // Clean up expired session
-        await supabase.from('sessions').delete().eq('id', session.id)
-        return null
-    }
-
-    // Update last_active
-    await supabase
-        .from('sessions')
-        .update({ last_active: new Date().toISOString() })
-        .eq('id', session.id)
-
-    // Fetch user data
-    const { data: user } = await supabase
-        .from('users_custom')
-        .select('id, email, full_name, avatar_url')
-        .eq('id', session.user_id)
-        .single()
-
-    if (!user) return null
+    if (!payload?.authenticated || !payload.user) return null
 
     return {
-        userId: user.id,
-        email: user.email,
-        fullName: user.full_name,
-        avatarUrl: user.avatar_url,
+        userId: payload.user.id,
+        email: payload.user.email,
+        fullName: payload.user.fullName,
+        avatarUrl: null,
     }
 }
 
@@ -81,14 +70,18 @@ export async function validateSession(token: string): Promise<{
  * Destroy a specific session (logout current device).
  */
 export async function destroySession(token: string): Promise<void> {
-    const supabase = await createServerClient()
-    await supabase.from('sessions').delete().eq('token', token)
+    await accountWorkerFetch('/auth/custom/sessions/destroy', {
+        method: 'POST',
+        body: JSON.stringify({ token }),
+    })
 }
 
 /**
  * Destroy all sessions for a user (logout everywhere).
  */
 export async function destroyAllUserSessions(userId: string): Promise<void> {
-    const supabase = await createServerClient()
-    await supabase.from('sessions').delete().eq('user_id', userId)
+    await accountWorkerFetch('/auth/custom/sessions/destroy-all', {
+        method: 'POST',
+        body: JSON.stringify({ user_id: userId }),
+    })
 }

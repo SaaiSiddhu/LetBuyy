@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 /**
@@ -27,12 +27,22 @@ export async function POST(request: NextRequest) {
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        const supabase = await createServerClient()
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id, password_hash, email_verified')
-            .eq('email', normalizedEmail)
-            .single()
+        const response = await accountWorkerFetch('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: normalizedEmail }),
+        })
+        const payload = await response.json().catch(() => null) as {
+            data?: {
+                password_hash?: string | null
+                email_verified?: boolean | null
+            } | null
+        } | null
+
+        if (!response.ok) {
+            return NextResponse.json({ error: 'Unable to look up account' }, { status: response.status })
+        }
+
+        const user = payload?.data
 
         if (!user) {
             return NextResponse.json({ exists: false, hasPassword: false })

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useState } from 'react';
 
 interface AnimatedBackgroundProps {
     /** CSS class for site-type color (e.g. cs-bg-store) */
@@ -13,22 +13,25 @@ interface AnimatedBackgroundProps {
     particleCount?: number;
 }
 
+function seededUnit(index: number, salt: number) {
+    const value = Math.sin((index + 1) * salt) * 10000;
+    return value - Math.floor(value);
+}
+
 export default function AnimatedBackground({
-    variant,
     showGrid = false,
     showParticles = true,
     particleCount = 30,
 }: AnimatedBackgroundProps) {
-    const particles = useMemo(() =>
+    const [particles] = useState(() =>
         Array.from({ length: particleCount }, (_, i) => ({
             id: i,
-            top: `${Math.random() * 100}%`,
-            left: `${Math.random() * 100}%`,
-            size: 1 + Math.random() * 2,
-            delay: Math.random() * 8,
-            duration: 4 + Math.random() * 6,
-        })),
-        [particleCount]
+            top: `${seededUnit(i, 19.19) * 100}%`,
+            left: `${seededUnit(i, 47.47) * 100}%`,
+            size: 1 + seededUnit(i, 12.9898) * 2,
+            delay: seededUnit(i, 53.31) * 8,
+            duration: 4 + seededUnit(i, 91.17) * 6,
+        }))
     );
 
     return (

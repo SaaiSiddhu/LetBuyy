@@ -11,139 +11,79 @@ import RightSidebar from '@/components/theme-editor/RightSidebar'
 import AddSectionModal from '@/components/theme-editor/AddSectionModal'
 import { useEditorHistory, type TemplateConfig, type SectionEntry } from '@/hooks/useEditorHistory'
 import { useEditorUrl } from '@/hooks/useEditorUrl'
-import { SECTION_SCHEMAS } from '@/lib/theme-schemas'
+import type { SectionSchema, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
-// Default template config for Urban Kicks
-const DEFAULT_TEMPLATE: TemplateConfig = {
+const EMPTY_TEMPLATE: TemplateConfig = {
     sections: {
         header: {
             id: 'header',
             type: 'header',
-            visible: true,
-            settings: {
-                behavior: 'sticky',
-                logoPlacement: 'left',
-                displayMode: 'name',
-                showSearch: true,
-                showCart: true,
-                showAccount: false,
-            },
+            visible: false,
+            settings: {},
         },
         footer: {
             id: 'footer',
             type: 'footer',
-            visible: true,
-            settings: {
-                columns: 3,
-                showLogo: true,
-                showNewsletter: true,
-                showSocial: true,
-                showPaymentIcons: true,
-                copyrightText: '© 2026 Urban Kicks. All rights reserved.',
-                instagramUrl: 'https://instagram.com/urbankicks',
-                twitterUrl: 'https://twitter.com/urbankicks',
-                contactEmail: 'hello@urban-kicks.store',
-            },
+            visible: false,
+            settings: {},
         },
-        template: [
-            {
-                id: 'hero-1',
-                type: 'heroBanner',
-                visible: true,
-                settings: {
-                    heading: 'Streetwear 2026',
-                    subheading: 'The future of fashion is here.',
-                    ctaText: 'Shop New Arrivals',
-                    ctaLink: '#products',
-                    image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=2000',
-                    overlay: 0.4,
-                    height: 'full',
-                    textAlign: 'center',
-                },
-            },
-            {
-                id: 'brand-marquee-1',
-                type: 'brandMarquee',
-                visible: true,
-                settings: {
-                    title: 'Trusted by top brands worldwide',
-                    speed: 25,
-                    pauseOnHover: true,
-                },
-            },
-            {
-                id: 'product-grid-1',
-                type: 'productGrid',
-                visible: true,
-                settings: {
-                    title: 'Trending Drops',
-                    subtitle: 'Hottest picks this season',
-                    columns: 4,
-                    rows: 2,
-                    showPrice: true,
-                    showRating: true,
-                    showAddToCart: true,
-                    cardStyle: 'minimal',
-                    sortBy: 'newest',
-                },
-            },
-            {
-                id: 'category-grid-1',
-                type: 'categoryGrid',
-                visible: true,
-                settings: {
-                    title: 'Shop by Category',
-                    subtitle: 'Find exactly what you\'re looking for',
-                    columns: 3,
-                    cardStyle: 'overlay',
-                },
-            },
-            {
-                id: 'testimonials-1',
-                type: 'testimonials',
-                visible: true,
-                settings: {
-                    title: 'What Our Customers Say',
-                    subtitle: 'Real reviews from real sneakerheads',
-                    layout: 'carousel',
-                    autoplay: true,
-                    showRating: true,
-                    showImage: false,
-                },
-            },
-            {
-                id: 'trust-badges-1',
-                type: 'trustBadges',
-                visible: true,
-                settings: { title: '' },
-            },
-            {
-                id: 'newsletter-1',
-                type: 'newsletter',
-                visible: true,
-                settings: {
-                    title: 'Stay in the Loop',
-                    subtitle: 'Get early access to new drops and exclusive discounts.',
-                    buttonText: 'Subscribe',
-                    placeholder: 'Enter your email',
-                    backgroundColor: 'transparent',
-                    successMessage: 'Thanks for subscribing!',
-                },
-            },
-        ],
+        template: [],
     },
-    themeSettings: {
-        primaryColor: '#000000',
-        secondaryColor: '#FFFFFF',
-        accentColor: '#E5E5E5',
-        backgroundColor: '#FFFFFF',
-        textColor: '#1A1A2E',
-        fontFamily: 'Inter',
-        headingFontFamily: 'Inter',
-        borderRadius: 12,
-        enableAnimations: true,
-        enableShadows: true,
-    },
+    themeSettings: {},
+}
+
+const EMPTY_THEME_SETTINGS_SCHEMA: ThemeSettingsSchema = {
+    schema_version: 'runtime',
+    settings: {},
+}
+
+function normalizeTemplateConfig(input: unknown): TemplateConfig {
+    const fallback = structuredClone(EMPTY_TEMPLATE)
+
+    if (!input || typeof input !== 'object') {
+        return fallback
+    }
+
+    const value = input as Record<string, unknown>
+    const rawSections = value.sections
+
+    if (rawSections && typeof rawSections === 'object' && !Array.isArray(rawSections)) {
+        const sections = rawSections as Record<string, unknown>
+        return {
+            sections: {
+                header: (sections.header as SectionEntry) || fallback.sections.header,
+                footer: (sections.footer as SectionEntry) || fallback.sections.footer,
+                template: Array.isArray(sections.template)
+                    ? (sections.template as SectionEntry[])
+                    : fallback.sections.template,
+            },
+            themeSettings: {
+                ...fallback.themeSettings,
+                ...((value.themeSettings as Record<string, unknown>) || {}),
+            },
+        }
+    }
+
+    if (Array.isArray(rawSections)) {
+        const allSections = rawSections as SectionEntry[]
+        const header = allSections.find(section => section.type === 'header') || fallback.sections.header
+        const footer = allSections.find(section => section.type === 'footer') || fallback.sections.footer
+        const template = allSections.filter(section => section.type !== 'header' && section.type !== 'footer')
+
+        return {
+            sections: {
+                header,
+                footer,
+                template,
+            },
+            themeSettings: {
+                ...fallback.themeSettings,
+                ...((value.themeSettings as Record<string, unknown>) || {}),
+            },
+        }
+    }
+
+    return fallback
 }
 
 function ThemeEditorInner() {
@@ -151,14 +91,73 @@ function ThemeEditorInner() {
     const store = params?.store as string
     const themeId = params?.themeId as string
 
-    const { state, canUndo, canRedo, pushState, undo, redo } = useEditorHistory(DEFAULT_TEMPLATE)
+    const { state, canUndo, canRedo, pushState, replaceState, undo, redo } = useEditorHistory(EMPTY_TEMPLATE)
     const { selectedSection, setSelectedSection } = useEditorUrl()
 
     const [activePanel, setActivePanel] = useState<'sections' | 'themeSettings'>('sections')
     const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+    const [isLoading, setIsLoading] = useState(true)
     const [isDirty, setIsDirty] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [showAddModal, setShowAddModal] = useState(false)
+    const [previewToken, setPreviewToken] = useState<string | null>(null)
+    const [previewError, setPreviewError] = useState<string | null>(null)
+    const [isPreviewRefreshing, setIsPreviewRefreshing] = useState(false)
+    const [sectionSchemas, setSectionSchemas] = useState<Record<string, SectionSchema>>({})
+    const [themeSettingsSchema, setThemeSettingsSchema] = useState<ThemeSettingsSchema>(EMPTY_THEME_SETTINGS_SCHEMA)
+    const [themeName, setThemeName] = useState(themeId)
+
+    useEffect(() => {
+        let cancelled = false
+
+        async function loadEditor() {
+            setIsLoading(true)
+            setLoadError(null)
+
+            try {
+                const res = await fetch(
+                    `/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`,
+                    { cache: 'no-store' }
+                )
+                const data = await res.json().catch(() => ({}))
+
+                if (!res.ok) {
+                    throw new Error(data.error || 'Failed to load theme editor')
+                }
+
+                if (!cancelled) {
+                    replaceState(normalizeTemplateConfig(data.draftConfig || data.templateConfig))
+                    if (data.sectionSchemas && typeof data.sectionSchemas === 'object') {
+                        setSectionSchemas(data.sectionSchemas)
+                    }
+                    if (data.themeSettingsSchema?.settings) {
+                        setThemeSettingsSchema(data.themeSettingsSchema)
+                    }
+                    if (typeof data.theme?.name === 'string') {
+                        setThemeName(data.theme.name)
+                    }
+                    setIsDirty(false)
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setLoadError(err instanceof Error ? err.message : 'Failed to load theme editor')
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsLoading(false)
+                }
+            }
+        }
+
+        if (store && themeId) {
+            loadEditor()
+        }
+
+        return () => {
+            cancelled = true
+        }
+    }, [store, themeId, replaceState])
 
     // Keyboard shortcuts: Ctrl+Z / Ctrl+Shift+Z
     useEffect(() => {
@@ -229,7 +228,7 @@ function ThemeEditorInner() {
     }, [state, pushState, selectedSection, setSelectedSection])
 
     const addSection = useCallback((sectionType: string) => {
-        const schema = SECTION_SCHEMAS[sectionType]
+        const schema = sectionSchemas[sectionType]
         if (!schema) return
         const newSection: SectionEntry = {
             id: `${sectionType}-${Date.now()}`,
@@ -242,7 +241,7 @@ function ThemeEditorInner() {
         pushState(next)
         setIsDirty(true)
         setSelectedSection(newSection.id)
-    }, [state, pushState, setSelectedSection])
+    }, [sectionSchemas, state, pushState, setSelectedSection])
 
     const updateThemeSetting = useCallback((key: string, value: unknown) => {
         const next = structuredClone(state)
@@ -251,35 +250,101 @@ function ThemeEditorInner() {
         setIsDirty(true)
     }, [state, pushState])
 
+    const saveDraft = useCallback(async () => {
+        const res = await fetch(
+            `/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}`,
+            {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ draftConfig: state }),
+            }
+        )
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) {
+            throw new Error(data.error?.message || (typeof data.error === 'string' ? data.error : res.statusText))
+        }
+
+        return data
+    }, [themeId, store, state])
+
     const handleSave = useCallback(async () => {
         setIsSaving(true)
         try {
-            const res = await fetch(
-                `/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`,
-                {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ templateConfig: state }),
-                }
-            )
-            if (!res.ok) {
-                const data = await res.json().catch(() => ({}))
-                console.error('[Editor Save] Failed:', data.error || res.statusText)
-            }
+            await saveDraft()
+            setLoadError(null)
+            setIsDirty(false)
         } catch (err) {
-            console.error('[Editor Save] Error:', err)
+            setLoadError(err instanceof Error ? err.message : 'Failed to save draft')
         } finally {
             setIsSaving(false)
-            setIsDirty(false)
         }
-    }, [themeId, store, state])
+    }, [saveDraft])
+
+    useEffect(() => {
+        if (!store || !themeId || isLoading || loadError) return
+
+        let cancelled = false
+        const timer = window.setTimeout(async () => {
+            setIsPreviewRefreshing(true)
+            setPreviewError(null)
+
+            try {
+                await saveDraft()
+                const res = await fetch(`/api/themes/${themeId}/preview-session?store_name=${encodeURIComponent(store)}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ store_name: store, ttl_seconds: 900 }),
+                })
+                const data = await res.json().catch(() => ({}))
+                if (!res.ok) {
+                    throw new Error(data.error?.message || data.error || res.statusText)
+                }
+
+                const token = data.data?.preview_token
+                if (!cancelled && typeof token === 'string') {
+                    setPreviewToken(token)
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setPreviewError(err instanceof Error ? err.message : 'Unable to refresh preview')
+                }
+            } finally {
+                if (!cancelled) {
+                    setIsPreviewRefreshing(false)
+                }
+            }
+        }, 700)
+
+        return () => {
+            cancelled = true
+            window.clearTimeout(timer)
+        }
+    }, [store, themeId, state, isLoading, loadError, saveDraft])
+
+    if (isLoading) {
+        return <ThemeEditorLoading />
+    }
+
+    if (loadError) {
+        return (
+            <div className="te-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--clr-bg-secondary, #f8f8f8)' }}>
+                <div style={{ textAlign: 'center', maxWidth: 420 }}>
+                    <p style={{ fontWeight: 700, marginBottom: 8 }}>Theme editor could not load</p>
+                    <p style={{ color: 'var(--clr-text-secondary)', marginBottom: 16 }}>{loadError}</p>
+                    <button className="te-header-save" onClick={() => window.location.reload()}>
+                        Retry
+                    </button>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="te-root">
             {/* Header */}
             <EditorHeader
                 storeName={store}
-                themeName={themeId === 'urban-kicks' ? 'Urban Kicks' : themeId}
+                themeName={themeName}
                 themeId={themeId}
                 isDirty={isDirty}
                 isSaving={isSaving}
@@ -306,6 +371,7 @@ function ThemeEditorInner() {
                         headerSection={state.sections.header}
                         footerSection={state.sections.footer}
                         templateSections={state.sections.template}
+                        sectionSchemas={sectionSchemas}
                         selectedSectionId={selectedSection}
                         onSelectSection={setSelectedSection}
                         onToggleVisibility={toggleVisibility}
@@ -315,24 +381,26 @@ function ThemeEditorInner() {
                 ) : (
                     <ThemeSettingsPanel
                         themeSettings={state.themeSettings}
+                        settingsSchema={themeSettingsSchema}
                         onSettingChange={updateThemeSetting}
                     />
                 )}
 
                 {/* Center Preview */}
                 <CenterPanel
+                    storeName={store}
                     viewport={viewport}
-                    headerSection={state.sections.header}
-                    footerSection={state.sections.footer}
-                    templateSections={state.sections.template}
+                    previewToken={previewToken}
+                    previewError={previewError}
+                    isPreviewRefreshing={isPreviewRefreshing}
                     selectedSectionId={selectedSection}
-                    onSelectSection={setSelectedSection}
                 />
 
                 {/* Right Sidebar */}
                 {selectedSection && activePanel === 'sections' && (
                     <RightSidebar
                         section={selectedSectionEntry}
+                        sectionSchemas={sectionSchemas}
                         onSettingChange={updateSetting}
                         onClose={() => setSelectedSection(null)}
                     />
@@ -342,6 +410,7 @@ function ThemeEditorInner() {
             {/* Add Section Modal */}
             <AddSectionModal
                 open={showAddModal}
+                sectionSchemas={sectionSchemas}
                 existingSectionTypes={state.sections.template.map(s => s.type)}
                 onAdd={addSection}
                 onClose={() => setShowAddModal(false)}

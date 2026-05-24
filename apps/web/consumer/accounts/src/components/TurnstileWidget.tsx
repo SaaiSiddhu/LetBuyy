@@ -38,8 +38,11 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
         // Use refs to avoid re-render dependency issues
         const onVerifyRef = useRef(onVerify)
         const onExpireRef = useRef(onExpire)
-        onVerifyRef.current = onVerify
-        onExpireRef.current = onExpire
+
+        useEffect(() => {
+            onVerifyRef.current = onVerify
+            onExpireRef.current = onExpire
+        }, [onVerify, onExpire])
 
         const renderWidget = useCallback(() => {
             if (!containerRef.current || !window.turnstile) return

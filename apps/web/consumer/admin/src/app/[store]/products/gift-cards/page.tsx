@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface GiftCard {
     id: string
@@ -16,7 +15,6 @@ interface GiftCard {
 
 export default function GiftCardsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
 
     const [giftCards, setGiftCards] = useState<GiftCard[]>([])
     const [loading, setLoading] = useState(true)
@@ -24,63 +22,35 @@ export default function GiftCardsPage() {
     const [newValue, setNewValue] = useState('')
     const [creating, setCreating] = useState(false)
 
+    const loadGiftCards = useCallback(async () => {
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setGiftCards(Array.isArray(payload.data) ? payload.data : [])
+        setLoading(false)
+    }, [store])
+
     useEffect(() => {
         loadGiftCards()
-    }, [])
-
-    async function loadGiftCards() {
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', store)
-            .single()
-
-        if (!storeData) { setLoading(false); return }
-
-        const { data } = await supabase
-            .from('gift_cards')
-            .select('*')
-            .eq('store_id', storeData.id)
-            .order('created_at', { ascending: false })
-
-        setGiftCards(data || [])
-        setLoading(false)
-    }
-
-    function generateCode() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
-        let code = ''
-        for (let i = 0; i < 16; i++) {
-            if (i > 0 && i % 4 === 0) code += '-'
-            code += chars[Math.floor(Math.random() * chars.length)]
-        }
-        return code
-    }
+    }, [loadGiftCards])
 
     async function handleCreate() {
         const value = parseFloat(newValue)
         if (!value || value <= 0) return
         setCreating(true)
 
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', store)
-            .single()
-
-        if (storeData) {
-            await supabase.from('gift_cards').insert({
-                store_id: storeData.id,
-                code: generateCode(),
+        await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
                 initial_value: value,
-                balance: value,
-                status: 'active',
-            })
+            }),
+        })
 
-            setNewValue('')
-            setShowCreate(false)
-            loadGiftCards()
-        }
+        setNewValue('')
+        setShowCreate(false)
+        loadGiftCards()
         setCreating(false)
     }
 

@@ -1,5 +1,4 @@
 import { notFound, redirect } from "next/navigation";
-import { cookies } from "next/headers";
 import { getSessionUser, getStoreForUser, getUserStores } from "@/lib/auth/session";
 import AdminShell from "@/components/AdminShell";
 
@@ -18,12 +17,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
     // Validate session
     const user = await getSessionUser();
     if (!user) {
-        // Clear stale session cookie to prevent redirect loops
-        const cookieStore = await cookies();
-        if (cookieStore.get('lb_session')) {
-            cookieStore.delete('lb_session');
-        }
-        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000';
+        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001';
         redirect(`${accountsUrl}/lookup`);
     }
 

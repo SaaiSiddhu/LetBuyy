@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Comment {
     id: string; post_id: string; post_title?: string; author_name: string
@@ -12,29 +11,35 @@ interface Comment {
 
 export default function CommentsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [comments, setComments] = useState<Comment[]>([])
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState<string>('all')
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        const { data } = await supabase.from('blog_comments').select('*, blog_posts(title)').eq('store_id', s.id).order('created_at', { ascending: false })
-        setComments((data || []).map((c: any) => ({ ...c, post_title: c.blog_posts?.title })))
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/blog-comments?limit=100`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setComments(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const updateStatus = async (id: string, status: string) => {
-        await supabase.from('blog_comments').update({ status }).eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/blog-comments/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status }),
+        })
         load()
     }
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this comment?')) return
-        await supabase.from('blog_comments').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/blog-comments/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         load()
     }
 

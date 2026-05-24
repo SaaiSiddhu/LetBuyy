@@ -35,6 +35,7 @@ export default function PolicyPage({ title, icon, lastUpdated, store, children }
     };
 
     const Icon = icons[icon];
+    const basePath = `/store/${store.subdomain}`;
 
     const handlePrint = () => {
         window.print();
@@ -46,7 +47,7 @@ export default function PolicyPage({ title, icon, lastUpdated, store, children }
                 {/* Header */}
                 <div className="py-4">
                     <Link
-                        href={`/`}
+                        href={basePath}
                         className="inline-flex items-center text-sm text-theme-secondary hover:opacity-70 transition-opacity"
                     >
                         <ArrowLeft size={16} className="mr-2" /> Back to Store

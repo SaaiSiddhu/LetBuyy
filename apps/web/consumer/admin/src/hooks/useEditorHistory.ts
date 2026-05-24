@@ -72,6 +72,14 @@ export function useEditorHistory(initial: TemplateConfig) {
         })
     }, [])
 
+    const replaceState = useCallback((newState: TemplateConfig) => {
+        setHistory({
+            past: [],
+            present: newState,
+            future: [],
+        })
+    }, [])
+
     const canUndo = history.past.length > 0
     const canRedo = history.future.length > 0
 
@@ -80,6 +88,7 @@ export function useEditorHistory(initial: TemplateConfig) {
         canUndo,
         canRedo,
         pushState,
+        replaceState,
         undo,
         redo,
     }

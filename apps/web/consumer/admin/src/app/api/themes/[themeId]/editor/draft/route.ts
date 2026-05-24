@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
  * POST /api/themes/[themeId]/editor/draft?store_name=xxx
@@ -33,55 +34,25 @@ export async function POST(
             )
         }
 
-        const supabase = await createClient()
+        const resolved = await resolveOwnedStoreId(storeName)
+        if (resolved.error) return resolved.error
 
-        // Get store id
-        const { data: store, error: storeError } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', storeName)
-            .single()
-
-        if (storeError || !store) {
-            return NextResponse.json(
-                { error: 'Store not found' },
-                { status: 404 }
-            )
-        }
-
-        // UPSERT draft (unique on store_id + theme_id)
-        const { error: upsertError } = await supabase
-            .from('theme_editor_drafts')
-            .upsert(
-                {
-                    store_id: store.id,
-                    theme_id: themeId,
-                    draft_config: draftConfig,
-                    auto_saved_at: new Date().toISOString(),
-                },
-                {
-                    onConflict: 'store_id,theme_id',
-                }
-            )
-
-        if (upsertError) {
-            console.error('[API /themes/editor/draft POST] Upsert error:', upsertError)
-            return NextResponse.json(
-                { error: 'Failed to save draft' },
-                { status: 500 }
-            )
-        }
+        const payload = await readWorkerJson(await workerFetch(`/themes/${themeId}/editor/draft`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                store_id: resolved.storeId,
+                template_config: draftConfig,
+                client: 'admin-web',
+            }),
+        }))
 
         return NextResponse.json({
             success: true,
-            savedAt: new Date().toISOString(),
+            savedAt: payload.data?.saved_at || new Date().toISOString(),
+            version: payload.data?.version,
         })
     } catch (err) {
-        console.error('[API /themes/editor/draft POST] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }
 
@@ -106,33 +77,16 @@ export async function DELETE(
             )
         }
 
-        const supabase = await createClient()
+        const resolved = await resolveOwnedStoreId(storeName)
+        if (resolved.error) return resolved.error
 
-        const { data: store } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', storeName)
-            .single()
-
-        if (!store) {
-            return NextResponse.json(
-                { error: 'Store not found' },
-                { status: 404 }
-            )
-        }
-
-        await supabase
-            .from('theme_editor_drafts')
-            .delete()
-            .eq('store_id', store.id)
-            .eq('theme_id', themeId)
+        await readWorkerJson(await workerFetch(
+            `/themes/${themeId}/editor/draft?store_id=${encodeURIComponent(resolved.storeId)}`,
+            { method: 'DELETE' }
+        ))
 
         return NextResponse.json({ success: true })
     } catch (err) {
-        console.error('[API /themes/editor/draft DELETE] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }

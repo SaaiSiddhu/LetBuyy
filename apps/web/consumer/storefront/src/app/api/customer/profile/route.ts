@@ -1,7 +1,7 @@
 // PATCH /api/customer/profile — Update customer profile
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/session';
-import { db } from '@/lib/supabase';
+import { readWorkerJson, workerFetch } from '@/lib/worker-client';
 
 export async function PATCH(request: NextRequest) {
     try {
@@ -17,15 +17,17 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
         }
 
-        const { error } = await db
-            .from('store_customers')
-            .update(updates)
-            .eq('id', session.sub)
-            .eq('store_id', session.storeId);
-
-        if (error) {
-            throw error;
-        }
+        const response = await workerFetch('/storefront/customer/profile', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                customer_id: session.sub,
+                store_id: session.storeId,
+                full_name: updates.full_name,
+                phone: updates.phone,
+                accepts_marketing: updates.accepts_marketing,
+            }),
+        });
+        await readWorkerJson(response);
 
         return NextResponse.json({ success: true });
     } catch (error: unknown) {

@@ -516,12 +516,9 @@ class DatabaseService {
 
   // Create order
   Future<String> createOrder(OrderModel order) async {
-    try {
-      final docRef = await _firestore.collection('orders').add(order.toMap());
-      return docRef.id;
-    } catch (e) {
-      throw DatabaseException('Failed to create order: ${e.toString()}');
-    }
+    throw DatabaseException(
+      'Orders must be created through the backend checkout workflow.',
+    );
   }
 
   // Get user orders
@@ -559,14 +556,9 @@ class DatabaseService {
 
   // Update order status (Admin)
   Future<void> updateOrderStatus(String orderId, String status) async {
-    try {
-      await _firestore.collection('orders').doc(orderId).update({
-        'orderStatus': status,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-    } catch (e) {
-      throw DatabaseException('Failed to update order status: ${e.toString()}');
-    }
+    throw DatabaseException(
+      'Order status changes must use the backend order state machine.',
+    );
   }
 
   // Get all orders (Admin)

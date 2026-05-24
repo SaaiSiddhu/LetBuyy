@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:ui';
 import 'dart:io';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -954,4 +953,3 @@ class _QRCodeBottomSheetState extends State<_QRCodeBottomSheet> {
     );
   }
 }
-

@@ -2,45 +2,71 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:crypto/crypto.dart';
 import 'package:letbuyy_core/letbuyy_core.dart';
 
 /// 🎨 Custom Razorpay Service - NO POPUP, Fully Custom UI
 class CustomRazorpayService {
+  final String? authToken;
+  final String orderEndpoint;
+  final String verifyEndpoint;
+
+  CustomRazorpayService({
+    this.authToken,
+    this.orderEndpoint = ApiConstants.razorpayOrderEndpoint,
+    this.verifyEndpoint = ApiConstants.razorpayVerifyEndpoint,
+  });
+
+  Map<String, String> get _headers {
+    return {
+      'Content-Type': 'application/json',
+      if (authToken != null && authToken!.isNotEmpty)
+        'Authorization': 'Bearer $authToken',
+    };
+  }
   
-  /// Create Order
+  /// Create a Razorpay order through the LetBuyy backend.
+  ///
+  /// `notes` must include `order_id` or `orderId` for the LetBuyy order.
+  /// Razorpay secrets are intentionally not available in Flutter.
   Future<CustomOrderResponse?> createOrder({
     required double amount,
     Map<String, dynamic>? notes,
   }) async {
     try {
-      final auth = base64Encode(
-        utf8.encode('${RazorpayConfig.keyId}:${RazorpayConfig.keySecret}')
-      );
+      final appOrderId =
+          notes?['order_id']?.toString() ?? notes?['orderId']?.toString();
+
+      if (appOrderId == null || appOrderId.isEmpty) {
+        debugPrint("❌ Backend order_id is required before creating a payment order");
+        return null;
+      }
       
       final response = await http.post(
-        Uri.parse('https://api.razorpay.com/v1/orders'),
-        headers: {
-          'Authorization': 'Basic $auth',
-          'Content-Type': 'application/json',
-        },
+        Uri.parse(orderEndpoint),
+        headers: _headers,
         body: jsonEncode({
-          'amount': (amount * 100).toInt(),
-          'currency': 'INR',
-          'receipt': 'rcpt_${DateTime.now().millisecondsSinceEpoch}',
-          'notes': notes ?? {},
+          'order_id': appOrderId,
+          'orderId': appOrderId,
+          'idempotency_key': notes?['idempotency_key'],
         }),
       );
 
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body);
-        debugPrint("✅ Order Created: ${data['id']}");
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      final data = (payload['data'] as Map<String, dynamic>?) ?? payload;
+      final providerOrderId =
+          data['razorpay_order_id']?.toString() ?? data['razorpayOrderId']?.toString();
+
+      if (response.statusCode >= 200 &&
+          response.statusCode < 300 &&
+          providerOrderId != null &&
+          providerOrderId.isNotEmpty) {
+        debugPrint("✅ Order Created by backend: $providerOrderId");
         
         return CustomOrderResponse(
-          orderId: data['id'],
-          amount: data['amount'] / 100,
-          currency: data['currency'],
-          receipt: data['receipt'],
+          orderId: providerOrderId,
+          amount: ((data['amount'] as num?)?.toDouble() ?? amount * 100) / 100,
+          currency: data['currency']?.toString() ?? RazorpayConfig.currency,
+          receipt: appOrderId,
         );
       } else {
         debugPrint("❌ Order Creation Failed: ${response.body}");
@@ -61,55 +87,12 @@ class CustomRazorpayService {
     required String customerEmail,
     required String customerPhone,
   }) async {
-    try {
-      final auth = base64Encode(
-        utf8.encode('${RazorpayConfig.keyId}:${RazorpayConfig.keySecret}')
-      );
-
-      final response = await http.post(
-        Uri.parse('https://api.razorpay.com/v1/payments/create/upi'),
-        headers: {
-          'Authorization': 'Basic $auth',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'amount': (amount * 100).toInt(),
-          'currency': 'INR',
-          'order_id': orderId,
-          'method': 'upi',
-          'vpa': vpa,
-          'customer': {
-            'name': customerName,
-            'email': customerEmail,
-            'contact': customerPhone,
-          },
-        }),
-      );
-
-      final data = jsonDecode(response.body);
-      
-      if (response.statusCode == 200) {
-        return PaymentResponse(
-          success: true,
-          paymentId: data['id'],
-          orderId: orderId,
-          signature: _generateSignature(orderId, data['id']),
-          method: 'upi',
-        );
-      } else {
-        return PaymentResponse(
-          success: false,
-          error: data['error']['description'] ?? 'Payment failed',
-          method: 'upi',
-        );
-      }
-    } catch (e) {
-      return PaymentResponse(
-        success: false,
-        error: e.toString(),
-        method: 'upi',
-      );
-    }
+    return PaymentResponse(
+      success: false,
+      orderId: orderId,
+      error: 'Direct UPI payment creation requires a backend payment-intent endpoint. Use Razorpay Checkout or add a server endpoint for UPI intents.',
+      method: 'upi',
+    );
   }
 
   /// Get Available UPI Apps
@@ -148,25 +131,36 @@ class CustomRazorpayService {
     ];
   }
 
-  /// Verify Signature
-  String _generateSignature(String orderId, String paymentId) {
-    final data = '$orderId|$paymentId';
-    final key = utf8.encode(RazorpayConfig.keySecret);
-    final bytes = utf8.encode(data);
-    
-    final hmac = Hmac(sha256, key);
-    final digest = hmac.convert(bytes);
-    
-    return digest.toString();
-  }
-
-  bool verifySignature({
+  Future<bool> verifySignature({
     required String orderId,
     required String paymentId,
     required String signature,
-  }) {
-    final generated = _generateSignature(orderId, paymentId);
-    return generated == signature;
+    required String appOrderId,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse(verifyEndpoint),
+        headers: _headers,
+        body: jsonEncode({
+          'order_id': appOrderId,
+          'orderId': appOrderId,
+          'razorpay_order_id': orderId,
+          'razorpay_payment_id': paymentId,
+          'razorpay_signature': signature,
+        }),
+      );
+
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        return false;
+      }
+
+      final payload = jsonDecode(response.body) as Map<String, dynamic>;
+      if (payload.containsKey('success')) return payload['success'] == true;
+      final data = payload['data'];
+      return data is Map<String, dynamic> && data['verified'] == true;
+    } catch (_) {
+      return false;
+    }
   }
 }
 

@@ -252,7 +252,7 @@ class SectionEditorScreenState extends State<SectionEditorScreen> {
     try {
       final storeService = context.read<StoreService>();
       final latestStore = await storeService.getStoreById(_store!.id);
-      if (latestStore != null && mounted) {
+      if (mounted) {
         final loadedSections = latestStore.templateConfig?.sections ?? [];
         setState(() {
           _store = latestStore;

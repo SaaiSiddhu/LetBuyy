@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Product {
     id: string
@@ -24,45 +23,24 @@ type TabFilter = 'all' | 'active' | 'draft' | 'archived'
 
 export default function ProductsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
 
     const [products, setProducts] = useState<Product[]>([])
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<TabFilter>('all')
     const [searchQuery, setSearchQuery] = useState('')
-    const [storeId, setStoreId] = useState<string | null>(null)
 
     const loadProducts = useCallback(async () => {
-        // Store ownership is already validated by the server-side [store]/layout.tsx
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', store)
-            .single()
-
-        if (!storeData) {
-            setLoading(false)
-            return
-        }
-
-        setStoreId(storeData.id)
-
-        let query = supabase
-            .from('products')
-            .select('id, name, status, stock, price, compare_price, images, category, product_type, vendor, is_active, created_at')
-            .eq('store_id', storeData.id)
-            .order('created_at', { ascending: false })
-
-        if (activeTab === 'active') {
-            query = query.eq('is_active', true)
-        } else if (activeTab === 'draft') {
-            query = query.eq('is_active', false)
-        }
-
-        const { data } = await query
-        setProducts(data || [])
+        setLoading(true)
+        const query = new URLSearchParams({
+            status: activeTab,
+            limit: '100',
+            sort: 'created_at',
+            order: 'desc',
+        })
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?${query.toString()}`)
+        const payload = await response.json()
+        setProducts(payload.data || [])
         setLoading(false)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [store, activeTab])
 
     useEffect(() => {

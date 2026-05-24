@@ -1,9 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Category {
     id: string
@@ -20,57 +18,49 @@ interface Category {
 
 export default function CategoriesPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
 
     const [categories, setCategories] = useState<Category[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [formData, setFormData] = useState({ name: '', slug: '', description: '' })
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
 
     const loadCategories = useCallback(async () => {
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', store)
-            .single()
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/categories`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
 
-        if (!storeData) { setLoading(false); return }
-        setStoreId(storeData.id)
-
-        const { data } = await supabase
-            .from('product_categories')
-            .select('*')
-            .eq('store_id', storeData.id)
-            .order('display_order', { ascending: true })
-
-        setCategories(data || [])
+        setCategories(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { loadCategories() }, [loadCategories])
 
     const generateSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
     const handleSave = async () => {
-        if (!storeId || !formData.name) return
+        if (!formData.name) return
         setSaving(true)
 
         const slug = formData.slug || generateSlug(formData.name)
         const payload = {
-            store_id: storeId,
             name: formData.name,
             slug,
             description: formData.description || null,
         }
 
-        if (editingId) {
-            await supabase.from('product_categories').update(payload).eq('id', editingId)
-        } else {
-            await supabase.from('product_categories').insert(payload)
-        }
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/categories/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/categories`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
 
         setSaving(false)
         setShowForm(false)
@@ -81,7 +71,9 @@ export default function CategoriesPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this category?')) return
-        await supabase.from('product_categories').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/categories/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         loadCategories()
     }
 

@@ -1,7 +1,8 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import Image, { type ImageLoaderProps } from 'next/image';
 import {
     ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
     ShieldCheck, MapPin, Truck, Clock, Package, User, Phone, Mail, Home
@@ -10,12 +11,50 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Script from 'next/script';
 
-// Razorpay Test Key (replace with your key)
-const RAZORPAY_KEY_ID = 'rzp_test_1DP5mmOlF5G5ag';
+interface RazorpaySuccessResponse {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+}
+
+interface RazorpayFailureResponse {
+    error?: {
+        description?: string;
+        reason?: string;
+    };
+}
+
+interface RazorpayOptions {
+    key: string;
+    amount: number;
+    currency: string;
+    name: string;
+    description: string;
+    image: string;
+    order_id: string;
+    handler: (response: RazorpaySuccessResponse) => void | Promise<void>;
+    prefill: {
+        name: string;
+        email: string;
+        contact: string;
+    };
+    notes: Record<string, string>;
+    theme: {
+        color: string;
+    };
+    modal: {
+        ondismiss: () => void;
+    };
+}
+
+interface RazorpayInstance {
+    on(event: 'payment.failed', handler: (response: RazorpayFailureResponse) => void): void;
+    open(): void;
+}
 
 declare global {
     interface Window {
-        Razorpay: any;
+        Razorpay?: new (options: RazorpayOptions) => RazorpayInstance;
     }
 }
 
@@ -40,9 +79,32 @@ interface FormData {
 
 type DeliveryOption = 'standard' | 'express';
 type PaymentMethod = 'online' | 'stripe' | 'paypal' | 'cod';
+type ProviderOrderMethod = 'razorpay' | 'stripe' | 'paypal' | 'cod';
+const productImageFallback = '/images/banners/new-arrivals-1.png';
+const passthroughImageLoader = ({ src }: ImageLoaderProps) => src;
+
+interface CreateOrderResult {
+    success?: boolean;
+    error?: string;
+    order?: {
+        id: string;
+        orderNumber: string;
+        status: string;
+        total: number;
+    };
+}
+
+interface AppliedCoupon {
+    code: string;
+    type: string;
+    value: number;
+    discount: number;
+    freeShipping?: boolean;
+}
 
 export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled }: CheckoutClientProps) {
     const { items, cartTotal, clearCart } = useCart();
+    const basePath = `/store/${subdomain}`;
 
     const [step, setStep] = useState(1); // 1: Address, 2: Review & Pay
     const [isProcessing, setIsProcessing] = useState(false);
@@ -51,6 +113,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('standard');
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(onlinePaymentEnabled ? 'online' : 'cod');
+    const [couponInput, setCouponInput] = useState('');
+    const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+    const [couponError, setCouponError] = useState('');
+    const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
+    const idempotencyKeysRef = useRef<Record<string, string>>({});
 
     const [formData, setFormData] = useState<FormData>({
         name: '',
@@ -69,10 +136,18 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
     // Delivery costs
     const deliveryCharges = deliveryOption === 'express' ? 99 : 0;
-    const totalAmount = cartTotal + deliveryCharges;
+    const discountAmount = appliedCoupon?.discount || 0;
+    const effectiveDeliveryCharges = appliedCoupon?.freeShipping ? 0 : deliveryCharges;
+    const totalAmount = Math.max(0, cartTotal + effectiveDeliveryCharges - discountAmount);
+    const getIdempotencyKey = (scope: string) => {
+        if (!idempotencyKeysRef.current[scope]) {
+            idempotencyKeysRef.current[scope] = `checkout-${scope}-${crypto.randomUUID()}`;
+        }
+        return idempotencyKeysRef.current[scope];
+    };
 
     // Auto-create customer record after order
-    const autoCreateCustomer = async () => {
+    const autoCreateCustomer = async (order?: CreateOrderResult['order']) => {
         try {
             await fetch('/api/customer/auto-create', {
                 method: 'POST',
@@ -82,6 +157,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     fullName: formData.name,
                     phone: formData.phone,
                     storeId,
+                    orderId: order?.id,
+                    orderTotal: order?.total,
                 }),
             });
         } catch {
@@ -111,61 +188,103 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         }
     };
 
+    const buildOrderPayload = (method: ProviderOrderMethod) => ({
+        storeId,
+        sellerId,
+        subdomain,
+        idempotencyKey: getIdempotencyKey(`order-${method}`),
+        customer: {
+            name: formData.name,
+            email: formData.email.toLowerCase(),
+            phone: formData.phone,
+            address: {
+                address: formData.address,
+                city: formData.city,
+                state: formData.state,
+                pincode: formData.pincode,
+            }
+        },
+        items: items.map(item => ({
+            productId: item.id,
+            quantity: item.quantity,
+        })),
+        paymentMethod: method,
+        deliveryOption,
+        couponCode: appliedCoupon?.code,
+    });
+
+    const applyCoupon = async () => {
+        const code = couponInput.trim().toUpperCase();
+        if (!code) {
+            setCouponError('Enter a coupon code');
+            return;
+        }
+
+        setIsCheckingCoupon(true);
+        setCouponError('');
+
+        try {
+            const query = new URLSearchParams({
+                code,
+                subdomain,
+                subtotal: String(cartTotal),
+            });
+            const response = await fetch(`/api/coupons/validate?${query.toString()}`);
+            const payload = await response.json();
+
+            if (!response.ok || !payload.valid || !payload.coupon) {
+                setAppliedCoupon(null);
+                setCouponError(payload.error || 'Invalid coupon code');
+                return;
+            }
+
+            setAppliedCoupon({
+                code: payload.coupon.code,
+                type: payload.coupon.type,
+                value: Number(payload.coupon.value || 0),
+                discount: Number(payload.coupon.discount || 0),
+                freeShipping: Boolean(payload.coupon.freeShipping),
+            });
+            setCouponInput(payload.coupon.code);
+        } catch {
+            setAppliedCoupon(null);
+            setCouponError('Unable to validate coupon');
+        } finally {
+            setIsCheckingCoupon(false);
+        }
+    };
+
+    const removeCoupon = () => {
+        setAppliedCoupon(null);
+        setCouponError('');
+        setCouponInput('');
+    };
+
+    const createCheckoutOrder = async (method: ProviderOrderMethod): Promise<CreateOrderResult> => {
+        const res = await fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(buildOrderPayload(method)),
+        });
+
+        return res.json();
+    };
+
     // Handle COD order
     const handleCODOrder = async () => {
         setIsProcessing(true);
         try {
-            const orderData = {
-                storeId,
-                sellerId,
-                subdomain,
-                customer: {
-                    name: formData.name,
-                    email: formData.email.toLowerCase(),
-                    phone: formData.phone,
-                    address: {
-                        address: formData.address,
-                        city: formData.city,
-                        state: formData.state,
-                        pincode: formData.pincode,
-                    }
-                },
-                items: items.map(item => ({
-                    productId: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    image: item.images[0] || '',
-                    variant: item.selectedVariant,
-                })),
-                pricing: {
-                    subtotal: cartTotal,
-                    deliveryCharge: deliveryCharges,
-                    discount: 0,
-                    total: totalAmount,
-                },
-                paymentMethod: 'cod',
-            };
+            const result = await createCheckoutOrder('cod');
 
-            const res = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData),
-            });
-
-            const result = await res.json();
-
-            if (result.success) {
+            if (result.success && result.order) {
                 setOrderNumber(result.order.orderNumber);
                 setIsSuccess(true);
                 clearCart();
-                autoCreateCustomer();
+                autoCreateCustomer(result.order);
             } else {
-                console.error('Order creation failed:', result.error);
                 alert('Order creation failed. Please try again.');
             }
-        } catch (error) {
-            console.error('COD Order error:', error);
+        } catch {
             alert('Order creation failed. Please try again.');
         } finally {
             setIsProcessing(false);
@@ -179,147 +298,116 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             return;
         }
 
+        if (!window.Razorpay) {
+            alert('Payment gateway is unavailable. Please try again.');
+            return;
+        }
+
         setIsProcessing(true);
 
-        const options = {
-            key: RAZORPAY_KEY_ID,
-            amount: Math.round(totalAmount * 100), // Amount in paise
-            currency: 'INR',
-            name: storeName,
-            description: `Order for ${items.length} item(s)`,
-            image: '/logo.png',
-            handler: async function (response: any) {
-                // Payment successful - create order
-                try {
-                    const orderData = {
-                        storeId,
-                        sellerId,
-                        subdomain,
-                        customer: {
-                            name: formData.name,
-                            email: formData.email.toLowerCase(),
-                            phone: formData.phone,
-                            address: {
-                                address: formData.address,
-                                city: formData.city,
-                                state: formData.state,
-                                pincode: formData.pincode,
-                            }
-                        },
-                        items: items.map(item => ({
-                            productId: item.id,
-                            name: item.name,
-                            price: item.price,
-                            quantity: item.quantity,
-                            image: item.images[0] || '',
-                            variant: item.selectedVariant,
-                        })),
-                        pricing: {
-                            subtotal: cartTotal,
-                            deliveryCharge: deliveryCharges,
-                            discount: 0,
-                            total: totalAmount,
-                        },
-                        paymentMethod: 'razorpay',
-                        razorpayPaymentId: response.razorpay_payment_id,
-                    };
-
-                    const res = await fetch('/api/orders', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(orderData),
-                    });
-
-                    const result = await res.json();
-
-                    if (result.success) {
-                        setOrderNumber(result.order.orderNumber);
-                        setIsSuccess(true);
-                        clearCart();
-                        autoCreateCustomer();
-                    } else {
-                        console.error('Order creation failed:', result.error);
-                        alert('Payment successful but order creation failed. Please contact support.');
-                    }
-                } catch (error) {
-                    console.error('Order creation error:', error);
-                    alert('Payment successful but order creation failed. Please contact support.');
-                }
-            },
-            prefill: {
-                name: formData.name,
-                email: formData.email,
-                contact: formData.phone,
-            },
-            notes: {
-                address: formData.address,
-                city: formData.city,
-                pincode: formData.pincode,
-            },
-            theme: {
-                color: '#6366f1',
-            },
-            modal: {
-                ondismiss: function () {
-                    setIsProcessing(false);
-                }
+        try {
+            const orderResult = await createCheckoutOrder('razorpay');
+            if (!orderResult.success || !orderResult.order) {
+                alert('Order creation failed. Please try again.');
+                setIsProcessing(false);
+                return;
             }
-        };
 
-        const rzp = new window.Razorpay(options);
-        rzp.on('payment.failed', function (response: any) {
-            console.error('Payment Failed:', response.error);
+            const paymentRes = await fetch('/api/payments/razorpay/create', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    orderId: orderResult.order.id,
+                    storeId,
+                    subdomain,
+                    idempotencyKey: getIdempotencyKey(`razorpay-create-${orderResult.order.id}`),
+                }),
+            });
+
+            const paymentResult = await paymentRes.json();
+            if (!paymentResult.success) {
+                alert(paymentResult.error || 'Online payment is not configured for this store yet.');
+                setIsProcessing(false);
+                return;
+            }
+
+            const options: RazorpayOptions = {
+                key: paymentResult.keyId,
+                amount: paymentResult.amount,
+                currency: paymentResult.currency || 'INR',
+                name: storeName,
+                description: `Order ${orderResult.order.orderNumber}`,
+                image: '/logo.png',
+                order_id: paymentResult.razorpayOrderId,
+                handler: async (response) => {
+                    try {
+                        const verifyRes = await fetch('/api/payments/razorpay/verify', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                orderId: orderResult.order!.id,
+                                subdomain,
+                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_payment_id: response.razorpay_payment_id,
+                                razorpay_signature: response.razorpay_signature,
+                                idempotencyKey: getIdempotencyKey(`razorpay-verify-${response.razorpay_payment_id}`),
+                            }),
+                        });
+
+                        const verifyResult = await verifyRes.json();
+                        if (verifyResult.success) {
+                            setOrderNumber(orderResult.order!.orderNumber);
+                            setIsSuccess(true);
+                            clearCart();
+                            autoCreateCustomer(orderResult.order);
+                        } else {
+                            alert(verifyResult.error || 'Payment verification failed. Please contact support.');
+                        }
+                    } catch {
+                        alert('Payment verification failed. Please contact support.');
+                    } finally {
+                        setIsProcessing(false);
+                    }
+                },
+                prefill: {
+                    name: formData.name,
+                    email: formData.email,
+                    contact: formData.phone,
+                },
+                notes: {
+                    order_id: orderResult.order.id,
+                    store_id: storeId,
+                    subdomain,
+                },
+                theme: {
+                    color: '#6366f1',
+                },
+                modal: {
+                    ondismiss: function () {
+                        setIsProcessing(false);
+                    }
+                }
+            };
+
+            const rzp = new window.Razorpay(options);
+            rzp.on('payment.failed', function () {
+                setIsProcessing(false);
+                alert('Payment failed. Please try again.');
+            });
+            rzp.open();
+        } catch {
             setIsProcessing(false);
             alert('Payment failed. Please try again.');
-        });
-        rzp.open();
+        }
     };
 
     // Initialize Stripe Checkout
     const handleStripeCheckout = async () => {
         setIsProcessing(true);
         try {
-            // 1. Create the order first
-            const orderData = {
-                storeId,
-                sellerId,
-                subdomain,
-                customer: {
-                    name: formData.name,
-                    email: formData.email.toLowerCase(),
-                    phone: formData.phone,
-                    address: {
-                        address: formData.address,
-                        city: formData.city,
-                        state: formData.state,
-                        pincode: formData.pincode,
-                    }
-                },
-                items: items.map(item => ({
-                    productId: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    image: item.images[0] || '',
-                    variant: item.selectedVariant,
-                })),
-                pricing: {
-                    subtotal: cartTotal,
-                    deliveryCharge: deliveryCharges,
-                    discount: 0,
-                    total: totalAmount,
-                },
-                paymentMethod: 'stripe',
-            };
+            const orderResult = await createCheckoutOrder('stripe');
 
-            const orderRes = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData),
-            });
-            const orderResult = await orderRes.json();
-
-            if (!orderResult.success) {
+            if (!orderResult.success || !orderResult.order) {
                 alert('Order creation failed. Please try again.');
                 setIsProcessing(false);
                 return;
@@ -332,11 +420,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
                     storeId,
-                    amount: totalAmount,
                     currency: 'inr',
                     customerEmail: formData.email.toLowerCase(),
                     successUrl: `${window.location.origin}/store/${subdomain}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
                     cancelUrl: `${window.location.origin}/store/${subdomain}/checkout`,
+                    idempotencyKey: getIdempotencyKey(`stripe-checkout-${orderResult.order.id}`),
                 }),
             });
 
@@ -349,8 +437,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 alert('Failed to create Stripe checkout session. Please try again.');
                 setIsProcessing(false);
             }
-        } catch (error) {
-            console.error('Stripe Checkout error:', error);
+        } catch {
             alert('Payment failed. Please try again.');
             setIsProcessing(false);
         }
@@ -360,47 +447,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const handlePayPalCheckout = async () => {
         setIsProcessing(true);
         try {
-            // 1. Create the order first
-            const orderData = {
-                storeId,
-                sellerId,
-                subdomain,
-                customer: {
-                    name: formData.name,
-                    email: formData.email.toLowerCase(),
-                    phone: formData.phone,
-                    address: {
-                        address: formData.address,
-                        city: formData.city,
-                        state: formData.state,
-                        pincode: formData.pincode,
-                    }
-                },
-                items: items.map(item => ({
-                    productId: item.id,
-                    name: item.name,
-                    price: item.price,
-                    quantity: item.quantity,
-                    image: item.images[0] || '',
-                    variant: item.selectedVariant,
-                })),
-                pricing: {
-                    subtotal: cartTotal,
-                    deliveryCharge: deliveryCharges,
-                    discount: 0,
-                    total: totalAmount,
-                },
-                paymentMethod: 'paypal',
-            };
+            const orderResult = await createCheckoutOrder('paypal');
 
-            const orderRes = await fetch('/api/orders', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData),
-            });
-            const orderResult = await orderRes.json();
-
-            if (!orderResult.success) {
+            if (!orderResult.success || !orderResult.order) {
                 alert('Order creation failed. Please try again.');
                 setIsProcessing(false);
                 return;
@@ -413,10 +462,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
                     storeId,
-                    amount: totalAmount,
-                    currency: 'INR',
                     returnUrl: `${window.location.origin}/store/${subdomain}/checkout/paypal-return?orderId=${orderResult.order.id}`,
                     cancelUrl: `${window.location.origin}/store/${subdomain}/checkout`,
+                    idempotencyKey: getIdempotencyKey(`paypal-create-${orderResult.order.id}`),
                 }),
             });
 
@@ -429,8 +477,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 alert('Failed to create PayPal order. Please try again.');
                 setIsProcessing(false);
             }
-        } catch (error) {
-            console.error('PayPal Checkout error:', error);
+        } catch {
             alert('Payment failed. Please try again.');
             setIsProcessing(false);
         }
@@ -462,14 +509,14 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     )}
                     <div className="space-y-3">
                         <Link
-                            href={`/orders`}
+                            href={`${basePath}/orders`}
                             className="block w-full text-white py-3 rounded-xl font-semibold"
                             style={{ backgroundColor: primaryColor }}
                         >
                             Track Your Order
                         </Link>
                         <Link
-                            href={`/`}
+                            href={basePath}
                             className="block w-full py-3 rounded-xl font-semibold border border-card text-theme-secondary"
                         >
                             Continue Shopping
@@ -487,7 +534,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 <div className="text-center">
                     <Package size={48} className="text-theme-hint mx-auto mb-4" />
                     <p className="text-theme-secondary mb-4">Your cart is empty</p>
-                    <Link href={`/shop`} className="font-semibold" style={{ color: primaryColor }}>
+                    <Link href={`${basePath}/shop`} className="font-semibold" style={{ color: primaryColor }}>
                         Go Shopping
                     </Link>
                 </div>
@@ -507,7 +554,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 <div className="container mx-auto px-4 max-w-5xl pb-8">
                     {/* Header */}
                     <div className="py-4">
-                        <Link href={`/cart`} className="inline-flex items-center text-sm text-theme-secondary hover:opacity-70">
+                        <Link href={`${basePath}/cart`} className="inline-flex items-center text-sm text-theme-secondary hover:opacity-70">
                             <ArrowLeft size={16} className="mr-2" /> Back to Cart
                         </Link>
                     </div>
@@ -740,7 +787,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <div className="space-y-2 max-h-40 overflow-y-auto">
                                                 {items.map(item => (
                                                     <div key={item.id} className="flex items-center gap-3 p-2 card-theme-secondary rounded-lg">
-                                                        <img src={item.images[0]} className="w-12 h-12 rounded-lg object-cover" />
+                                                        <Image
+                                                            loader={passthroughImageLoader}
+                                                            unoptimized
+                                                            src={item.images[0] || productImageFallback}
+                                                            alt={item.name}
+                                                            width={48}
+                                                            height={48}
+                                                            className="w-12 h-12 rounded-lg object-cover"
+                                                        />
                                                         <div className="flex-1 min-w-0">
                                                             <p className="text-sm font-medium truncate">{item.name}</p>
                                                             <p className="text-xs text-theme-secondary">Qty: {item.quantity}</p>
@@ -894,14 +949,71 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                     </div>
                                     <div className="flex justify-between text-theme-secondary">
                                         <span>Delivery</span>
-                                        <span className={deliveryCharges === 0 ? 'text-green-600 font-medium' : ''}>
-                                            {deliveryCharges === 0 ? 'Free' : `₹${deliveryCharges}`}
+                                        <span className={effectiveDeliveryCharges === 0 ? 'text-green-600 font-medium' : ''}>
+                                            {effectiveDeliveryCharges === 0 ? 'Free' : `₹${effectiveDeliveryCharges}`}
                                         </span>
                                     </div>
+                                    {appliedCoupon && (
+                                        <div className="flex justify-between text-green-600">
+                                            <span>Coupon ({appliedCoupon.code})</span>
+                                            <span>
+                                                {appliedCoupon.freeShipping && discountAmount === 0
+                                                    ? 'Free delivery'
+                                                    : `-₹${discountAmount.toLocaleString('en-IN')}`}
+                                            </span>
+                                        </div>
+                                    )}
                                     <div className="border-t border-card pt-2 flex justify-between font-bold text-lg">
                                         <span>Total</span>
                                         <span style={{ color: primaryColor }}>₹{totalAmount.toLocaleString('en-IN')}</span>
                                     </div>
+                                </div>
+
+                                <div className="mt-4 pt-4 border-t border-card">
+                                    {appliedCoupon ? (
+                                        <div className="flex items-center justify-between gap-3 rounded-lg border border-green-200 bg-green-50 px-3 py-2">
+                                            <div>
+                                                <p className="text-sm font-semibold text-green-700">{appliedCoupon.code}</p>
+                                                <p className="text-xs text-green-700">
+                                                    {appliedCoupon.freeShipping
+                                                        ? 'Free delivery applied'
+                                                        : `₹${discountAmount.toLocaleString('en-IN')} off applied`}
+                                                </p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={removeCoupon}
+                                                className="text-xs font-semibold text-green-700 hover:text-green-900"
+                                            >
+                                                Remove
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            <div className="flex gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={couponInput}
+                                                    onChange={e => {
+                                                        setCouponInput(e.target.value.toUpperCase());
+                                                        setCouponError('');
+                                                    }}
+                                                    placeholder="Coupon code"
+                                                    className="min-w-0 flex-1 px-3 py-2 input-theme rounded-lg text-sm outline-none"
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={applyCoupon}
+                                                    disabled={isCheckingCoupon}
+                                                    className="px-3 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60"
+                                                    style={{ backgroundColor: primaryColor }}
+                                                >
+                                                    {isCheckingCoupon ? 'Checking' : 'Apply'}
+                                                </button>
+                                            </div>
+                                            {couponError && <p className="text-xs text-red-500">{couponError}</p>}
+                                        </div>
+                                    )}
                                 </div>
 
                                 {/* Trust Badges */}
@@ -922,7 +1034,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
                                 {/* Payment Partners */}
                                 <div className="mt-4 pt-4 border-t border-card flex items-center justify-center gap-4">
-                                    <img src="https://razorpay.com/assets/razorpay-logo.svg" alt="Razorpay" className="h-4 opacity-50" />
+                                    <Image
+                                        loader={passthroughImageLoader}
+                                        unoptimized
+                                        src="https://razorpay.com/assets/razorpay-logo.svg"
+                                        alt="Razorpay"
+                                        width={96}
+                                        height={16}
+                                        className="h-4 w-auto opacity-50"
+                                    />
                                 </div>
                             </div>
                         </div>

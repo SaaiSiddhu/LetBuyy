@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 interface UserStore {
     id: string
@@ -53,10 +54,11 @@ function getSiteTypeLabel(type: string): string {
 }
 
 export default function AllStoresClient({ user, stores }: AllStoresClientProps) {
+    const router = useRouter()
     const [tab, setTab] = useState<'active' | 'inactive'>('active')
     const [isDark, setIsDark] = useState(false)
 
-    const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000'
+    const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
 
     useEffect(() => {
         const theme = localStorage.getItem('letbuyy_theme')
@@ -71,11 +73,11 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
     const firstName = user.fullName ? user.fullName.split(' ')[0] : 'there'
 
     const handleCreateStore = () => {
-        window.location.href = `${accountsUrl}/onboarding`
+        window.location.assign(`${accountsUrl}/onboarding`)
     }
 
     const handleOpenStore = (subdomain: string) => {
-        window.location.href = `/${subdomain}/dashboard`
+        router.push(`/${subdomain}/dashboard`)
     }
 
     return (

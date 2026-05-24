@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
+import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
 import SubscribeCheckoutClient from './SubscribeCheckoutClient'
 
 /* ——————————————————————————————————————
@@ -30,15 +30,10 @@ export default async function SubscribeCheckoutPage({ params, searchParams }: Pa
     const siteType = site_type || storeData.site_type || 'store'
     const billingPeriod = bp === 'YEARLY' ? 'yearly' : 'monthly'
 
-    // Fetch the selected plan
-    const supabase = await createClient()
-    const { data: plan } = await supabase
-        .from('plans')
-        .select('*')
-        .eq('site_type', siteType)
-        .eq('slug', planSlug)
-        .eq('is_active', true)
-        .single()
+    const plansPayload = await workerFetch(
+        `/payments/plans?site_type=${encodeURIComponent(siteType)}&slug=${encodeURIComponent(planSlug)}`
+    ).then(readWorkerJson)
+    const plan = plansPayload?.data?.[0]
 
     if (!plan) return notFound()
 

@@ -3,3 +3,9 @@ packages:
   - "apps/web/consumer/*"
   - "packages/typescript/*"
   - "backend/workers/*"
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - unrs-resolver
+  - workerd

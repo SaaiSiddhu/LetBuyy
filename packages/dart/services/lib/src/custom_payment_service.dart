@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:letbuyy_core/letbuyy_core.dart';
+
+void _assertBackendOrder({
+  required String keyId,
+  required String orderId,
+  required double amount,
+}) {
+  if (keyId.isEmpty || orderId.isEmpty || amount <= 0) {
+    throw PaymentException(
+      'Backend-created payment order data is required before opening checkout',
+      code: 'PAYMENT_ORDER_REQUIRED',
+    );
+  }
+}
 
 class RazorpayCustomService {
   late Razorpay _razorpay;
@@ -39,16 +53,21 @@ class RazorpayCustomService {
 
   // Open Razorpay with UPI preselected
   void openUpiPayment({
+    required String keyId,
+    required String orderId,
     required double amount,
     required String userName,
     required String userEmail,
     required String userPhone,
     String? preferredUpiApp,
   }) {
+    _assertBackendOrder(keyId: keyId, orderId: orderId, amount: amount);
+
     var options = {
-      'key': 'rzp_live_RZMIepwnzTqjsH', // Your Razorpay key
+      'key': keyId,
       'amount': (amount * 100).toInt(), // Amount in paise
-      'name': 'Agrimate',
+      'order_id': orderId,
+      'name': RazorpayConfig.appName,
       'description': 'Order Payment',
       'prefill': {
         'contact': userPhone,
@@ -80,15 +99,20 @@ class RazorpayCustomService {
 
   // Open Razorpay with Card preselected
   void openCardPayment({
+    required String keyId,
+    required String orderId,
     required double amount,
     required String userName,
     required String userEmail,
     required String userPhone,
   }) {
+    _assertBackendOrder(keyId: keyId, orderId: orderId, amount: amount);
+
     var options = {
-      'key': 'rzp_test_1DP5mmOlF5G5ag',
+      'key': keyId,
       'amount': (amount * 100).toInt(),
-      'name': 'Agrimate',
+      'order_id': orderId,
+      'name': RazorpayConfig.appName,
       'description': 'Order Payment',
       'prefill': {
         'contact': userPhone,
@@ -113,15 +137,20 @@ class RazorpayCustomService {
 
   // Open Razorpay with all payment methods
   void openAllPaymentMethods({
+    required String keyId,
+    required String orderId,
     required double amount,
     required String userName,
     required String userEmail,
     required String userPhone,
   }) {
+    _assertBackendOrder(keyId: keyId, orderId: orderId, amount: amount);
+
     var options = {
-      'key': 'rzp_test_1DP5mmOlF5G5ag',
+      'key': keyId,
       'amount': (amount * 100).toInt(),
-      'name': 'Agrimate',
+      'order_id': orderId,
+      'name': RazorpayConfig.appName,
       'description': 'Order Payment',
       'prefill': {
         'contact': userPhone,

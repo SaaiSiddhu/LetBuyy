@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef, Suspense } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget from '@/components/TurnstileWidget'
+import { AuthIcon } from '@/components/AuthIcon'
 
 type Lang = 'en' | 'hi' | 'ta'
 type Step = 'email' | 'otp' | 'password'
@@ -18,6 +19,7 @@ const translations: Record<Lang, Record<string, string>> = {
         or: 'or',
         apple: 'Apple',
         google: 'Google',
+        comingSoon: 'Soon',
         alreadyHave: 'Already have an account?',
         logIn: 'Log in',
         terms: 'By proceeding, you agree to the',
@@ -55,6 +57,7 @@ const translations: Record<Lang, Record<string, string>> = {
         or: 'या',
         apple: 'Apple',
         google: 'Google',
+        comingSoon: 'जल्द',
         alreadyHave: 'पहले से अकाउंट है?',
         logIn: 'लॉग इन',
         terms: 'आगे बढ़कर, आप सहमत हैं',
@@ -90,6 +93,7 @@ const translations: Record<Lang, Record<string, string>> = {
         or: 'அல்லது',
         apple: 'Apple',
         google: 'Google',
+        comingSoon: 'விரைவில்',
         alreadyHave: 'ஏற்கனவே கணக்கு உள்ளதா?',
         logIn: 'உள்நுழை',
         terms: 'தொடர்வதன் மூலம், நீங்கள் ஒப்புக்கொள்கிறீர்கள்',
@@ -400,10 +404,10 @@ function SignupContent() {
             })
 
             if (error) {
-                console.error('OAuth error:', error.message)
+                setError(error.message || 'Failed to start sign in')
             }
-        } catch (err) {
-            console.error('OAuth initiation failed:', err)
+        } catch {
+            setError('Failed to start sign in')
         }
     }, [])
 
@@ -421,7 +425,7 @@ function SignupContent() {
                     {lang.toUpperCase()}
                 </button>
                 <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </button>
             </div>
 
@@ -458,7 +462,7 @@ function SignupContent() {
                                 />
                             </div>
 
-                            {error && <div className="auth-error">{error}</div>}
+                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
                             <button
                                 type="submit"
@@ -474,11 +478,12 @@ function SignupContent() {
                         </div>
 
                         <div className="auth-oauth-row">
-                            <button className="auth-btn-oauth" onClick={() => handleOAuth('apple')}>
+                            <button className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M17.05 20.28c-.98.95-2.05.88-3.08.4-1.09-.5-2.08-.48-3.24 0-1.44.62-2.2.44-3.06-.4C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
                                 </svg>
                                 {t.apple}
+                                <span className="auth-coming-soon-badge">{t.comingSoon}</span>
                             </button>
                             <button className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
                                 <svg width="18" height="18" viewBox="0 0 24 24">
@@ -508,7 +513,7 @@ function SignupContent() {
                 {step === 'otp' && (
                     <div className="auth-step-content" key="otp">
                         <div className="auth-otp-icon">
-                            <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'var(--primary)' }}>mail</span>
+                            <AuthIcon name="mail" size={32} style={{ color: 'var(--primary)' }} />
                         </div>
 
                         <h1 className="auth-title">{t.otpTitle}</h1>
@@ -534,7 +539,7 @@ function SignupContent() {
                             ))}
                         </div>
 
-                        {error && <div className="auth-error">{error}</div>}
+                        {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
                         <button
                             className="auth-btn-primary"
@@ -573,7 +578,7 @@ function SignupContent() {
                 {step === 'password' && (
                     <div className="auth-step-content" key="password">
                         <div className="auth-otp-icon">
-                            <span className="material-symbols-outlined" style={{ fontSize: 32, color: 'var(--primary)' }}>lock</span>
+                            <AuthIcon name="lock" size={32} style={{ color: 'var(--primary)' }} />
                         </div>
 
                         <h1 className="auth-title">{t.pwTitle}</h1>
@@ -599,9 +604,7 @@ function SignupContent() {
                                         onClick={() => setShowPassword(!showPassword)}
                                         tabIndex={-1}
                                     >
-                                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                                            {showPassword ? 'visibility_off' : 'visibility'}
-                                        </span>
+                                        <AuthIcon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
                                     </button>
                                 </div>
                             </div>
@@ -622,21 +625,15 @@ function SignupContent() {
                             {/* Password rules */}
                             <div className="auth-pw-rules">
                                 <div className={`auth-pw-rule ${pwRules.minLength ? 'pass' : ''}`}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                                        {pwRules.minLength ? 'check_circle' : 'radio_button_unchecked'}
-                                    </span>
+                                    <AuthIcon name={pwRules.minLength ? 'check_circle' : 'radio_button_unchecked'} size={16} />
                                     {t.pwRule8}
                                 </div>
                                 <div className={`auth-pw-rule ${pwRules.hasUppercase ? 'pass' : ''}`}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                                        {pwRules.hasUppercase ? 'check_circle' : 'radio_button_unchecked'}
-                                    </span>
+                                    <AuthIcon name={pwRules.hasUppercase ? 'check_circle' : 'radio_button_unchecked'} size={16} />
                                     {t.pwRuleUpper}
                                 </div>
                                 <div className={`auth-pw-rule ${pwRules.hasNumber ? 'pass' : ''}`}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>
-                                        {pwRules.hasNumber ? 'check_circle' : 'radio_button_unchecked'}
-                                    </span>
+                                    <AuthIcon name={pwRules.hasNumber ? 'check_circle' : 'radio_button_unchecked'} size={16} />
                                     {t.pwRuleNumber}
                                 </div>
                             </div>
@@ -645,7 +642,7 @@ function SignupContent() {
                                 <div className="auth-error">{t.pwMismatch}</div>
                             )}
 
-                            {error && <div className="auth-error">{error}</div>}
+                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
                             <button
                                 type="submit"

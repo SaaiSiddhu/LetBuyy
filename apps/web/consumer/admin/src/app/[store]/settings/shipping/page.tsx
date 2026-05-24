@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface ShippingZone {
@@ -23,39 +22,22 @@ export default function ShippingSettingsPage() {
     const [loading, setLoading] = useState(true)
     const [zones, setZones] = useState<ShippingZone[]>([])
     const [rates, setRates] = useState<ShippingRate[]>([])
-    const [storeId, setStoreId] = useState('')
     const [showAdd, setShowAdd] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [formName, setFormName] = useState('')
     const [formCountries, setFormCountries] = useState('')
     const [saving, setSaving] = useState(false)
-    const supabase = createClient()
 
     const loadData = useCallback(async () => {
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .or(`store_name.eq.${store},subdomain.eq.${store}`)
-            .single()
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/shipping/zones`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
 
-        if (!storeData) { setLoading(false); return }
-        setStoreId(storeData.id)
-
-        const { data: zonesData } = await supabase
-            .from('shipping_zones')
-            .select('*')
-            .eq('site_id', storeData.id)
-
-        if (zonesData) setZones(zonesData)
-
-        const { data: ratesData } = await supabase
-            .from('shipping_rates')
-            .select('*')
-            .eq('site_id', storeData.id)
-
-        if (ratesData) setRates(ratesData)
+        setZones(Array.isArray(payload.data?.zones) ? payload.data.zones : [])
+        setRates(Array.isArray(payload.data?.rates) ? payload.data.rates : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { loadData() }, [loadData])
 
@@ -63,10 +45,13 @@ export default function ShippingSettingsPage() {
         if (!formName.trim()) return
         setSaving(true)
         const countries = formCountries.split(',').map(c => c.trim()).filter(Boolean)
-        await supabase.from('shipping_zones').insert({
-            site_id: storeId,
+        await fetch(`/api/stores/${encodeURIComponent(store)}/shipping/zones`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
             name: formName.trim(),
             countries,
+            }),
         })
         setShowAdd(false)
         resetForm()
@@ -78,10 +63,14 @@ export default function ShippingSettingsPage() {
         if (!formName.trim() || !editingId) return
         setSaving(true)
         const countries = formCountries.split(',').map(c => c.trim()).filter(Boolean)
-        await supabase.from('shipping_zones').update({
-            name: formName.trim(),
-            countries,
-        }).eq('id', editingId)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/shipping/zones/${encodeURIComponent(editingId)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                name: formName.trim(),
+                countries,
+            }),
+        })
         setEditingId(null)
         resetForm()
         setSaving(false)
@@ -90,7 +79,9 @@ export default function ShippingSettingsPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this shipping zone and all its rates?')) return
-        await supabase.from('shipping_zones').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/shipping/zones/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         setZones(prev => prev.filter(z => z.id !== id))
         setRates(prev => prev.filter(r => r.zone_id !== id))
     }

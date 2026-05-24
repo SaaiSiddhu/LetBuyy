@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { getAuthHeaders } from '@/lib/csrf-client'
+import { AuthIcon } from '@/components/AuthIcon'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -110,14 +111,14 @@ export default function ForgotPasswordPage() {
                     {lang.toUpperCase()}
                 </button>
                 <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </button>
             </div>
 
             <div className="auth-card">
                 {/* No logo on forgot-password */}
 
-                <div className="auth-icon"><span className="material-symbols-outlined" style={{ fontSize: 36 }}>lock</span></div>
+                <div className="auth-icon"><AuthIcon name="lock" size={36} /></div>
 
                 <h1 className="auth-title">{t.title}</h1>
                 <p className="auth-subtitle">{t.subtitle}</p>
@@ -137,7 +138,7 @@ export default function ForgotPasswordPage() {
                         />
                     </div>
 
-                    {error && <div className="auth-error">{error}</div>}
+                    {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
 
                     <button
                         type="submit"

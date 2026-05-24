@@ -1,21 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { SECTION_SCHEMAS } from '@/lib/theme-schemas'
+import type { SectionSchema } from '@/lib/theme-schemas'
 
 interface AddSectionModalProps {
     open: boolean
+    sectionSchemas: Record<string, SectionSchema>
     existingSectionTypes: string[]
     onAdd: (sectionType: string) => void
     onClose: () => void
 }
 
-export default function AddSectionModal({ open, existingSectionTypes, onAdd, onClose }: AddSectionModalProps) {
+export default function AddSectionModal({ open, sectionSchemas, existingSectionTypes, onAdd, onClose }: AddSectionModalProps) {
     const [search, setSearch] = useState('')
 
     if (!open) return null
 
-    const availableSections = Object.entries(SECTION_SCHEMAS)
+    const availableSections = Object.entries(sectionSchemas)
         .filter(([type]) => type !== 'header' && type !== 'footer') // pinned, can't add
         .filter(([type, schema]) => {
             const q = search.toLowerCase()

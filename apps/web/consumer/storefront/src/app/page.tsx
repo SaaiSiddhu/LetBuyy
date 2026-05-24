@@ -1,6 +1,19 @@
-import { createClient } from '@supabase/supabase-js';
 import StorefrontLanding from './storefront-landing';
 import type { Metadata } from 'next';
+import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+
+type StoreShowcase = {
+  storeName: string;
+  displayName: string;
+  subdomain: string;
+  logoUrl: string | null;
+  themeId: string | null;
+  status: 'draft' | 'published';
+  siteType: string;
+  createdAt: string;
+  ownerName: string | null;
+  maskedEmail: string;
+};
 
 // ─── SEO Metadata ──────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -40,10 +53,11 @@ function maskEmail(email: string): string {
 
 // ─── ISR: Revalidate every 5 minutes ──────────────────────────
 export const revalidate = 300;
+export const dynamic = 'force-dynamic';
 
 // ─── Page Component ────────────────────────────────────────────
 export default async function Home() {
-  let stores: any[] = [];
+  let stores: StoreShowcase[] = [];
   let stats = {
     totalStores: 0,
     totalThemes: 0,
@@ -52,69 +66,30 @@ export default async function Home() {
   };
 
   try {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const response = await workerFetch('/storefront/directory');
+    const payload = await readWorkerJson(response);
+    const storesRaw = Array.isArray(payload?.data?.stores) ? payload.data.stores : [];
 
-    // 1. Fetch recent stores with owner info
-    const { data: storesRaw } = await supabase
-      .from('sites')
-      .select(`
-                store_name,
-                name,
-                logo_url,
-                theme_id,
-                status,
-                site_type,
-                created_at,
-                users_custom!sites_custom_user_id_fkey (
-                    full_name,
-                    email
-                )
-            `)
-      .in('status', ['draft', 'published'])
-      .order('created_at', { ascending: false })
-      .limit(12);
+    stores = storesRaw.map((s: Record<string, unknown>) => {
+      const owner = Array.isArray(s.users_custom)
+        ? s.users_custom[0] as Record<string, unknown> | undefined
+        : s.users_custom as Record<string, unknown> | undefined;
 
-    // 2. Fetch platform stats (parallel queries)
-    const [storesCount, themesCount, productsCount, ordersCount] =
-      await Promise.all([
-        supabase
-          .from('sites')
-          .select('*', { count: 'exact', head: true })
-          .not('status', 'eq', 'suspended'),
-        supabase
-          .from('online_store_themes')
-          .select('*', { count: 'exact', head: true }),
-        supabase
-          .from('products')
-          .select('*', { count: 'exact', head: true }),
-        supabase
-          .from('orders')
-          .select('*', { count: 'exact', head: true }),
-      ]);
+      return {
+        storeName: (s.store_name as string) || '',
+        displayName: ((s.name || s.store_name) as string) || '',
+        subdomain: (s.store_name as string) || '',
+        logoUrl: (s.logo_url as string) || null,
+        themeId: (s.theme_id as string) || null,
+        status: s.status === 'draft' ? 'draft' : 'published',
+        siteType: (s.site_type as string) || 'store',
+        createdAt: (s.created_at as string) || new Date(0).toISOString(),
+        ownerName: (owner?.full_name as string) || null,
+        maskedEmail: maskEmail((owner?.email as string) || 'unknown@email.com'),
+      };
+    });
 
-    // 3. Transform data
-    stores = (storesRaw || []).map((s: any) => ({
-      storeName: s.store_name,
-      displayName: s.name || s.store_name,
-      subdomain: s.store_name,
-      logoUrl: s.logo_url,
-      themeId: s.theme_id,
-      status: s.status,
-      siteType: s.site_type,
-      createdAt: s.created_at,
-      ownerName: s.users_custom?.full_name || null,
-      maskedEmail: maskEmail(s.users_custom?.email || 'unknown@email.com'),
-    }));
-
-    stats = {
-      totalStores: storesCount.count || 0,
-      totalThemes: themesCount.count || 0,
-      totalProducts: productsCount.count || 0,
-      totalOrders: ordersCount.count || 0,
-    };
+    stats = payload?.data?.stats || stats;
   } catch (error) {
     console.error('[Landing] Data fetch failed:', error);
     // Page still renders with empty state

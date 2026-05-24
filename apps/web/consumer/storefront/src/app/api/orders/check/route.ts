@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getOrdersByContact, hasOrdersForContact, checkCustomerExists } from '@/lib/order-service';
+import { getOrderContactSummary } from '@/lib/order-service';
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
@@ -11,12 +11,11 @@ export async function GET(request: NextRequest) {
     }
 
     try {
-        const hasOrders = await hasOrdersForContact(subdomain, contact);
-        const hasPassword = await checkCustomerExists(contact);
+        const summary = await getOrderContactSummary(subdomain, contact);
 
         return NextResponse.json({
-            hasOrders,
-            hasPassword,
+            hasOrders: summary.hasOrders,
+            hasPassword: summary.hasPassword,
         });
     } catch (error) {
         console.error('Error checking orders:', error);

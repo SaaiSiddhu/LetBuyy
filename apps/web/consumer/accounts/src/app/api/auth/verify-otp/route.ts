@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateOTPToken } from '@/lib/auth/tokens'
 import { validateCsrf } from '@/lib/auth/csrf'
@@ -48,13 +48,11 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const supabase = await createServerClient()
-
         // Mark email as verified
-        await supabase
-            .from('users_custom')
-            .update({ email_verified: true })
-            .eq('email', result.email)
+        await accountWorkerFetch('/auth/custom/users/verify-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: result.email }),
+        })
 
         return NextResponse.json({
             success: true,

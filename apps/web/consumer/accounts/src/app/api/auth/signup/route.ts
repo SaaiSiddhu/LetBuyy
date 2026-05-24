@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createOTPToken } from '@/lib/auth/tokens'
@@ -50,14 +50,18 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid email address' }, { status: 400 })
         }
 
-        const supabase = await createServerClient()
-
         // Check if user already exists
-        const { data: existing } = await supabase
-            .from('users_custom')
-            .select('id, email_verified')
-            .eq('email', normalizedEmail)
-            .single()
+        const existingResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+            method: 'POST',
+            body: JSON.stringify({ email: normalizedEmail }),
+        })
+        const existingPayload = await existingResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email_verified: boolean
+            } | null
+        } | null
+        const existing = existingPayload?.data || null
 
         if (existing) {
             if (existing.email_verified) {
@@ -74,17 +78,24 @@ export async function POST(request: NextRequest) {
             })
         }
 
-        // Create new user (unverified, no password yet)
-        const { data: newUser, error: createError } = await supabase
-            .from('users_custom')
-            .insert({ email: normalizedEmail })
-            .select('id')
-            .single()
+        const createResponse = await accountWorkerFetch('/auth/custom/users/ensure', {
+            method: 'POST',
+            body: JSON.stringify({ email: normalizedEmail }),
+        })
+        const createPayload = await createResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+            } | null
+            error?: {
+                message?: string
+            }
+        } | null
 
-        if (createError || !newUser) {
-            console.error('User creation error:', createError)
+        if (!createResponse.ok || !createPayload?.data) {
+            console.error('User creation error:', createPayload?.error?.message || createResponse.statusText)
             return NextResponse.json({ error: 'Failed to create account' }, { status: 500 })
         }
+        const newUser = createPayload.data
 
         // Create OTP and send via email
         const otp = await createOTPToken(normalizedEmail, newUser.id)

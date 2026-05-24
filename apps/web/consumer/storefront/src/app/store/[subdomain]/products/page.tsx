@@ -1,43 +1,53 @@
 import { StoreService } from '@/lib/store-service';
-import { ProductService } from '@/lib/product-service';
 import { notFound } from 'next/navigation';
-import { DEFAULT_THEME_SETTINGS } from '@/types/store';
-import EnhancedShopGrid from '../shop/enhanced-shop-grid';
+import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
+import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
+import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
+import { createProductListingFallbackSection } from '@/lib/theme-engine/product-route';
+import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 
-// === COST OPTIMIZATION: ISR - Regenerate pages every 5 minutes ===
-export const revalidate = 300;
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 /**
  * /store/[subdomain]/products — All Products page
- * Server component that fetches products from Supabase and renders
- * the full EnhancedShopGrid with search, sort, and filtering.
+ * Route-resolved product listing rendered through the storefront composition engine.
  */
-export default async function StorefrontProductsPage({ params }: { params: Promise<{ subdomain: string }> }) {
+export default async function StorefrontProductsPage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ subdomain: string }>;
+    searchParams?: Promise<{ theme_preview_token?: string }>;
+}) {
     const { subdomain } = await params;
-    const store = await StoreService.getStoreBySubdomain(subdomain);
+    const query = await searchParams;
+    const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
+    const previewStore = previewToken
+        ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
+        : null;
+    const store = previewStore || await StoreService.getStoreBySubdomain(subdomain);
 
     if (!store) return notFound();
 
-    // Get all products: try selectedProductIds first, then fall back to seller's full catalog
-    let products = await ProductService.getProductsByIds(store.selectedProductIds);
-
-    if (products.length === 0 && store.sellerId) {
-        products = await ProductService.getProductsBySellerId(store.sellerId);
-    }
-
-    // Fallback: try fetching all products for this store
-    if (products.length === 0 && store.id) {
-        products = await ProductService.getProductsByStoreId(store.id);
-    }
-
-    const theme = store.templateConfig?.themeSettings || DEFAULT_THEME_SETTINGS;
+    const renderPlan = resolveStorefrontTemplate(store, {
+        type: 'collection',
+        path: `/store/${subdomain}/products`,
+        subdomain,
+        resourceSlug: 'all-products',
+        fallbackSections: [createProductListingFallbackSection('All Products')],
+    });
+    const sectionData = await buildSectionDataPlan({
+        store,
+        sections: renderPlan.template.sections,
+        route: renderPlan.route,
+    });
 
     return (
-        <EnhancedShopGrid
-            products={products}
-            theme={theme}
-            subdomain={subdomain}
-            storeName={store.name}
+        <StorefrontCompositionEngine
+            store={store}
+            plan={renderPlan}
+            sectionData={sectionData}
         />
     );
 }

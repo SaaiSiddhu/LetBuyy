@@ -23,14 +23,14 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
   final _formKey = GlobalKey<FormState>();
   final _keyIdController = TextEditingController();
   final _keySecretController = TextEditingController();
-  
+
   bool _testMode = true;
   bool _isLoading = false;
   bool _isConnecting = false;
   bool _isConnected = false;
   bool _obscureSecret = true;
   late AppThemeColors colors;
-  
+
   StoreModel? _store;
   PaymentConfigModel? _paymentConfig;
 
@@ -51,15 +51,21 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     setState(() => _isLoading = true);
     try {
       final storeService = context.read<StoreService>();
-      final subscriptionService = SubscriptionService(api: context.read<ApiClient>());
-      
+      final subscriptionService = SubscriptionService(
+        api: context.read<ApiClient>(),
+      );
+
       final store = await storeService.getFirstStore();
       if (store != null) {
-        final config = await subscriptionService.getPaymentConfigModel(store.id);
+        final config = await subscriptionService.getPaymentConfigModel(
+          store.id,
+        );
         setState(() {
           _store = store;
           _paymentConfig = config;
-          _isConnected = config?.mode == PaymentMode.ownAccount && config?.verified == true;
+          _isConnected =
+              config?.mode == PaymentMode.ownAccount &&
+              config?.verified == true;
         });
       }
     } finally {
@@ -75,16 +81,31 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
     HapticFeedback.mediumImpact();
 
     try {
-      final subscriptionService = SubscriptionService(api: context.read<ApiClient>());
-      await subscriptionService.connectOwnRazorpay(
+      final subscriptionService = SubscriptionService(
+        api: context.read<ApiClient>(),
+      );
+      final response = await subscriptionService.connectOwnRazorpay(
         storeId: _store!.id,
         keyId: _keyIdController.text.trim(),
         keySecret: _keySecretController.text.trim(),
         testMode: _testMode,
       );
+      final config = PaymentConfigModel.fromMap(response, _store!.id);
 
-      setState(() => _isConnected = true);
-      _showSuccessDialog();
+      setState(() {
+        _paymentConfig = config;
+        _isConnected = config.mode == PaymentMode.ownAccount && config.verified;
+      });
+
+      if (config.verified) {
+        _keyIdController.clear();
+        _keySecretController.clear();
+        _showSuccessDialog();
+      } else {
+        _showError(
+          'Keys were saved, but verification did not complete. Re-check the credentials before going live.',
+        );
+      }
     } catch (e) {
       _showError(e.toString());
     } finally {
@@ -209,10 +230,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
               ),
               Text(
                 'Use your own payment gateway',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: colors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 13, color: colors.textSecondary),
               ),
             ],
           ),
@@ -227,7 +245,9 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
       decoration: BoxDecoration(
         color: const Color(0xFF2563EB).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF2563EB).withValues(alpha: 0.3)),
+        border: Border.all(
+          color: const Color(0xFF2563EB).withValues(alpha: 0.3),
+        ),
       ),
       child: Row(
         children: [
@@ -254,10 +274,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                 SizedBox(height: 4),
                 Text(
                   'With your own Razorpay, you pay 0% commission to Letbuyy. Payments go directly to your bank.',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
                 ),
               ],
             ),
@@ -299,9 +316,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             _paymentConfig?.testMode == true
                 ? 'Test Mode Active'
                 : 'Live Mode Active',
-            style: TextStyle(
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(color: colors.textSecondary),
           ),
           const SizedBox(height: 16),
           Row(
@@ -332,10 +347,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
         ),
         Text(
           label,
-          style: TextStyle(
-            fontSize: 12,
-            color: colors.textSecondary,
-          ),
+          style: TextStyle(fontSize: 12, color: colors.textSecondary),
         ),
       ],
     );
@@ -358,26 +370,26 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
           const SizedBox(height: 8),
           Text(
             'Enter your Razorpay API keys from the Dashboard',
-            style: TextStyle(
-              fontSize: 13,
-              color: colors.textSecondary,
-            ),
+            style: TextStyle(fontSize: 13, color: colors.textSecondary),
           ),
           const SizedBox(height: 20),
-          
+
           // Key ID Field
           _buildInputField(
             controller: _keyIdController,
             label: 'Key ID',
-            hint: 'rzp_test_xxxxxxxx',
+            hint: 'Razorpay key ID',
             validator: (v) {
               if (v == null || v.isEmpty) return 'Key ID is required';
-              if (!v.startsWith('rzp_')) return 'Invalid Key ID format';
+              final expectedPrefix =
+                  'rzp'
+                  '_';
+              if (!v.startsWith(expectedPrefix)) return 'Invalid Key ID format';
               return null;
             },
           ),
           const SizedBox(height: 16),
-          
+
           // Key Secret Field
           _buildInputField(
             controller: _keySecretController,
@@ -398,7 +410,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             },
           ),
           const SizedBox(height: 16),
-          
+
           // Test Mode Toggle
           Container(
             padding: const EdgeInsets.all(16),
@@ -437,9 +449,9 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
               ],
             ),
           ),
-          
+
           const SizedBox(height: 32),
-          
+
           // Connect Button
           SizedBox(
             width: double.infinity,
@@ -471,16 +483,13 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
                     ),
             ),
           ),
-          
+
           const SizedBox(height: 16),
-          
+
           Center(
             child: Text(
               'Your API keys are encrypted and stored securely',
-              style: TextStyle(
-                fontSize: 11,
-                color: colors.textSecondary,
-              ),
+              style: TextStyle(fontSize: 11, color: colors.textSecondary),
             ),
           ),
         ],
@@ -569,9 +578,7 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
             Text(
               'Upgrade to Professional to connect your own Razorpay account and pay 0% commission.',
               textAlign: TextAlign.center,
-              style: TextStyle(
-                color: colors.textSecondary,
-              ),
+              style: TextStyle(color: colors.textSecondary),
             ),
             const SizedBox(height: 24),
             ElevatedButton(
@@ -579,7 +586,10 @@ class _ConnectRazorpayScreenState extends State<ConnectRazorpayScreen> {
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFF59E0B),
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 32,
+                  vertical: 16,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16),
                 ),

@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
+import { AuthIcon } from '@/components/AuthIcon'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -121,14 +122,14 @@ function CheckEmailContent() {
                     {lang.toUpperCase()}
                 </button>
                 <button onClick={toggleTheme} className="auth-theme-btn" aria-label="Toggle theme">
-                    <span className="material-symbols-outlined" style={{ fontSize: 16, verticalAlign: 'middle' }}>{isDark ? 'light_mode' : 'dark_mode'}</span>
+                    <AuthIcon name={isDark ? 'light_mode' : 'dark_mode'} size={16} />
                 </button>
             </div>
 
             <div className="auth-card">
                 {/* No logo on check-email */}
 
-                <div className="auth-icon"><span className="material-symbols-outlined" style={{ fontSize: 36 }}>mail</span></div>
+                <div className="auth-icon"><AuthIcon name="mail" size={36} /></div>
 
                 <h1 className="auth-title">{t.title}</h1>
 

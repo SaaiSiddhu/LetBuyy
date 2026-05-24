@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerClient } from '@/lib/supabase/server'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
 import { sendStoreCreatedEmail } from '@/lib/email/resend'
 
 /**
@@ -18,14 +18,17 @@ export async function POST(request: NextRequest) {
 
         // Log to email_logs table
         try {
-            const supabase = await createServerClient()
-            await supabase.from('email_logs').insert({
-                recipient_email: email,
-                email_type: 'store_created_success',
-                subject: `🎉 Your store is ready!`,
-                status: result.success ? 'sent' : 'failed',
-                error_message: result.error || null,
-                metadata: { storeName, storeType, storeUrl, adminUrl },
+            await accountWorkerFetch('/notifications/email-log', {
+                method: 'POST',
+                requireSession: true,
+                body: JSON.stringify({
+                    recipient_email: email,
+                    email_type: 'store_created_success',
+                    subject: 'Your store is ready!',
+                    status: result.success ? 'sent' : 'failed',
+                    error_message: result.error || null,
+                    metadata: { storeName, storeType, storeUrl, adminUrl },
+                }),
             })
         } catch (logErr) {
             console.error('Email log error:', logErr)

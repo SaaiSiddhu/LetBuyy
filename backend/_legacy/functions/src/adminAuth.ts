@@ -6,12 +6,13 @@ import { createEmailTransporter, EMAIL_CONFIG } from "./config/email.config";
 // Enable CORS for all origins
 const cors = require("cors")({ origin: true });
 
-// Firebase API Key for password verification
-const FIREBASE_API_KEY = "AIzaSyBx7A1UywuzGJL380a7KAWry4uqoJyhHzM";
+// Firebase API key for password verification. Legacy functions must read this from runtime config.
+const FIREBASE_API_KEY = process.env.FIREBASE_WEB_API_KEY || functions.config().firebase?.web_api_key || "";
 
 // Helper function to verify password via Firebase Auth REST API
 async function verifyPasswordWithFirebaseAuth(email: string, password: string): Promise<boolean> {
   try {
+    if (!FIREBASE_API_KEY) return false;
     const response = await fetch(
       `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${FIREBASE_API_KEY}`,
       {

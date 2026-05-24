@@ -6,28 +6,33 @@ import { ShoppingBag, Heart } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
-import { usePreviewWishlist } from '@/app/theme-preview/urban-kicks/_context/wishlist-context';
+import { useWishlist } from '@/context/wishlist-context';
+import type { CSSProperties } from 'react';
+
+const productImageFallback = '/images/banners/new-arrivals-1.png';
 
 interface Props {
     section: SectionModel;
     products: ProductModel[];
     theme?: ThemeSettings;
+    basePath?: string;
 }
 
-export default function ProductGrid({ section, products, theme }: Props) {
+export default function ProductGrid({ section, products, theme, basePath: providedBasePath }: Props) {
     const settings = section.settings as Partial<ProductGridSettings>;
     const params = useParams();
     const subdomain = params.subdomain as string;
+    const basePath = providedBasePath || (subdomain ? `/store/${subdomain}` : '');
     const { addToCart } = useCart();
-    const { isInWishlist, toggleWishlist: contextToggleWishlist } = usePreviewWishlist();
+    const { isInWishlist, toggleWishlist: contextToggleWishlist } = useWishlist();
 
     const colors = theme || DEFAULT_THEME_SETTINGS;
     const title = settings.title || 'Our Products';
     const showPrice = settings.showPrice !== false;
     const showAddToCart = settings.showAddToCart !== false;
-
-    // Fixed: 2 columns x 3 rows = 6 products
-    const displayProducts = products.slice(0, 6);
+    const columns = Math.max(1, Number(settings.columns || 3));
+    const rows = Math.max(1, Number(settings.rows || 2));
+    const displayProducts = products.slice(0, columns * rows);
 
     // Helper to create rgba from hex
     const hexToRgba = (hex: string, alpha: number) => {
@@ -73,7 +78,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                         {title}
                     </h2>
                     <Link
-                        href={`/theme-preview/urban-kicks/shop`}
+                        href={`${basePath}/shop`}
                         className="text-sm font-semibold hover:underline"
                         style={{ color: colors.secondaryColor }}
                     >
@@ -82,7 +87,10 @@ export default function ProductGrid({ section, products, theme }: Props) {
                 </div>
 
                 {/* 2x3 Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div
+                    className="product-grid-dynamic"
+                    style={{ '--product-grid-columns': Math.min(columns, 5) } as CSSProperties}
+                >
                     {displayProducts.map((product, i) => {
                         const discount = getDiscount(product);
                         const isWishlisted = isInWishlist(product.id);
@@ -95,7 +103,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.03 }}
                             >
-                                <Link href={`/theme-preview/urban-kicks/product/${product.id}`} className="group block">
+                                <Link href={`${basePath}/product/${product.id}`} className="group block">
                                     <div
                                         className="card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                                         style={{ borderRadius: `${colors.borderRadius}px` }}
@@ -106,7 +114,7 @@ export default function ProductGrid({ section, products, theme }: Props) {
                                             style={{ backgroundColor: getCardBgColor(i) }}
                                         >
                                             <img
-                                                src={product.images[0]}
+                                                src={product.images[0] || productImageFallback}
                                                 alt={product.name}
                                                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                             />

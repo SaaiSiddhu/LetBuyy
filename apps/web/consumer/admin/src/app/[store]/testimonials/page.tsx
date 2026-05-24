@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Testimonial {
     id: string
@@ -20,43 +19,55 @@ interface Testimonial {
 
 export default function TestimonialsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Testimonial[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({ author_name: '', author_title: '', author_company: '', content: '', rating: '5' })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('testimonials').select('*').eq('site_id', s.id).order('display_order', { ascending: true })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/testimonials`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!storeId || !formData.author_name || !formData.content) return
+        if (!formData.author_name || !formData.content) return
         setSaving(true)
         const payload = {
-            site_id: storeId, author_name: formData.author_name, content: formData.content,
+            author_name: formData.author_name, content: formData.content,
             author_title: formData.author_title || null,
             author_company: formData.author_company || null,
             rating: formData.rating ? parseInt(formData.rating) : null,
         }
-        if (editingId) await supabase.from('testimonials').update(payload).eq('id', editingId)
-        else await supabase.from('testimonials').insert(payload)
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/content/testimonials/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/content/testimonials`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null)
         setFormData({ author_name: '', author_title: '', author_company: '', content: '', rating: '5' })
         load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('testimonials').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/content/testimonials/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const startEdit = (t: Testimonial) => { setEditingId(t.id); setFormData({ author_name: t.author_name, author_title: t.author_title || '', author_company: t.author_company || '', content: t.content, rating: t.rating ? String(t.rating) : '5' }); setShowForm(true) }
     const inputStyle: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
     const renderStars = (rating: number | null) => '★'.repeat(rating || 0) + '☆'.repeat(5 - (rating || 0))

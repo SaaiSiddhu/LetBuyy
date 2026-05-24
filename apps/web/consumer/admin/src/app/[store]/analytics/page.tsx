@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface AnalyticsData {
@@ -21,58 +20,12 @@ export default function AnalyticsPage() {
 
     useEffect(() => {
         async function load() {
-            const supabase = createClient()
-            // Store ownership is already validated by the server-side [store]/layout.tsx
-            const { data: storeData } = await supabase
-                .from('sites')
-                .select('id')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
-
-            if (!storeData) return
-
-            const daysAgo = period === '7d' ? 7 : period === '30d' ? 30 : 90
-            const since = new Date()
-            since.setDate(since.getDate() - daysAgo)
-
-            const [productsRes, ordersRes] = await Promise.all([
-                supabase
-                    .from('products')
-                    .select('id', { count: 'exact', head: true })
-                    .eq('store_id', storeData.id),
-                supabase
-                    .from('orders')
-                    .select('id, total, status, created_at')
-                    .eq('store_id', storeData.id)
-                    .gte('created_at', since.toISOString()),
-            ])
-
-            const orders = ordersRes.data || []
-            const totalRevenue = orders.reduce((s, o) => s + (Number(o.total) || 0), 0)
-            const ordersByStatus: Record<string, number> = {}
-            orders.forEach(o => {
-                ordersByStatus[o.status] = (ordersByStatus[o.status] || 0) + 1
+            setLoading(true)
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/analytics?period=${period}`, {
+                cache: 'no-store',
             })
-
-            // Group revenue by month
-            const monthMap: Record<string, number> = {}
-            orders.forEach(o => {
-                const d = new Date(o.created_at)
-                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`
-                monthMap[key] = (monthMap[key] || 0) + (Number(o.total) || 0)
-            })
-            const revenueByMonth = Object.entries(monthMap)
-                .sort(([a], [b]) => a.localeCompare(b))
-                .map(([month, revenue]) => ({ month, revenue }))
-
-            setData({
-                totalOrders: orders.length,
-                totalRevenue,
-                totalProducts: productsRes.count || 0,
-                avgOrderValue: orders.length > 0 ? totalRevenue / orders.length : 0,
-                ordersByStatus,
-                revenueByMonth,
-            })
+            const payload = await response.json()
+            setData(payload.data)
             setLoading(false)
         }
         load()

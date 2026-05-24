@@ -1,9 +1,10 @@
 import { createClient } from '@/lib/supabase/server'
-import { createServerClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { createSession } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
+import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
  * GET /auth/callback
@@ -43,63 +44,38 @@ export async function GET(request: Request) {
         // Determine OAuth provider
         const provider = oauthUser.app_metadata?.provider || 'oauth'
 
-        // Step 2: Get or create users_custom entry (service role for full access)
-        const supabase = await createServerClient()
+        const fullName = oauthUser.user_metadata?.full_name || oauthUser.user_metadata?.name || null
+        const avatarUrl = oauthUser.user_metadata?.avatar_url || oauthUser.user_metadata?.picture || null
 
-        const { data: existingUser } = await supabase
-            .from('users_custom')
-            .select('id, email, full_name, avatar_url, email_verified')
-            .eq('email', oauthEmail)
-            .single()
-
-        let userId: string
-        let fullName: string | null = null
-        let avatarUrl: string | null = null
-
-        if (existingUser) {
-            // Existing user — update if needed
-            userId = existingUser.id
-            fullName = existingUser.full_name
-            avatarUrl = existingUser.avatar_url
-
-            // If user previously signed up with email but hasn't verified,
-            // mark as verified now (OAuth confirms the email)
-            if (!existingUser.email_verified) {
-                await supabase
-                    .from('users_custom')
-                    .update({
-                        email_verified: true,
-                        auth_provider: provider,
-                        avatar_url: existingUser.avatar_url || oauthUser.user_metadata?.avatar_url || null,
-                        full_name: existingUser.full_name || oauthUser.user_metadata?.full_name || null,
-                        updated_at: new Date().toISOString(),
-                    })
-                    .eq('id', userId)
+        const userResponse = await accountWorkerFetch('/auth/custom/users/ensure', {
+            method: 'POST',
+            body: JSON.stringify({
+                email: oauthEmail,
+                email_verified: true,
+                full_name: fullName,
+                avatar_url: avatarUrl,
+                auth_provider: provider,
+            }),
+        })
+        const userPayload = await userResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                full_name: string | null
+                avatar_url: string | null
             }
-        } else {
-            // New user — create users_custom entry
-            fullName = oauthUser.user_metadata?.full_name || oauthUser.user_metadata?.name || null
-            avatarUrl = oauthUser.user_metadata?.avatar_url || oauthUser.user_metadata?.picture || null
-
-            const { data: newUser, error: insertError } = await supabase
-                .from('users_custom')
-                .insert({
-                    email: oauthEmail,
-                    email_verified: true,
-                    full_name: fullName,
-                    avatar_url: avatarUrl,
-                    auth_provider: provider,
-                })
-                .select('id')
-                .single()
-
-            if (insertError || !newUser) {
-                console.error('Failed to create users_custom entry:', insertError)
-                return NextResponse.redirect(`${origin}/lookup?error=account_creation_failed`)
+            error?: {
+                message?: string
             }
+        } | null
 
-            userId = newUser.id
+        if (!userResponse.ok || !userPayload?.data) {
+            console.error('Failed to create users_custom entry:', userPayload?.error?.message || userResponse.statusText)
+            return NextResponse.redirect(`${origin}/lookup?error=account_creation_failed`)
         }
+
+        const userId = userPayload.data.id
+        const resolvedFullName = userPayload.data.full_name || fullName
+        const resolvedAvatarUrl = userPayload.data.avatar_url || avatarUrl
 
         // Step 3: Create custom session + device fingerprint
         const ip = request.headers.get('x-forwarded-for') || 'unknown'
@@ -112,22 +88,24 @@ export async function GET(request: Request) {
         await setSessionCookie(sessionToken)
         await addAccount({
             email: oauthEmail,
-            name: fullName,
-            avatar: avatarUrl,
+            name: resolvedFullName,
+            avatar: resolvedAvatarUrl,
             lastLogin: new Date().toISOString(),
         })
 
         // Step 5: Check if user has a store → redirect appropriately
-        const { data: store } = await supabase
-            .from('sites')
-            .select('subdomain')
-            .eq('custom_user_id', userId)
-            .limit(1)
-            .single()
+        const storesResponse = await accountWorkerFetch('/stores?limit=1', {
+            method: 'GET',
+            requireSession: true,
+            sessionToken,
+        })
+        const storesPayload = await storesResponse.json().catch(() => null) as {
+            data?: Array<{ subdomain: string }>
+        } | null
+        const store = storesResponse.ok ? storesPayload?.data?.[0] : null
 
-        const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3000'
         const redirectTo = store?.subdomain
-            ? `${adminUrl}/${store.subdomain}/dashboard`
+            ? getAdminDashboardUrl(store.subdomain)
             : `${origin}/onboarding`
 
         return NextResponse.redirect(redirectTo)
