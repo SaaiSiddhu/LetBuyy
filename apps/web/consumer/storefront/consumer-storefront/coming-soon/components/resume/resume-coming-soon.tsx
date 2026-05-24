@@ -1,6 +1,23 @@
 'use client';
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, type CSSProperties } from 'react';
 interface Props { storeName: string; tagline?: string; logoUrl?: string; launchDate?: string; }
+
+function seededUnit(index: number, salt: number) {
+    const value = Math.sin((index + 1) * salt) * 10000;
+    return value - Math.floor(value);
+}
+
+const PARTICLE_STYLES: CSSProperties[] = Array.from({ length: 35 }, (_, i) => ({
+    position: 'absolute',
+    width: 1 + seededUnit(i, 12.9898) * 1.5,
+    height: 1 + seededUnit(i, 78.233) * 1.5,
+    borderRadius: '50%',
+    background: '#fff',
+    opacity: .06 + seededUnit(i, 37.719) * .1,
+    top: `${seededUnit(i, 19.19) * 100}%`,
+    left: `${seededUnit(i, 47.47) * 100}%`,
+    animation: `pf ${5 + seededUnit(i, 91.17) * 8}s ease-in-out ${seededUnit(i, 53.31) * 4}s infinite alternate`,
+}));
 
 function useCountdown(td?: string) {
     const tgt = useMemo(() => { if (td) return new Date(td); const d = new Date(); d.setDate(d.getDate() + 14); return d; }, [td]);
@@ -24,14 +41,13 @@ const EXPERIENCE = [
 ];
 
 export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDate }: Props) {
-    const [ok, setOk] = useState(false);
+    const ok = true;
     const [mx, setMx] = useState(0.5);
     const [my, setMy] = useState(0.5);
     const [email, setEmail] = useState('');
     const [done, setDone] = useState(false);
     const t = useCountdown(launchDate);
 
-    useEffect(() => { setOk(true); }, []);
     useEffect(() => { const fn = (e: MouseEvent) => { setMx(e.clientX / window.innerWidth); setMy(e.clientY / window.innerHeight); }; window.addEventListener('mousemove', fn); return () => window.removeEventListener('mousemove', fn); }, []);
     const submit = (e: React.FormEvent) => { e.preventDefault(); if (!email.includes('@')) return; setDone(true); setTimeout(() => { setDone(false); setEmail(''); }, 3000); };
     const px = (mx - 0.5) * 15, py = (my - 0.5) * 15;
@@ -44,7 +60,7 @@ export default function ResumeComingSoon({ storeName, tagline, logoUrl, launchDa
                 <div style={{ position: 'absolute', top: 0, left: '-50%', width: '200%', height: '100%', background: 'linear-gradient(105deg,transparent 40%,rgba(59,130,246,.03) 45%,rgba(14,165,233,.04) 50%,rgba(16,185,129,.03) 55%,transparent 60%)', animation: 'au 12s ease-in-out infinite alternate' }} />
             </div>
             <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: .035, backgroundImage: 'linear-gradient(rgba(255,255,255,.5) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.5) 1px,transparent 1px)', backgroundSize: '50px 50px', mask: 'radial-gradient(ellipse 60% 60% at 50% 50%,black 20%,transparent 70%)', WebkitMask: 'radial-gradient(ellipse 60% 60% at 50% 50%,black 20%,transparent 70%)' }} />
-            {ok && <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>{Array.from({ length: 35 }, (_, i) => (<div key={i} style={{ position: 'absolute', width: 1 + Math.random() * 1.5, height: 1 + Math.random() * 1.5, borderRadius: '50%', background: '#fff', opacity: .06 + Math.random() * .1, top: `${Math.random() * 100}%`, left: `${Math.random() * 100}%`, animation: `pf ${5 + Math.random() * 8}s ease-in-out ${Math.random() * 4}s infinite alternate` }} />))}</div>}
+            {ok && <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none' }}>{PARTICLE_STYLES.map((style, i) => (<div key={i} style={style} />))}</div>}
 
             <div style={{ position: 'relative', zIndex: 2, flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: 'clamp(12px,3dvh,24px) clamp(16px,4vw,32px)', gap: 'clamp(8px,1.5dvh,16px)' }}>
                 {/* NAV */}

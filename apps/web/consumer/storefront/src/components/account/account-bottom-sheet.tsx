@@ -20,12 +20,14 @@ interface Props {
     isOpen: boolean;
     onClose: () => void;
     storeId: string;
+    subdomain: string;
 }
 
 type SheetState = 'email_entry' | 'password_login' | 'set_password' | 'not_found' | 'logged_in';
 
-export default function AccountBottomSheet({ isOpen, onClose, storeId }: Props) {
+export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain }: Props) {
     const { customer, isAuthenticated, login, setPassword, checkEmail, logout } = useCustomerAuth();
+    const basePath = `/store/${subdomain}`;
 
     const [state, setState] = useState<SheetState>('email_entry');
     const [email, setEmail] = useState('');
@@ -381,7 +383,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId }: Props) 
                                         </div>
                                         <div className="flex flex-col gap-2 pt-2">
                                             <Link
-                                                href="/shop"
+                                                href={`${basePath}/shop`}
                                                 onClick={onClose}
                                                 className="w-full py-3 rounded-xl text-white text-sm font-semibold text-center transition-opacity"
                                                 style={{ backgroundColor: 'var(--primary, #00B3B3)' }}
@@ -430,10 +432,10 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId }: Props) 
                                         {/* Navigation Links */}
                                         <nav className="space-y-1">
                                             {[
-                                                { href: '/account/orders', icon: Package, label: 'My Orders' },
-                                                { href: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-                                                { href: '/account/addresses', icon: MapPin, label: 'Addresses' },
-                                                { href: '/account/settings', icon: Settings, label: 'Settings' },
+                                                { href: `${basePath}/account/orders`, icon: Package, label: 'My Orders' },
+                                                { href: `${basePath}/account/wishlist`, icon: Heart, label: 'Wishlist' },
+                                                { href: `${basePath}/account/addresses`, icon: MapPin, label: 'Addresses' },
+                                                { href: `${basePath}/account/settings`, icon: Settings, label: 'Settings' },
                                             ].map(({ href, icon: Icon, label }) => (
                                                 <Link
                                                     key={href}

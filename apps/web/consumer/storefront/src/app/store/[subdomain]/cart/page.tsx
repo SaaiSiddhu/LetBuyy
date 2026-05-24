@@ -2,73 +2,21 @@
 
 import { useCart } from '@/context/cart-context';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, Tag, X, Check, Ticket, Shield, Truck, Package } from 'lucide-react';
+import { Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Package } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
 
-interface Coupon {
-    code: string;
-    discount: number;
-    type: 'percent' | 'flat';
-    minOrder: number;
-    description: string;
-}
-
-// Demo coupons - in production this would come from Firestore
-const DEMO_COUPONS: Coupon[] = [
-    { code: 'SAVE10', discount: 10, type: 'percent', minOrder: 500, description: '10% off on orders above ₹500' },
-    { code: 'FLAT50', discount: 50, type: 'flat', minOrder: 300, description: '₹50 off on orders above ₹300' },
-    { code: 'FIRST100', discount: 100, type: 'flat', minOrder: 0, description: '₹100 off for new customers' },
-];
+const productImageFallback = '/images/banners/new-arrivals-1.png';
 
 export default function CartPage() {
     const { items, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
     const params = useParams();
     const subdomain = params.subdomain as string;
-
-    const [couponCode, setCouponCode] = useState('');
-    const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
-    const [couponError, setCouponError] = useState('');
-    const [showCoupons, setShowCoupons] = useState(false);
+    const basePath = `/store/${subdomain}`;
 
     // Theme colors - would come from store context in production
     const primaryColor = 'var(--primary, #6366f1)';
-
-    // Calculate discount
-    const calculateDiscount = () => {
-        if (!appliedCoupon) return 0;
-        if (appliedCoupon.type === 'percent') {
-            return Math.round(cartTotal * (appliedCoupon.discount / 100));
-        }
-        return appliedCoupon.discount;
-    };
-
-    const discountAmount = calculateDiscount();
-    const finalTotal = cartTotal - discountAmount;
-
-    const applyCoupon = () => {
-        setCouponError('');
-        const coupon = DEMO_COUPONS.find(c => c.code.toLowerCase() === couponCode.toLowerCase());
-
-        if (!coupon) {
-            setCouponError('Invalid coupon code');
-            return;
-        }
-
-        if (cartTotal < coupon.minOrder) {
-            setCouponError(`Minimum order ₹${coupon.minOrder} required`);
-            return;
-        }
-
-        setAppliedCoupon(coupon);
-        setCouponCode('');
-    };
-
-    const removeCoupon = () => {
-        setAppliedCoupon(null);
-        setCouponError('');
-    };
+    const finalTotal = cartTotal;
 
     if (items.length === 0) {
         return (
@@ -84,7 +32,7 @@ export default function CartPage() {
                     <h1 className="text-2xl font-bold mb-2 text-theme">Your Bag is Empty</h1>
                     <p className="text-theme-secondary mb-6 text-sm max-w-xs">Start shopping to add items to your bag</p>
                     <Link
-                        href={`/shop`}
+                        href={`${basePath}/shop`}
                         className="text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all hover:-translate-y-0.5"
                         style={{ backgroundColor: primaryColor }}
                     >
@@ -100,7 +48,7 @@ export default function CartPage() {
             <div className="container mx-auto px-4 max-w-5xl pb-8">
                 {/* Header */}
                 <div className="py-4">
-                    <Link href={`/`} className="inline-flex items-center text-sm hover:opacity-70 transition-opacity" style={{ color: 'var(--text-secondary)' }}>
+                    <Link href={basePath} className="inline-flex items-center text-sm hover:opacity-70 transition-opacity" style={{ color: 'var(--text-secondary)' }}>
                         <ArrowLeft size={16} className="mr-2" /> Continue Shopping
                     </Link>
                 </div>
@@ -132,9 +80,9 @@ export default function CartPage() {
                                     className="card-theme p-3 rounded-xl shadow-sm border border-card flex gap-3"
                                 >
                                     {/* Image - Compact */}
-                                    <Link href={`/product/${item.id}`} className="flex-shrink-0">
+                                    <Link href={`${basePath}/product/${item.id}`} className="flex-shrink-0">
                                         <div className="w-20 h-20 card-theme-secondary rounded-lg overflow-hidden">
-                                            <img src={item.images[0]} alt={item.name} className="w-full h-full object-cover" />
+                                            <img src={item.images[0] || productImageFallback} alt={item.name} className="w-full h-full object-cover" />
                                         </div>
                                     </Link>
 
@@ -189,105 +137,6 @@ export default function CartPage() {
                                 </motion.div>
                             ))}
                         </AnimatePresence>
-
-                        {/* Coupon Section */}
-                        <div className="card-theme p-4 rounded-xl shadow-sm border border-card">
-                            <div className="flex items-center gap-2 mb-3">
-                                <Ticket size={18} style={{ color: primaryColor }} />
-                                <span className="font-semibold text-sm text-card">Apply Coupon</span>
-                            </div>
-
-                            {/* Applied Coupon */}
-                            {appliedCoupon && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg mb-3"
-                                >
-                                    <div className="flex items-center gap-2">
-                                        <Check size={16} className="text-green-600" />
-                                        <div>
-                                            <p className="text-sm font-semibold text-green-700">{appliedCoupon.code}</p>
-                                            <p className="text-xs text-green-600">Saving ₹{discountAmount}</p>
-                                        </div>
-                                    </div>
-                                    <button onClick={removeCoupon} className="text-green-600 hover:text-green-800">
-                                        <X size={16} />
-                                    </button>
-                                </motion.div>
-                            )}
-
-                            {/* Coupon Input */}
-                            {!appliedCoupon && (
-                                <>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            value={couponCode}
-                                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                            placeholder="Enter coupon code"
-                                            className="flex-1 px-3 py-2 border border-card rounded-lg text-sm outline-none text-card card-theme-secondary uppercase"
-                                        />
-                                        <button
-                                            onClick={applyCoupon}
-                                            disabled={!couponCode}
-                                            className="px-4 py-2 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-opacity"
-                                            style={{ backgroundColor: primaryColor }}
-                                        >
-                                            Apply
-                                        </button>
-                                    </div>
-                                    {couponError && (
-                                        <p className="text-red-500 text-xs mt-2">{couponError}</p>
-                                    )}
-
-                                    {/* Available Coupons */}
-                                    <button
-                                        onClick={() => setShowCoupons(!showCoupons)}
-                                        className="text-xs mt-3 flex items-center gap-1 hover:opacity-70"
-                                        style={{ color: 'var(--card-text-muted)' }}
-                                    >
-                                        <Tag size={12} />
-                                        {showCoupons ? 'Hide available coupons' : 'View available coupons'}
-                                    </button>
-
-                                    <AnimatePresence>
-                                        {showCoupons && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                className="overflow-hidden"
-                                            >
-                                                <div className="mt-3 space-y-2">
-                                                    {DEMO_COUPONS.map((coupon) => (
-                                                        <div
-                                                            key={coupon.code}
-                                                            className="flex items-center justify-between p-2 card-theme-secondary rounded-lg border border-dashed border-card"
-                                                        >
-                                                            <div>
-                                                                <p className="text-sm font-semibold text-card">{coupon.code}</p>
-                                                                <p className="text-xs text-card-muted">{coupon.description}</p>
-                                                            </div>
-                                                            <button
-                                                                onClick={() => {
-                                                                    setCouponCode(coupon.code);
-                                                                    setShowCoupons(false);
-                                                                }}
-                                                                className="text-xs font-semibold"
-                                                                style={{ color: primaryColor }}
-                                                            >
-                                                                Apply
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </>
-                            )}
-                        </div>
                     </div>
 
                     {/* Order Summary - Sticky */}
@@ -301,13 +150,6 @@ export default function CartPage() {
                                     <span>₹{cartTotal.toLocaleString('en-IN')}</span>
                                 </div>
 
-                                {appliedCoupon && (
-                                    <div className="flex justify-between text-green-600">
-                                        <span>Discount ({appliedCoupon.code})</span>
-                                        <span>-₹{discountAmount.toLocaleString('en-IN')}</span>
-                                    </div>
-                                )}
-
                                 <div className="flex justify-between text-card-muted">
                                     <span>Shipping</span>
                                     <span className="text-green-600 font-medium">Free</span>
@@ -317,16 +159,10 @@ export default function CartPage() {
                                     <span>Total</span>
                                     <span style={{ color: 'var(--card-text)' }}>₹{finalTotal.toLocaleString('en-IN')}</span>
                                 </div>
-
-                                {discountAmount > 0 && (
-                                    <p className="text-xs text-green-600 text-center bg-green-50 py-1 rounded">
-                                        🎉 You're saving ₹{discountAmount.toLocaleString('en-IN')}!
-                                    </p>
-                                )}
                             </div>
 
                             <Link
-                                href={`/checkout`}
+                                href={`${basePath}/checkout`}
                                 className="w-full mt-4 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all hover:opacity-90"
                                 style={{ backgroundColor: 'var(--card-bg)', color: 'var(--card-text)' }}
                             >

@@ -7,6 +7,7 @@
 import { useEffect, useState } from 'react';
 import { Package, ChevronRight, Loader2, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 interface Order {
     id: string;
@@ -34,6 +35,9 @@ const statusColors: Record<string, string> = {
 };
 
 export default function OrdersPage() {
+    const params = useParams();
+    const subdomain = params.subdomain as string;
+    const basePath = `/store/${subdomain}`;
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -67,7 +71,7 @@ export default function OrdersPage() {
                     When you place an order, it will appear here.
                 </p>
                 <Link
-                    href="/shop"
+                    href={`${basePath}/shop`}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold"
                     style={{ backgroundColor: 'var(--primary)' }}
                 >

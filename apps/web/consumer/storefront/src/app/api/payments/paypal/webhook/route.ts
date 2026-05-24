@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyWebhookSignature } from '@/lib/paypal';
-import { db } from '@/lib/supabase';
+import { markOrderPaid, markOrderPaymentFailed } from '@/lib/payment-order';
 
 export async function POST(request: NextRequest) {
     try {
@@ -16,7 +16,6 @@ export async function POST(request: NextRequest) {
         // Verify webhook signature
         const isValid = await verifyWebhookSignature({ body: rawBody, headers });
         if (!isValid) {
-            console.error('[PayPal Webhook] Signature verification failed');
             return NextResponse.json({ error: 'Invalid signature' }, { status: 401 });
         }
 
@@ -29,16 +28,12 @@ export async function POST(request: NextRequest) {
                 const orderId = capture.custom_id; // We set this during order creation
 
                 if (orderId) {
-                    await db
-                        .from('orders')
-                        .update({
-                            payment_status: 'paid',
-                            payment_id: capture.id,
-                            status: 'confirmed',
-                        })
-                        .eq('id', orderId);
-
-                    console.log(`[PayPal Webhook] Order ${orderId} marked as paid via capture ${capture.id}`);
+                    await markOrderPaid({
+                        orderId,
+                        provider: 'paypal',
+                        paymentId: capture.id,
+                        idempotencyKey: event.id || capture.id,
+                    });
                 }
                 break;
             }
@@ -50,26 +45,26 @@ export async function POST(request: NextRequest) {
 
                 if (orderId) {
                     const newStatus = eventType === 'PAYMENT.CAPTURE.DENIED' ? 'failed' : 'refunded';
-                    await db
-                        .from('orders')
-                        .update({
-                            payment_status: newStatus,
-                            status: eventType === 'PAYMENT.CAPTURE.DENIED' ? 'cancelled' : 'refunded',
-                        })
-                        .eq('id', orderId);
-
-                    console.log(`[PayPal Webhook] Order ${orderId} status: ${newStatus}`);
+                    await markOrderPaymentFailed({
+                        orderId,
+                        provider: 'paypal',
+                        providerEventId: event.id || capture.id,
+                        paymentStatus: newStatus,
+                        orderStatus: eventType === 'PAYMENT.CAPTURE.DENIED' ? 'cancelled' : 'refunded',
+                        reason: eventType,
+                        releaseInventory: eventType === 'PAYMENT.CAPTURE.DENIED',
+                        idempotencyKey: event.id || capture.id,
+                    });
                 }
                 break;
             }
 
             default:
-                console.log(`[PayPal Webhook] Unhandled event: ${eventType}`);
+                break;
         }
 
         return NextResponse.json({ received: true });
     } catch (error) {
-        console.error('[PayPal Webhook] Error:', error);
         return NextResponse.json(
             { error: 'Webhook processing failed' },
             { status: 400 }

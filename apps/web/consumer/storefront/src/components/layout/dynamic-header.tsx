@@ -8,7 +8,8 @@ import { useRouter } from 'next/navigation';
 import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, TrendingUp, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import AccountBottomSheet from '@/components/account/account-bottom-sheet';
-import { HeaderSettings, NavPage, DEFAULT_NAV_PAGES, StoreModel, ThemeSettings, ProductModel, SiteType } from '@/types/store';
+import { getStoreBasePath, resolveStoreHref } from '@/lib/store-paths';
+import { HeaderSettings, NavPage, StoreModel, ThemeSettings, ProductModel, SiteType } from '@/types/store';
 
 interface DynamicHeaderProps {
     store: StoreModel;
@@ -58,10 +59,13 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const logoPlacement = settings?.logoPlacement || 'left';
     const displayMode = settings?.displayMode || 'both';
     const navPlacement = settings?.navPlacement || 'right';
-    const navPages: NavPage[] = settings?.navPages || DEFAULT_NAV_PAGES;
+    const navPages: NavPage[] = settings?.navPages?.length
+        ? settings.navPages
+        : store.navigation?.main || [];
     const showSearch = settings?.showSearch !== false && store.siteType === 'store';
     const showCart = settings?.showCart !== false && store.siteType === 'store';
     const isStoreSite = store.siteType === 'store';
+    const basePath = getStoreBasePath(store.subdomain);
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious() || 0;
@@ -122,7 +126,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchQuery.trim()) {
-            router.push(`/shop?search=${encodeURIComponent(searchQuery)}`);
+            router.push(`${basePath}/shop?search=${encodeURIComponent(searchQuery)}`);
             setSearchOpen(false);
             setSearchQuery('');
         }
@@ -146,8 +150,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const logoUrl = getLogoUrl();
     const hasValidLogo = logoUrl !== null;
 
-    // Cart URL with subdomain
-    const cartUrl = `/cart`;
+    const cartUrl = `${basePath}/cart`;
 
     return (
         <>
@@ -183,7 +186,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             {visiblePages.slice(0, 5).map((page) => (
                                 <Link
                                     key={page.id}
-                                    href={page.href.startsWith('/') ? page.href : page.href}
+                                    href={resolveStoreHref(store.subdomain, page.href)}
                                     className="text-sm font-medium hover:opacity-70 transition-opacity"
                                 >
                                     {page.label}
@@ -194,7 +197,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
 
                     {/* Logo/Brand - HORIZONTAL FORCED */}
                     <Link
-                        href={`/`}
+                        href={basePath}
                         className={`flex items-center gap-2 ${logoPlacement === 'center' ? 'absolute left-1/2 -translate-x-1/2' : ''}`}
                     >
                         {hasValidLogo && (displayMode === 'logo' || displayMode === 'both') && (
@@ -226,7 +229,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             {visiblePages.slice(0, 5).map((page) => (
                                 <Link
                                     key={page.id}
-                                    href={page.href.startsWith('/') ? page.href : page.href}
+                                    href={resolveStoreHref(store.subdomain, page.href)}
                                     className="text-sm font-medium hover:opacity-70 transition-opacity"
                                 >
                                     {page.label}
@@ -326,7 +329,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                         {searchResults.map((product) => (
                                             <Link
                                                 key={product.id}
-                                                href={`/product/${product.id}`}
+                                                href={`${basePath}/product/${product.id}`}
                                                 onClick={() => {
                                                     setSearchOpen(false);
                                                     setSearchQuery('');
@@ -408,7 +411,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 onSubmit={(e) => {
                                     e.preventDefault();
                                     if (searchQuery.trim()) {
-                                        router.push(`/shop?search=${encodeURIComponent(searchQuery)}`);
+                                        router.push(`${basePath}/shop?search=${encodeURIComponent(searchQuery)}`);
                                         setMobileMenuOpen(false);
                                         setSearchQuery('');
                                     }
@@ -436,7 +439,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                     transition={{ delay: index * 0.03 }}
                                 >
                                     <Link
-                                        href={page.href.startsWith('/') ? page.href : page.href}
+                                        href={resolveStoreHref(store.subdomain, page.href)}
                                         onClick={() => setMobileMenuOpen(false)}
                                         className="flex items-center justify-between px-4 py-3 text-card hover:bg-surface-hover"
                                     >
@@ -464,7 +467,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                         <ShoppingBag size={16} />
                                         Cart {cartCount > 0 && `(${cartCount})`}
                                     </Link>
-                                    <Link href={`/shop`} onClick={() => setMobileMenuOpen(false)}>
+                                    <Link href={`${basePath}/shop`} onClick={() => setMobileMenuOpen(false)}>
                                         <div
                                             className="w-full py-3 text-center text-white font-semibold text-sm rounded-lg"
                                             style={{ backgroundColor: theme.primaryColor }}
@@ -494,6 +497,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                     isOpen={accountOpen}
                     onClose={() => setAccountOpen(false)}
                     storeId={store.id}
+                    subdomain={store.subdomain}
                 />
             )}
         </>

@@ -1,36 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { capturePayPalOrder } from '@/lib/paypal';
-import { db } from '@/lib/supabase';
+import { loadStorefrontPayableOrder, markOrderPaid } from '@/lib/payment-order';
+import { WorkerRequestError } from '@/lib/worker-client';
 
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { paypalOrderId, orderId } = body;
+        const { paypalOrderId, orderId, idempotencyKey } = body;
 
-        if (!paypalOrderId || !orderId) {
+        if (!paypalOrderId || !orderId || !idempotencyKey) {
             return NextResponse.json(
-                { error: 'Missing required fields: paypalOrderId, orderId' },
+                { error: 'Missing required fields: paypalOrderId, orderId, idempotencyKey' },
                 { status: 400 }
             );
+        }
+
+        const order = await loadStorefrontPayableOrder(orderId);
+        if (order.payment_id && order.payment_id !== paypalOrderId) {
+            return NextResponse.json({ error: 'PayPal order does not match this checkout order' }, { status: 409 });
         }
 
         const result = await capturePayPalOrder(paypalOrderId);
 
         if (result.status === 'COMPLETED') {
-            // Update the order as paid
-            const { error } = await db
-                .from('orders')
-                .update({
-                    payment_status: 'paid',
-                    payment_id: result.captureId,
-                    status: 'confirmed',
-                })
-                .eq('id', orderId);
-
-            if (error) {
-                console.error('[PayPal Capture] Order update failed:', error.message);
-                return NextResponse.json({ error: 'Payment captured but order update failed' }, { status: 500 });
-            }
+            await markOrderPaid({ orderId, provider: 'paypal', paymentId: result.captureId, idempotencyKey });
 
             return NextResponse.json({
                 success: true,
@@ -44,7 +37,14 @@ export async function POST(request: NextRequest) {
             }, { status: 400 });
         }
     } catch (error) {
-        console.error('[PayPal Capture] Error:', error);
+        if (error instanceof WorkerRequestError) {
+            return NextResponse.json({ error: error.message }, { status: error.status });
+        }
+
+        if (error instanceof Error && error.message.includes('[PayPal]')) {
+            return NextResponse.json({ error: 'PayPal is not configured' }, { status: 503 });
+        }
+
         return NextResponse.json(
             { error: 'Failed to capture PayPal payment' },
             { status: 500 }

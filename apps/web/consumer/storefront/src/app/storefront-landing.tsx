@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import './storefront-landing.css';
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -38,15 +39,6 @@ interface FinderResult {
     siteType: string;
 }
 
-// ─── Theme Badge Registry ──────────────────────────────────────
-const THEME_META: Record<string, { label: string; color: string }> = {
-    'urban-kicks': { label: 'Urban Kicks', color: '#ef4444' },
-    'luxe-atelier': { label: 'Luxe Atelier', color: '#d4af37' },
-    'natures-basket': { label: "Nature's Basket", color: '#22c55e' },
-    'neon-tech': { label: 'Neon Tech', color: '#06b6d4' },
-    'modern': { label: 'Modern', color: '#6366f1' },
-};
-
 // ─── Site Type Registry ────────────────────────────────────────
 const SITE_TYPE_META: Record<string, { label: string; icon: string; color: string }> = {
     store: { label: 'Store', icon: '🛍️', color: '#6366f1' },
@@ -76,6 +68,22 @@ function formatStat(n: number): string {
     if (n >= 10000) return `${(n / 1000).toFixed(1)}K`;
     if (n >= 1000) return n.toLocaleString('en-IN');
     return n.toString();
+}
+
+function getThemeMeta(themeId: string | null) {
+    const fallback = { label: 'Theme', color: '#6366f1' };
+    if (!themeId) return fallback;
+
+    const palette = ['#6366f1', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+    const hash = [...themeId].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+    return {
+        label: themeId
+            .split(/[-_\s]+/)
+            .filter(Boolean)
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ') || fallback.label,
+        color: palette[hash % palette.length],
+    };
 }
 
 // ─── Hook: Count-Up Animation ──────────────────────────────────
@@ -304,7 +312,7 @@ function StoreFinder() {
 
 // ─── Store Card Component ──────────────────────────────────────
 function StoreCard({ store }: { store: StoreShowcase }) {
-    const theme = THEME_META[store.themeId || 'modern'] || THEME_META['modern'];
+    const theme = getThemeMeta(store.themeId);
     const isLive = store.status === 'published';
     const isDev = typeof window !== 'undefined' && window.location.hostname.includes('localhost');
     const storeUrl = isDev
@@ -413,10 +421,10 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
             {/* ── Navbar ── */}
             <nav className="landing-nav" aria-label="Main navigation">
                 <div className="landing-nav-inner">
-                    <a href="/" className="landing-nav-logo">
+                    <Link href="/" className="landing-nav-logo">
                         <span className="logo-icon">L</span>
                         LetBuyy
-                    </a>
+                    </Link>
                     <a href="https://accounts.letbuyy.store" className="landing-nav-cta">
                         Create Site →
                     </a>

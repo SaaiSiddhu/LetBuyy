@@ -34,12 +34,13 @@ export const stripe = new Proxy({} as Stripe, {
 export async function createCheckoutSession(params: {
     orderId: string;
     storeId: string;
-    amount: number;       // in the smallest currency unit (e.g. INR paise)
+    amount: number;       // base currency amount stored on the order
     currency: string;
     customerEmail: string;
     storeName?: string;
     successUrl: string;
     cancelUrl: string;
+    idempotencyKey: string;
 }): Promise<Stripe.Checkout.Session> {
     const session = await stripe.checkout.sessions.create({
         payment_method_types: ['card'],
@@ -59,11 +60,15 @@ export async function createCheckoutSession(params: {
             },
         ],
         metadata: {
+            order_id: params.orderId,
             orderId: params.orderId,
+            store_id: params.storeId,
             storeId: params.storeId,
         },
         success_url: params.successUrl,
         cancel_url: params.cancelUrl,
+    }, {
+        idempotencyKey: params.idempotencyKey,
     });
 
     return session;

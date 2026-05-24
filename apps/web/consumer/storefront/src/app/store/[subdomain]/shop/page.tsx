@@ -1,35 +1,49 @@
 import { StoreService } from '@/lib/store-service';
-import { ProductService } from '@/lib/product-service';
 import { notFound } from 'next/navigation';
-import { DEFAULT_THEME_SETTINGS } from '@/types/store';
+import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
+import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
+import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
+import { createProductListingFallbackSection } from '@/lib/theme-engine/product-route';
+import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 
-// === COST OPTIMIZATION: ISR - Regenerate pages every 5 minutes ===
-export const revalidate = 300; // seconds
-import EnhancedShopGrid from './enhanced-shop-grid';
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
-export default async function ShopPage({ params }: { params: Promise<{ subdomain: string }> }) {
+export default async function ShopPage({
+    params,
+    searchParams,
+}: {
+    params: Promise<{ subdomain: string }>;
+    searchParams?: Promise<{ theme_preview_token?: string }>;
+}) {
     const { subdomain } = await params;
-    const store = await StoreService.getStoreBySubdomain(subdomain);
+    const query = await searchParams;
+    const previewToken = await resolveThemePreviewToken(subdomain, query?.theme_preview_token);
+    const previewStore = previewToken
+        ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
+        : null;
+    const store = previewStore || await StoreService.getStoreBySubdomain(subdomain);
 
     if (!store) return notFound();
 
-    // Use store's selected product IDs (same as main page)
-    // Also try fetching by sellerId as fallback
-    let products = await ProductService.getProductsByIds(store.selectedProductIds);
-
-    // If no products from selectedProductIds, try fetching by sellerId
-    if (products.length === 0 && store.sellerId) {
-        products = await ProductService.getProductsBySellerId(store.sellerId);
-    }
-
-    const theme = store.templateConfig?.themeSettings || DEFAULT_THEME_SETTINGS;
+    const renderPlan = resolveStorefrontTemplate(store, {
+        type: 'collection',
+        path: `/store/${subdomain}/shop`,
+        subdomain,
+        resourceSlug: 'all-products',
+        fallbackSections: [createProductListingFallbackSection('All Products')],
+    });
+    const sectionData = await buildSectionDataPlan({
+        store,
+        sections: renderPlan.template.sections,
+        route: renderPlan.route,
+    });
 
     return (
-        <EnhancedShopGrid
-            products={products}
-            theme={theme}
-            subdomain={subdomain}
-            storeName={store.name}
+        <StorefrontCompositionEngine
+            store={store}
+            plan={renderPlan}
+            sectionData={sectionData}
         />
     );
 }

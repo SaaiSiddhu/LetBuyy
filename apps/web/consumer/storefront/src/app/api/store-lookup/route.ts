@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
+import { readWorkerJson, workerFetch } from '@/lib/worker-client';
 
 export async function GET(req: NextRequest) {
     const query = req.nextUrl.searchParams.get('q')?.trim().toLowerCase();
 
-    // Validation
     if (!query || query.length < 3) {
         return NextResponse.json({
             status: 'invalid',
@@ -20,59 +19,11 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const supabase = createClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        );
-
-        // 1. Try exact subdomain match first
-        const { data: exactMatch, error: exactError } = await supabase
-            .from('sites')
-            .select('store_name, name, status, site_type')
-            .eq('store_name', query)
-            .not('status', 'eq', 'suspended')
-            .limit(1);
-
-        console.log('[store-lookup] Query:', query, 'Exact match:', exactMatch, 'Error:', exactError);
-
-        if (exactMatch && exactMatch.length > 0) {
-            const site = exactMatch[0];
-            return NextResponse.json({
-                status: 'found',
-                store: {
-                    name: site.name || site.store_name,
-                    subdomain: site.store_name,
-                    status: site.status,
-                    siteType: site.site_type,
-                },
-            });
-        }
-
-        // 2. Fuzzy name search fallback
-        const { data: fuzzyMatch } = await supabase
-            .from('sites')
-            .select('store_name, name, status, site_type')
-            .ilike('name', `%${query}%`)
-            .not('status', 'eq', 'suspended')
-            .order('created_at', { ascending: false })
-            .limit(1);
-
-        if (fuzzyMatch && fuzzyMatch.length > 0) {
-            const site = fuzzyMatch[0];
-            return NextResponse.json({
-                status: 'found',
-                store: {
-                    name: site.name || site.store_name,
-                    subdomain: site.store_name,
-                    status: site.status,
-                    siteType: site.site_type,
-                },
-            });
-        }
-
-        return NextResponse.json({ status: 'not_found' });
+        const response = await workerFetch(`/storefront/lookup?q=${encodeURIComponent(query)}`);
+        const payload = await readWorkerJson(response);
+        return NextResponse.json(payload?.data || { status: 'not_found' });
     } catch (err) {
-        console.error('[store-lookup] Error:', err);
+        console.error('[store-lookup] Worker proxy error:', err);
         return NextResponse.json({ status: 'not_found' });
     }
 }

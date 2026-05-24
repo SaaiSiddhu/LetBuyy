@@ -9,10 +9,11 @@ export default function CartIcon() {
     const { cartCount, isOpen, setIsOpen } = useCart();
     const params = useParams();
     const subdomain = params.subdomain as string;
+    const basePath = `/store/${subdomain}`;
 
     return (
         <Link
-            href={`/cart`}
+            href={`${basePath}/cart`}
             className="relative p-2 text-theme-secondary hover:text-primary transition-colors group"
         >
             <ShoppingBag size={24} className="group-hover:scale-110 transition-transform" />

@@ -7,9 +7,13 @@
 import { useWishlist } from '@/context/wishlist-context';
 import { Heart, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 
 export default function WishlistPage() {
     const { items, toggleWishlist } = useWishlist();
+    const params = useParams();
+    const subdomain = params.subdomain as string;
+    const basePath = `/store/${subdomain}`;
 
     if (items.length === 0) {
         return (
@@ -25,7 +29,7 @@ export default function WishlistPage() {
                     Save items you love and come back to them anytime.
                 </p>
                 <Link
-                    href="/shop"
+                    href={`${basePath}/shop`}
                     className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold"
                     style={{ backgroundColor: 'var(--primary)' }}
                 >
@@ -54,7 +58,7 @@ export default function WishlistPage() {
                         >
                             <Heart size={18} fill="#ef4444" stroke="#ef4444" />
                         </button>
-                        <Link href={`/product/${productId}`}>
+                        <Link href={`${basePath}/product/${productId}`}>
                             <div
                                 className="w-full aspect-square rounded-xl mb-3 flex items-center justify-center"
                                 style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}

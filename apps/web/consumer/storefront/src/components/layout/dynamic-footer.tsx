@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { StoreModel, FooterSettings, ThemeSettings } from '@/types/store';
+import { resolveStoreHref } from '@/lib/store-paths';
 import { Mail, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from 'lucide-react';
 
 interface DynamicFooterProps {
@@ -27,7 +28,6 @@ export default function DynamicFooter({ store, settings }: DynamicFooterProps) {
     const currentYear = new Date().getFullYear();
     const copyrightText = `© ${currentYear} ${store.name}. All rights reserved.`;
     const showSocial = settings?.showSocial !== false;
-
     // Social URLs from settings (empty = hidden)
     const instagramUrl = settings?.instagramUrl || '';
     const facebookUrl = settings?.facebookUrl || '';
@@ -39,19 +39,11 @@ export default function DynamicFooter({ store, settings }: DynamicFooterProps) {
     // Contact email
     const contactEmail = settings?.contactEmail || 'help@letbuyy.com';
 
-    const quickLinks = [
-        { label: 'Home', href: `/` },
-        { label: 'Shop', href: `/shop` },
-        { label: 'Cart', href: `/cart` },
-        { label: 'Track Order', href: `/orders` },
-    ];
+    const quickLinks = store.navigation?.footer?.length
+        ? store.navigation.footer
+        : store.navigation?.main || [];
 
-    const policyLinks = [
-        { label: 'Privacy Policy', href: `/privacy` },
-        { label: 'Terms of Service', href: `/terms` },
-        { label: 'Shipping', href: `/shipping` },
-        { label: 'Returns & Exchange', href: `/returns` },
-    ];
+    const policyLinks = store.navigation?.policies || [];
 
     // Build social icons array from URLs
     const socialIcons = [];
@@ -115,58 +107,66 @@ export default function DynamicFooter({ store, settings }: DynamicFooterProps) {
                     </div>
 
                     {/* Quick Links */}
-                    <div>
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.1 }}
-                        >
-                            <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">
-                                Quick Links
-                            </h4>
-                            <ul className="space-y-2">
-                                {quickLinks.map((link) => (
-                                    <li key={link.href}>
-                                        <Link
-                                            href={link.href}
-                                            className="text-sm footer-text-muted hover:text-white transition-colors inline-flex items-center gap-1 group"
-                                        >
-                                            <span className="w-0 group-hover:w-2 h-px transition-all" style={{ backgroundColor: theme.primaryColor }} />
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </motion.div>
-                    </div>
+                    {quickLinks.length > 0 && (
+                        <div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.1 }}
+                            >
+                                <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">
+                                    Quick Links
+                                </h4>
+                                <ul className="space-y-2">
+                                    {quickLinks.map((link) => (
+                                        <li key={link.id}>
+                                            <Link
+                                                href={resolveStoreHref(store.subdomain, link.href)}
+                                                target={link.openInNewTab ? '_blank' : undefined}
+                                                rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                                                className="text-sm footer-text-muted hover:text-white transition-colors inline-flex items-center gap-1 group"
+                                            >
+                                                <span className="w-0 group-hover:w-2 h-px transition-all" style={{ backgroundColor: theme.primaryColor }} />
+                                                {link.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
+                        </div>
+                    )}
 
                     {/* Policies */}
-                    <div>
-                        <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.2 }}
-                        >
-                            <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">
-                                Policies
-                            </h4>
-                            <ul className="space-y-2">
-                                {policyLinks.map((link) => (
-                                    <li key={link.href}>
-                                        <Link
-                                            href={link.href}
-                                            className="text-sm footer-text-muted hover:text-white transition-colors inline-flex items-center gap-1 group"
-                                        >
-                                            <span className="w-0 group-hover:w-2 h-px transition-all" style={{ backgroundColor: theme.primaryColor }} />
-                                            {link.label}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </motion.div>
-                    </div>
+                    {policyLinks.length > 0 && (
+                        <div>
+                            <motion.div
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <h4 className="text-sm font-semibold text-white mb-3 uppercase tracking-wider">
+                                    Policies
+                                </h4>
+                                <ul className="space-y-2">
+                                    {policyLinks.map((link) => (
+                                        <li key={link.id}>
+                                            <Link
+                                                href={resolveStoreHref(store.subdomain, link.href)}
+                                                target={link.openInNewTab ? '_blank' : undefined}
+                                                rel={link.openInNewTab ? 'noopener noreferrer' : undefined}
+                                                className="text-sm footer-text-muted hover:text-white transition-colors inline-flex items-center gap-1 group"
+                                            >
+                                                <span className="w-0 group-hover:w-2 h-px transition-all" style={{ backgroundColor: theme.primaryColor }} />
+                                                {link.label}
+                                            </Link>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </motion.div>
+                        </div>
+                    )}
 
                     {/* Contact */}
                     <div>

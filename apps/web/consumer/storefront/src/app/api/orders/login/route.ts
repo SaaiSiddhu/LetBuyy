@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Verify password
-        const isValid = await verifyCustomerPassword(emailOrPhone, password);
+        const isValid = await verifyCustomerPassword(emailOrPhone, password, undefined, subdomain);
 
         if (!isValid) {
             return NextResponse.json({ error: 'Invalid password' }, { status: 401 });

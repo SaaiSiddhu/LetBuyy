@@ -5,7 +5,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import {
@@ -14,14 +14,17 @@ import {
 } from 'lucide-react';
 
 const navItems = [
-    { href: '/account/orders', icon: Package, label: 'Orders' },
-    { href: '/account/wishlist', icon: Heart, label: 'Wishlist' },
-    { href: '/account/addresses', icon: MapPin, label: 'Addresses' },
-    { href: '/account/settings', icon: Settings, label: 'Settings' },
+    { href: 'orders', icon: Package, label: 'Orders' },
+    { href: 'wishlist', icon: Heart, label: 'Wishlist' },
+    { href: 'addresses', icon: MapPin, label: 'Addresses' },
+    { href: 'settings', icon: Settings, label: 'Settings' },
 ];
 
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
+    const params = useParams();
+    const subdomain = params.subdomain as string;
+    const basePath = `/store/${subdomain}`;
     const { isAuthenticated, isLoading, customer } = useCustomerAuth();
     const [currentPath, setCurrentPath] = useState('');
 
@@ -32,9 +35,9 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
     // Redirect if not authenticated (after loading completes)
     useEffect(() => {
         if (!isLoading && !isAuthenticated) {
-            router.push('/');
+            router.push(basePath);
         }
-    }, [isLoading, isAuthenticated, router]);
+    }, [basePath, isLoading, isAuthenticated, router]);
 
     if (isLoading) {
         return (
@@ -68,12 +71,13 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                 </div>
                 <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
                     {navItems.map(({ href, icon: Icon, label }) => {
-                        const active = currentPath.includes(href);
+                        const itemHref = `${basePath}/account/${href}`;
+                        const active = currentPath.includes(itemHref);
                         return (
                             <Link
                                 key={href}
-                                href={href}
-                                onClick={() => setCurrentPath(href)}
+                                href={itemHref}
+                                onClick={() => setCurrentPath(itemHref)}
                                 className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
                                 style={{
                                     backgroundColor: active ? 'var(--primary)' : 'var(--surface, #F3F4F6)',
@@ -109,12 +113,13 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
                         <nav className="space-y-1">
                             {navItems.map(({ href, icon: Icon, label }) => {
-                                const active = currentPath.includes(href);
+                                const itemHref = `${basePath}/account/${href}`;
+                                const active = currentPath.includes(itemHref);
                                 return (
                                     <Link
                                         key={href}
-                                        href={href}
-                                        onClick={() => setCurrentPath(href)}
+                                        href={itemHref}
+                                        onClick={() => setCurrentPath(itemHref)}
                                         className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
                                         style={{
                                             backgroundColor: active ? 'var(--primary)' : 'transparent',

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import { ShoppingBag, Menu, Search, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 
@@ -11,6 +12,9 @@ export default function FloatingHeader() {
     const [hidden, setHidden] = useState(false);
     const [scrolled, setScrolled] = useState(false);
     const { cartCount } = useCart();
+    const params = useParams();
+    const subdomain = params.subdomain as string | undefined;
+    const basePath = subdomain ? `/store/${subdomain}` : '';
 
     useMotionValueEvent(scrollY, "change", (latest) => {
         const previous = scrollY.getPrevious() || 0;
@@ -42,7 +46,7 @@ export default function FloatingHeader() {
                 </button>
 
                 {/* Logo */}
-                <Link href="/" className="relative z-10">
+                <Link href={basePath || '/'} className="relative z-10">
                     <span className={`font-display text-2xl font-bold tracking-tight ${scrolled ? 'text-theme' : 'text-white'}`}>
                         STORE
                     </span>
@@ -53,7 +57,7 @@ export default function FloatingHeader() {
                     {['Collection', 'About', 'Journal'].map((item) => (
                         <Link
                             key={item}
-                            href={`/${item.toLowerCase()}`}
+                            href={basePath ? `${basePath}/shop` : `/${item.toLowerCase()}`}
                             className="text-sm font-medium hover:text-primary transition-colors"
                         >
                             {item}
@@ -69,7 +73,7 @@ export default function FloatingHeader() {
                     <button className="p-2 rounded-full hover:bg-surface-hover transition-colors hidden sm:block">
                         <User size={22} strokeWidth={1.5} />
                     </button>
-                    <Link href="/cart" className="p-2 rounded-full hover:bg-black/5 transition-colors relative">
+                    <Link href={basePath ? `${basePath}/cart` : '/cart'} className="p-2 rounded-full hover:bg-black/5 transition-colors relative">
                         <ShoppingBag size={22} strokeWidth={1.5} />
                         {cartCount > 0 && (
                             <span className="absolute top-1 right-0 bg-primary text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full">

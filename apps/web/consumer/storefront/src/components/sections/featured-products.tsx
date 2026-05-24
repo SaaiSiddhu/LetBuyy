@@ -8,6 +8,8 @@ import { ChevronLeft, ChevronRight, ShoppingBag, Heart } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { useCart } from '@/context/cart-context';
 
+const productImageFallback = '/images/banners/new-arrivals-1.png';
+
 interface Props {
     section: SectionModel;
     products: ProductModel[];
@@ -18,6 +20,7 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
     const settings = section.settings as Record<string, any>;
     const params = useParams();
     const subdomain = params.subdomain as string;
+    const basePath = subdomain ? `/store/${subdomain}` : '';
     const scrollRef = useRef<HTMLDivElement>(null);
     const { addToCart } = useCart();
     const [wishlist, setWishlist] = useState<Set<string>>(new Set());
@@ -133,7 +136,7 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                 className="flex-shrink-0 w-[160px] md:w-[180px]"
                                 style={{ scrollSnapAlign: 'start' }}
                             >
-                                <Link href={`/product/${product.id}`}>
+                                <Link href={`${basePath}/product/${product.id}`}>
                                     <div className="group">
                                         <div
                                             className="card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
@@ -145,7 +148,7 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                                 style={{ backgroundColor: getCardBgColor(i) }}
                                             >
                                                 <img
-                                                    src={product.images[0]}
+                                                    src={product.images[0] || productImageFallback}
                                                     alt={product.name}
                                                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                                                 />

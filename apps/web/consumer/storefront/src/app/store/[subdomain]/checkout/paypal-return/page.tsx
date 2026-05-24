@@ -34,6 +34,7 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
                     body: JSON.stringify({
                         paypalOrderId: token,
                         orderId,
+                        idempotencyKey: `paypal-capture-${orderId}-${token}`,
                     }),
                 });
 

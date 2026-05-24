@@ -6,7 +6,7 @@ export type SiteType = 'store' | 'portfolio' | 'resume' | 'landing';
 
 export type PaymentGateway = 'razorpay' | 'stripe' | 'paypal';
 
-export type SectionType =
+export type BuiltInSectionType =
     | 'header'
     | 'heroBanner'
     | 'productGrid'
@@ -16,6 +16,7 @@ export type SectionType =
     | 'aboutSection'
     | 'collectionFilter'
     | 'newsletter'
+    | 'contentPage'
     | 'instagramFeed'
     | 'faqAccordion'
     | 'videoHero'
@@ -31,6 +32,8 @@ export type SectionType =
     // Shared (portfolio/resume/landing)
     | 'contactForm'
     | 'ctaSection';
+
+export type SectionType = BuiltInSectionType | (string & {});
 
 // Legacy type mapping (for compatibility)
 export type LegacySectionType = 'hero' | 'product_grid' | 'featured_collection' | 'newsletter' | 'header' | 'footer';
@@ -68,77 +71,15 @@ export const DEFAULT_THEME_SETTINGS: ThemeSettings = {
     surfaceColor: '#F9FAFB',
 };
 
-// Complete theme presets for all 10 themes
-export const THEME_PRESETS: Record<string, Partial<ThemeSettings>> = {
-    'minimal_modern': {
-        isDark: false,
-        backgroundColor: '#FFFFFF',
-        textColor: '#000000',
-        surfaceColor: '#F9FAFB',
-    },
-    'vibrant_bold': {
-        isDark: false,
-        backgroundColor: '#FFFFFF',
-        textColor: '#1A1A2E',
-        surfaceColor: '#FFF5F5',
-    },
-    'natural_organic': {
-        isDark: false,
-        backgroundColor: '#F5F1EB',
-        textColor: '#2D5016',
-        surfaceColor: '#FDFCFA',
-    },
-    'tech_elite': {
-        isDark: true,
-        backgroundColor: '#0A0A0F',
-        textColor: '#FFFFFF',
-        surfaceColor: '#1A1A2E',
-    },
-    'luxury_premium': {
-        isDark: true,
-        backgroundColor: '#1C1C1C',
-        textColor: '#F8F5F0',
-        surfaceColor: '#2A2A2A',
-    },
-    'sunset_gradient': {
-        isDark: false,
-        backgroundColor: '#FFFAF5',
-        textColor: '#1A1A2E',
-        surfaceColor: '#FFF8F0',
-    },
-    'ocean_breeze': {
-        isDark: false,
-        backgroundColor: '#F0FDFF',
-        textColor: '#0A4D68',
-        surfaceColor: '#E8FAFB',
-    },
-    'midnight_purple': {
-        isDark: true,
-        backgroundColor: '#1a1625',
-        textColor: '#FFFFFF',
-        surfaceColor: '#2D2640',
-    },
-    'fresh_mint': {
-        isDark: false,
-        backgroundColor: '#F0FDF4',
-        textColor: '#064E3B',
-        surfaceColor: '#ECFDF5',
-    },
-    'royal_rose': {
-        isDark: false,
-        backgroundColor: '#FDF2F8',
-        textColor: '#831843',
-        surfaceColor: '#FDF4F9',
-    },
-};
-
 // ============= SECTION MODEL =============
 
 export interface SectionModel {
     id: string;
     type: SectionType;
     order: number;
-    settings: Record<string, any>;
+    rendererKey?: string;
+    schemaVersion?: string;
+    settings: Record<string, unknown>;
     blocks?: BlockModel[];
     isVisible: boolean;
     createdAt?: string;
@@ -149,17 +90,39 @@ export interface BlockModel {
     id: string;
     type: string;
     order: number;
-    settings: Record<string, any>;
+    rendererKey?: string;
+    schemaVersion?: string;
+    settings: Record<string, unknown>;
     isVisible: boolean;
 }
 
 // ============= STORE TEMPLATE =============
 
+export interface StorefrontTemplateConfig {
+    id?: string;
+    type?: string;
+    layoutKey?: string;
+    sections: SectionModel[];
+}
+
+export interface StorefrontSectionGroupConfig {
+    id?: string;
+    role?: 'header' | 'footer' | 'aside' | 'custom';
+    sections: SectionModel[];
+}
+
 export interface StoreTemplateConfig {
     storeId?: string;
     themeId: string;
+    releaseId?: string;
+    releaseVersion?: number;
+    releasePublishedAt?: string;
+    engineVersion?: string;
     themeSettings: ThemeSettings;
     sections: SectionModel[];
+    sectionGroups?: Record<string, StorefrontSectionGroupConfig>;
+    templates?: Record<string, StorefrontTemplateConfig>;
+    releaseManifest?: Record<string, unknown>;
     createdAt?: string;
     updatedAt?: string;
 }
@@ -176,7 +139,9 @@ export interface StoreModel {
     logoUrl?: string;
     bannerUrl?: string;
     themeId?: string;
-    themeCustomization?: Record<string, any>; // Legacy field
+    currentThemeReleaseId?: string;
+    storefrontReleaseVersion?: number;
+    themeCustomization?: Record<string, unknown>; // Legacy field
     siteType: SiteType;
     selectedProductIds: string[];
     templateConfig: StoreTemplateConfig;
@@ -187,6 +152,7 @@ export interface StoreModel {
     codEnabled?: boolean;
     onlinePaymentEnabled?: boolean;
     paymentGateways?: PaymentGateway[];
+    navigation?: StoreNavigation;
     createdAt: string;
     updatedAt?: string;
     publishedAt?: string;
@@ -299,7 +265,7 @@ export interface OrderPayment {
     paypalOrderId?: string;
 }
 
-export type OrderStatus = 'pending' | 'confirmed' | 'shipped' | 'delivered' | 'cancelled';
+export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
 
 export interface OrderTracking {
     number?: string;
@@ -381,6 +347,17 @@ export interface NavPage {
     href: string;
     isDefault: boolean;
     isVisible: boolean;
+    openInNewTab?: boolean;
+    children?: NavPage[];
+    targetType?: string;
+    targetResourceId?: string | null;
+    metadata?: Record<string, unknown>;
+}
+
+export interface StoreNavigation {
+    main?: NavPage[];
+    footer?: NavPage[];
+    policies?: NavPage[];
 }
 
 export const DEFAULT_NAV_PAGES: NavPage[] = [
