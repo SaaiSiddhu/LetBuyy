@@ -99,6 +99,18 @@ export interface RuntimeThemeLoader {
   loadPreviewTheme(storeId: string, previewToken: string, context: ThemeEngineRenderContext): Promise<StoreTemplateConfig | null>;
 }
 
+export interface RuntimeSectionInjection {
+  position: 'before' | 'after' | 'replace';
+  targetSectionId?: string;
+  section: SectionModel;
+}
+
+export interface ThemeRuntimeOrchestrator {
+  sectionRegistry: SectionRegistryRuntime;
+  blockRegistry: BlockRegistryRuntime;
+  loader: RuntimeThemeLoader;
+}
+
 export class InMemorySectionRegistryRuntime implements SectionRegistryRuntime {
   private readonly sections = new Map<SectionType, SectionRuntimeDefinition>();
 
@@ -195,5 +207,82 @@ export function composeStorefrontTheme(input: StorefrontCompositionInput): Store
     sections: sections.filter((section) => section.isVisible !== false).sort((left, right) => left.order - right.order),
     sectionGroups,
     hydrationManifest: createThemeHydrationManifest(input.storeTemplate),
+  };
+}
+
+export async function loadRuntimeTheme(
+  orchestrator: ThemeRuntimeOrchestrator,
+  context: ThemeEngineRenderContext,
+  previewToken?: string | null,
+): Promise<StoreTemplateConfig | null> {
+  return previewToken
+    ? orchestrator.loader.loadPreviewTheme(context.storeId, previewToken, context)
+    : orchestrator.loader.loadPublishedTheme(context.storeId, context);
+}
+
+export function injectRuntimeSections(sections: SectionModel[], injections: RuntimeSectionInjection[]): SectionModel[] {
+  let next = [...sections];
+
+  for (const injection of injections) {
+    if (!injection.targetSectionId) {
+      next = [...next, injection.section];
+      continue;
+    }
+
+    const targetIndex = next.findIndex((section) => section.id === injection.targetSectionId);
+    if (targetIndex === -1) {
+      next = [...next, injection.section];
+      continue;
+    }
+
+    if (injection.position === 'replace') {
+      next = [
+        ...next.slice(0, targetIndex),
+        injection.section,
+        ...next.slice(targetIndex + 1),
+      ];
+    } else if (injection.position === 'before') {
+      next = [
+        ...next.slice(0, targetIndex),
+        injection.section,
+        ...next.slice(targetIndex),
+      ];
+    } else {
+      next = [
+        ...next.slice(0, targetIndex + 1),
+        injection.section,
+        ...next.slice(targetIndex + 1),
+      ];
+    }
+  }
+
+  return next.map((section, index) => ({ ...section, order: section.order ?? index }));
+}
+
+export function hydrateAndComposeStorefrontTheme(
+  orchestrator: Pick<ThemeRuntimeOrchestrator, 'sectionRegistry' | 'blockRegistry'>,
+  input: StorefrontCompositionInput,
+  injections: RuntimeSectionInjection[] = [],
+): StorefrontCompositionResult {
+  const composed = composeStorefrontTheme(input);
+  const injectedSections = injectRuntimeSections(composed.sections, injections);
+  const hydratedSections = hydrateSectionSchemas({
+    sections: injectedSections,
+    sectionRegistry: orchestrator.sectionRegistry,
+    blockRegistry: orchestrator.blockRegistry,
+  });
+
+  return {
+    ...composed,
+    sections: hydratedSections,
+    hydrationManifest: {
+      ...composed.hydrationManifest,
+      sectionCount: hydratedSections.length,
+      blockCount: hydratedSections.flatMap((section) => section.blocks || []).length,
+      rendererKeys: [...new Set([
+        ...composed.hydrationManifest.rendererKeys,
+        ...hydratedSections.map((section) => section.rendererKey).filter((value): value is string => Boolean(value)),
+      ])],
+    },
   };
 }

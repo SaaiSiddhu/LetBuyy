@@ -1,4 +1,5 @@
 export * from './projection';
+export * from './query-runtime';
 export * from '../storefront-query-layer/index';
 export * from '../merchant-query-layer/index';
 export * from '../analytics-query-layer/index';
