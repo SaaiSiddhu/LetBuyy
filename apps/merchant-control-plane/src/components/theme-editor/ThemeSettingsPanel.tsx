@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import SchemaFormRenderer from './SchemaFormRenderer'
-import type { ThemeSettingsSchema } from '@/lib/theme-schemas'
+import type { ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 interface ThemeSettingsPanelProps {
     themeSettings: Record<string, unknown>
@@ -13,7 +13,7 @@ interface ThemeSettingsPanelProps {
 export default function ThemeSettingsPanel({ themeSettings, settingsSchema, onSettingChange }: ThemeSettingsPanelProps) {
     const [expandedGroup, setExpandedGroup] = useState<string | null>('colors')
 
-    const groups = settingsSchema.settings
+    const groups = settingsSchema.settings as Record<string, ThemeSettingsGroup>
 
     return (
         <aside className="te-left-sidebar">
