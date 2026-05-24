@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-05-24T19:15:50.857Z",
-  "sourceFiles": 1138,
+  "generatedAt": "2026-05-24T19:41:01.608Z",
+  "sourceFiles": 1175,
   "packages": 15,
   "migrations": 58,
   "nextRoutes": 270,
@@ -8,7 +8,7 @@
   "honoRouteFiles": 30,
   "envNames": 99,
   "duplicateMigrationNumbers": [],
-  "topicDocs": 61,
+  "topicDocs": 65,
   "appAgents": 11,
   "packageAgents": 15
 }
