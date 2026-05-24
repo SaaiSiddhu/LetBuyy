@@ -10,7 +10,7 @@ set -euo pipefail
 SUPABASE_URL="${SUPABASE_URL:?Set SUPABASE_URL env var}"
 SUPABASE_SERVICE_KEY="${SUPABASE_SERVICE_ROLE_KEY:?Set SUPABASE_SERVICE_ROLE_KEY env var}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-SQL_DIR="${SCRIPT_DIR}/../supabase/seed"
+SQL_DIR="${SCRIPT_DIR}/../seeds"
 
 echo "╔════════════════════════════════════════════╗"
 echo "║  LetBuyy — Database Seeder                 ║"

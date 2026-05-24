@@ -80,4 +80,4 @@ done
 echo ""
 echo "🎉 Migration steps complete!"
 echo "   Review the output above and verify data integrity."
-echo "   Run the seed script next if needed: ./seed-data.sh"
+echo "   Run the seed script next if needed: database/supabase/scripts/seed-data.sh"
