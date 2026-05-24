@@ -2,22 +2,39 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Platform Operations Portal",
   "runtimeRoot": "apps/platform-operations-portal",
-  "actorType": ["platform-employee"],
+  "actorType": [
+    "platform-employee"
+  ],
   "runtimeCategory": "next-app",
   "runtimeClassification": "platform-operations-control-plane",
   "ownership": {
     "sourceAuthority": "apps/platform-operations-portal",
     "businessAuthority": "Employee operations surface for support, operational queues, marketing workflows, store and user review, and invites.",
-    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/platform-operations-governance.md"]
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/platform-operations-governance.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/ui", "@letbuyy/utils"],
+    "workspacePackages": [
+      "@letbuyy/api-types",
+      "@letbuyy/ui",
+      "@letbuyy/utils"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
   "deploymentAuthority": {
     "platform": "Vercel",
-    "config": ["apps/platform-operations-portal/next.config.ts"]
+    "config": [
+      "apps/platform-operations-portal/next.config.ts"
+    ]
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/next-app.schema.json",
@@ -28,5 +45,13 @@
     "correlationId": "X-Request-ID",
     "logging": "structured redacted operations workflow logs",
     "audit": "employee workflow actions require role-scoped audit events"
+  },
+  "executionAuthority": {
+    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
+    "orchestrationRole": "No durable business orchestration; delegate workflows to application-services and backend services.",
+    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through runtime-composition adapters or service API contracts.",
+    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
+    "queryOwnership": "May consume runtime-composition query layers and API responses; page-level read aggregation must migrate to packages/runtime-composition.",
+    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
   }
 }

@@ -2,22 +2,46 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Storefront Runtime",
   "runtimeRoot": "apps/storefront-runtime",
-  "actorType": ["shopper", "customer"],
+  "actorType": [
+    "shopper",
+    "customer"
+  ],
   "runtimeCategory": "next-app",
   "runtimeClassification": "tenant-data-plane",
   "ownership": {
     "sourceAuthority": "apps/storefront-runtime",
     "businessAuthority": "Shopper storefront, public catalog, cart, checkout, customer account, and theme presentation runtime.",
-    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/theme-runtime-governance.md"]
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/theme-runtime-governance.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/auth-core", "@letbuyy/checkout-core", "@letbuyy/cms-core", "@letbuyy/commerce-core", "@letbuyy/tenant-core", "@letbuyy/theme-engine", "@letbuyy/utils"],
+    "workspacePackages": [
+      "@letbuyy/api-types",
+      "@letbuyy/auth-core",
+      "@letbuyy/checkout-core",
+      "@letbuyy/cms-core",
+      "@letbuyy/commerce-core",
+      "@letbuyy/runtime-composition",
+      "@letbuyy/tenant-core",
+      "@letbuyy/theme-engine",
+      "@letbuyy/utils"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
   "deploymentAuthority": {
     "platform": "Vercel",
-    "config": ["apps/storefront-runtime/next.config.ts"]
+    "config": [
+      "apps/storefront-runtime/next.config.ts"
+    ]
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/next-app.schema.json",
@@ -28,5 +52,13 @@
     "correlationId": "X-Request-ID",
     "logging": "structured redacted storefront server and edge logs",
     "audit": "customer mutations and checkout actions must be audit-correlated through backend services"
+  },
+  "executionAuthority": {
+    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
+    "orchestrationRole": "No durable business orchestration; delegate workflows to application-services and backend services.",
+    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through runtime-composition adapters or service API contracts.",
+    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
+    "queryOwnership": "May consume runtime-composition query layers and API responses; page-level read aggregation must migrate to packages/runtime-composition.",
+    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
   }
 }

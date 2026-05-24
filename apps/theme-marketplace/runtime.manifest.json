@@ -2,22 +2,41 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Theme Marketplace",
   "runtimeRoot": "apps/theme-marketplace",
-  "actorType": ["merchant", "theme-developer"],
+  "actorType": [
+    "merchant",
+    "theme-developer"
+  ],
   "runtimeCategory": "next-app",
   "runtimeClassification": "marketplace-control-plane",
   "ownership": {
     "sourceAuthority": "apps/theme-marketplace",
     "businessAuthority": "Theme catalog, theme details, checkout, acquisition, and marketplace discovery flows.",
-    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/theme-runtime-governance.md"]
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/theme-runtime-governance.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/theme-engine", "@letbuyy/utils"],
+    "workspacePackages": [
+      "@letbuyy/api-types",
+      "@letbuyy/runtime-composition",
+      "@letbuyy/theme-engine",
+      "@letbuyy/utils"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
   "deploymentAuthority": {
     "platform": "Vercel",
-    "config": ["apps/theme-marketplace/next.config.ts"]
+    "config": [
+      "apps/theme-marketplace/next.config.ts"
+    ]
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/next-app.schema.json",
@@ -28,5 +47,13 @@
     "correlationId": "X-Request-ID",
     "logging": "structured redacted theme marketplace logs",
     "audit": "theme acquisition and payment actions must be audit-correlated"
+  },
+  "executionAuthority": {
+    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
+    "orchestrationRole": "No durable business orchestration; delegate workflows to application-services and backend services.",
+    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through runtime-composition adapters or service API contracts.",
+    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
+    "queryOwnership": "May consume runtime-composition query layers and API responses; page-level read aggregation must migrate to packages/runtime-composition.",
+    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
   }
 }

@@ -4,6 +4,7 @@ import {
   createReporter,
   deprecatedTrackedPrefixes,
   domainPackageRoots,
+  executionPackageRoots,
   exists,
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
@@ -31,6 +32,15 @@ const mandatoryGovernanceFiles = [
   "docs/governance/mobile-governance.md",
   "docs/governance/observability-governance.md",
   "docs/governance/theme-runtime-governance.md",
+  "docs/governance/runtime-composition-governance.md",
+  "docs/governance/execution-architecture-governance.md",
+  "docs/governance/application-services-governance.md",
+  "docs/governance/infrastructure-governance.md",
+  "docs/governance/orchestration-governance.md",
+  "docs/governance/query-layer-governance.md",
+  "docs/governance/event-driven-governance.md",
+  "docs/governance/storefront-execution-governance.md",
+  "docs/governance/provider-isolation-governance.md",
   "docs/governance/tooling-governance.md",
   "docs/governance/runtime-manifest-governance.md",
   "config/env/README.md",
@@ -41,7 +51,9 @@ const mandatoryGovernanceFiles = [
   "scripts/validate-governance.mjs",
   "scripts/validate-architecture.mjs",
   "scripts/validators/runtime-manifest-validator.mjs",
+  "scripts/validators/execution-layer-validator.mjs",
   "scripts/validators/dependency-graph-validator.mjs",
+  "scripts/validators/provider-isolation-validator.mjs",
   "scripts/validators/tooling-governance-validator.mjs",
   ".github/workflows/architecture-governance.yml",
   ".github/CODEOWNERS",
@@ -55,6 +67,11 @@ for (const relPath of [...canonicalAppRoots, ...canonicalServiceRoots]) {
 for (const relPath of domainPackageRoots) {
   reporter.assert(exists(relPath), `Missing governed domain package root: ${relPath}`);
   reporter.assert(exists(`${relPath}/AGENTS.md`), `Missing domain package ownership file: ${relPath}/AGENTS.md`);
+}
+
+for (const relPath of executionPackageRoots) {
+  reporter.assert(exists(relPath), `Missing governed execution package root: ${relPath}`);
+  reporter.assert(exists(`${relPath}/AGENTS.md`), `Missing execution package ownership file: ${relPath}/AGENTS.md`);
 }
 
 for (const relPath of mandatoryGovernanceFiles) {

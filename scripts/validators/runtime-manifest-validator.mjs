@@ -21,6 +21,7 @@ const requiredStringFields = [
 const requiredObjectFields = [
   "ownership",
   "allowedDependencies",
+  "executionAuthority",
   "deploymentAuthority",
   "environmentAuthority",
   "observabilityAuthority",
@@ -106,6 +107,21 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
     Array.isArray(manifest.forbiddenDependencies) && manifest.forbiddenDependencies.length > 0,
     `Runtime manifest forbiddenDependencies must be a non-empty array: ${manifestPath}`,
   );
+
+  const executionAuthority = manifest.executionAuthority;
+  for (const field of [
+    "executionRole",
+    "orchestrationRole",
+    "infrastructureOwnership",
+    "eventOwnership",
+    "queryOwnership",
+    "compositionOwnership",
+  ]) {
+    reporter.assert(
+      typeof executionAuthority?.[field] === "string" && executionAuthority[field].trim().length > 0,
+      `Runtime manifest executionAuthority.${field} must be a non-empty string: ${manifestPath}`,
+    );
+  }
 
   const schema = manifest.environmentAuthority?.schema;
   reporter.assert(

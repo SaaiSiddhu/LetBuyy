@@ -73,6 +73,10 @@ function validateDirection(fromRoot, toRoot, reason) {
     reporter.errors.push(`Apps may not import service runtime source: ${fromRoot} -> ${toRoot} (${reason})`);
   }
 
+  if (fromRoot.startsWith("apps/") && toRoot === "packages/infrastructure") {
+    reporter.errors.push(`Apps must use runtime composition or service APIs instead of infrastructure adapters: ${fromRoot} -> ${toRoot} (${reason})`);
+  }
+
   if (fromRoot.startsWith("services/") && (toRoot.startsWith("apps/") || toRoot.startsWith("services/"))) {
     reporter.errors.push(`Services must remain runtime-independent: ${fromRoot} -> ${toRoot} (${reason})`);
   }
@@ -97,7 +101,35 @@ function validateDirection(fromRoot, toRoot, reason) {
       "packages/theme-engine",
     ],
     "packages/typescript/ui": ["packages/typescript/api-types", "packages/typescript/utils"],
-    "packages/typescript/utils": ["packages/typescript/api-types"],
+    "packages/typescript/utils": ["packages/infrastructure", "packages/typescript/api-types"],
+    "packages/application-services": [
+      "packages/app-engine",
+      "packages/auth-core",
+      "packages/billing-core",
+      "packages/checkout-core",
+      "packages/cms-core",
+      "packages/commerce-core",
+      "packages/event-core",
+      "packages/notification-core",
+      "packages/orchestration",
+      "packages/search-core",
+      "packages/shared-types",
+      "packages/tenant-core",
+      "packages/theme-engine",
+    ],
+    "packages/runtime-composition": [
+      "packages/application-services",
+      "packages/checkout-core",
+      "packages/cms-core",
+      "packages/commerce-core",
+      "packages/infrastructure",
+      "packages/search-core",
+      "packages/shared-types",
+      "packages/tenant-core",
+      "packages/theme-engine",
+    ],
+    "packages/orchestration": ["packages/event-core", "packages/shared-types"],
+    "packages/infrastructure": [],
     "packages/app-engine": ["packages/shared-types"],
     "packages/auth-core": ["packages/shared-types"],
     "packages/billing-core": ["packages/event-core", "packages/shared-types"],

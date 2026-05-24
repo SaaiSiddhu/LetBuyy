@@ -2,19 +2,32 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Event Bus",
   "runtimeRoot": "services/event-bus",
-  "actorType": ["service"],
+  "actorType": [
+    "service"
+  ],
   "runtimeCategory": "reserved-service",
   "runtimeClassification": "event-service-plane",
   "ownership": {
     "sourceAuthority": "services/event-bus",
     "businessAuthority": "Reserved internal event transport authority for commerce domain events and async workflow fanout.",
-    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/observability-governance.md"]
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/observability-governance.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types"],
+    "workspacePackages": [
+      "@letbuyy/api-types"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
   "deploymentAuthority": {
     "platform": "Reserved event service",
     "config": []
@@ -28,5 +41,13 @@
     "correlationId": "X-Request-ID",
     "logging": "structured redacted event bus logs",
     "audit": "event publication must retain event ID, tenant, producer, and consumer acknowledgement state"
+  },
+  "executionAuthority": {
+    "executionRole": "Execution container for APIs, workers, webhooks, schedulers, queue consumers, and runtime bootstrapping.",
+    "orchestrationRole": "Delegates business workflow sequencing to packages/application-services; owns transport invocation and runtime transactions only.",
+    "infrastructureOwnership": "May wire packages/infrastructure adapters to runtime bindings and secrets; does not import provider SDKs directly.",
+    "eventOwnership": "Owns runtime event ingestion, dispatch, acknowledgement, and handler execution for declared service responsibilities.",
+    "queryOwnership": "May execute service-side read models through application-services or runtime-composition contracts.",
+    "compositionOwnership": "No UI composition authority; composes execution handlers and response envelopes only."
   }
 }

@@ -2,22 +2,40 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Marketing Site",
   "runtimeRoot": "apps/marketing-site",
-  "actorType": ["visitor", "prospect"],
+  "actorType": [
+    "visitor",
+    "prospect"
+  ],
   "runtimeCategory": "next-app",
   "runtimeClassification": "public-marketing-plane",
   "ownership": {
     "sourceAuthority": "apps/marketing-site",
     "businessAuthority": "Public LetBuyy marketing, pricing, product narrative, and conversion routing.",
-    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/runtime-governance.md"]
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/runtime-governance.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/utils"],
+    "workspacePackages": [
+      "@letbuyy/api-types",
+      "@letbuyy/utils"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts", "auth-pages"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts",
+    "auth-pages"
+  ],
   "deploymentAuthority": {
     "platform": "Vercel",
-    "config": ["apps/marketing-site/next.config.ts"]
+    "config": [
+      "apps/marketing-site/next.config.ts"
+    ]
   },
   "environmentAuthority": {
     "schema": "config/env/schemas/next-app.schema.json",
@@ -28,5 +46,13 @@
     "correlationId": "X-Request-ID",
     "logging": "structured redacted marketing conversion logs",
     "audit": "marketing has no authority over authenticated account mutations"
+  },
+  "executionAuthority": {
+    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
+    "orchestrationRole": "No durable business orchestration; delegate workflows to application-services and backend services.",
+    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through runtime-composition adapters or service API contracts.",
+    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
+    "queryOwnership": "May consume runtime-composition query layers and API responses; page-level read aggregation must migrate to packages/runtime-composition.",
+    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
   }
 }

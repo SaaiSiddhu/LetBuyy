@@ -13,6 +13,7 @@
     "ownership",
     "allowedDependencies",
     "forbiddenDependencies",
+    "executionAuthority",
     "deploymentAuthority",
     "environmentAuthority",
     "observabilityAuthority"
@@ -66,6 +67,26 @@
       "items": { "type": "string", "minLength": 1 },
       "minItems": 1,
       "uniqueItems": true
+    },
+    "executionAuthority": {
+      "type": "object",
+      "required": [
+        "executionRole",
+        "orchestrationRole",
+        "infrastructureOwnership",
+        "eventOwnership",
+        "queryOwnership",
+        "compositionOwnership"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "executionRole": { "type": "string", "minLength": 1 },
+        "orchestrationRole": { "type": "string", "minLength": 1 },
+        "infrastructureOwnership": { "type": "string", "minLength": 1 },
+        "eventOwnership": { "type": "string", "minLength": 1 },
+        "queryOwnership": { "type": "string", "minLength": 1 },
+        "compositionOwnership": { "type": "string", "minLength": 1 }
+      }
     },
     "deploymentAuthority": {
       "type": "object",

@@ -2,19 +2,36 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Mobile Shopper App",
   "runtimeRoot": "apps/mobile/shopper-app",
-  "actorType": ["shopper", "customer"],
+  "actorType": [
+    "shopper",
+    "customer"
+  ],
   "runtimeCategory": "flutter-app",
   "runtimeClassification": "mobile-customer-runtime",
   "ownership": {
     "sourceAuthority": "apps/mobile/shopper-app",
     "businessAuthority": "Reserved mobile shopper runtime for customer browsing, cart, checkout, account, and order flows.",
-    "governanceDocs": ["docs/governance/mobile-governance.md", "docs/governance/runtime-boundaries.md"]
+    "governanceDocs": [
+      "docs/governance/mobile-governance.md",
+      "docs/governance/runtime-boundaries.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["letbuyy_core", "letbuyy_models", "letbuyy_services", "letbuyy_ui_kit"],
+    "workspacePackages": [
+      "letbuyy_core",
+      "letbuyy_models",
+      "letbuyy_services",
+      "letbuyy_ui_kit"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
   "deploymentAuthority": {
     "platform": "Mobile app stores",
     "config": []
@@ -28,5 +45,13 @@
     "correlationId": "X-Request-ID",
     "logging": "redacted mobile client logs and backend-correlated request IDs",
     "audit": "customer mutations must be audit-correlated through backend APIs"
+  },
+  "executionAuthority": {
+    "executionRole": "Thin composition runtime for routing, rendering, presentation adapters, and runtime-specific transport.",
+    "orchestrationRole": "No durable business orchestration; delegate workflows to application-services and backend services.",
+    "infrastructureOwnership": "No provider SDK or direct infrastructure adapter ownership; consume provider integrations through runtime-composition adapters or service API contracts.",
+    "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
+    "queryOwnership": "May consume runtime-composition query layers and API responses; page-level read aggregation must migrate to packages/runtime-composition.",
+    "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
   }
 }

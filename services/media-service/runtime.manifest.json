@@ -2,19 +2,33 @@
   "$schema": "config/runtime/runtime-manifest.schema.json",
   "runtimeName": "Media Service",
   "runtimeRoot": "services/media-service",
-  "actorType": ["service", "merchant"],
+  "actorType": [
+    "service",
+    "merchant"
+  ],
   "runtimeCategory": "reserved-service",
   "runtimeClassification": "media-service-plane",
   "ownership": {
     "sourceAuthority": "services/media-service",
     "businessAuthority": "Reserved media upload, transformation, metadata, storage, and delivery authority.",
-    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/dependency-governance.md"]
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/dependency-governance.md"
+    ]
   },
   "allowedDependencies": {
-    "workspacePackages": ["@letbuyy/api-types"],
+    "workspacePackages": [
+      "@letbuyy/api-types"
+    ],
     "runtimeImports": []
   },
-  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
   "deploymentAuthority": {
     "platform": "Reserved Cloudflare service",
     "config": []
@@ -28,5 +42,13 @@
     "correlationId": "X-Request-ID",
     "logging": "structured redacted media service logs",
     "audit": "media mutations must record tenant, object key, checksum, and storage provider action"
+  },
+  "executionAuthority": {
+    "executionRole": "Execution container for APIs, workers, webhooks, schedulers, queue consumers, and runtime bootstrapping.",
+    "orchestrationRole": "Delegates business workflow sequencing to packages/application-services; owns transport invocation and runtime transactions only.",
+    "infrastructureOwnership": "May wire packages/infrastructure adapters to runtime bindings and secrets; does not import provider SDKs directly.",
+    "eventOwnership": "Owns runtime event ingestion, dispatch, acknowledgement, and handler execution for declared service responsibilities.",
+    "queryOwnership": "May execute service-side read models through application-services or runtime-composition contracts.",
+    "compositionOwnership": "No UI composition authority; composes execution handlers and response envelopes only."
   }
 }

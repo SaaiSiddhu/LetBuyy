@@ -126,6 +126,13 @@ export const domainPackageRoots = [
   "packages/mobile-ui-kit",
 ];
 
+export const executionPackageRoots = [
+  "packages/application-services",
+  "packages/infrastructure",
+  "packages/orchestration",
+  "packages/runtime-composition",
+];
+
 export const workspacePackageRoots = [
   "packages/typescript/api-types",
   "packages/typescript/ui",
@@ -134,6 +141,7 @@ export const workspacePackageRoots = [
   "packages/dart/models",
   "packages/dart/services",
   "packages/dart/ui_kit",
+  ...executionPackageRoots,
   ...domainPackageRoots,
 ];
 
