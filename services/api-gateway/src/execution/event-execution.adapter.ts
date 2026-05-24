@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { NOTIFICATION_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import { NOTIFICATION_APPLICATION_WORKFLOWS, NOTIFICATION_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -33,6 +33,14 @@ export interface AuditEventInput {
 
 export class EventExecutionAdapter {
     static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = NOTIFICATION_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'event-execution.adapter',
+        workflowAuthority: 'notification-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) { }
 

@@ -863,6 +863,9 @@ importers:
       '@letbuyy/orchestration':
         specifier: workspace:*
         version: link:../../packages/orchestration
+      '@letbuyy/runtime-composition':
+        specifier: workspace:*
+        version: link:../../packages/runtime-composition
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types

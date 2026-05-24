@@ -1,5 +1,16 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { NOTIFICATION_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import {
+    NOTIFICATION_APPLICATION_WORKFLOWS,
+    NOTIFICATION_EXECUTION_PIPELINES,
+    SEARCH_EXECUTION_PIPELINES,
+    defineRuntimeBridge,
+} from '@letbuyy/application-services';
+import {
+    analyticsRollupDate,
+    buildSearchProjectionDocument,
+    normalizeQueueEnvelope,
+    queueRetryDelaySeconds,
+} from '@letbuyy/runtime-composition';
 
 type JsonObject = Record<string, unknown>;
 
@@ -73,31 +84,19 @@ interface OrderSearchRow {
     deleted_at?: string | null;
 }
 
-function retryDelaySeconds(attempt: number): number {
-    const exponent = Math.max(0, Math.min(attempt - 1, 8));
-    return Math.min(3600, 60 * 2 ** exponent);
-}
-
-function toEnvelope(payload: JsonObject): EventEnvelope {
-    return payload as EventEnvelope;
-}
-
-function rollupDate(occurredAt?: string): string {
-    const date = occurredAt ? new Date(occurredAt) : new Date();
-    if (Number.isNaN(date.getTime())) return new Date().toISOString().slice(0, 10);
-    return date.toISOString().slice(0, 10);
-}
-
-function textParts(...parts: Array<string | number | null | undefined | string[]>): string {
-    return parts
-        .flatMap((part) => Array.isArray(part) ? part : [part])
-        .filter((part): part is string | number => part !== null && part !== undefined && String(part).length > 0)
-        .map((part) => String(part))
-        .join(' ');
-}
-
 export class QueueExecutionAdapter {
     static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = {
+        ...NOTIFICATION_EXECUTION_PIPELINES,
+        ...SEARCH_EXECUTION_PIPELINES,
+    };
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'queue-execution.adapter',
+        workflowAuthority: 'notification-application',
+        allowedResponsibilities: ['queue-claim', 'database-rpc'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) {}
 
@@ -163,7 +162,7 @@ export class QueueExecutionAdapter {
     }
 
     private async processAnalyticsJob(job: PlatformQueueJob): Promise<boolean> {
-        const envelope = toEnvelope(job.payload);
+        const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
         const siteId = job.site_id || envelope.site_id;
         if (!siteId) return false;
 
@@ -194,8 +193,8 @@ export class QueueExecutionAdapter {
 
         if (error) throw new Error(`Analytics event projection failed: ${error.message}`);
 
-        await this.incrementRollup(siteId, 'events.total', rollupDate(occurredAt), {});
-        await this.incrementRollup(siteId, `events.${eventType}`, rollupDate(occurredAt), {
+        await this.incrementRollup(siteId, 'events.total', analyticsRollupDate(occurredAt), {});
+        await this.incrementRollup(siteId, `events.${eventType}`, analyticsRollupDate(occurredAt), {
             aggregate_type: aggregateType,
         });
 
@@ -203,7 +202,7 @@ export class QueueExecutionAdapter {
     }
 
     private async processSearchJob(job: PlatformQueueJob): Promise<boolean> {
-        const envelope = toEnvelope(job.payload);
+        const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
         const aggregateType = envelope.aggregate?.type || '';
         const aggregateId = envelope.aggregate?.id || '';
 
@@ -239,31 +238,31 @@ export class QueueExecutionAdapter {
             .from('search_documents')
             .upsert(
                 {
-                    site_id: product.store_id,
-                    object_type: 'product',
-                    object_id: product.id,
-                    title: product.name || '',
-                    subtitle: product.sku || product.category || null,
-                    searchable_text: textParts(
-                        product.name,
-                        product.description,
-                        product.sku,
-                        product.category,
-                        product.product_type,
-                        product.vendor,
-                        product.tags
-                    ),
-                    attributes: {
-                        price: product.price,
-                        category: product.category,
-                        product_type: product.product_type,
-                        vendor: product.vendor,
-                        tags: product.tags || [],
-                    },
-                    source_event_id: job.event_id,
-                    status,
-                    indexed_at: new Date().toISOString(),
-                    deleted_at: null,
+                    ...buildSearchProjectionDocument({
+                        siteId: product.store_id,
+                        objectType: 'product',
+                        objectId: product.id,
+                        title: product.name || '',
+                        subtitle: product.sku || product.category || null,
+                        textParts: [
+                            product.name,
+                            product.description,
+                            product.sku,
+                            product.category,
+                            product.product_type,
+                            product.vendor,
+                            product.tags,
+                        ],
+                        attributes: {
+                            price: product.price,
+                            category: product.category,
+                            product_type: product.product_type,
+                            vendor: product.vendor,
+                            tags: product.tags || [],
+                        },
+                        sourceEventId: job.event_id,
+                        status,
+                    }),
                 },
                 { onConflict: 'site_id,object_type,object_id' }
             );
@@ -287,27 +286,28 @@ export class QueueExecutionAdapter {
             .from('search_documents')
             .upsert(
                 {
-                    site_id: order.store_id,
-                    object_type: 'order',
-                    object_id: order.id,
-                    title: order.order_number || order.id,
-                    subtitle: order.customer_email || null,
-                    searchable_text: textParts(
-                        order.order_number,
-                        order.customer_name,
-                        order.customer_email,
-                        order.status,
-                        order.total
-                    ),
-                    attributes: {
-                        status: order.status,
-                        total: order.total,
-                        customer_email: order.customer_email,
-                    },
-                    source_event_id: job.event_id,
-                    status: order.deleted_at ? 'deleted' : 'active',
-                    indexed_at: new Date().toISOString(),
-                    deleted_at: order.deleted_at || null,
+                    ...buildSearchProjectionDocument({
+                        siteId: order.store_id,
+                        objectType: 'order',
+                        objectId: order.id,
+                        title: order.order_number || order.id,
+                        subtitle: order.customer_email || null,
+                        textParts: [
+                            order.order_number,
+                            order.customer_name,
+                            order.customer_email,
+                            order.status,
+                            order.total,
+                        ],
+                        attributes: {
+                            status: order.status,
+                            total: order.total,
+                            customer_email: order.customer_email,
+                        },
+                        sourceEventId: job.event_id,
+                        status: order.deleted_at ? 'deleted' : 'active',
+                        deletedAt: order.deleted_at || null,
+                    }),
                 },
                 { onConflict: 'site_id,object_type,object_id' }
             );
@@ -376,7 +376,7 @@ export class QueueExecutionAdapter {
             p_job_id: job.id,
             p_worker_id: workerId,
             p_error_message: error instanceof Error ? error.message : 'Queue job failed',
-            p_retry_seconds: retryDelaySeconds(job.attempts),
+            p_retry_seconds: queueRetryDelaySeconds(job.attempts),
             p_result: {},
         });
 

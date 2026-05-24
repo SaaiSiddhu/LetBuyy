@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { CHECKOUT_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import { CHECKOUT_APPLICATION_WORKFLOWS, CHECKOUT_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
 import { ConflictError, NotFoundError } from '../lib/errors';
 
 type PayableOrder = {
@@ -14,6 +14,14 @@ type PayableOrder = {
 
 export class PaymentExecutionAdapter {
     static readonly applicationWorkflows = CHECKOUT_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = CHECKOUT_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'payment-execution.adapter',
+        workflowAuthority: 'checkout-application',
+        allowedResponsibilities: ['database-rpc', 'provider-adapter-wiring', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) { }
 

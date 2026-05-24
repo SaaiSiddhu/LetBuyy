@@ -1,5 +1,10 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { AUTH_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import {
+    AUTH_APPLICATION_WORKFLOWS,
+    AUTH_EXECUTION_PIPELINES,
+    canonicalizeExecutionPayload,
+    defineRuntimeBridge,
+} from '@letbuyy/application-services';
 import { ConflictError, ValidationError } from '../lib/errors';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -17,17 +22,6 @@ export type IdempotencyClaim =
     | { kind: 'claimed'; id: string; requestHash: string }
     | { kind: 'replay'; responseBody: JsonValue; statusCode: number };
 
-function stableJson(value: unknown): string {
-    if (value === null || typeof value !== 'object') return JSON.stringify(value);
-    if (Array.isArray(value)) return `[${value.map((item) => stableJson(item)).join(',')}]`;
-
-    const record = value as Record<string, unknown>;
-    return `{${Object.keys(record)
-        .sort()
-        .map((key) => `${JSON.stringify(key)}:${stableJson(record[key])}`)
-        .join(',')}}`;
-}
-
 async function sha256Hex(value: string): Promise<string> {
     const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
     return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -40,6 +34,14 @@ function isUniqueViolation(error: { code?: string; message?: string } | null): b
 
 export class IdempotencyExecutionAdapter {
     static readonly applicationWorkflows = AUTH_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = AUTH_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'idempotency-execution.adapter',
+        workflowAuthority: 'auth-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) { }
 
@@ -61,7 +63,7 @@ export class IdempotencyExecutionAdapter {
         expiresInSeconds?: number;
     }): Promise<IdempotencyClaim> {
         const key = IdempotencyExecutionAdapter.normalizeKey(params.key);
-        const requestHash = await sha256Hex(stableJson(params.requestBody));
+        const requestHash = await sha256Hex(canonicalizeExecutionPayload(params.requestBody));
         const now = Date.now();
         const lockedUntil = new Date(now + (params.lockSeconds ?? 120) * 1000).toISOString();
         const expiresAt = new Date(now + (params.expiresInSeconds ?? 24 * 60 * 60) * 1000).toISOString();
@@ -145,7 +147,7 @@ export class IdempotencyExecutionAdapter {
         resourceType?: string;
         resourceId?: string;
     }) {
-        const responseHash = await sha256Hex(stableJson(params.responseBody));
+        const responseHash = await sha256Hex(canonicalizeExecutionPayload(params.responseBody));
         const { error } = await this.db
             .from('idempotency_keys')
             .update({

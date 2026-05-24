@@ -60,6 +60,9 @@
             "@letbuyy/orchestration": [
                 "../../packages/orchestration/src/index.ts"
             ],
+            "@letbuyy/runtime-composition": [
+                "../../packages/runtime-composition/src/index.ts"
+            ],
             "@letbuyy/search-core": [
                 "../../packages/search-core/src/index.ts"
             ],

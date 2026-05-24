@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { CorrelationContext } from '@letbuyy/orchestration';
+import { defineRuntimeBridge } from '@letbuyy/application-services';
 
 type Metadata = Record<string, unknown>;
 
@@ -37,6 +38,13 @@ function isMissingOptionalOperationalTable(error: { message?: string } | null | 
 
 export class ObservabilityExecutionAdapter {
     static readonly correlationContract: Array<keyof CorrelationContext> = ['requestId', 'correlationId'];
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'observability-execution.adapter',
+        workflowAuthority: 'notification-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) {}
 

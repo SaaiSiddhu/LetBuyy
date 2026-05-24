@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { THEME_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
 import {
     getDefaultStorefrontThemeTemplate,
     hasRenderableThemeTemplate,
@@ -474,6 +474,14 @@ async function sha256Hex(input: string): Promise<string> {
 
 export class ThemeExecutionAdapter {
     static readonly applicationWorkflows = THEME_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = THEME_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'theme-execution.adapter',
+        workflowAuthority: 'theme-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     private schemaRegistry: SchemaRegistryExecutionAdapter;
 

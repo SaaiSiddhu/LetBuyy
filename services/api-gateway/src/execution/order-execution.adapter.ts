@@ -3,9 +3,13 @@
 // ============================================================
 
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { CHECKOUT_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import {
+    CHECKOUT_APPLICATION_WORKFLOWS,
+    CHECKOUT_EXECUTION_PIPELINES,
+    defineRuntimeBridge,
+    planOrderStatusTransition,
+} from '@letbuyy/application-services';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
-import { VALID_TRANSITIONS } from '../schemas/order.schema';
 import type { TenantContext } from '../lib/tenant-context';
 import { SaasExecutionAdapter } from './saas-execution.adapter';
 import type {
@@ -23,6 +27,14 @@ interface OrderRow {
 
 export class OrderExecutionAdapter {
     static readonly applicationWorkflows = CHECKOUT_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = CHECKOUT_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'order-execution.adapter',
+        workflowAuthority: 'checkout-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) { }
 
@@ -138,14 +150,6 @@ export class OrderExecutionAdapter {
         newStatus: string,
         metadata?: Record<string, unknown>
     ) {
-        if (newStatus === 'shipped') {
-            return this.fulfillOrder(orderId, tenant, {
-                idempotency_key: String(metadata?.idempotency_key || tenant.requestId),
-                carrier: typeof metadata?.carrier === 'string' ? metadata.carrier : undefined,
-                tracking_number: typeof metadata?.tracking_number === 'string' ? metadata.tracking_number : undefined,
-            });
-        }
-
         const { data: order } = await this.db
             .from('orders')
             .select('id, store_id, status')
@@ -159,37 +163,29 @@ export class OrderExecutionAdapter {
             throw new ForbiddenError('Not authorized to update this order');
         }
 
-        // Validate transition
-        const allowed = VALID_TRANSITIONS[ownedOrder.status] || [];
-        if (!allowed.includes(newStatus)) {
+        const plan = planOrderStatusTransition(ownedOrder.status, newStatus, metadata || {});
+        if (plan.delegatesToFulfillment) {
+            return this.fulfillOrder(orderId, tenant, {
+                idempotency_key: String(metadata?.idempotency_key || tenant.requestId),
+                carrier: typeof metadata?.carrier === 'string' ? metadata.carrier : undefined,
+                tracking_number: typeof metadata?.tracking_number === 'string' ? metadata.tracking_number : undefined,
+            });
+        }
+
+        if (!plan.allowed) {
             throw new ValidationError(
                 `Cannot transition from "${ownedOrder.status}" to "${newStatus}". ` +
-                `Allowed transitions: ${allowed.length > 0 ? allowed.join(', ') : 'none (terminal state)'}`
+                `Allowed transitions: ${plan.allowedTransitions.length > 0 ? plan.allowedTransitions.join(', ') : 'none (terminal state)'}`
             );
         }
 
-        // Build updates
-        const updates: Record<string, unknown> = { status: newStatus };
-
-        if (newStatus === 'shipped') {
-            updates.fulfillment_status = 'fulfilled';
-            if (metadata?.tracking_number) updates.tracking_number = metadata.tracking_number;
-            if (metadata?.carrier) updates.carrier = metadata.carrier;
-        }
-
-        if (newStatus === 'delivered') {
-            updates.payment_status = 'paid';
-        }
-
-        if (newStatus === 'cancelled') {
-            updates.payment_status = 'refunded';
-            updates.notes = metadata?.cancellation_reason || 'Order cancelled';
+        if (plan.requiresInventoryRelease) {
             await this.returnInventory(orderId, tenant);
         }
 
         const { data, error } = await this.db
             .from('orders')
-            .update(updates)
+            .update(plan.updates)
             .eq('id', orderId)
             .eq('store_id', tenant.siteId)
             .select()

@@ -19,6 +19,7 @@
         "@letbuyy/event-core": "workspace:*",
         "@letbuyy/infrastructure": "workspace:*",
         "@letbuyy/orchestration": "workspace:*",
+        "@letbuyy/runtime-composition": "workspace:*",
         "@letbuyy/shared-types": "workspace:*",
         "@letbuyy/tenant-core": "workspace:*",
         "@letbuyy/theme-engine": "workspace:*",

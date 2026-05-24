@@ -3,7 +3,13 @@
 // ============================================================
 
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { COMMERCE_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import {
+    COMMERCE_APPLICATION_WORKFLOWS,
+    COMMERCE_EXECUTION_PIPELINES,
+    defineRuntimeBridge,
+    generateProductSlug,
+    planProductUpdate,
+} from '@letbuyy/application-services';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasExecutionAdapter } from './saas-execution.adapter';
@@ -22,6 +28,14 @@ interface ProductViewCounterRow {
 
 export class ProductExecutionAdapter {
     static readonly applicationWorkflows = COMMERCE_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = COMMERCE_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'product-execution.adapter',
+        workflowAuthority: 'commerce-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) { }
 
@@ -34,7 +48,7 @@ export class ProductExecutionAdapter {
         await this.assertProductQuota(input.store_id);
 
         // Generate slug from name
-        const slug = this.generateSlug(input.url_handle || input.name);
+        const slug = generateProductSlug(input.url_handle || input.name);
 
         const { data, error } = await this.db
             .from('products')
@@ -94,38 +108,16 @@ export class ProductExecutionAdapter {
     ) {
         const ownedProduct = await this.getOwnedProduct(productId, userId, sessionStoreId);
 
-        // Filter to allowed fields only
-        const ALLOWED_FIELDS = [
-            'name', 'description', 'price', 'compare_price', 'cost_per_item', 'images',
-            'category', 'product_type', 'vendor', 'stock', 'track_inventory', 'sku',
-            'barcode', 'sell_when_oos', 'is_physical', 'weight', 'weight_unit',
-            'country_of_origin', 'hs_code', 'url_handle', 'seo_title', 'seo_description',
-            'charge_tax', 'is_active', 'is_featured', 'tags', 'variants', 'display_order',
-        ];
-
-        const safeUpdates: Record<string, unknown> = {};
-        for (const key of ALLOWED_FIELDS) {
-            if (updates[key] !== undefined) safeUpdates[key] = updates[key];
-        }
-
-        if (typeof safeUpdates.name === 'string' && updates.url_handle === undefined) {
-            safeUpdates.url_handle = this.generateSlug(safeUpdates.name);
-        }
-
-        if (typeof safeUpdates.is_active === 'boolean' && updates.status === undefined) {
-            safeUpdates.status = safeUpdates.is_active ? 'active' : 'draft';
-        }
-
-        const hasOptionUpdates = updates.product_options !== undefined;
-        if (Object.keys(safeUpdates).length === 0 && !hasOptionUpdates) {
+        const updatePlan = planProductUpdate(updates);
+        if (Object.keys(updatePlan.safeUpdates).length === 0 && !updatePlan.hasOptionUpdates) {
             throw new ValidationError('No valid fields to update');
         }
 
         let data: Record<string, unknown> | null = null;
-        if (Object.keys(safeUpdates).length > 0) {
+        if (Object.keys(updatePlan.safeUpdates).length > 0) {
             const result = await this.db
                 .from('products')
-                .update(safeUpdates)
+                .update(updatePlan.safeUpdates)
                 .eq('id', productId)
                 .select()
                 .single();
@@ -134,18 +126,18 @@ export class ProductExecutionAdapter {
             data = result.data as Record<string, unknown>;
         }
 
-        if (Array.isArray(updates.product_options)) {
+        if (updatePlan.hasOptionUpdates && Array.isArray(updates.product_options)) {
             await this.replaceProductOptions(productId, updates.product_options as ProductOptionInput[]);
         }
 
-        if (Array.isArray(updates.variants)) {
-            const basePrice = typeof safeUpdates.price === 'number'
-                ? safeUpdates.price
+        if (updatePlan.hasVariantUpdates && Array.isArray(updates.variants)) {
+            const basePrice = typeof updatePlan.safeUpdates.price === 'number'
+                ? updatePlan.safeUpdates.price
                 : Number(data?.price ?? ownedProduct.price ?? 0);
             await this.replaceProductVariants(productId, basePrice, updates.variants as ProductVariantInput[], userId);
         }
 
-        if (typeof updates.stock === 'number') {
+        if (updatePlan.hasInventoryUpdate && typeof updates.stock === 'number') {
             await this.setInventoryAvailable(productId, null, updates.stock, userId, 'product.update');
         }
 
@@ -281,18 +273,6 @@ export class ProductExecutionAdapter {
 
             throw new Error(`Product view counter update failed: ${error.message}`);
         }
-    }
-
-    /**
-     * Generate a URL-safe slug from a product name.
-     */
-    private generateSlug(name: string): string {
-        return name
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .slice(0, 100);
     }
 
     private async assertStoreOwnership(

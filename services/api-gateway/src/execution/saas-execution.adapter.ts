@@ -1,5 +1,11 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
-import { BILLING_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
+import {
+    BILLING_APPLICATION_WORKFLOWS,
+    BILLING_EXECUTION_PIPELINES,
+    defineRuntimeBridge,
+    normalizeBillingObject,
+    normalizeBillingStringArray,
+} from '@letbuyy/application-services';
 
 type JsonObject = Record<string, unknown>;
 
@@ -42,16 +48,16 @@ function isMissingSaasTableOrFunction(error: { message?: string } | null | undef
     );
 }
 
-function normalizeStringArray(value: unknown): string[] {
-    return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
-}
-
-function normalizeObject(value: unknown): JsonObject {
-    return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonObject : {};
-}
-
 export class SaasExecutionAdapter {
     static readonly applicationWorkflows = BILLING_APPLICATION_WORKFLOWS;
+    static readonly executionPipelines = BILLING_EXECUTION_PIPELINES;
+    static readonly runtimeBridge = defineRuntimeBridge({
+        kind: 'runtime-bridge',
+        adapter: 'saas-execution.adapter',
+        workflowAuthority: 'billing-application',
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
+        forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
+    });
 
     constructor(private db: SupabaseClient) {}
 
@@ -80,9 +86,9 @@ export class SaasExecutionAdapter {
             site_id: raw.site_id || siteId,
             site_type: raw.site_type || 'store',
             plan: raw.plan || fallbackPlan,
-            features: normalizeStringArray(raw.features),
-            limits: normalizeObject(raw.limits),
-            entitlements: normalizeObject(raw.entitlements),
+            features: normalizeBillingStringArray(raw.features),
+            limits: normalizeBillingObject(raw.limits),
+            entitlements: normalizeBillingObject(raw.entitlements),
         };
     }
 
@@ -108,6 +114,6 @@ export class SaasExecutionAdapter {
             throw new Error(`Usage metering failed: ${error.message}`);
         }
 
-        return normalizeObject(data);
+        return normalizeBillingObject(data);
     }
 }
