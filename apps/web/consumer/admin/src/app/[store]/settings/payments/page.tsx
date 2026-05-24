@@ -1,89 +1,133 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 
-interface PaymentMethod {
-    id: string
-    provider: string
-    is_active: boolean
-    mode: string
+type SanitizedPaymentSettings = {
+    mode: 'shared' | 'ownAccount'
+    gateways: string[]
+    razorpay: {
+        key_id: string | null
+        test_mode: boolean
+        verified: boolean
+        connected_at: string | null
+        updated_at: string | null
+        secret_configured: boolean
+    } | null
 }
 
-const PROVIDERS = [
-    { value: 'razorpay', label: 'Razorpay', desc: 'UPI, cards, net banking (India)' },
-    { value: 'stripe', label: 'Stripe', desc: 'Cards, wallets (Global)' },
-    { value: 'paypal', label: 'PayPal', desc: 'PayPal accounts & cards' },
-    { value: 'cod', label: 'Cash on Delivery', desc: 'Pay at delivery' },
-]
+type PaymentConfig = {
+    store_id: string
+    online_payment_enabled: boolean
+    cod_enabled: boolean
+    payment_settings: SanitizedPaymentSettings
+}
+
+type PaymentConfigPayload = {
+    data?: PaymentConfig
+    error?: string | { message?: string }
+}
+
+function getPayloadError(payload: PaymentConfigPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
 
 export default function PaymentsSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const [loading, setLoading] = useState(true)
-    const [methods, setMethods] = useState<PaymentMethod[]>([])
-    const [storeId, setStoreId] = useState('')
-    const [showAdd, setShowAdd] = useState(false)
-    const [newProvider, setNewProvider] = useState('razorpay')
-    const [newMode, setNewMode] = useState('test')
     const [saving, setSaving] = useState(false)
-    const supabase = createClient()
+    const [config, setConfig] = useState<PaymentConfig | null>(null)
+    const [keyId, setKeyId] = useState('')
+    const [keySecret, setKeySecret] = useState('')
+    const [testMode, setTestMode] = useState(true)
+    const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState<string | null>(null)
 
     const loadData = useCallback(async () => {
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .or(`store_name.eq.${store},subdomain.eq.${store}`)
-            .single()
+        setLoading(true)
+        setError(null)
 
-        if (!storeData) { setLoading(false); return }
-        setStoreId(storeData.id)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payment-config`, {
+                cache: 'no-store',
+            })
+            const payload = (await response.json().catch(() => null)) as PaymentConfigPayload | null
 
-        const { data: paymentData } = await supabase
-            .from('payment_methods')
-            .select('id, provider, is_active, mode')
-            .eq('site_id', storeData.id)
+            if (!response.ok || !payload?.data) {
+                throw new Error(getPayloadError(payload, 'Unable to load payment settings'))
+            }
 
-        if (paymentData) setMethods(paymentData)
-        setLoading(false)
-    }, [store, supabase])
+            setConfig(payload.data)
+            setTestMode(payload.data.payment_settings.razorpay?.test_mode ?? true)
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unable to load payment settings')
+        } finally {
+            setLoading(false)
+        }
+    }, [store])
 
-    useEffect(() => { loadData() }, [loadData])
+    useEffect(() => {
+        void loadData()
+    }, [loadData])
 
-    const handleAdd = async () => {
+    const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault()
+        setError(null)
+        setSuccess(null)
+
+        if (!keyId.trim() || !keySecret.trim()) {
+            setError('Enter both Razorpay key ID and key secret.')
+            return
+        }
+
         setSaving(true)
-        await supabase.from('payment_methods').insert({
-            site_id: storeId,
-            provider: newProvider,
-            mode: newMode,
-            is_active: true,
-        })
-        setShowAdd(false)
-        setNewProvider('razorpay')
-        setNewMode('test')
-        setSaving(false)
-        await loadData()
-    }
 
-    const toggleActive = async (id: string, current: boolean) => {
-        await supabase.from('payment_methods').update({ is_active: !current }).eq('id', id)
-        setMethods(prev => prev.map(m => m.id === id ? { ...m, is_active: !current } : m))
-    }
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/payment-config`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    key_id: keyId.trim(),
+                    key_secret: keySecret.trim(),
+                    test_mode: testMode,
+                }),
+            })
+            const payload = (await response.json().catch(() => null)) as PaymentConfigPayload | null
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Remove this payment provider?')) return
-        await supabase.from('payment_methods').delete().eq('id', id)
-        setMethods(prev => prev.filter(m => m.id !== id))
+            if (!response.ok || !payload?.data) {
+                throw new Error(getPayloadError(payload, 'Unable to save payment settings'))
+            }
+
+            setConfig(payload.data)
+            setKeyId('')
+            setKeySecret('')
+            setSuccess(
+                payload.data.payment_settings.razorpay?.verified
+                    ? 'Razorpay is connected and verified.'
+                    : 'Razorpay keys were saved, but verification did not complete. Re-check the credentials before going live.'
+            )
+        } catch (err) {
+            setError(err instanceof Error ? err.message : 'Unable to save payment settings')
+        } finally {
+            setSaving(false)
+        }
     }
 
     if (loading) {
         return (
             <div className="settings-page">
-                <div className="settings-page-header"><div className="settings-skeleton" style={{ width: 120, height: 28 }} /></div>
-                <div className="settings-card"><div className="settings-skeleton" style={{ width: '100%', height: 100 }} /></div>
+                <div className="settings-page-header">
+                    <div className="settings-skeleton" style={{ width: 120, height: 28 }} />
+                </div>
+                <div className="settings-card">
+                    <div className="settings-skeleton" style={{ width: '100%', height: 180 }} />
+                </div>
             </div>
         )
     }
+
+    const razorpay = config?.payment_settings.razorpay
 
     return (
         <div className="settings-page">
@@ -91,77 +135,88 @@ export default function PaymentsSettingsPage() {
                 <h1>Payments</h1>
             </div>
 
+            {error && (
+                <div className="settings-info-banner" style={{ borderColor: 'var(--danger, #e53e3e)' }}>
+                    <span className="material-symbols-outlined">error</span>
+                    <span>{error}</span>
+                </div>
+            )}
+
+            {success && (
+                <div className="settings-info-banner">
+                    <span className="material-symbols-outlined">check_circle</span>
+                    <span>{success}</span>
+                </div>
+            )}
+
             <div className="settings-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <h2 style={{ margin: 0 }}>Payment providers</h2>
-                    {!showAdd && (
-                        <button className="settings-btn-primary" style={{ padding: '7px 14px', fontSize: 12 }} onClick={() => setShowAdd(true)}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
-                            Add provider
-                        </button>
-                    )}
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start', marginBottom: 18 }}>
+                    <div>
+                        <h2 style={{ margin: 0 }}>Razorpay account</h2>
+                        <p style={{ margin: '6px 0 0', color: 'var(--text-secondary)', fontSize: 13 }}>
+                            Connect the seller Razorpay account used by storefront checkout and Flutter builder flows.
+                        </p>
+                    </div>
+                    <span className={`settings-badge ${razorpay?.verified ? 'connected' : 'pending'}`}>
+                        {razorpay?.verified ? 'Verified' : razorpay?.secret_configured ? 'Saved' : 'Not connected'}
+                    </span>
                 </div>
 
-                {showAdd && (
-                    <div style={{ padding: 16, background: 'var(--bg-secondary)', borderRadius: 8, marginBottom: 16 }}>
-                        <div className="settings-form-group" style={{ marginBottom: 12 }}>
-                            <label>Provider</label>
-                            <select value={newProvider} onChange={(e) => setNewProvider(e.target.value)}>
-                                {PROVIDERS.map(p => (
-                                    <option key={p.value} value={p.value}>{p.label} — {p.desc}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="settings-form-group" style={{ marginBottom: 12 }}>
-                            <label>Mode</label>
-                            <select value={newMode} onChange={(e) => setNewMode(e.target.value)}>
-                                <option value="test">Test mode</option>
-                                <option value="live">Live mode</option>
-                            </select>
-                        </div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <button className="settings-btn-primary" onClick={handleAdd} disabled={saving} style={{ padding: '7px 14px', fontSize: 12 }}>
-                                {saving ? 'Adding...' : 'Add provider'}
-                            </button>
-                            <button className="settings-btn-secondary" onClick={() => setShowAdd(false)} style={{ padding: '7px 14px', fontSize: 12 }}>Cancel</button>
-                        </div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
+                    <div className="settings-info-banner" style={{ margin: 0 }}>
+                        <span className="material-symbols-outlined">key</span>
+                        <span>{razorpay?.key_id || 'No key configured'}</span>
                     </div>
-                )}
+                    <div className="settings-info-banner" style={{ margin: 0 }}>
+                        <span className="material-symbols-outlined">payments</span>
+                        <span>{config?.online_payment_enabled ? 'Online payments enabled' : 'Online payments disabled'}</span>
+                    </div>
+                    <div className="settings-info-banner" style={{ margin: 0 }}>
+                        <span className="material-symbols-outlined">local_shipping</span>
+                        <span>{config?.cod_enabled ? 'COD available' : 'COD disabled'}</span>
+                    </div>
+                </div>
 
-                {methods.length === 0 && !showAdd ? (
-                    <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }}>payments</span>
-                        <p style={{ marginBottom: 12 }}>No payment providers configured yet.</p>
+                <form onSubmit={handleSubmit}>
+                    <div className="settings-form-group" style={{ marginBottom: 12 }}>
+                        <label>Razorpay key ID</label>
+                        <input
+                            value={keyId}
+                            onChange={(event) => setKeyId(event.target.value)}
+                            placeholder={testMode ? 'rzp_test_...' : 'rzp_live_...'}
+                            autoComplete="off"
+                        />
                     </div>
-                ) : (
-                    methods.map(method => (
-                        <div key={method.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
-                            <div>
-                                <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>
-                                    {method.provider.charAt(0).toUpperCase() + method.provider.slice(1)}
-                                </div>
-                                <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>
-                                    {method.mode === 'test' ? 'Test mode' : 'Live mode'}
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <span
-                                    className={`settings-badge ${method.is_active ? 'connected' : 'pending'}`}
-                                    onClick={() => toggleActive(method.id, method.is_active)}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    {method.is_active ? 'Active' : 'Inactive'}
-                                </span>
-                                <button className="settings-btn-secondary" style={{ padding: '6px 12px', fontSize: 12, color: 'var(--danger, #e53e3e)' }} onClick={() => handleDelete(method.id)}>Remove</button>
-                            </div>
-                        </div>
-                    ))
-                )}
+
+                    <div className="settings-form-group" style={{ marginBottom: 12 }}>
+                        <label>Razorpay key secret</label>
+                        <input
+                            value={keySecret}
+                            onChange={(event) => setKeySecret(event.target.value)}
+                            placeholder="Paste key secret"
+                            type="password"
+                            autoComplete="new-password"
+                        />
+                    </div>
+
+                    <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16, color: 'var(--text-secondary)', fontSize: 13 }}>
+                        <input
+                            checked={testMode}
+                            onChange={(event) => setTestMode(event.target.checked)}
+                            type="checkbox"
+                        />
+                        Use Razorpay test mode
+                    </label>
+
+                    <button className="settings-btn-primary" disabled={saving} type="submit">
+                        {saving ? 'Saving...' : razorpay?.secret_configured ? 'Update Razorpay keys' : 'Connect Razorpay'}
+                    </button>
+                </form>
             </div>
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">info</span>
-                <span>Payment providers allow your customers to pay using credit cards, UPI, net banking, and more.</span>
+                <span className="material-symbols-outlined">shield_lock</span>
+                <span>Secrets are sent to the LetBuyy API worker and stored encrypted. The admin UI only receives masked payment settings.</span>
             </div>
         </div>
     )

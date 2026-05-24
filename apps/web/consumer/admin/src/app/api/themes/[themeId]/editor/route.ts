@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
-import { SECTION_SCHEMAS, THEME_SETTINGS_SCHEMA } from '@/lib/theme-schemas'
+import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
  * GET /api/themes/[themeId]/editor?store_name=xxx
@@ -23,71 +23,28 @@ export async function GET(
             )
         }
 
-        const supabase = await createClient()
+        const resolved = await resolveOwnedStoreId(storeName)
+        if (resolved.error) return resolved.error
 
-        // Fetch store data
-        const { data: store, error: storeError } = await supabase
-            .from('sites')
-            .select('id, name, store_name, status, theme_id, template_config')
-            .eq('store_name', storeName)
-            .single()
-
-        if (storeError || !store) {
-            return NextResponse.json(
-                { error: 'Store not found' },
-                { status: 404 }
-            )
-        }
-
-        // Fetch theme metadata from catalog
-        const { data: theme } = await supabase
-            .from('themes')
-            .select('*')
-            .or(`slug.eq.${themeId},id.eq.${themeId}`)
-            .single()
-
-        // Check for existing draft
-        const { data: draft } = await supabase
-            .from('theme_editor_drafts')
-            .select('draft_config, auto_saved_at')
-            .eq('store_id', store.id)
-            .eq('theme_id', themeId)
-            .single()
-
-        // Build template config — use stored config or create defaults
-        const templateConfig = store.template_config || {
-            sections: {
-                header: { id: 'header', type: 'header', visible: true, settings: {} },
-                footer: { id: 'footer', type: 'footer', visible: true, settings: {} },
-                template: [],
-            },
-            themeSettings: {},
-        }
+        const workerResponse = await workerFetch(
+            `/themes/${themeId}/editor?store_id=${encodeURIComponent(resolved.storeId)}`
+        )
+        const payload = await readWorkerJson(workerResponse)
+        const editor = payload.data
 
         return NextResponse.json({
-            store: {
-                id: store.id,
-                name: store.name,
-                subdomain: store.store_name,
-                status: store.status,
-            },
-            theme: theme || {
-                slug: themeId,
-                name: themeId,
-                version: '1.0.0',
-            },
-            templateConfig,
-            draftConfig: draft?.draft_config || null,
-            draftSavedAt: draft?.auto_saved_at || null,
-            sectionSchemas: SECTION_SCHEMAS,
-            themeSettingsSchema: THEME_SETTINGS_SCHEMA,
+            store: editor.store,
+            theme: editor.theme,
+            templateConfig: editor.template_config,
+            draftConfig: editor.draft?.exists ? editor.template_config : null,
+            draftSavedAt: editor.draft?.updated_at || null,
+            release: editor.release || null,
+            sectionSchemas: editor.schemas?.sections || {},
+            themeSettingsSchema: editor.schemas?.settings || {},
+            version: editor.version,
         })
     } catch (err) {
-        console.error('[API /themes/editor GET] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }
 
@@ -123,57 +80,34 @@ export async function PUT(
             )
         }
 
-        const supabase = await createClient()
+        const resolved = await resolveOwnedStoreId(storeName)
+        if (resolved.error) return resolved.error
 
-        // Get store id
-        const { data: store, error: storeError } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', storeName)
-            .single()
-
-        if (storeError || !store) {
-            return NextResponse.json(
-                { error: 'Store not found' },
-                { status: 404 }
-            )
-        }
-
-        // Update the live template config
-        const { error: updateError } = await supabase
-            .from('sites')
-            .update({
+        await readWorkerJson(await workerFetch(`/themes/${themeId}/editor/draft`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                store_id: resolved.storeId,
                 template_config: templateConfig,
-                updated_at: new Date().toISOString(),
-            })
-            .eq('id', store.id)
+                client: 'admin-web',
+            }),
+        }))
 
-        if (updateError) {
-            console.error('[API /themes/editor PUT] Update error:', updateError)
-            return NextResponse.json(
-                { error: 'Failed to save template config' },
-                { status: 500 }
-            )
-        }
-
-        // Delete any existing draft (it's now published)
-        await supabase
-            .from('theme_editor_drafts')
-            .delete()
-            .eq('store_id', store.id)
-            .eq('theme_id', themeId)
+        const publishPayload = await readWorkerJson(await workerFetch(`/themes/${themeId}/publish`, {
+            method: 'POST',
+            body: JSON.stringify({
+                store_id: resolved.storeId,
+                make_store_live: true,
+            }),
+        }))
 
         const savedAt = new Date().toISOString()
 
         return NextResponse.json({
             success: true,
             savedAt,
+            release: publishPayload.data?.release || null,
         })
     } catch (err) {
-        console.error('[API /themes/editor PUT] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }

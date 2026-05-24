@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface VariantOption {
     name: string
@@ -11,10 +10,10 @@ interface VariantOption {
 }
 
 export default function AddProductPage() {
-    const { store } = useParams<{ store: string }>()
+    const { store, productId } = useParams<{ store: string; productId?: string }>()
     const router = useRouter()
-    const supabase = createClient()
     const fileInputRef = useRef<HTMLInputElement>(null)
+    const isEditing = Boolean(productId && productId !== 'new')
 
     // ——— Form state ———
     const [title, setTitle] = useState('')
@@ -33,7 +32,7 @@ export default function AddProductPage() {
 
     // Inventory
     const [trackInventory, setTrackInventory] = useState(true)
-    const [quantity, setQuantity] = useState('0')
+    const [quantity, setQuantity] = useState('10')
     const [sku, setSku] = useState('')
     const [barcode, setBarcode] = useState('')
     const [sellWhenOos, setSellWhenOos] = useState(false)
@@ -65,7 +64,9 @@ export default function AddProductPage() {
 
     // Save state
     const [saving, setSaving] = useState(false)
+    const [loadingProduct, setLoadingProduct] = useState(isEditing)
     const [error, setError] = useState<string | null>(null)
+    const [success, setSuccess] = useState<string | null>(null)
 
     // ——— Auto-generate URL handle from title ———
     const generateHandle = (text: string) => {
@@ -84,6 +85,96 @@ export default function AddProductPage() {
         }
     }
 
+    const getPayloadError = (payload: unknown, fallback: string) => {
+        if (!payload || typeof payload !== 'object') return fallback
+        const errorValue = (payload as { error?: unknown }).error
+        if (typeof errorValue === 'string') return errorValue
+        if (errorValue && typeof errorValue === 'object' && typeof (errorValue as { message?: unknown }).message === 'string') {
+            return (errorValue as { message: string }).message
+        }
+        return fallback
+    }
+
+    const normalizeString = (value: unknown) => typeof value === 'string' ? value : ''
+    const normalizeNumberInput = (value: unknown) => {
+        if (value === null || value === undefined || value === '') return ''
+        const numberValue = Number(value)
+        return Number.isFinite(numberValue) ? String(numberValue) : ''
+    }
+
+    const hydrateProduct = useCallback((product: Record<string, unknown>) => {
+        setTitle(normalizeString(product.name))
+        setDescription(normalizeString(product.description))
+        setImages(Array.isArray(product.images) ? product.images.filter((image): image is string => typeof image === 'string') : [])
+        setCategory(normalizeString(product.category))
+        setPrice(normalizeNumberInput(product.price))
+        setComparePrice(normalizeNumberInput(product.compare_price ?? product.compare_at_price))
+        setCostPerItem(normalizeNumberInput(product.cost_per_item ?? product.cost_price))
+        setChargeTax(product.charge_tax !== false)
+        setTrackInventory(product.track_inventory !== false)
+        setQuantity(normalizeNumberInput(product.stock ?? product.stock_quantity ?? 0))
+        setSku(normalizeString(product.sku))
+        setBarcode(normalizeString(product.barcode))
+        setSellWhenOos(Boolean(product.sell_when_oos))
+        setIsPhysical(product.is_physical !== false)
+        setWeight(normalizeNumberInput(product.weight))
+        setWeightUnit(normalizeString(product.weight_unit) || 'kg')
+        setCountryOfOrigin(normalizeString(product.country_of_origin))
+        setHsCode(normalizeString(product.hs_code))
+        setSeoTitle(normalizeString(product.seo_title))
+        setSeoDescription(normalizeString(product.seo_description))
+        setUrlHandle(normalizeString(product.url_handle || product.slug))
+        setStatus(product.is_active === false || product.status === 'draft' ? 'draft' : 'active')
+        setProductType(normalizeString(product.product_type))
+        setVendor(normalizeString(product.vendor))
+        setTags(Array.isArray(product.tags) ? product.tags.filter((tag): tag is string => typeof tag === 'string').join(', ') : '')
+        setVariantOptions(Array.isArray(product.product_options)
+            ? product.product_options
+                .filter((option): option is VariantOption => {
+                    if (!option || typeof option !== 'object') return false
+                    const value = option as VariantOption
+                    return typeof value.name === 'string' && Array.isArray(value.values)
+                })
+                .map(option => ({
+                    name: option.name,
+                    values: option.values.filter((value): value is string => typeof value === 'string'),
+                }))
+            : []
+        )
+    }, [])
+
+    useEffect(() => {
+        if (!isEditing || !productId) return
+
+        let cancelled = false
+
+        const loadProduct = async () => {
+            setLoadingProduct(true)
+            setError(null)
+
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`)
+                const payload = await response.json().catch(() => null)
+
+                if (!response.ok || !payload?.data) {
+                    throw new Error(getPayloadError(payload, 'Unable to load product'))
+                }
+
+                if (!cancelled) hydrateProduct(payload.data as Record<string, unknown>)
+            } catch (err) {
+                if (!cancelled) setError(err instanceof Error ? err.message : 'Unable to load product')
+            } finally {
+                if (!cancelled) setLoadingProduct(false)
+            }
+        }
+
+        loadProduct()
+
+        return () => {
+            cancelled = true
+        }
+    }, [hydrateProduct, isEditing, productId, store])
+
     // ——— Image upload ———
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files
@@ -93,18 +184,17 @@ export default function AddProductPage() {
         const newImages: string[] = []
 
         for (const file of Array.from(files)) {
-            const ext = file.name.split('.').pop()
-            const fileName = `${store}/${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`
+            const formData = new FormData()
+            formData.append('file', file)
 
-            const { error: uploadError } = await supabase.storage
-                .from('product-images')
-                .upload(fileName, file)
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/upload`, {
+                method: 'POST',
+                body: formData,
+            })
+            const payload = await response.json().catch(() => null)
 
-            if (!uploadError) {
-                const { data: urlData } = supabase.storage
-                    .from('product-images')
-                    .getPublicUrl(fileName)
-                newImages.push(urlData.publicUrl)
+            if (response.ok && payload?.data?.url) {
+                newImages.push(payload.data.url)
             }
         }
 
@@ -156,22 +246,17 @@ export default function AddProductPage() {
 
         setSaving(true)
         setError(null)
+        setSuccess(null)
 
         try {
-            // Get store ID
-            const { data: storeData } = await supabase
-                .from('sites')
-                .select('id')
-                .eq('store_name', store)
-                .single()
+            const endpoint = isEditing && productId
+                ? `/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`
+                : `/api/stores/${encodeURIComponent(store)}/products`
 
-            if (!storeData) throw new Error('Store not found')
-
-            // Insert product
-            const { data: product, error: insertError } = await supabase
-                .from('products')
-                .insert({
-                    store_id: storeData.id,
+            const response = await fetch(endpoint, {
+                method: isEditing ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
                     name: title.trim(),
                     description: description.trim(),
                     images,
@@ -197,33 +282,28 @@ export default function AddProductPage() {
                     vendor: vendor || null,
                     tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [],
                     is_active: status === 'active',
-                    variants: variantOptions.length > 0
-                        ? variantOptions.map(opt => ({
-                            name: opt.name,
-                            options: Object.fromEntries(opt.values.map((v, i) => [String(i), v]))
-                        }))
-                        : [],
-                })
-                .select('id')
-                .single()
+                    product_options: variantOptions.map((opt, i) => ({
+                        name: opt.name,
+                        position: i,
+                        values: opt.values,
+                    })),
+                    variants: [],
+                }),
+            })
 
-            if (insertError) throw insertError
-
-            // Insert variant options to product_options table if they exist
-            if (variantOptions.length > 0 && product) {
-                const optionInserts = variantOptions.map((opt, i) => ({
-                    product_id: product.id,
-                    name: opt.name,
-                    position: i,
-                    values: opt.values,
-                }))
-
-                await supabase
-                    .from('product_options')
-                    .insert(optionInserts)
+            if (!response.ok) {
+                const payload = await response.json().catch(() => null)
+                throw new Error(getPayloadError(payload, 'Failed to save product'))
             }
 
-            router.push(`/${store}/products`)
+            const payload = await response.json().catch(() => null)
+
+            if (isEditing) {
+                if (payload?.data) hydrateProduct(payload.data as Record<string, unknown>)
+                setSuccess('Product saved')
+            } else {
+                router.push(`/${store}/products`)
+            }
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Failed to save product'
             setError(message)
@@ -235,8 +315,24 @@ export default function AddProductPage() {
         chargeTax, quantity, trackInventory, sku, barcode, sellWhenOos,
         isPhysical, weight, weightUnit, countryOfOrigin, hsCode,
         urlHandle, seoTitle, seoDescription, productType, vendor, tags,
-        status, variantOptions, store, supabase, router
+        status, variantOptions, store, router, isEditing, productId, hydrateProduct
     ])
+
+    if (loadingProduct) {
+        return (
+            <div className="product-form-wrapper">
+                <div className="product-form-header">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Link href={`/${store}/products`} className="product-form-back">
+                            <span className="material-symbols-outlined">arrow_back</span>
+                        </Link>
+                        <h1 className="product-form-title">Edit product</h1>
+                    </div>
+                </div>
+                <div className="admin-skeleton" style={{ height: 520, borderRadius: 14 }} />
+            </div>
+        )
+    }
 
     return (
         <div className="product-form-wrapper">
@@ -246,7 +342,7 @@ export default function AddProductPage() {
                     <Link href={`/${store}/products`} className="product-form-back">
                         <span className="material-symbols-outlined">arrow_back</span>
                     </Link>
-                    <h1 className="product-form-title">Add product</h1>
+                    <h1 className="product-form-title">{isEditing ? 'Edit product' : 'Add product'}</h1>
                 </div>
                 <div className="product-form-actions">
                     <Link href={`/${store}/products`} className="setup-plan-banner-btn" style={{
@@ -279,6 +375,16 @@ export default function AddProductPage() {
                     fontSize: 13, border: '1px solid rgba(239, 68, 68, 0.2)'
                 }}>
                     {error}
+                </div>
+            )}
+
+            {success && (
+                <div style={{
+                    padding: '10px 16px', marginBottom: 20, borderRadius: 8,
+                    background: 'rgba(34, 197, 94, 0.1)', color: 'var(--success)',
+                    fontSize: 13, border: '1px solid rgba(34, 197, 94, 0.2)'
+                }}>
+                    {success}
                 </div>
             )}
 

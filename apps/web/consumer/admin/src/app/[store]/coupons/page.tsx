@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Coupon {
     id: string
@@ -18,48 +17,56 @@ interface Coupon {
     created_at: string
 }
 
+function getErrorMessage(payload: unknown, fallback: string) {
+    if (payload && typeof payload === 'object') {
+        const error = (payload as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+            const message = (error as { message?: unknown }).message
+            if (typeof message === 'string') return message
+        }
+        const message = (payload as { message?: unknown }).message
+        if (typeof message === 'string') return message
+    }
+
+    return fallback
+}
+
 export default function CouponsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
 
     const [coupons, setCoupons] = useState<Coupon[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
+    const [formError, setFormError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
         code: '', type: 'percentage' as Coupon['type'], value: '', min_purchase: '', max_uses: '',
         starts_at: '', expires_at: '', is_active: true
     })
 
     const loadCoupons = useCallback(async () => {
-        const { data: storeData } = await supabase
-            .from('sites').select('id').eq('store_name', store).single()
-        if (!storeData) { setLoading(false); return }
-        setStoreId(storeData.id)
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/coupons?status=all&limit=100`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
 
-        const { data } = await supabase
-            .from('coupons')
-            .select('*')
-            .eq('store_id', storeData.id)
-            .order('created_at', { ascending: false })
-
-        setCoupons(data || [])
+        setCoupons(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { loadCoupons() }, [loadCoupons])
 
     const handleSave = async () => {
-        if (!storeId || !formData.code || !formData.value) return
+        if (!formData.code || (formData.type !== 'free_shipping' && !formData.value)) return
         setSaving(true)
+        setFormError(null)
 
         const payload = {
-            store_id: storeId,
             code: formData.code.toUpperCase().trim(),
             type: formData.type,
-            value: parseFloat(formData.value),
+            value: formData.type === 'free_shipping' ? 0 : parseFloat(formData.value),
             min_purchase: formData.min_purchase ? parseFloat(formData.min_purchase) : null,
             max_uses: formData.max_uses ? parseInt(formData.max_uses) : null,
             starts_at: formData.starts_at || null,
@@ -67,17 +74,33 @@ export default function CouponsPage() {
             is_active: formData.is_active,
         }
 
-        if (editingId) {
-            await supabase.from('coupons').update(payload).eq('id', editingId)
-        } else {
-            await supabase.from('coupons').insert(payload)
-        }
+        try {
+            const response = await fetch(
+                editingId
+                    ? `/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(editingId)}`
+                    : `/api/stores/${encodeURIComponent(store)}/coupons`,
+                {
+                    method: editingId ? 'PATCH' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                }
+            )
+            const result = await response.json().catch(() => null)
 
-        setSaving(false)
-        setShowForm(false)
-        setEditingId(null)
-        resetForm()
-        loadCoupons()
+            if (!response.ok) {
+                setFormError(getErrorMessage(result, 'Unable to save coupon'))
+                return
+            }
+
+            setShowForm(false)
+            setEditingId(null)
+            resetForm()
+            await loadCoupons()
+        } catch {
+            setFormError('Unable to save coupon')
+        } finally {
+            setSaving(false)
+        }
     }
 
     const resetForm = () => setFormData({
@@ -87,17 +110,24 @@ export default function CouponsPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this coupon?')) return
-        await supabase.from('coupons').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         loadCoupons()
     }
 
     const toggleActive = async (coupon: Coupon) => {
-        await supabase.from('coupons').update({ is_active: !coupon.is_active }).eq('id', coupon.id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(coupon.id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ is_active: !coupon.is_active }),
+        })
         loadCoupons()
     }
 
     const startEdit = (c: Coupon) => {
         setEditingId(c.id)
+        setFormError(null)
         setFormData({
             code: c.code, type: c.type, value: String(c.value),
             min_purchase: c.min_purchase ? String(c.min_purchase) : '',
@@ -130,7 +160,7 @@ export default function CouponsPage() {
         <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
             <div className="products-page-header">
                 <h1>Coupons</h1>
-                <button onClick={() => { setShowForm(true); setEditingId(null); resetForm() }}
+                <button onClick={() => { setShowForm(true); setEditingId(null); setFormError(null); resetForm() }}
                     className="setup-plan-banner-btn" style={{
                         background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px',
                         borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
@@ -146,6 +176,11 @@ export default function CouponsPage() {
                     <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600 }}>
                         {editingId ? 'Edit Coupon' : 'New Coupon'}
                     </h3>
+                    {formError && (
+                        <div style={{ marginBottom: 12, color: 'var(--danger)', fontSize: 13 }}>
+                            {formError}
+                        </div>
+                    )}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
                         <div style={{ gridColumn: '1 / -1' }}>
                             <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Code</label>
@@ -165,11 +200,12 @@ export default function CouponsPage() {
                         </div>
                         <div>
                             <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>
-                                {formData.type === 'percentage' ? 'Discount %' : 'Discount ₹'}
+                                {formData.type === 'percentage' ? 'Discount %' : formData.type === 'free_shipping' ? 'Discount' : 'Discount ₹'}
                             </label>
                             <input type="number" placeholder="20" value={formData.value}
                                 onChange={e => setFormData(f => ({ ...f, value: e.target.value }))}
-                                style={inputStyle} />
+                                disabled={formData.type === 'free_shipping'}
+                                style={{ ...inputStyle, opacity: formData.type === 'free_shipping' ? 0.6 : 1 }} />
                         </div>
                         <div>
                             <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Min Purchase (₹)</label>
@@ -201,14 +237,14 @@ export default function CouponsPage() {
                             <label htmlFor="coupon-active" style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Active</label>
                         </div>
                         <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 10 }}>
-                            <button onClick={handleSave} disabled={saving || !formData.code || !formData.value} style={{
+                            <button onClick={handleSave} disabled={saving || !formData.code || (formData.type !== 'free_shipping' && !formData.value)} style={{
                                 background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 20px',
                                 borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
-                                opacity: (saving || !formData.code) ? 0.5 : 1
+                                opacity: (saving || !formData.code || (formData.type !== 'free_shipping' && !formData.value)) ? 0.5 : 1
                             }}>
                                 {saving ? 'Saving...' : (editingId ? 'Update' : 'Create')}
                             </button>
-                            <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{
+                            <button onClick={() => { setShowForm(false); setEditingId(null); setFormError(null) }} style={{
                                 background: 'var(--bg-secondary)', color: 'var(--text-primary)',
                                 border: '1px solid var(--border)', padding: '8px 20px',
                                 borderRadius: 8, fontSize: 13, cursor: 'pointer'

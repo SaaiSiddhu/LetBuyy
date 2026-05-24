@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { createClient } from '@/lib/supabase/server'
+import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
 import DashboardClient from './DashboardClient'
 
 /* ——————————————————————————————————————
@@ -50,8 +50,6 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     const storeData = await getStoreForUser(store, user.id)
     if (!storeData) return notFound()
 
-    const supabase = await createClient()
-
     // Build StoreInfo for the client
     const storeInfo: StoreInfo = {
         id: storeData.id,
@@ -75,33 +73,29 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     let setupStatus: SetupStatus
 
     if (storeData.site_type === 'store') {
-        const [productsResult, shippingResult] = await Promise.all([
-            supabase
-                .from('products')
-                .select('id', { count: 'exact', head: true })
-                .eq('store_id', storeData.id),
-            supabase
-                .from('shipping_zones')
-                .select('id', { count: 'exact', head: true })
-                .eq('store_id', storeData.id),
+        const [productsPayload, shippingPayload] = await Promise.all([
+            workerFetch(`/products?store_id=${encodeURIComponent(storeData.id)}&limit=1`).then(readWorkerJson).catch(() => null),
+            workerFetch(`/shipping-tax/shipping/zones?store_id=${encodeURIComponent(storeData.id)}&limit=1`).then(readWorkerJson).catch(() => null),
         ])
+        const productsCount = productsPayload?.meta?.total || 0
+        const shippingCount = shippingPayload?.meta?.total || 0
 
         setupStatus = {
-            primaryComplete: (productsResult.count || 0) > 0,
-            secondaryComplete: (shippingResult.count || 0) > 0,
+            primaryComplete: productsCount > 0,
+            secondaryComplete: shippingCount > 0,
             themeCustomized: !!themeCustomized,
             domainConfigured,
             paymentConfigured: false,
-            hasShipping: (shippingResult.count || 0) > 0,
+            hasShipping: shippingCount > 0,
         }
     } else {
-        const { count: pagesCount } = await supabase
-            .from('pages')
-            .select('id', { count: 'exact', head: true })
-            .eq('site_id', storeData.id)
+        const pagesPayload = await workerFetch(`/pages?store_id=${encodeURIComponent(storeData.id)}&limit=1`)
+            .then(readWorkerJson)
+            .catch(() => null)
+        const pagesCount = pagesPayload?.meta?.total || 0
 
         setupStatus = {
-            primaryComplete: (pagesCount || 0) > 0,
+            primaryComplete: pagesCount > 0,
             secondaryComplete: !!themeCustomized,
             themeCustomized: !!themeCustomized,
             domainConfigured,

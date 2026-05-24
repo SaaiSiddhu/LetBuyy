@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
 
 /**
  * GET /api/plans?site_type=store&slug=starter
- * 
- * Fetches plans from the database, filtered by site_type.
- * Optionally filter by slug for a specific plan.
+ *
+ * Fetches active subscription plans through the Hono worker.
  */
 export async function GET(request: NextRequest) {
     try {
@@ -20,32 +19,17 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        const supabase = await createClient()
+        const query = new URLSearchParams({ site_type: siteType })
+        if (slug) query.set('slug', slug)
 
-        let query = supabase
-            .from('plans')
-            .select('*')
-            .eq('site_type', siteType)
-            .eq('is_active', true)
-            .order('display_order', { ascending: true })
+        const workerResponse = await workerFetch(`/payments/plans?${query.toString()}`, {
+            method: 'GET',
+            requireSession: true,
+        })
+        const payload = await readWorkerJson(workerResponse) as { data?: unknown[] }
 
-        if (slug) {
-            query = query.eq('slug', slug)
-        }
-
-        const { data: plans, error } = await query
-
-        if (error) {
-            console.error('[API /plans] Supabase error:', error)
-            return NextResponse.json(
-                { error: 'Failed to fetch plans' },
-                { status: 500 }
-            )
-        }
-
-        return NextResponse.json({ plans: plans || [] })
+        return NextResponse.json({ plans: payload.data || [] })
     } catch (err) {
-        console.error('[API /plans] Unexpected error:', err)
         return NextResponse.json(
             { error: 'Internal server error' },
             { status: 500 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface Invoice {
@@ -16,9 +15,21 @@ interface Invoice {
 interface PaymentMethodInfo {
     id: string
     provider: string
-    last4: string
-    card_brand: string
+    detail: string
     is_default: boolean
+}
+
+type PaymentConfigPayload = {
+    data?: {
+        cod_enabled: boolean
+        payment_settings: {
+            razorpay: {
+                key_id: string | null
+                verified: boolean
+                secret_configured: boolean
+            } | null
+        }
+    }
 }
 
 export default function BillingSettingsPage() {
@@ -27,37 +38,19 @@ export default function BillingSettingsPage() {
     const [invoices, setInvoices] = useState<Invoice[]>([])
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([])
     const [subscription, setSubscription] = useState<{ plan: string; status: string; current_period_end: string } | null>(null)
-    const supabase = createClient()
 
     useEffect(() => {
         async function load() {
-            const { data: storeData } = await supabase
-                .from('sites')
-                .select('id')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const data = payload.data
 
-            if (!storeData) { setLoading(false); return }
-
-            // Fetch active subscription
-            const { data: sub } = await supabase
-                .from('subscriptions')
-                .select('plan, status, current_period_end')
-                .eq('store_id', storeData.id)
-                .eq('status', 'active')
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle()
-
+            const sub = data?.subscription
             if (sub) setSubscription(sub)
 
-            // Fetch invoices (all subscriptions for this store serve as billing history)
-            const { data: invoiceData } = await supabase
-                .from('subscriptions')
-                .select('id, amount_paid, status, billing_period, created_at')
-                .eq('store_id', storeData.id)
-                .order('created_at', { ascending: false })
-                .limit(20)
+            const invoiceData = data?.invoices || []
 
             if (invoiceData) {
                 setInvoices(invoiceData.map((inv: Record<string, unknown>) => ({
@@ -70,26 +63,36 @@ export default function BillingSettingsPage() {
                 })))
             }
 
-            // Fetch payment methods
-            const { data: pmData } = await supabase
-                .from('payment_methods')
-                .select('id, provider, is_active')
-                .eq('site_id', storeData.id)
+            const paymentPayload = { data: data?.payment } as PaymentConfigPayload
+            if (paymentPayload.data) {
+                const configuredMethods: PaymentMethodInfo[] = []
+                const razorpay = paymentPayload.data.payment_settings.razorpay
 
-            if (pmData) {
-                setPaymentMethods(pmData.map((pm: Record<string, unknown>) => ({
-                    id: pm.id as string,
-                    provider: pm.provider as string,
-                    last4: '••••',
-                    card_brand: (pm.provider as string) || 'card',
-                    is_default: (pm.is_active as boolean) || false,
-                })))
+                if (razorpay?.secret_configured) {
+                    configuredMethods.push({
+                        id: 'razorpay',
+                        provider: 'Razorpay',
+                        detail: razorpay.key_id || 'Configured',
+                        is_default: razorpay.verified,
+                    })
+                }
+
+                if (paymentPayload.data.cod_enabled) {
+                    configuredMethods.push({
+                        id: 'cod',
+                        provider: 'Cash on Delivery',
+                        detail: 'Available at checkout',
+                        is_default: !razorpay?.secret_configured,
+                    })
+                }
+
+                setPaymentMethods(configuredMethods)
             }
 
             setLoading(false)
         }
         load()
-    }, [store, supabase])
+    }, [store])
 
     if (loading) {
         return (
@@ -146,7 +149,7 @@ export default function BillingSettingsPage() {
                                 <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-hint)' }}>credit_card</span>
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{pm.provider}</div>
-                                    <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>Ending in {pm.last4}</div>
+                                    <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>{pm.detail}</div>
                                 </div>
                             </div>
                             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>

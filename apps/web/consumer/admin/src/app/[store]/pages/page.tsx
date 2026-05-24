@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface StorePage {
@@ -16,48 +15,36 @@ export default function PagesPage() {
     const { store } = useParams<{ store: string }>()
     const [pages, setPages] = useState<StorePage[]>([])
     const [loading, setLoading] = useState(true)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [showAdd, setShowAdd] = useState(false)
     const [newPage, setNewPage] = useState({ title: '', slug: '', body: '' })
     const [saving, setSaving] = useState(false)
-    const supabase = createClient()
 
     const loadPages = useCallback(async () => {
-        // Store ownership is already validated by the server-side [store]/layout.tsx
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .or(`store_name.eq.${store},subdomain.eq.${store}`)
-            .single()
-
-        if (!storeData) return
-        setStoreId(storeData.id)
-
-        const { data } = await supabase
-            .from('pages')
-            .select('*')
-            .eq('store_id', storeData.id)
-            .order('updated_at', { ascending: false })
-
-        setPages(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/pages?limit=100`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setPages(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { loadPages() }, [loadPages])
 
     const handleAdd = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!storeId) return
         setSaving(true)
 
         const slug = newPage.slug || newPage.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
-        await supabase.from('pages').insert({
-            store_id: storeId,
+        await fetch(`/api/stores/${encodeURIComponent(store)}/pages`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
             title: newPage.title,
             slug,
             body: newPage.body,
             status: 'draft',
+            }),
         })
 
         setNewPage({ title: '', slug: '', body: '' })
@@ -68,13 +55,19 @@ export default function PagesPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this page?')) return
-        await supabase.from('pages').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/pages/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         loadPages()
     }
 
     const handleTogglePublish = async (page: StorePage) => {
         const newStatus = page.status === 'published' ? 'draft' : 'published'
-        await supabase.from('pages').update({ status: newStatus }).eq('id', page.id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/pages/${encodeURIComponent(page.id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus }),
+        })
         loadPages()
     }
 

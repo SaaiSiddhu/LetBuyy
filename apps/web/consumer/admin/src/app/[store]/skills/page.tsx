@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Skill {
     id: string; name: string; category: string | null; proficiency: number; display_order: number
@@ -10,36 +9,48 @@ interface Skill {
 
 export default function SkillsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Skill[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({ name: '', category: '', proficiency: '80' })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('skills').select('*').eq('site_id', s.id).order('display_order', { ascending: true })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/skills`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!storeId || !formData.name) return
+        if (!formData.name) return
         setSaving(true)
-        const payload = { site_id: storeId, name: formData.name, category: formData.category || null, proficiency: parseInt(formData.proficiency) || 80 }
-        if (editingId) await supabase.from('skills').update(payload).eq('id', editingId)
-        else await supabase.from('skills').insert(payload)
+        const payload = { name: formData.name, category: formData.category || null, proficiency: parseInt(formData.proficiency) || 80 }
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/content/skills/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/content/skills`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null); setFormData({ name: '', category: '', proficiency: '80' }); load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('skills').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/content/skills/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const startEdit = (s: Skill) => { setEditingId(s.id); setFormData({ name: s.name, category: s.category || '', proficiency: String(s.proficiency) }); setShowForm(true) }
     const iS: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
     const grouped = items.reduce<Record<string, Skill[]>>((a, s) => { const c = s.category || 'Other'; if (!a[c]) a[c] = []; a[c].push(s); return a }, {})

@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Collection {
     id: string
@@ -17,7 +16,6 @@ interface Collection {
 
 export default function CollectionsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
 
     const [collections, setCollections] = useState<Collection[]>([])
     const [loading, setLoading] = useState(true)
@@ -26,51 +24,36 @@ export default function CollectionsPage() {
     const [newDesc, setNewDesc] = useState('')
     const [creating, setCreating] = useState(false)
 
+    const loadCollections = useCallback(async () => {
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/collections`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setCollections(Array.isArray(payload.data) ? payload.data : [])
+        setLoading(false)
+    }, [store])
+
     useEffect(() => {
         loadCollections()
-    }, [])
-
-    async function loadCollections() {
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', store)
-            .single()
-
-        if (!storeData) { setLoading(false); return }
-
-        const { data } = await supabase
-            .from('collections')
-            .select('*')
-            .eq('store_id', storeData.id)
-            .order('created_at', { ascending: false })
-
-        setCollections(data || [])
-        setLoading(false)
-    }
+    }, [loadCollections])
 
     async function handleCreate() {
         if (!newTitle.trim()) return
         setCreating(true)
 
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id')
-            .eq('store_name', store)
-            .single()
-
-        if (storeData) {
-            await supabase.from('collections').insert({
-                store_id: storeData.id,
+        await fetch(`/api/stores/${encodeURIComponent(store)}/collections`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
                 title: newTitle.trim(),
                 description: newDesc.trim() || null,
-            })
+            }),
+        })
 
-            setNewTitle('')
-            setNewDesc('')
-            setShowCreate(false)
-            loadCollections()
-        }
+        setNewTitle('')
+        setNewDesc('')
+        setShowCreate(false)
+        loadCollections()
         setCreating(false)
     }
 

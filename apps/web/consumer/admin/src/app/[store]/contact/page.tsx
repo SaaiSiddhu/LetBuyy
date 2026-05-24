@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Submission {
     id: string; full_name: string; email: string; phone: string | null
@@ -11,29 +10,35 @@ interface Submission {
 
 export default function ContactPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Submission[]>([])
     const [loading, setLoading] = useState(true)
     const [selected, setSelected] = useState<Submission | null>(null)
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        const { data } = await supabase.from('form_submissions').select('*').eq('store_id', s.id).eq('form_type', 'contact').order('created_at', { ascending: false })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions?type=contact&limit=100`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const markRead = async (id: string) => {
-        await supabase.from('form_submissions').update({ status: 'read' }).eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: 'read' }),
+        })
         load()
     }
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete?')) return
-        await supabase.from('form_submissions').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/form-submissions/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         setSelected(null); load()
     }
 

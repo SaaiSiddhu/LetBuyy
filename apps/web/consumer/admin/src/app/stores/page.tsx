@@ -12,7 +12,7 @@ export default async function AllStoresPage() {
 
     if (!user) {
         const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000'
+            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
         redirect(`${accountsUrl}/lookup`)
     }
 

@@ -54,16 +54,11 @@ function formatINR(paise: number): string {
     return `₹${rupees.toLocaleString('en-IN')}`
 }
 
-function formatINRFull(paise: number): string {
-    return `₹${(paise / 100).toLocaleString('en-IN')}`
-}
-
 export default function SelectPlanClient({
     plans,
     currentPlan,
     storeName,
     storeSlug,
-    storeId,
     siteType,
     trialStatus,
     trialEndsAt,
@@ -71,11 +66,13 @@ export default function SelectPlanClient({
     const router = useRouter()
     const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly')
     const [showCompare, setShowCompare] = useState(false)
+    const [renderTime] = useState(() => Date.now())
+    const [renderDate] = useState(() => new Date())
 
     const trialDaysLeft = trialEndsAt
-        ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+        ? Math.max(0, Math.ceil((new Date(trialEndsAt).getTime() - renderTime) / (1000 * 60 * 60 * 24)))
         : 0
-    const isTrialExpired = trialStatus === 'expired' || (trialEndsAt && new Date(trialEndsAt) < new Date())
+    const isTrialExpired = trialStatus === 'expired' || (trialEndsAt && new Date(trialEndsAt) < renderDate)
 
     const handleSelectPlan = (planSlug: string) => {
         const plan = plans.find(p => p.slug === planSlug)

@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface NotificationPref {
@@ -26,21 +25,20 @@ export default function NotificationsSettingsPage() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [success, setSuccess] = useState(false)
-    const [storeId, setStoreId] = useState('')
+    const [siteSettings, setSiteSettings] = useState<Record<string, unknown>>({})
     const [prefs, setPrefs] = useState<NotificationPref[]>(DEFAULT_PREFS)
-    const supabase = createClient()
 
     useEffect(() => {
         async function load() {
-            const { data } = await supabase
-                .from('sites')
-                .select('id, site_settings')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const data = payload.data
 
             if (data) {
-                setStoreId(data.id)
                 const siteSettings = (data.site_settings as Record<string, unknown>) || {}
+                setSiteSettings(siteSettings)
                 const saved = (siteSettings.notifications as Record<string, boolean>) || {}
                 // Merge saved preferences with defaults
                 setPrefs(DEFAULT_PREFS.map(p => ({
@@ -51,7 +49,7 @@ export default function NotificationsSettingsPage() {
             setLoading(false)
         }
         load()
-    }, [store, supabase])
+    }, [store])
 
     const togglePref = (key: string) => {
         setPrefs(prev => prev.map(p =>
@@ -67,24 +65,18 @@ export default function NotificationsSettingsPage() {
         const notifMap: Record<string, boolean> = {}
         prefs.forEach(p => { notifMap[p.key] = p.enabled })
 
-        // Merge into existing site_settings
-        const { data: current } = await supabase
-            .from('sites')
-            .select('site_settings')
-            .eq('id', storeId)
-            .single()
-
-        const existing = (current?.site_settings as Record<string, unknown>) || {}
-
-        await supabase
-            .from('sites')
-            .update({ site_settings: { ...existing, notifications: notifMap } })
-            .eq('id', storeId)
+        const nextSettings = { ...siteSettings, notifications: notifMap }
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ site_settings: nextSettings }),
+        })
+        setSiteSettings(nextSettings)
 
         setSaving(false)
         setSuccess(true)
         setTimeout(() => setSuccess(false), 3000)
-    }, [storeId, prefs, supabase])
+    }, [store, prefs, siteSettings])
 
     if (loading) {
         return (

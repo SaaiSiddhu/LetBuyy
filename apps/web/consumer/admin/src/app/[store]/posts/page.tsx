@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Post {
     id: string; title: string; slug: string; status: 'draft' | 'published' | 'archived'
@@ -12,46 +11,57 @@ interface Post {
 
 export default function PostsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [posts, setPosts] = useState<Post[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [filter, setFilter] = useState<string>('all')
     const [formData, setFormData] = useState({ title: '', slug: '', excerpt: '', content: '', status: 'draft' as Post['status'] })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('blog_posts').select('*').eq('store_id', s.id).order('created_at', { ascending: false })
-        setPosts(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/posts?limit=100`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setPosts(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const genSlug = (t: string) => t.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 
     const handleSave = async () => {
-        if (!storeId || !formData.title) return
+        if (!formData.title) return
         setSaving(true)
         const payload = {
-            store_id: storeId, title: formData.title,
+            title: formData.title,
             slug: formData.slug || genSlug(formData.title),
             excerpt: formData.excerpt || null, content: formData.content || null,
             status: formData.status,
-            published_at: formData.status === 'published' ? new Date().toISOString() : null,
         }
-        if (editingId) await supabase.from('blog_posts').update(payload).eq('id', editingId)
-        else await supabase.from('blog_posts').insert(payload)
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/posts/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/posts`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null)
         setFormData({ title: '', slug: '', excerpt: '', content: '', status: 'draft' }); load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete this post?')) return; await supabase.from('blog_posts').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Archive this post?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/posts/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const startEdit = (p: Post) => { setEditingId(p.id); setFormData({ title: p.title, slug: p.slug, excerpt: p.excerpt || '', content: p.content || '', status: p.status }); setShowForm(true) }
     const iS: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
     const fD = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'

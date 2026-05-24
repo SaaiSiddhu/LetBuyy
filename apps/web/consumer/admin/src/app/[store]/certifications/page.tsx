@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Cert {
     id: string; name: string; issuer: string; credential_id: string | null
@@ -12,41 +11,53 @@ interface Cert {
 
 export default function CertificationsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Cert[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({ name: '', issuer: '', credential_id: '', credential_url: '', issue_date: '', expiry_date: '' })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('certifications').select('*').eq('site_id', s.id).order('display_order', { ascending: true })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/certifications`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!storeId || !formData.name || !formData.issuer) return
+        if (!formData.name || !formData.issuer) return
         setSaving(true)
         const payload = {
-            site_id: storeId, name: formData.name, issuer: formData.issuer,
+            name: formData.name, issuer: formData.issuer,
             credential_id: formData.credential_id || null, credential_url: formData.credential_url || null,
             issue_date: formData.issue_date || null, expiry_date: formData.expiry_date || null,
         }
-        if (editingId) await supabase.from('certifications').update(payload).eq('id', editingId)
-        else await supabase.from('certifications').insert(payload)
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/content/certifications/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/content/certifications`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null)
         setFormData({ name: '', issuer: '', credential_id: '', credential_url: '', issue_date: '', expiry_date: '' }); load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('certifications').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/content/certifications/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const startEdit = (c: Cert) => { setEditingId(c.id); setFormData({ name: c.name, issuer: c.issuer, credential_id: c.credential_id || '', credential_url: c.credential_url || '', issue_date: c.issue_date || '', expiry_date: c.expiry_date || '' }); setShowForm(true) }
     const iS: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
     const fD = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : ''

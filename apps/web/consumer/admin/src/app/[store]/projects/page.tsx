@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Project {
     id: string
@@ -20,37 +19,43 @@ interface Project {
 
 export default function ProjectsPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [projects, setProjects] = useState<Project[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({ title: '', description: '', url: '', technologies: '' })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('projects').select('*').eq('site_id', s.id).order('display_order', { ascending: true })
-        setProjects(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/projects`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setProjects(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!storeId || !formData.title) return
+        if (!formData.title) return
         setSaving(true)
         const payload = {
-            site_id: storeId, title: formData.title,
+            title: formData.title,
             description: formData.description || null,
             url: formData.url || null,
             technologies: formData.technologies ? formData.technologies.split(',').map(t => t.trim()) : [],
         }
-        if (editingId) await supabase.from('projects').update(payload).eq('id', editingId)
-        else await supabase.from('projects').insert(payload)
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/content/projects/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/content/projects`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null)
         setFormData({ title: '', description: '', url: '', technologies: '' })
         load()
@@ -58,7 +63,9 @@ export default function ProjectsPage() {
 
     const handleDelete = async (id: string) => {
         if (!confirm('Delete this project?')) return
-        await supabase.from('projects').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/content/projects/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         load()
     }
 

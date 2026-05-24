@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface GeneralData {
@@ -31,16 +30,14 @@ export default function GeneralSettingsPage() {
         site_type: 'store',
     })
 
-    // Load store data on mount — createClient() inside effect to avoid re-creation
+    // Load store data through the store-scoped worker proxy.
     useEffect(() => {
         async function load() {
-            const supabase = createClient()
-            // Store ownership is already validated by the server-side [store]/layout.tsx
-            const { data: storeData } = await supabase
-                .from('sites')
-                .select('id, name, store_name, subdomain, custom_domain, currency, site_type, description')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const storeData = payload.data
 
             if (storeData) {
                 setData({
@@ -64,27 +61,31 @@ export default function GeneralSettingsPage() {
         setSaving(true)
         setSuccess(false)
 
-        const supabase = createClient()
-        await supabase.from('sites').update({
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
             name: data.name,
             description: data.description,
             currency: data.currency,
-        }).eq('id', data.id)
+            }),
+        })
 
         setSaving(false)
         setSuccess(true)
         setTimeout(() => setSuccess(false), 3000)
-    }, [data])
+    }, [data, store])
 
     const handleDelete = useCallback(async () => {
         if (!confirm(`Are you sure you want to delete "${data.name}"? This cannot be undone.`)) return
         if (!confirm('This will permanently delete all products, orders, and pages. Proceed?')) return
 
-        const supabase = createClient()
-        await supabase.from('sites').delete().eq('id', data.id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'DELETE',
+        })
         const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
         window.location.href = accountsUrl
-    }, [data])
+    }, [data, store])
 
     if (loading) {
         return (

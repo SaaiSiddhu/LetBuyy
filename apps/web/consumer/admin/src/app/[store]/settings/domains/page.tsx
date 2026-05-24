@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 export default function DomainSettingsPage() {
@@ -15,16 +14,14 @@ export default function DomainSettingsPage() {
     const [customDomain, setCustomDomain] = useState('')
     const [saving, setSaving] = useState(false)
     const [success, setSuccess] = useState(false)
-    const supabase = createClient()
 
     useEffect(() => {
         async function load() {
-            // Store ownership is already validated by the server-side [store]/layout.tsx
-            const { data } = await supabase
-                .from('sites')
-                .select('id, subdomain, store_name, custom_domain')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const data = payload.data
 
             if (data) {
                 setStoreData({
@@ -37,16 +34,18 @@ export default function DomainSettingsPage() {
             setLoading(false)
         }
         load()
-    }, [store, supabase])
+    }, [store])
 
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
         setSaving(true)
         setSuccess(false)
 
-        await supabase.from('sites').update({
-            custom_domain: customDomain || null,
-        }).eq('id', storeData.id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ custom_domain: customDomain || null }),
+        })
 
         setSaving(false)
         setSuccess(true)

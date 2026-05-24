@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface PolicyField {
@@ -15,26 +14,22 @@ export default function PoliciesSettingsPage() {
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
     const [success, setSuccess] = useState(false)
-    const [storeId, setStoreId] = useState('')
     const [policies, setPolicies] = useState<PolicyField[]>([
         { key: 'refund_policy', label: 'Refund policy', value: '' },
         { key: 'privacy_policy', label: 'Privacy policy', value: '' },
         { key: 'terms_of_service', label: 'Terms of service', value: '' },
         { key: 'shipping_policy', label: 'Shipping policy', value: '' },
     ])
-    const supabase = createClient()
 
     useEffect(() => {
         async function load() {
-            // Store ownership is already validated by the server-side [store]/layout.tsx
-            const { data } = await supabase
-                .from('sites')
-                .select('id, refund_policy, privacy_policy, terms_of_service, shipping_policy')
-                .or(`store_name.eq.${store},subdomain.eq.${store}`)
-                .single()
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json()
+            const data = payload.data
 
             if (data) {
-                setStoreId(data.id)
                 setPolicies(p => p.map(policy => ({
                     ...policy,
                     value: (data as Record<string, string>)[policy.key] || '',
@@ -43,13 +38,17 @@ export default function PoliciesSettingsPage() {
             setLoading(false)
         }
         load()
-    }, [store, supabase])
+    }, [store])
 
     const handleSave = async () => {
         setSaving(true)
         const update: Record<string, string> = {}
         policies.forEach(p => { update[p.key] = p.value })
-        await supabase.from('sites').update(update).eq('id', storeId)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(update),
+        })
         setSaving(false)
         setSuccess(true)
         setTimeout(() => setSuccess(false), 3000)

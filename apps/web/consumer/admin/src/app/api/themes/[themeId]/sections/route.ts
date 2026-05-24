@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { SECTION_SCHEMAS } from '@/lib/theme-schemas'
+import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
 
 /**
  * GET /api/themes/[themeId]/sections
  *
- * Returns available section schemas for a given theme.
- * Since schemas are hard-coded in the registry, themeId is used for
- * future extensibility when different themes may have different available sections.
+ * Returns available section schemas for a given theme from the worker schema registry.
  */
 export async function GET(
     _request: NextRequest,
@@ -14,27 +12,21 @@ export async function GET(
 ) {
     try {
         const { themeId } = await params
-
-        // For now, all themes use the same section schemas from Urban Kicks.
-        // In future, different themes could register different section types.
-        const schemas = SECTION_SCHEMAS
+        const payload = await readWorkerJson(await workerFetch(`/themes/${themeId}/schema`))
+        const schemas = payload.data?.schemas?.sections || {}
 
         return NextResponse.json({
             themeId,
             sections: Object.entries(schemas).map(([type, schema]) => ({
                 type,
-                name: schema.name,
-                description: schema.description,
-                hasBlocks: !!schema.blocks_schema,
-                settingsCount: schema.settings_schema.length,
+                name: (schema as { name?: string }).name || type,
+                description: (schema as { description?: string }).description || '',
+                hasBlocks: Boolean((schema as { blocks_schema?: unknown }).blocks_schema),
+                settingsCount: Object.keys((schema as { settings_schema?: Record<string, unknown> }).settings_schema || {}).length,
             })),
             schemas,
         })
     } catch (err) {
-        console.error('[API /themes/sections GET] Unexpected error:', err)
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err)
     }
 }

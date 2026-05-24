@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { useParams } from 'next/navigation'
 
 interface Employee {
@@ -23,42 +22,32 @@ export default function UsersSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const [loading, setLoading] = useState(true)
     const [employees, setEmployees] = useState<Employee[]>([])
-    const [storeId, setStoreId] = useState('')
     const [showAdd, setShowAdd] = useState(false)
     const [newEmail, setNewEmail] = useState('')
     const [newRole, setNewRole] = useState('editor')
     const [saving, setSaving] = useState(false)
-    const supabase = createClient()
-
     const loadData = useCallback(async () => {
-        const { data: storeData } = await supabase
-            .from('sites')
-            .select('id, store_name')
-            .or(`store_name.eq.${store},subdomain.eq.${store}`)
-            .single()
-
-        if (!storeData) { setLoading(false); return }
-        setStoreId(storeData.id)
-
-        const { data: empData } = await supabase
-            .from('employees')
-            .select('id, email, role, status, created_at')
-            .eq('site_id', storeData.id)
-
-        if (empData) setEmployees(empData)
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setEmployees(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { loadData() }, [loadData])
 
     const handleAdd = async () => {
         if (!newEmail.trim() || !newEmail.includes('@')) return
         setSaving(true)
-        await supabase.from('employees').insert({
-            site_id: storeId,
+        await fetch(`/api/stores/${encodeURIComponent(store)}/users`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
             email: newEmail.trim().toLowerCase(),
             role: newRole,
             status: 'invited',
+            }),
         })
         setShowAdd(false)
         setNewEmail('')
@@ -69,12 +58,18 @@ export default function UsersSettingsPage() {
 
     const handleRemove = async (id: string) => {
         if (!confirm('Remove this staff member?')) return
-        await supabase.from('employees').delete().eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/users/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
         setEmployees(prev => prev.filter(e => e.id !== id))
     }
 
     const handleRoleChange = async (id: string, role: string) => {
-        await supabase.from('employees').update({ role }).eq('id', id)
+        await fetch(`/api/stores/${encodeURIComponent(store)}/users/${encodeURIComponent(id)}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ role }),
+        })
         setEmployees(prev => prev.map(e => e.id === id ? { ...e, role } : e))
     }
 

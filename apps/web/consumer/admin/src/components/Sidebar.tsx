@@ -46,6 +46,7 @@ const navConfig: Record<SiteType, NavGroup[]> = {
                     ],
                 },
                 { href: 'customers', label: 'Customers', icon: 'group' },
+                { href: 'reviews', label: 'Reviews', icon: 'rate_review' },
                 { href: 'coupons', label: 'Discounts', icon: 'sell' },
                 { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
             ],

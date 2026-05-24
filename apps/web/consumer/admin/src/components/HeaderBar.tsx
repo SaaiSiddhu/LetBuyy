@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { usePathname } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
@@ -27,18 +27,6 @@ function getStoreInitials(name: string): string {
     return name.substring(0, 2).toUpperCase()
 }
 
-/** Return a Material Symbols icon name for a site type. */
-function getSiteTypeIcon(type: string): string {
-    switch (type) {
-        case 'store': return 'storefront'
-        case 'portfolio': return 'palette'
-        case 'resume': return 'description'
-        case 'landing': return 'web'
-        case 'blog': return 'article'
-        default: return 'language'
-    }
-}
-
 /** Return a human-readable label for a site type. */
 function getSiteTypeLabel(type: string): string {
     switch (type) {
@@ -61,7 +49,7 @@ export default function HeaderBar({
     onAISidebarToggle,
     isSettingsPage = false,
 }: HeaderBarProps) {
-    const pathname = usePathname()
+    const router = useRouter()
     const [switcherOpen, setSwitcherOpen] = useState(false)
     const [notificationsOpen, setNotificationsOpen] = useState(false)
     const [isDark, setIsDark] = useState(false)
@@ -151,15 +139,15 @@ export default function HeaderBar({
                 method: 'POST',
             })
             const data = await res.json()
-            window.location.href = data.redirectTo || `${process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000'}/lookup`
+            window.location.assign(data.redirectTo || `${process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'}/lookup`)
         } catch {
-            window.location.href = `${process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000'}/lookup`
+            window.location.assign(`${process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'}/lookup`)
         }
     }
 
     const handleSwitchStore = (subdomain: string) => {
         setSwitcherOpen(false)
-        window.location.href = `/${subdomain}/dashboard`
+        router.push(`/${subdomain}/dashboard`)
     }
 
     const closeSwitcher = useCallback(() => setSwitcherOpen(false), [])

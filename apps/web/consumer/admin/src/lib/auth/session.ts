@@ -1,5 +1,5 @@
-import { cookies } from 'next/headers'
-import { createClient } from '@/lib/supabase/server'
+import { workerFetch, readWorkerJson } from '@/lib/api/worker-client'
+import { cache } from 'react'
 
 export interface SessionUser {
     id: string
@@ -8,71 +8,51 @@ export interface SessionUser {
     avatarUrl: string | null
 }
 
-/**
- * Validate the lb_session cookie and return the authenticated user.
- * This is the admin app's equivalent of the accounts app's session system.
- *
- * For now, it queries the sessions → users_custom tables using
- * the Supabase service role client.
- *
- * Returns null if no valid session is found.
- */
-export async function getSessionUser(): Promise<SessionUser | null> {
+interface StoreSummary {
+    id: string
+    name: string
+    store_name: string
+    subdomain: string
+    site_type: string
+    status: string
+    trial_ends_at?: string | null
+    trial_status?: string | null
+    theme_id?: string | null
+    theme_settings?: Record<string, unknown> | null
+    custom_domain?: string | null
+}
+
+export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     try {
-        const cookieStore = await cookies()
-        const sessionToken = cookieStore.get('lb_session')?.value
-
-        if (!sessionToken) return null
-
-        const supabase = await createClient()
-
-        // Query session → user
-        const { data: session } = await supabase
-            .from('sessions')
-            .select('user_id, expires_at')
-            .eq('token', sessionToken)
-            .single()
-
-        if (!session) return null
-
-        // Check expiration
-        if (new Date(session.expires_at) < new Date()) {
-            return null
+        const response = await workerFetch('/auth/custom/session', {
+            method: 'GET',
+            requireSession: true,
+        })
+        const payload = await readWorkerJson(response) as {
+            authenticated?: boolean
+            user?: {
+                id: string
+                email: string
+                fullName: string | null
+            }
         }
 
-        // Get user details
-        const { data: user } = await supabase
-            .from('users_custom')
-            .select('id, email, full_name, avatar_url')
-            .eq('id', session.user_id)
-            .single()
-
-        if (!user) return null
-
-        // Update session last_active
-        await supabase
-            .from('sessions')
-            .update({ last_active: new Date().toISOString() })
-            .eq('token', sessionToken)
+        if (!payload.authenticated || !payload.user) return null
 
         return {
-            id: user.id,
-            email: user.email,
-            fullName: user.full_name,
-            avatarUrl: user.avatar_url,
+            id: payload.user.id,
+            email: payload.user.email,
+            fullName: payload.user.fullName,
+            avatarUrl: null,
         }
     } catch {
         return null
     }
-}
+})
 
-/**
- * Get the store info for a given store_name/subdomain,
- * and verify the user owns it.
- */
-export async function getStoreForUser(
+export const getStoreForUser = cache(async (
     storeName: string,
-    userId: string
+    _userId: string
 ): Promise<{
     id: string
     name: string
@@ -85,20 +65,16 @@ export async function getStoreForUser(
     theme_id: string
     theme_settings: Record<string, unknown> | null
     custom_domain: string | null
-} | null> {
+} | null> => {
     try {
-        const supabase = await createClient()
-
-        const { data } = await supabase
-            .from('sites')
-            .select('id, name, store_name, subdomain, site_type, status, custom_user_id, trial_ends_at, trial_status, theme_id, theme_settings, custom_domain')
-            .or(`store_name.eq.${storeName},subdomain.eq.${storeName}`)
-            .single()
+        const response = await workerFetch(`/stores/handle/${encodeURIComponent(storeName)}`, {
+            method: 'GET',
+            requireSession: true,
+        })
+        const payload = await readWorkerJson(response) as { data?: StoreSummary }
+        const data = payload.data
 
         if (!data) return null
-
-        // Verify ownership
-        if (data.custom_user_id !== userId) return null
 
         return {
             id: data.id,
@@ -116,13 +92,10 @@ export async function getStoreForUser(
     } catch {
         return null
     }
-}
+})
 
-/**
- * Get all stores for a user (for the store switcher).
- */
-export async function getUserStores(
-    userId: string
+export const getUserStores = cache(async (
+    _userId: string
 ): Promise<Array<{
     id: string
     name: string
@@ -130,18 +103,23 @@ export async function getUserStores(
     subdomain: string
     site_type: string
     status: string
-}>> {
+}>> => {
     try {
-        const supabase = await createClient()
+        const response = await workerFetch('/stores?limit=50', {
+            method: 'GET',
+            requireSession: true,
+        })
+        const payload = await readWorkerJson(response) as { data?: StoreSummary[] }
 
-        const { data } = await supabase
-            .from('sites')
-            .select('id, name, store_name, subdomain, site_type, status')
-            .eq('custom_user_id', userId)
-            .order('created_at', { ascending: false })
-
-        return data || []
+        return (payload.data || []).map((store) => ({
+            id: store.id,
+            name: store.name,
+            store_name: store.store_name,
+            subdomain: store.subdomain,
+            site_type: store.site_type,
+            status: store.status,
+        }))
     } catch {
         return []
     }
-}
+})

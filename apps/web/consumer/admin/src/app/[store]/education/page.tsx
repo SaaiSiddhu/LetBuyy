@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
 
 interface Education {
     id: string
@@ -19,43 +18,55 @@ interface Education {
 
 export default function EducationPage() {
     const { store } = useParams<{ store: string }>()
-    const supabase = createClient()
     const [items, setItems] = useState<Education[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
-    const [storeId, setStoreId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formData, setFormData] = useState({ institution: '', degree: '', field_of_study: '', start_date: '', end_date: '', grade: '', description: '' })
 
     const load = useCallback(async () => {
-        const { data: s } = await supabase.from('sites').select('id').eq('store_name', store).single()
-        if (!s) { setLoading(false); return }
-        setStoreId(s.id)
-        const { data } = await supabase.from('education').select('*').eq('site_id', s.id).order('display_order', { ascending: true })
-        setItems(data || [])
+        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/education`, {
+            cache: 'no-store',
+        })
+        const payload = await response.json()
+        setItems(Array.isArray(payload.data) ? payload.data : [])
         setLoading(false)
-    }, [store, supabase])
+    }, [store])
 
     useEffect(() => { load() }, [load])
 
     const handleSave = async () => {
-        if (!storeId || !formData.institution || !formData.degree) return
+        if (!formData.institution || !formData.degree) return
         setSaving(true)
         const payload = {
-            site_id: storeId, institution: formData.institution, degree: formData.degree,
+            institution: formData.institution, degree: formData.degree,
             field_of_study: formData.field_of_study || null,
             start_date: formData.start_date || null, end_date: formData.end_date || null,
             grade: formData.grade || null, description: formData.description || null,
         }
-        if (editingId) await supabase.from('education').update(payload).eq('id', editingId)
-        else await supabase.from('education').insert(payload)
+        await fetch(
+            editingId
+                ? `/api/stores/${encodeURIComponent(store)}/content/education/${encodeURIComponent(editingId)}`
+                : `/api/stores/${encodeURIComponent(store)}/content/education`,
+            {
+                method: editingId ? 'PATCH' : 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            }
+        )
         setSaving(false); setShowForm(false); setEditingId(null)
         setFormData({ institution: '', degree: '', field_of_study: '', start_date: '', end_date: '', grade: '', description: '' })
         load()
     }
 
-    const handleDelete = async (id: string) => { if (!confirm('Delete?')) return; await supabase.from('education').delete().eq('id', id); load() }
+    const handleDelete = async (id: string) => {
+        if (!confirm('Delete?')) return
+        await fetch(`/api/stores/${encodeURIComponent(store)}/content/education/${encodeURIComponent(id)}`, {
+            method: 'DELETE',
+        })
+        load()
+    }
     const startEdit = (e: Education) => { setEditingId(e.id); setFormData({ institution: e.institution, degree: e.degree, field_of_study: e.field_of_study || '', start_date: e.start_date || '', end_date: e.end_date || '', grade: e.grade || '', description: e.description || '' }); setShowForm(true) }
     const inputStyle: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
     const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : ''
