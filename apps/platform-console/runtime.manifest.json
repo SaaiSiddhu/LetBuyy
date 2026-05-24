@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Platform Console",
+  "runtimeRoot": "apps/platform-console",
+  "actorType": ["platform-operator"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "platform-governance-control-plane",
+  "ownership": {
+    "sourceAuthority": "apps/platform-console",
+    "businessAuthority": "Super-admin governance surface for platform users, stores, subscriptions, employees, analytics, MFA, settings, and audit logs.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/platform-operations-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/ui", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/platform-console/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel platform-console project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted platform governance logs",
+    "audit": "all privileged platform actions require immutable audit events"
+  }
+}

@@ -99,6 +99,11 @@ export const canonicalServiceRoots = [
   "services/event-bus",
 ];
 
+export const canonicalRuntimeRoots = [
+  ...canonicalAppRoots,
+  ...canonicalServiceRoots,
+];
+
 export const domainPackageRoots = [
   "packages/commerce-core",
   "packages/checkout-core",
@@ -119,6 +124,17 @@ export const domainPackageRoots = [
   "packages/mobile-models",
   "packages/mobile-services",
   "packages/mobile-ui-kit",
+];
+
+export const workspacePackageRoots = [
+  "packages/typescript/api-types",
+  "packages/typescript/ui",
+  "packages/typescript/utils",
+  "packages/dart/core",
+  "packages/dart/models",
+  "packages/dart/services",
+  "packages/dart/ui_kit",
+  ...domainPackageRoots,
 ];
 
 export const activeRootPrefixes = [
@@ -196,6 +212,58 @@ export function listWorkspaceFiles(startDirs = [
 
   for (const dir of startDirs) walk(path.join(root, dir), dir);
   return files.sort();
+}
+
+export function listWorkspaceDirectories(startDirs = [
+  "apps",
+  "packages",
+  "services",
+  "database",
+  "infrastructure",
+  "legacy",
+  "docs",
+  "scripts",
+  "config",
+]) {
+  const directories = [];
+
+  function walk(absDir, relDir) {
+    if (!fs.existsSync(absDir)) return;
+
+    for (const entry of fs.readdirSync(absDir, { withFileTypes: true })) {
+      const relPath = relDir ? `${relDir}/${entry.name}` : entry.name;
+      const absPath = path.join(absDir, entry.name);
+
+      if (entry.isDirectory()) {
+        directories.push(normalizePath(relPath));
+        if (!ignoredDirectoryNames.has(entry.name)) walk(absPath, relPath);
+      }
+    }
+  }
+
+  for (const dir of startDirs) walk(path.join(root, dir), dir);
+  return directories.sort();
+}
+
+export function listLocalArtifactDirectories(startDirs = ["apps", "packages", "services"]) {
+  const artifactDirectoryNames = new Set([
+    "node_modules",
+    ".next",
+    ".turbo",
+    ".dart_tool",
+    "dist",
+    "build",
+    "coverage",
+    ".cache",
+    ".wrangler",
+    ".vercel",
+    ".symlinks",
+    "Pods",
+  ]);
+
+  return listWorkspaceDirectories(startDirs).filter((dir) =>
+    dir.split("/").some((segment) => artifactDirectoryNames.has(segment)),
+  );
 }
 
 export function exists(relPath) {

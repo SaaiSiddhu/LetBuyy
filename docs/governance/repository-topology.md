@@ -70,8 +70,19 @@ infrastructure/
 
 config/
   env/
+    governance/
+    ownership/
     templates/
     schemas/
+  runtime/
+    runtime-manifest.schema.json
+
+scripts/
+  validators/
+  governance/
+  generators/
+  migration/
+  utilities/
 
 legacy/
   firebase/
@@ -113,10 +124,14 @@ docs/
 - Database state lives under `database/`.
 - Provider, deployment, DNS, security, monitoring, and CI config live under `infrastructure/`.
 - Environment templates, schemas, and runtime env ownership rules live under `config/env/`.
+- Runtime manifest schemas live under `config/runtime/`.
+- Reusable tooling lives under canonical `scripts/` subdirectories; root scripts are stable entrypoints only.
 - Deprecated systems live under `legacy/`.
 - Generated or lifecycle-owned docs live under explicit `docs/` lifecycle directories.
 - Deprecated runtime aliases are forbidden and must not coexist with canonical runtimes.
 - The forbidden app alias roots are `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.
 - `apps/mobile/operator-team-app` is retired; employee operations belong in `apps/platform-operations-portal`, and native operator work belongs in `apps/mobile/operator-app`.
 - `apps/storefront-runtime/consumer-storefront` is retired; storefront source authority belongs under `apps/storefront-runtime/src`.
+- Every app/service runtime must include `runtime.manifest.json`.
+- Runtime-local `node_modules`, generated output, and local build caches are not topology and must not survive governance validation.
 - New app roots require a governance doc update, validator update, CI enforcement, and an ownership decision before source is added.

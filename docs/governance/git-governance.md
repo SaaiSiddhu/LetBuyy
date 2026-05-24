@@ -12,6 +12,7 @@
 
 - Files over 10 MiB require explicit ownership reasoning before tracking.
 - Build caches, app bundles, package-manager stores, Worker bundles, APK/AAB/IPA files, and raw validation logs are forbidden in Git.
+- Runtime-local `node_modules` under `apps/`, `services/`, or `packages/` are forbidden as tracked content and as local handoff pollution.
 - Historical large blobs must be handled by a coordinated history-cleaning plan, not an ad hoc local reset.
 
 ## Current Object Database Finding
@@ -29,5 +30,5 @@
 
 - `.gitignore` prevents future local artifact discovery.
 - `scripts/validators/generated-artifact-validator.mjs` prevents artifact commits.
-- `scripts/validators/stale-artifact-validator.mjs` catches untracked governance scan artifacts before final handoff.
-
+- `scripts/validators/stale-artifact-validator.mjs` catches untracked governance scan artifacts and ignored local artifact directories before final handoff.
+- `scripts/validators/environment-validator.mjs` blocks tracked env dumps and secret-like values without printing secret contents.

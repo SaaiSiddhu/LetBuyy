@@ -4,6 +4,7 @@ import {
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
   generatedArtifactPattern,
+  listLocalArtifactDirectories,
   listWorkspaceFiles,
   getUntrackedFiles,
   startsWithPrefix,
@@ -16,8 +17,10 @@ const workspaceFiles = listWorkspaceFiles();
 const localScanArtifactPattern =
   /^(deep-tree|domain-map|env-map|garbage-map|heavy-files|import-map|package-map|root-governance|runtime-map|topology|tsconfig-map)\.txt$|^(debug|tmp|temp|scratch|analysis)[-.].*\.(txt|log|json|md|mjs|js|ts)$/;
 const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
+const localArtifactDirectories = listLocalArtifactDirectories();
 const offenders = [
   ...untrackedFiles.filter((file) => generatedArtifactPattern.test(file) || localScanArtifactPattern.test(file)),
+  ...localArtifactDirectories,
   ...workspaceFiles.filter(
     (file) =>
       debugArtifactPattern.test(file) ||

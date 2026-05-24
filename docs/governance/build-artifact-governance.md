@@ -9,6 +9,7 @@ Generated outputs include:
 - Flutter and native output: `build/`, `.dart_tool/`, `.flutter-plugins*`, `*.dill`, APK/AAB/IPA files, iOS `Pods/`, `.symlinks/`.
 - Worker output: `.wrangler/`, temporary bundles, dev state, source maps.
 - Coverage and caches: `coverage/`, `.cache/`, `.turbo/cache/`, package-manager stores.
+- Runtime-local dependency installs: `apps/**/node_modules`, `services/**/node_modules`, and `packages/**/node_modules`.
 - Local analysis scratch files: root scan maps such as `topology.txt`, `import-map.txt`, and `heavy-files.txt`.
 - Debug and trace output: `firebase-debug.log`, `*debug*.log`, `*.trace`, `*.trace.json`, and raw `docs/architecture/validation/` logs.
 
@@ -20,6 +21,7 @@ Generated outputs include:
 - Build outputs may be produced locally or in CI, but CI artifacts must be uploaded through CI artifact storage, not committed.
 - If a generated directory must be retained for debugging, place the finding in `docs/governance` as a human-authored summary, not as raw cache output.
 - Temporary root scripts and debug outputs are forbidden; reusable governance tooling belongs under `scripts/validators/` and must be documented.
+- Local runtime artifact directories are pollution even when ignored. They must be removed before final handoff if governance validators are expected to pass.
 
 ## Current Historical Risk
 
@@ -31,3 +33,4 @@ The Git object database contains historical `.turbo/cache/*.tar.zst` blobs large
 - `scripts/validators/generated-artifact-validator.mjs` fails on tracked generated artifacts.
 - `scripts/validators/generated-artifact-validator.mjs` fails on tracked debug artifacts and forbidden topology paths.
 - `scripts/validators/stale-artifact-validator.mjs` fails on untracked non-ignored governance scan artifacts, debug artifacts, and forbidden topology paths that should not be left in the workspace.
+- `scripts/validators/stale-artifact-validator.mjs` also fails on ignored runtime-local artifact directories under app, service, and package roots.

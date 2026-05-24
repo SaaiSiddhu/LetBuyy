@@ -83,7 +83,11 @@ all.env
 
 # Node
 node_modules/
+apps/**/node_modules/
+services/**/node_modules/
+packages/**/node_modules/
 .next/
+apps/**/.next/
 **/.next/
 .turbo/
 **/.turbo/
@@ -91,6 +95,8 @@ node_modules/
 **/coverage/
 coverage/
 dist/
+services/**/dist/
+packages/**/dist/
 **/dist/
 out/
 **/out/
@@ -98,6 +104,7 @@ out/
 *.tsbuildinfo
 **/.wrangler/tmp/
 **/.wrangler/
+services/**/.wrangler/
 **/supabase/.temp/
 packages/typescript/*/dist/
 
@@ -106,6 +113,8 @@ packages/typescript/*/dist/
 key.jks
 *.jks
 **/build/
+apps/mobile/**/build/
+packages/dart/**/build/
 *.dill
 *.dill.track.dill
 *.track.dill

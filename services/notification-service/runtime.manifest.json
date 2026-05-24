@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Notification Service",
+  "runtimeRoot": "services/notification-service",
+  "actorType": ["service"],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "notification-service-plane",
+  "ownership": {
+    "sourceAuthority": "services/notification-service",
+    "businessAuthority": "Reserved notification authority for email, SMS, push, and commerce lifecycle messaging.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/observability-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Reserved Cloudflare service",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted notification service logs",
+    "audit": "notification dispatches must retain template, recipient, and provider event references without secret payloads"
+  }
+}

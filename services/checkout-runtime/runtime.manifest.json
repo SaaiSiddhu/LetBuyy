@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Checkout Runtime",
+  "runtimeRoot": "services/checkout-runtime",
+  "actorType": ["service", "shopper"],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "checkout-service-plane",
+  "ownership": {
+    "sourceAuthority": "services/checkout-runtime",
+    "businessAuthority": "Reserved backend checkout authority for server-side totals, payment orchestration, and idempotent checkout mutations.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/dependency-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Reserved Cloudflare service",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted checkout service logs",
+    "audit": "checkout mutations must record idempotency and provider reconciliation state"
+  }
+}

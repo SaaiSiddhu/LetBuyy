@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "App Marketplace",
+  "runtimeRoot": "apps/app-marketplace",
+  "actorType": ["merchant", "developer"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "marketplace-control-plane",
+  "ownership": {
+    "sourceAuthority": "apps/app-marketplace",
+    "businessAuthority": "App discovery, installation, developer submission, app review, and extension marketplace flows.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/runtime-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/ui", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/app-marketplace/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel app-marketplace project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted marketplace logs",
+    "audit": "app install, submission, and review actions must be audit-correlated"
+  }
+}

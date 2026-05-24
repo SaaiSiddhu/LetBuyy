@@ -14,6 +14,7 @@ LetBuyy has three runtime classes:
 - Services own API protocols, domain orchestration, auth enforcement, tenant context, idempotency, events, and provider integrations.
 - Database migrations own schema, RLS, indexes, functions, triggers, and seed/verification logic.
 - Each runtime must have an `AGENTS.md` describing ownership, actor, dependencies, deployment path, and forbidden imports.
+- Each canonical app and service runtime must have `runtime.manifest.json` describing actor type, category, classification, ownership, allowed dependencies, deployment authority, environment authority, and observability authority.
 - Runtime names must describe operational responsibility, not implementation detail.
 - Only canonical app roots may exist under `apps/`; alias roots and placeholder app roots are governance failures.
 - Storefront source authority belongs under `apps/storefront-runtime/src`; nested storefront runtimes are forbidden.
@@ -35,3 +36,6 @@ Architecture validation must fail when:
 - A runtime references deprecated pre-normalization roots outside archived historical documentation.
 - A deprecated app alias, duplicate operator runtime, nested storefront runtime, debug log, or raw trace file exists in active topology.
 - A service runtime lacks package metadata, deployment metadata, or ownership documentation.
+- A canonical runtime lacks `runtime.manifest.json`.
+- A runtime manifest references missing governance docs or the wrong environment schema.
+- Ignored runtime-local artifacts such as `node_modules`, `.next`, `.dart_tool`, `build`, `dist`, or `.wrangler` remain under app/service/package roots during governance validation.

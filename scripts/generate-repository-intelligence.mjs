@@ -112,6 +112,10 @@ const topicDirs = [
   "performance",
   "security",
   "observability",
+  "mobile",
+  "theme-runtime",
+  "tooling",
+  "runtime-manifest",
   "caching",
   "conflicts",
   "technical-debt",
@@ -650,6 +654,10 @@ function topicKeywordMatcher(topic, summary) {
     performance: ["cache", "loading", "image", "revalidate", "bundle"],
     security: ["security", "csrf", "cors", "service_role", "auth", "webhook"],
     observability: ["logger", "request", "console.", "health", "monitor"],
+    mobile: ["mobile", "flutter", "dart", "pubspec", "android", "ios"],
+    "theme-runtime": ["theme-engine", "section", "renderer", "theme-preview", "storefront-runtime"],
+    tooling: ["scripts/", "validator", "generator", "governance"],
+    "runtime-manifest": ["runtime.manifest", "runtime manifest", "runtimeRoot", "actorType"],
     caching: ["cache", "redis", "upstash", "kv", "revalidate"],
     conflicts: ["duplicate", "legacy", "broken", "fix", "stale"],
     "technical-debt": ["todo", "fixme", "hack", "any", "console.log", "inline"],
@@ -758,6 +766,7 @@ function buildRootAgents() {
   lines.push("- Web app runtimes: `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/identity-platform`, `apps/app-marketplace`, `apps/theme-marketplace`, `apps/marketing-site`, `apps/platform-console`, `apps/platform-operations-portal`.");
   lines.push("- Mobile runtimes: `apps/mobile/shopper-app`, `apps/mobile/merchant-app`, `apps/mobile/operator-app`.");
   lines.push("- Service runtimes: `services/api-gateway`, `services/webhook-service`, plus reserved service roots documented in `docs/governance/runtime-boundaries.md`.");
+  lines.push("- Every canonical runtime root must include `runtime.manifest.json`; manifests are machine-readable runtime authority and are enforced by `scripts/validators/runtime-manifest-validator.mjs`.");
   lines.push("- Deprecated app aliases are forbidden: `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.");
   lines.push("- `apps/mobile/operator-team-app` and `apps/storefront-runtime/consumer-storefront` are retired topology paths and must not be recreated.");
   lines.push("");
@@ -797,18 +806,21 @@ function buildRootAgents() {
   lines.push("");
   lines.push("- TypeScript packages require `package.json`, `src/index.ts`, `AGENTS.md`, and a `typecheck` script.");
   lines.push("- Dart packages require `pubspec.yaml`, `lib/`, and `AGENTS.md`.");
+  lines.push("- Package `AGENTS.md` files must define purpose, ownership rules, forbidden imports, runtime authority, dependency rules, and migration notes.");
   lines.push("- Shared packages expose intentional public contracts only; implementation internals are not cross-runtime APIs.");
   lines.push("- UI packages must not depend on data clients, provider SDKs, secrets, or service internals.");
   lines.push("");
   lines.push("## Build Artifact Governance");
   lines.push("");
   lines.push("- `.next`, `dist`, `build`, `coverage`, `.turbo`, `.cache`, `.dart_tool`, `.wrangler`, `.vercel`, `Pods`, `.symlinks`, `*.tsbuildinfo`, `*.dill`, APK/AAB/IPA files, and `*.tar.zst` caches are generated outputs.");
+  lines.push("- Nested `node_modules` under `apps/`, `services/`, or `packages/` are local pollution and must never become runtime authority.");
   lines.push("- Generated outputs must remain ignored, untracked, and excluded from architecture intelligence.");
   lines.push("- Raw validation logs and local scan maps must not become source authority; summarize findings in `docs/governance` instead.");
   lines.push("");
   lines.push("## Environment Governance");
   lines.push("");
   lines.push("- Environment contracts live under `config/env/` with templates and schemas.");
+  lines.push("- Runtime environment ownership lives under `config/env/ownership/`; environment governance process notes live under `config/env/governance/`.");
   lines.push("- Runtime env files are local-only and must not be tracked.");
   lines.push("- `NEXT_PUBLIC_*` values are public and must never contain secrets.");
   lines.push("- Server secrets belong in Vercel, Cloudflare, CI secret stores, or operator shell sessions, not the repository.");
@@ -847,7 +859,9 @@ function buildRootAgents() {
   lines.push("- `services/*` for independently deployable backends and workers.");
   lines.push("- `packages/*` for reusable contracts, domain logic, utilities, and UI.");
   lines.push("- `config/env/*` for environment templates and schemas.");
+  lines.push("- `config/runtime/*` for runtime manifest schemas and future runtime-governance config.");
   lines.push("- `docs/governance/*` for persistent human-authored governance memory.");
+  lines.push("- `scripts/validators/*` for CI-enforced governance checks, with reusable tooling organized under `scripts/governance`, `scripts/generators`, `scripts/migration`, and `scripts/utilities`.");
   lines.push("- `legacy/*` for isolated historical systems.");
   lines.push("- Temporary root scripts and debug outputs are forbidden; short-lived analysis belongs under ignored `.codex/`, `.analysis/`, `.tmp/`, or `temp/` and must be deleted before handoff.");
   lines.push("");
@@ -870,11 +884,12 @@ function buildRootAgents() {
   lines.push("- Dependency direction is `apps -> packages`, `apps -> services by API`, `services -> packages`, and `packages -> packages` only.");
   lines.push("- Database and infrastructure do not import runtime code.");
   lines.push("- Shared logic graduates into packages before reuse.");
+  lines.push("- `scripts/validators/dependency-graph-validator.mjs` enforces dependency direction, package layering, and circular dependency prevention.");
   lines.push("");
   lines.push("## CI/CD Governance");
   lines.push("");
   lines.push("- CI must run `node scripts/validate-governance.mjs` for topology-sensitive changes.");
-  lines.push("- CI must fail on app-to-app imports, package-to-runtime imports, tracked generated artifacts, tracked env files, invalid runtime roots, and legacy leakage.");
+  lines.push("- CI must fail on app-to-app imports, package-to-runtime imports, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, tracked env files, invalid runtime roots, and legacy leakage.");
   lines.push("- Build, lint, typecheck, and test jobs should be added per runtime as blockers are retired.");
   lines.push("");
   lines.push("## Documentation Governance");
@@ -890,6 +905,7 @@ function buildRootAgents() {
   lines.push("- Inspect source before architecture decisions.");
   lines.push("- Preserve tenant isolation and runtime boundaries.");
   lines.push("- Run governance validation before handoff.");
+  lines.push("- Update runtime manifests and governance docs before moving, renaming, creating, or retiring runtime roots.");
   lines.push("");
   lines.push("## Forbidden Architectural Patterns");
   lines.push("");
@@ -897,6 +913,7 @@ function buildRootAgents() {
   lines.push("- Package imports from apps or services.");
   lines.push("- Active runtime imports from `legacy/*` or `infrastructure/*`.");
   lines.push("- Runtime dependence on `.next`, `dist`, `.wrangler`, `.turbo`, Flutter build output, or generated logs.");
+  lines.push("- Runtime-local `node_modules` as source authority or committed content.");
   lines.push("- Reintroducing deprecated runtime aliases, `apps/mobile/operator-team-app`, or nested `consumer-storefront` source trees.");
   lines.push("- Tracked runtime env files or committed secrets.");
   lines.push("- Duplicated auth ownership across apps and services without documented canonical owner.");
@@ -1136,6 +1153,28 @@ function buildPackageAgents(target) {
   lines.push("- Shared API/domain types belong in `packages/typescript/api-types` or Dart model packages, not app pages.");
   lines.push("- Shared UI must support light/dark themes, keyboard focus, disabled state, loading state, and error state.");
   lines.push("- Shared payment/auth utilities must not log secrets or expose provider details to the client.");
+  lines.push("");
+  lines.push("## Dependency Rules");
+  lines.push("");
+  lines.push("- Dependencies must flow from runtimes into shared packages, never from packages back into runtime source.");
+  lines.push("- Package-to-package dependencies must follow the layer rules enforced by `scripts/validators/dependency-graph-validator.mjs`.");
+  lines.push("- Dart `core` is the foundation layer; Dart services may depend on core/models but not UI kit.");
+  lines.push("- TypeScript shared packages must avoid service, app, infrastructure, and generated artifact imports.");
+  lines.push("");
+  lines.push("## Forbidden Imports");
+  lines.push("");
+  lines.push("- No imports from `apps/*`, `services/*`, `legacy/*`, `infrastructure/*`, or generated output directories.");
+  lines.push("- No runtime-local env, routing, API handler, database client, or provider SDK imports unless this package explicitly owns that adapter.");
+  lines.push("");
+  lines.push("## Runtime Authority");
+  lines.push("");
+  lines.push("- This package does not deploy independently and must not own runtime configuration, routes, worker bindings, or app environment files.");
+  lines.push("- Runtime manifests in `apps/*/runtime.manifest.json` and `services/*/runtime.manifest.json` define where this package may be consumed.");
+  lines.push("");
+  lines.push("## Migration Notes");
+  lines.push("");
+  lines.push("- Extract logic into this package only after at least two runtimes need the contract or the domain boundary is explicitly approved.");
+  lines.push("- Package promotion requires public exports, focused tests or type coverage, AGENTS updates, dependency graph validation, and regenerated repository intelligence.");
   lines.push("");
   lines.push("## Key Files");
   lines.push("");

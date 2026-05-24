@@ -4,11 +4,14 @@ import path from "node:path";
 const validators = [
   "architecture-validator.mjs",
   "runtime-validator.mjs",
+  "runtime-manifest-validator.mjs",
   "package-ownership-validator.mjs",
   "import-validator.mjs",
+  "dependency-graph-validator.mjs",
   "environment-validator.mjs",
   "generated-artifact-validator.mjs",
   "stale-artifact-validator.mjs",
+  "tooling-governance-validator.mjs",
 ];
 
 for (const validator of validators) {

@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Identity Platform",
+  "runtimeRoot": "apps/identity-platform",
+  "actorType": ["merchant", "store-staff"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "identity-control-plane",
+  "ownership": {
+    "sourceAuthority": "apps/identity-platform",
+    "businessAuthority": "Merchant authentication, onboarding, password, OTP, OAuth callback, and store selection UI.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/runtime-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/identity-platform/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel identity-platform project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted identity event logs",
+    "audit": "auth state changes must be correlated without exposing credentials or tokens"
+  }
+}

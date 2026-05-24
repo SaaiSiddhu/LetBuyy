@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/runtime-env-ownership.schema.json",
+  "title": "LetBuyy Runtime Environment Ownership",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["nextApp", "worker", "mobile"],
+  "patternProperties": {
+    "^(nextApp|worker|mobile)$": {
+      "type": "object",
+      "required": ["schema", "template", "secretStore", "owners", "rules"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": { "type": "string", "minLength": 1 },
+        "template": { "type": "string", "minLength": 1 },
+        "secretStore": { "type": "string", "minLength": 1 },
+        "owners": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "rules": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1
+        }
+      }
+    }
+  }
+}

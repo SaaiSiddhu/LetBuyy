@@ -36,3 +36,5 @@
 - Deprecated app aliases may not be recreated as placeholders or compatibility roots.
 - `apps/storefront-runtime/consumer-storefront` may not be used as a nested runtime or theme authority.
 - Platform console and platform operations portal are separate runtimes: console is super-admin governance, while operations portal is employee workflow execution.
+- Runtime manifests are required at every app/service root and are the machine-readable boundary contract.
+- Mobile package dependencies must follow `core -> models -> services/ui_kit`; mobile apps must not import other mobile apps.

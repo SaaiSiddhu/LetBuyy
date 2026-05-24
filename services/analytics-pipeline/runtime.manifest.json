@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Analytics Pipeline",
+  "runtimeRoot": "services/analytics-pipeline",
+  "actorType": ["service"],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "analytics-service-plane",
+  "ownership": {
+    "sourceAuthority": "services/analytics-pipeline",
+    "businessAuthority": "Reserved analytics ingestion, aggregation, attribution, and reporting pipeline authority.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/observability-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Reserved analytics service",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted analytics pipeline logs",
+    "audit": "analytics jobs must preserve event lineage, tenant scope, and aggregation version"
+  }
+}

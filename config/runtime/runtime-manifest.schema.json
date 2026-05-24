@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/runtime-manifest.schema.json",
+  "title": "LetBuyy Runtime Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "runtimeName",
+    "runtimeRoot",
+    "actorType",
+    "runtimeCategory",
+    "runtimeClassification",
+    "ownership",
+    "allowedDependencies",
+    "forbiddenDependencies",
+    "deploymentAuthority",
+    "environmentAuthority",
+    "observabilityAuthority"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "runtimeName": { "type": "string", "minLength": 1 },
+    "runtimeRoot": { "type": "string", "minLength": 1 },
+    "actorType": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "runtimeCategory": { "type": "string", "minLength": 1 },
+    "runtimeClassification": { "type": "string", "minLength": 1 },
+    "ownership": {
+      "type": "object",
+      "required": ["sourceAuthority", "governanceDocs"],
+      "additionalProperties": false,
+      "properties": {
+        "sourceAuthority": { "type": "string", "minLength": 1 },
+        "businessAuthority": { "type": "string" },
+        "governanceDocs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "allowedDependencies": {
+      "type": "object",
+      "required": ["workspacePackages", "runtimeImports"],
+      "additionalProperties": false,
+      "properties": {
+        "workspacePackages": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        },
+        "runtimeImports": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "forbiddenDependencies": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "deploymentAuthority": {
+      "type": "object",
+      "required": ["platform", "config"],
+      "additionalProperties": true,
+      "properties": {
+        "platform": { "type": "string", "minLength": 1 },
+        "config": {
+          "type": "array",
+          "items": { "type": "string" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "environmentAuthority": {
+      "type": "object",
+      "required": ["schema", "template", "secretStore"],
+      "additionalProperties": false,
+      "properties": {
+        "schema": { "type": "string", "minLength": 1 },
+        "template": { "type": "string", "minLength": 1 },
+        "secretStore": { "type": "string", "minLength": 1 }
+      }
+    },
+    "observabilityAuthority": {
+      "type": "object",
+      "required": ["correlationId", "logging", "audit"],
+      "additionalProperties": false,
+      "properties": {
+        "correlationId": { "type": "string", "minLength": 1 },
+        "logging": { "type": "string", "minLength": 1 },
+        "audit": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

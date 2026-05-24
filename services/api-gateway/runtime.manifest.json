@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "API Gateway",
+  "runtimeRoot": "services/api-gateway",
+  "actorType": ["service", "merchant", "shopper", "platform-operator"],
+  "runtimeCategory": "cloudflare-worker",
+  "runtimeClassification": "backend-api-control-plane",
+  "ownership": {
+    "sourceAuthority": "services/api-gateway",
+    "businessAuthority": "Hono /v1 API gateway, validation, service orchestration, tenant enforcement, and worker-owned backend routes.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/observability-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Cloudflare Workers",
+    "config": ["services/api-gateway/wrangler.toml"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted worker logs",
+    "audit": "backend mutations and privileged reads must emit service-owned audit events"
+  }
+}

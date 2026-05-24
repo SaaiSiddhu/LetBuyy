@@ -48,10 +48,12 @@ for (const entry of appEntries) {
 for (const appRoot of canonicalAppRoots) {
   reporter.assert(exists(appRoot), `Missing app runtime root: ${appRoot}`);
   reporter.assert(exists(`${appRoot}/AGENTS.md`), `Missing app runtime AGENTS.md: ${appRoot}`);
+  reporter.assert(exists(`${appRoot}/runtime.manifest.json`), `Missing app runtime manifest: ${appRoot}/runtime.manifest.json`);
 }
 
 for (const serviceRoot of canonicalServiceRoots) {
   reporter.assert(exists(`${serviceRoot}/AGENTS.md`), `Missing service runtime AGENTS.md: ${serviceRoot}`);
+  reporter.assert(exists(`${serviceRoot}/runtime.manifest.json`), `Missing service runtime manifest: ${serviceRoot}/runtime.manifest.json`);
 
   const hasSource = trackedFiles.some((file) => file.startsWith(`${serviceRoot}/src/`));
   if (hasSource) {

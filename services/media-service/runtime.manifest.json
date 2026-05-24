@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Media Service",
+  "runtimeRoot": "services/media-service",
+  "actorType": ["service", "merchant"],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "media-service-plane",
+  "ownership": {
+    "sourceAuthority": "services/media-service",
+    "businessAuthority": "Reserved media upload, transformation, metadata, storage, and delivery authority.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/dependency-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Reserved Cloudflare service",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted media service logs",
+    "audit": "media mutations must record tenant, object key, checksum, and storage provider action"
+  }
+}

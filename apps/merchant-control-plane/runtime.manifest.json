@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Merchant Control Plane",
+  "runtimeRoot": "apps/merchant-control-plane",
+  "actorType": ["merchant", "store-staff"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "merchant-control-plane",
+  "ownership": {
+    "sourceAuthority": "apps/merchant-control-plane",
+    "businessAuthority": "Merchant dashboard for store configuration, CMS, products, orders, themes, analytics, and settings.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/runtime-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/ui", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/merchant-control-plane/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel merchant-control-plane project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted merchant operation logs",
+    "audit": "merchant mutations must emit tenant-scoped audit events"
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Storefront Runtime",
+  "runtimeRoot": "apps/storefront-runtime",
+  "actorType": ["shopper", "customer"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "tenant-data-plane",
+  "ownership": {
+    "sourceAuthority": "apps/storefront-runtime",
+    "businessAuthority": "Shopper storefront, public catalog, cart, checkout, customer account, and theme presentation runtime.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/theme-runtime-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/storefront-runtime/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel storefront-runtime project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted storefront server and edge logs",
+    "audit": "customer mutations and checkout actions must be audit-correlated through backend services"
+  }
+}

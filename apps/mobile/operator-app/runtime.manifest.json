@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Mobile Operator App",
+  "runtimeRoot": "apps/mobile/operator-app",
+  "actorType": ["platform-operator"],
+  "runtimeCategory": "flutter-app",
+  "runtimeClassification": "mobile-platform-operations-control-plane",
+  "ownership": {
+    "sourceAuthority": "apps/mobile/operator-app",
+    "businessAuthority": "Native platform operator scaffold for controlled super-admin and operational oversight workflows.",
+    "governanceDocs": ["docs/governance/mobile-governance.md", "docs/governance/platform-operations-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["letbuyy_core", "letbuyy_models", "letbuyy_services", "letbuyy_ui_kit"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Mobile app stores",
+    "config": ["apps/mobile/operator-app/pubspec.yaml"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/mobile.schema.json",
+    "template": "config/env/templates/mobile.dart-defines.example",
+    "secretStore": "mobile CI dart-define environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "redacted mobile operator logs and backend-correlated request IDs",
+    "audit": "privileged operator actions require immutable audit events"
+  }
+}

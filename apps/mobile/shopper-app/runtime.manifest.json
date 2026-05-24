@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Mobile Shopper App",
+  "runtimeRoot": "apps/mobile/shopper-app",
+  "actorType": ["shopper", "customer"],
+  "runtimeCategory": "flutter-app",
+  "runtimeClassification": "mobile-customer-runtime",
+  "ownership": {
+    "sourceAuthority": "apps/mobile/shopper-app",
+    "businessAuthority": "Reserved mobile shopper runtime for customer browsing, cart, checkout, account, and order flows.",
+    "governanceDocs": ["docs/governance/mobile-governance.md", "docs/governance/runtime-boundaries.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["letbuyy_core", "letbuyy_models", "letbuyy_services", "letbuyy_ui_kit"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Mobile app stores",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/mobile.schema.json",
+    "template": "config/env/templates/mobile.dart-defines.example",
+    "secretStore": "mobile CI dart-define environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "redacted mobile client logs and backend-correlated request IDs",
+    "audit": "customer mutations must be audit-correlated through backend APIs"
+  }
+}

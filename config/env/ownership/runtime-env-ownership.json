@@ -1,0 +1,59 @@
+{
+  "$schema": "../schemas/runtime-env-ownership.schema.json",
+  "nextApp": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel project environment",
+    "owners": [
+      "apps/storefront-runtime",
+      "apps/merchant-control-plane",
+      "apps/identity-platform",
+      "apps/app-marketplace",
+      "apps/theme-marketplace",
+      "apps/marketing-site",
+      "apps/platform-console",
+      "apps/platform-operations-portal"
+    ],
+    "rules": [
+      "No tracked .env files.",
+      "NEXT_PUBLIC_* values are public and must not contain secrets.",
+      "Service-role secrets are server-only."
+    ]
+  },
+  "worker": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets",
+    "owners": [
+      "services/api-gateway",
+      "services/webhook-service",
+      "services/checkout-runtime",
+      "services/queue-workers",
+      "services/notification-service",
+      "services/search-service",
+      "services/media-service",
+      "services/analytics-pipeline",
+      "services/event-bus"
+    ],
+    "rules": [
+      ".dev.vars is local-only.",
+      "Wrangler bindings are service-owned.",
+      "Provider webhook secrets are never committed."
+    ]
+  },
+  "mobile": {
+    "schema": "config/env/schemas/mobile.schema.json",
+    "template": "config/env/templates/mobile.dart-defines.example",
+    "secretStore": "Mobile CI dart-define and platform secret injection",
+    "owners": [
+      "apps/mobile/shopper-app",
+      "apps/mobile/merchant-app",
+      "apps/mobile/operator-app"
+    ],
+    "rules": [
+      "No provider secret keys in Flutter source.",
+      "Only public endpoint and anon client values may be passed to app builds.",
+      "Mobile build artifacts and generated platform caches remain ignored."
+    ]
+  }
+}

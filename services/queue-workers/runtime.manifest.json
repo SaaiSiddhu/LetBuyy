@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Queue Workers",
+  "runtimeRoot": "services/queue-workers",
+  "actorType": ["service"],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "async-worker-plane",
+  "ownership": {
+    "sourceAuthority": "services/queue-workers",
+    "businessAuthority": "Reserved background queue worker authority for asynchronous commerce jobs.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/observability-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Reserved Cloudflare Queues",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted queue worker logs",
+    "audit": "job side effects must preserve event IDs and retry state"
+  }
+}

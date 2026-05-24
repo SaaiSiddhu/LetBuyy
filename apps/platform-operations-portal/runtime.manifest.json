@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Platform Operations Portal",
+  "runtimeRoot": "apps/platform-operations-portal",
+  "actorType": ["platform-employee"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "platform-operations-control-plane",
+  "ownership": {
+    "sourceAuthority": "apps/platform-operations-portal",
+    "businessAuthority": "Employee operations surface for support, operational queues, marketing workflows, store and user review, and invites.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/platform-operations-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/ui", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/platform-operations-portal/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel platform-operations-portal project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted operations workflow logs",
+    "audit": "employee workflow actions require role-scoped audit events"
+  }
+}

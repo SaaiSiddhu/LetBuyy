@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Event Bus",
+  "runtimeRoot": "services/event-bus",
+  "actorType": ["service"],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "event-service-plane",
+  "ownership": {
+    "sourceAuthority": "services/event-bus",
+    "businessAuthority": "Reserved internal event transport authority for commerce domain events and async workflow fanout.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/observability-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts"],
+  "deploymentAuthority": {
+    "platform": "Reserved event service",
+    "config": []
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted event bus logs",
+    "audit": "event publication must retain event ID, tenant, producer, and consumer acknowledgement state"
+  }
+}

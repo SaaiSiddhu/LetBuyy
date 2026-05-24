@@ -1,0 +1,32 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Marketing Site",
+  "runtimeRoot": "apps/marketing-site",
+  "actorType": ["visitor", "prospect"],
+  "runtimeCategory": "next-app",
+  "runtimeClassification": "public-marketing-plane",
+  "ownership": {
+    "sourceAuthority": "apps/marketing-site",
+    "businessAuthority": "Public LetBuyy marketing, pricing, product narrative, and conversion routing.",
+    "governanceDocs": ["docs/governance/runtime-boundaries.md", "docs/governance/runtime-governance.md"]
+  },
+  "allowedDependencies": {
+    "workspacePackages": ["@letbuyy/api-types", "@letbuyy/utils"],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": ["apps/*", "services/*", "legacy/*", "infrastructure/*", "generated-artifacts", "auth-pages"],
+  "deploymentAuthority": {
+    "platform": "Vercel",
+    "config": ["apps/marketing-site/next.config.ts"]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/next-app.schema.json",
+    "template": "config/env/templates/next-app.env.example",
+    "secretStore": "Vercel marketing-site project environment"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted marketing conversion logs",
+    "audit": "marketing has no authority over authenticated account mutations"
+  }
+}
