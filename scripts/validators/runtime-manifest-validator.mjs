@@ -16,6 +16,13 @@ const requiredStringFields = [
   "runtimeRoot",
   "runtimeCategory",
   "runtimeClassification",
+  "orchestrationAuthority",
+  "eventAuthority",
+  "workflowAuthority",
+  "queryAuthority",
+  "compositionAuthority",
+  "executionOwnership",
+  "providerOwnership",
 ];
 
 const requiredObjectFields = [
@@ -120,6 +127,28 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
     reporter.assert(
       typeof executionAuthority?.[field] === "string" && executionAuthority[field].trim().length > 0,
       `Runtime manifest executionAuthority.${field} must be a non-empty string: ${manifestPath}`,
+    );
+  }
+
+  if (runtimeRoot.startsWith("apps/")) {
+    reporter.assert(
+      /application-services|runtime-composition|none|delegate/i.test(manifest.workflowAuthority),
+      `App manifest workflowAuthority must delegate workflow ownership out of the app: ${manifestPath}`,
+    );
+    reporter.assert(
+      /none|service|infrastructure adapter|provider/i.test(manifest.providerOwnership),
+      `App manifest providerOwnership must make direct provider ownership unavailable: ${manifestPath}`,
+    );
+  }
+
+  if (runtimeRoot.startsWith("services/")) {
+    reporter.assert(
+      /execution|transport|worker|webhook|queue|scheduler|handler/i.test(manifest.executionOwnership),
+      `Service manifest executionOwnership must describe execution-container authority: ${manifestPath}`,
+    );
+    reporter.assert(
+      /application-services|packages\/application-services|delegate/i.test(manifest.workflowAuthority),
+      `Service manifest workflowAuthority must delegate workflows to application-services: ${manifestPath}`,
     );
   }
 

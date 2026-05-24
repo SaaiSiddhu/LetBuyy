@@ -50,5 +50,12 @@
     "eventOwnership": "Owns runtime event ingestion, dispatch, acknowledgement, and handler execution for declared service responsibilities.",
     "queryOwnership": "May execute service-side read models through application-services or runtime-composition contracts.",
     "compositionOwnership": "No UI composition authority; composes execution handlers and response envelopes only."
-  }
+  },
+  "orchestrationAuthority": "Transport and handler invocation only; business orchestration delegates to packages/application-services and event flow delegates to packages/orchestration.",
+  "eventAuthority": "Owns runtime event ingress, handler execution, acknowledgement, and correlation propagation for this service boundary; event contracts live in packages/orchestration and packages/event-core.",
+  "workflowAuthority": "Workflows, use cases, sequencing, and cross-domain coordination are owned by packages/application-services, not this runtime.",
+  "queryAuthority": "Executes service-side reads through application-services or runtime-composition contracts; does not own cross-domain projection assembly.",
+  "compositionAuthority": "Owns API, worker, webhook, scheduler, queue, and response-envelope composition only; no UI or business workflow composition.",
+  "executionOwnership": "Execution container for APIs, workers, schedulers, queues, webhooks, event handlers, transport, and runtime bootstrapping only.",
+  "providerOwnership": "May bind packages/infrastructure adapters to deployment secrets and runtime bindings; direct provider SDK imports are forbidden outside packages/infrastructure."
 }

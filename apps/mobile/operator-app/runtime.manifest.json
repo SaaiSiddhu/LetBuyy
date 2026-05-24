@@ -49,5 +49,12 @@
     "eventOwnership": "May forward correlation IDs and display event-derived state; does not own durable event processing.",
     "queryOwnership": "May consume runtime-composition query layers and API responses; page-level read aggregation must migrate to packages/runtime-composition.",
     "compositionOwnership": "Owns user-facing runtime composition and presentation for its actor boundary."
-  }
+  },
+  "orchestrationAuthority": "No durable business orchestration; routes and pages delegate workflows to packages/application-services and read composition to packages/runtime-composition.",
+  "eventAuthority": "No durable event ownership; may propagate correlation metadata and render event-derived state received from service APIs.",
+  "workflowAuthority": "Workflows, use cases, sequencing, and cross-domain coordination are owned by packages/application-services, not this runtime.",
+  "queryAuthority": "Consumes packages/runtime-composition query layers and service API responses; does not own aggregation pipelines or projection assembly.",
+  "compositionAuthority": "Owns actor-specific rendering, routing, presentation adapters, and runtime composition only.",
+  "executionOwnership": "Routing, rendering, runtime adapters, presentation transport, and runtime hooks only.",
+  "providerOwnership": "None; provider execution must go through services or packages/infrastructure adapters consumed behind approved runtime-composition or service API boundaries."
 }

@@ -13,6 +13,13 @@
     "ownership",
     "allowedDependencies",
     "forbiddenDependencies",
+    "orchestrationAuthority",
+    "eventAuthority",
+    "workflowAuthority",
+    "queryAuthority",
+    "compositionAuthority",
+    "executionOwnership",
+    "providerOwnership",
     "executionAuthority",
     "deploymentAuthority",
     "environmentAuthority",
@@ -68,6 +75,13 @@
       "minItems": 1,
       "uniqueItems": true
     },
+    "orchestrationAuthority": { "type": "string", "minLength": 1 },
+    "eventAuthority": { "type": "string", "minLength": 1 },
+    "workflowAuthority": { "type": "string", "minLength": 1 },
+    "queryAuthority": { "type": "string", "minLength": 1 },
+    "compositionAuthority": { "type": "string", "minLength": 1 },
+    "executionOwnership": { "type": "string", "minLength": 1 },
+    "providerOwnership": { "type": "string", "minLength": 1 },
     "executionAuthority": {
       "type": "object",
       "required": [

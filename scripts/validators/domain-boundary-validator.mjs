@@ -139,11 +139,11 @@ for (const file of runtimeRouteSchemaAuthorities) {
   );
 }
 
-const productService = readFile("services/api-gateway/src/services/product.service.ts");
+const productService = readFile("services/api-gateway/src/execution/product-execution.adapter.ts");
 reporter.assert(productService.includes("@letbuyy/commerce-core"), "Product service command contracts must come from @letbuyy/commerce-core");
 reporter.assert(!/\binterface\s+CreateProductInput\b|\binterface\s+ProductVariantInput\b|\binterface\s+ProductOptionInput\b/.test(productService), "Product service must not own commerce command interfaces locally");
 
-const orderService = readFile("services/api-gateway/src/services/order.service.ts");
+const orderService = readFile("services/api-gateway/src/execution/order-execution.adapter.ts");
 reporter.assert(orderService.includes("@letbuyy/checkout-core"), "Order service command contracts must come from @letbuyy/checkout-core");
 reporter.assert(!/\binterface\s+(CreateOrderInput|FulfillOrderInput|RefundOrderInput|CompleteRefundInput|OrderItem|RefundLine|FulfillmentLine)\b/.test(orderService), "Order service must not own checkout command interfaces locally");
 
