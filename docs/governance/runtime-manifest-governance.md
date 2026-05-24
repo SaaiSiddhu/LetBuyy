@@ -22,13 +22,20 @@ Required fields:
 - `queryAuthority`
 - `compositionAuthority`
 - `executionOwnership`
+- `distributedExecutionOwnership`
+- `queueOwnership`
 - `providerOwnership`
 - `executionBoundaries`
 - `asyncExecutionOwnership`
 - `observabilityOwnership`
 - `workflowRecoveryOwnership`
 - `replayOwnership`
+- `checkpointOwnership`
 - `projectionOwnership`
+- `cacheOwnership`
+- `resilienceOwnership`
+- `regionalOwnership`
+- `tenantScalingOwnership`
 - `deploymentAuthority`
 - `environmentAuthority`
 - `observabilityAuthority`
@@ -38,8 +45,8 @@ Required fields:
 - Apps under `apps/` own user-facing runtime composition, rendering, routing, presentation adapters, and transport hooks only.
 - Mobile apps under `apps/mobile/` own native actor surfaces.
 - Services under `services/` own backend execution containers: APIs, workers, schedulers, queues, webhooks, event handlers, and runtime bootstrapping.
-- Application workflow authority belongs to `packages/application-services`; event execution primitives belong to `packages/orchestration`; query aggregation belongs to `packages/runtime-composition`; provider SDK execution belongs to `packages/infrastructure`.
-- Recovery, replay, async, observability, and projection ownership fields must match actual runtime behavior. Apps must delegate these authorities; services may execute containers only when package-owned policy describes the work.
+- Application workflow authority belongs to `packages/application-services`; durable distributed runtime contracts belong to `packages/distributed-runtime`; event orchestration policy belongs to `packages/orchestration`; projection persistence belongs to `packages/projection-runtime`; query aggregation belongs to `packages/runtime-composition`; provider SDK execution belongs to `packages/infrastructure`.
+- Recovery, replay, async, observability, projection, queue, checkpoint, cache, resilience, regional, and tenant-scaling ownership fields must match actual runtime behavior. Apps must delegate these authorities; services may execute containers only when package-owned policy describes the work.
 - Runtime manifests do not create runtime source authority by themselves; they describe and constrain existing canonical roots.
 
 ## Enforcement
@@ -52,7 +59,8 @@ Required fields:
 - environment schema ownership is invalid
 - governance docs referenced by the manifest do not exist
 - declared internal workspace package dependencies do not match `allowedDependencies.workspacePackages`
-- execution ownership fields are missing or do not match app/service runtime category
+- execution and Phase 3 distributed ownership fields are missing or do not match app/service runtime category
+- queue, checkpoint, cache, resilience, regional, tenant scaling, replay, or projection ownership drifts from the package-owned execution model
 - platform console and platform operations portal actor boundaries blur
 
 ## Change Process

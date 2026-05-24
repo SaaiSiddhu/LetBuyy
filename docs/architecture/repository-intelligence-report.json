@@ -1,14 +1,14 @@
 {
-  "generatedAt": "2026-05-24T22:53:23.719Z",
-  "sourceFiles": 1299,
-  "packages": 31,
-  "migrations": 58,
+  "generatedAt": "2026-05-24T23:23:42.790Z",
+  "sourceFiles": 1348,
+  "packages": 33,
+  "migrations": 59,
   "nextRoutes": 270,
   "nextApiRoutes": 118,
   "honoRouteFiles": 30,
-  "envNames": 102,
+  "envNames": 103,
   "duplicateMigrationNumbers": [],
   "topicDocs": 65,
   "appAgents": 11,
-  "packageAgents": 26
+  "packageAgents": 32
 }
