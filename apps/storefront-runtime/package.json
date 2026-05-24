@@ -1,5 +1,5 @@
 {
-  "name": "@letbuyy/storefront",
+  "name": "@letbuyy/storefront-runtime",
   "version": "0.1.0",
   "private": true,
   "scripts": {

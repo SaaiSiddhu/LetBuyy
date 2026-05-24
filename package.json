@@ -6,6 +6,7 @@
         "build": "turbo build",
         "dev": "turbo dev --concurrency 15",
         "lint": "turbo lint",
+        "validate:architecture": "node scripts/validate-architecture.mjs",
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {

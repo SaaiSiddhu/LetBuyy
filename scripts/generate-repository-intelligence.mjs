@@ -139,122 +139,122 @@ const appTargets = [
   {
     output: "apps/admin/AGENTS.md",
     name: "Admin Alias",
-    actual: "apps/web/consumer/admin",
+    actual: "apps/merchant-control-plane",
     purpose: "Compatibility AGENTS for the merchant/admin dashboard. Do not add source code under apps/admin.",
   },
   {
     output: "apps/storefront/AGENTS.md",
     name: "Storefront Alias",
-    actual: "apps/web/consumer/storefront",
+    actual: "apps/storefront-runtime",
     purpose: "Compatibility AGENTS for public storefront rendering, checkout, accounts, and theme previews.",
   },
   {
     output: "apps/merchant/AGENTS.md",
     name: "Merchant Alias",
-    actual: "apps/web/consumer/admin",
+    actual: "apps/merchant-control-plane",
     purpose: "Merchant operating console alias. Source lives in consumer/admin.",
   },
   {
     output: "apps/internal/AGENTS.md",
     name: "Internal Alias",
-    actual: "apps/web/administrative",
+    actual: "apps/platform-console",
     purpose: "Internal platform governance alias covering console and team apps.",
   },
   {
     output: "apps/auth/AGENTS.md",
     name: "Auth Alias",
-    actual: "apps/web/consumer/accounts",
+    actual: "apps/identity-platform",
     purpose: "Identity and onboarding portal alias. All platform auth pages belong in accounts.",
   },
   {
     output: "apps/analytics/AGENTS.md",
     name: "Analytics Alias",
-    actual: "backend/workers/api/src/routes/analytics.ts",
+    actual: "services/api-gateway/src/routes/analytics.ts",
     purpose: "Analytics system ownership alias spanning worker analytics and merchant dashboards.",
   },
   {
     output: "apps/checkout/AGENTS.md",
     name: "Checkout Alias",
-    actual: "apps/web/consumer/storefront/src/app/store/[subdomain]/checkout",
+    actual: "apps/storefront-runtime/src/app/store/[subdomain]/checkout",
     purpose: "Checkout ownership alias spanning storefront checkout pages and payment APIs.",
   },
   {
-    output: "apps/web/consumer/accounts/AGENTS.md",
-    name: "Accounts",
-    actual: "apps/web/consumer/accounts",
+    output: "apps/identity-platform/AGENTS.md",
+    name: "Identity Platform",
+    actual: "apps/identity-platform",
     purpose: "All merchant authentication, signup, password, OTP, OAuth callback, session, onboarding and store selection UI.",
   },
   {
-    output: "apps/web/consumer/admin/AGENTS.md",
-    name: "Admin",
-    actual: "apps/web/consumer/admin",
+    output: "apps/merchant-control-plane/AGENTS.md",
+    name: "Merchant Control Plane",
+    actual: "apps/merchant-control-plane",
     purpose: "Per-store merchant dashboard, adaptive CMS, products, orders, settings, themes, analytics, and site-type-specific operations.",
   },
   {
-    output: "apps/web/consumer/storefront/AGENTS.md",
-    name: "Storefront",
-    actual: "apps/web/consumer/storefront",
+    output: "apps/storefront-runtime/AGENTS.md",
+    name: "Storefront Runtime",
+    actual: "apps/storefront-runtime",
     purpose: "Wildcard tenant storefronts, public product catalog, customer accounts, cart, checkout, policy pages, and theme previews.",
   },
   {
-    output: "apps/web/consumer/landing/AGENTS.md",
-    name: "Landing",
-    actual: "apps/web/consumer/landing",
+    output: "apps/marketing-site/AGENTS.md",
+    name: "Marketing Site",
+    actual: "apps/marketing-site",
     purpose: "Public marketing site, pricing, and conversion flow. Must not host auth pages.",
   },
   {
-    output: "apps/web/consumer/app-store/AGENTS.md",
-    name: "App Store",
-    actual: "apps/web/consumer/app-store",
+    output: "apps/app-marketplace/AGENTS.md",
+    name: "App Marketplace",
+    actual: "apps/app-marketplace",
     purpose: "Extension marketplace, developer app submission, app search, install routes and app review APIs.",
   },
   {
-    output: "apps/web/consumer/theme-marketplace/AGENTS.md",
+    output: "apps/theme-marketplace/AGENTS.md",
     name: "Theme Marketplace",
-    actual: "apps/web/consumer/theme-marketplace",
+    actual: "apps/theme-marketplace",
     purpose: "Theme catalog, theme detail pages, checkout, Supabase-backed theme service, and theme acquisition workflow.",
   },
   {
-    output: "apps/web/administrative/console/AGENTS.md",
-    name: "Console",
-    actual: "apps/web/administrative/console",
+    output: "apps/platform-console/AGENTS.md",
+    name: "Platform Console",
+    actual: "apps/platform-console",
     purpose: "Super admin scaffold for platform operations, users, stores, subscriptions, analytics, employees, audit logs, and MFA.",
   },
   {
-    output: "apps/web/administrative/team/AGENTS.md",
-    name: "Team",
-    actual: "apps/web/administrative/team",
+    output: "apps/platform-operations-portal/AGENTS.md",
+    name: "Platform Operations Portal",
+    actual: "apps/platform-operations-portal",
     purpose: "Employee portal scaffold for support, operations, users, stores, marketing and invite flows.",
   },
   {
-    output: "apps/flutter/builder/AGENTS.md",
-    name: "Flutter Builder",
-    actual: "apps/flutter/builder",
+    output: "apps/mobile/merchant-app/AGENTS.md",
+    name: "Mobile Merchant App",
+    actual: "apps/mobile/merchant-app",
     purpose: "Native/mobile store builder, editor, dashboard, products, themes, preview systems and merchant operations.",
   },
   {
-    output: "apps/flutter/super_admin/AGENTS.md",
-    name: "Flutter Super Admin",
-    actual: "apps/flutter/super_admin",
+    output: "apps/mobile/operator-app/AGENTS.md",
+    name: "Mobile Operator App",
+    actual: "apps/mobile/operator-app",
     purpose: "Native super admin scaffold.",
   },
   {
-    output: "apps/flutter/team/AGENTS.md",
-    name: "Flutter Team",
-    actual: "apps/flutter/team",
+    output: "apps/mobile/operator-team-app/AGENTS.md",
+    name: "Mobile Operator Team App",
+    actual: "apps/mobile/operator-team-app",
     purpose: "Native team scaffold.",
   },
 ];
 
 const packageTargets = [
   { output: "packages/ui/AGENTS.md", name: "UI Alias", actual: "packages/typescript/ui", purpose: "Shared web UI component alias." },
-  { output: "packages/db/AGENTS.md", name: "Database Alias", actual: "backend/supabase", purpose: "Database schema, migrations, RLS, seed and Supabase config ownership alias." },
-  { output: "packages/api/AGENTS.md", name: "API Alias", actual: "backend/workers/api", purpose: "Cloudflare Hono API worker ownership alias." },
+  { output: "packages/db/AGENTS.md", name: "Database Alias", actual: "database/supabase", purpose: "Database schema, migrations, RLS, seed and Supabase config ownership alias." },
+  { output: "packages/api/AGENTS.md", name: "API Alias", actual: "services/api-gateway", purpose: "Cloudflare Hono API worker ownership alias." },
   { output: "packages/shared/AGENTS.md", name: "Shared Alias", actual: "packages", purpose: "Shared TypeScript and Dart contracts, utilities, services, and models." },
   { output: "packages/config/AGENTS.md", name: "Config Alias", actual: ".", purpose: "Root workspace, Vercel, Turborepo, pnpm, Cloudflare, Supabase and Terraform config governance." },
   { output: "packages/auth/AGENTS.md", name: "Auth Alias", actual: "packages/typescript/utils/src/auth.ts", purpose: "Shared auth helper and platform identity governance alias." },
-  { output: "packages/analytics/AGENTS.md", name: "Analytics Alias", actual: "backend/workers/api/src/routes/analytics.ts", purpose: "Shared analytics contract and event governance alias." },
-  { output: "packages/payments/AGENTS.md", name: "Payments Alias", actual: "backend/workers/api/src/routes/payments.ts", purpose: "Payment route, checkout provider and webhook governance alias." },
+  { output: "packages/analytics/AGENTS.md", name: "Analytics Alias", actual: "services/api-gateway/src/routes/analytics.ts", purpose: "Shared analytics contract and event governance alias." },
+  { output: "packages/payments/AGENTS.md", name: "Payments Alias", actual: "services/api-gateway/src/routes/payments.ts", purpose: "Payment route, checkout provider and webhook governance alias." },
   { output: "packages/typescript/ui/AGENTS.md", name: "TypeScript UI", actual: "packages/typescript/ui", purpose: "Shared Button, Input, DataTable package and design-system extraction point." },
   { output: "packages/typescript/utils/AGENTS.md", name: "TypeScript Utils", actual: "packages/typescript/utils", purpose: "Shared Supabase, API and auth utility package." },
   { output: "packages/typescript/api-types/AGENTS.md", name: "API Types", actual: "packages/typescript/api-types", purpose: "Shared TypeScript domain and API contract package." },
@@ -365,20 +365,21 @@ function firstLines(text, count = 6) {
 }
 
 function classifyArea(file) {
-  if (file.startsWith("apps/web/consumer/accounts")) return "consumer auth app";
-  if (file.startsWith("apps/web/consumer/admin")) return "consumer admin merchant app";
-  if (file.startsWith("apps/web/consumer/storefront")) return "consumer storefront app";
-  if (file.startsWith("apps/web/consumer/landing")) return "marketing landing app";
-  if (file.startsWith("apps/web/consumer/app-store")) return "app marketplace";
-  if (file.startsWith("apps/web/consumer/theme-marketplace")) return "theme marketplace";
-  if (file.startsWith("apps/web/administrative/console")) return "administrative console";
-  if (file.startsWith("apps/web/administrative/team")) return "administrative team portal";
-  if (file.startsWith("apps/flutter/builder")) return "flutter builder";
-  if (file.startsWith("apps/flutter/super_admin")) return "flutter super admin";
-  if (file.startsWith("apps/flutter/team")) return "flutter team";
-  if (file.startsWith("backend/workers/api")) return "cloudflare api worker";
-  if (file.startsWith("backend/workers/webhooks")) return "cloudflare webhooks worker";
-  if (file.startsWith("backend/supabase")) return "supabase database";
+  if (file.startsWith("apps/identity-platform")) return "identity platform";
+  if (file.startsWith("apps/merchant-control-plane")) return "merchant control plane";
+  if (file.startsWith("apps/storefront-runtime")) return "storefront runtime";
+  if (file.startsWith("apps/marketing-site")) return "marketing site";
+  if (file.startsWith("apps/app-marketplace")) return "app marketplace";
+  if (file.startsWith("apps/theme-marketplace")) return "theme marketplace";
+  if (file.startsWith("apps/platform-console")) return "platform console";
+  if (file.startsWith("apps/platform-operations-portal")) return "platform operations portal";
+  if (file.startsWith("apps/mobile/merchant-app")) return "mobile merchant app";
+  if (file.startsWith("apps/mobile/operator-app")) return "mobile operator app";
+  if (file.startsWith("apps/mobile/operator-team-app")) return "mobile operator team app";
+  if (file.startsWith("services/api-gateway")) return "api gateway service";
+  if (file.startsWith("services/webhook-service")) return "webhook service";
+  if (file.startsWith("database/supabase")) return "supabase database";
+  if (file.startsWith("legacy/firebase")) return "firebase legacy";
   if (file.startsWith("packages/typescript/ui")) return "shared web ui package";
   if (file.startsWith("packages/typescript/utils")) return "shared web utils package";
   if (file.startsWith("packages/typescript/api-types")) return "shared api types package";
@@ -412,19 +413,19 @@ function routeFromNextAppFile(file) {
 
 function appRootForFile(file) {
   const appRoots = [
-    "apps/web/consumer/accounts",
-    "apps/web/consumer/admin",
-    "apps/web/consumer/storefront",
-    "apps/web/consumer/landing",
-    "apps/web/consumer/app-store",
-    "apps/web/consumer/theme-marketplace",
-    "apps/web/administrative/console",
-    "apps/web/administrative/team",
-    "apps/flutter/builder",
-    "apps/flutter/super_admin",
-    "apps/flutter/team",
-    "backend/workers/api",
-    "backend/workers/webhooks",
+    "apps/identity-platform",
+    "apps/merchant-control-plane",
+    "apps/storefront-runtime",
+    "apps/marketing-site",
+    "apps/app-marketplace",
+    "apps/theme-marketplace",
+    "apps/platform-console",
+    "apps/platform-operations-portal",
+    "apps/mobile/merchant-app",
+    "apps/mobile/operator-app",
+    "apps/mobile/operator-team-app",
+    "services/api-gateway",
+    "services/webhook-service",
     "packages/typescript/ui",
     "packages/typescript/utils",
     "packages/typescript/api-types",
@@ -594,10 +595,10 @@ const nextConfigs = sourceFiles.filter((file) => file.endsWith("next.config.ts")
 const middlewareFiles = sourceFiles.filter((file) => /middleware\.(ts|js)$/.test(file));
 const wranglerFiles = sourceFiles.filter((file) => file.endsWith("wrangler.toml"));
 const terraformFiles = sourceFiles.filter((file) => file.endsWith(".tf"));
-const migrationFiles = sourceFiles.filter((file) => file.startsWith("backend/supabase/migrations/") && file.endsWith(".sql")).sort();
+const migrationFiles = sourceFiles.filter((file) => file.startsWith("database/supabase/migrations/") && file.endsWith(".sql")).sort();
 const nextRoutes = fileSummaries.filter((summary) => summary.nextRoute);
 const nextApiRoutes = fileSummaries.filter((summary) => summary.file.includes("/src/app/api/") && summary.file.endsWith("/route.ts"));
-const honoRouteFiles = fileSummaries.filter((summary) => summary.file.startsWith("backend/workers/api/src/routes/"));
+const honoRouteFiles = fileSummaries.filter((summary) => summary.file.startsWith("services/api-gateway/src/routes/"));
 const envNames = unique(fileSummaries.flatMap((summary) => summary.envNames));
 const appRoots = unique(fileSummaries.map((summary) => summary.appRoot).filter((item) => item !== "."));
 const useClientCount = fileSummaries.filter((summary) => summary.flags.includes("client component")).length;
@@ -630,7 +631,7 @@ for (const key of Object.keys(sqlTotals)) sqlTotals[key] = unique(sqlTotals[key]
 
 const envFiles = allFiles.filter((file) => /(^|\/)\.env|\.env(\.|$)|all\.env/.test(file));
 const trackedGeneratedArtifacts = [];
-for (const file of ["backend/workers/api/dist/index.js", "backend/workers/api/dist/index.js.map", "backend/workers/api/dist/README.md"]) {
+for (const file of ["services/api-gateway/dist/index.js", "services/api-gateway/dist/index.js.map", "services/api-gateway/dist/README.md"]) {
   if (allFiles.includes(file)) trackedGeneratedArtifacts.push(file);
 }
 
@@ -642,7 +643,7 @@ function topicKeywordMatcher(topic, summary) {
   const keywordMap = {
     architecture: ["architecture", "layout", "config", "package", "turbo", "workspace", "routes"],
     backend: ["backend", "worker", "hono", "route", "service", "supabase"],
-    frontend: ["apps/web", "page.tsx", "component", "tsx", "globals.css"],
+    frontend: ["apps/", "page.tsx", "component", "tsx", "globals.css"],
     ui: ["components", "ui", "button", "input", "card", "theme"],
     ux: ["checkout", "dashboard", "page.tsx", "loading", "empty", "error"],
     auth: ["auth", "login", "signup", "session", "otp", "password", "jwt"],
@@ -650,7 +651,7 @@ function topicKeywordMatcher(topic, summary) {
     database: ["migration", "supabase", ".sql", "table", "policy"],
     schemas: ["schema", "zod", "migration", "api-types"],
     analytics: ["analytics", "event", "metric", "dashboard"],
-    cloudflare: ["cloudflare", "worker", "wrangler", "r2", "kv", "dns.tf"],
+    cloudflare: ["cloudflare", "worker", "wrangler", "r2", "kv", "infrastructure/dns"],
     vercel: ["vercel", "next.config", ".vercel"],
     routing: ["middleware", "route.ts", "page.tsx", "[subdomain]", "[store]"],
     deployment: ["vercel", "wrangler", "terraform", "turbo", "build"],
@@ -743,7 +744,7 @@ function buildRootAgents() {
   lines.push("");
   lines.push("## Repository Applications");
   lines.push("");
-  for (const target of appTargets.filter((target) => !target.output.startsWith("apps/") || target.output.startsWith("apps/web") || target.output.startsWith("apps/flutter"))) {
+  for (const target of appTargets.filter((target) => !["apps/admin/AGENTS.md", "apps/storefront/AGENTS.md", "apps/merchant/AGENTS.md", "apps/internal/AGENTS.md", "apps/auth/AGENTS.md", "apps/analytics/AGENTS.md", "apps/checkout/AGENTS.md"].includes(target.output))) {
     const files = listFilesUnder(target.actual, sourceFiles);
     lines.push(`- ${target.name}: \`${target.actual}\` (${files.length} scanned files). ${target.purpose}`);
   }
@@ -760,7 +761,7 @@ function buildRootAgents() {
   lines.push("- Preserve tenant isolation. Every merchant-owned record must resolve through `site_id` or an explicit store ownership check.");
   lines.push("- Keep authentication centralized in the accounts app UI and API worker services. Landing must not host login/signup pages except redirects.");
   lines.push("- API routes must use `/v1` in the Hono worker and should use `/api/v1` at app boundaries when exposed through Next route handlers.");
-  lines.push("- Use Zod schemas for inbound API payloads. The worker already contains `backend/workers/api/src/schemas/*`; add new schemas there before adding handlers.");
+  lines.push("- Use Zod schemas for inbound API payloads. The API gateway already contains `services/api-gateway/src/schemas/*`; add new schemas there before adding handlers.");
   lines.push("- Never expose Supabase service role keys to client components. Current service-role references are server/worker files only and must remain so.");
   lines.push("- Never store auth tokens in `localStorage`. Local storage is acceptable only for non-secret UI preferences or preview-only wishlist/search state.");
   lines.push("- Payment code must recalculate prices server-side, verify provider signatures, and require idempotency for mutation/payment endpoints.");
@@ -770,7 +771,7 @@ function buildRootAgents() {
   lines.push("- Do not leave production `console.log` statements in source. The scan found " + consoleLogCount + " source files with `console.log`.");
   lines.push("- Do not add new `any` types without an explicit local type. The scan found " + anyCount + " files using `any`.");
   lines.push("- Do not hardcode payment provider key ids. The scan found " + hardcodedPaymentKeyFiles.length + " files with hardcoded Razorpay/Stripe-style key identifiers.");
-  lines.push("- Do not add generated build artifacts to git. `backend/workers/api/dist/*` is currently tracked and should be treated as generated output debt.");
+  lines.push("- Do not add generated build artifacts to git. `services/api-gateway/dist/*` must remain untracked generated output.");
   lines.push("");
   lines.push("## Architecture Boundaries");
   lines.push("");
@@ -803,12 +804,12 @@ function buildRootAgents() {
   lines.push("");
   lines.push("## Backend and API Governance");
   lines.push("");
-  lines.push("- Hono worker entrypoint: `backend/workers/api/src/index.ts`.");
+  lines.push("- Hono worker entrypoint: `services/api-gateway/src/index.ts`.");
   lines.push("- Public Hono surfaces currently mount `auth`, `contacts`, and `storefront` before global auth middleware.");
   lines.push("- Protected Hono surfaces currently mount: " + honoRouteFiles.map((summary) => path.basename(summary.file, ".ts")).sort().join(", ") + ".");
   lines.push("- Use `AppError` and `formatAppError` for known errors. Unexpected errors must log internally and return sanitized `INTERNAL_ERROR` responses.");
   lines.push("- All list endpoints require pagination; all mutation endpoints should require validation and idempotency where side effects can duplicate.");
-  lines.push("- Add business logic to services, not handlers. Existing service roots include `backend/workers/api/src/services` and app `src/lib/*service*` files.");
+  lines.push("- Add business logic to services, not handlers. Existing service roots include `services/api-gateway/src/services` and app `src/lib/*service*` files.");
   lines.push("");
   lines.push("## Auth and Session Governance");
   lines.push("");
@@ -820,7 +821,7 @@ function buildRootAgents() {
   lines.push("");
   lines.push("## Database Governance");
   lines.push("");
-  lines.push("- Migration root: `backend/supabase/migrations`.");
+  lines.push("- Migration root: `database/supabase/migrations`.");
   lines.push("- Tables detected: " + sqlTotals.tables.length + ".");
   lines.push("- Indexes detected: " + sqlTotals.indexes.length + ".");
   lines.push("- RLS-enabled table statements detected: " + sqlTotals.rlsTables.length + ".");
@@ -830,8 +831,8 @@ function buildRootAgents() {
   lines.push("## Cloudflare and Vercel Governance");
   lines.push("");
   lines.push("- Vercel install command currently removes app-local Next copies before `pnpm install`; this is a workaround and should not become app logic.");
-  lines.push("- Cloudflare Workers are configured through `backend/workers/api/wrangler.toml` and `backend/workers/webhooks/wrangler.toml`.");
-  lines.push("- Terraform DNS config lives in `infrastructure/dns.tf` and includes service records for LetBuyy subdomains.");
+  lines.push("- Cloudflare Workers are configured through `services/api-gateway/wrangler.toml` and `services/webhook-service/wrangler.toml`.");
+  lines.push("- Terraform DNS config lives in `infrastructure/dns/dns.tf` and includes service records for LetBuyy subdomains.");
   lines.push("- Wildcard tenant routing belongs to storefront middleware and Cloudflare DNS, not individual tenant Next routes.");
   lines.push("- Custom domains require ownership verification, CNAME/TXT validation, SSL issuance, tenant mapping, and takeover prevention before activation.");
   lines.push("");
@@ -873,7 +874,7 @@ function buildRootAgents() {
   lines.push(`| Package manifests | ${packages.length} | pnpm workspace plus worker packages |`);
   lines.push(`| Next app route files | ${nextRoutes.length} | Includes pages, layouts, route handlers, loading/error files |`);
   lines.push(`| Next API route handlers | ${nextApiRoutes.length} | App-local API surface still exists |`);
-  lines.push(`| Hono route modules | ${honoRouteFiles.length} | Worker route modules under backend/workers/api/src/routes |`);
+  lines.push(`| Hono route modules | ${honoRouteFiles.length} | Worker route modules under services/api-gateway/src/routes |`);
   lines.push(`| Supabase migrations | ${migrationFiles.length} | Numeric prefix conflicts: ${duplicateMigrationNumbers.length} |`);
   lines.push(`| Environment variable names referenced | ${envNames.length} | Names only, no values printed |`);
   lines.push("");
@@ -893,9 +894,9 @@ function buildAppAgents(target) {
   lines.push(`Purpose: ${target.purpose}`);
   lines.push("");
   lines.push(`Actual source root: \`${target.actual}\`.`);
-  if (target.output.startsWith("apps/") && !target.output.startsWith("apps/web") && !target.output.startsWith("apps/flutter")) {
+  if (["apps/admin/AGENTS.md", "apps/storefront/AGENTS.md", "apps/merchant/AGENTS.md", "apps/internal/AGENTS.md", "apps/auth/AGENTS.md", "apps/analytics/AGENTS.md", "apps/checkout/AGENTS.md"].includes(target.output)) {
     lines.push("");
-    lines.push("This is an alias governance file required by the repository intelligence system. Do not place application source in this alias directory unless the monorepo layout is intentionally migrated.");
+    lines.push("This is an alias governance file required by the repository intelligence system. Do not place application source in this alias directory.");
   }
   lines.push("");
   lines.push("## Source Inventory");
@@ -1126,7 +1127,7 @@ function buildMasterIntelligence() {
   lines.push("");
   lines.push("- Root package manager: `pnpm@10.6.2` from root `package.json`.");
   lines.push("- Turborepo tasks: build, dev, lint, test, typecheck.");
-  lines.push("- pnpm workspace roots: web administrative apps, web consumer apps, TypeScript packages, backend workers.");
+  lines.push("- pnpm workspace roots: explicit app runtimes, mobile runtimes, TypeScript packages, and service runtimes.");
   lines.push("- Flutter/Dart workspace exists through root `pubspec.yaml`, `analysis_options.yaml`, and package/app `pubspec.yaml` files, but Dart packages are not part of pnpm workspace.");
   lines.push("- Vercel install command currently removes app-local Next copies before install, which signals dependency skew debt rather than a normal deployment primitive.");
   lines.push("");
@@ -1177,7 +1178,7 @@ function buildMasterIntelligence() {
   const storefrontMatches = fileSummaries.filter((summary) => topicKeywordMatcher("storefront", summary));
   lines.push(compactFileTable(storefrontMatches, 120));
   lines.push("");
-  lines.push("- Storefront app owns wildcard-style routes under `src/app/store/[subdomain]` and theme previews under `src/app/theme-preview/urban-kicks`.");
+  lines.push("- Storefront runtime owns wildcard-style routes under `src/app/store/[subdomain]` and theme previews under `src/app/theme-preview/urban-kicks`.");
   lines.push("- Storefront includes customer account pages, cart, checkout, orders, returns, shop, product detail, policy pages, and dynamic layout.");
   lines.push("- Storefront also carries an `urban-kicks` theme package under `consumer-storefront/stores/urban-kicks` with sections, templates, locales, dynamic pages, preview pages, CSS, and custom assets.");
   lines.push("");
@@ -1270,7 +1271,7 @@ function buildMasterIntelligence() {
   const performanceMatches = fileSummaries.filter((summary) => topicKeywordMatcher("performance", summary) || topicKeywordMatcher("caching", summary));
   lines.push(compactFileTable(performanceMatches, 90));
   lines.push("");
-  lines.push("- Performance debt includes generated worker `dist` artifacts tracked in git, localStorage-heavy preview/client flows, and unverified Lighthouse targets.");
+  lines.push("- Performance debt includes localStorage-heavy preview/client flows, missing service-level performance budgets, and unverified Lighthouse targets.");
   lines.push("- Storefront performance depends on tenant lookup caching, image optimization, ISR/cache invalidation, and minimizing hydration for commerce pages.");
   lines.push("");
   lines.push("## 13. Security Intelligence");
@@ -1374,9 +1375,9 @@ function buildMasterIntelligence() {
     lines.push(`- Data ownership note: ${/site_id|store_id|customer|order|product|inventory|subscription|media|blog|theme/i.test(`${summary.file} ${summary.leading.join(" ")}`) ? "contains commerce or tenant-owned domain language" : "no commerce entity marker in path/header"}.`);
     lines.push(`- Shared boundary note: ${summary.appRoot.startsWith("packages/") ? "shared package changes can affect multiple apps" : "app/local changes should stay within ownership boundary unless intentionally extracted"}.`);
     lines.push(`- Frontend boundary note: ${summary.file.includes("/src/app/") ? "App Router file, preserve server/client component contract" : "not under a Next app route directory"}.`);
-    lines.push(`- Worker boundary note: ${summary.file.startsWith("backend/workers/") ? "Cloudflare runtime constraints apply" : "not directly in a worker runtime"}.`);
-    lines.push(`- Database boundary note: ${summary.file.startsWith("backend/supabase/") ? "Supabase migration/config rules apply" : "not directly under Supabase database boundary"}.`);
-    lines.push(`- Mobile boundary note: ${summary.file.startsWith("apps/flutter/") || summary.file.startsWith("packages/dart/") ? "Flutter/Dart analysis and Material icon rules apply" : "not directly a Flutter/Dart runtime file"}.`);
+    lines.push(`- Worker boundary note: ${summary.file.startsWith("services/") ? "service runtime constraints apply" : "not directly in a service runtime"}.`);
+    lines.push(`- Database boundary note: ${summary.file.startsWith("database/supabase/") ? "Supabase migration/config rules apply" : "not directly under Supabase database boundary"}.`);
+    lines.push(`- Mobile boundary note: ${summary.file.startsWith("apps/mobile/") || summary.file.startsWith("packages/dart/") ? "Flutter/Dart analysis and Material icon rules apply" : "not directly a Flutter/Dart runtime file"}.`);
     lines.push(`- Deployment boundary note: ${/vercel|wrangler|terraform|dns|package\.json|turbo|workspace|pubspec|gradle/i.test(summary.file) ? "deployment or build config marker detected" : "no direct deployment config marker detected"}.`);
     lines.push(`- Observability note: ${/logger|console|request|health|monitor|analytics|event/i.test(`${summary.file} ${summary.leading.join(" ")}`) ? "observability/event/logging marker detected" : "no direct observability marker detected"}.`);
     lines.push(`- Caching note: ${/cache|redis|upstash|revalidate|isr|kv/i.test(`${summary.file} ${summary.leading.join(" ")}`) ? "cache behavior may be involved" : "no direct cache marker detected"}.`);

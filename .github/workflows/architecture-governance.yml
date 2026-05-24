@@ -1,0 +1,36 @@
+name: Architecture Governance
+
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "services/**"
+      - "packages/**"
+      - "database/**"
+      - "infrastructure/**"
+      - "docs/governance/**"
+      - "scripts/validate-architecture.mjs"
+      - "package.json"
+      - "pnpm-workspace.yaml"
+      - ".github/CODEOWNERS"
+      - ".github/workflows/architecture-governance.yml"
+  push:
+    branches:
+      - main
+      - master
+      - "codex/**"
+
+jobs:
+  validate-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate architecture
+        run: node scripts/validate-architecture.mjs
