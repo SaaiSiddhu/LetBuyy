@@ -16,7 +16,8 @@ Purpose: Provider SDK, external API, storage, queue, cache, analytics, search, a
 ## Runtime Authority
 
 - This package does not deploy independently.
-- Apps and services may depend on adapter exports to avoid direct provider SDK coupling.
+- Services and approved execution packages may depend on adapter exports to avoid direct provider SDK coupling.
+- Apps must not import this package directly; apps consume provider-backed behavior through service APIs or runtime-composition contracts.
 
 ## Migration Notes
 

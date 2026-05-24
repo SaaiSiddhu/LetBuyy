@@ -1,6 +1,6 @@
 # Orchestration Governance
 
-Status: Phase 2 foundation.
+Status: Phase 2.5 event execution foundation.
 
 Orchestration primitives live in `packages/orchestration`.
 
@@ -15,6 +15,10 @@ Orchestration primitives live in `packages/orchestration`.
 - Saga definitions.
 - Retry and dead-letter policies.
 - Event contract metadata.
+- Event router and subscription contracts.
+- Event dispatcher execution contracts.
+- Outbox processing contracts.
+- Execution trace and audit contracts.
 
 ## Rules
 
@@ -22,4 +26,5 @@ Orchestration primitives live in `packages/orchestration`.
 - Replayable events must declare replay safety and owner package.
 - Dead-letter policies must include target, retention, and alert threshold.
 - Sagas crossing provider boundaries must define compensation requirements.
-- Service queues execute orchestration; application services own workflow sequencing.
+- Service queues execute provider-neutral orchestration contracts; application services own workflow sequencing.
+- Runtime event execution must use provider-neutral ports before concrete queue, persistence, dead-letter, or telemetry adapters are wired.

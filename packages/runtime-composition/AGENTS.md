@@ -10,7 +10,8 @@ Purpose: Query-layer and response-composition contracts for storefront, merchant
 
 ## Forbidden Imports
 
-- No imports from `apps/*`, `services/*`, `legacy/*`, `infrastructure/*`, generated output, or provider SDKs.
+- No imports from `apps/*`, `services/*`, `legacy/*`, generated output, or provider SDKs.
+- Infrastructure access must stay provider-neutral and go through declared `@letbuyy/infrastructure/*` adapter contracts only when a runtime-composition adapter requires provider-backed read composition.
 
 ## Runtime Authority
 
