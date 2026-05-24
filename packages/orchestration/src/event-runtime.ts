@@ -9,6 +9,15 @@ export interface EventExecutionMetadata {
   replay: boolean;
 }
 
+export type RuntimeQueueName =
+  | 'payment-events'
+  | 'inventory-jobs'
+  | 'webhook-deliveries'
+  | 'analytics-events'
+  | 'search-indexing'
+  | 'fulfillment-jobs'
+  | 'bulk-admin-jobs';
+
 export interface EventSubscription<TPayload extends Record<string, unknown> = Record<string, unknown>> {
   name: string;
   eventTypes: string[];
@@ -44,6 +53,28 @@ export interface IdempotencyRuntimePort {
   fail(key: string, reason: string): Promise<void>;
 }
 
+export interface DomainEventEnvelopeInput {
+  event_id: string;
+  event_type: string;
+  site_id: string | null;
+  aggregate_type: string;
+  aggregate_id: string;
+  created_at: string;
+  request_id: string | null;
+  trace_id: string | null;
+  idempotency_key: string;
+  schema_version: number;
+  payload: Record<string, unknown>;
+}
+
+export interface EventExecutionContext<TPayload extends Record<string, unknown> = Record<string, unknown>> {
+  event: RuntimeEventEnvelope<TPayload>;
+  subscription: EventSubscription<TPayload>;
+  metadata: EventExecutionMetadata;
+  correlation: CorrelationContext;
+  startedAt: string;
+}
+
 export class EventRouter {
   private readonly subscriptions: EventSubscription[] = [];
 
@@ -53,10 +84,12 @@ export class EventRouter {
 
   matching(eventType: string): EventSubscription[] {
     return this.subscriptions.filter((subscription) =>
-      subscription.eventTypes.includes('*') || subscription.eventTypes.includes(eventType),
+      subscription.eventTypes.some((candidate) => eventMatchesSubscription(eventType, [candidate])),
     );
   }
 }
+
+export class EventSubscriptionRegistry extends EventRouter {}
 
 export class EventDispatcher {
   constructor(
@@ -122,5 +155,49 @@ export function createEventExecutionMetadata(
     attempt: 1,
     maxAttempts,
     replay: false,
+  };
+}
+
+export function eventRetryDelaySeconds(attempt: number, baseSeconds = 30): number {
+  const exponent = Math.max(0, Math.min(attempt - 1, 8));
+  return Math.min(3600, baseSeconds * 2 ** exponent);
+}
+
+export function eventMatchesSubscription(eventType: string, eventTypes: string[]): boolean {
+  return eventTypes.some((candidate) => {
+    if (candidate === '*') return true;
+    if (candidate === eventType) return true;
+    if (!candidate.endsWith('.*')) return false;
+    return eventType.startsWith(candidate.slice(0, -1));
+  });
+}
+
+export function queueNamesForEvent(eventType: string): RuntimeQueueName[] {
+  const queues = new Set<RuntimeQueueName>();
+
+  if (eventType.startsWith('payment.') || eventType.startsWith('refund.')) queues.add('payment-events');
+  if (eventType.startsWith('inventory.') || eventType.startsWith('po.') || eventType.startsWith('transfer.')) queues.add('inventory-jobs');
+  if (eventType.startsWith('fulfillment.') || eventType.startsWith('shipment.') || eventType.startsWith('return.') || eventType.includes('.fulfillment.')) queues.add('fulfillment-jobs');
+  if (eventType.startsWith('product.') || eventType.startsWith('collection.') || eventType.startsWith('category.') || eventType.startsWith('customer.') || eventType.startsWith('order.') || eventType.startsWith('theme.')) queues.add('search-indexing');
+
+  queues.add('analytics-events');
+  return [...queues];
+}
+
+export function buildDomainEventEnvelope(event: DomainEventEnvelopeInput): Record<string, unknown> {
+  return {
+    id: event.event_id,
+    type: event.event_type,
+    site_id: event.site_id,
+    aggregate: {
+      type: event.aggregate_type,
+      id: event.aggregate_id,
+    },
+    occurred_at: event.created_at,
+    request_id: event.request_id,
+    trace_id: event.trace_id,
+    idempotency_key: event.idempotency_key,
+    schema_version: event.schema_version,
+    payload: event.payload,
   };
 }

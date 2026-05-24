@@ -97,3 +97,5 @@ export * from './observability-runtime';
 export * from './replay-runtime';
 export * from './workflow-recovery-runtime';
 export * from './async-execution-runtime';
+export * from './reliability-runtime';
+export * from './workflow-checkpoint-runtime';

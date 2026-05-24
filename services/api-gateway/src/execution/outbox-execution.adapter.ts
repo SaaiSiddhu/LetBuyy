@@ -2,13 +2,15 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import {
     NOTIFICATION_APPLICATION_WORKFLOWS,
     NOTIFICATION_EXECUTION_PIPELINES,
-    buildDomainEventEnvelope,
     defineRuntimeBridge,
+    isValidWebhookTarget,
+} from '@letbuyy/application-services';
+import {
+    buildDomainEventEnvelope,
     eventMatchesSubscription,
     eventRetryDelaySeconds,
-    isValidWebhookTarget,
     queueNamesForEvent,
-} from '@letbuyy/application-services';
+} from '@letbuyy/orchestration';
 import { hmacSha256Hex } from '../lib/internal-auth';
 
 type JsonObject = Record<string, unknown>;

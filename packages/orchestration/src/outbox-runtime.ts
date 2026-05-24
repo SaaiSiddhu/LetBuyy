@@ -25,6 +25,24 @@ export interface OutboxPublishPlan<TPayload = Record<string, unknown>> {
   dedupeKey: string;
 }
 
+export interface OutboxDispatchTarget {
+  kind: 'queue' | 'webhook' | 'event-bus';
+  name: string;
+  idempotencyKey: string;
+}
+
+export interface OutboxDispatchPlan<TPayload = Record<string, unknown>> extends OutboxPublishPlan<TPayload> {
+  dispatchTargets: OutboxDispatchTarget[];
+  orderingKey: string;
+}
+
+export interface OutboxRecoveryPlan {
+  recordId: string;
+  action: 'retry' | 'dead-letter' | 'skip';
+  availableAt?: string;
+  reason: string;
+}
+
 export interface OutboxRuntimePort {
   append<TPayload = Record<string, unknown>>(event: RuntimeEventEnvelope<TPayload>, context: CorrelationContext): Promise<OutboxRecord<TPayload>>;
   claim(limit: number, workerId: string): Promise<OutboxRecord[]>;
@@ -53,6 +71,44 @@ export function planOutboxPublish<TPayload = Record<string, unknown>>(
     },
     sequenceKey: aggregate,
     dedupeKey: event.idempotency_key || event.event_id,
+  };
+}
+
+export function planOutboxDispatch<TPayload = Record<string, unknown>>(
+  event: RuntimeEventEnvelope<TPayload>,
+  context: CorrelationContext,
+  targets: OutboxDispatchTarget[],
+): OutboxDispatchPlan<TPayload> {
+  const publish = planOutboxPublish(event, context);
+  return {
+    ...publish,
+    dispatchTargets: targets,
+    orderingKey: publish.sequenceKey,
+  };
+}
+
+export function planOutboxRecovery(record: OutboxRecord, retryPolicy: RetryPolicy, reason: string): OutboxRecoveryPlan {
+  if (record.status === 'processed' || record.status === 'dead') {
+    return {
+      recordId: record.id,
+      action: 'skip',
+      reason: `outbox record is already ${record.status}`,
+    };
+  }
+
+  if (record.attempts >= retryPolicy.maxAttempts) {
+    return {
+      recordId: record.id,
+      action: 'dead-letter',
+      reason,
+    };
+  }
+
+  return {
+    recordId: record.id,
+    action: 'retry',
+    availableAt: nextRetryIso(record.attempts, retryPolicy),
+    reason,
   };
 }
 
