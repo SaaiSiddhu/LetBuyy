@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { THEME_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import {
     getSectionSchemas,
     getThemeSettingsSchema,
@@ -139,7 +140,9 @@ function stringArray(value: unknown): string[] {
     return value.filter((item): item is string => typeof item === 'string');
 }
 
-export class SchemaRegistryService {
+export class SchemaRegistryExecutionAdapter {
+    static readonly applicationWorkflows = THEME_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) {}
 
     async resolveThemeRuntime(theme: ThemeRegistryThemeInput): Promise<ThemeRuntimeSchema> {

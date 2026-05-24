@@ -5,7 +5,7 @@ import { getSupabaseAdmin, success } from '../lib/supabase';
 import { ValidationError } from '../lib/errors';
 import { getRequestId } from '../lib/tenant-context';
 import { requireSuperAdmin } from '../middleware/rbac';
-import { OutboxService } from '../services/outbox.service';
+import { OutboxExecutionAdapter } from '../execution/outbox-execution.adapter';
 import {
     ConsumeQueueJobsSchema,
     CreateWebhookSubscriptionSchema,
@@ -18,8 +18,8 @@ import {
     type DispatchWebhookDeliveriesInput,
     type OperationsListQuery,
 } from '../schemas/operations.schema';
-import { SaasService } from '../services/saas.service';
-import { QueueService } from '../services/queue.service';
+import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
+import { QueueExecutionAdapter } from '../execution/queue-execution.adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -65,7 +65,7 @@ router.post('/outbox/dispatch', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const service = new OutboxService(db);
+    const service = new OutboxExecutionAdapter(db);
     const result = await service.dispatchBatch({
         dispatcherId: dispatcherId('manual-outbox'),
         outboxLimit: parsed.data.limit,
@@ -84,7 +84,7 @@ router.post('/webhook-deliveries/dispatch', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const service = new OutboxService(db);
+    const service = new OutboxExecutionAdapter(db);
     const result = await service.dispatchWebhookDeliveries(
         dispatcherId('manual-webhooks'),
         parsed.data.limit || 25
@@ -179,7 +179,7 @@ router.post('/jobs/consume', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const service = new QueueService(db);
+    const service = new QueueExecutionAdapter(db);
     const workerId = dispatcherId('manual-queue');
     const result = parsed.data.queue_name
         ? [await service.consumeQueue(workerId, parsed.data.queue_name, parsed.data.limit || 25)]
@@ -319,7 +319,7 @@ router.get('/request-logs', async (c) => {
 
 router.get('/entitlements/:siteId', async (c) => {
     const db = getSupabaseAdmin(c);
-    const service = new SaasService(db);
+    const service = new SaasExecutionAdapter(db);
     const entitlements = await service.resolveEntitlements(c.req.param('siteId'));
 
     return c.json(success({ entitlements }));
@@ -354,7 +354,7 @@ router.post('/usage/record', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const meter = await new SaasService(db).recordUsage({
+    const meter = await new SaasExecutionAdapter(db).recordUsage({
         siteId: parsed.data.site_id,
         meterName: parsed.data.meter_name,
         amount: parsed.data.amount,

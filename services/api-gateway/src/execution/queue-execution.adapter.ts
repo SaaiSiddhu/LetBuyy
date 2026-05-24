@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { NOTIFICATION_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 
 type JsonObject = Record<string, unknown>;
 
@@ -95,7 +96,9 @@ function textParts(...parts: Array<string | number | null | undefined | string[]
         .join(' ');
 }
 
-export class QueueService {
+export class QueueExecutionAdapter {
+    static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) {}
 
     async consumeQueues(

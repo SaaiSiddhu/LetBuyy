@@ -7,7 +7,7 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
-import { ProductService } from '../services/product.service';
+import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -246,7 +246,7 @@ router.post('/import-products', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'CSV must have a "name" column' } }, 400);
     }
 
-    const service = new ProductService(db);
+    const service = new ProductExecutionAdapter(db);
     const imported = [];
 
     for (const row of rows.slice(1)) {

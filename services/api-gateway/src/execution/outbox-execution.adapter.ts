@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { NOTIFICATION_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import { hmacSha256Hex } from '../lib/internal-auth';
 
 type JsonObject = Record<string, unknown>;
@@ -182,7 +183,9 @@ async function readResponsePreview(response: Response, maxCharacters = 2000): Pr
     return output.slice(0, maxCharacters);
 }
 
-export class OutboxService {
+export class OutboxExecutionAdapter {
+    static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient, private fetcher: typeof fetch = fetch) {}
 
     async dispatchBatch(options: DispatchOptions): Promise<DispatchBatchResult> {

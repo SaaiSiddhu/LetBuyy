@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { BILLING_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 
 type JsonObject = Record<string, unknown>;
 
@@ -49,7 +50,9 @@ function normalizeObject(value: unknown): JsonObject {
     return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonObject : {};
 }
 
-export class SaasService {
+export class SaasExecutionAdapter {
+    static readonly applicationWorkflows = BILLING_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) {}
 
     async resolveEntitlements(siteId: string, fallbackPlan = 'free'): Promise<SiteEntitlementSnapshot> {

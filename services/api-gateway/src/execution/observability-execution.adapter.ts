@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import type { CorrelationContext } from '@letbuyy/orchestration';
 
 type Metadata = Record<string, unknown>;
 
@@ -34,7 +35,9 @@ function isMissingOptionalOperationalTable(error: { message?: string } | null | 
     return Boolean(error?.message?.includes(tableName) && error.message.includes('schema cache'));
 }
 
-export class ObservabilityService {
+export class ObservabilityExecutionAdapter {
+    static readonly correlationContract: Array<keyof CorrelationContext> = ['requestId', 'correlationId'];
+
     constructor(private db: SupabaseClient) {}
 
     async recordRequestLog(input: WorkerRequestLogInput): Promise<void> {

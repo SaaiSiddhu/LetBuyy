@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { AUTH_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import { ConflictError, ValidationError } from '../lib/errors';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
@@ -37,7 +38,9 @@ function isUniqueViolation(error: { code?: string; message?: string } | null): b
     return error?.code === '23505' || message.includes('duplicate key');
 }
 
-export class IdempotencyService {
+export class IdempotencyExecutionAdapter {
+    static readonly applicationWorkflows = AUTH_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) { }
 
     static normalizeKey(key: string | undefined | null): string {
@@ -57,7 +60,7 @@ export class IdempotencyService {
         lockSeconds?: number;
         expiresInSeconds?: number;
     }): Promise<IdempotencyClaim> {
-        const key = IdempotencyService.normalizeKey(params.key);
+        const key = IdempotencyExecutionAdapter.normalizeKey(params.key);
         const requestHash = await sha256Hex(stableJson(params.requestBody));
         const now = Date.now();
         const lockedUntil = new Date(now + (params.lockSeconds ?? 120) * 1000).toISOString();

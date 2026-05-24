@@ -1,12 +1,13 @@
 // ============================================================
-// ORDER SERVICE — Business logic extraction from routes
+// ORDER EXECUTION ADAPTER — Application-service-backed runtime adapter
 // ============================================================
 
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { CHECKOUT_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { VALID_TRANSITIONS } from '../schemas/order.schema';
 import type { TenantContext } from '../lib/tenant-context';
-import { SaasService } from './saas.service';
+import { SaasExecutionAdapter } from './saas-execution.adapter';
 import type {
     CompleteRefundCommand,
     CreateCheckoutOrderCommand,
@@ -20,7 +21,9 @@ interface OrderRow {
     store_id?: string | null;
 }
 
-export class OrderService {
+export class OrderExecutionAdapter {
+    static readonly applicationWorkflows = CHECKOUT_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) { }
 
     /**
@@ -70,7 +73,7 @@ export class OrderService {
             throw new Error(`Order creation failed: ${message}`);
         }
 
-        await new SaasService(this.db).recordUsage({
+        await new SaasExecutionAdapter(this.db).recordUsage({
             siteId: tenant.siteId,
             meterName: 'orders',
             amount: 1,
@@ -90,7 +93,7 @@ export class OrderService {
     }
 
     private async assertOrderQuota(siteId: string): Promise<void> {
-        const entitlements = await new SaasService(this.db).resolveEntitlements(siteId);
+        const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(siteId);
         const rawLimit = entitlements.limits.orders_monthly;
         if (rawLimit === null || rawLimit === undefined) return;
 

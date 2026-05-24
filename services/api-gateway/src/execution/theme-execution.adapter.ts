@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { THEME_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import {
     getDefaultStorefrontThemeTemplate,
     hasRenderableThemeTemplate,
@@ -14,8 +15,8 @@ import type {
     RollbackThemeReleaseInput,
     SaveThemeDraftInput,
 } from '../schemas/theme.schema';
-import { EventService } from './event.service';
-import { SchemaRegistryService, type ThemeRuntimeSchema } from './schema-registry.service';
+import { EventExecutionAdapter } from './event-execution.adapter';
+import { SchemaRegistryExecutionAdapter, type ThemeRuntimeSchema } from './schema-registry-execution.adapter';
 
 type DbRecord = Record<string, unknown>;
 
@@ -471,11 +472,13 @@ async function sha256Hex(input: string): Promise<string> {
         .join('');
 }
 
-export class ThemeService {
-    private schemaRegistry: SchemaRegistryService;
+export class ThemeExecutionAdapter {
+    static readonly applicationWorkflows = THEME_APPLICATION_WORKFLOWS;
+
+    private schemaRegistry: SchemaRegistryExecutionAdapter;
 
     constructor(private db: SupabaseClient) {
-        this.schemaRegistry = new SchemaRegistryService(db);
+        this.schemaRegistry = new SchemaRegistryExecutionAdapter(db);
     }
 
     private async validateTemplateConfig(templateConfig: DbRecord, theme: ThemeRecord): Promise<ThemeRuntimeSchema> {
@@ -1147,7 +1150,7 @@ export class ThemeService {
             activate: true,
         });
 
-        const events = new EventService(this.db);
+        const events = new EventExecutionAdapter(this.db);
         await events.emitDomainEvent({
             storeId: input.store_id,
             aggregateType: 'theme',
@@ -1332,7 +1335,7 @@ export class ThemeService {
             requestId,
         });
 
-        const events = new EventService(this.db);
+        const events = new EventExecutionAdapter(this.db);
         await events.emitDomainEvent({
             storeId: input.store_id,
             aggregateType: 'theme_draft',
@@ -1394,7 +1397,7 @@ export class ThemeService {
             .eq('theme_id', theme.slug);
 
         if (draft) {
-            const events = new EventService(this.db);
+            const events = new EventExecutionAdapter(this.db);
             await events.emitDomainEvent({
                 storeId,
                 aggregateType: 'theme_draft',
@@ -1664,7 +1667,7 @@ export class ThemeService {
             throw new Error(`Theme preview session creation failed: ${error?.message || 'Unknown error'}`);
         }
 
-        const events = new EventService(this.db);
+        const events = new EventExecutionAdapter(this.db);
         await events.emitAuditEvent({
             storeId: input.store_id,
             actorId: userId,

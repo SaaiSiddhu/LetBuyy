@@ -33,6 +33,9 @@
             "@letbuyy/app-engine": [
                 "../../packages/app-engine/src/index.ts"
             ],
+            "@letbuyy/application-services": [
+                "../../packages/application-services/src/index.ts"
+            ],
             "@letbuyy/auth-core": [
                 "../../packages/auth-core/src/index.ts"
             ],
@@ -53,6 +56,9 @@
             ],
             "@letbuyy/notification-core": [
                 "../../packages/notification-core/src/index.ts"
+            ],
+            "@letbuyy/orchestration": [
+                "../../packages/orchestration/src/index.ts"
             ],
             "@letbuyy/search-core": [
                 "../../packages/search-core/src/index.ts"

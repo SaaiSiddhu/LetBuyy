@@ -1,11 +1,12 @@
 // ============================================================
-// PRODUCT SERVICE — Business logic extraction from routes
+// PRODUCT EXECUTION ADAPTER — Application-service-backed runtime adapter
 // ============================================================
 
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { COMMERCE_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
-import { SaasService } from './saas.service';
+import { SaasExecutionAdapter } from './saas-execution.adapter';
 import type { CreateProductCommand, ProductOptionInput, ProductVariantInput } from '@letbuyy/commerce-core';
 
 interface OwnedProductRow {
@@ -19,7 +20,9 @@ interface ProductViewCounterRow {
     view_count?: number | null;
 }
 
-export class ProductService {
+export class ProductExecutionAdapter {
+    static readonly applicationWorkflows = COMMERCE_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) { }
 
     /**
@@ -319,7 +322,7 @@ export class ProductService {
     }
 
     private async assertProductQuota(storeId: string): Promise<void> {
-        const entitlements = await new SaasService(this.db).resolveEntitlements(storeId);
+        const entitlements = await new SaasExecutionAdapter(this.db).resolveEntitlements(storeId);
         const rawLimit = entitlements.limits.products;
         if (rawLimit === null || rawLimit === undefined) return;
         const productLimit = typeof rawLimit === 'number' ? rawLimit : Number(rawLimit);
@@ -345,7 +348,7 @@ export class ProductService {
         actorId: string,
         resourceId: string
     ): Promise<void> {
-        await new SaasService(this.db).recordUsage({
+        await new SaasExecutionAdapter(this.db).recordUsage({
             siteId: storeId,
             meterName: 'products',
             amount,

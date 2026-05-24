@@ -4,8 +4,8 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbErrorBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { OrderService } from '../services/order.service';
-import { IdempotencyService } from '../services/idempotency.service';
+import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import {
     CreateOrderSchema,
@@ -317,7 +317,7 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
     const body = c.get('validatedBody') as UpdateOrderStatusInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
         key: body.idempotency_key,
@@ -330,7 +330,7 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
         return c.json(claim.responseBody as any, claim.statusCode as any);
     }
 
-    const service = new OrderService(db);
+    const service = new OrderExecutionAdapter(db);
     try {
         const data = await service.transitionStatus(orderId, tenant, body.status, body);
         const responseBody = success(data);
@@ -355,7 +355,7 @@ router.post('/', validate('json', CreateOrderSchema), async (c) => {
     const body = c.get('validatedBody') as CreateOrderInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOwnedSite(c, body.store_id);
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
         key: body.idempotency_key,
@@ -368,7 +368,7 @@ router.post('/', validate('json', CreateOrderSchema), async (c) => {
         return c.json(claim.responseBody as any, claim.statusCode as any);
     }
 
-    const service = new OrderService(db);
+    const service = new OrderExecutionAdapter(db);
     try {
         const order = await service.createOrder(
             {
@@ -408,7 +408,7 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
     const body = c.get('validatedBody') as FulfillOrderInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
         key: body.idempotency_key,
@@ -421,7 +421,7 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
         return c.json(claim.responseBody as any, claim.statusCode as any);
     }
 
-    const service = new OrderService(db);
+    const service = new OrderExecutionAdapter(db);
     try {
         const data = await service.fulfillOrder(orderId, tenant, body);
         const responseBody = success(data);
@@ -445,7 +445,7 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
     const body = c.get('validatedBody') as CompleteRefundInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
         key: body.idempotency_key,
@@ -458,7 +458,7 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
         return c.json(claim.responseBody as any, claim.statusCode as any);
     }
 
-    const service = new OrderService(db);
+    const service = new OrderExecutionAdapter(db);
     try {
         const data = await service.completeRefund(orderId, tenant, body);
         const responseBody = success(data);
@@ -482,7 +482,7 @@ router.post('/:id/refund', validate('json', RefundOrderSchema), async (c) => {
     const body = c.get('validatedBody') as RefundOrderInput;
     const db = getSupabaseAdmin(c);
     const tenant = await resolveTenantContextForOrder(c, orderId);
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: tenant.siteId,
         key: body.idempotency_key,
@@ -495,7 +495,7 @@ router.post('/:id/refund', validate('json', RefundOrderSchema), async (c) => {
         return c.json(claim.responseBody as any, claim.statusCode as any);
     }
 
-    const service = new OrderService(db);
+    const service = new OrderExecutionAdapter(db);
     try {
         const data = await service.createRefund(orderId, tenant, body);
         const responseBody = success(data);

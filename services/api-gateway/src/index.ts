@@ -36,8 +36,8 @@ import reviewsRouter from './routes/reviews';
 import formSubmissionsRouter from './routes/form-submissions';
 import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
-import { OutboxService } from './services/outbox.service';
-import { QueueService } from './services/queue.service';
+import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
+import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
 
 // Environment bindings
 export interface Env {
@@ -214,8 +214,8 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
     const dispatcherId = `cron:${controller.cron || 'manual'}:${crypto.randomUUID()}`;
     const workerId = `cron-queue:${controller.cron || 'manual'}:${crypto.randomUUID()}`;
     const db = getSupabaseAdminFromEnv(env);
-    const outbox = new OutboxService(db);
-    const queue = new QueueService(db);
+    const outbox = new OutboxExecutionAdapter(db);
+    const queue = new QueueExecutionAdapter(db);
 
     return outbox
         .dispatchBatch({

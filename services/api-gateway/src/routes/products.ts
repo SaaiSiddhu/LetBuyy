@@ -3,7 +3,7 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { ProductService } from '../services/product.service';
+import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import {
     CreateProductSchema,
     UpdateProductSchema,
@@ -353,7 +353,7 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductService(db);
+    const service = new ProductExecutionAdapter(db);
     const data = await service.createProduct(body, customUser.id, auth.user.storeId);
 
     return c.json(success(data), 201);
@@ -371,7 +371,7 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductService(db);
+    const service = new ProductExecutionAdapter(db);
     const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
 
     return c.json(success(data));
@@ -388,7 +388,7 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductService(db);
+    const service = new ProductExecutionAdapter(db);
     const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
 
     return c.json(success(result));
@@ -405,7 +405,7 @@ router.delete('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductService(db);
+    const service = new ProductExecutionAdapter(db);
     const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
 
     return c.json({ data: result });

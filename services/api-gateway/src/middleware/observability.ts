@@ -2,7 +2,7 @@ import { createMiddleware } from 'hono/factory';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin } from '../lib/supabase';
-import { ObservabilityService } from '../services/observability.service';
+import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
 
 type AppContext = Context<{ Bindings: Env }>;
 
@@ -92,7 +92,7 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
     writeStructuredRuntimeLog(fields);
 
     const db = getSupabaseAdmin(c);
-    const service = new ObservabilityService(db);
+    const service = new ObservabilityExecutionAdapter(db);
 
     c.executionCtx.waitUntil(
         service.recordRequestLog({

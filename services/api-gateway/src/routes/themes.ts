@@ -23,8 +23,8 @@ import {
     type ThemePurchaseOrderInput,
     type ThemePurchaseVerifyInput,
 } from '../schemas/theme.schema';
-import { EventService } from '../services/event.service';
-import { ThemeService } from '../services/theme.service';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -140,7 +140,7 @@ router.get('/', async (c) => {
         );
     }
 
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     const customUser = await resolveCustomUser(db, auth.user);
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
@@ -281,7 +281,7 @@ router.get('/installations/list', async (c) => {
 router.get('/:slug/schema', async (c) => {
     const slug = c.req.param('slug');
     const db = getSupabaseAdmin(c);
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.getEditableSchema(slug)));
 });
 
@@ -305,7 +305,7 @@ router.get('/:slug/editor', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.loadEditor(slug, parsed.data.store_id, customUser.id)));
 });
 
@@ -319,7 +319,7 @@ router.put('/:slug/editor/draft', validate('json', SaveThemeDraftSchema), async 
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.saveDraft(slug, body, customUser.id, getRequestId(c))));
 });
 
@@ -343,7 +343,7 @@ router.delete('/:slug/editor/draft', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c))));
 });
 
@@ -357,7 +357,7 @@ router.post('/:slug/publish', validate('json', PublishThemeSchema), async (c) =>
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.publish(slug, body, customUser.id, getRequestId(c))));
 });
 
@@ -371,7 +371,7 @@ router.post('/:slug/preview-session', validate('json', PreviewTokenSchema), asyn
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.createPreviewSession(slug, body, customUser.id, getRequestId(c))), 201);
 });
 
@@ -395,7 +395,7 @@ router.get('/:slug/releases', async (c) => {
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.listReleases(slug, parsed.data.store_id, customUser.id)));
 });
 
@@ -410,7 +410,7 @@ router.post('/:slug/releases/:releaseId/rollback', validate('json', RollbackThem
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c))));
 });
 
@@ -454,7 +454,7 @@ router.post('/:slug/install', validate('json', InstallThemeSchema), async (c) =>
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ThemeService(db);
+    const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.installTheme(slug, body, customUser.id, getRequestId(c))), 201);
 });
 
@@ -606,7 +606,7 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
         throw new Error('Unable to record pending theme purchase');
     }
 
-    const events = new EventService(db);
+    const events = new EventExecutionAdapter(db);
     await events.emitDomainEvent({
         storeId: null,
         aggregateType: 'theme_purchase',
@@ -695,7 +695,7 @@ router.post('/:slug/purchase/verify', validate('json', ThemePurchaseVerifySchema
     }
 
     const requestId = getRequestId(c);
-    const events = new EventService(db);
+    const events = new EventExecutionAdapter(db);
     await events.emitDomainEvent({
         storeId: null,
         aggregateType: 'theme_purchase',

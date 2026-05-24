@@ -18,10 +18,10 @@ import {
     type CreateStorefrontProductReviewInput,
     type StorefrontProductReviewsQueryInput,
 } from '../schemas/review.schema';
-import { OrderService } from '../services/order.service';
-import { PaymentService } from '../services/payment.service';
-import { ProductService } from '../services/product.service';
-import { IdempotencyService } from '../services/idempotency.service';
+import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
+import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
+import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 
@@ -1057,7 +1057,7 @@ async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?
     const db = getSupabaseAdmin(c);
 
     if (storeId) {
-        return new PaymentService(db).loadStorefrontPayableOrder(orderId, storeId);
+        return new PaymentExecutionAdapter(db).loadStorefrontPayableOrder(orderId, storeId);
     }
 
     const { data: order } = await db
@@ -1111,7 +1111,7 @@ router.post('/internal/payments/reference', async (c) => {
     if (body.storeId) await loadInternalPayableOrder(c, body.orderId, body.storeId);
 
     const db = getSupabaseAdmin(c);
-    await new PaymentService(db).attachPaymentReference({
+    await new PaymentExecutionAdapter(db).attachPaymentReference({
         orderId: body.orderId,
         provider: body.provider,
         providerOrderId: body.paymentReference,
@@ -1134,7 +1134,7 @@ router.post('/internal/payments/confirm', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const order = await new PaymentService(db).confirmPayment({
+    const order = await new PaymentExecutionAdapter(db).confirmPayment({
         orderId: body.orderId,
         provider: body.provider,
         providerPaymentId: body.paymentId,
@@ -1159,7 +1159,7 @@ router.post('/internal/payments/failure', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const order = await new PaymentService(db).recordPaymentFailure({
+    const order = await new PaymentExecutionAdapter(db).recordPaymentFailure({
         orderId: body.orderId,
         provider: body.provider,
         providerEventId: body.providerEventId,
@@ -1536,9 +1536,9 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
         );
     }
 
-    const service = new OrderService(db);
+    const service = new OrderExecutionAdapter(db);
     const tenant = await createPublicStorefrontTenantContext(c, store.id);
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: store.id,
         key: body.idempotencyKey,
@@ -1627,9 +1627,9 @@ router.post(
         }
 
         const db = getSupabaseAdmin(c);
-        const paymentService = new PaymentService(db);
+        const paymentService = new PaymentExecutionAdapter(db);
         const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
-        const idempotency = new IdempotencyService(db);
+        const idempotency = new IdempotencyExecutionAdapter(db);
         const claim = await idempotency.begin({
             siteId: store.id,
             key: body.idempotencyKey,
@@ -1729,9 +1729,9 @@ router.post(
         }
 
         const db = getSupabaseAdmin(c);
-        const paymentService = new PaymentService(db);
+        const paymentService = new PaymentExecutionAdapter(db);
         const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
-        const idempotency = new IdempotencyService(db);
+        const idempotency = new IdempotencyExecutionAdapter(db);
         const claim = await idempotency.begin({
             siteId: store.id,
             key: body.idempotencyKey,
@@ -1846,7 +1846,7 @@ router.get('/:subdomain/products/:slug', async (c) => {
         .eq('is_active', true)
         .single();
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
-    await new ProductService(db).recordStorefrontView(data as StorefrontProductDetail);
+    await new ProductExecutionAdapter(db).recordStorefrontView(data as StorefrontProductDetail);
     return c.json(success(data));
 });
 

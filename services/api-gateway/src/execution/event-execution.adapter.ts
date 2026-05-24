@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { NOTIFICATION_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -30,7 +31,9 @@ export interface AuditEventInput {
     metadata?: JsonRecord;
 }
 
-export class EventService {
+export class EventExecutionAdapter {
+    static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) { }
 
     async emitDomainEvent(input: DomainEventInput) {

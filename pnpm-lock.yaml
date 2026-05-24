@@ -836,6 +836,9 @@ importers:
       '@letbuyy/app-engine':
         specifier: workspace:*
         version: link:../../packages/app-engine
+      '@letbuyy/application-services':
+        specifier: workspace:*
+        version: link:../../packages/application-services
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
@@ -857,6 +860,9 @@ importers:
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
+      '@letbuyy/orchestration':
+        specifier: workspace:*
+        version: link:../../packages/orchestration
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types

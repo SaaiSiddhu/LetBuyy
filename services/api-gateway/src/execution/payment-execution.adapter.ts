@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
+import { CHECKOUT_APPLICATION_WORKFLOWS } from '@letbuyy/application-services';
 import { ConflictError, NotFoundError } from '../lib/errors';
 
 type PayableOrder = {
@@ -11,7 +12,9 @@ type PayableOrder = {
     status?: string | null;
 };
 
-export class PaymentService {
+export class PaymentExecutionAdapter {
+    static readonly applicationWorkflows = CHECKOUT_APPLICATION_WORKFLOWS;
+
     constructor(private db: SupabaseClient) { }
 
     async loadStorefrontPayableOrder(orderId: string, storeId: string): Promise<PayableOrder> {

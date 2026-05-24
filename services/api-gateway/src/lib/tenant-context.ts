@@ -4,7 +4,7 @@ import type { Env } from '../index';
 import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership } from './auth-user';
 import { getSupabaseAdmin } from './supabase';
-import { SaasService } from '../services/saas.service';
+import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
 import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 
 export type TenantContext = RuntimeTenantContext;
@@ -132,7 +132,7 @@ export async function resolveTenantAccessProfile(
     const explicitPermissions = membership?.permissions || fallbackPermissions;
     const permissions = [...new Set([...rolePermissions, ...explicitPermissions])];
     const plan = fallbackPlan || await loadPlan(db, siteId);
-    const entitlementSnapshot = await new SaasService(db).resolveEntitlements(siteId, plan);
+    const entitlementSnapshot = await new SaasExecutionAdapter(db).resolveEntitlements(siteId, plan);
 
     return {
         membershipId: membership?.id || null,

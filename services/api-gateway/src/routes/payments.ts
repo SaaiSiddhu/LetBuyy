@@ -6,7 +6,7 @@ import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
 import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
 import { ForbiddenError, ConflictError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
-import { PaymentService } from '../services/payment.service';
+import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
@@ -485,7 +485,7 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
             );
         }
 
-        const paymentService = new PaymentService(db);
+        const paymentService = new PaymentExecutionAdapter(db);
         await paymentService.attachPaymentReference({
             orderId: body.order_id,
             provider: 'razorpay',
@@ -583,7 +583,7 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         throw new ConflictError('Payment reference mismatch');
     }
 
-    const paymentService = new PaymentService(db);
+    const paymentService = new PaymentExecutionAdapter(db);
     const updated = await paymentService.confirmPayment({
         orderId: order.id,
         provider: 'razorpay',
@@ -648,7 +648,7 @@ router.post('/stripe/checkout', validate('json', StripeCheckoutSchema), async (c
         }
 
         // Update order with Stripe session ID
-        const paymentService = new PaymentService(db);
+        const paymentService = new PaymentExecutionAdapter(db);
         await paymentService.attachPaymentReference({
             orderId: body.order_id,
             provider: 'stripe',

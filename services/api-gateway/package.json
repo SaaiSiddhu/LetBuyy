@@ -10,6 +10,7 @@
     "dependencies": {
         "@letbuyy/api-types": "workspace:*",
         "@letbuyy/app-engine": "workspace:*",
+        "@letbuyy/application-services": "workspace:*",
         "@letbuyy/auth-core": "workspace:*",
         "@letbuyy/billing-core": "workspace:*",
         "@letbuyy/checkout-core": "workspace:*",
@@ -17,6 +18,7 @@
         "@letbuyy/commerce-core": "workspace:*",
         "@letbuyy/event-core": "workspace:*",
         "@letbuyy/infrastructure": "workspace:*",
+        "@letbuyy/orchestration": "workspace:*",
         "@letbuyy/shared-types": "workspace:*",
         "@letbuyy/tenant-core": "workspace:*",
         "@letbuyy/theme-engine": "workspace:*",

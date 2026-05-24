@@ -7,7 +7,7 @@ import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { dbFailureBody, failureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { IdempotencyService } from '../services/idempotency.service';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import {
     AdjustInventorySchema,
     BulkAdjustSchema,
@@ -414,7 +414,7 @@ router.post('/purchase-orders', validate('json', CreatePurchaseOrderSchema), asy
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: body.store_id,
         key: body.idempotency_key,
@@ -460,7 +460,7 @@ router.post('/purchase-orders/:id/receive', validate('json', ReceivePurchaseOrde
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Purchase order not found' } }, 404);
     }
 
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId,
         key: body.idempotency_key,
@@ -528,7 +528,7 @@ router.post('/transfers', validate('json', CreateTransferSchema), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId: body.store_id,
         key: body.idempotency_key,
@@ -595,7 +595,7 @@ router.post('/transfers/:id/receive', validate('json', ReceiveTransferSchema), a
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Transfer not found' } }, 404);
     }
 
-    const idempotency = new IdempotencyService(db);
+    const idempotency = new IdempotencyExecutionAdapter(db);
     const claim = await idempotency.begin({
         siteId,
         key: body.idempotency_key,
