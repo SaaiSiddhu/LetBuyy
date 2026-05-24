@@ -24,6 +24,7 @@
         "@letbuyy/cms-core": "workspace:*",
         "@letbuyy/commerce-core": "workspace:*",
         "@letbuyy/infrastructure": "workspace:*",
+        "@letbuyy/projection-runtime": "workspace:*",
         "@letbuyy/search-core": "workspace:*",
         "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/tenant-core": "workspace:*",

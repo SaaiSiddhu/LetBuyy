@@ -48,6 +48,9 @@
             "@letbuyy/commerce-core": [
                 "../../packages/commerce-core/src/index.ts"
             ],
+            "@letbuyy/distributed-runtime": [
+                "../../packages/distributed-runtime/src/index.ts"
+            ],
             "@letbuyy/event-core": [
                 "../../packages/event-core/src/index.ts"
             ],
@@ -59,6 +62,9 @@
             ],
             "@letbuyy/orchestration": [
                 "../../packages/orchestration/src/index.ts"
+            ],
+            "@letbuyy/projection-runtime": [
+                "../../packages/projection-runtime/src/index.ts"
             ],
             "@letbuyy/runtime-composition": [
                 "../../packages/runtime-composition/src/index.ts"

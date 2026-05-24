@@ -5,6 +5,7 @@
     "moduleResolution": "Bundler",
     "baseUrl": ".",
     "paths": {
+      "@letbuyy/distributed-runtime": ["../distributed-runtime/src/index.ts"],
       "@letbuyy/event-core": ["../event-core/src/index.ts"],
       "@letbuyy/shared-types": ["../shared-types/src/index.ts"]
     },

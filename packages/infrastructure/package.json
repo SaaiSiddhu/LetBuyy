@@ -17,7 +17,8 @@
     "./queue-adapter": "./queue-adapter/index.ts",
     "./analytics-adapter": "./analytics-adapter/index.ts",
     "./cache-adapter": "./cache-adapter/index.ts",
-    "./search-provider-adapter": "./search-provider-adapter/index.ts"
+    "./search-provider-adapter": "./search-provider-adapter/index.ts",
+    "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

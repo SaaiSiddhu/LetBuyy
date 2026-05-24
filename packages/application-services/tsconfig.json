@@ -10,6 +10,7 @@
       "@letbuyy/checkout-core": ["../checkout-core/src/index.ts"],
       "@letbuyy/cms-core": ["../cms-core/src/index.ts"],
       "@letbuyy/commerce-core": ["../commerce-core/src/index.ts"],
+      "@letbuyy/distributed-runtime": ["../distributed-runtime/src/index.ts"],
       "@letbuyy/event-core": ["../event-core/src/index.ts"],
       "@letbuyy/notification-core": ["../notification-core/src/index.ts"],
       "@letbuyy/orchestration": ["../orchestration/src/index.ts"],

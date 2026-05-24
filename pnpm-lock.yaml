@@ -600,6 +600,19 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/distributed-runtime:
+    dependencies:
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../event-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/event-core:
     dependencies:
       '@letbuyy/shared-types':
@@ -659,6 +672,25 @@ importers:
 
   packages/orchestration:
     dependencies:
+      '@letbuyy/distributed-runtime':
+        specifier: workspace:*
+        version: link:../distributed-runtime
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../event-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/projection-runtime:
+    dependencies:
+      '@letbuyy/distributed-runtime':
+        specifier: workspace:*
+        version: link:../distributed-runtime
       '@letbuyy/event-core':
         specifier: workspace:*
         version: link:../event-core
@@ -687,6 +719,9 @@ importers:
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../infrastructure
+      '@letbuyy/projection-runtime':
+        specifier: workspace:*
+        version: link:../projection-runtime
       '@letbuyy/search-core':
         specifier: workspace:*
         version: link:../search-core

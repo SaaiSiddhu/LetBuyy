@@ -13,6 +13,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@letbuyy/distributed-runtime": "workspace:*",
     "@letbuyy/event-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*"
   },

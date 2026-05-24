@@ -99,3 +99,5 @@ export * from './workflow-recovery-runtime';
 export * from './async-execution-runtime';
 export * from './reliability-runtime';
 export * from './workflow-checkpoint-runtime';
+export * from './workflow-durability-runtime';
+export * from './execution-coordination-runtime';
