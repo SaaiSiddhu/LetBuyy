@@ -1,4 +1,15 @@
 import { Hono } from "hono";
+import {
+    getRazorpayOrderNotes as fetchRazorpayOrderNotes,
+    hmacSha256Hex,
+    timingSafeEqual,
+} from "@letbuyy/infrastructure/razorpay-adapter";
+import {
+    insertSupabaseRows,
+    patchSupabaseRows,
+    selectSupabaseRows,
+    upsertSupabaseRows,
+} from "@letbuyy/infrastructure/supabase-adapter";
 
 // ============================================================
 // WEBHOOK HANDLER — Razorpay & Stripe Signature Verification
@@ -19,40 +30,6 @@ const app = new Hono<{ Bindings: Env }>();
 
 // ─── Helpers ────────────────────────────────────────────────────────
 
-/**
- * Compute HMAC-SHA256 using Web Crypto API (Cloudflare Workers compatible).
- * Returns hex-encoded digest string.
- */
-async function hmacSha256Hex(secret: string, payload: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const key = await crypto.subtle.importKey(
-        "raw",
-        encoder.encode(secret),
-        { name: "HMAC", hash: "SHA-256" },
-        false,
-        ["sign"]
-    );
-    const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(payload));
-    return Array.from(new Uint8Array(signature))
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
-}
-
-/**
- * Timing-safe comparison to prevent timing attacks on signature checks.
- */
-function timingSafeEqual(a: string, b: string): boolean {
-    if (a.length !== b.length) return false;
-    const encoder = new TextEncoder();
-    const aBytes = encoder.encode(a);
-    const bBytes = encoder.encode(b);
-    let result = 0;
-    for (let i = 0; i < aBytes.length; i++) {
-        result |= aBytes[i]! ^ bBytes[i]!;
-    }
-    return result === 0;
-}
-
 async function writeWebhookEvent(
     env: Env,
     event: {
@@ -63,30 +40,16 @@ async function writeWebhookEvent(
         raw_payload: unknown;
     }
 ): Promise<{ duplicate: boolean }> {
-    const url = `${env.SUPABASE_URL}/rest/v1/payment_webhook_events?on_conflict=provider,provider_event_id`;
-    const response = await fetch(url, {
-        method: "POST",
-        headers: {
-            apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-            "Content-Type": "application/json",
-            Prefer: "resolution=ignore-duplicates,return=representation",
-        },
-        body: JSON.stringify({
+    const rows = await upsertSupabaseRows(env, "payment_webhook_events", {
             provider: event.provider,
             provider_event_id: event.provider_event_id,
             event_type: event.event_type,
             signature_valid: event.signature_valid,
             raw_payload: event.raw_payload,
             processing_status: "received",
-        }),
-    });
-
-    if (!response.ok) {
-        throw new Error(`Failed to persist webhook event: ${response.status}`);
-    }
-
-    const rows = await response.json().catch(() => []);
+        },
+        { onConflict: "provider,provider_event_id" }
+    );
     return { duplicate: Array.isArray(rows) && rows.length === 0 };
 }
 
@@ -97,21 +60,14 @@ async function markWebhookEvent(
     status: "processed" | "failed" | "ignored",
     errorMessage?: string
 ) {
-    const url = `${env.SUPABASE_URL}/rest/v1/payment_webhook_events?provider=eq.${provider}&provider_event_id=eq.${encodeURIComponent(providerEventId)}`;
-    await fetch(url, {
-        method: "PATCH",
-        headers: {
-            apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-            Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-            "Content-Type": "application/json",
-            Prefer: "return=minimal",
-        },
-        body: JSON.stringify({
+    await patchSupabaseRows(env, "payment_webhook_events", {
+        provider: `eq.${provider}`,
+        provider_event_id: `eq.${providerEventId}`,
+    }, {
             processing_status: status,
             processed_at: new Date().toISOString(),
             error_message: errorMessage || null,
-        }),
-    });
+    }, "return=minimal");
 }
 
 function razorpayProviderEventId(
@@ -204,36 +160,12 @@ function isUuid(value: string): boolean {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
-function restUrl(env: Env, table: string, params: Record<string, string>): string {
-    const url = new URL(`/rest/v1/${table}`, env.SUPABASE_URL);
-    Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
-    return url.toString();
-}
-
-function serviceHeaders(env: Env, prefer = "return=representation"): HeadersInit {
-    return {
-        apikey: env.SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
-        "Content-Type": "application/json",
-        Prefer: prefer,
-    };
-}
-
 async function selectRows<T>(
     env: Env,
     table: string,
     params: Record<string, string>
 ): Promise<T[]> {
-    const response = await fetch(restUrl(env, table, params), {
-        headers: serviceHeaders(env),
-    });
-
-    if (!response.ok) {
-        const message = await response.text().catch(() => "");
-        throw new Error(`Supabase select failed for ${table}: ${response.status} ${message}`);
-    }
-
-    return response.json() as Promise<T[]>;
+    return selectSupabaseRows<T>(env, table, params);
 }
 
 async function patchRows<T>(
@@ -243,19 +175,7 @@ async function patchRows<T>(
     body: Record<string, unknown>,
     prefer = "return=representation"
 ): Promise<T[]> {
-    const response = await fetch(restUrl(env, table, params), {
-        method: "PATCH",
-        headers: serviceHeaders(env, prefer),
-        body: JSON.stringify(body),
-    });
-
-    if (!response.ok) {
-        const message = await response.text().catch(() => "");
-        throw new Error(`Supabase patch failed for ${table}: ${response.status} ${message}`);
-    }
-
-    if (prefer.includes("return=minimal")) return [];
-    return response.json() as Promise<T[]>;
+    return patchSupabaseRows<T>(env, table, params, body, prefer);
 }
 
 async function insertRows<T>(
@@ -263,18 +183,7 @@ async function insertRows<T>(
     table: string,
     rows: Record<string, unknown> | Array<Record<string, unknown>>
 ): Promise<T[]> {
-    const response = await fetch(restUrl(env, table, {}), {
-        method: "POST",
-        headers: serviceHeaders(env),
-        body: JSON.stringify(rows),
-    });
-
-    if (!response.ok) {
-        const message = await response.text().catch(() => "");
-        throw new Error(`Supabase insert failed for ${table}: ${response.status} ${message}`);
-    }
-
-    return response.json() as Promise<T[]>;
+    return insertSupabaseRows<T>(env, table, rows);
 }
 
 async function findOrderByPaymentCandidates(
@@ -409,16 +318,10 @@ async function markOrderRefunded(
 
 async function getRazorpayOrderNotes(env: Env, orderId: string): Promise<JsonObject> {
     if (!env.RAZORPAY_KEY_ID || !env.RAZORPAY_KEY_SECRET) return {};
-
-    const response = await fetch(`https://api.razorpay.com/v1/orders/${orderId}`, {
-        headers: {
-            Authorization: `Basic ${btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`)}`,
-        },
-    });
-
-    if (!response.ok) return {};
-    const order = asObject(await response.json().catch(() => ({})));
-    return asObject(order.notes);
+    return fetchRazorpayOrderNotes({
+        keyId: env.RAZORPAY_KEY_ID,
+        keySecret: env.RAZORPAY_KEY_SECRET,
+    }, orderId);
 }
 
 async function resolveRazorpayNotes(env: Env, payment: JsonObject): Promise<JsonObject> {

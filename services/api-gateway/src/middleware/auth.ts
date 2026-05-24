@@ -1,5 +1,8 @@
 import { createMiddleware } from 'hono/factory';
-import { createClient } from '@supabase/supabase-js';
+import {
+    createSupabaseAnonClient,
+    createSupabaseServiceClient,
+} from '@letbuyy/infrastructure/supabase-adapter';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 
@@ -130,9 +133,7 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
         return null;
     }
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY, {
-        auth: { autoRefreshToken: false, persistSession: false },
-    });
+    const supabase = createSupabaseServiceClient(c.env);
 
     const { data: session } = await supabase
         .from('sessions')
@@ -210,7 +211,7 @@ export const authMiddleware = createMiddleware<{ Bindings: Env }>(
         const token = authHeader.slice(7);
 
         try {
-            const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+            const supabase = createSupabaseAnonClient(c.env);
 
             const {
                 data: { user },
@@ -273,7 +274,7 @@ export const optionalAuth = createMiddleware<{ Bindings: Env }>(
         if (authHeader?.startsWith('Bearer ')) {
             const token = authHeader.slice(7);
             try {
-                const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+                const supabase = createSupabaseAnonClient(c.env);
                 const {
                     data: { user },
                 } = await supabase.auth.getUser(token);

@@ -16,10 +16,10 @@
         "@letbuyy/cms-core": "workspace:*",
         "@letbuyy/commerce-core": "workspace:*",
         "@letbuyy/event-core": "workspace:*",
+        "@letbuyy/infrastructure": "workspace:*",
         "@letbuyy/shared-types": "workspace:*",
         "@letbuyy/tenant-core": "workspace:*",
         "@letbuyy/theme-engine": "workspace:*",
-        "@supabase/supabase-js": "^2.47.0",
         "bcryptjs": "^3.0.3",
         "hono": "^4.7.0",
         "zod": "^4.3.6"

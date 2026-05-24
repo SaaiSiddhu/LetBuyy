@@ -8,6 +8,7 @@
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
+        "@letbuyy/infrastructure": "workspace:*",
         "hono": "^4.0.0"
     },
     "devDependencies": {

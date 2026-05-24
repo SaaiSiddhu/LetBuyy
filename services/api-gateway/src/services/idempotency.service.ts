@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { ConflictError, ValidationError } from '../lib/errors';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };

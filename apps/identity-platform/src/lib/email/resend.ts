@@ -1,12 +1,5 @@
-import { Resend } from 'resend'
+import { sendResendEmail } from '@letbuyy/runtime-composition/identity-runtime-adapter'
 
-let _resend: Resend | null = null
-function getResend(): Resend {
-  if (!_resend) {
-    _resend = new Resend(process.env.RESEND_API_KEY)
-  }
-  return _resend
-}
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'
 const LOCAL_ACCOUNTS_URL = 'http://localhost:3001'
 
@@ -21,16 +14,16 @@ interface SendEmailOptions {
  */
 export async function sendEmail({ to, subject, html }: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    const { error } = await getResend().emails.send({
+    const result = await sendResendEmail({
       from: `LetBuyy <${FROM_EMAIL}>`,
       to,
       subject,
       html,
     })
 
-    if (error) {
-      console.error('Resend error:', error)
-      return { success: false, error: error.message }
+    if (!result.success) {
+      console.error('Resend error:', result.error)
+      return { success: false, error: result.error }
     }
 
     return { success: true }

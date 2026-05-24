@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { User, Session, AuthChangeEvent } from '@supabase/supabase-js';
+import type { User, Session, AuthChangeEvent } from '@letbuyy/runtime-composition/identity-runtime-adapter';
 import { getSupabaseClient } from '@/lib/supabase/client';
 
 /* ─── Types ─── */
@@ -32,6 +32,11 @@ export function useAuthProvider(): AuthState {
 
     useEffect(() => {
         const supabase = getSupabaseClient();
+        if (!supabase) {
+            setUser(null);
+            setIsLoading(false);
+            return;
+        }
 
         // 1. Check initial session
         supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
@@ -52,6 +57,10 @@ export function useAuthProvider(): AuthState {
 
     const signOut = useCallback(async () => {
         const supabase = getSupabaseClient();
+        if (!supabase) {
+            setUser(null);
+            return;
+        }
         await supabase.auth.signOut();
         setUser(null);
     }, []);

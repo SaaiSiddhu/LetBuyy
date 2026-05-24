@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { ConflictError, NotFoundError } from '../lib/errors';
 
 type PayableOrder = {

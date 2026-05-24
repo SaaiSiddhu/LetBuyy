@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 
 type Metadata = Record<string, unknown>;
 

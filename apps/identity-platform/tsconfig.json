@@ -19,7 +19,8 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@letbuyy/runtime-composition/*": ["../../packages/runtime-composition/*/index.ts"]
     }
   },
   "include": [

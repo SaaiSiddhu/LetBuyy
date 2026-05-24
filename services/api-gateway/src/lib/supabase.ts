@@ -1,4 +1,8 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+    createSupabaseServiceClient,
+    createSupabaseUserClient,
+    type SupabaseClient,
+} from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
 import type { Context } from 'hono';
 
@@ -6,9 +10,7 @@ import type { Context } from 'hono';
  * Create a Supabase Admin client (service role — bypasses RLS)
  */
 export function getSupabaseAdminFromEnv(env: Env): SupabaseClient {
-    return createClient(env.SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
-        auth: { autoRefreshToken: false, persistSession: false },
-    });
+    return createSupabaseServiceClient(env);
 }
 
 export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient {
@@ -19,9 +21,7 @@ export function getSupabaseAdmin(c: Context<{ Bindings: Env }>): SupabaseClient 
  * Create a Supabase client scoped to the authenticated user (respects RLS)
  */
 export function getSupabaseUser(c: Context<{ Bindings: Env }>, token: string): SupabaseClient {
-    return createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY, {
-        global: { headers: { Authorization: `Bearer ${token}` } },
-    });
+    return createSupabaseUserClient(c.env, token);
 }
 
 // ── Response Envelope (matches Doc 09 § 1.3) ──────────────────

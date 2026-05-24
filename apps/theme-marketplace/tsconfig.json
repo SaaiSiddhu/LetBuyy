@@ -29,6 +29,9 @@
             "@letbuyy/shared-types": [
                 "../../packages/shared-types/src/index.ts"
             ],
+            "@letbuyy/runtime-composition/*": [
+                "../../packages/runtime-composition/*/index.ts"
+            ],
             "@/*": [
                 "./src/*"
             ]

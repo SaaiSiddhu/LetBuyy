@@ -7,7 +7,6 @@
         "declarationMap": true,
         "sourceMap": true,
         "outDir": "./dist",
-        "rootDir": "./src",
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
@@ -16,7 +15,13 @@
         "isolatedModules": true,
         "types": [
             "node"
-        ]
+        ],
+        "baseUrl": ".",
+        "paths": {
+            "@letbuyy/infrastructure/*": [
+                "../../infrastructure/*/index.ts"
+            ]
+        }
     },
     "include": [
         "src/**/*"

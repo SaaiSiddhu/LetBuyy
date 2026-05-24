@@ -48,6 +48,9 @@
             "@letbuyy/event-core": [
                 "../../packages/event-core/src/index.ts"
             ],
+            "@letbuyy/infrastructure/*": [
+                "../../packages/infrastructure/*/index.ts"
+            ],
             "@letbuyy/notification-core": [
                 "../../packages/notification-core/src/index.ts"
             ],

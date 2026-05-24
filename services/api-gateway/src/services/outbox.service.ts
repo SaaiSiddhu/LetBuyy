@@ -1,4 +1,4 @@
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { hmacSha256Hex } from '../lib/internal-auth';
 
 type JsonObject = Record<string, unknown>;

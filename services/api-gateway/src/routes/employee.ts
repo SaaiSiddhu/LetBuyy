@@ -2,7 +2,10 @@ import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
-import { createClient } from '@supabase/supabase-js';
+import {
+    createSupabaseAnonClient,
+    createSupabaseServiceClient,
+} from '@letbuyy/infrastructure/supabase-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -41,7 +44,7 @@ router.post('/auth/login', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'email and password required' } }, 400);
     }
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const supabase = createSupabaseAnonClient(c.env);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
@@ -102,7 +105,7 @@ router.post('/auth/accept-invite', async (c) => {
     }
 
     // Create Supabase auth user for employee
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createSupabaseServiceClient(c.env);
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
         email: invite.email,
         password,

@@ -1,6 +1,9 @@
 import { Hono } from 'hono';
 import type { Context } from 'hono';
-import { createClient } from '@supabase/supabase-js';
+import {
+    createSupabaseAnonClient,
+    createSupabaseServiceClient,
+} from '@letbuyy/infrastructure/supabase-adapter';
 import { resolveCustomUser } from '../lib/auth-user';
 import { bytesToHex, verifyInternalAppRequest } from '../lib/internal-auth';
 import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
@@ -492,7 +495,7 @@ auth.post('/custom/tokens/validate', async (c) => {
 auth.post('/signup', validate('json', SignUpSchema), async (c) => {
     const body = c.get('validatedBody') as { email: string; password: string; name?: string };
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_SERVICE_ROLE_KEY);
+    const supabase = createSupabaseServiceClient(c.env);
 
     const { data, error } = await supabase.auth.admin.createUser({
         email: body.email,
@@ -522,7 +525,7 @@ auth.post('/signup', validate('json', SignUpSchema), async (c) => {
 auth.post('/signin', validate('json', SignInSchema), async (c) => {
     const body = c.get('validatedBody') as { email: string; password: string };
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const supabase = createSupabaseAnonClient(c.env);
 
     const { data, error } = await supabase.auth.signInWithPassword({
         email: body.email,
@@ -549,7 +552,7 @@ auth.post('/signin', validate('json', SignInSchema), async (c) => {
 auth.post('/signin/otp', validate('json', OtpRequestSchema), async (c) => {
     const body = c.get('validatedBody') as { email: string };
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const supabase = createSupabaseAnonClient(c.env);
 
     const { error } = await supabase.auth.signInWithOtp({ email: body.email });
 
@@ -564,7 +567,7 @@ auth.post('/signin/otp', validate('json', OtpRequestSchema), async (c) => {
 auth.post('/signin/otp/verify', validate('json', OtpVerifySchema), async (c) => {
     const body = c.get('validatedBody') as { email: string; token: string };
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const supabase = createSupabaseAnonClient(c.env);
 
     const { data, error } = await supabase.auth.verifyOtp({
         email: body.email,
@@ -597,7 +600,7 @@ auth.post('/signout', async (c) => {
         return c.json({ data: { message: 'Signed out' } });
     }
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY, {
+    const supabase = createSupabaseAnonClient(c.env, {
         global: { headers: { Authorization: authHeader } },
     });
 
@@ -610,7 +613,7 @@ auth.post('/signout', async (c) => {
 auth.post('/password/reset', validate('json', PasswordResetRequestSchema), async (c) => {
     const body = c.get('validatedBody') as { email: string };
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY);
+    const supabase = createSupabaseAnonClient(c.env);
 
     const { error } = await supabase.auth.resetPasswordForEmail(body.email, {
         redirectTo: 'https://accounts.letbuyy.store/reset-password',
@@ -636,7 +639,7 @@ auth.post('/password/update', validate('json', PasswordUpdateSchema), async (c) 
 
     const body = c.get('validatedBody') as { password: string };
 
-    const supabase = createClient(c.env.SUPABASE_URL, c.env.SUPABASE_ANON_KEY, {
+    const supabase = createSupabaseAnonClient(c.env, {
         global: { headers: { Authorization: authHeader } },
     });
 

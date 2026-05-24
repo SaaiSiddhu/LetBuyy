@@ -4,6 +4,7 @@ import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
+import { verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -52,13 +53,7 @@ async function encryptPaymentSecret(secret: string, encryptionKey: string): Prom
 }
 
 async function verifyRazorpayCredentials(keyId: string, keySecret: string): Promise<boolean> {
-    const response = await fetch('https://api.razorpay.com/v1/payments?count=1', {
-        headers: {
-            Authorization: `Basic ${btoa(`${keyId}:${keySecret}`)}`,
-        },
-    });
-
-    return response.ok;
+    return verifyRazorpayCredentialsWithAdapter({ keyId, keySecret });
 }
 
 function sanitizePaymentSettings(settings: PaymentSettings | null | undefined) {

@@ -13,6 +13,10 @@ packages:
   - "packages/notification-core"
   - "packages/search-core"
   - "packages/billing-core"
+  - "packages/application-services"
+  - "packages/infrastructure"
+  - "packages/orchestration"
+  - "packages/runtime-composition"
   - "packages/typescript/*"
   - "services/*"
 

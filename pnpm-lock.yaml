@@ -23,12 +23,6 @@ importers:
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
-      '@supabase/ssr':
-        specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.95.3)
-      '@supabase/supabase-js':
-        specifier: ^2.95.2
-        version: 2.95.3
       jose:
         specifier: ^6.1.3
         version: 6.1.3
@@ -75,24 +69,15 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/runtime-composition':
+        specifier: workspace:*
+        version: link:../../packages/runtime-composition
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
       '@react-email/components':
         specifier: ^1.0.7
         version: 1.0.7(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
-      '@supabase/ssr':
-        specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.95.3)
-      '@supabase/supabase-js':
-        specifier: ^2.95.2
-        version: 2.95.3
-      '@upstash/ratelimit':
-        specifier: ^2.0.8
-        version: 2.0.8(@upstash/redis@1.36.2)
-      '@upstash/redis':
-        specifier: ^1.36.2
-        version: 1.36.2
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -111,9 +96,6 @@ importers:
       react-email:
         specifier: ^5.2.8
         version: 5.2.8
-      resend:
-        specifier: ^6.9.2
-        version: 6.9.2(@react-email/render@2.0.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -151,12 +133,6 @@ importers:
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
-      '@supabase/ssr':
-        specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.95.3)
-      '@supabase/supabase-js':
-        specifier: ^2.95.2
-        version: 2.95.3
       framer-motion:
         specifier: ^12.33.0
         version: 12.34.0(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
@@ -261,12 +237,6 @@ importers:
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
-      '@supabase/ssr':
-        specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.95.3)
-      '@supabase/supabase-js':
-        specifier: ^2.95.2
-        version: 2.95.3
       lucide-react:
         specifier: ^0.562.0
         version: 0.562.0(react@19.2.3)
@@ -316,12 +286,6 @@ importers:
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
-      '@supabase/ssr':
-        specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.95.3)
-      '@supabase/supabase-js':
-        specifier: ^2.95.2
-        version: 2.95.3
       lucide-react:
         specifier: ^0.562.0
         version: 0.562.0(react@19.2.3)
@@ -377,6 +341,9 @@ importers:
       '@letbuyy/commerce-core':
         specifier: workspace:*
         version: link:../../packages/commerce-core
+      '@letbuyy/runtime-composition':
+        specifier: workspace:*
+        version: link:../../packages/runtime-composition
       '@letbuyy/tenant-core':
         specifier: workspace:*
         version: link:../../packages/tenant-core
@@ -386,9 +353,6 @@ importers:
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
-      '@paypal/checkout-server-sdk':
-        specifier: ^1.0.3
-        version: 1.0.3
       '@vercel/speed-insights':
         specifier: ^1.3.1
         version: 1.3.1(next@16.1.6(react-dom@19.2.3(react@19.2.3))(react@19.2.3))(react@19.2.3)
@@ -416,9 +380,6 @@ importers:
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
-      stripe:
-        specifier: ^20.3.1
-        version: 20.3.1(@types/node@20.19.33)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.1
@@ -453,18 +414,15 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/runtime-composition':
+        specifier: workspace:*
+        version: link:../../packages/runtime-composition
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../packages/theme-engine
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
-      '@supabase/ssr':
-        specifier: ^0.8.0
-        version: 0.8.0(@supabase/supabase-js@2.95.3)
-      '@supabase/supabase-js':
-        specifier: ^2.95.2
-        version: 2.95.3
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -486,9 +444,6 @@ importers:
       server-only:
         specifier: ^0.0.1
         version: 0.0.1
-      stripe:
-        specifier: ^20.3.1
-        version: 20.3.1(@types/node@20.19.33)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.1
@@ -526,6 +481,49 @@ importers:
       zod:
         specifier: ^4.3.6
         version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/application-services:
+    dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../auth-core
+      '@letbuyy/billing-core':
+        specifier: workspace:*
+        version: link:../billing-core
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../checkout-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../commerce-core
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../event-core
+      '@letbuyy/notification-core':
+        specifier: workspace:*
+        version: link:../notification-core
+      '@letbuyy/orchestration':
+        specifier: workspace:*
+        version: link:../orchestration
+      '@letbuyy/search-core':
+        specifier: workspace:*
+        version: link:../search-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../tenant-core
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../theme-engine
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -615,6 +613,34 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/infrastructure:
+    dependencies:
+      '@supabase/ssr':
+        specifier: ^0.8.0
+        version: 0.8.0(@supabase/supabase-js@2.95.3)
+      '@supabase/supabase-js':
+        specifier: ^2.95.2
+        version: 2.95.3
+      '@upstash/ratelimit':
+        specifier: ^2.0.8
+        version: 2.0.8(@upstash/redis@1.36.2)
+      '@upstash/redis':
+        specifier: ^1.36.2
+        version: 1.36.2
+      resend:
+        specifier: ^6.9.2
+        version: 6.9.2(@react-email/render@2.0.4(react-dom@19.2.3(react@19.2.3))(react@19.2.3))
+      stripe:
+        specifier: ^20.3.1
+        version: 20.3.1(@types/node@20.19.33)
+    devDependencies:
+      '@types/node':
+        specifier: ^20
+        version: 20.19.33
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/notification-core:
     dependencies:
       '@letbuyy/event-core':
@@ -626,6 +652,53 @@ importers:
       zod:
         specifier: ^4.3.6
         version: 4.3.6
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/orchestration:
+    dependencies:
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../event-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
+  packages/runtime-composition:
+    dependencies:
+      '@letbuyy/application-services':
+        specifier: workspace:*
+        version: link:../application-services
+      '@letbuyy/checkout-core':
+        specifier: workspace:*
+        version: link:../checkout-core
+      '@letbuyy/cms-core':
+        specifier: workspace:*
+        version: link:../cms-core
+      '@letbuyy/commerce-core':
+        specifier: workspace:*
+        version: link:../commerce-core
+      '@letbuyy/infrastructure':
+        specifier: workspace:*
+        version: link:../infrastructure
+      '@letbuyy/search-core':
+        specifier: workspace:*
+        version: link:../search-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+      '@letbuyy/tenant-core':
+        specifier: workspace:*
+        version: link:../tenant-core
+      '@letbuyy/theme-engine':
+        specifier: workspace:*
+        version: link:../theme-engine
     devDependencies:
       typescript:
         specifier: ^5.9.3
@@ -744,9 +817,9 @@ importers:
 
   packages/typescript/utils:
     dependencies:
-      '@supabase/supabase-js':
-        specifier: ^2.47.0
-        version: 2.95.3
+      '@letbuyy/infrastructure':
+        specifier: workspace:*
+        version: link:../../infrastructure
     devDependencies:
       '@types/node':
         specifier: ^20
@@ -781,6 +854,9 @@ importers:
       '@letbuyy/event-core':
         specifier: workspace:*
         version: link:../../packages/event-core
+      '@letbuyy/infrastructure':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure
       '@letbuyy/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -790,9 +866,6 @@ importers:
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../packages/theme-engine
-      '@supabase/supabase-js':
-        specifier: ^2.47.0
-        version: 2.95.3
       bcryptjs:
         specifier: ^3.0.3
         version: 3.0.3
@@ -815,6 +888,9 @@ importers:
 
   services/webhook-service:
     dependencies:
+      '@letbuyy/infrastructure':
+        specifier: workspace:*
+        version: link:../../packages/infrastructure
       hono:
         specifier: ^4.0.0
         version: 4.11.9
@@ -1660,15 +1736,6 @@ packages:
   '@nolyfill/is-core-module@1.0.39':
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
-
-  '@paypal/checkout-server-sdk@1.0.3':
-    resolution: {integrity: sha512-UEdq8akEdMz0Vs4qoQFU2gMp8PpyE/HKyMwiZuK4vIWUKl8jfd1fWKjQN5cDFm9NkFUIp5U7h++rdMOVj9WMNA==}
-    engines: {node: '>=8'}
-    deprecated: 'Package no longer supported. The author suggests using the @paypal/paypal-server-sdk package instead: https://www.npmjs.com/package/@paypal/paypal-server-sdk. Contact Support at https://www.npmjs.com/support for more info.'
-
-  '@paypal/paypalhttp@1.0.1':
-    resolution: {integrity: sha512-DC7AHxTT7drF6dUi3YaFdPVuT15sIkpD5H2eHmdtFgxM4UanS1o1ZDfMhR9mpxd8o+X6pz2r+EZVRRq+n1cssQ==}
-    engines: {node: '>=4'}
 
   '@react-email/body@0.2.1':
     resolution: {integrity: sha512-ljDiQiJDu/Fq//vSIIP0z5Nuvt4+DX1RqGasstChDGJB/14ogd4VdNS9aacoede/ZjGy3o3Qb+cxyS+XgM6SwQ==}
@@ -4743,12 +4810,6 @@ snapshots:
       fastq: 1.20.1
 
   '@nolyfill/is-core-module@1.0.39': {}
-
-  '@paypal/checkout-server-sdk@1.0.3':
-    dependencies:
-      '@paypal/paypalhttp': 1.0.1
-
-  '@paypal/paypalhttp@1.0.1': {}
 
   '@react-email/body@0.2.1(react@19.2.3)':
     dependencies:

@@ -2,7 +2,7 @@
 // ORDER SERVICE — Business logic extraction from routes
 // ============================================================
 
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { VALID_TRANSITIONS } from '../schemas/order.schema';
 import type { TenantContext } from '../lib/tenant-context';

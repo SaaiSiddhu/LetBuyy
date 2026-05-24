@@ -1,6 +1,6 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createSupabaseBrowserClient } from '@letbuyy/runtime-composition/identity-runtime-adapter';
 
-let clientInstance: ReturnType<typeof createBrowserClient> | null = null;
+let clientInstance: ReturnType<typeof createSupabaseBrowserClient> | null = null;
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -19,7 +19,7 @@ export function getSupabaseClient() {
             );
             return null;
         }
-        clientInstance = createBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        clientInstance = createSupabaseBrowserClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     }
     return clientInstance;
 }

@@ -1,5 +1,5 @@
 import type { Context } from 'hono';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import type { Env } from '../index';
 import { ForbiddenError, NotFoundError } from './errors';
 import { resolveCustomUser, verifySiteOwnership } from './auth-user';

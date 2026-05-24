@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@letbuyy/application-services": ["../application-services/src/index.ts"],
+      "@letbuyy/checkout-core": ["../checkout-core/src/index.ts"],
+      "@letbuyy/cms-core": ["../cms-core/src/index.ts"],
+      "@letbuyy/commerce-core": ["../commerce-core/src/index.ts"],
+      "@letbuyy/infrastructure/*": ["../infrastructure/*/index.ts"],
+      "@letbuyy/search-core": ["../search-core/src/index.ts"],
+      "@letbuyy/shared-types": ["../shared-types/src/index.ts"],
+      "@letbuyy/tenant-core": ["../tenant-core/src/index.ts"],
+      "@letbuyy/theme-engine": ["../theme-engine/src/index.ts"]
+    },
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*.ts", "*-query-layer/**/*.ts", "*-adapter/**/*.ts"]
+}

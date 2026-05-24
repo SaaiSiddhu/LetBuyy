@@ -1,96 +1,14 @@
-// ============================================================
-// STRIPE — Server-side client & helpers
-// ============================================================
-
 import 'server-only';
-import Stripe from 'stripe';
 
-// Lazy-initialize to prevent build-time crashes when env vars are missing
-let _stripe: Stripe | null = null;
-export function getStripe(): Stripe {
-    if (!_stripe) {
-        const key = process.env.STRIPE_SECRET_KEY;
-        if (!key) {
-            throw new Error(
-                '[Stripe] STRIPE_SECRET_KEY is not configured. ' +
-                'Set the STRIPE_SECRET_KEY environment variable to enable payments.'
-            );
-        }
-        _stripe = new Stripe(key);
-    }
-    return _stripe;
-}
+export {
+  constructWebhookEvent,
+  createCheckoutSession,
+  getCheckoutSession,
+  getStripeClient as getStripe,
+  stripe,
+} from '@letbuyy/runtime-composition/checkout-runtime-adapter';
 
-// Backward-compatible export (lazy)
-export const stripe = new Proxy({} as Stripe, {
-    get(_target, prop) {
-        return (getStripe() as unknown as Record<string | symbol, unknown>)[prop];
-    },
-});
-
-/**
- * Create a Stripe Checkout Session for an order.
- */
-export async function createCheckoutSession(params: {
-    orderId: string;
-    storeId: string;
-    amount: number;       // base currency amount stored on the order
-    currency: string;
-    customerEmail: string;
-    storeName?: string;
-    successUrl: string;
-    cancelUrl: string;
-    idempotencyKey: string;
-}): Promise<Stripe.Checkout.Session> {
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        mode: 'payment',
-        customer_email: params.customerEmail,
-        line_items: [
-            {
-                price_data: {
-                    currency: params.currency,
-                    product_data: {
-                        name: params.storeName || 'Order Payment',
-                        description: `Order #${params.orderId}`,
-                    },
-                    unit_amount: Math.round(params.amount * 100), // Convert to paise/cents
-                },
-                quantity: 1,
-            },
-        ],
-        metadata: {
-            order_id: params.orderId,
-            orderId: params.orderId,
-            store_id: params.storeId,
-            storeId: params.storeId,
-        },
-        success_url: params.successUrl,
-        cancel_url: params.cancelUrl,
-    }, {
-        idempotencyKey: params.idempotencyKey,
-    });
-
-    return session;
-}
-
-/**
- * Construct and verify a Stripe webhook event from a raw body.
- */
-export function constructWebhookEvent(
-    rawBody: string | Buffer,
-    signature: string
-): Stripe.Event {
-    const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-    if (!webhookSecret) {
-        throw new Error('STRIPE_WEBHOOK_SECRET not configured');
-    }
-    return stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
-}
-
-/**
- * Retrieve a Checkout Session by ID.
- */
-export async function getCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session> {
-    return stripe.checkout.sessions.retrieve(sessionId);
-}
+export type {
+  StripeCheckoutSession,
+  StripeWebhookEvent,
+} from '@letbuyy/runtime-composition/checkout-runtime-adapter';

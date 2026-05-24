@@ -2,7 +2,7 @@
 // PRODUCT SERVICE — Business logic extraction from routes
 // ============================================================
 
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasService } from './saas.service';

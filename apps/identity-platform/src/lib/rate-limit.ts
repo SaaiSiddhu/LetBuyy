@@ -1,58 +1,38 @@
-import { Ratelimit } from '@upstash/ratelimit'
-import { Redis } from '@upstash/redis'
+import { createUpstashSlidingWindowLimiter, type RateLimiterPort } from '@letbuyy/runtime-composition/identity-runtime-adapter'
 
-// Create Redis client (only if configured)
-const redis = process.env.UPSTASH_REDIS_REST_URL
-    ? new Redis({
-        url: process.env.UPSTASH_REDIS_REST_URL,
-        token: process.env.UPSTASH_REDIS_REST_TOKEN || '',
-    })
-    : null
+const redisConfig = {
+    url: process.env.UPSTASH_REDIS_REST_URL,
+    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+}
 
 /**
  * Rate limiter configurations for different auth endpoints.
  * Uses sliding window algorithm for smooth rate limiting.
  */
-const limiters: Record<string, Ratelimit | null> = {
+const limiters: Record<string, RateLimiterPort | null> = {
     // Lookup: 10 requests per 15 minutes
-    lookup: redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '15 m'), prefix: 'rl:lookup' })
-        : null,
+    lookup: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 10, window: '15 m', prefix: 'rl:lookup' }),
 
     // Signup: 3 requests per hour
-    signup: redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, '1 h'), prefix: 'rl:signup' })
-        : null,
+    signup: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 3, window: '1 h', prefix: 'rl:signup' }),
 
     // Login: 5 requests per 15 minutes
-    login: redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '15 m'), prefix: 'rl:login' })
-        : null,
+    login: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 5, window: '15 m', prefix: 'rl:login' }),
 
     // Send magic link: 3 per 15 minutes
-    'send-magic': redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, '15 m'), prefix: 'rl:magic' })
-        : null,
+    'send-magic': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 3, window: '15 m', prefix: 'rl:magic' }),
 
     // Send reset: 3 per 15 minutes
-    'send-reset': redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(3, '15 m'), prefix: 'rl:reset' })
-        : null,
+    'send-reset': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 3, window: '15 m', prefix: 'rl:reset' }),
 
     // Set password: 5 per 15 minutes
-    'set-password': redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '15 m'), prefix: 'rl:setpw' })
-        : null,
+    'set-password': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 5, window: '15 m', prefix: 'rl:setpw' }),
 
     // Reset password: 5 per 15 minutes
-    'reset-password': redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(5, '15 m'), prefix: 'rl:resetpw' })
-        : null,
+    'reset-password': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 5, window: '15 m', prefix: 'rl:resetpw' }),
 
     // Verify: 10 per 15 minutes
-    verify: redis
-        ? new Ratelimit({ redis, limiter: Ratelimit.slidingWindow(10, '15 m'), prefix: 'rl:verify' })
-        : null,
+    verify: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 10, window: '15 m', prefix: 'rl:verify' }),
 }
 
 /**

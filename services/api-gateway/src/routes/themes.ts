@@ -25,6 +25,7 @@ import {
 } from '../schemas/theme.schema';
 import { EventService } from '../services/event.service';
 import { ThemeService } from '../services/theme.service';
+import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 const SUPPORTED_THEME_SLUGS = ['urban-kicks'];
@@ -58,13 +59,6 @@ type ThemePurchaseRecord = {
     provider_order_id?: string | null;
     provider_payment_id?: string | null;
     payment_idempotency_key?: string | null;
-};
-
-type RazorpayOrderCreateResponse = {
-    id?: string;
-    amount?: number;
-    currency?: string;
-    error?: { description?: string };
 };
 
 function getRequestId(c: Context<{ Bindings: Env }>): string {
@@ -564,13 +558,9 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
     }
 
     const requestId = getRequestId(c);
-    const razorpayResponse = await fetch('https://api.razorpay.com/v1/orders', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${btoa(`${c.env.RAZORPAY_KEY_ID}:${c.env.RAZORPAY_KEY_SECRET}`)}`,
-        },
-        body: JSON.stringify({
+    const razorpayOrder = await createRazorpayOrder(
+        { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+        {
             amount: amountPaise,
             currency: body.currency,
             receipt: `theme_${purchasableTheme.id.slice(0, 8)}_${Date.now()}`,
@@ -581,11 +571,10 @@ router.post('/:slug/purchase', validate('json', ThemePurchaseOrderSchema), async
                 idempotency_key: body.idempotency_key || '',
                 request_id: requestId,
             },
-        }),
-    });
+        }
+    );
 
-    const razorpayOrder = (await razorpayResponse.json()) as RazorpayOrderCreateResponse;
-    if (!razorpayResponse.ok || !razorpayOrder.id) {
+    if (!razorpayOrder.id) {
         return c.json(
             errorBody('PAYMENT_PROVIDER_ERROR', 'Failed to create theme payment order'),
             502

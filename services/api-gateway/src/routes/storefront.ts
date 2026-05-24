@@ -23,6 +23,7 @@ import { PaymentService } from '../services/payment.service';
 import { ProductService } from '../services/product.service';
 import { IdempotencyService } from '../services/idempotency.service';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
+import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -1644,13 +1645,9 @@ router.post(
         const amountMinorUnits = Math.round(Number(order.total) * 100);
 
         try {
-            const response = await fetch('https://api.razorpay.com/v1/orders', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Basic ${btoa(`${c.env.RAZORPAY_KEY_ID}:${c.env.RAZORPAY_KEY_SECRET}`)}`,
-                },
-                body: JSON.stringify({
+            const providerOrder = await createRazorpayOrder(
+                { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+                {
                     amount: amountMinorUnits,
                     currency: order.currency || 'INR',
                     receipt: body.orderId,
@@ -1660,12 +1657,10 @@ router.post(
                         source: 'storefront',
                         idempotency_key: body.idempotencyKey,
                     },
-                }),
-            });
+                }
+            );
 
-            const providerOrder = (await response.json()) as RazorpayOrderResponse;
-
-            if (!response.ok || !providerOrder.id) {
+            if (!providerOrder.id) {
                 await idempotency.fail(claim.id);
                 return c.json(
                     {

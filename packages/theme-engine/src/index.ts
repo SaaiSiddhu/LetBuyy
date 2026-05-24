@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { SlugSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export * from './theme-registry';
+export * from './execution-runtime';
 
 export type BuiltInSectionType =
   | 'header'

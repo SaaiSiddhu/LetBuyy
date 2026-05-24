@@ -7,6 +7,8 @@ import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
 import { ForbiddenError, ConflictError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentService } from '../services/payment.service';
+import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
     RazorpayOrderSchema,
     RazorpayVerifySchema,
@@ -266,13 +268,9 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         );
     }
 
-    const orderRes = await fetch('https://api.razorpay.com/v1/orders', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Basic ${btoa(`${c.env.RAZORPAY_KEY_ID}:${c.env.RAZORPAY_KEY_SECRET}`)}`,
-        },
-        body: JSON.stringify({
+    const order = await createRazorpayOrder(
+        { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+        {
             amount: amountPaise,
             currency: 'INR',
             receipt: `sub_${body.store_id.slice(-8)}_${Date.now()}`,
@@ -282,11 +280,10 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
                 billing_period: body.billing_period,
                 user_id: customUser.id,
             },
-        }),
-    });
+        }
+    );
 
-    const order = (await orderRes.json()) as RazorpayOrderCreateResponse;
-    if (!orderRes.ok || !order.id) {
+    if (!order.id) {
         return c.json(
             errorBody('PAYMENT_PROVIDER_ERROR', 'Failed to create subscription payment order'),
             502
@@ -468,13 +465,9 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
         const order = await loadPayableOrder(c, body.order_id, customUser.id, auth.user.storeId);
         const amountMinorUnits = Math.round(order.total * 100);
 
-        const response = await fetch('https://api.razorpay.com/v1/orders', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Basic ${btoa(`${c.env.RAZORPAY_KEY_ID}:${c.env.RAZORPAY_KEY_SECRET}`)}`,
-            },
-            body: JSON.stringify({
+        const razorpayOrder = await createRazorpayOrder(
+            { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+            {
                 amount: amountMinorUnits,
                 currency: order.currency || 'INR',
                 receipt: body.order_id,
@@ -482,12 +475,10 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
                     order_id: body.order_id,
                     idempotency_key: body.idempotency_key || '',
                 },
-            }),
-        });
+            }
+        );
 
-        const razorpayOrder = (await response.json()) as Record<string, unknown>;
-
-        if (!response.ok) {
+        if (!razorpayOrder.id) {
             return c.json(
                 { error: { code: 'PAYMENT_ERROR', message: 'Failed to create payment order' } },
                 500
@@ -498,7 +489,7 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
         await paymentService.attachPaymentReference({
             orderId: body.order_id,
             provider: 'razorpay',
-            providerOrderId: String(razorpayOrder.id),
+            providerOrderId: razorpayOrder.id,
             requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
             idempotencyKey: body.idempotency_key,
         });
@@ -633,30 +624,18 @@ router.post('/stripe/checkout', validate('json', StripeCheckoutSchema), async (c
         const order = await loadPayableOrder(c, body.order_id, customUser.id, auth.user.storeId);
         const unitAmount = Math.round(order.total * 100);
 
-        const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-                Authorization: `Bearer ${c.env.STRIPE_SECRET_KEY}`,
-                ...(body.idempotency_key ? { 'Idempotency-Key': body.idempotency_key } : {}),
-            },
-            body: new URLSearchParams({
-                mode: 'payment',
-                success_url:
-                    body.success_url ||
-                    'https://letbuyy.store/checkout/success?session_id={CHECKOUT_SESSION_ID}',
-                cancel_url: body.cancel_url || 'https://letbuyy.store/checkout/cancel',
-                'metadata[order_id]': body.order_id,
-                'line_items[0][price_data][currency]': (order.currency || 'INR').toLowerCase(),
-                'line_items[0][price_data][product_data][name]': `LetBuyy order ${body.order_id}`,
-                'line_items[0][price_data][unit_amount]': String(unitAmount),
-                'line_items[0][quantity]': '1',
-            }),
+        const session = await createStripeCheckoutSessionWithFetch({
+            secretKey: c.env.STRIPE_SECRET_KEY,
+            orderId: body.order_id,
+            amountMinorUnits: unitAmount,
+            currency: order.currency || 'INR',
+            successUrl: body.success_url || 'https://letbuyy.store/checkout/success?session_id={CHECKOUT_SESSION_ID}',
+            cancelUrl: body.cancel_url || 'https://letbuyy.store/checkout/cancel',
+            idempotencyKey: body.idempotency_key,
+            name: `LetBuyy order ${body.order_id}`,
         });
 
-        const session = (await response.json()) as Record<string, unknown>;
-
-        if (!response.ok) {
+        if (!session.id) {
             return c.json(
                 {
                     error: {
