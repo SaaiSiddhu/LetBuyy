@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/live-production-certification.schema.json",
+  "title": "LetBuyy Live Production Certification Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "certificationVersion",
+    "environment",
+    "certificationMode",
+    "workflow",
+    "modeDetection",
+    "scripts",
+    "evidenceStore",
+    "evidenceCategories"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "certificationVersion": { "type": "integer", "minimum": 1 },
+    "environment": { "const": "production" },
+    "certificationMode": { "enum": ["credential-gated-plan-ready", "live-certified"] },
+    "workflow": { "type": "string", "minLength": 1 },
+    "modeDetection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["script", "modes", "executeRequires"],
+      "properties": {
+        "script": { "type": "string", "minLength": 1 },
+        "modes": {
+          "type": "array",
+          "items": { "enum": ["auto", "plan", "execute"] },
+          "minItems": 3,
+          "uniqueItems": true
+        },
+        "executeRequires": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "scripts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "certification",
+        "deployment",
+        "operationsVerification",
+        "drills",
+        "security",
+        "observability",
+        "database",
+        "cloudflare",
+        "load"
+      ],
+      "properties": {
+        "certification": { "type": "string", "minLength": 1 },
+        "deployment": { "type": "string", "minLength": 1 },
+        "operationsVerification": { "type": "string", "minLength": 1 },
+        "drills": { "type": "string", "minLength": 1 },
+        "security": { "type": "string", "minLength": 1 },
+        "observability": { "type": "string", "minLength": 1 },
+        "database": { "type": "string", "minLength": 1 },
+        "cloudflare": { "type": "string", "minLength": 1 },
+        "load": { "type": "string", "minLength": 1 }
+      }
+    },
+    "evidenceStore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["api", "projectionTables"],
+      "properties": {
+        "api": { "type": "string", "minLength": 1 },
+        "projectionTables": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "evidenceCategories": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "deployment",
+        "cloudflare",
+        "supabase",
+        "observability",
+        "incident",
+        "failover",
+        "chaos",
+        "load",
+        "security",
+        "dashboards",
+        "control-plane",
+        "sre",
+        "event-store",
+        "multi-region"
+      ],
+      "properties": {
+        "deployment": { "$ref": "#/$defs/evidenceCategory" },
+        "cloudflare": { "$ref": "#/$defs/evidenceCategory" },
+        "supabase": { "$ref": "#/$defs/evidenceCategory" },
+        "observability": { "$ref": "#/$defs/evidenceCategory" },
+        "incident": { "$ref": "#/$defs/evidenceCategory" },
+        "failover": { "$ref": "#/$defs/evidenceCategory" },
+        "chaos": { "$ref": "#/$defs/evidenceCategory" },
+        "load": { "$ref": "#/$defs/evidenceCategory" },
+        "security": { "$ref": "#/$defs/evidenceCategory" },
+        "dashboards": { "$ref": "#/$defs/evidenceCategory" },
+        "control-plane": { "$ref": "#/$defs/evidenceCategory" },
+        "sre": { "$ref": "#/$defs/evidenceCategory" },
+        "event-store": { "$ref": "#/$defs/evidenceCategory" },
+        "multi-region": { "$ref": "#/$defs/evidenceCategory" }
+      }
+    }
+  },
+  "$defs": {
+    "evidenceCategory": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required", "planMode", "executeMode", "source"],
+      "properties": {
+        "required": { "const": true },
+        "planMode": { "type": "string", "minLength": 1 },
+        "executeMode": { "type": "string", "minLength": 1 },
+        "source": { "type": "string", "minLength": 1 },
+        "lastVerifiedAt": { "type": "string", "format": "date-time" },
+        "evidenceId": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

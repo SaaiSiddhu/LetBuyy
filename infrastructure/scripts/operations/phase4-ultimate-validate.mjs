@@ -50,7 +50,9 @@ const validationCommands = [
   ["node", ["infrastructure/scripts/database/verify-supabase-operations.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/observability/verify-observability-rollout.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/security/verify-security-gates.mjs"]],
-  ["node", ["infrastructure/scripts/load/run-load-suite.mjs", `--environment=${environment}`]],
+  ["node", ["infrastructure/scripts/load/run-load-suite.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
+  ["node", ["infrastructure/scripts/operations/verify-live-operations.mjs", `--environment=${environment}`, ...(execute ? ["--execute"] : [])]],
+  ["node", ["infrastructure/scripts/operations/run-live-drills.mjs", `--environment=${environment}`, `--version=${version}`, ...(execute ? ["--execute"] : [])]],
   ["node", ["infrastructure/scripts/deploy/verify-health-gates.mjs", `--environment=${environment}`, ...(execute ? [] : ["--preflight"])]],
 ];
 
@@ -77,9 +79,9 @@ if (execute) {
     environment,
     gate_name: "cloudflare-provider-contracts",
     status: "passed",
-    observed_value: 1,
-    threshold: 1,
-    evidence_url: "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
+    observed_value: { passed: true },
+    threshold: { expected: true },
+    evidence_url: null,
   });
   await postOperations("/runtime/dashboards", {
     snapshot_id: `phase4-dashboards-${environment}-${timestamp}`,

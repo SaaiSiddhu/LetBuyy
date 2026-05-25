@@ -9,6 +9,7 @@
         "validate:architecture": "node scripts/validate-architecture.mjs",
         "validate:governance": "node scripts/validate-governance.mjs",
         "validate:production": "node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production",
+        "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {

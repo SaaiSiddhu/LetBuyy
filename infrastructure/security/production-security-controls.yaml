@@ -47,3 +47,16 @@ controls:
     securityEvidence:
       table: security_enforcement_events
       api: /v1/operations/runtime/security/enforcement-events
+    liveCertification:
+      modeDetection: infrastructure/scripts/operations/phase4-live-certify.mjs
+      credentialGated: true
+      executeRequires:
+        - cloudflare api token
+        - supabase database url
+        - observability endpoints
+        - operations api token
+        - vercel deployment token
+        - secret rotation payloads
+      evidence:
+        config: config/runtime/live-production-certification.json
+        api: /v1/operations/runtime

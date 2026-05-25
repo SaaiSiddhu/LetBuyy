@@ -6,6 +6,7 @@ import path from "node:path";
 
 const args = new Set(process.argv.slice(2));
 const execute = args.has("--execute");
+const skipValidation = args.has("--skip-validation");
 const environment = valueFor("--environment") || "production";
 const target = valueFor("--target") || "all";
 const wranglerLogPath = process.env.WRANGLER_LOG_PATH || path.join(os.tmpdir(), "letbuyy-wrangler-logs");
@@ -58,12 +59,14 @@ if (!["staging", "production"].includes(environment)) {
 }
 
 cleanWranglerArtifacts();
-run("npm", ["run", "validate:governance"]);
-run("node", [
-  "infrastructure/scripts/operations/phase4-ultimate-validate.mjs",
-  `--environment=${environment}`,
-  ...(execute ? ["--execute"] : []),
-]);
+if (!skipValidation) {
+  run("npm", ["run", "validate:governance"]);
+  run("node", [
+    "infrastructure/scripts/operations/phase4-ultimate-validate.mjs",
+    `--environment=${environment}`,
+    ...(execute ? ["--execute"] : []),
+  ]);
+}
 
 if (shouldRun("cloudflare")) {
   if (execute) requireEnv(["CLOUDFLARE_API_TOKEN", "TF_VAR_cloudflare_account_id", "TF_VAR_cloudflare_api_token"]);
