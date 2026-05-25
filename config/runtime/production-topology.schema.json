@@ -1,0 +1,137 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/production-topology.schema.json",
+  "title": "LetBuyy Production Runtime Topology",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "topologyVersion",
+    "environment",
+    "queueProvider",
+    "eventStoreProvider",
+    "cacheProviders",
+    "observabilityStack",
+    "regions",
+    "runtimes"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "topologyVersion": { "type": "integer", "minimum": 1 },
+    "environment": { "const": "production" },
+    "queueProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "terraform", "producerConfig", "consumerConfig", "queues"],
+      "properties": {
+        "provider": { "const": "cloudflare-queues" },
+        "terraform": { "type": "string", "minLength": 1 },
+        "producerConfig": { "type": "string", "minLength": 1 },
+        "consumerConfig": { "type": "string", "minLength": 1 },
+        "queues": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "eventStoreProvider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "migrations", "retentionPolicy"],
+      "properties": {
+        "provider": { "const": "supabase-postgres-append-only" },
+        "migrations": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "retentionPolicy": { "type": "string", "minLength": 1 }
+      }
+    },
+    "cacheProviders": {
+      "type": "array",
+      "items": { "enum": ["upstash-redis", "cloudflare-kv", "vercel-edge-cache"] },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "observabilityStack": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["collector", "metrics", "traces", "logs", "dashboards", "alerts"],
+      "properties": {
+        "collector": { "type": "string", "minLength": 1 },
+        "metrics": { "const": "prometheus" },
+        "traces": { "const": "tempo" },
+        "logs": { "const": "loki" },
+        "dashboards": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "alerts": { "type": "string", "minLength": 1 }
+      }
+    },
+    "regions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["primary", "failover", "edge"],
+      "properties": {
+        "primary": { "type": "string", "minLength": 1 },
+        "failover": { "type": "string", "minLength": 1 },
+        "edge": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "runtimes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "runtimeName",
+          "runtimeRoot",
+          "environment",
+          "deploymentManifests",
+          "observability",
+          "queueProvider",
+          "eventStore",
+          "failover",
+          "incident",
+          "security",
+          "chaos",
+          "loadTesting",
+          "controlPlane",
+          "regionalRouting"
+        ],
+        "properties": {
+          "runtimeName": { "type": "string", "minLength": 1 },
+          "runtimeRoot": { "type": "string", "minLength": 1 },
+          "environment": { "const": "production" },
+          "deploymentManifests": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 },
+            "minItems": 1,
+            "uniqueItems": true
+          },
+          "observability": { "type": "string", "minLength": 1 },
+          "queueProvider": { "type": "string", "minLength": 1 },
+          "eventStore": { "type": "string", "minLength": 1 },
+          "failover": { "type": "string", "minLength": 1 },
+          "incident": { "type": "string", "minLength": 1 },
+          "security": { "type": "string", "minLength": 1 },
+          "chaos": { "type": "string", "minLength": 1 },
+          "loadTesting": { "type": "string", "minLength": 1 },
+          "controlPlane": { "type": "string", "minLength": 1 },
+          "regionalRouting": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

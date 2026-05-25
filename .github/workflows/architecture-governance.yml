@@ -48,3 +48,12 @@ jobs:
 
       - name: Validate operational runtime topology
         run: node scripts/validators/distributed-runtime-validator.mjs
+
+      - name: Validate production readiness topology
+        run: node scripts/validators/production-readiness-validator.mjs
+
+      - name: Generate SBOM
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high

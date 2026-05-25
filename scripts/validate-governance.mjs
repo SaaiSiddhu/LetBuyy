@@ -7,6 +7,7 @@ const validators = [
   "runtime-manifest-validator.mjs",
   "execution-layer-validator.mjs",
   "distributed-runtime-validator.mjs",
+  "production-readiness-validator.mjs",
   "package-ownership-validator.mjs",
   "import-validator.mjs",
   "dependency-graph-validator.mjs",

@@ -52,6 +52,18 @@ const requiredStringFields = [
   "coordinationExecutionOwnership",
   "diagnosticsOwnership",
   "operationalControlPlaneOwnership",
+  "deploymentOwnership",
+  "observabilityInfrastructureOwnership",
+  "queueProviderOwnership",
+  "eventStoreOwnership",
+  "failoverOwnership",
+  "incidentOwnership",
+  "deploymentTopologyOwnership",
+  "securityOwnership",
+  "chaosOwnership",
+  "loadTestingOwnership",
+  "controlPlaneOwnership",
+  "regionalRoutingOwnership",
 ];
 
 const requiredObjectFields = [

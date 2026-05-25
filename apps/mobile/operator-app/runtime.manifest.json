@@ -12,7 +12,18 @@
     "businessAuthority": "Native platform operator scaffold for controlled super-admin and operational oversight workflows.",
     "governanceDocs": [
       "docs/governance/mobile-governance.md",
-      "docs/governance/platform-operations-governance.md"
+      "docs/governance/platform-operations-governance.md",
+      "docs/governance/production-runtime-governance.md",
+      "docs/governance/deployment-governance.md",
+      "docs/governance/observability-infrastructure-governance.md",
+      "docs/governance/incident-response-governance.md",
+      "docs/governance/failover-governance.md",
+      "docs/governance/chaos-engineering-governance.md",
+      "docs/governance/sre-governance.md",
+      "docs/governance/queue-provider-governance.md",
+      "docs/governance/event-store-governance.md",
+      "docs/governance/security-operations-governance.md",
+      "docs/governance/multi-region-runtime-governance.md"
     ]
   },
   "allowedDependencies": {
@@ -85,5 +96,17 @@
   "cacheExecutionOwnership": "No cache execution ownership; cache invalidation, consistency checks, replay invalidation, and lifecycle metrics delegate to runtime-composition, projection-runtime, and service runtimes.",
   "coordinationExecutionOwnership": "No distributed coordination execution ownership; worker leases, fencing tokens, leader election, and ownership transfer delegate to service runtimes using packages/distributed-runtime.",
   "diagnosticsOwnership": "May surface user-safe diagnostics returned by service APIs; runtime diagnostics persistence and incident metadata delegate to operational service runtimes.",
-  "operationalControlPlaneOwnership": "No operational control-plane ownership; replay, workflow, queue, resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes."
+  "operationalControlPlaneOwnership": "No operational control-plane ownership; replay, workflow, queue, resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes.",
+  "deploymentOwnership": "Owns presentation runtime deployment participation for Mobile Operator App; deploys through provider promotion gates and delegates infrastructure execution to service runtimes.",
+  "observabilityInfrastructureOwnership": "Emits correlated runtime telemetry to the OpenTelemetry, Prometheus, Tempo, Loki, and Grafana stack declared in infrastructure/observability.",
+  "queueProviderOwnership": "Delegates production queue provider execution to services/api-gateway producers and services/queue-workers consumers.",
+  "eventStoreOwnership": "Delegates event persistence to packages/distributed-runtime contracts backed by Supabase Postgres append-only event store.",
+  "failoverOwnership": "Participates in active/passive failover through deployment topology, health checks, and service-owned runtime fallback.",
+  "incidentOwnership": "Participates in incident metadata, diagnostics, alert routing, and audit records through production incident governance.",
+  "deploymentTopologyOwnership": "Must match config/runtime/deployment-topology.json and config/runtime/production-topology.json; topology drift is a hard validation failure.",
+  "securityOwnership": "Uses provider environment stores and authenticated service APIs; no service-role or provider secrets may enter client runtime.",
+  "chaosOwnership": "Participates in approved chaos experiments recorded in chaos_experiment_runs with guardrails and rollback commands.",
+  "loadTestingOwnership": "Participates in k6/Gatling/Locust production-readiness benchmarks recorded in load_test_runs.",
+  "controlPlaneOwnership": "Uses operator UI/API surfaces for control-plane visibility and delegates execution to service runtimes.",
+  "regionalRoutingOwnership": "Uses global-edge routing and delegates stateful regional execution to service and data runtimes."
 }

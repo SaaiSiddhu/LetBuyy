@@ -1,0 +1,451 @@
+{
+  "$schema": "config/runtime/production-topology.schema.json",
+  "topologyVersion": 1,
+  "environment": "production",
+  "queueProvider": {
+    "provider": "cloudflare-queues",
+    "terraform": "infrastructure/cloudflare/queues.tf",
+    "producerConfig": "services/api-gateway/wrangler.toml",
+    "consumerConfig": "services/queue-workers/wrangler.toml",
+    "queues": [
+      "letbuyy-events",
+      "letbuyy-analytics",
+      "letbuyy-search-indexing",
+      "letbuyy-notifications",
+      "letbuyy-dead-letters"
+    ]
+  },
+  "eventStoreProvider": {
+    "provider": "supabase-postgres-append-only",
+    "migrations": [
+      "database/supabase/migrations/059_distributed_runtime_operations_foundation.sql",
+      "database/supabase/migrations/060_operational_runtime_finalization.sql",
+      "database/supabase/migrations/061_operational_readiness_runtime.sql",
+      "database/supabase/migrations/062_production_rollout_operations.sql"
+    ],
+    "retentionPolicy": "hot/warm/archive/legal-hold retention classes in distributed_event_store"
+  },
+  "cacheProviders": [
+    "upstash-redis",
+    "cloudflare-kv",
+    "vercel-edge-cache"
+  ],
+  "observabilityStack": {
+    "collector": "infrastructure/observability/otel-collector.yaml",
+    "metrics": "prometheus",
+    "traces": "tempo",
+    "logs": "loki",
+    "dashboards": [
+      "infrastructure/observability/grafana-runtime-dashboard.json"
+    ],
+    "alerts": "infrastructure/observability/prometheus-rules.yaml"
+  },
+  "regions": {
+    "primary": "ap-south-1",
+    "failover": "ap-southeast-1",
+    "edge": [
+      "global-edge"
+    ]
+  },
+  "runtimes": [
+    {
+      "runtimeName": "Supabase Database",
+      "runtimeRoot": "database/supabase",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/migration-orchestration.yaml",
+        "database/supabase/migrations/062_production_rollout_operations.sql"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Event Bus",
+      "runtimeRoot": "services/event-bus",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Queue Workers",
+      "runtimeRoot": "services/queue-workers",
+      "environment": "production",
+      "deploymentManifests": [
+        "services/queue-workers/wrangler.toml",
+        "infrastructure/cloudflare/queues.tf"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues consumer and DLQ",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "API Gateway",
+      "runtimeRoot": "services/api-gateway",
+      "environment": "production",
+      "deploymentManifests": [
+        "services/api-gateway/wrangler.toml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Webhook Service",
+      "runtimeRoot": "services/webhook-service",
+      "environment": "production",
+      "deploymentManifests": [
+        "services/webhook-service/wrangler.toml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Analytics Pipeline",
+      "runtimeRoot": "services/analytics-pipeline",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Checkout Runtime",
+      "runtimeRoot": "services/checkout-runtime",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Media Service",
+      "runtimeRoot": "services/media-service",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Notification Service",
+      "runtimeRoot": "services/notification-service",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Search Service",
+      "runtimeRoot": "services/search-service",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
+        "infrastructure/deployment/release-promotion.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Identity Platform",
+      "runtimeRoot": "apps/identity-platform",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Merchant Control Plane",
+      "runtimeRoot": "apps/merchant-control-plane",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Storefront Runtime",
+      "runtimeRoot": "apps/storefront-runtime",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Marketing Site",
+      "runtimeRoot": "apps/marketing-site",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "App Marketplace",
+      "runtimeRoot": "apps/app-marketplace",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Theme Marketplace",
+      "runtimeRoot": "apps/theme-marketplace",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Platform Console",
+      "runtimeRoot": "apps/platform-console",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Platform Operations Portal",
+      "runtimeRoot": "apps/platform-operations-portal",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/deployment/kubernetes/runtime-health-probes.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Mobile Shopper App",
+      "runtimeRoot": "apps/mobile/shopper-app",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/monitoring/slo-catalog.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Mobile Merchant App",
+      "runtimeRoot": "apps/mobile/merchant-app",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/monitoring/slo-catalog.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    },
+    {
+      "runtimeName": "Mobile Operator App",
+      "runtimeRoot": "apps/mobile/operator-app",
+      "environment": "production",
+      "deploymentManifests": [
+        "infrastructure/deployment/release-promotion.yaml",
+        "infrastructure/monitoring/slo-catalog.yaml"
+      ],
+      "observability": "OpenTelemetry collector plus runtime telemetry tables",
+      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
+      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
+      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
+      "incident": "Incident metadata in production_incidents and production_incident_events",
+      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
+      "chaos": "Chaos validation recorded in chaos_experiment_runs",
+      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
+      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+    }
+  ]
+}

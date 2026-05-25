@@ -19,3 +19,18 @@ Status: Phase 3 operations-final deployment topology foundation.
 
 - `scripts/validators/distributed-runtime-validator.mjs` hard fails missing runtime roots, invalid dependency references, missing health metadata, and missing scaling metadata.
 - CI explicitly runs the distributed runtime validator after governance validation.
+# Phase 4 Production Topology
+
+Phase 4 adds production topology enforcement through `config/runtime/production-topology.json` and `scripts/validators/production-readiness-validator.mjs`.
+
+The production topology must map every canonical runtime to:
+
+- deployment manifests or provider config,
+- observability ownership,
+- queue provider ownership,
+- event-store ownership,
+- failover and regional routing ownership,
+- incident and control-plane ownership,
+- security, chaos, and load-testing ownership.
+
+Topology drift is a hard validation failure. Runtime source may not claim production ownership unless the backing infrastructure file exists under `infrastructure/*`, `config/runtime/*`, `database/supabase/migrations/*`, or the runtime-owned deployment config.
