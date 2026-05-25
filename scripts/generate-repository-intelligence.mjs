@@ -1065,6 +1065,14 @@ function buildRootAgents() {
   lines.push("- After significant architecture changes, regenerate `docs/architecture/master-system-intelligence.md` with `node scripts/generate-repository-intelligence.mjs`.");
   lines.push("- Verification for code changes: affected build, lint/typecheck, and user-flow browser/emulator test where applicable. Docs-only changes require presence and line-count verification.");
   lines.push("");
+  lines.push("## Phase 4 Enterprise Lifecycle Finalization");
+  lines.push("");
+  lines.push("- Enterprise SDLC authority lives in `config/runtime/environment-lifecycle.json`, `config/runtime/rollout-lifecycle.json`, and `config/runtime/operational-certification-policy.json`.");
+  lines.push("- Local development lifecycle authority lives in `infrastructure/local/docker-compose.yml`, `config/env/templates/local.env.example`, and `infrastructure/scripts/local/*`.");
+  lines.push("- Feature flag evaluation authority lives in `packages/shared-types/src/index.ts`; persisted operational control evidence lives in migration `065_enterprise_sdlc_lifecycle.sql`.");
+  lines.push("- Governance validation must run `scripts/validators/operational-lifecycle-validator.mjs`; stale live certification evidence is a hard failure.");
+  lines.push("- Plan mode means executable workflows and evidence contracts only. Do not claim live deployment, live failover, live chaos, live load, or live certification until execute-mode provider evidence is recorded and fresh.");
+  lines.push("");
   lines.push("## Current Risk Register");
   lines.push("");
   lines.push("- Critical security tasks remain in `tasks/todo.md`: secret rotation, webhook verification parity, auth rate limiting, CSRF, and server-side price recalculation.");
