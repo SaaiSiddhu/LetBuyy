@@ -1,19 +1,19 @@
 {
-    "name": "@letbuyy/webhook-service",
-    "version": "0.1.0",
-    "private": true,
-    "scripts": {
-        "dev": "wrangler dev --inspector-port 9232",
-        "deploy": "wrangler deploy",
-        "typecheck": "tsc --noEmit"
-    },
-    "dependencies": {
-        "@letbuyy/infrastructure": "workspace:*",
-        "hono": "^4.0.0"
-    },
-    "devDependencies": {
-        "@cloudflare/workers-types": "^4.0.0",
-        "typescript": "^5.0.0",
-        "wrangler": "^3.0.0"
-    }
+  "name": "@letbuyy/webhook-service",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev --inspector-port 9232",
+    "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@letbuyy/infrastructure": "workspace:*",
+    "hono": "^4.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^3.0.0"
+  }
 }

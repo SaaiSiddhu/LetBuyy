@@ -61,7 +61,7 @@ if (!supportedEnvironments.includes(environment)) {
 
 cleanWranglerArtifacts();
 if (!skipValidation) {
-  run("npm", ["run", "validate:governance"]);
+  run("pnpm", ["run", "validate:governance"]);
   run("node", [
     "infrastructure/scripts/operations/phase4-ultimate-validate.mjs",
     `--environment=${environment}`,
@@ -86,7 +86,6 @@ if (shouldRun("cloudflare")) {
 
 if (shouldRun("workers")) {
   if (execute) requireEnv(["CLOUDFLARE_API_TOKEN"]);
-  const deployFlag = execute ? [] : ["--dry-run"];
   for (const config of [
     "services/api-gateway/wrangler.toml",
     "services/webhook-service/wrangler.toml",
@@ -103,12 +102,17 @@ if (shouldRun("workers")) {
         ...(execute ? ["--require-real-bindings"] : []),
       ]);
     }
-    run("npx", ["wrangler", "deploy", "--config", deployConfig, "--env", environment, "--keep-vars", ...deployFlag]);
+    const deployCommand = ["infrastructure/scripts/deploy/deploy-worker-runtime.mjs", "--config", deployConfig, "--env", environment];
+    if (!execute) {
+      console.log(`[production-deploy] planned node ${deployCommand.join(" ")} --dry-run`);
+      continue;
+    }
+    run("node", deployCommand);
   }
   cleanWranglerArtifacts();
 
   if (execute) {
-    run("npx", ["wrangler", "triggers", "deploy", "--config", "services/api-gateway/wrangler.toml", "--env", environment]);
+    run("pnpm", ["--dir", "services/api-gateway", "exec", "wrangler", "triggers", "deploy", "--config", "wrangler.toml", "--env", environment]);
   }
 }
 
@@ -128,12 +132,12 @@ if (shouldRun("apps")) {
   for (const appRoot of appRoots) {
     if (!fs.existsSync(`${appRoot}/package.json`)) continue;
     if (!execute) {
-      console.log(`[production-deploy] planned npx vercel deploy --cwd ${appRoot} --yes${environment === "production" ? " --prod" : ""}`);
+      console.log(`[production-deploy] planned pnpm dlx vercel deploy --cwd ${appRoot} --yes${environment === "production" ? " --prod" : ""}`);
       continue;
     }
-    const deployArgs = ["vercel", "deploy", "--cwd", appRoot, "--yes"];
+    const deployArgs = ["dlx", "vercel", "deploy", "--cwd", appRoot, "--yes"];
     if (environment === "production") deployArgs.push("--prod");
-    run("npx", deployArgs);
+    run("pnpm", deployArgs);
   }
 }
 

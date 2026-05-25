@@ -631,7 +631,7 @@ const rolloutCi = readFile(".github/workflows/production-rollout.yml");
 for (const ciFragment of [
   "verify-security-gates.mjs",
   "phase4-ultimate-validate.mjs",
-  "npm audit --audit-level=high --omit=dev",
+  "pnpm audit --audit-level high --prod",
   "production-deploy.mjs",
   "validate:governance",
   "typecheck",

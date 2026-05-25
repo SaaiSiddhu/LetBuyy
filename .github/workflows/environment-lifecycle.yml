@@ -32,11 +32,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Setup pnpm
+        run: corepack enable
+
       - name: Validate lifecycle contracts
         run: node scripts/validators/operational-lifecycle-validator.mjs
 
       - name: Governance gates
-        run: node scripts/validate-governance.mjs
+        run: pnpm run validate:governance
 
   local-stack-smoke:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_local_stack }}

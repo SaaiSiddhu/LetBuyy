@@ -29,6 +29,8 @@ After each phase:
 - Run targeted typecheck/build where blast radius requires it.
 - Commit atomically with a rollback-safe message.
 
+Replayable Supabase migrations must not use `DROP TABLE`, `DROP SCHEMA`, `TRUNCATE`, physical `sites`/`stores` rename cycles, or `CREATE TABLE stores`. `stores` is compatibility/API language only; canonical tenant storage remains `sites`.
+
 ## Move Rules
 
 - Prefer `git mv` for tracked runtime moves.
@@ -36,3 +38,6 @@ After each phase:
 - Update workspace manifests, deployment config, generated intelligence scripts, docs, and CI in the same phase as path changes.
 - Do not delete legacy code until it is isolated under `legacy/` and no active runtime imports it.
 
+## Validation
+
+Migration safety is enforced by `scripts/validators/migration-safety-validator.mjs` and is part of `pnpm run validate:governance`. Unsafe historical migrations must be retired as no-op migration-number memory or replaced by additive compatibility objects.

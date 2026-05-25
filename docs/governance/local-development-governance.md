@@ -17,10 +17,10 @@ The canonical local stack is `infrastructure/local/docker-compose.yml` and inclu
 
 ## Commands
 
-- Bootstrap: `npm run local:bootstrap`.
-- Start: `npm run local:up`.
-- Seed: `npm run local:seed`.
-- Health: `npm run local:health`.
-- Reset: `npm run local:reset`.
+- Bootstrap: `pnpm run local:bootstrap`.
+- Start: `pnpm run local:up`.
+- Seed: `pnpm run local:seed`.
+- Health: `pnpm run local:health`.
+- Reset: `pnpm run local:reset`.
 
 Local health evidence is useful for developer readiness only. It is never production certification.

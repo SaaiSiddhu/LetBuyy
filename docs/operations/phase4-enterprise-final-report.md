@@ -4,7 +4,7 @@ Generated on 2026-05-25. This report is repository evidence, not live production
 
 ## 1. Local Development Lifecycle
 
-Implemented through `infrastructure/local/docker-compose.yml`, local environment template, local schema/seed SQL, provider mocks, replay runtime, and `npm run local:*` scripts.
+Implemented through `infrastructure/local/docker-compose.yml`, local environment template, local schema/seed SQL, provider mocks, replay runtime, and `pnpm run local:*` scripts.
 
 ## 2. Development Environment Lifecycle
 

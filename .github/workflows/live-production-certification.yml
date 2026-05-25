@@ -63,6 +63,18 @@ jobs:
       - name: Operational lifecycle gates
         run: pnpm run validate:lifecycle
 
+      - name: Dependency governance gates
+        run: pnpm run validate:dependencies
+
+      - name: Migration safety gates
+        run: pnpm run validate:migrations
+
+      - name: Cloudflare isolation gates
+        run: pnpm run validate:cloudflare
+
+      - name: Governance tests
+        run: pnpm run test
+
       - name: Typecheck
         run: pnpm run typecheck
 
@@ -94,7 +106,7 @@ jobs:
         run: node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=${{ inputs.environment }} --mode=${{ inputs.mode }} --report-output=phase4-live-certification-report.json
 
       - name: Generate SBOM
-        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+        run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
 
       - name: Attest SBOM
         uses: actions/attest-build-provenance@v1

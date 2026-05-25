@@ -47,8 +47,13 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
       - name: Validate governance
-        run: node scripts/validate-governance.mjs
+        run: pnpm run validate:governance
 
       - name: Validate operational runtime topology
         run: node scripts/validators/distributed-runtime-validator.mjs
@@ -56,13 +61,20 @@ jobs:
       - name: Validate production readiness topology
         run: node scripts/validators/production-readiness-validator.mjs
 
-      - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
+      - name: Validate dependency governance
+        run: pnpm run validate:dependencies
+
+      - name: Validate TypeScript governance
+        run: pnpm run validate:typescript
+
+      - name: Run governance tests
+        run: pnpm run test
+
+      - name: Typecheck workspace
+        run: pnpm run typecheck
 
       - name: Generate SBOM
-        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+        run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
 
       - name: Dependency audit
-        run: pnpm audit --audit-level high
+        run: pnpm audit --audit-level high --prod

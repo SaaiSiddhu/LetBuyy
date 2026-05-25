@@ -1,4 +1,4 @@
 {
     "$schema": "https://openapi.vercel.sh/vercel.json",
-    "installCommand": "rm -rf apps/storefront-runtime/node_modules/next apps/merchant-control-plane/node_modules/next apps/identity-platform/node_modules/next apps/marketing-site/node_modules/next 2>/dev/null; pnpm install"
+    "installCommand": "corepack enable && pnpm install --frozen-lockfile"
 }

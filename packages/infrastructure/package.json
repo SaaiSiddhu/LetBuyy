@@ -21,7 +21,7 @@
     "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -b",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

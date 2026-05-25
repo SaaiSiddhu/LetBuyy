@@ -10,7 +10,12 @@ Production deployment uses environment promotion, health gates, and rollback own
 
 ## Release Gates
 
-- `node scripts/validate-governance.mjs`
+- `pnpm run validate:governance`
+- `pnpm run validate:dependencies`
+- `pnpm run validate:typescript`
+- `pnpm run validate:migrations`
+- `pnpm run validate:cloudflare`
+- `pnpm run test`
 - `node scripts/validators/operational-lifecycle-validator.mjs`
 - `node scripts/validators/production-readiness-validator.mjs`
 - `node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=dev`
@@ -35,10 +40,11 @@ Production deployment uses environment promotion, health gates, and rollback own
 
 ## Execution
 
+- Direct `wrangler deploy` package scripts are forbidden. Worker package deploy scripts must call `infrastructure/scripts/deploy/deploy-worker-runtime.mjs`, and operators must pass `--env dev`, `--env staging`, or `--env production`.
 - Plan production Workers with `node infrastructure/scripts/deploy/production-deploy.mjs --environment=production --target=workers`.
 - Plan development Workers with `node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers`.
 - Execute development Cloudflare primitives with `node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute`.
 - Execute development Workers with `node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute`.
-- Plan the complete Phase 4 production gate with `npm run validate:production`.
+- Plan the complete Phase 4 production gate with `pnpm run validate:production`.
 - Execute only through GitHub environment approval or an equivalent audited operator shell with provider credentials.
 - Cloudflare Worker rollback uses `node infrastructure/scripts/deploy/production-rollback.mjs`.

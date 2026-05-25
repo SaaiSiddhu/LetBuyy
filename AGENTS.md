@@ -209,15 +209,18 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 ## Dependency Governance
 
 - Dependency direction is `apps -> packages`, `apps -> services by API`, `services -> packages`, and `packages -> packages` only.
+- pnpm dependency lifecycle is strict: `node-linker=isolated`, `shamefully-hoist=false`, `strict-peer-dependencies=true`, and `auto-install-peers=false`.
+- Every imported external package must be declared by the owning app, service, or package manifest. Hidden transitive dependency access is forbidden.
+- TypeScript packages must expose explicit `exports`; cross-package imports must use public package exports, not relative imports into another package root.
 - Database and infrastructure do not import runtime code.
 - Shared logic graduates into packages before reuse.
 - API contract aggregation through `@letbuyy/api-types` is backward compatibility only; new domain authority belongs in the domain package public export.
-- `scripts/validators/dependency-graph-validator.mjs` enforces dependency direction, package layering, and circular dependency prevention.
+- `scripts/validators/dependency-manifest-validator.mjs`, `scripts/validators/undeclared-import-validator.mjs`, `scripts/validators/package-export-validator.mjs`, `scripts/validators/dependency-graph-validator.mjs`, and `scripts/validators/circular-import-validator.mjs` enforce dependency declarations, package public exports, dependency direction, package layering, and circular dependency prevention.
 
 ## CI/CD Governance
 
 - CI must run `node scripts/validate-governance.mjs` for topology-sensitive changes.
-- CI must fail on app-to-app imports, package-to-runtime imports, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, tracked env files, invalid runtime roots, and legacy leakage.
+- CI must fail on app-to-app imports, package-to-runtime imports, undeclared dependency imports, non-exported package subpaths, circular package/runtime imports, npm/npx leakage in governed execution paths, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, unsafe migration history, tracked env files, invalid runtime roots, and legacy leakage.
 - Build, lint, typecheck, and test jobs should be added per runtime as blockers are retired.
 
 ## Documentation Governance

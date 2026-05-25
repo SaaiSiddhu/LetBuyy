@@ -153,11 +153,27 @@ END $$;
 -- is 'sites'. This updatable view bridges the gap.
 -- ============================================
 
--- Drop existing 'stores' if it exists as a TABLE
--- (older schema had a physical stores table — we replace it with a view)
-DROP TABLE IF EXISTS stores CASCADE;
--- Also drop if it exists as a view (for re-runs)
-DROP VIEW IF EXISTS stores CASCADE;
+-- Replace an existing stores view only. A physical stores table indicates an
+-- unsafe historical migration state and must not be dropped automatically.
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1
+        FROM information_schema.views
+        WHERE table_schema = 'public'
+          AND table_name = 'stores'
+    ) THEN
+        DROP VIEW stores CASCADE;
+    ELSIF EXISTS (
+        SELECT 1
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
+          AND table_name = 'stores'
+          AND table_type = 'BASE TABLE'
+    ) THEN
+        RAISE EXCEPTION 'Unsafe migration state: stores exists as a table. Refusing to drop tenant data; repair sites/stores topology before replay.';
+    END IF;
+END $$;
 
 -- Create an updatable view so apps can INSERT/UPDATE/DELETE
 -- through the 'stores' name while data lives in 'sites'

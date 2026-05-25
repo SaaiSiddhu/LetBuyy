@@ -20,4 +20,4 @@ for (const dir of ["artifacts/live-certification", ".tmp/local"]) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
-console.log("[local-bootstrap] next: npm run local:up && npm run local:seed && npm run local:health");
+console.log("[local-bootstrap] next: pnpm run local:up && pnpm run local:seed && pnpm run local:health");

@@ -18,7 +18,7 @@
     "./search-application": "./search-application/index.ts"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -b",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

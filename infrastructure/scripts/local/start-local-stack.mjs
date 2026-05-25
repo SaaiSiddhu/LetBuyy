@@ -3,4 +3,4 @@ import { dockerComposeArgs, ensureDockerAvailable, run } from "./common.mjs";
 
 ensureDockerAvailable();
 run("docker", dockerComposeArgs(["up", "-d", "--remove-orphans"]));
-console.log("[local-start] stack started; run npm run local:health for readiness");
+console.log("[local-start] stack started; run pnpm run local:health for readiness");

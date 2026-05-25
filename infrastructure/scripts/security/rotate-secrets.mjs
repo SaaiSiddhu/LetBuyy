@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
+import path from "node:path";
 
 const args = new Set(process.argv.slice(2));
 const execute = args.has("--execute");
@@ -33,6 +34,12 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function packageDirForConfig(config) {
+  const normalized = config.split(path.sep).join("/");
+  const segments = normalized.split("/");
+  return segments[0] === "services" && segments[1] ? `${segments[0]}/${segments[1]}` : ".";
+}
+
 assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 
 for (const secretName of requiredSecretNames) {
@@ -46,7 +53,7 @@ for (const secretName of requiredSecretNames) {
   assert(secretValue && secretValue.length >= 16, `Missing or too-short ${envName} for --execute`);
 
   for (const config of workerSecretConfigs) {
-    const result = spawnSync("npx", ["wrangler", "secret", "put", secretName, "--config", config, "--env", environment], {
+    const result = spawnSync("pnpm", ["--dir", packageDirForConfig(config), "exec", "wrangler", "secret", "put", secretName, "--config", "wrangler.toml", "--env", environment], {
       input: `${secretValue}\n`,
       stdio: ["pipe", "inherit", "inherit"],
       env: {

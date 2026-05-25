@@ -10,7 +10,7 @@
     "./theme-registry": "./src/theme-registry.ts"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -b",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

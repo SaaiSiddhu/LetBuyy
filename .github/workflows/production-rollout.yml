@@ -66,6 +66,18 @@ jobs:
       - name: Operational lifecycle gates
         run: pnpm run validate:lifecycle
 
+      - name: Dependency governance gates
+        run: pnpm run validate:dependencies
+
+      - name: Migration safety gates
+        run: pnpm run validate:migrations
+
+      - name: Cloudflare isolation gates
+        run: pnpm run validate:cloudflare
+
+      - name: Governance tests
+        run: pnpm run test
+
       - name: Typecheck
         run: pnpm run typecheck
 
@@ -73,7 +85,7 @@ jobs:
         run: node infrastructure/scripts/security/verify-security-gates.mjs
 
       - name: Dependency vulnerability scan
-        run: npm audit --audit-level=high --omit=dev
+        run: pnpm audit --audit-level high --prod
 
       - name: Phase 4 ultimate validation plan
         if: ${{ !inputs.execute }}
@@ -115,7 +127,7 @@ jobs:
         run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=${{ inputs.environment }} --target=${{ inputs.target }} --execute
 
       - name: Generate SBOM
-        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+        run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
 
       - name: Upload SBOM
         uses: actions/upload-artifact@v4

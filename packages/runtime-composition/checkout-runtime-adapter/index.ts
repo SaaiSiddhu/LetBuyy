@@ -5,15 +5,15 @@ export {
   getStripeClient,
   getStripeClient as getStripe,
   stripe,
-} from '../../infrastructure/stripe-adapter/index';
+} from '@letbuyy/infrastructure/stripe-adapter';
 
 export {
   capturePayPalOrder,
   createPayPalOrder,
   verifyWebhookSignature,
-} from '../../infrastructure/paypal-adapter/index';
+} from '@letbuyy/infrastructure/paypal-adapter';
 
 export type {
   StripeCheckoutSession,
   StripeWebhookEvent,
-} from '../../infrastructure/stripe-adapter/index';
+} from '@letbuyy/infrastructure/stripe-adapter';

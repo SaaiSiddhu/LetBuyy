@@ -37,7 +37,7 @@
 
 ## Deployment Lifecycle
 
-1. Local test: `npm run validate:lifecycle`, `npm run validate:governance`, `npm run typecheck`
+1. Local test: `pnpm run validate:lifecycle`, `pnpm run validate:governance`, `pnpm run typecheck`
 2. Dev primitives: `node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute`
 3. Dev Workers: `node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute`
 4. Staging validation: `node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=staging`

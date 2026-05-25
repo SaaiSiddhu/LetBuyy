@@ -1,27 +1,27 @@
 export {
   createSupabaseBrowserClient,
   createSupabaseServerClient,
-} from '../../infrastructure/supabase-adapter/index';
+} from '@letbuyy/infrastructure/supabase-adapter';
 
 export type {
   AuthChangeEvent,
   Session,
   SupabaseClient,
   User,
-} from '../../infrastructure/supabase-adapter/index';
+} from '@letbuyy/infrastructure/supabase-adapter';
 
 export {
   sendResendEmail,
-} from '../../infrastructure/resend-adapter/index';
+} from '@letbuyy/infrastructure/resend-adapter';
 
 export type {
   ResendEmailInput,
-} from '../../infrastructure/resend-adapter/index';
+} from '@letbuyy/infrastructure/resend-adapter';
 
 export {
   createUpstashSlidingWindowLimiter,
-} from '../../infrastructure/cache-adapter/index';
+} from '@letbuyy/infrastructure/cache-adapter';
 
 export type {
   RateLimiterPort,
-} from '../../infrastructure/cache-adapter/index';
+} from '@letbuyy/infrastructure/cache-adapter';

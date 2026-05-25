@@ -4,6 +4,25 @@
 -- Renames sites → stores, aligns all tables
 -- ============================================
 
+/*
+RETIRED ENTERPRISE SAFETY NOTE:
+
+This historical migration performed an unsafe physical rename from `sites` to
+`stores`. Later migrations re-established `sites` as canonical storage and
+`stores` as a compatibility view. Leaving this migration executable makes a
+fresh replay capable of renaming live tenant data and then dropping it in a
+later compatibility migration.
+
+The canonical repository contract is now:
+- database tables use `sites`;
+- UI/API language may use store/stores;
+- `stores` may only be a view or route term, never canonical table storage.
+
+This file remains as migration-number memory only and is intentionally no-op.
+*/
+
+/*
+
 -- ============================================
 -- 1. RENAME sites → stores
 -- ============================================
@@ -429,3 +448,4 @@ CREATE POLICY "super_admin_manage_roles" ON employee_roles
     FOR ALL USING (
         EXISTS (SELECT 1 FROM super_admin_allowlist WHERE user_id = auth.uid() AND is_active = TRUE)
     );
+*/

@@ -7,7 +7,7 @@
   "types": "./src/index.ts",
   "scripts": {
     "build": "tsc --noEmit",
-    "deploy": "wrangler deploy",
+    "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "dev": "wrangler dev",
     "typecheck": "tsc --noEmit"
   },

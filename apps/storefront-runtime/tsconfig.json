@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -19,23 +23,57 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"],
-      "@letbuyy/auth-core": ["../../packages/auth-core/src/index.ts"],
-      "@letbuyy/api-types": ["../../packages/typescript/api-types/src/index.ts"],
-      "@letbuyy/app-engine": ["../../packages/app-engine/src/index.ts"],
-      "@letbuyy/billing-core": ["../../packages/billing-core/src/index.ts"],
-      "@letbuyy/checkout-core": ["../../packages/checkout-core/src/index.ts"],
-      "@letbuyy/cms-core": ["../../packages/cms-core/src/index.ts"],
-      "@letbuyy/commerce-core": ["../../packages/commerce-core/src/index.ts"],
-      "@letbuyy/distributed-runtime": ["../../packages/distributed-runtime/src/index.ts"],
-      "@letbuyy/event-core": ["../../packages/event-core/src/index.ts"],
-      "@letbuyy/notification-core": ["../../packages/notification-core/src/index.ts"],
-      "@letbuyy/projection-runtime": ["../../packages/projection-runtime/src/index.ts"],
-      "@letbuyy/runtime-composition/*": ["../../packages/runtime-composition/*/index.ts"],
-      "@letbuyy/search-core": ["../../packages/search-core/src/index.ts"],
-      "@letbuyy/shared-types": ["../../packages/shared-types/src/index.ts"],
-      "@letbuyy/tenant-core": ["../../packages/tenant-core/src/index.ts"],
-      "@letbuyy/theme-engine": ["../../packages/theme-engine/src/index.ts"]
+      "@/*": [
+        "./src/*"
+      ],
+      "@letbuyy/auth-core": [
+        "../../packages/auth-core/src/index.ts"
+      ],
+      "@letbuyy/api-types": [
+        "../../packages/typescript/api-types/src/index.ts"
+      ],
+      "@letbuyy/app-engine": [
+        "../../packages/app-engine/src/index.ts"
+      ],
+      "@letbuyy/billing-core": [
+        "../../packages/billing-core/src/index.ts"
+      ],
+      "@letbuyy/checkout-core": [
+        "../../packages/checkout-core/src/index.ts"
+      ],
+      "@letbuyy/cms-core": [
+        "../../packages/cms-core/src/index.ts"
+      ],
+      "@letbuyy/commerce-core": [
+        "../../packages/commerce-core/src/index.ts"
+      ],
+      "@letbuyy/distributed-runtime": [
+        "../../packages/distributed-runtime/src/index.ts"
+      ],
+      "@letbuyy/event-core": [
+        "../../packages/event-core/src/index.ts"
+      ],
+      "@letbuyy/notification-core": [
+        "../../packages/notification-core/src/index.ts"
+      ],
+      "@letbuyy/projection-runtime": [
+        "../../packages/projection-runtime/src/index.ts"
+      ],
+      "@letbuyy/runtime-composition/*": [
+        "../../packages/runtime-composition/*/index.ts"
+      ],
+      "@letbuyy/search-core": [
+        "../../packages/search-core/src/index.ts"
+      ],
+      "@letbuyy/shared-types": [
+        "../../packages/shared-types/src/index.ts"
+      ],
+      "@letbuyy/tenant-core": [
+        "../../packages/tenant-core/src/index.ts"
+      ],
+      "@letbuyy/theme-engine": [
+        "../../packages/theme-engine/src/index.ts"
+      ]
     }
   },
   "include": [
@@ -46,5 +84,8 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ],
+  "extends": "../../tsconfig.base.json"
 }

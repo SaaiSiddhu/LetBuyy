@@ -24,31 +24,31 @@ TELEMETRY_ENV = "local"
 RUNTIME_NAME = "API Gateway"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-EVENT_QUEUE_NAME = "letbuyy-events"
-ANALYTICS_QUEUE_NAME = "letbuyy-analytics"
-SEARCH_QUEUE_NAME = "letbuyy-search-indexing"
-NOTIFICATION_QUEUE_NAME = "letbuyy-notifications"
+EVENT_QUEUE_NAME = "letbuyy-events-local"
+ANALYTICS_QUEUE_NAME = "letbuyy-analytics-local"
+SEARCH_QUEUE_NAME = "letbuyy-search-indexing-local"
+NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-local"
 
 [[queues.producers]]
 binding = "EVENT_QUEUE"
-queue = "letbuyy-events"
+queue = "letbuyy-events-local"
 
 [[queues.producers]]
 binding = "ANALYTICS_QUEUE"
-queue = "letbuyy-analytics"
+queue = "letbuyy-analytics-local"
 
 [[queues.producers]]
 binding = "SEARCH_QUEUE"
-queue = "letbuyy-search-indexing"
+queue = "letbuyy-search-indexing-local"
 
 [[queues.producers]]
 binding = "NOTIFICATION_QUEUE"
-queue = "letbuyy-notifications"
+queue = "letbuyy-notifications-local"
 
 [[r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-production-storage"
-preview_bucket_name = "letbuyy-staging-storage"
+bucket_name = "letbuyy-local-storage"
+preview_bucket_name = "letbuyy-local-storage"
 
 [placement]
 mode = "smart"
@@ -168,6 +168,11 @@ queue = "letbuyy-search-indexing-staging"
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications-staging"
 
+[[env.staging.kv_namespaces]]
+binding = "CACHE"
+id = "__LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID__"
+preview_id = "__LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID__"
+
 [[env.staging.r2_buckets]]
 binding = "R2_BUCKET"
 bucket_name = "letbuyy-staging-storage"
@@ -223,6 +228,11 @@ queue = "letbuyy-search-indexing"
 [[env.production.queues.producers]]
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE"
+id = "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__"
+preview_id = "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__"
 
 [[env.production.r2_buckets]]
 binding = "R2_BUCKET"

@@ -5,3 +5,11 @@
 Shared helpers belong in `governance-common.mjs`. New validators must be wired through `scripts/validate-governance.mjs` before their enforcement is documented.
 
 `operational-lifecycle-validator.mjs` hard-fails enterprise SDLC drift: local stack contracts, development/staging/production isolation, rollout controls, feature flag evaluation, sandbox providers, shadow traffic contracts, load tooling, and stale live certification evidence.
+
+Enterprise dependency and execution hardening is enforced by:
+
+- `dependency-manifest-validator.mjs` and `undeclared-import-validator.mjs` for package-level import declarations.
+- `dependency-graph-validator.mjs` and `circular-import-validator.mjs` for dependency direction and cycle prevention.
+- `package-export-validator.mjs` for explicit package public APIs.
+- `supply-chain-validator.mjs` for npm/npx leakage prevention in governed execution paths.
+- `ci-simulation-validator.mjs` for required workflow and release-promotion gates.

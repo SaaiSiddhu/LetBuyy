@@ -13,7 +13,7 @@ const capabilityGroups = [
   {
     name: "cloudflare",
     env: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "TF_VAR_cloudflare_api_token", "TF_VAR_cloudflare_account_id"],
-    tools: ["npx", "terraform"],
+    tools: ["pnpm", "terraform"],
   },
   {
     name: "supabase",
@@ -31,7 +31,7 @@ const capabilityGroups = [
   {
     name: "vercel",
     env: ["VERCEL_TOKEN", "VERCEL_ORG_ID"],
-    tools: ["npx"],
+    tools: ["pnpm"],
   },
   {
     name: "load-testing",

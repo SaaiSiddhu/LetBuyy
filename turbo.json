@@ -6,6 +6,7 @@
   "tasks": {
     "build": {
       "dependsOn": [
+        "^typecheck",
         "^build"
       ],
       "outputs": [
@@ -31,19 +32,21 @@
       "persistent": true
     },
     "lint": {
-      "dependsOn": [
-        "^build"
-      ]
+      "dependsOn": []
     },
     "test": {
       "dependsOn": [
-        "^build"
+        "^typecheck"
+      ],
+      "outputs": [
+        "coverage/**"
       ]
     },
     "typecheck": {
       "dependsOn": [
         "^build"
-      ]
+      ],
+      "outputs": []
     }
   }
 }

@@ -70,20 +70,20 @@ startupSequence:
     requires:
       - cloudflare-primitives
   - name: queue-workers
-    command: npx wrangler deploy --config services/queue-workers/wrangler.toml --env production --keep-vars
+    command: node infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config services/queue-workers/wrangler.toml --env production
     requires:
       - cloudflare-primitives
       - database-migrations
   - name: api-gateway
-    command: npx wrangler deploy --config services/api-gateway/wrangler.toml --env production --keep-vars
+    command: node infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config services/api-gateway/wrangler.toml --env production
     requires:
       - queue-workers
   - name: webhook-service
-    command: npx wrangler deploy --config services/webhook-service/wrangler.toml --env production --keep-vars
+    command: node infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config services/webhook-service/wrangler.toml --env production
     requires:
       - api-gateway
   - name: web-runtimes
-    command: npx vercel deploy --prod --yes
+    command: pnpm dlx vercel deploy --prod --yes
     requires:
       - api-gateway
       - webhook-service
