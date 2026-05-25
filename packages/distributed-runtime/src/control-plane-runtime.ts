@@ -39,6 +39,22 @@ export function permissionForControlCommand(command: RuntimeControlCommand): Run
     };
   }
 
+  if (command.targetType === 'provider') {
+    return {
+      resourceType: 'provider',
+      action: 'admin',
+      tenantScoped: false,
+    };
+  }
+
+  if (command.targetType === 'cache') {
+    return {
+      resourceType: 'tenant-runtime',
+      action: 'admin',
+      tenantScoped: false,
+    };
+  }
+
   return {
     resourceType: 'tenant-runtime',
     action: 'admin',

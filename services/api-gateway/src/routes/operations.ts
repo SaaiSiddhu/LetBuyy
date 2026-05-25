@@ -12,7 +12,18 @@ import {
     DispatchOutboxSchema,
     DispatchWebhookDeliveriesSchema,
     OperationsListQuerySchema,
+    AuthorizeRuntimeReplaySchema,
+    RecordChaosExperimentSchema,
+    RecordDeploymentPromotionSchema,
+    RecordFailoverDrillSchema,
+    RecordLoadTestRunSchema,
+    RecordProductionIncidentSchema,
     RecordUsageSchema,
+    RuntimeDeadLetterRedriveSchema,
+    RuntimeQueueRecoverySchema,
+    ScheduleRuntimeReplaySchema,
+    SubmitRuntimeControlCommandSchema,
+    UpdateProductionIncidentStatusSchema,
     UpdateWebhookSubscriptionSchema,
     type DispatchOutboxInput,
     type DispatchWebhookDeliveriesInput,
@@ -28,6 +39,11 @@ router.use('*', requireSuperAdmin);
 
 function dispatcherId(prefix: string): string {
     return `${prefix}:${crypto.randomUUID()}`;
+}
+
+function actorId(c: AppContext): string {
+    const auth = c.get('auth');
+    return auth.user.id;
 }
 
 async function readOptionalJson<T>(c: AppContext, fallback: T): Promise<T> {
@@ -54,6 +70,18 @@ function parseListQuery(c: AppContext): OperationsListQuery {
     }
 
     return parsed.data;
+}
+
+function parseLimit(c: AppContext, fallback = 50): number {
+    const parsed = OperationsListQuerySchema.safeParse({
+        limit: c.req.query('limit') || String(fallback),
+    });
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid limit query', parsed.error.flatten());
+    }
+
+    return parsed.data.limit;
 }
 
 router.post('/outbox/dispatch', async (c) => {
@@ -368,6 +396,417 @@ router.post('/usage/record', async (c) => {
     });
 
     return c.json(success({ meter }));
+});
+
+router.get('/runtime/overview', async (c) => {
+    const db = getSupabaseAdmin(c);
+
+    const [
+        health,
+        queues,
+        alerts,
+        incidents,
+        deployments,
+        failover,
+        chaos,
+        load,
+        slo,
+    ] = await Promise.all([
+        db.from('runtime_health_projections')
+            .select('runtime_name, status, region, dependencies, checked_at, metadata')
+            .is('deleted_at', null)
+            .order('checked_at', { ascending: false })
+            .limit(30),
+        db.from('queue_operation_snapshots')
+            .select('queue_name, partition_key, site_id, depth, leased, retrying, dead_lettered, oldest_available_at, sampled_at, metadata')
+            .is('deleted_at', null)
+            .order('sampled_at', { ascending: false })
+            .limit(30),
+        db.from('runtime_alert_evaluations')
+            .select('alert_name, runtime_name, severity, firing, observed_value, reason, runbook, evaluated_at, metadata')
+            .is('deleted_at', null)
+            .order('evaluated_at', { ascending: false })
+            .limit(30),
+        db.from('production_incidents')
+            .select('incident_id, title, severity, status, affected_runtimes, affected_regions, customer_impact, started_at, mitigated_at, resolved_at, metadata')
+            .is('deleted_at', null)
+            .neq('status', 'closed')
+            .order('started_at', { ascending: false })
+            .limit(20),
+        db.from('deployment_promotion_runs')
+            .select('promotion_id, runtime_name, runtime_root, environment, strategy, version, status, health_gates, started_at, finished_at, created_at')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(20),
+        db.from('failover_drill_runs')
+            .select('drill_id, drill_type, source_region, target_region, affected_runtimes, status, rto_seconds, rpo_seconds, result, created_at')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(20),
+        db.from('chaos_experiment_runs')
+            .select('experiment_id, experiment_type, environment, blast_radius, status, guardrails, result, created_at')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(20),
+        db.from('load_test_runs')
+            .select('run_id, test_type, environment, status, tool, target_rps, p95_latency_ms, error_rate, report_url, result, created_at')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(20),
+        db.from('runtime_slo_definitions')
+            .select('slo_id, runtime_name, sli_name, target_percent, window, error_budget_policy, alert_policy, active')
+            .is('deleted_at', null)
+            .eq('active', true)
+            .order('runtime_name', { ascending: true })
+            .limit(50),
+    ]);
+
+    for (const result of [health, queues, alerts, incidents, deployments, failover, chaos, load, slo]) {
+        if (result.error) throw new Error(`Runtime overview query failed: ${result.error.message}`);
+    }
+
+    return c.json(success({
+        health: health.data || [],
+        queues: queues.data || [],
+        alerts: alerts.data || [],
+        incidents: incidents.data || [],
+        deployments: deployments.data || [],
+        failover_drills: failover.data || [],
+        chaos_experiments: chaos.data || [],
+        load_tests: load.data || [],
+        slos: slo.data || [],
+    }));
+});
+
+router.get('/runtime/queues/:queueName', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('inspect_distributed_queue', {
+        p_queue_name: c.req.param('queueName'),
+        p_limit: parseLimit(c, 100),
+    });
+
+    if (error) throw new Error(`Distributed queue inspection failed: ${error.message}`);
+
+    return c.json(success({ messages: data || [] }));
+});
+
+router.post('/runtime/queues/:queueName/recover-leases', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RuntimeQueueRecoverySchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid queue lease recovery request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const operationId = dispatcherId('queue-recovery');
+    const { data, error } = await db.rpc('recover_stuck_distributed_queue_leases', {
+        p_queue_name: c.req.param('queueName'),
+        p_recovery_operation_id: operationId,
+        p_reason: parsed.data.reason,
+        p_limit: parsed.data.limit || 100,
+    });
+
+    if (error) throw new Error(`Distributed queue lease recovery failed: ${error.message}`);
+
+    return c.json(success({ operation_id: operationId, recovered_count: data }));
+});
+
+router.post('/runtime/queues/:queueName/redrive-dead-letters', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RuntimeDeadLetterRedriveSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid dead-letter redrive request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const operationId = dispatcherId('dead-letter-redrive');
+    const { data, error } = await db.rpc('redrive_distributed_dead_letters', {
+        p_queue_name: c.req.param('queueName'),
+        p_message_ids: parsed.data.message_ids,
+        p_recovery_operation_id: operationId,
+        p_reason: parsed.data.reason,
+    });
+
+    if (error) throw new Error(`Distributed dead-letter redrive failed: ${error.message}`);
+
+    return c.json(success({ operation_id: operationId, redriven_count: data }));
+});
+
+router.get('/runtime/replays', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('replay_operation_schedules')
+        .select('replay_id, owner_runtime, site_id, event_types, cursor, batch_size, dry_run, impact, rollback_plan, requested_by, approved_by, authorization_expires_at, status, request_id, correlation_id, trace_id, created_at, updated_at')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(parseLimit(c));
+
+    if (error) throw new Error(`Runtime replay list failed: ${error.message}`);
+
+    return c.json(success({ replays: data || [] }));
+});
+
+router.post('/runtime/replays', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = ScheduleRuntimeReplaySchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid runtime replay schedule request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const requestId = getRequestId(c);
+    const { data, error } = await db.rpc('schedule_runtime_replay_operation', {
+        p_replay_id: parsed.data.replay_id,
+        p_owner_runtime: parsed.data.owner_runtime,
+        p_site_id: parsed.data.site_id || null,
+        p_event_types: parsed.data.event_types,
+        p_cursor: parsed.data.cursor,
+        p_batch_size: parsed.data.batch_size,
+        p_dry_run: parsed.data.dry_run,
+        p_requested_by: actorId(c),
+        p_reason: parsed.data.reason,
+        p_request_id: requestId,
+        p_correlation_id: requestId,
+        p_trace_id: c.req.header('X-Trace-ID') || null,
+    });
+
+    if (error) throw new Error(`Runtime replay scheduling failed: ${error.message}`);
+
+    return c.json(success({ replay: data }), 201);
+});
+
+router.post('/runtime/replays/:replayId/authorize', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = AuthorizeRuntimeReplaySchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid runtime replay authorization request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('authorize_runtime_replay_operation', {
+        p_replay_id: c.req.param('replayId'),
+        p_approved_by: actorId(c),
+        p_expires_at: parsed.data.expires_at,
+    });
+
+    if (error) throw new Error(`Runtime replay authorization failed: ${error.message}`);
+
+    return c.json(success({ replay: data }));
+});
+
+router.get('/runtime/control-commands', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('runtime_control_commands')
+        .select('command_id, operation, target_type, target_id, requested_by, reason, status, result, request_id, correlation_id, trace_id, created_at, updated_at')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(parseLimit(c));
+
+    if (error) throw new Error(`Runtime control command list failed: ${error.message}`);
+
+    return c.json(success({ commands: data || [] }));
+});
+
+router.post('/runtime/control-commands', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = SubmitRuntimeControlCommandSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid runtime control command request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const requestId = getRequestId(c);
+    const authUserId = actorId(c);
+    const { data, error } = await db
+        .from('runtime_control_commands')
+        .insert({
+            command_id: parsed.data.command_id,
+            operation: parsed.data.operation,
+            target_type: parsed.data.target_type,
+            target_id: parsed.data.target_id,
+            requested_by: authUserId,
+            reason: parsed.data.reason,
+            request_id: requestId,
+            correlation_id: requestId,
+            trace_id: c.req.header('X-Trace-ID') || null,
+            created_by: authUserId,
+            updated_by: authUserId,
+        })
+        .select('command_id, operation, target_type, target_id, status, created_at')
+        .single();
+
+    if (error) throw new Error(`Runtime control command submission failed: ${error.message}`);
+
+    return c.json(success({ command: data }), 201);
+});
+
+router.get('/runtime/incidents', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('production_incidents')
+        .select('incident_id, title, severity, status, affected_runtimes, affected_regions, customer_impact, commander_id, started_at, mitigated_at, resolved_at, postmortem_url, metadata, created_at, updated_at')
+        .is('deleted_at', null)
+        .order('started_at', { ascending: false })
+        .limit(parseLimit(c));
+
+    if (error) throw new Error(`Production incident list failed: ${error.message}`);
+
+    return c.json(success({ incidents: data || [] }));
+});
+
+router.post('/runtime/incidents', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordProductionIncidentSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid production incident request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_production_incident', {
+        p_incident_id: parsed.data.incident_id,
+        p_title: parsed.data.title,
+        p_severity: parsed.data.severity,
+        p_affected_runtimes: parsed.data.affected_runtimes,
+        p_affected_regions: parsed.data.affected_regions,
+        p_customer_impact: parsed.data.customer_impact,
+        p_commander_id: actorId(c),
+        p_metadata: parsed.data.metadata,
+    });
+
+    if (error) throw new Error(`Production incident creation failed: ${error.message}`);
+
+    return c.json(success({ incident: data }), 201);
+});
+
+router.patch('/runtime/incidents/:incidentId/status', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = UpdateProductionIncidentStatusSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid production incident status request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('update_production_incident_status', {
+        p_incident_id: c.req.param('incidentId'),
+        p_status: parsed.data.status,
+        p_actor_id: actorId(c),
+        p_summary: parsed.data.summary,
+        p_details: parsed.data.details,
+    });
+
+    if (error) throw new Error(`Production incident status update failed: ${error.message}`);
+
+    return c.json(success({ incident: data }));
+});
+
+router.post('/runtime/failover-drills', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordFailoverDrillSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid failover drill request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_failover_drill_run', {
+        p_drill_id: parsed.data.drill_id,
+        p_drill_type: parsed.data.drill_type,
+        p_source_region: parsed.data.source_region || null,
+        p_target_region: parsed.data.target_region || null,
+        p_affected_runtimes: parsed.data.affected_runtimes,
+        p_status: parsed.data.status,
+        p_rto_seconds: parsed.data.rto_seconds ?? null,
+        p_rpo_seconds: parsed.data.rpo_seconds ?? null,
+        p_result: parsed.data.result,
+    });
+
+    if (error) throw new Error(`Failover drill recording failed: ${error.message}`);
+
+    return c.json(success({ drill: data }), 201);
+});
+
+router.post('/runtime/chaos-experiments', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordChaosExperimentSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid chaos experiment request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_chaos_experiment_run', {
+        p_experiment_id: parsed.data.experiment_id,
+        p_experiment_type: parsed.data.experiment_type,
+        p_environment: parsed.data.environment,
+        p_blast_radius: parsed.data.blast_radius,
+        p_status: parsed.data.status,
+        p_guardrails: parsed.data.guardrails,
+        p_result: parsed.data.result,
+    });
+
+    if (error) throw new Error(`Chaos experiment recording failed: ${error.message}`);
+
+    return c.json(success({ experiment: data }), 201);
+});
+
+router.post('/runtime/load-tests', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordLoadTestRunSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid load test run request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_load_test_run', {
+        p_run_id: parsed.data.run_id,
+        p_test_type: parsed.data.test_type,
+        p_environment: parsed.data.environment,
+        p_status: parsed.data.status,
+        p_tool: parsed.data.tool,
+        p_target_rps: parsed.data.target_rps ?? null,
+        p_p95_latency_ms: parsed.data.p95_latency_ms ?? null,
+        p_error_rate: parsed.data.error_rate ?? null,
+        p_report_url: parsed.data.report_url || null,
+        p_result: parsed.data.result,
+    });
+
+    if (error) throw new Error(`Load test run recording failed: ${error.message}`);
+
+    return c.json(success({ run: data }), 201);
+});
+
+router.post('/runtime/deployments', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordDeploymentPromotionSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid deployment promotion request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_deployment_promotion_run', {
+        p_promotion_id: parsed.data.promotion_id,
+        p_runtime_name: parsed.data.runtime_name,
+        p_runtime_root: parsed.data.runtime_root,
+        p_environment: parsed.data.environment,
+        p_strategy: parsed.data.strategy,
+        p_version: parsed.data.version,
+        p_status: parsed.data.status,
+        p_health_gates: parsed.data.health_gates,
+    });
+
+    if (error) throw new Error(`Deployment promotion recording failed: ${error.message}`);
+
+    return c.json(success({ deployment: data }), 201);
 });
 
 export default router;

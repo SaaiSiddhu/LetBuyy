@@ -35,8 +35,27 @@ export interface RuntimeControlCommand {
     | 'redrive-dead-letter'
     | 'cancel-workflow'
     | 'retry-workflow'
-    | 'drain-worker';
-  targetType: 'queue' | 'event-stream' | 'workflow' | 'dead-letter' | 'worker';
+    | 'drain-worker'
+    | 'invalidate-cache'
+    | 'throttle-tenant'
+    | 'release-tenant-throttle'
+    | 'failover-region'
+    | 'restore-region'
+    | 'pause-provider'
+    | 'restore-provider'
+    | 'promote-deployment'
+    | 'rollback-deployment';
+  targetType:
+    | 'queue'
+    | 'event-stream'
+    | 'workflow'
+    | 'dead-letter'
+    | 'worker'
+    | 'cache'
+    | 'tenant-runtime'
+    | 'region'
+    | 'provider'
+    | 'deployment';
   targetId: string;
   requestedBy: string;
   reason: string;
