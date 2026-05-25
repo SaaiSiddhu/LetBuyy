@@ -65,6 +65,21 @@ jobs:
       - name: Lifecycle gates
         run: pnpm run validate:lifecycle
 
+      - name: Runtime safety gates
+        run: pnpm run validate:runtime
+
+      - name: Replay safety gates
+        run: pnpm run validate:replay
+
+      - name: Deployment safety gates
+        run: pnpm run validate:deployment
+
+      - name: Runtime topology gates
+        run: pnpm run validate:topology
+
+      - name: Cloudflare isolation gates
+        run: pnpm run validate:cloudflare
+
       - name: Typecheck
         run: pnpm run typecheck
 

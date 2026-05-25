@@ -29,7 +29,7 @@ After each phase:
 - Run targeted typecheck/build where blast radius requires it.
 - Commit atomically with a rollback-safe message.
 
-Replayable Supabase migrations must not use `DROP TABLE`, `DROP SCHEMA`, `TRUNCATE`, physical `sites`/`stores` rename cycles, or `CREATE TABLE stores`. `stores` is compatibility/API language only; canonical tenant storage remains `sites`.
+Replayable Supabase migrations must not use `DROP TABLE`, `DROP SCHEMA`, `DROP COLUMN`, `TRUNCATE`, physical table renames, physical column renames, physical `sites`/`stores` rename cycles, or `CREATE TABLE stores`. `stores` is compatibility/API language only; canonical tenant storage remains `sites`.
 
 ## Move Rules
 
@@ -40,4 +40,4 @@ Replayable Supabase migrations must not use `DROP TABLE`, `DROP SCHEMA`, `TRUNCA
 
 ## Validation
 
-Migration safety is enforced by `scripts/validators/migration-safety-validator.mjs` and is part of `pnpm run validate:governance`. Unsafe historical migrations must be retired as no-op migration-number memory or replaced by additive compatibility objects.
+Migration safety is enforced by `scripts/validators/migration-safety-validator.mjs` and is part of `pnpm run validate:governance`. Unsafe historical migrations must be retired as no-op migration-number memory or replaced by additive compatibility objects. Production migration orchestration must keep staging dry-run, PITR checkpoint, rollback manifest, event-store integrity, and production readiness gates in `infrastructure/deployment/migration-orchestration.yaml`.

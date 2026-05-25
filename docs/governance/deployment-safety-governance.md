@@ -19,6 +19,10 @@ local -> dev -> staging -> canary -> production
 ## Validation
 
 - `tests/operations/deployment-safety.test.mjs`
+- `tests/operations/runtime-governance.test.mjs`
+- `scripts/validators/deployment-safety-validator.mjs`
+- `scripts/validators/runtime-topology-validator.mjs`
+- `scripts/validators/env-isolation-validator.mjs`
 - `scripts/validators/cloudflare-environment-validator.mjs`
 - `scripts/validators/supply-chain-validator.mjs`
 - `scripts/validators/ci-simulation-validator.mjs`

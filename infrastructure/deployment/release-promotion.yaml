@@ -1,4 +1,14 @@
 environments:
+  local:
+    promotionSource: developer-workspace
+    secrets: local-placeholders-only
+    deploy: no-live-deploy
+    deploymentCommand: pnpm run local:up
+    rollbackCommand: pnpm run local:reset
+    healthGates:
+      - local-bootstrap
+      - local-health
+      - replay-runtime-local-health
   dev:
     promotionSource: feature-branch
     secrets: provider-dev

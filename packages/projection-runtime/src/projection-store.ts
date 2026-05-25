@@ -1,4 +1,4 @@
-import type { RuntimeTenantScope } from '@letbuyy/distributed-runtime';
+import { stableReplaySerialize, type RuntimeTenantScope } from '@letbuyy/distributed-runtime';
 
 export interface ProjectionIdentity {
   projectionName: string;
@@ -60,6 +60,16 @@ export class ProjectionStoreRuntime<TReadModel = Record<string, unknown>> {
     if (!record.identity.projectionName || record.identity.projectionVersion < 1) {
       throw new Error('Projection store record requires a name and version');
     }
+    if (!record.freshness.sourceEventId) {
+      throw new Error('Projection store record requires sourceEventId for replay integrity');
+    }
+    if (record.freshness.sourceGlobalPosition === undefined || record.freshness.sourceGlobalPosition === null) {
+      throw new Error('Projection store record requires sourceGlobalPosition for replay integrity');
+    }
+    if (Number.isNaN(Date.parse(record.freshness.projectedAt))) {
+      throw new Error('Projection store record requires an ISO-compatible projectedAt timestamp');
+    }
+    stableReplaySerialize(record.readModel);
     return this.store.upsert(record);
   }
 

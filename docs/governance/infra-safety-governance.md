@@ -14,5 +14,7 @@ Infrastructure changes must be declarative, environment-scoped, drift-detectable
 
 - `scripts/validators/cloudflare-environment-validator.mjs`
 - `scripts/validators/environment-validator.mjs`
+- `scripts/validators/env-isolation-validator.mjs`
+- `scripts/validators/runtime-topology-validator.mjs`
 - `infrastructure/scripts/deploy/deploy-worker-runtime.mjs`
 - GitHub environment approvals for execute-mode deployment workflows

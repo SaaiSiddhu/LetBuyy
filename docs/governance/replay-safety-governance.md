@@ -12,6 +12,10 @@ Replay safety means the same valid event stream produces the same projection sta
 
 ## Validation
 
+- `config/runtime/replay-safety-contract.json` is the machine-readable replay determinism contract.
+- `scripts/validators/replay-safety-validator.mjs` blocks replay-critical wall-clock/random entropy and requires stable serialization.
+- `scripts/validators/event-schema-validator.mjs` enforces versioned append-only event storage and replay compatibility gates.
+- `scripts/validators/projection-integrity-validator.mjs` requires projection source event and source position metadata.
 - `tests/replay/replay-determinism.test.mjs` proves the minimum deterministic replay contract.
 - `scripts/validators/migration-safety-validator.mjs` blocks schema history patterns that would destroy replayability.
 - Live replay recovery remains execute-mode evidence and must not be claimed from repository checks alone.

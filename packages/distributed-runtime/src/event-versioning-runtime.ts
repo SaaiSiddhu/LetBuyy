@@ -66,4 +66,8 @@ export function assertReplayVersionAllowed(resolution: EventVersionResolution): 
   if (resolution.status === 'unsupported' || resolution.status === 'requires-migration') {
     throw new Error(`Event replay blocked: ${resolution.reason}`);
   }
+
+  if (resolution.descriptor && resolution.descriptor.replaySafe !== true) {
+    throw new Error(`Event replay blocked: ${resolution.descriptor.eventType} v${resolution.descriptor.version} is not marked replay-safe`);
+  }
 }

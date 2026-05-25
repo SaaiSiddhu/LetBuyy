@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/replay-safety-contract.schema.json",
+  "title": "LetBuyy Replay Safety Contract",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "contractVersion",
+    "determinism",
+    "eventOrdering",
+    "eventEvolution",
+    "projectionIntegrity",
+    "migrationSafety",
+    "authorization"
+  ],
+  "properties": {
+    "contractVersion": { "type": "integer", "minimum": 1 },
+    "determinism": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["eventTimeSource", "serialization", "checksum", "forbiddenReplayEntropy"],
+      "properties": {
+        "eventTimeSource": { "const": "producer-supplied-occurredAt-only" },
+        "serialization": { "const": "stable-json-sorted-keys" },
+        "checksum": { "const": "fnv1a32-stable-json" },
+        "forbiddenReplayEntropy": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "eventOrdering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["requiredPositions", "gapPolicy", "idempotencyPolicy"],
+      "properties": {
+        "requiredPositions": {
+          "type": "array",
+          "items": { "enum": ["stream_position", "global_position"] },
+          "minItems": 2,
+          "uniqueItems": true
+        },
+        "gapPolicy": { "const": "fail-closed" },
+        "idempotencyPolicy": { "const": "stream-scoped-idempotency-key" }
+      }
+    },
+    "eventEvolution": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schemaVersionPolicy", "compatibilityPolicy", "breakingChangePolicy"],
+      "properties": {
+        "schemaVersionPolicy": { "const": "positive-integer" },
+        "compatibilityPolicy": { "const": "additive-compatible-or-explicit-migration" },
+        "breakingChangePolicy": { "const": "blocked-before-replay" }
+      }
+    },
+    "projectionIntegrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceEventIdRequired", "sourceGlobalPositionRequired", "readModelSerialization"],
+      "properties": {
+        "sourceEventIdRequired": { "const": true },
+        "sourceGlobalPositionRequired": { "const": true },
+        "readModelSerialization": { "const": "stable-json-sorted-keys" }
+      }
+    },
+    "migrationSafety": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["destructiveOperations", "renamePolicy", "rehearsalPolicy"],
+      "properties": {
+        "destructiveOperations": { "const": "forbidden" },
+        "renamePolicy": { "const": "expand-contract-with-compatibility-only" },
+        "rehearsalPolicy": { "const": "required-before-production" }
+      }
+    },
+    "authorization": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["nonDryRunReplay", "expiryPolicy"],
+      "properties": {
+        "nonDryRunReplay": { "const": "approved-and-timeboxed" },
+        "expiryPolicy": { "const": "fail-closed" }
+      }
+    }
+  }
+}

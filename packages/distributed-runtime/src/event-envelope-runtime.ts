@@ -49,7 +49,7 @@ export interface DistributedEventInput<TPayload = Record<string, unknown>> {
   sourceRuntime: string;
   producer: string;
   payload: TPayload;
-  occurredAt?: RuntimeIsoTimestamp;
+  occurredAt: RuntimeIsoTimestamp;
   aggregateType?: string;
   aggregateId?: string;
   tenant?: RuntimeTenantScope | null;
@@ -59,6 +59,59 @@ export interface DistributedEventInput<TPayload = Record<string, unknown>> {
   replayable?: boolean;
   retentionClass?: EventRetentionClass;
   metadata?: Record<string, unknown>;
+}
+
+export function canonicalizeReplayValue(value: unknown, path = 'payload'): unknown {
+  if (value === null || typeof value === 'string' || typeof value === 'boolean') return value;
+
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      throw new Error(`Replay payload is not deterministic at ${path}: number must be finite`);
+    }
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item, index) => canonicalizeReplayValue(item, `${path}[${index}]`));
+  }
+
+  if (typeof value === 'object') {
+    if (value instanceof Date) {
+      throw new Error(`Replay payload is not deterministic at ${path}: Date objects must be serialized before event creation`);
+    }
+
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) {
+      throw new Error(`Replay payload is not deterministic at ${path}: only plain JSON objects are allowed`);
+    }
+
+    const record = value as Record<string, unknown>;
+    const sorted: Record<string, unknown> = {};
+    for (const key of Object.keys(record).sort()) {
+      const child = record[key];
+      if (child === undefined) {
+        throw new Error(`Replay payload is not deterministic at ${path}.${key}: undefined is not JSON-serializable`);
+      }
+      sorted[key] = canonicalizeReplayValue(child, `${path}.${key}`);
+    }
+    return sorted;
+  }
+
+  throw new Error(`Replay payload is not deterministic at ${path}: ${typeof value} is not JSON-serializable`);
+}
+
+export function stableReplaySerialize(value: unknown): string {
+  return JSON.stringify(canonicalizeReplayValue(value));
+}
+
+export function replayPayloadChecksum(value: unknown): string {
+  const serialized = stableReplaySerialize(value);
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < serialized.length; index += 1) {
+    hash ^= serialized.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
 export function buildEventStreamName(input: {
@@ -93,6 +146,10 @@ export function buildEventPartition(input: {
 export function createDistributedEventEnvelope<TPayload = Record<string, unknown>>(
   input: DistributedEventInput<TPayload>,
 ): DistributedEventEnvelope<TPayload> {
+  if (!input.occurredAt) {
+    throw new Error('Distributed event envelope requires producer-supplied occurredAt for deterministic replay');
+  }
+
   const siteId = input.tenant?.siteId || input.correlation.siteId || undefined;
   const streamName = buildEventStreamName({
     aggregateType: input.aggregateType,
@@ -114,7 +171,7 @@ export function createDistributedEventEnvelope<TPayload = Record<string, unknown
     site_id: siteId,
     aggregate_type: input.aggregateType,
     aggregate_id: input.aggregateId,
-    occurred_at: input.occurredAt || new Date().toISOString(),
+    occurred_at: input.occurredAt,
     payload: input.payload,
     request_id: input.correlation.requestId,
     idempotency_key: input.idempotencyKey,
@@ -140,6 +197,8 @@ export function assertReplaySafeEventEnvelope<TPayload>(event: DistributedEventE
   const missing = [
     ['event_id', event.event_id],
     ['event_type', event.event_type],
+    ['source_runtime', event.source_runtime],
+    ['occurred_at', event.occurred_at],
     ['stream_name', event.stream_name],
     ['partition_key', event.partition_key],
     ['correlation_id', event.correlation_id],
@@ -154,6 +213,29 @@ export function assertReplaySafeEventEnvelope<TPayload>(event: DistributedEventE
   if (event.immutable !== true) {
     throw new Error('Distributed event envelope must be immutable');
   }
+
+  if (!Number.isInteger(event.schema_version) || event.schema_version < 1) {
+    throw new Error('Distributed event envelope requires a positive integer schema_version');
+  }
+
+  if (Number.isNaN(Date.parse(event.occurred_at))) {
+    throw new Error('Distributed event envelope requires an ISO-compatible occurred_at timestamp');
+  }
+
+  if (typeof event.replayable !== 'boolean') {
+    throw new Error('Distributed event envelope requires an explicit replayable flag');
+  }
+
+  if (event.stream_position !== undefined && (!Number.isInteger(event.stream_position) || event.stream_position < 1)) {
+    throw new Error('Distributed event envelope stream_position must be a positive integer when present');
+  }
+
+  if (event.global_position !== undefined && (!Number.isInteger(event.global_position) || event.global_position < 1)) {
+    throw new Error('Distributed event envelope global_position must be a positive integer when present');
+  }
+
+  stableReplaySerialize(event.payload);
+  stableReplaySerialize(event.metadata);
 }
 
 export function eventOrderingKey<TPayload>(event: DistributedEventEnvelope<TPayload>): string {

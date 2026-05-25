@@ -1,4 +1,11 @@
-import type { DistributedEventEnvelope, ReplayStoragePlan, ReplayStorageRuntime, RuntimeCorrelationContext } from '@letbuyy/distributed-runtime';
+import {
+  assertReplaySafeEventEnvelope,
+  stableReplaySerialize,
+  type DistributedEventEnvelope,
+  type ReplayStoragePlan,
+  type ReplayStorageRuntime,
+  type RuntimeCorrelationContext,
+} from '@letbuyy/distributed-runtime';
 import type { ProjectionStorePort, ProjectionStoreRecord } from './projection-store';
 
 export interface ProjectionEventProjector<TPayload = Record<string, unknown>, TReadModel = Record<string, unknown>> {
@@ -12,6 +19,39 @@ export interface ProjectionReplayResult {
   projected: number;
   skipped: number;
   failed: number;
+}
+
+export function assertProjectionReplayRecord<TPayload = Record<string, unknown>, TReadModel = Record<string, unknown>>(
+  record: ProjectionStoreRecord<TReadModel>,
+  event: DistributedEventEnvelope<TPayload>,
+): void {
+  assertReplaySafeEventEnvelope(event);
+
+  if (event.global_position === undefined || event.global_position === null) {
+    throw new Error(`Projection replay requires persisted global_position for event ${event.event_id}`);
+  }
+
+  if (record.freshness.sourceEventId !== event.event_id) {
+    throw new Error(`Projection replay sourceEventId mismatch for event ${event.event_id}`);
+  }
+
+  if (record.freshness.sourceGlobalPosition !== event.global_position) {
+    throw new Error(`Projection replay sourceGlobalPosition mismatch for event ${event.event_id}`);
+  }
+
+  if (
+    event.stream_position !== undefined
+    && event.stream_position !== null
+    && record.freshness.sourceStreamPosition !== event.stream_position
+  ) {
+    throw new Error(`Projection replay sourceStreamPosition mismatch for event ${event.event_id}`);
+  }
+
+  if (record.identity.projectionVersion < 1) {
+    throw new Error('Projection replay record requires a positive projectionVersion');
+  }
+
+  stableReplaySerialize(record.readModel);
 }
 
 export class ProjectionReplayRuntime<TPayload = Record<string, unknown>, TReadModel = Record<string, unknown>> {
@@ -33,6 +73,7 @@ export class ProjectionReplayRuntime<TPayload = Record<string, unknown>, TReadMo
 
     for (const event of batch.events) {
       try {
+        assertReplaySafeEventEnvelope(event);
         if (!this.projector.supports(event)) {
           result.skipped += 1;
           continue;
@@ -44,6 +85,7 @@ export class ProjectionReplayRuntime<TPayload = Record<string, unknown>, TReadMo
           continue;
         }
 
+        assertProjectionReplayRecord(record, event);
         await this.store.upsert(record);
         result.projected += 1;
       } catch {

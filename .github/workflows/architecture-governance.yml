@@ -55,6 +55,18 @@ jobs:
       - name: Validate governance
         run: pnpm run validate:governance
 
+      - name: Validate runtime safety
+        run: pnpm run validate:runtime
+
+      - name: Validate replay safety
+        run: pnpm run validate:replay
+
+      - name: Validate deployment safety
+        run: pnpm run validate:deployment
+
+      - name: Validate runtime topology
+        run: pnpm run validate:topology
+
       - name: Validate operational runtime topology
         run: node scripts/validators/distributed-runtime-validator.mjs
 

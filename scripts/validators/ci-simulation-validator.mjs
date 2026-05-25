@@ -9,6 +9,10 @@ const architecture = readFile(".github/workflows/architecture-governance.yml");
 for (const fragment of [
   "pnpm install --frozen-lockfile",
   "pnpm run validate:governance",
+  "pnpm run validate:runtime",
+  "pnpm run validate:replay",
+  "pnpm run validate:deployment",
+  "pnpm run validate:topology",
   "pnpm run validate:dependencies",
   "pnpm run validate:typescript",
   "pnpm run validate:survivability",
@@ -23,6 +27,10 @@ const rollout = readFile(".github/workflows/production-rollout.yml");
 for (const fragment of [
   "pnpm run validate:governance",
   "pnpm run validate:lifecycle",
+  "pnpm run validate:runtime",
+  "pnpm run validate:replay",
+  "pnpm run validate:deployment",
+  "pnpm run validate:topology",
   "pnpm run validate:dependencies",
   "pnpm run validate:migrations",
   "pnpm run validate:cloudflare",
@@ -41,6 +49,10 @@ const certification = readFile(".github/workflows/live-production-certification.
 for (const fragment of [
   "pnpm run validate:governance",
   "pnpm run validate:lifecycle",
+  "pnpm run validate:runtime",
+  "pnpm run validate:replay",
+  "pnpm run validate:deployment",
+  "pnpm run validate:topology",
   "pnpm run validate:dependencies",
   "pnpm run validate:migrations",
   "pnpm run validate:cloudflare",
