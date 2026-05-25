@@ -24,3 +24,15 @@ Do not set the approval flag unless the incident commander, release owner, and S
 ## Certification Rule
 
 Fresh operations records are necessary but not sufficient. Certification only passes when required evidence has a passing operational status such as `passed`, `healthy`, `success`, `succeeded`, or `closed`.
+
+## Local Operational Proof
+
+When provider credentials or load tools are unavailable, run the local-only proof harness:
+
+```bash
+pnpm run proof:local
+```
+
+This executes the local replay runtime, local HTTP load, replay determinism stress, and queue recovery stress. It writes ignored evidence to `artifacts/local-operational-proof/report.json`.
+
+The report has `scope: "local-only"` and `certification: false`. It is useful execution evidence for local runtime behavior, but it is not production or internet-scale certification.

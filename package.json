@@ -30,6 +30,7 @@
         "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "test": "node --test tests/*/*.test.mjs",
         "test:workspaces": "turbo test",
+        "proof:local": "node infrastructure/scripts/operations/run-local-operational-proof.mjs",
         "survivability:plan": "node infrastructure/scripts/operations/run-survivability-suite.mjs --environment=production --mode=plan",
         "typecheck": "turbo typecheck"
     },

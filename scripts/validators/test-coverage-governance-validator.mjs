@@ -21,6 +21,7 @@ const requiredTestFiles = [
   "tests/chaos/degraded-mode.test.mjs",
   "tests/security/execution-mode.test.mjs",
   "tests/survivability/survivability-governance.test.mjs",
+  "tests/survivability/local-operational-proof.test.mjs",
 ];
 
 for (const file of requiredTestFiles) {

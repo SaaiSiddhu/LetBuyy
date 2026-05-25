@@ -71,6 +71,7 @@ docs/architecture/validation/
 phase4-live-certification-report.json
 certification-report.json
 artifacts/live-certification/
+artifacts/local-operational-proof/
 
 # Cloud Functions
 functions/node_modules/
