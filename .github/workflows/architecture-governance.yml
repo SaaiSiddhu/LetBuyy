@@ -58,6 +58,9 @@ jobs:
       - name: Validate runtime safety
         run: pnpm run validate:runtime
 
+      - name: Validate runtime reconciliation
+        run: pnpm run validate:reconciliation
+
       - name: Validate replay safety
         run: pnpm run validate:replay
 

@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Manifest Lineage",
+  "type": "object",
+  "required": ["$schema", "manifestVersion", "mode", "checksumAlgorithm", "entries", "failurePolicy"],
+  "properties": {
+    "$schema": { "const": "config/runtime/manifest-lineage.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "checksumAlgorithm": { "const": "sha256" },
+    "entries": { "type": "array", "minItems": 7 },
+    "failurePolicy": { "const": "fail-closed" }
+  }
+}

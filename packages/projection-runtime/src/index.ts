@@ -10,3 +10,4 @@ export * from './projection-lifecycle-runtime';
 export * from './projection-checkpoint-runtime';
 export * from './projection-consistency-runtime';
 export * from './projection-operations-runtime';
+export * from './projection-reconciliation-runtime';

@@ -66,6 +66,9 @@ jobs:
       - name: Runtime safety gates
         run: pnpm run validate:runtime
 
+      - name: Runtime reconciliation gates
+        run: pnpm run validate:reconciliation
+
       - name: Replay safety gates
         run: pnpm run validate:replay
 

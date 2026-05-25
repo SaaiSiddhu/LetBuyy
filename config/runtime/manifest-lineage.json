@@ -1,0 +1,51 @@
+{
+  "$schema": "config/runtime/manifest-lineage.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "checksumAlgorithm": "sha256",
+  "entries": [
+    {
+      "path": "config/runtime/runtime-orchestration-manifest.json",
+      "owner": "runtime-orchestration",
+      "compatibility": "additive-or-explicit-migration",
+      "checksum": "374e485f4e9df3e5fde1fde6fae63b6fdf5453c9aed16836bcf2a07a7ad1dace"
+    },
+    {
+      "path": "config/runtime/replay-evolution-manifest.json",
+      "owner": "replay-runtime",
+      "compatibility": "additive-or-explicit-transform-before-replay",
+      "checksum": "43076a4221fd32c9b59fac12aa72bff156768e66b2c18b6f1b61dbc846316ca2"
+    },
+    {
+      "path": "config/runtime/projection-recovery-manifest.json",
+      "owner": "projection-runtime",
+      "compatibility": "rebuild-compatible",
+      "checksum": "7bf6cd83aa7b0845ea4d51fd83da3cbf9b8f2fc661d7f7f74d9ab948852a548b"
+    },
+    {
+      "path": "config/runtime/queue-lifecycle-manifest.json",
+      "owner": "queue-runtime",
+      "compatibility": "dead-letter-and-retry-compatible",
+      "checksum": "e4301cf460f05ed809b745c32261c2c5d3ba00c9db0806483da0a519941b815e"
+    },
+    {
+      "path": "config/runtime/deployment-lineage-manifest.json",
+      "owner": "deployment-runtime",
+      "compatibility": "rollback-lineage-compatible",
+      "checksum": "2a00c99a92d8fddbec23ae0929b9db235fc25c7a4652bd315e1deaf51a38a10f"
+    },
+    {
+      "path": "config/runtime/cloudflare-binding-ownership.json",
+      "owner": "cloudflare-runtime",
+      "compatibility": "explicit-env-binding-compatible",
+      "checksum": "f7a051c83c748a8e1a101b5323cae7fd534e1838ee60fc95f5c8eab2f80197e5"
+    },
+    {
+      "path": "config/runtime/deployment-topology.json",
+      "owner": "runtime-topology",
+      "compatibility": "startup-order-compatible",
+      "checksum": "3750b2472f4a2b5a95698ae9f6dd447b865032b145f46ebb0dff2c3263d5cc31"
+    }
+  ],
+  "failurePolicy": "fail-closed"
+}
