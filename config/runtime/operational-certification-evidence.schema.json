@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Operational Certification Evidence Contract",
+  "type": "object",
+  "required": [
+    "$schema",
+    "contractVersion",
+    "mode",
+    "harness",
+    "telemetry",
+    "certificationCategories",
+    "validators",
+    "artifactPolicy",
+    "failurePolicy"
+  ],
+  "properties": {
+    "$schema": { "const": "config/runtime/operational-certification-evidence.schema.json" },
+    "contractVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "local-executable-evidence-not-production-certification" },
+    "harness": { "type": "object" },
+    "telemetry": { "type": "object" },
+    "certificationCategories": { "type": "array", "minItems": 7 },
+    "validators": { "type": "array", "minItems": 10 },
+    "artifactPolicy": { "type": "object" },
+    "failurePolicy": { "const": "fail-closed" }
+  }
+}

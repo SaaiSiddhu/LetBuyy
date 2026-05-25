@@ -84,6 +84,9 @@ jobs:
       - name: Distributed survivability finalization gates
         run: pnpm run validate:distributed-survivability
 
+      - name: Operational certification evidence gates
+        run: pnpm run validate:operational-certification
+
       - name: Replay safety gates
         run: pnpm run validate:replay
 

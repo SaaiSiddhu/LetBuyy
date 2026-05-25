@@ -1,0 +1,27 @@
+{
+  "$schema": "config/runtime/recovery-slo-contract.schema.json",
+  "contractVersion": 1,
+  "mode": "local-executable-evidence-not-production-certification",
+  "budgets": {
+    "replayRestorationMs": 1500,
+    "queueRebuildMs": 1500,
+    "rollbackRecoveryMs": 1500,
+    "walRestorationMs": 1500,
+    "orchestrationRecoveryMs": 1500,
+    "leaseFailoverMs": 1500,
+    "durableObjectRecoveryMs": 1500
+  },
+  "boundedConvergence": {
+    "maxIterations": 8,
+    "requiresFixedPoint": true,
+    "requiresAcyclicRecoveryDag": true,
+    "requiresTelemetryLineage": true
+  },
+  "recoveryBudgetGovernance": {
+    "budgetSource": "config/runtime/recovery-slo-contract.json",
+    "timingEvidenceSource": "artifacts/operational-certification/report.json",
+    "budgetComparison": "observed-local-duration-must-not-exceed-budget",
+    "productionCertificationPolicy": "local timing evidence is not production SLO certification"
+  },
+  "failurePolicy": "fail-closed"
+}

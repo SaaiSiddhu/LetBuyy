@@ -1,0 +1,101 @@
+{
+  "$schema": "config/runtime/operational-certification-evidence.schema.json",
+  "contractVersion": 1,
+  "mode": "local-executable-evidence-not-production-certification",
+  "harness": {
+    "script": "infrastructure/scripts/operations/run-operational-certification.mjs",
+    "defaultMode": "local",
+    "defaultOutput": "artifacts/operational-certification/report.json",
+    "planMode": "prints executable certification plan without evidence claims",
+    "localMode": "executes deterministic in-memory recovery scenarios and writes ignored local evidence",
+    "executeMode": "refuses live evidence recording; provider execution remains owned by phase4-live-certify.mjs",
+    "productionCertification": false
+  },
+  "telemetry": {
+    "schemaVersion": 1,
+    "requiredFields": [
+      "trace_id",
+      "span_id",
+      "parent_span_id",
+      "category",
+      "operation",
+      "event_sequence",
+      "started_at",
+      "duration_ms",
+      "input_checksum",
+      "result_checksum",
+      "causality_checksum"
+    ],
+    "lineagePolicies": [
+      "trace-id-stable-per-run",
+      "span-parentage-required",
+      "result-checksum-required",
+      "replay-safe-serialization",
+      "timing-is-observed-not-synthetic"
+    ]
+  },
+  "certificationCategories": [
+    {
+      "id": "replay",
+      "runnerFunction": "certifyReplayExecution",
+      "validator": "replay-certification-validator",
+      "requiredEvidence": ["same-input-checksum", "same-state-checksum", "projection-equivalence", "timing-observed"]
+    },
+    {
+      "id": "rollback",
+      "runnerFunction": "certifyRollbackExecution",
+      "validator": "rollback-certification-validator",
+      "requiredEvidence": ["rollback-dag-checksum", "compensation-checksum", "causality-checksum", "timing-observed"]
+    },
+    {
+      "id": "queue",
+      "runnerFunction": "certifyQueueRebuild",
+      "validator": "queue-certification-validator",
+      "requiredEvidence": ["checkpoint-checksum", "dead-letter-recovery", "poison-message-quarantine", "convergence-checksum"]
+    },
+    {
+      "id": "wal",
+      "runnerFunction": "certifyWalRecovery",
+      "validator": "wal-certification-validator",
+      "requiredEvidence": ["append-only-lineage", "corruption-detected", "cursor-restored", "snapshot-restored"]
+    },
+    {
+      "id": "failover",
+      "runnerFunction": "certifyLeaseFailover",
+      "validator": "failover-certification-validator",
+      "requiredEvidence": ["single-authority", "stale-executor-evicted", "fencing-token-replayed", "takeover-timing-observed"]
+    },
+    {
+      "id": "durable-object",
+      "runnerFunction": "certifyDurableObjectRecovery",
+      "validator": "durable-object-certification-validator",
+      "requiredEvidence": ["binding-ownership", "snapshot-restored", "replay-cursor-restored", "no-env-crossover"]
+    },
+    {
+      "id": "orchestration",
+      "runnerFunction": "certifyOrchestrationRecovery",
+      "validator": "operational-evidence-validator",
+      "requiredEvidence": ["resumable-cursor", "recovery-checksum", "bounded-convergence", "telemetry-lineage"]
+    }
+  ],
+  "validators": [
+    "replay-certification-validator",
+    "rollback-certification-validator",
+    "queue-certification-validator",
+    "wal-certification-validator",
+    "failover-certification-validator",
+    "recovery-slo-validator",
+    "operational-evidence-validator",
+    "telemetry-lineage-validator",
+    "durable-object-certification-validator",
+    "recovery-budget-validator"
+  ],
+  "artifactPolicy": {
+    "trackedArtifactsForbidden": true,
+    "ignoredDirectory": "artifacts/operational-certification/",
+    "hashAlgorithm": "sha256",
+    "liveCertificationRequiresProviderEvidence": true,
+    "localEvidenceCertification": false
+  },
+  "failurePolicy": "fail-closed"
+}

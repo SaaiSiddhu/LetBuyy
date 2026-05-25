@@ -105,6 +105,18 @@
       "owner": "convergence-math",
       "compatibility": "fixed-point-compatible",
       "checksum": "f4ff1f4317a6287b88c6a9b6dbed278fbe1047180ede0bebb8059269432a706d"
+    },
+    {
+      "path": "config/runtime/operational-certification-evidence.json",
+      "owner": "operational-certification",
+      "compatibility": "local-evidence-contract-compatible",
+      "checksum": "4a5e032544432e8be3058945bd82859e8b42abb035de7059d8852a1b612d2685"
+    },
+    {
+      "path": "config/runtime/recovery-slo-contract.json",
+      "owner": "recovery-slo",
+      "compatibility": "bounded-recovery-budget-compatible",
+      "checksum": "703626d54f82bc2d7f23be98bbcebec034147e73e7c699408801645660a76021"
     }
   ],
   "failurePolicy": "fail-closed"

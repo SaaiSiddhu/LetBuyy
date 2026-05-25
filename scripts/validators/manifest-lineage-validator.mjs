@@ -49,6 +49,8 @@ const requiredEntries = [
   "config/runtime/failure-domain-manifest.json",
   "config/runtime/replay-branch-registry.json",
   "config/runtime/convergence-invariants.json",
+  "config/runtime/operational-certification-evidence.json",
+  "config/runtime/recovery-slo-contract.json",
 ];
 
 const entries = manifest?.entries || [];

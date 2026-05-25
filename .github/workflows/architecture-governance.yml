@@ -73,6 +73,9 @@ jobs:
       - name: Validate distributed survivability finalization
         run: pnpm run validate:distributed-survivability
 
+      - name: Validate operational certification evidence
+        run: pnpm run validate:operational-certification
+
       - name: Validate replay safety
         run: pnpm run validate:replay
 

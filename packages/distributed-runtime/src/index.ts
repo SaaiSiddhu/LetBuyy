@@ -73,6 +73,7 @@ export * from './adaptive-recovery-throttling-runtime';
 export * from './durable-object-recovery-runtime';
 export * from './convergence-proof-runtime';
 export * from './recovery-drill-runtime';
+export * from './operational-certification-runtime';
 export * from './queue-operations-runtime';
 export * from './replay-operations-runtime';
 export * from './telemetry-operations-runtime';
