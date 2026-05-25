@@ -1,0 +1,34 @@
+{
+  "title": "LetBuyy Replay Operations",
+  "uid": "letbuyy-replay-operations",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["letbuyy", "replay", "event-store"],
+  "panels": [
+    {
+      "type": "table",
+      "title": "Replay Schedules",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select replay_id, owner_runtime, dry_run, impact, status, requested_by, approved_by, authorization_expires_at, created_at from replay_operation_schedules where deleted_at is null order by created_at desc limit 50" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Event Store Integrity",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select stream_name, status, checked_events, gap_count, duplicate_count, checked_at from event_store_integrity_checks where deleted_at is null order by checked_at desc limit 50" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Replay Lag",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "max(letbuyy_replay_lag_seconds) by (owner_runtime)", "legendFormat": "{{owner_runtime}}" }
+      ]
+    }
+  ]
+}

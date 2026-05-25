@@ -16,6 +16,8 @@ environments:
     promotionSource: signed-release-tag
     secrets: provider-production
     deploy: blue-green
+    deploymentCommand: node infrastructure/scripts/deploy/production-deploy.mjs --environment=production --target=all --execute
+    rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api
     healthGates:
       - governance-validation
       - production-readiness-validator
@@ -24,8 +26,43 @@ environments:
       - storefront-health
       - queue-lag
       - error-budget
+      - security-gates
+      - chaos-suite-approved
+      - load-suite-current
+startupSequence:
+  - name: cloudflare-primitives
+    command: terraform -chdir=infrastructure/cloudflare apply -input=false
+    owns:
+      - queues
+      - kv-cache
+      - r2-storage
+  - name: database-migrations
+    command: node infrastructure/scripts/deploy/verify-health-gates.mjs --environment=production --preflight
+    requires:
+      - cloudflare-primitives
+  - name: queue-workers
+    command: npx wrangler deploy --config services/queue-workers/wrangler.toml --env production --keep-vars
+    requires:
+      - cloudflare-primitives
+      - database-migrations
+  - name: api-gateway
+    command: npx wrangler deploy --config services/api-gateway/wrangler.toml --env production --keep-vars
+    requires:
+      - queue-workers
+  - name: webhook-service
+    command: npx wrangler deploy --config services/webhook-service/wrangler.toml --env production --keep-vars
+    requires:
+      - api-gateway
+  - name: web-runtimes
+    command: npx vercel deploy --prod --yes
+    requires:
+      - api-gateway
+      - webhook-service
 rollback:
   apiGateway: wrangler-rollback-previous-version
   webApps: vercel-promote-previous-deployment
   database: forward-fix-or-approved-reversible-migration
   queues: pause-consumer-redrive-after-fix
+driftValidation:
+  command: node scripts/validators/production-readiness-validator.mjs
+  requiredBeforePromotion: true

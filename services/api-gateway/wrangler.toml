@@ -1,6 +1,7 @@
 name = "letbuyy-api"
 main = "src/index.ts"
 compatibility_date = "2026-05-01"
+workers_dev = true
 
 [observability]
 enabled = true
@@ -36,11 +37,6 @@ queue = "letbuyy-search-indexing"
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications"
 
-[[kv_namespaces]]
-binding = "CACHE"
-id = "replace-with-production-kv-namespace-id"
-preview_id = "replace-with-preview-kv-namespace-id"
-
 [[r2_buckets]]
 binding = "R2_BUCKET"
 bucket_name = "letbuyy-production-storage"
@@ -53,3 +49,99 @@ mode = "smart"
 port = 8787
 inspector_port = 9231
 local_protocol = "http"
+
+[env.staging]
+name = "letbuyy-api-staging"
+workers_dev = false
+routes = [
+  { pattern = "api.staging.letbuyy.store", custom_domain = true }
+]
+
+[env.staging.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.staging.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.staging.triggers]
+crons = ["*/1 * * * *"]
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+RUNTIME_NAME = "API Gateway"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[[env.staging.queues.producers]]
+binding = "EVENT_QUEUE"
+queue = "letbuyy-events-staging"
+
+[[env.staging.queues.producers]]
+binding = "ANALYTICS_QUEUE"
+queue = "letbuyy-analytics-staging"
+
+[[env.staging.queues.producers]]
+binding = "SEARCH_QUEUE"
+queue = "letbuyy-search-indexing-staging"
+
+[[env.staging.queues.producers]]
+binding = "NOTIFICATION_QUEUE"
+queue = "letbuyy-notifications-staging"
+
+[[env.staging.r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "letbuyy-staging-storage"
+
+[env.staging.placement]
+mode = "smart"
+
+[env.production]
+name = "letbuyy-api"
+workers_dev = false
+routes = [
+  { pattern = "api.letbuyy.store", custom_domain = true }
+]
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.production.triggers]
+crons = ["*/1 * * * *"]
+
+[env.production.vars]
+ENVIRONMENT = "production"
+RUNTIME_NAME = "API Gateway"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[[env.production.queues.producers]]
+binding = "EVENT_QUEUE"
+queue = "letbuyy-events"
+
+[[env.production.queues.producers]]
+binding = "ANALYTICS_QUEUE"
+queue = "letbuyy-analytics"
+
+[[env.production.queues.producers]]
+binding = "SEARCH_QUEUE"
+queue = "letbuyy-search-indexing"
+
+[[env.production.queues.producers]]
+binding = "NOTIFICATION_QUEUE"
+queue = "letbuyy-notifications"
+
+[[env.production.r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "letbuyy-production-storage"
+
+[env.production.placement]
+mode = "smart"

@@ -1,6 +1,16 @@
 name = "letbuyy-webhooks"
 main = "src/index.ts"
-compatibility_date = "2024-03-01"
+compatibility_date = "2026-05-01"
+workers_dev = true
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
 
 [dev]
 port = 8788
@@ -8,3 +18,56 @@ inspector_port = 9232
 
 [vars]
 ENVIRONMENT = "local"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.staging]
+name = "letbuyy-webhooks-staging"
+workers_dev = false
+routes = [
+  { pattern = "webhooks.staging.letbuyy.store", custom_domain = true }
+]
+
+[env.staging.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.staging.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.staging.placement]
+mode = "smart"
+
+[env.production]
+name = "letbuyy-webhooks"
+workers_dev = false
+routes = [
+  { pattern = "webhooks.letbuyy.store", custom_domain = true }
+]
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.production.placement]
+mode = "smart"

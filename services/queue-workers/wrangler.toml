@@ -1,6 +1,7 @@
 name = "letbuyy-queue-workers"
 main = "src/index.ts"
 compatibility_date = "2026-05-01"
+workers_dev = false
 
 [observability]
 enabled = true
@@ -21,35 +22,45 @@ FAILOVER_REGION = "ap-southeast-1"
 queue = "letbuyy-events"
 max_batch_size = 50
 max_batch_timeout = 10
+max_concurrency = 25
 max_retries = 10
+retry_delay = 30
 dead_letter_queue = "letbuyy-dead-letters"
 
 [[queues.consumers]]
 queue = "letbuyy-analytics"
 max_batch_size = 50
 max_batch_timeout = 10
+max_concurrency = 20
 max_retries = 8
+retry_delay = 30
 dead_letter_queue = "letbuyy-dead-letters"
 
 [[queues.consumers]]
 queue = "letbuyy-search-indexing"
 max_batch_size = 25
 max_batch_timeout = 10
+max_concurrency = 20
 max_retries = 8
+retry_delay = 45
 dead_letter_queue = "letbuyy-dead-letters"
 
 [[queues.consumers]]
 queue = "letbuyy-notifications"
 max_batch_size = 25
 max_batch_timeout = 10
+max_concurrency = 10
 max_retries = 6
+retry_delay = 60
 dead_letter_queue = "letbuyy-dead-letters"
 
 [[queues.consumers]]
 queue = "letbuyy-dead-letters"
 max_batch_size = 25
 max_batch_timeout = 30
+max_concurrency = 5
 max_retries = 3
+retry_delay = 300
 
 [placement]
 mode = "smart"
@@ -58,3 +69,135 @@ mode = "smart"
 port = 8791
 inspector_port = 9234
 local_protocol = "http"
+
+[env.staging]
+name = "letbuyy-queue-workers-staging"
+workers_dev = false
+
+[env.staging.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.staging.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+RUNTIME_NAME = "Queue Workers"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[[env.staging.queues.consumers]]
+queue = "letbuyy-events-staging"
+max_batch_size = 50
+max_batch_timeout = 10
+max_concurrency = 10
+max_retries = 10
+retry_delay = 30
+dead_letter_queue = "letbuyy-dead-letters-staging"
+
+[[env.staging.queues.consumers]]
+queue = "letbuyy-analytics-staging"
+max_batch_size = 50
+max_batch_timeout = 10
+max_concurrency = 10
+max_retries = 8
+retry_delay = 30
+dead_letter_queue = "letbuyy-dead-letters-staging"
+
+[[env.staging.queues.consumers]]
+queue = "letbuyy-search-indexing-staging"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 10
+max_retries = 8
+retry_delay = 45
+dead_letter_queue = "letbuyy-dead-letters-staging"
+
+[[env.staging.queues.consumers]]
+queue = "letbuyy-notifications-staging"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 5
+max_retries = 6
+retry_delay = 60
+dead_letter_queue = "letbuyy-dead-letters-staging"
+
+[[env.staging.queues.consumers]]
+queue = "letbuyy-dead-letters-staging"
+max_batch_size = 25
+max_batch_timeout = 30
+max_concurrency = 3
+max_retries = 3
+retry_delay = 300
+
+[env.staging.placement]
+mode = "smart"
+
+[env.production]
+name = "letbuyy-queue-workers"
+workers_dev = false
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
+RUNTIME_NAME = "Queue Workers"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-events"
+max_batch_size = 50
+max_batch_timeout = 10
+max_concurrency = 25
+max_retries = 10
+retry_delay = 30
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-analytics"
+max_batch_size = 50
+max_batch_timeout = 10
+max_concurrency = 20
+max_retries = 8
+retry_delay = 30
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-search-indexing"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 20
+max_retries = 8
+retry_delay = 45
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-notifications"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 10
+max_retries = 6
+retry_delay = 60
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-dead-letters"
+max_batch_size = 25
+max_batch_timeout = 30
+max_concurrency = 5
+max_retries = 3
+retry_delay = 300
+
+[env.production.placement]
+mode = "smart"

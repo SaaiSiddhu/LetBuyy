@@ -1,0 +1,34 @@
+{
+  "title": "LetBuyy Deployment Operations",
+  "uid": "letbuyy-deployment-operations",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["letbuyy", "deployment", "release"],
+  "panels": [
+    {
+      "type": "table",
+      "title": "Promotion Runs",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select promotion_id, runtime_name, runtime_root, environment, strategy, version, status, created_at from deployment_promotion_runs where deleted_at is null order by created_at desc limit 50" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Health Gates",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select runtime_root, gate_name, status, observed_value, threshold, evaluated_at from deployment_health_gate_results where deleted_at is null order by evaluated_at desc limit 100" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Readiness Gate Runs",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select gate_run_id, environment, version, status, failure_summary, started_at, finished_at from production_readiness_gate_runs where deleted_at is null order by created_at desc limit 50" }
+      ]
+    }
+  ]
+}

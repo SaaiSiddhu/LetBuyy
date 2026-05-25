@@ -31,3 +31,18 @@ controls:
         - queue.redrive
         - replay.schedule
         - deployment.promote
+  runtimeEnforcement:
+    csrf:
+      boundary: services/api-gateway/src/middleware/security.ts
+      mode: double-submit-cookie-for-cookie-backed-mutations
+    webhooks:
+      boundary: services/webhook-service/src/index.ts
+      requiredProviders:
+        - razorpay
+        - stripe
+    authRateLimiting:
+      boundary: services/api-gateway/src/middleware/rateLimit.ts
+      provider: upstash-redis-rest
+    securityEvidence:
+      table: security_enforcement_events
+      api: /v1/operations/runtime/security/enforcement-events
