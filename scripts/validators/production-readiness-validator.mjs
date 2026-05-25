@@ -42,6 +42,7 @@ const requiredFiles = [
   "infrastructure/scripts/operations/phase4-live-certify.mjs",
   "infrastructure/scripts/operations/verify-live-operations.mjs",
   "infrastructure/scripts/operations/run-live-drills.mjs",
+  "infrastructure/scripts/operations/generate-certification-report.mjs",
   "infrastructure/scripts/security/verify-security-gates.mjs",
   "infrastructure/scripts/security/rotate-secrets.mjs",
   "infrastructure/scripts/chaos/queue-outage.mjs",
@@ -56,7 +57,9 @@ const requiredFiles = [
   "services/queue-workers/src/index.ts",
   "database/supabase/migrations/062_production_rollout_operations.sql",
   "database/supabase/migrations/063_absolute_production_operationalization.sql",
+  "database/supabase/migrations/064_live_production_certification.sql",
   "database/supabase/verification/063_absolute_production_operationalization.sql",
+  "database/supabase/verification/064_live_production_certification.sql",
   "apps/platform-console/src/app/(dashboard)/operations/page.tsx",
   "docs/runbooks/incident-sev1.md",
   "docs/runbooks/queue-dlq-redrive.md",
@@ -65,6 +68,7 @@ const requiredFiles = [
   "docs/runbooks/deployment-rollback.md",
   "docs/runbooks/secret-rotation.md",
   "docs/runbooks/chaos-drill.md",
+  "docs/runbooks/live-certification-execute.md",
   "docs/operations/production-certification.md",
   "docs/operations/phase4-live-execution-evidence.md",
   "docs/governance/live-rollout-governance.md",
@@ -77,6 +81,8 @@ const requiredFiles = [
   "docs/governance/security-certification-governance.md",
   "docs/governance/sre-certification-governance.md",
   "docs/governance/global-operations-governance.md",
+  "docs/governance/operational-certification-governance.md",
+  "docs/governance/deployment-readiness-governance.md",
   "docs/governance/production-runtime-governance.md",
   "docs/governance/deployment-governance.md",
   "docs/governance/observability-infrastructure-governance.md",
@@ -181,6 +187,7 @@ for (const file of [
   productionTopology?.liveCertification?.certificationScript,
   productionTopology?.liveCertification?.operationsVerificationScript,
   productionTopology?.liveCertification?.drillScript,
+  productionTopology?.liveCertification?.reportScript,
   productionTopology?.liveCertification?.certificationDoc,
   productionTopology?.chaosEngineering?.runner,
   productionTopology?.loadTesting?.runner,
@@ -201,6 +208,7 @@ for (const liveFile of [
   liveCertification?.scripts?.deployment,
   liveCertification?.scripts?.operationsVerification,
   liveCertification?.scripts?.drills,
+  liveCertification?.scripts?.report,
   liveCertification?.scripts?.security,
   liveCertification?.scripts?.observability,
   liveCertification?.scripts?.database,
@@ -209,6 +217,27 @@ for (const liveFile of [
 ].filter(Boolean)) {
   reporter.assert(exists(liveFile), `Live certification references missing source file: ${liveFile}`);
 }
+
+for (const certificationRuntimeFile of [
+  liveCertification?.certificationRuntime?.reportScript,
+].filter(Boolean)) {
+  reporter.assert(exists(certificationRuntimeFile), `Live certification runtime references missing source file: ${certificationRuntimeFile}`);
+}
+
+reporter.assert(
+  liveCertification?.certificationRuntime?.reportApi === "/v1/operations/runtime/certification-reports",
+  "Live certification runtime must declare the certification report API",
+);
+
+reporter.assert(
+  liveCertification?.certificationRuntime?.reportProjection === "operational_certification_reports",
+  "Live certification runtime must declare operational_certification_reports projection",
+);
+
+reporter.assert(
+  Number(liveCertification?.certificationRuntime?.evidenceExpirationHours) > 0,
+  "Live certification runtime must declare positive evidence expiration hours",
+);
 
 reporter.assert(
   liveCertification?.certificationMode === "credential-gated-plan-ready" || liveCertification?.certificationMode === "live-certified",
@@ -325,6 +354,8 @@ for (const tableName of [
 
 const finalMigration = readFile("database/supabase/migrations/063_absolute_production_operationalization.sql");
 const finalVerification = readFile("database/supabase/verification/063_absolute_production_operationalization.sql");
+const certificationMigration = readFile("database/supabase/migrations/064_live_production_certification.sql");
+const certificationVerification = readFile("database/supabase/verification/064_live_production_certification.sql");
 for (const tableName of [
   "production_readiness_gate_runs",
   "deployment_health_gate_results",
@@ -342,6 +373,28 @@ for (const tableName of [
   reporter.assert(
     new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(finalMigration),
     `Phase 4.final table must enable RLS: ${tableName}`,
+  );
+}
+
+for (const certificationFragment of [
+  "CREATE TABLE IF NOT EXISTS operational_certification_reports",
+  "ALTER TABLE operational_certification_reports ENABLE ROW LEVEL SECURITY",
+  "CREATE OR REPLACE FUNCTION record_operational_certification_report",
+]) {
+  reporter.assert(
+    certificationMigration.includes(certificationFragment),
+    `Phase 4 live certification migration must include ${certificationFragment}`,
+  );
+}
+
+for (const certificationVerificationFragment of [
+  "operational_certification_reports",
+  "record_operational_certification_report",
+  "pg_policies",
+]) {
+  reporter.assert(
+    certificationVerification.includes(certificationVerificationFragment),
+    `Phase 4 live certification verification SQL must include ${certificationVerificationFragment}`,
   );
 }
 
@@ -406,6 +459,7 @@ for (const routeFragment of [
   "/runtime/sre/error-budgets",
   "/runtime/security/enforcement-events",
   "/runtime/regional-routing-overrides",
+  "/runtime/certification-reports",
 ]) {
   reporter.assert(
     operationsRoute.includes(routeFragment),
@@ -435,6 +489,17 @@ reporter.assert(
   "CI must run the production readiness validator",
 );
 
+const gitignore = readFile(".gitignore");
+for (const ignoredArtifact of [
+  "phase4-live-certification-report.json",
+  "artifacts/live-certification/",
+]) {
+  reporter.assert(
+    gitignore.includes(ignoredArtifact),
+    `Gitignore must exclude generated certification artifact: ${ignoredArtifact}`,
+  );
+}
+
 const rolloutCi = readFile(".github/workflows/production-rollout.yml");
 for (const ciFragment of [
   "verify-security-gates.mjs",
@@ -454,6 +519,7 @@ for (const ciFragment of [
 const liveCi = readFile(".github/workflows/live-production-certification.yml");
 for (const ciFragment of [
   "phase4-live-certify.mjs",
+  "phase4-live-certification-report.json",
   "Setup k6",
   "ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY",
   "LETBUYY_OPERATIONS_TOKEN",
@@ -506,10 +572,25 @@ for (const liveFragment of [
   "production-deploy.mjs",
   "verify-live-operations.mjs",
   "run-live-drills.mjs",
+  "generate-certification-report.mjs",
 ]) {
   reporter.assert(
     liveScript.includes(liveFragment),
     `Live certification script must include ${liveFragment}`,
+  );
+}
+
+const reportScript = readFile("infrastructure/scripts/operations/generate-certification-report.mjs");
+for (const reportFragment of [
+  "operational_certification_reports",
+  "evidence_expiration_hours",
+  "live_certified",
+  "/runtime/certification-reports",
+  "--record",
+]) {
+  reporter.assert(
+    reportScript.includes(reportFragment),
+    `Operational certification report generator must include ${reportFragment}`,
   );
 }
 
