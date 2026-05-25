@@ -51,6 +51,54 @@
       "owner": "runtime-topology",
       "compatibility": "startup-order-compatible",
       "checksum": "3750b2472f4a2b5a95698ae9f6dd447b865032b145f46ebb0dff2c3263d5cc31"
+    },
+    {
+      "path": "config/runtime/distributed-execution-contract.json",
+      "owner": "distributed-execution",
+      "compatibility": "execution-checkpoint-compatible",
+      "checksum": "7e883434f42ebaf6b364b44bbfd1da583dde2c87bf70a0bec37cbcfc914fa133"
+    },
+    {
+      "path": "config/runtime/distributed-consistency-contract.json",
+      "owner": "distributed-consistency",
+      "compatibility": "consistency-precedence-compatible",
+      "checksum": "ac5857f0a1f5d75be3735a7e282088db48e37f45c36bb0dd8788e093a8cd8be6"
+    },
+    {
+      "path": "config/runtime/runtime-causality-graph.json",
+      "owner": "runtime-causality",
+      "compatibility": "acyclic-causality-compatible",
+      "checksum": "3723c43ba2a452680b02063bc6c2c6902e4a39819644f35ea0a8de5fc049ffc4"
+    },
+    {
+      "path": "config/runtime/runtime-saturation-contract.json",
+      "owner": "runtime-saturation",
+      "compatibility": "budget-compatible",
+      "checksum": "d19dd3656514e1af9a21fc071618ebfb3c6f73c83e0070d8c85f470e03249f64"
+    },
+    {
+      "path": "config/runtime/runtime-memory-model.json",
+      "owner": "runtime-memory",
+      "compatibility": "single-owner-memory-compatible",
+      "checksum": "501eca9c9c600789a1bfdc384db3156dba266c4ae60e362b15bbc61b51c67a10"
+    },
+    {
+      "path": "config/runtime/failure-domain-manifest.json",
+      "owner": "failure-domain",
+      "compatibility": "blast-radius-compatible",
+      "checksum": "2c40cb98f2f6c76d98fb4be76b9ce8082cd9706e9dae41cc82fb2fc9c6792a93"
+    },
+    {
+      "path": "config/runtime/replay-branch-registry.json",
+      "owner": "replay-branch-governance",
+      "compatibility": "isolated-branch-compatible",
+      "checksum": "1a79f82487258479606c5ee41b37d6426d6741aa7b47b07b8b1e92b80271af26"
+    },
+    {
+      "path": "config/runtime/convergence-invariants.json",
+      "owner": "convergence-math",
+      "compatibility": "fixed-point-compatible",
+      "checksum": "f4ff1f4317a6287b88c6a9b6dbed278fbe1047180ede0bebb8059269432a706d"
     }
   ],
   "failurePolicy": "fail-closed"

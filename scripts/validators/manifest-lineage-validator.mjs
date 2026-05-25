@@ -40,6 +40,14 @@ const requiredEntries = [
   "config/runtime/deployment-lineage-manifest.json",
   "config/runtime/cloudflare-binding-ownership.json",
   "config/runtime/deployment-topology.json",
+  "config/runtime/distributed-execution-contract.json",
+  "config/runtime/distributed-consistency-contract.json",
+  "config/runtime/runtime-causality-graph.json",
+  "config/runtime/runtime-saturation-contract.json",
+  "config/runtime/runtime-memory-model.json",
+  "config/runtime/failure-domain-manifest.json",
+  "config/runtime/replay-branch-registry.json",
+  "config/runtime/convergence-invariants.json",
 ];
 
 const entries = manifest?.entries || [];

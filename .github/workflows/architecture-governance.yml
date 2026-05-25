@@ -64,6 +64,9 @@ jobs:
       - name: Validate survivability intelligence
         run: pnpm run validate:survivability-intelligence
 
+      - name: Validate distributed execution
+        run: pnpm run validate:distributed-execution
+
       - name: Validate replay safety
         run: pnpm run validate:replay
 

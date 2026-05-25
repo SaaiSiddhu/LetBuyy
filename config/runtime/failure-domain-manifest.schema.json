@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Failure Domain Manifest",
+  "type": "object",
+  "required": [
+    "$schema",
+    "manifestVersion",
+    "mode",
+    "engine",
+    "domains",
+    "validators",
+    "failurePolicy"
+  ],
+  "properties": {
+    "$schema": { "const": "config/runtime/failure-domain-manifest.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "engine": { "type": "object" },
+    "domains": { "type": "array", "minItems": 7 },
+    "validators": { "type": "array", "minItems": 1 },
+    "failurePolicy": { "const": "fail-closed" }
+  }
+}

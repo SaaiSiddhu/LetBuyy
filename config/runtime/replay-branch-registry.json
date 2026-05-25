@@ -1,0 +1,26 @@
+{
+  "$schema": "config/runtime/replay-branch-registry.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "engine": {
+    "engineSource": "packages/distributed-runtime/src/replay-branch-governance-runtime.ts",
+    "registryCompiler": "compileReplayBranchRegistry",
+    "mergeValidator": "validateReplayBranchMerge",
+    "assertionFunction": "assertReplayBranchRegistry",
+    "garbageCollectionPolicy": "ttl-expiry-after-isolated-branch-validation"
+  },
+  "branches": [
+    {
+      "branchId": "checkout-order-schema-evolution-v1",
+      "owner": "replay-runtime",
+      "baseCheckpoint": "checkout-order-replay-fixture-v1",
+      "parentBranchId": null,
+      "ttlSeconds": 86400,
+      "isolated": true,
+      "mergePolicy": "checksum-compatible-only",
+      "expectedProjectionChecksum": "77e95d5b"
+    }
+  ],
+  "validators": ["replay-branch-validator"],
+  "failurePolicy": "fail-closed"
+}

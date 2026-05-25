@@ -74,6 +74,9 @@ jobs:
       - name: Survivability intelligence gates
         run: pnpm run validate:survivability-intelligence
 
+      - name: Distributed execution gates
+        run: pnpm run validate:distributed-execution
+
       - name: Replay safety gates
         run: pnpm run validate:replay
 

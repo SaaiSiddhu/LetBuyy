@@ -1,0 +1,24 @@
+{
+  "$schema": "config/runtime/convergence-invariants.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "engine": {
+    "engineSource": "packages/distributed-runtime/src/convergence-math-runtime.ts",
+    "compiler": "compileConvergenceEquilibrium",
+    "assertionFunction": "assertConvergenceEquilibrium",
+    "checksum": "equilibriumChecksum",
+    "oscillationPolicy": "repeated-non-stabilizing-checksum-hard-fails"
+  },
+  "invariants": [
+    { "invariantId": "event-store-to-replay", "expression": "event-store.global-position == replay.checkpoint.global-position", "sourceOfTruth": "event-store", "derivedState": "replay-runtime" },
+    { "invariantId": "replay-to-projection", "expression": "replay.checkpoint.global-position == projection.sourceGlobalPosition", "sourceOfTruth": "replay-runtime", "derivedState": "projection-runtime" },
+    { "invariantId": "queue-to-event", "expression": "queue.delivery.eventId maps to event-store.eventId", "sourceOfTruth": "event-store", "derivedState": "queue-runtime" }
+  ],
+  "equilibrium": {
+    "fixedPointPolicy": "deterministic-equilibrium-required",
+    "checksumValidation": "fixedPointChecksum-and-equilibriumChecksum",
+    "expectedChecksumSource": "repository-fixture-not-live-evidence"
+  },
+  "validators": ["convergence-math-validator"],
+  "failurePolicy": "fail-closed"
+}

@@ -1,0 +1,22 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { spawnSync } from "node:child_process";
+import fs from "node:fs";
+
+test("saturation governance validator enforces recovery budgets", () => {
+  const result = spawnSync(process.execPath, ["scripts/validators/saturation-governance-validator.mjs"], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+  });
+
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
+test("saturation contract budgets every recovery subsystem", () => {
+  const manifest = JSON.parse(fs.readFileSync("config/runtime/runtime-saturation-contract.json", "utf8"));
+  const kinds = new Set(manifest.budgets.map((budget) => budget.kind));
+
+  for (const kind of ["orchestration", "rollback", "replay", "queue-rebuild", "reconciliation", "dag-execution", "projection-rebuild", "queue-recovery"]) {
+    assert.ok(kinds.has(kind), `missing saturation budget ${kind}`);
+  }
+});

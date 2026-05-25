@@ -1,0 +1,53 @@
+{
+  "$schema": "config/runtime/distributed-execution-contract.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "executionEngine": {
+    "engineSource": "packages/distributed-runtime/src/distributed-execution-runtime.ts",
+    "planner": "planDistributedExecution",
+    "resumeEngine": "resumeDistributedExecution",
+    "journalFunction": "createExecutionJournalEntry",
+    "replaySafetyAssertion": "assertExecutionReplaySafe",
+    "states": ["PLANNED", "EXECUTING", "PARTIAL_FAILURE", "COMPENSATING", "RECOVERED", "VERIFIED"],
+    "checkpointPolicy": "every-state-transition-has-checksum-and-causality-chain",
+    "operationSequencing": "sequence-then-operation-id",
+    "lineageTracking": "executionLineageChecksum",
+    "recoveryPolicy": "resume-from-last-verified-checkpoint-before-compensation"
+  },
+  "idempotencyEngine": {
+    "engineSource": "packages/distributed-runtime/src/orchestration-idempotency-runtime.ts",
+    "registryFactory": "createIdempotentExecutionRegistry",
+    "registrationFunction": "registerIdempotentOperation",
+    "retryLineageFunction": "buildRetryLineage",
+    "assertionFunction": "assertNoDuplicateExecution",
+    "requiredFields": ["operationId", "operationIdempotencyKey", "executionHash", "retryFingerprint", "compensationHash", "executionChecksum"],
+    "retryPolicy": "same-idempotency-key-must-replay-same-execution-checksum",
+    "exactlyOnceSimulation": "registry-deduplicates-retry-before-apply"
+  },
+  "compensationGovernance": {
+    "engineSource": "packages/distributed-runtime/src/compensation-saga-runtime.ts",
+    "stepFactory": "createCompensationStep",
+    "dagCompiler": "compileCompensationDag",
+    "assertionFunction": "assertCompensationDagSafe",
+    "rollbackLineageManifest": "config/runtime/deployment-lineage-manifest.json",
+    "irreversibleOperationPolicy": "operator-approval-required-and-checksummed",
+    "partialRollbackPolicy": "compensate-reversible-steps-before-forward-fix",
+    "orderingPolicy": "dependency-aware-dag-before-execution"
+  },
+  "cloudflareExecutionGovernance": {
+    "engineSource": "packages/distributed-runtime/src/cloudflare-execution-governance-runtime.ts",
+    "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
+    "compiler": "compileCloudflareExecutionLineage",
+    "assertionFunction": "assertCloudflareExecutionLineage",
+    "nonInheritableBindings": ["vars", "kv_namespaces", "r2_buckets", "queues", "durable_objects", "services", "secrets"],
+    "resourceLineage": ["worker-execution", "queue-producer-consumer-causality", "durable-object-ownership", "service-binding-ancestry", "kv-r2-binding-ancestry"],
+    "remoteBindingPolicy": "plan-only-until-execute-mode-credentials-exist"
+  },
+  "validators": [
+    "execution-runtime-validator",
+    "orchestration-idempotency-validator",
+    "compensation-governance-validator",
+    "cloudflare-execution-governance-validator"
+  ],
+  "failurePolicy": "fail-closed"
+}

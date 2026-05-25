@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Convergence Invariants",
+  "type": "object",
+  "required": [
+    "$schema",
+    "manifestVersion",
+    "mode",
+    "engine",
+    "invariants",
+    "equilibrium",
+    "validators",
+    "failurePolicy"
+  ],
+  "properties": {
+    "$schema": { "const": "config/runtime/convergence-invariants.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "engine": { "type": "object" },
+    "invariants": { "type": "array", "minItems": 3 },
+    "equilibrium": { "type": "object" },
+    "validators": { "type": "array", "minItems": 1 },
+    "failurePolicy": { "const": "fail-closed" }
+  }
+}

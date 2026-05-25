@@ -1,0 +1,39 @@
+{
+  "$schema": "config/runtime/distributed-consistency-contract.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "consistencyModel": {
+    "engineSource": "packages/distributed-runtime/src/distributed-consistency-runtime.ts",
+    "authoritativeOwnershipRules": {
+      "event-store": ["source-events", "global-position", "stream-position"],
+      "replay-runtime": ["replay-checkpoints", "event-ordering"],
+      "queue-runtime": ["delivery-state", "retry-state", "dead-letter-state"],
+      "projection-runtime": ["read-model-state", "projection-checkpoints"],
+      "deployment-runtime": ["worker-version-lineage", "rollback-version-lineage"],
+      "reconciliation-runtime": ["desired-vs-observed-runtime-state"]
+    },
+    "precedenceHierarchy": ["event-store", "replay-runtime", "queue-runtime", "projection-runtime", "deployment-runtime", "reconciliation-runtime"],
+    "staleStateArbitration": "highest-precedence-wins-with-checksum-match",
+    "causalConsistencyGuarantees": ["causation-id-required", "checkpoint-precedes-derived-state", "queue-delivery-maps-to-source-event"],
+    "eventualConsistencyGovernance": "deterministic-fixed-point-required",
+    "replayConflictArbitration": "event-store-precedes-derived-state",
+    "reconciliationAuthorityOrdering": ["event-store", "replay-runtime", "queue-runtime", "projection-runtime", "deployment-runtime", "reconciliation-runtime"],
+    "convergenceTimeoutSeconds": 900
+  },
+  "arbitrationEngine": {
+    "function": "arbitrateDistributedConsistency",
+    "assertionFunction": "assertConsistencyConverges",
+    "decisionChecksum": "decisionChecksum",
+    "deadlockPolicy": "fail-closed-before-runtime-activation"
+  },
+  "convergenceModel": {
+    "equilibriumManifest": "config/runtime/runtime-saturation-contract.json",
+    "fixedPointPolicy": "all-derived-state-checksums-align-with-authoritative-source",
+    "oscillationPolicy": "block-if-checksum-repeats-without-stabilization"
+  },
+  "validators": [
+    "distributed-consistency-validator",
+    "convergence-math-validator"
+  ],
+  "failurePolicy": "fail-closed"
+}

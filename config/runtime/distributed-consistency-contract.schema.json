@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Distributed Consistency Contract",
+  "type": "object",
+  "required": [
+    "$schema",
+    "manifestVersion",
+    "mode",
+    "consistencyModel",
+    "arbitrationEngine",
+    "convergenceModel",
+    "validators",
+    "failurePolicy"
+  ],
+  "properties": {
+    "$schema": { "const": "config/runtime/distributed-consistency-contract.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "consistencyModel": { "type": "object" },
+    "arbitrationEngine": { "type": "object" },
+    "convergenceModel": { "type": "object" },
+    "validators": { "type": "array", "minItems": 2 },
+    "failurePolicy": { "const": "fail-closed" }
+  }
+}
