@@ -1,5 +1,6 @@
 {
   "title": "LetBuyy Runtime Operations",
+  "uid": "letbuyy-runtime-operations",
   "schemaVersion": 39,
   "version": 1,
   "tags": ["letbuyy", "phase4", "runtime"],

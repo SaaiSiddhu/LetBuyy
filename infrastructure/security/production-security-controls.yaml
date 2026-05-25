@@ -3,6 +3,7 @@ controls:
     store: cloudflare-worker-secrets-and-vercel-project-env
     rotationWindowDays: 90
     emergencyRotationWindowHours: 4
+    rotationCommand: node infrastructure/scripts/security/rotate-secrets.mjs --environment=production --execute
     forbiddenInRepository:
       - service role keys
       - webhook secrets

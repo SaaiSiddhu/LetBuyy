@@ -59,7 +59,11 @@ if (!["staging", "production"].includes(environment)) {
 
 cleanWranglerArtifacts();
 run("npm", ["run", "validate:governance"]);
-run("node", ["infrastructure/scripts/deploy/verify-health-gates.mjs", `--environment=${environment}`, "--preflight"]);
+run("node", [
+  "infrastructure/scripts/operations/phase4-ultimate-validate.mjs",
+  `--environment=${environment}`,
+  ...(execute ? ["--execute"] : []),
+]);
 
 if (shouldRun("cloudflare")) {
   if (execute) requireEnv(["CLOUDFLARE_API_TOKEN", "TF_VAR_cloudflare_account_id", "TF_VAR_cloudflare_api_token"]);

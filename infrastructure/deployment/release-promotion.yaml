@@ -20,8 +20,12 @@ environments:
     rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api
     healthGates:
       - governance-validation
+      - phase4-ultimate-validation
       - production-readiness-validator
+      - cloudflare-provider-contract-validation
       - database-migration-dry-run
+      - supabase-operational-verification
+      - observability-rollout-verification
       - worker-health
       - storefront-health
       - queue-lag
@@ -30,12 +34,20 @@ environments:
       - chaos-suite-approved
       - load-suite-current
 startupSequence:
+  - name: phase4-ultimate-preflight
+    command: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production
+    owns:
+      - provider-contract-validation
+      - supabase-operational-verification
+      - observability-rollout-verification
   - name: cloudflare-primitives
     command: terraform -chdir=infrastructure/cloudflare apply -input=false
     owns:
       - queues
       - kv-cache
       - r2-storage
+    requires:
+      - phase4-ultimate-preflight
   - name: database-migrations
     command: node infrastructure/scripts/deploy/verify-health-gates.mjs --environment=production --preflight
     requires:
