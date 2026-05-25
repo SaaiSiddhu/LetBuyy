@@ -47,6 +47,11 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
       - name: Validate governance
         run: node scripts/validate-governance.mjs
 
@@ -60,4 +65,4 @@ jobs:
         run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
 
       - name: Dependency audit
-        run: npm audit --audit-level=high
+        run: pnpm audit --audit-level high
