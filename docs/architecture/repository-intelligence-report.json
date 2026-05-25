@@ -1,8 +1,8 @@
 {
-  "generatedAt": "2026-05-24T23:51:00.283Z",
-  "sourceFiles": 1354,
+  "generatedAt": "2026-05-25T00:24:15.462Z",
+  "sourceFiles": 1378,
   "packages": 33,
-  "migrations": 60,
+  "migrations": 61,
   "nextRoutes": 270,
   "nextApiRoutes": 118,
   "honoRouteFiles": 30,
