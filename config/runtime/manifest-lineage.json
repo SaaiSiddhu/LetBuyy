@@ -11,6 +11,12 @@
       "checksum": "374e485f4e9df3e5fde1fde6fae63b6fdf5453c9aed16836bcf2a07a7ad1dace"
     },
     {
+      "path": "config/runtime/runtime-survivability-intelligence.json",
+      "owner": "runtime-survivability",
+      "compatibility": "deterministic-convergence-intelligence",
+      "checksum": "7ad0f9cc0367a9b6c378861e8b925d29bff61f0cb38de72e2a44958188412131"
+    },
+    {
       "path": "config/runtime/replay-evolution-manifest.json",
       "owner": "replay-runtime",
       "compatibility": "additive-or-explicit-transform-before-replay",

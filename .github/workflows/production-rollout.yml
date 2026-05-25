@@ -72,6 +72,9 @@ jobs:
       - name: Runtime reconciliation gates
         run: pnpm run validate:reconciliation
 
+      - name: Survivability intelligence gates
+        run: pnpm run validate:survivability-intelligence
+
       - name: Replay safety gates
         run: pnpm run validate:replay
 

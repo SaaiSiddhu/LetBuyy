@@ -33,6 +33,7 @@ function checksum(relPath) {
 
 const requiredEntries = [
   "config/runtime/runtime-orchestration-manifest.json",
+  "config/runtime/runtime-survivability-intelligence.json",
   "config/runtime/replay-evolution-manifest.json",
   "config/runtime/projection-recovery-manifest.json",
   "config/runtime/queue-lifecycle-manifest.json",
