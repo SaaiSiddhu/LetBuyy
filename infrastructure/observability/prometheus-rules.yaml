@@ -1,0 +1,30 @@
+groups:
+  - name: letbuyy-production-slo
+    rules:
+      - alert: LetBuyyApiGatewayHighErrorRate
+        expr: sum(rate(http_server_errors_total{runtime="api-gateway"}[5m])) / sum(rate(http_requests_total{runtime="api-gateway"}[5m])) > 0.01
+        for: 10m
+        labels:
+          severity: critical
+          owner: services/api-gateway
+        annotations:
+          summary: API Gateway 5xx rate is above 1 percent.
+          runbook: docs/governance/incident-response-governance.md
+      - alert: LetBuyyQueueDeadLetterGrowth
+        expr: increase(letbuyy_queue_dead_letter_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: high
+          owner: services/queue-workers
+        annotations:
+          summary: Cloudflare Queue messages are reaching the dead-letter queue.
+          runbook: docs/governance/queue-provider-governance.md
+      - alert: LetBuyyReplayLagHigh
+        expr: max(letbuyy_replay_lag_seconds) > 300
+        for: 10m
+        labels:
+          severity: high
+          owner: services/event-bus
+        annotations:
+          summary: Replay lag exceeds five minutes.
+          runbook: docs/governance/event-store-governance.md

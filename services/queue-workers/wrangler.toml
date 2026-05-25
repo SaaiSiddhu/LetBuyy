@@ -1,0 +1,60 @@
+name = "letbuyy-queue-workers"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[vars]
+ENVIRONMENT = "local"
+RUNTIME_NAME = "Queue Workers"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[[queues.consumers]]
+queue = "letbuyy-events"
+max_batch_size = 50
+max_batch_timeout = 10
+max_retries = 10
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[queues.consumers]]
+queue = "letbuyy-analytics"
+max_batch_size = 50
+max_batch_timeout = 10
+max_retries = 8
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[queues.consumers]]
+queue = "letbuyy-search-indexing"
+max_batch_size = 25
+max_batch_timeout = 10
+max_retries = 8
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[queues.consumers]]
+queue = "letbuyy-notifications"
+max_batch_size = 25
+max_batch_timeout = 10
+max_retries = 6
+dead_letter_queue = "letbuyy-dead-letters"
+
+[[queues.consumers]]
+queue = "letbuyy-dead-letters"
+max_batch_size = 25
+max_batch_timeout = 30
+max_retries = 3
+
+[placement]
+mode = "smart"
+
+[dev]
+port = 8791
+inspector_port = 9234
+local_protocol = "http"

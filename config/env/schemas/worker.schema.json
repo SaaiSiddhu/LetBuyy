@@ -12,6 +12,9 @@
     "INTERNAL_API_SECRET": { "type": "string" },
     "LETBUYY_INTERNAL_API_SECRET": { "type": "string" },
     "ENVIRONMENT": { "enum": ["local", "staging", "production"] },
+    "RUNTIME_NAME": { "type": "string" },
+    "PRIMARY_REGION": { "type": "string" },
+    "FAILOVER_REGION": { "type": "string" },
     "RAZORPAY_KEY_ID": { "type": "string" },
     "RAZORPAY_KEY_SECRET": { "type": "string" },
     "RAZORPAY_WEBHOOK_SECRET": { "type": "string" },
@@ -25,4 +28,3 @@
     "R2_BUCKET": { "type": "string" }
   }
 }
-

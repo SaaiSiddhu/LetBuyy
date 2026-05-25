@@ -38,6 +38,7 @@ import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
+import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
 
 // Environment bindings
 export interface Env {
@@ -51,6 +52,11 @@ export interface Env {
     AUTH_SECRET?: string;
     INTERNAL_API_SECRET?: string;
     R2_BUCKET: R2Bucket;
+    CACHE?: KVNamespace;
+    EVENT_QUEUE?: Queue<Record<string, unknown>>;
+    ANALYTICS_QUEUE?: Queue<Record<string, unknown>>;
+    SEARCH_QUEUE?: Queue<Record<string, unknown>>;
+    NOTIFICATION_QUEUE?: Queue<Record<string, unknown>>;
     RESEND_API_KEY: string;
     ENVIRONMENT: string;
     // Future: Upstash Redis for distributed rate limiting
@@ -216,6 +222,7 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
     const db = getSupabaseAdminFromEnv(env);
     const outbox = new OutboxExecutionAdapter(db);
     const queue = new QueueExecutionAdapter(db);
+    const eventQueue = env.EVENT_QUEUE ? createCloudflareQueueProducer(env.EVENT_QUEUE) : null;
 
     return outbox
         .dispatchBatch({
@@ -225,6 +232,20 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
         })
         .then(async (outboxResult) => {
             const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing'], 50);
+            await eventQueue?.enqueue({
+                id: crypto.randomUUID(),
+                queueName: 'letbuyy-events',
+                payload: {
+                    event_type: 'runtime.scheduled_dispatch.completed',
+                    dispatcher_id: dispatcherId,
+                    worker_id: workerId,
+                    outbox_result: outboxResult,
+                    queue_result: queueResult,
+                    environment: env.ENVIRONMENT,
+                },
+                attempts: 0,
+                correlationId: dispatcherId,
+            });
             console.info(JSON.stringify({
                 level: 'info',
                 service: 'letbuyy-api',

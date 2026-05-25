@@ -1,0 +1,25 @@
+slos:
+  - name: api-gateway-availability
+    owner: services/api-gateway
+    sli: successful_http_requests / total_http_requests
+    target: 99.9
+    window: 30d
+    errorBudgetPolicy: freeze-risky-deployments-below-25-percent
+  - name: checkout-mutation-latency
+    owner: services/checkout-runtime
+    sli: p95_checkout_mutation_latency_ms
+    target: 1500
+    window: 30d
+    errorBudgetPolicy: require-staff-sre-approval-below-25-percent
+  - name: queue-processing-lag
+    owner: services/queue-workers
+    sli: p95_queue_lag_seconds
+    target: 60
+    window: 7d
+    errorBudgetPolicy: pause-noncritical-replays-below-25-percent
+  - name: storefront-availability
+    owner: apps/storefront-runtime
+    sli: successful_storefront_requests / total_storefront_requests
+    target: 99.9
+    window: 30d
+    errorBudgetPolicy: freeze-theme-runtime-rollouts-below-25-percent

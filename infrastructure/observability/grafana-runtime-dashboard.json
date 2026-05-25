@@ -1,0 +1,56 @@
+{
+  "title": "LetBuyy Runtime Operations",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["letbuyy", "phase4", "runtime"],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "API Error Rate",
+      "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_errors_total{runtime=\"api-gateway\"}[5m])) / sum(rate(http_requests_total{runtime=\"api-gateway\"}[5m]))",
+          "legendFormat": "api-gateway"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Queue Depth",
+      "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "sum by (queue_name) (letbuyy_queue_depth)",
+          "legendFormat": "{{queue_name}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Replay Lag",
+      "gridPos": { "x": 0, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "max by (owner_runtime) (letbuyy_replay_lag_seconds)",
+          "legendFormat": "{{owner_runtime}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Provider Health",
+      "gridPos": { "x": 12, "y": 8, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "expr": "min by (provider) (letbuyy_provider_health_score)",
+          "legendFormat": "{{provider}}"
+        }
+      ]
+    }
+  ]
+}

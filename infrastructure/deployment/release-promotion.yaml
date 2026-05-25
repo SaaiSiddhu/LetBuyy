@@ -1,0 +1,31 @@
+environments:
+  dev:
+    promotionSource: feature-branch
+    secrets: local-only
+    deploy: preview
+  staging:
+    promotionSource: main
+    secrets: provider-staging
+    deploy: canary
+    healthGates:
+      - governance-validation
+      - typecheck
+      - migration-plan
+      - smoke-tests
+  production:
+    promotionSource: signed-release-tag
+    secrets: provider-production
+    deploy: blue-green
+    healthGates:
+      - governance-validation
+      - production-readiness-validator
+      - database-migration-dry-run
+      - worker-health
+      - storefront-health
+      - queue-lag
+      - error-budget
+rollback:
+  apiGateway: wrangler-rollback-previous-version
+  webApps: vercel-promote-previous-deployment
+  database: forward-fix-or-approved-reversible-migration
+  queues: pause-consumer-redrive-after-fix

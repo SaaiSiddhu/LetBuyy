@@ -1,0 +1,20 @@
+migrationPolicy:
+  engine: supabase-postgres
+  root: database/supabase/migrations
+  preflight:
+    - validate sequential migration numbering
+    - run governance validation
+    - run SQL dry run against staging branch
+    - verify rollback notes for destructive operations
+  production:
+    lock: advisory-migration-lock
+    window: approved-change-window
+    backup: require-pitr-checkpoint-before-apply
+    verification:
+      - schema version recorded
+      - RLS enabled on new tables
+      - updated_at triggers use update_updated_at()
+      - service-role policies exist for operational tables
+  rollback:
+    strategy: forward-fix-preferred
+    approval: principal-engineer-and-sre

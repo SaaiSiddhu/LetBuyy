@@ -1,6 +1,6 @@
 name = "letbuyy-api"
 main = "src/index.ts"
-compatibility_date = "2024-01-01"
+compatibility_date = "2026-05-01"
 
 [observability]
 enabled = true
@@ -14,21 +14,41 @@ invocation_logs = true
 [triggers]
 crons = ["*/1 * * * *"]
 
-# Environment variables (set via wrangler secret)
 [vars]
-ENVIRONMENT = "development"
+ENVIRONMENT = "local"
+RUNTIME_NAME = "API Gateway"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
 
-# KV Namespaces for caching
-# [[kv_namespaces]]
-# binding = "CACHE"
-# id = "your-kv-namespace-id"
+[[queues.producers]]
+binding = "EVENT_QUEUE"
+queue = "letbuyy-events"
 
-# R2 Bucket for file storage
-# [[r2_buckets]]
-# binding = "STORAGE"
-# bucket_name = "letbuyy-storage"
+[[queues.producers]]
+binding = "ANALYTICS_QUEUE"
+queue = "letbuyy-analytics"
 
-# Development settings
+[[queues.producers]]
+binding = "SEARCH_QUEUE"
+queue = "letbuyy-search-indexing"
+
+[[queues.producers]]
+binding = "NOTIFICATION_QUEUE"
+queue = "letbuyy-notifications"
+
+[[kv_namespaces]]
+binding = "CACHE"
+id = "replace-with-production-kv-namespace-id"
+preview_id = "replace-with-preview-kv-namespace-id"
+
+[[r2_buckets]]
+binding = "R2_BUCKET"
+bucket_name = "letbuyy-production-storage"
+preview_bucket_name = "letbuyy-staging-storage"
+
+[placement]
+mode = "smart"
+
 [dev]
 port = 8787
 inspector_port = 9231

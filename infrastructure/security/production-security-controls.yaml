@@ -1,0 +1,33 @@
+controls:
+  secrets:
+    store: cloudflare-worker-secrets-and-vercel-project-env
+    rotationWindowDays: 90
+    emergencyRotationWindowHours: 4
+    forbiddenInRepository:
+      - service role keys
+      - webhook secrets
+      - provider tokens
+      - customer session secrets
+  deploymentSigning:
+    required: true
+    ciProvider: github-actions
+    artifactAttestation: required
+    sbom: required
+  scanning:
+    dependencyScan: npm-audit-and-pnpm-audit
+    secretScan: governance-environment-validator
+    sbomGenerator: cyclonedx
+  access:
+    platformConsole:
+      mfa: required
+      allowlist: required
+      audit: runtime_control_commands
+    operationsPortal:
+      mfa: required
+      roleScopes:
+        - incident.read
+        - incident.write
+        - queue.inspect
+        - queue.redrive
+        - replay.schedule
+        - deployment.promote
