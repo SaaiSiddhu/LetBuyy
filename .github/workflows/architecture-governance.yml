@@ -47,11 +47,6 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: |
-          corepack enable
-          pnpm install --frozen-lockfile
-
       - name: Validate governance
         run: node scripts/validate-governance.mjs
 
@@ -60,6 +55,11 @@ jobs:
 
       - name: Validate production readiness topology
         run: node scripts/validators/production-readiness-validator.mjs
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
 
       - name: Generate SBOM
         run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
