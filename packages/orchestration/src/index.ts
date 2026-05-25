@@ -102,3 +102,4 @@ export * from './workflow-checkpoint-runtime';
 export * from './workflow-durability-runtime';
 export * from './execution-coordination-runtime';
 export * from './workflow-continuation-runtime';
+export * from './workflow-operations-runtime';

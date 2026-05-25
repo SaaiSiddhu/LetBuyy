@@ -66,6 +66,21 @@ export interface ProviderExecutionResult<TValue> {
   error?: string;
 }
 
+export interface ProviderRecoveryPlan {
+  provider: ProviderIdentifier['provider'];
+  operation: string;
+  action: 'hold' | 'retry' | 'failover' | 'degrade' | 'restore';
+  retryAfterSeconds?: number;
+  alternateProvider?: ProviderIdentifier['provider'];
+  reason: string;
+}
+
+export interface ProviderResilienceOperationsPort {
+  latestHealth(identifier: ProviderIdentifier): Promise<ProviderHealthCheckResult | null>;
+  recordHealth(result: ProviderHealthCheckResult): Promise<void>;
+  recordRecoveryPlan(plan: ProviderRecoveryPlan): Promise<void>;
+}
+
 export function providerBackoffMs(attempt: number, policy: ProviderRetryGovernance): number {
   return Math.min(policy.backoffMs * 2 ** Math.max(0, attempt - 1), policy.maxBackoffMs);
 }
@@ -100,6 +115,79 @@ export function decideProviderFallback(
   if (health.status === 'healthy') return { action: 'none', reason: 'provider is healthy' };
   if (policy.fallbackMode === 'none') return { action: 'maintenance-error', reason: 'provider is degraded and no fallback is configured' };
   return { action: policy.fallbackMode, reason: `provider is ${health.status}` };
+}
+
+export function planProviderRecovery(
+  health: ProviderHealthCheckResult,
+  policy: ProviderResiliencePolicy,
+): ProviderRecoveryPlan {
+  if (health.status === 'healthy') {
+    return {
+      provider: policy.identifier.provider,
+      operation: policy.identifier.operation,
+      action: 'restore',
+      reason: 'provider health is restored',
+    };
+  }
+
+  if (policy.fallback.fallbackMode === 'alternate-provider' && policy.fallback.alternateProvider) {
+    return {
+      provider: policy.identifier.provider,
+      operation: policy.identifier.operation,
+      action: 'failover',
+      alternateProvider: policy.fallback.alternateProvider,
+      reason: `provider is ${health.status}; alternate provider is configured`,
+    };
+  }
+
+  if (policy.fallback.fallbackMode !== 'none') {
+    return {
+      provider: policy.identifier.provider,
+      operation: policy.identifier.operation,
+      action: 'degrade',
+      retryAfterSeconds: policy.rateLimit.defaultRetryAfterSeconds,
+      reason: `provider is ${health.status}; degraded mode ${policy.fallback.fallbackMode} is configured`,
+    };
+  }
+
+  return {
+    provider: policy.identifier.provider,
+    operation: policy.identifier.operation,
+    action: health.status === 'degraded' ? 'retry' : 'hold',
+    retryAfterSeconds: policy.rateLimit.defaultRetryAfterSeconds,
+    reason: `provider is ${health.status}; no fallback is configured`,
+  };
+}
+
+export class ProviderResilienceOperationsRuntime {
+  constructor(private readonly operations: ProviderResilienceOperationsPort) {}
+
+  async evaluate(policy: ProviderResiliencePolicy, syntheticHealth?: ProviderHealthCheckResult): Promise<ProviderRecoveryPlan> {
+    const health = syntheticHealth || await this.operations.latestHealth(policy.identifier);
+    if (!health) {
+      return {
+        provider: policy.identifier.provider,
+        operation: policy.identifier.operation,
+        action: 'retry',
+        retryAfterSeconds: policy.rateLimit.defaultRetryAfterSeconds,
+        reason: 'provider health is unknown',
+      };
+    }
+
+    const plan = planProviderRecovery(health, policy);
+    await this.operations.recordRecoveryPlan(plan);
+    return plan;
+  }
+
+  async recordHealth(result: ProviderHealthCheckResult): Promise<ProviderRecoveryPlan> {
+    await this.operations.recordHealth(result);
+    return {
+      provider: result.identifier.provider,
+      operation: result.identifier.operation,
+      action: result.status === 'healthy' ? 'restore' : result.status === 'degraded' ? 'retry' : 'hold',
+      reason: result.reason || `provider status is ${result.status}`,
+    };
+  }
 }
 
 export async function executeProviderCall<TValue>(input: {
