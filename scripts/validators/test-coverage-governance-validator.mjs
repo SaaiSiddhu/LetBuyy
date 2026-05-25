@@ -20,6 +20,7 @@ const requiredTestFiles = [
   "tests/feature-flags/feature-flag-governance.test.mjs",
   "tests/chaos/degraded-mode.test.mjs",
   "tests/security/execution-mode.test.mjs",
+  "tests/survivability/survivability-governance.test.mjs",
 ];
 
 for (const file of requiredTestFiles) {

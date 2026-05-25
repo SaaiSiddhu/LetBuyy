@@ -18,7 +18,8 @@
       "LetBuyy operations API token",
       "Vercel deployment credentials",
       "Wrangler secret rotation payloads",
-      "terraform, psql, npx, and k6 local tools"
+      "terraform, psql, pnpm, k6, locust, and gatling local tools",
+      "LETBUYY_SURVIVABILITY_EXECUTION_APPROVED=true for survivability-suite execute mode"
     ]
   },
   "scripts": {
@@ -31,7 +32,8 @@
     "observability": "infrastructure/scripts/observability/verify-observability-rollout.mjs",
     "database": "infrastructure/scripts/database/verify-supabase-operations.mjs",
     "cloudflare": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
-    "load": "infrastructure/scripts/load/run-load-suite.mjs"
+    "load": "infrastructure/scripts/load/run-load-suite.mjs",
+    "survivability": "infrastructure/scripts/operations/run-survivability-suite.mjs"
   },
   "certificationRuntime": {
     "reportScript": "infrastructure/scripts/operations/generate-certification-report.mjs",

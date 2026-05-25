@@ -22,6 +22,11 @@ const requiredSecretNames = [
 
 const capabilityGroups = [
   {
+    name: "operator-approval",
+    env: ["LETBUYY_SURVIVABILITY_EXECUTION_APPROVED"],
+    validator: () => process.env.LETBUYY_SURVIVABILITY_EXECUTION_APPROVED === "true",
+  },
+  {
     name: "cloudflare",
     env: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "TF_VAR_cloudflare_api_token", "TF_VAR_cloudflare_account_id"],
     tools: ["pnpm", "terraform"],
@@ -83,11 +88,13 @@ function evaluateCapabilities() {
       if (!alternatives.some(hasEnv)) missingEnv.push(alternatives.join("|"));
     }
     const missingTools = (group.tools || []).filter((tool) => !hasTool(tool));
+    const validatorReady = group.validator ? group.validator() : true;
     return {
       name: group.name,
-      ready: missingEnv.length === 0 && missingTools.length === 0,
+      ready: missingEnv.length === 0 && missingTools.length === 0 && validatorReady,
       missingEnv,
       missingTools,
+      approval: validatorReady ? "ok" : "not-approved",
     };
   });
 }
@@ -108,7 +115,7 @@ const executeReady = capabilities.every((capability) => capability.ready);
 if (requestedMode === "execute" && !executeReady) {
   const missing = capabilities
     .filter((capability) => !capability.ready)
-    .map((capability) => `${capability.name}: env=[${capability.missingEnv.join(",") || "ok"}] tools=[${capability.missingTools.join(",") || "ok"}]`)
+    .map((capability) => `${capability.name}: env=[${capability.missingEnv.join(",") || "ok"}] tools=[${capability.missingTools.join(",") || "ok"}] approval=${capability.approval}`)
     .join("; ");
   throw new Error(`Cannot run Phase 4 live certification in execute mode. Missing capabilities: ${missing}`);
 }
@@ -118,7 +125,7 @@ const mode = requestedMode === "auto" ? (executeReady ? "execute" : "plan") : re
 console.log(`[phase4-live] environment=${environment} mode=${mode} version=${version}`);
 for (const capability of capabilities) {
   console.log(
-    `[phase4-live] capability ${capability.name}: ${capability.ready ? "ready" : "plan-only"} env=${capability.missingEnv.join(",") || "ok"} tools=${capability.missingTools.join(",") || "ok"}`,
+    `[phase4-live] capability ${capability.name}: ${capability.ready ? "ready" : "plan-only"} env=${capability.missingEnv.join(",") || "ok"} tools=${capability.missingTools.join(",") || "ok"} approval=${capability.approval}`,
   );
 }
 

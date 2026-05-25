@@ -13,3 +13,4 @@ Enterprise dependency and execution hardening is enforced by:
 - `package-export-validator.mjs` for explicit package public APIs.
 - `supply-chain-validator.mjs` for npm/npx leakage prevention in governed execution paths.
 - `ci-simulation-validator.mjs` for required workflow and release-promotion gates.
+- `survivability-governance-validator.mjs` for plan-vs-execute proof boundaries, measured live evidence status, observability contracts, and multi-region runtime contracts.

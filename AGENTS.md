@@ -216,12 +216,14 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 - Shared logic graduates into packages before reuse.
 - API contract aggregation through `@letbuyy/api-types` is backward compatibility only; new domain authority belongs in the domain package public export.
 - `scripts/validators/dependency-manifest-validator.mjs`, `scripts/validators/undeclared-import-validator.mjs`, `scripts/validators/package-export-validator.mjs`, `scripts/validators/dependency-graph-validator.mjs`, and `scripts/validators/circular-import-validator.mjs` enforce dependency declarations, package public exports, dependency direction, package layering, and circular dependency prevention.
+- `scripts/validators/survivability-governance-validator.mjs` enforces plan-vs-execute survivability contracts, live evidence status rules, observability contracts, and multi-region runtime proof boundaries.
 
 ## CI/CD Governance
 
 - CI must run `node scripts/validate-governance.mjs` for topology-sensitive changes.
 - CI must fail on app-to-app imports, package-to-runtime imports, undeclared dependency imports, non-exported package subpaths, circular package/runtime imports, npm/npx leakage in governed execution paths, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, unsafe migration history, tracked env files, invalid runtime roots, and legacy leakage.
 - Build, lint, typecheck, and test jobs should be added per runtime as blockers are retired.
+- CI must run survivability governance before production rollout or live certification. Plan-mode proof is not live certification; execute-mode evidence must be fresh, measured, and stored through the operations control plane.
 
 ## Documentation Governance
 

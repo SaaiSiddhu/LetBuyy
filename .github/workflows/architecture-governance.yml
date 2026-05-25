@@ -67,6 +67,9 @@ jobs:
       - name: Validate TypeScript governance
         run: pnpm run validate:typescript
 
+      - name: Validate survivability governance
+        run: pnpm run validate:survivability
+
       - name: Run governance tests
         run: pnpm run test
 

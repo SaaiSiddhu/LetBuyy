@@ -24,11 +24,13 @@
         "validate:security": "node scripts/validators/provider-isolation-validator.mjs && node scripts/validators/environment-validator.mjs && node scripts/validators/supply-chain-validator.mjs",
         "validate:observability": "node scripts/validators/production-readiness-validator.mjs",
         "validate:chaos": "node --test tests/operations/*.test.mjs tests/chaos/*.test.mjs",
+        "validate:survivability": "node scripts/validators/survivability-governance-validator.mjs",
         "validate:ci": "node scripts/validators/ci-simulation-validator.mjs",
         "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
         "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "test": "node --test tests/*/*.test.mjs",
         "test:workspaces": "turbo test",
+        "survivability:plan": "node infrastructure/scripts/operations/run-survivability-suite.mjs --environment=production --mode=plan",
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {

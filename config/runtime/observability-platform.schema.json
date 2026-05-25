@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Observability Platform Contract",
+  "type": "object",
+  "required": ["contractVersion", "signals", "lineage", "dashboards", "alerts"],
+  "properties": {
+    "contractVersion": { "type": "integer", "minimum": 1 },
+    "signals": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "lineage": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "dashboards": { "type": "array", "items": { "type": "object" }, "minItems": 1 },
+    "alerts": { "type": "array", "items": { "type": "object" }, "minItems": 1 }
+  }
+}

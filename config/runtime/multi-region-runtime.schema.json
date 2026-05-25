@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Multi-Region Runtime Contract",
+  "type": "object",
+  "required": ["contractVersion", "regions", "failoverPairs", "replayIntegrity"],
+  "properties": {
+    "contractVersion": { "type": "integer", "minimum": 1 },
+    "regions": { "type": "array", "items": { "type": "object" }, "minItems": 4 },
+    "failoverPairs": { "type": "array", "items": { "type": "object" }, "minItems": 1 },
+    "replayIntegrity": { "type": "object" }
+  }
+}

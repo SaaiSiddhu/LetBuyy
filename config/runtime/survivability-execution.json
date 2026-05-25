@@ -1,0 +1,78 @@
+{
+  "$schema": "config/runtime/survivability-execution.schema.json",
+  "contractVersion": 1,
+  "modePolicy": {
+    "planMode": "Validate contracts, topology, gates, and planned evidence without provider mutation.",
+    "executeMode": "Run live provider commands, runtime drills, telemetry checks, load tests, rollback checks, and record fresh operations evidence.",
+    "executeRequires": [
+      "LETBUYY_SURVIVABILITY_EXECUTION_APPROVED=true",
+      "Cloudflare API credentials",
+      "Supabase database URL",
+      "Prometheus, Grafana, and OpenTelemetry health URLs",
+      "LetBuyy operations API token",
+      "Vercel deployment credentials when app deployment is requested",
+      "k6, locust, gatling, terraform, psql, and pnpm"
+    ],
+    "forbidden": [
+      "marking planned evidence as passed",
+      "recording passed failover evidence without observed RTO/RPO",
+      "recording passed load evidence without measured latency/error metrics",
+      "recording passed chaos evidence without recovery observation",
+      "recording live certification from documentation alone"
+    ]
+  },
+  "evidencePolicy": {
+    "sourceOfTruth": "/v1/operations/runtime",
+    "freshnessHours": 24,
+    "passingStatuses": ["passed", "healthy", "success", "succeeded", "closed"],
+    "nonPassingStatuses": ["planned", "requested", "pending", "pending-live-evidence", "measurement-required", "failed", "degraded"],
+    "requiredFields": [
+      "environment",
+      "runtime",
+      "status",
+      "run_id",
+      "observed_at",
+      "measurement_source"
+    ],
+    "planModeEvidenceStatus": "contract-ready",
+    "executeModeEvidenceStatus": "measured"
+  },
+  "requiredStages": [
+    { "name": "governance", "script": "pnpm run validate:governance", "evidence": "validator output" },
+    { "name": "dependency", "script": "pnpm run validate:dependencies", "evidence": "dependency validator output" },
+    { "name": "typescript", "script": "pnpm run validate:typescript && pnpm run typecheck", "evidence": "composite build/typecheck output" },
+    { "name": "tests", "script": "pnpm run test && pnpm run validate:tests", "evidence": "node test and critical test proof output" },
+    { "name": "replay", "script": "pnpm run validate:replay", "evidence": "deterministic replay test output" },
+    { "name": "migrations", "script": "pnpm run validate:migrations", "evidence": "migration safety validator output" },
+    { "name": "cloudflare", "script": "pnpm run validate:cloudflare", "evidence": "Worker environment isolation validator output" },
+    { "name": "observability", "script": "pnpm run validate:observability", "evidence": "dashboard, alert, and collector validation output" },
+    { "name": "deployment", "script": "node infrastructure/scripts/deploy/production-deploy.mjs --environment=production --target=workers", "evidence": "deployment plan or execute output" },
+    { "name": "rollback", "script": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api", "evidence": "rollback command path and Cloudflare rollback response in execute mode" },
+    { "name": "chaos", "script": "pnpm run validate:chaos", "evidence": "chaos tests plus operations evidence in execute mode" },
+    { "name": "load", "script": "node infrastructure/scripts/load/run-load-suite.mjs --environment=production", "evidence": "k6, Locust, and Gatling results in execute mode" },
+    { "name": "certification", "script": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto", "evidence": "credential-gated certification report" }
+  ],
+  "operationalProof": {
+    "survivabilitySuite": "infrastructure/scripts/operations/run-survivability-suite.mjs",
+    "reportScript": "infrastructure/scripts/operations/generate-certification-report.mjs",
+    "liveCertificationScript": "infrastructure/scripts/operations/phase4-live-certify.mjs",
+    "validator": "scripts/validators/survivability-governance-validator.mjs",
+    "requiredEvidenceCategories": [
+      "deployment",
+      "cloudflare",
+      "supabase",
+      "observability",
+      "incident",
+      "failover",
+      "chaos",
+      "load",
+      "security",
+      "dashboards",
+      "control-plane",
+      "sre",
+      "event-store",
+      "multi-region",
+      "replay-runtime"
+    ]
+  }
+}

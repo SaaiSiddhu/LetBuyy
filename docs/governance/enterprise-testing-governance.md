@@ -16,6 +16,7 @@ Testing authority starts with repository-enforced governance tests and grows int
 - Event contract coverage for replay, deployment, SRE, chaos, and operational recovery.
 - Execute-mode certification fail-closed behavior.
 - Chaos degraded-mode behavior for provider outage.
+- Survivability evidence contracts, execute-mode approval, and non-fake live drill evidence behavior.
 
 ## Required Runtime Evolution
 

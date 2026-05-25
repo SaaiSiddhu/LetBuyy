@@ -57,7 +57,42 @@
     "failover": "ap-southeast-1",
     "edge": [
       "global-edge"
-    ]
+    ],
+    "globalRegions": [
+      {
+        "id": "india",
+        "primaryRegion": "ap-south-1",
+        "tenantAffinity": "india-first",
+        "queueNamespace": "letbuyy-india",
+        "telemetryLabel": "region=\"india\""
+      },
+      {
+        "id": "apac",
+        "primaryRegion": "ap-southeast-1",
+        "tenantAffinity": "apac",
+        "queueNamespace": "letbuyy-apac",
+        "telemetryLabel": "region=\"apac\""
+      },
+      {
+        "id": "eu",
+        "primaryRegion": "eu-west-1",
+        "tenantAffinity": "eu",
+        "queueNamespace": "letbuyy-eu",
+        "telemetryLabel": "region=\"eu\""
+      },
+      {
+        "id": "us",
+        "primaryRegion": "us-east-1",
+        "tenantAffinity": "us",
+        "queueNamespace": "letbuyy-us",
+        "telemetryLabel": "region=\"us\""
+      }
+    ],
+    "replayIntegrity": {
+      "checksumRequired": true,
+      "projectionComparisonRequired": true,
+      "failClosedOnDivergence": true
+    }
   },
   "runtimes": [
     {

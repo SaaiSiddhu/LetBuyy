@@ -11,6 +11,11 @@ const output = valueFor("--output");
 
 const capabilityGroups = [
   {
+    name: "operator-approval",
+    env: ["LETBUYY_SURVIVABILITY_EXECUTION_APPROVED"],
+    validator: () => process.env.LETBUYY_SURVIVABILITY_EXECUTION_APPROVED === "true",
+  },
+  {
     name: "cloudflare",
     env: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID", "TF_VAR_cloudflare_api_token", "TF_VAR_cloudflare_account_id"],
     tools: ["pnpm", "terraform"],
@@ -70,11 +75,13 @@ function evaluateCapabilities() {
       if (!alternatives.some(hasEnv)) missingEnv.push(alternatives.join("|"));
     }
     const missingTools = (group.tools || []).filter((tool) => !hasTool(tool));
+    const validatorReady = group.validator ? group.validator() : true;
     return {
       name: group.name,
-      ready: missingEnv.length === 0 && missingTools.length === 0,
+      ready: missingEnv.length === 0 && missingTools.length === 0 && validatorReady,
       missingEnv,
       missingTools,
+      approval: validatorReady ? "ok" : "not-approved",
     };
   });
 }
@@ -124,12 +131,31 @@ function newestTimestamp(records) {
 function summarizeEvidence(name, records, maxAgeHours) {
   const newest = newestTimestamp(records);
   const fresh = newest ? Date.now() - newest <= maxAgeHours * 60 * 60 * 1000 : false;
+  const passingStatuses = new Set(["passed", "healthy", "success", "succeeded", "closed"]);
+  const passingRecords = records.filter((record) => {
+    const statusCandidates = [
+      record.status,
+      record.gate_status,
+      record.health_status,
+      record.result?.status,
+      record.result?.outcome,
+      record.evidence?.status,
+    ]
+      .filter(Boolean)
+      .map((value) => String(value).toLowerCase());
+
+    if (statusCandidates.some((status) => passingStatuses.has(status))) return true;
+    if (record.is_consistent === true) return true;
+    if (record.signature_valid === true) return true;
+    return false;
+  });
   return {
     name,
     records: records.length,
+    passing_records: passingRecords.length,
     newest_at: newest ? new Date(newest).toISOString() : null,
     fresh,
-    status: records.length > 0 && fresh ? "passed" : "missing",
+    status: passingRecords.length > 0 && fresh ? "passed" : "missing",
   };
 }
 
@@ -185,7 +211,7 @@ const certification = readJson("config/runtime/live-production-certification.jso
 const capabilities = evaluateCapabilities();
 const missingCapabilities = capabilities
   .filter((capability) => !capability.ready)
-  .map((capability) => `${capability.name}: env=[${capability.missingEnv.join(",") || "ok"}] tools=[${capability.missingTools.join(",") || "ok"}]`);
+  .map((capability) => `${capability.name}: env=[${capability.missingEnv.join(",") || "ok"}] tools=[${capability.missingTools.join(",") || "ok"}] approval=${capability.approval}`);
 const maxAgeHours = certification.certificationRuntime?.evidenceExpirationHours || 24;
 const evidenceSummary = requestedMode === "execute"
   ? await liveEvidenceSummary(maxAgeHours)

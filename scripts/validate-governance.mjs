@@ -22,6 +22,7 @@ const validators = [
   "cloudflare-environment-validator.mjs",
   "migration-safety-validator.mjs",
   "test-coverage-governance-validator.mjs",
+  "survivability-governance-validator.mjs",
   "ci-simulation-validator.mjs",
   "domain-boundary-validator.mjs",
   "environment-validator.mjs",

@@ -44,3 +44,20 @@ This document defines observability standards only. It does not implement teleme
 - Local observability is implemented by `infrastructure/local/docker-compose.yml` with OpenTelemetry Collector, Prometheus, Grafana, Loki, and Tempo.
 - Staging must emit queue, replay, deployment, feature-flag exposure, shadow traffic, and SLO evidence before production promotion.
 - Production observability certification requires execute-mode evidence in `operational_dashboard_snapshots` and `sre_error_budget_snapshots`.
+
+## Live Telemetry Contract
+
+Observability must be live telemetry, not static dashboard theater.
+
+### Rules
+
+- Every production dashboard must reference live telemetry targets.
+- Required signals are traces, metrics, logs, spans, and operational events.
+- Required lineage dimensions are request, queue, replay, deployment, tenant, regional, and migration lineage.
+- Prometheus rules must cover error burn, queue/DLQ growth, replay lag, deployment gate failure, event-store integrity, error-budget freeze, and regional overrides.
+- Plan mode may validate dashboard JSON and alert definitions. Execute mode must query Prometheus, Grafana, and the OpenTelemetry collector health endpoint.
+
+### Enforcement
+
+- `config/runtime/observability-platform.json` is the observability contract.
+- `scripts/validators/survivability-governance-validator.mjs` verifies dashboard targets, alert names, and forbidden placeholder sources.

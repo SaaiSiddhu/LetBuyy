@@ -13,6 +13,12 @@ const requiredFiles = [
   "config/runtime/production-topology.json",
   "config/runtime/live-production-certification.schema.json",
   "config/runtime/live-production-certification.json",
+  "config/runtime/survivability-execution.schema.json",
+  "config/runtime/survivability-execution.json",
+  "config/runtime/observability-platform.schema.json",
+  "config/runtime/observability-platform.json",
+  "config/runtime/multi-region-runtime.schema.json",
+  "config/runtime/multi-region-runtime.json",
   "infrastructure/cloudflare/queues.tf",
   "infrastructure/cloudflare/storage.tf",
   "infrastructure/cloudflare/workers-topology.md",
@@ -44,6 +50,7 @@ const requiredFiles = [
   "infrastructure/scripts/operations/phase4-live-certify.mjs",
   "infrastructure/scripts/operations/verify-live-operations.mjs",
   "infrastructure/scripts/operations/run-live-drills.mjs",
+  "infrastructure/scripts/operations/run-survivability-suite.mjs",
   "infrastructure/scripts/operations/generate-certification-report.mjs",
   "infrastructure/scripts/security/verify-security-gates.mjs",
   "infrastructure/scripts/security/rotate-secrets.mjs",
@@ -71,6 +78,8 @@ const requiredFiles = [
   "docs/runbooks/secret-rotation.md",
   "docs/runbooks/chaos-drill.md",
   "docs/runbooks/live-certification-execute.md",
+  "docs/runbooks/survivability-suite.md",
+  "docs/runbooks/infra-recovery.md",
   "docs/operations/production-certification.md",
   "docs/operations/dev-environment-operationalization-report.md",
   "docs/operations/phase4-live-execution-evidence.md",
@@ -100,6 +109,10 @@ const requiredFiles = [
   "docs/governance/deployment-pipeline-governance.md",
   "docs/governance/runtime-observability-governance.md",
   "docs/governance/operational-dashboard-governance.md",
+  "docs/governance/operational-resilience-governance.md",
+  "docs/governance/deployment-proof-governance.md",
+  "docs/governance/deterministic-runtime-governance.md",
+  "docs/governance/infra-recovery-governance.md",
 ];
 
 for (const file of requiredFiles) {
@@ -217,6 +230,7 @@ for (const liveFile of [
   liveCertification?.scripts?.database,
   liveCertification?.scripts?.cloudflare,
   liveCertification?.scripts?.load,
+  liveCertification?.scripts?.survivability,
 ].filter(Boolean)) {
   reporter.assert(exists(liveFile), `Live certification references missing source file: ${liveFile}`);
 }

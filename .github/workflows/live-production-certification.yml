@@ -72,6 +72,9 @@ jobs:
       - name: Cloudflare isolation gates
         run: pnpm run validate:cloudflare
 
+      - name: Survivability governance gates
+        run: pnpm run validate:survivability
+
       - name: Governance tests
         run: pnpm run test
 
@@ -91,6 +94,7 @@ jobs:
           GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
           OTEL_COLLECTOR_HEALTH_URL: ${{ secrets.OTEL_COLLECTOR_HEALTH_URL }}
           LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+          LETBUYY_SURVIVABILITY_EXECUTION_APPROVED: ${{ secrets.LETBUYY_SURVIVABILITY_EXECUTION_APPROVED }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY }}
