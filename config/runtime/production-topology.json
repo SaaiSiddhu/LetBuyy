@@ -23,7 +23,8 @@
       "database/supabase/migrations/060_operational_runtime_finalization.sql",
       "database/supabase/migrations/061_operational_readiness_runtime.sql",
       "database/supabase/migrations/062_production_rollout_operations.sql",
-      "database/supabase/migrations/063_absolute_production_operationalization.sql"
+      "database/supabase/migrations/063_absolute_production_operationalization.sql",
+      "database/supabase/migrations/064_live_production_certification.sql"
     ],
     "verificationSql": "database/supabase/verification/063_absolute_production_operationalization.sql",
     "verificationScript": "infrastructure/scripts/database/verify-supabase-operations.mjs",
@@ -562,6 +563,7 @@
     "certificationScript": "infrastructure/scripts/operations/phase4-live-certify.mjs",
     "operationsVerificationScript": "infrastructure/scripts/operations/verify-live-operations.mjs",
     "drillScript": "infrastructure/scripts/operations/run-live-drills.mjs",
+    "reportScript": "infrastructure/scripts/operations/generate-certification-report.mjs",
     "certificationDoc": "docs/operations/production-certification.md",
     "evidenceGovernanceDocs": [
       "docs/governance/live-rollout-governance.md",
@@ -573,7 +575,9 @@
       "docs/governance/observability-certification-governance.md",
       "docs/governance/security-certification-governance.md",
       "docs/governance/sre-certification-governance.md",
-      "docs/governance/global-operations-governance.md"
+      "docs/governance/global-operations-governance.md",
+      "docs/governance/operational-certification-governance.md",
+      "docs/governance/deployment-readiness-governance.md"
     ]
   },
   "operationalDashboards": [
@@ -592,7 +596,8 @@
     "docs/runbooks/regional-failover.md",
     "docs/runbooks/deployment-rollback.md",
     "docs/runbooks/secret-rotation.md",
-    "docs/runbooks/chaos-drill.md"
+    "docs/runbooks/chaos-drill.md",
+    "docs/runbooks/live-certification-execute.md"
   ],
   "chaosEngineering": {
     "runner": "infrastructure/scripts/chaos/run-chaos-experiment.mjs",

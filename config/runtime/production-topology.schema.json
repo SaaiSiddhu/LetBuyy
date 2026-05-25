@@ -118,6 +118,7 @@
         "certificationScript",
         "operationsVerificationScript",
         "drillScript",
+        "reportScript",
         "certificationDoc",
         "evidenceGovernanceDocs"
       ],
@@ -127,6 +128,7 @@
         "certificationScript": { "type": "string", "minLength": 1 },
         "operationsVerificationScript": { "type": "string", "minLength": 1 },
         "drillScript": { "type": "string", "minLength": 1 },
+        "reportScript": { "type": "string", "minLength": 1 },
         "certificationDoc": { "type": "string", "minLength": 1 },
         "evidenceGovernanceDocs": {
           "type": "array",

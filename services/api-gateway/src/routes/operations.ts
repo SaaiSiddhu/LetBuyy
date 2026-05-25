@@ -22,6 +22,7 @@ import {
     RecordProductionIncidentSchema,
     RecordProductionReadinessGateSchema,
     RecordRegionalRoutingOverrideSchema,
+    RecordOperationalCertificationReportSchema,
     RecordSecurityEnforcementEventSchema,
     RecordSreErrorBudgetSnapshotSchema,
     RecordUsageSchema,
@@ -415,6 +416,7 @@ router.get('/runtime/overview', async (c) => {
         alerts,
         incidents,
         deployments,
+        deploymentHealth,
         failover,
         chaos,
         load,
@@ -425,6 +427,7 @@ router.get('/runtime/overview', async (c) => {
         errorBudgets,
         security,
         regionalOverrides,
+        certificationReports,
     ] = await Promise.all([
         db.from('runtime_health_projections')
             .select('runtime_name, status, region, dependencies, checked_at, metadata')
@@ -451,6 +454,11 @@ router.get('/runtime/overview', async (c) => {
             .select('promotion_id, runtime_name, runtime_root, environment, strategy, version, status, health_gates, started_at, finished_at, created_at')
             .is('deleted_at', null)
             .order('created_at', { ascending: false })
+            .limit(20),
+        db.from('deployment_health_gate_results')
+            .select('gate_id, promotion_id, runtime_root, environment, gate_name, status, observed_value, threshold, evidence_url, evaluated_at')
+            .is('deleted_at', null)
+            .order('evaluated_at', { ascending: false })
             .limit(20),
         db.from('failover_drill_runs')
             .select('drill_id, drill_type, source_region, target_region, affected_runtimes, status, rto_seconds, rpo_seconds, result, created_at')
@@ -503,9 +511,14 @@ router.get('/runtime/overview', async (c) => {
             .is('deleted_at', null)
             .order('created_at', { ascending: false })
             .limit(20),
+        db.from('operational_certification_reports')
+            .select('certification_id, environment, certification_mode, status, repository_maturity_score, live_maturity_score, evidence_summary, missing_capabilities, generated_at, expires_at')
+            .is('deleted_at', null)
+            .order('generated_at', { ascending: false })
+            .limit(20),
     ]);
 
-    for (const result of [health, queues, alerts, incidents, deployments, failover, chaos, load, slo, readiness, eventIntegrity, dashboards, errorBudgets, security, regionalOverrides]) {
+    for (const result of [health, queues, alerts, incidents, deployments, deploymentHealth, failover, chaos, load, slo, readiness, eventIntegrity, dashboards, errorBudgets, security, regionalOverrides, certificationReports]) {
         if (result.error) throw new Error(`Runtime overview query failed: ${result.error.message}`);
     }
 
@@ -515,6 +528,7 @@ router.get('/runtime/overview', async (c) => {
         alerts: alerts.data || [],
         incidents: incidents.data || [],
         deployments: deployments.data || [],
+        deployment_health_gates: deploymentHealth.data || [],
         failover_drills: failover.data || [],
         chaos_experiments: chaos.data || [],
         load_tests: load.data || [],
@@ -525,6 +539,7 @@ router.get('/runtime/overview', async (c) => {
         error_budgets: errorBudgets.data || [],
         security_events: security.data || [],
         regional_routing_overrides: regionalOverrides.data || [],
+        certification_reports: certificationReports.data || [],
     }));
 });
 
@@ -1061,6 +1076,48 @@ router.post('/runtime/regional-routing-overrides', async (c) => {
     if (error) throw new Error(`Regional routing override recording failed: ${error.message}`);
 
     return c.json(success({ override: data }), 201);
+});
+
+router.get('/runtime/certification-reports', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('operational_certification_reports')
+        .select('certification_id, environment, certification_mode, status, repository_maturity_score, live_maturity_score, evidence_summary, missing_capabilities, generated_at, expires_at, report')
+        .is('deleted_at', null)
+        .order('generated_at', { ascending: false })
+        .limit(parseLimit(c));
+
+    if (error) throw new Error(`Operational certification report list failed: ${error.message}`);
+
+    return c.json(success({ reports: data || [] }));
+});
+
+router.post('/runtime/certification-reports', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordOperationalCertificationReportSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid operational certification report request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_operational_certification_report', {
+        p_certification_id: parsed.data.certification_id,
+        p_environment: parsed.data.environment,
+        p_certification_mode: parsed.data.certification_mode,
+        p_status: parsed.data.status,
+        p_repository_maturity_score: parsed.data.repository_maturity_score,
+        p_live_maturity_score: parsed.data.live_maturity_score,
+        p_evidence_summary: parsed.data.evidence_summary,
+        p_missing_capabilities: parsed.data.missing_capabilities,
+        p_expires_at: parsed.data.expires_at || null,
+        p_report: parsed.data.report,
+        p_actor_id: actorId(c),
+    });
+
+    if (error) throw new Error(`Operational certification report recording failed: ${error.message}`);
+
+    return c.json(success({ report: data }), 201);
 });
 
 export default router;

@@ -59,6 +59,7 @@ for (const routeFragment of [
   "/runtime/sre/error-budgets",
   "/runtime/security/enforcement-events",
   "/runtime/regional-routing-overrides",
+  "/runtime/certification-reports",
 ]) {
   assert(routeSource.includes(routeFragment), `Operations API is missing live route ${routeFragment}`);
 }
@@ -69,6 +70,7 @@ for (const dashboardFragment of [
   "cache: 'no-store'",
   "Operations API unavailable",
   "Live runtime projections",
+  "Operational Certification",
 ]) {
   assert(dashboardSource.includes(dashboardFragment), `Operations dashboard is missing live data contract: ${dashboardFragment}`);
 }
@@ -86,10 +88,19 @@ if (execute) {
     "queues",
     "incidents",
     "deployments",
+    "deployment_health_gates",
     "event_store_integrity",
     "security_events",
     "error_budgets",
     "regional_routing_overrides",
+    "alerts",
+    "failover_drills",
+    "chaos_experiments",
+    "load_tests",
+    "slos",
+    "readiness_gates",
+    "dashboards",
+    "certification_reports",
   ]) {
     assert(Array.isArray(data[key]), `Operations overview live response is missing array field ${key}`);
   }

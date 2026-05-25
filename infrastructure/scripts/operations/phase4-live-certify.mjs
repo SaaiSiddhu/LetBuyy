@@ -5,6 +5,7 @@ const args = new Set(process.argv.slice(2));
 const requestedMode = valueFor("--mode") || (args.has("--execute") ? "execute" : "auto");
 const environment = valueFor("--environment") || "production";
 const version = valueFor("--version") || process.env.GITHUB_SHA || `local-${Date.now()}`;
+const reportOutput = valueFor("--report-output");
 
 const requiredSecretNames = [
   "SUPABASE_SERVICE_ROLE_KEY",
@@ -122,6 +123,7 @@ for (const capability of capabilities) {
 }
 
 const commonArgs = [`--environment=${environment}`, `--version=${version}`];
+const reportOutputArgs = reportOutput ? [`--output=${reportOutput}`] : [];
 
 if (mode === "execute") {
   run("node", ["infrastructure/scripts/security/rotate-secrets.mjs", `--environment=${environment}`, "--execute"]);
@@ -129,12 +131,14 @@ if (mode === "execute") {
   run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=all", "--execute", "--skip-validation"]);
   run("node", ["infrastructure/scripts/operations/verify-live-operations.mjs", `--environment=${environment}`, "--execute"]);
   run("node", ["infrastructure/scripts/operations/run-live-drills.mjs", ...commonArgs, "--execute"]);
+  run("node", ["infrastructure/scripts/operations/generate-certification-report.mjs", ...commonArgs, "--mode=execute", "--record", ...reportOutputArgs]);
   console.log(`[phase4-live] ${environment} live production certification executed`);
 } else {
   run("node", ["infrastructure/scripts/security/rotate-secrets.mjs", `--environment=${environment}`]);
   run("node", ["infrastructure/scripts/operations/phase4-ultimate-validate.mjs", ...commonArgs]);
   run("node", ["infrastructure/scripts/operations/verify-live-operations.mjs", `--environment=${environment}`]);
   run("node", ["infrastructure/scripts/operations/run-live-drills.mjs", ...commonArgs]);
+  run("node", ["infrastructure/scripts/operations/generate-certification-report.mjs", ...commonArgs, "--mode=plan", ...reportOutputArgs]);
   run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=workers", "--skip-validation"]);
   console.log(`[phase4-live] ${environment} live certification plan passed; execute mode remains credential-gated`);
 }

@@ -255,6 +255,19 @@ export const RecordRegionalRoutingOverrideSchema = z.object({
   metadata: JsonRecordSchema.default({}),
 });
 
+export const RecordOperationalCertificationReportSchema = z.object({
+  certification_id: z.string().trim().min(8).max(120),
+  environment: z.enum(['staging', 'production']),
+  certification_mode: z.enum(['plan', 'execute']),
+  status: z.enum(['credential-gated', 'certified', 'failed', 'expired']),
+  repository_maturity_score: z.number().min(0).max(10),
+  live_maturity_score: z.number().min(0).max(10),
+  evidence_summary: JsonRecordSchema.default({}),
+  missing_capabilities: z.array(z.string().trim().min(1).max(160)).max(100).default([]),
+  expires_at: z.string().datetime().nullable().optional(),
+  report: JsonRecordSchema.default({}),
+});
+
 export interface DomainOutboxEvent {
   id: string;
   store_id?: string | null;
@@ -326,3 +339,4 @@ export type RecordOperationalDashboardSnapshotInput = z.infer<typeof RecordOpera
 export type RecordSreErrorBudgetSnapshotInput = z.infer<typeof RecordSreErrorBudgetSnapshotSchema>;
 export type RecordSecurityEnforcementEventInput = z.infer<typeof RecordSecurityEnforcementEventSchema>;
 export type RecordRegionalRoutingOverrideInput = z.infer<typeof RecordRegionalRoutingOverrideSchema>;
+export type RecordOperationalCertificationReportInput = z.infer<typeof RecordOperationalCertificationReportSchema>;

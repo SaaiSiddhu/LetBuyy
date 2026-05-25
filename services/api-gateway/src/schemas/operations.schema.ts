@@ -25,6 +25,7 @@ export {
   RecordSreErrorBudgetSnapshotSchema,
   RecordSecurityEnforcementEventSchema,
   RecordRegionalRoutingOverrideSchema,
+  RecordOperationalCertificationReportSchema,
   type DispatchOutboxInput,
   type DispatchWebhookDeliveriesInput,
   type ConsumeQueueJobsInput,
@@ -51,4 +52,5 @@ export {
   type RecordSreErrorBudgetSnapshotInput,
   type RecordSecurityEnforcementEventInput,
   type RecordRegionalRoutingOverrideInput,
+  type RecordOperationalCertificationReportInput,
 } from '@letbuyy/event-core';

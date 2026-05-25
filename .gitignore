@@ -68,6 +68,9 @@ pubsub-debug.log
 
 # Local governance/debug scan output
 docs/architecture/validation/
+phase4-live-certification-report.json
+certification-report.json
+artifacts/live-certification/
 
 # Cloud Functions
 functions/node_modules/

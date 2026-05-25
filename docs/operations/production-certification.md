@@ -37,6 +37,23 @@ Live evidence is operational data, not markdown. Evidence is recorded through `/
 - `event_store_integrity_checks`
 - `regional_routing_overrides`
 - `runtime_control_commands`
+- `operational_certification_reports`
+
+## Central Report
+
+Generate a central certification report:
+
+```bash
+node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan
+```
+
+Credentialed execute mode records the report through `/v1/operations/runtime/certification-reports`:
+
+```bash
+node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=execute --record
+```
+
+Reports expire after the configured evidence window in `config/runtime/live-production-certification.json`.
 
 ## Certification State
 

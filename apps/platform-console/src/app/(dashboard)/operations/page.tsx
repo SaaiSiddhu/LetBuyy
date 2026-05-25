@@ -5,10 +5,12 @@ type OperationsOverview = {
     queues?: Array<{ queue_name: string; depth?: number | null; leased?: number | null; retrying?: number | null; dead_lettered?: number | null; sampled_at?: string | null }>;
     incidents?: Array<{ incident_id: string; title: string; severity: string; status: string; started_at?: string | null }>;
     deployments?: Array<{ promotion_id: string; runtime_name: string; environment: string; strategy: string; status: string; version: string; created_at?: string | null }>;
+    deployment_health_gates?: Array<{ gate_id: string; runtime_root: string; environment: string; gate_name: string; status: string; evaluated_at?: string | null }>;
     event_store_integrity?: Array<{ check_id: string; stream_name?: string | null; status: string; checked_events?: number | null; gap_count?: number | null; duplicate_count?: number | null; checked_at?: string | null }>;
     security_events?: Array<{ enforcement_id: string; control_name: string; runtime_root: string; status: string; severity: string; recorded_at?: string | null }>;
     error_budgets?: Array<{ budget_id: string; runtime_name: string; slo_id: string; status: string; remaining_budget_percent: number; burn_rate: number; sampled_at?: string | null }>;
     regional_routing_overrides?: Array<{ override_id: string; runtime_root: string; source_region: string; target_region: string; status: string; created_at?: string | null }>;
+    certification_reports?: Array<{ certification_id: string; certification_mode: string; status: string; repository_maturity_score: number; live_maturity_score: number; generated_at?: string | null; expires_at?: string | null }>;
 };
 
 type ApiEnvelope = {
@@ -71,20 +73,24 @@ export default async function OperationsDashboardPage() {
     const queues = overview?.queues || [];
     const incidents = overview?.incidents || [];
     const deployments = overview?.deployments || [];
+    const deploymentHealth = overview?.deployment_health_gates || [];
     const integrity = overview?.event_store_integrity || [];
     const security = overview?.security_events || [];
     const budgets = overview?.error_budgets || [];
     const regional = overview?.regional_routing_overrides || [];
+    const certifications = overview?.certification_reports || [];
+    const latestCertification = certifications[0];
 
     return (
         <main className="space-y-8 p-8">
             <PageHeader />
 
-            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <MetricTile label="Healthy runtimes" value={`${health.filter((item) => item.status === 'healthy').length}/${health.length}`} />
                 <MetricTile label="Open incidents" value={String(incidents.filter((item) => item.status !== 'closed').length)} />
                 <MetricTile label="DLQ messages" value={String(queues.reduce((total, item) => total + Number(item.dead_lettered || 0), 0))} />
                 <MetricTile label="Frozen budgets" value={String(budgets.filter((item) => item.status === 'freeze' || item.status === 'exhausted').length)} />
+                <MetricTile label="Certification" value={latestCertification ? `${latestCertification.live_maturity_score}/10` : 'none'} />
             </section>
 
             <section className="grid gap-6 xl:grid-cols-2">
@@ -106,8 +112,18 @@ export default async function OperationsDashboardPage() {
                 </OperationalPanel>
 
                 <OperationalPanel title="Deployment Gates" icon={<GitBranch size={18} />}>
-                    {deployments.map((item) => (
-                        <StatusRow key={item.promotion_id} label={item.runtime_name} detail={`${item.environment} · ${item.strategy} · ${item.version}`} status={item.status} />
+                    {[...deployments.map((item) => ({
+                        key: item.promotion_id,
+                        label: item.runtime_name,
+                        detail: `${item.environment} · ${item.strategy} · ${item.version}`,
+                        status: item.status,
+                    })), ...deploymentHealth.map((item) => ({
+                        key: item.gate_id,
+                        label: item.runtime_root,
+                        detail: `${item.environment} · ${item.gate_name}`,
+                        status: item.status,
+                    }))].map((item) => (
+                        <StatusRow key={item.key} label={item.label} detail={item.detail} status={item.status} />
                     ))}
                 </OperationalPanel>
 
@@ -131,6 +147,17 @@ export default async function OperationsDashboardPage() {
                 <OperationalPanel title="Regional Overrides" icon={<RadioTower size={18} />}>
                     {regional.map((item) => (
                         <StatusRow key={item.override_id} label={item.runtime_root} detail={`${item.source_region} to ${item.target_region}`} status={item.status} />
+                    ))}
+                </OperationalPanel>
+
+                <OperationalPanel title="Operational Certification" icon={<CheckCircle2 size={18} />}>
+                    {certifications.map((item) => (
+                        <StatusRow
+                            key={item.certification_id}
+                            label={item.certification_id}
+                            detail={`${item.certification_mode} · repo ${item.repository_maturity_score}/10 · live ${item.live_maturity_score}/10`}
+                            status={item.status}
+                        />
                     ))}
                 </OperationalPanel>
             </section>

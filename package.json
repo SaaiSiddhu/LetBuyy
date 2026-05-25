@@ -10,6 +10,7 @@
         "validate:governance": "node scripts/validate-governance.mjs",
         "validate:production": "node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production",
         "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
+        "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {

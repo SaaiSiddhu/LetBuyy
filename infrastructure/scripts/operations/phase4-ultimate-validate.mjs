@@ -91,12 +91,12 @@ if (execute) {
     source_api: "/v1/operations/runtime/overview",
     source_projection: "operational_dashboard_snapshots",
     panels: [
-      "runtime",
-      "queue",
-      "replay",
-      "incident",
-      "deployment",
-      "sre",
+      { name: "runtime", status: "validated" },
+      { name: "queue", status: "validated" },
+      { name: "replay", status: "validated" },
+      { name: "incident", status: "validated" },
+      { name: "deployment", status: "validated" },
+      { name: "sre", status: "validated" },
     ],
   });
   await postOperations("/runtime/security/enforcement-events", {

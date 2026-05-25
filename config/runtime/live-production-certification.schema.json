@@ -11,6 +11,7 @@
     "workflow",
     "modeDetection",
     "scripts",
+    "certificationRuntime",
     "evidenceStore",
     "evidenceCategories"
   ],
@@ -48,6 +49,7 @@
         "deployment",
         "operationsVerification",
         "drills",
+        "report",
         "security",
         "observability",
         "database",
@@ -59,11 +61,25 @@
         "deployment": { "type": "string", "minLength": 1 },
         "operationsVerification": { "type": "string", "minLength": 1 },
         "drills": { "type": "string", "minLength": 1 },
+        "report": { "type": "string", "minLength": 1 },
         "security": { "type": "string", "minLength": 1 },
         "observability": { "type": "string", "minLength": 1 },
         "database": { "type": "string", "minLength": 1 },
         "cloudflare": { "type": "string", "minLength": 1 },
         "load": { "type": "string", "minLength": 1 }
+      }
+    },
+    "certificationRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["reportScript", "reportApi", "reportProjection", "evidenceExpirationHours", "minimumLiveScore", "minimumRepositoryScore"],
+      "properties": {
+        "reportScript": { "type": "string", "minLength": 1 },
+        "reportApi": { "type": "string", "minLength": 1 },
+        "reportProjection": { "type": "string", "minLength": 1 },
+        "evidenceExpirationHours": { "type": "integer", "minimum": 1 },
+        "minimumLiveScore": { "type": "number", "minimum": 0, "maximum": 10 },
+        "minimumRepositoryScore": { "type": "number", "minimum": 0, "maximum": 10 }
       }
     },
     "evidenceStore": {

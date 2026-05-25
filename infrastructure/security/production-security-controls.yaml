@@ -60,3 +60,5 @@ controls:
       evidence:
         config: config/runtime/live-production-certification.json
         api: /v1/operations/runtime
+        reportApi: /v1/operations/runtime/certification-reports
+        reportProjection: operational_certification_reports

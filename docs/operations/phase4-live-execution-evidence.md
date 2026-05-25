@@ -10,6 +10,7 @@ This file records the repository-side certification state. It is not a substitut
 - Live Supabase verification: not executed from this checkout.
 - Live observability endpoint verification: not executed from this checkout.
 - Live secret rotation: not executed from this checkout.
+- Central certification report: available in plan mode through `infrastructure/scripts/operations/generate-certification-report.mjs`; live report recording requires execute mode and `LETBUYY_OPERATIONS_TOKEN`.
 
 ## Executable Evidence Contract
 
@@ -20,6 +21,12 @@ node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=pro
 ```
 
 When all required credentials and tools are present, auto mode becomes execute mode and records live evidence through `/v1/operations/runtime`.
+
+Generate a local plan-mode certification report without claiming live execution:
+
+```bash
+node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan
+```
 
 ## Required Live Evidence Categories
 
@@ -37,3 +44,4 @@ When all required credentials and tools are present, auto mode becomes execute m
 - SRE
 - event-store
 - multi-region
+- central operational certification
