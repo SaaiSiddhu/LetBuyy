@@ -7,6 +7,7 @@
     "terraform": "infrastructure/cloudflare/queues.tf",
     "producerConfig": "services/api-gateway/wrangler.toml",
     "consumerConfig": "services/queue-workers/wrangler.toml",
+    "validationScript": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
     "queues": [
       "letbuyy-events",
       "letbuyy-analytics",
@@ -24,6 +25,8 @@
       "database/supabase/migrations/062_production_rollout_operations.sql",
       "database/supabase/migrations/063_absolute_production_operationalization.sql"
     ],
+    "verificationSql": "database/supabase/verification/063_absolute_production_operationalization.sql",
+    "verificationScript": "infrastructure/scripts/database/verify-supabase-operations.mjs",
     "retentionPolicy": "hot/warm/archive/legal-hold retention classes in distributed_event_store"
   },
   "cacheProviders": [
@@ -44,7 +47,8 @@
       "infrastructure/observability/grafana-deployment-dashboard.json",
       "infrastructure/observability/grafana-sre-dashboard.json"
     ],
-    "alerts": "infrastructure/observability/prometheus-rules.yaml"
+    "alerts": "infrastructure/observability/prometheus-rules.yaml",
+    "validationScript": "infrastructure/scripts/observability/verify-observability-rollout.mjs"
   },
   "regions": {
     "primary": "ap-south-1",
@@ -543,11 +547,13 @@
     "releasePromotion": "infrastructure/deployment/release-promotion.yaml",
     "deployScript": "infrastructure/scripts/deploy/production-deploy.mjs",
     "rollbackScript": "infrastructure/scripts/deploy/production-rollback.mjs",
-    "healthGateScript": "infrastructure/scripts/deploy/verify-health-gates.mjs"
+    "healthGateScript": "infrastructure/scripts/deploy/verify-health-gates.mjs",
+    "ultimateValidationScript": "infrastructure/scripts/operations/phase4-ultimate-validate.mjs"
   },
   "securityOperations": {
     "controls": "infrastructure/security/production-security-controls.yaml",
     "securityGateScript": "infrastructure/scripts/security/verify-security-gates.mjs",
+    "secretRotationScript": "infrastructure/scripts/security/rotate-secrets.mjs",
     "secretRotationRunbook": "docs/runbooks/secret-rotation.md"
   },
   "operationalDashboards": [

@@ -27,12 +27,13 @@
     "queueProvider": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["provider", "terraform", "producerConfig", "consumerConfig", "queues"],
+      "required": ["provider", "terraform", "producerConfig", "consumerConfig", "validationScript", "queues"],
       "properties": {
         "provider": { "const": "cloudflare-queues" },
         "terraform": { "type": "string", "minLength": 1 },
         "producerConfig": { "type": "string", "minLength": 1 },
         "consumerConfig": { "type": "string", "minLength": 1 },
+        "validationScript": { "type": "string", "minLength": 1 },
         "queues": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
@@ -44,9 +45,11 @@
     "eventStoreProvider": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["provider", "migrations", "retentionPolicy"],
+      "required": ["provider", "migrations", "verificationSql", "verificationScript", "retentionPolicy"],
       "properties": {
         "provider": { "const": "supabase-postgres-append-only" },
+        "verificationSql": { "type": "string", "minLength": 1 },
+        "verificationScript": { "type": "string", "minLength": 1 },
         "migrations": {
           "type": "array",
           "items": { "type": "string", "minLength": 1 },
@@ -65,7 +68,7 @@
     "observabilityStack": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["collector", "metrics", "traces", "logs", "dashboards", "alerts"],
+      "required": ["collector", "metrics", "traces", "logs", "dashboards", "alerts", "validationScript"],
       "properties": {
         "collector": { "type": "string", "minLength": 1 },
         "metrics": { "const": "prometheus" },
@@ -77,28 +80,31 @@
           "minItems": 1,
           "uniqueItems": true
         },
-        "alerts": { "type": "string", "minLength": 1 }
+        "alerts": { "type": "string", "minLength": 1 },
+        "validationScript": { "type": "string", "minLength": 1 }
       }
     },
     "deploymentPipeline": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["workflow", "releasePromotion", "deployScript", "rollbackScript", "healthGateScript"],
+      "required": ["workflow", "releasePromotion", "deployScript", "rollbackScript", "healthGateScript", "ultimateValidationScript"],
       "properties": {
         "workflow": { "type": "string", "minLength": 1 },
         "releasePromotion": { "type": "string", "minLength": 1 },
         "deployScript": { "type": "string", "minLength": 1 },
         "rollbackScript": { "type": "string", "minLength": 1 },
-        "healthGateScript": { "type": "string", "minLength": 1 }
+        "healthGateScript": { "type": "string", "minLength": 1 },
+        "ultimateValidationScript": { "type": "string", "minLength": 1 }
       }
     },
     "securityOperations": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["controls", "securityGateScript", "secretRotationRunbook"],
+      "required": ["controls", "securityGateScript", "secretRotationScript", "secretRotationRunbook"],
       "properties": {
         "controls": { "type": "string", "minLength": 1 },
         "securityGateScript": { "type": "string", "minLength": 1 },
+        "secretRotationScript": { "type": "string", "minLength": 1 },
         "secretRotationRunbook": { "type": "string", "minLength": 1 }
       }
     },

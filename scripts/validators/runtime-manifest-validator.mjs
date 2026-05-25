@@ -57,6 +57,7 @@ const requiredStringFields = [
   "deploymentPipelineOwnership",
   "observabilityInfrastructureOwnership",
   "telemetryInfrastructureOwnership",
+  "dashboardOwnership",
   "operationalDashboardOwnership",
   "sreOwnership",
   "queueProviderOwnership",

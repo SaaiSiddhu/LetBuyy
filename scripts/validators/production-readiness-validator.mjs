@@ -30,10 +30,15 @@ const requiredFiles = [
   "infrastructure/observability/grafana-sre-dashboard.json",
   "infrastructure/security/production-security-controls.yaml",
   "infrastructure/monitoring/slo-catalog.yaml",
+  "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
+  "infrastructure/scripts/database/verify-supabase-operations.mjs",
   "infrastructure/scripts/deploy/production-deploy.mjs",
   "infrastructure/scripts/deploy/production-rollback.mjs",
   "infrastructure/scripts/deploy/verify-health-gates.mjs",
+  "infrastructure/scripts/observability/verify-observability-rollout.mjs",
+  "infrastructure/scripts/operations/phase4-ultimate-validate.mjs",
   "infrastructure/scripts/security/verify-security-gates.mjs",
+  "infrastructure/scripts/security/rotate-secrets.mjs",
   "infrastructure/scripts/chaos/queue-outage.mjs",
   "infrastructure/scripts/chaos/provider-outage.mjs",
   "infrastructure/scripts/chaos/run-chaos-experiment.mjs",
@@ -46,6 +51,7 @@ const requiredFiles = [
   "services/queue-workers/src/index.ts",
   "database/supabase/migrations/062_production_rollout_operations.sql",
   "database/supabase/migrations/063_absolute_production_operationalization.sql",
+  "database/supabase/verification/063_absolute_production_operationalization.sql",
   "apps/platform-console/src/app/(dashboard)/operations/page.tsx",
   "docs/runbooks/incident-sev1.md",
   "docs/runbooks/queue-dlq-redrive.md",
@@ -79,6 +85,7 @@ const phase4ManifestFields = [
   "deploymentOwnership",
   "deploymentPipelineOwnership",
   "telemetryInfrastructureOwnership",
+  "dashboardOwnership",
   "operationalDashboardOwnership",
   "sreOwnership",
   "replayOperationsOwnership",
@@ -135,15 +142,21 @@ for (const file of [
   productionTopology?.queueProvider?.terraform,
   productionTopology?.queueProvider?.producerConfig,
   productionTopology?.queueProvider?.consumerConfig,
+  productionTopology?.queueProvider?.validationScript,
+  productionTopology?.eventStoreProvider?.verificationSql,
+  productionTopology?.eventStoreProvider?.verificationScript,
   productionTopology?.observabilityStack?.collector,
   productionTopology?.observabilityStack?.alerts,
+  productionTopology?.observabilityStack?.validationScript,
   productionTopology?.deploymentPipeline?.workflow,
   productionTopology?.deploymentPipeline?.releasePromotion,
   productionTopology?.deploymentPipeline?.deployScript,
   productionTopology?.deploymentPipeline?.rollbackScript,
   productionTopology?.deploymentPipeline?.healthGateScript,
+  productionTopology?.deploymentPipeline?.ultimateValidationScript,
   productionTopology?.securityOperations?.controls,
   productionTopology?.securityOperations?.securityGateScript,
+  productionTopology?.securityOperations?.secretRotationScript,
   productionTopology?.securityOperations?.secretRotationRunbook,
   productionTopology?.chaosEngineering?.runner,
   productionTopology?.loadTesting?.runner,
@@ -224,6 +237,7 @@ for (const tableName of [
 }
 
 const finalMigration = readFile("database/supabase/migrations/063_absolute_production_operationalization.sql");
+const finalVerification = readFile("database/supabase/verification/063_absolute_production_operationalization.sql");
 for (const tableName of [
   "production_readiness_gate_runs",
   "deployment_health_gate_results",
@@ -257,6 +271,18 @@ for (const functionName of [
   reporter.assert(
     new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(finalMigration),
     `Phase 4.final migration must create operational helper function ${functionName}`,
+  );
+}
+
+for (const verificationFragment of [
+  "validate_event_stream_consistency",
+  "pg_policies",
+  "production_readiness_gate_runs",
+  "regional_routing_overrides",
+]) {
+  reporter.assert(
+    finalVerification.includes(verificationFragment),
+    `Phase 4 ultimate verification SQL must include ${verificationFragment}`,
   );
 }
 
@@ -325,6 +351,8 @@ reporter.assert(
 const rolloutCi = readFile(".github/workflows/production-rollout.yml");
 for (const ciFragment of [
   "verify-security-gates.mjs",
+  "phase4-ultimate-validate.mjs",
+  "npm audit --audit-level=high --omit=dev",
   "production-deploy.mjs",
   "validate:governance",
   "typecheck",
@@ -333,6 +361,32 @@ for (const ciFragment of [
   reporter.assert(
     rolloutCi.includes(ciFragment),
     `Production rollout workflow must include ${ciFragment}`,
+  );
+}
+
+const deployScript = readFile("infrastructure/scripts/deploy/production-deploy.mjs");
+for (const deployFragment of [
+  "phase4-ultimate-validate.mjs",
+  "--execute",
+  "WRANGLER_LOG_PATH",
+]) {
+  reporter.assert(
+    deployScript.includes(deployFragment),
+    `Production deploy script must include ${deployFragment}`,
+  );
+}
+
+const ultimateScript = readFile("infrastructure/scripts/operations/phase4-ultimate-validate.mjs");
+for (const ultimateFragment of [
+  "verify-provider-contracts.mjs",
+  "verify-supabase-operations.mjs",
+  "verify-observability-rollout.mjs",
+  "verify-security-gates.mjs",
+  "LETBUYY_OPERATIONS_TOKEN",
+]) {
+  reporter.assert(
+    ultimateScript.includes(ultimateFragment),
+    `Phase 4 ultimate validation must include ${ultimateFragment}`,
   );
 }
 
