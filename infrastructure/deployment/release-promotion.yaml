@@ -99,9 +99,15 @@ startupSequence:
       - webhook-service
 rollback:
   apiGateway: wrangler-rollback-previous-version
+  webhookService: wrangler-rollback-approved-previous-version
+  queueWorkers: wrangler-rollback-approved-previous-version
   webApps: vercel-promote-previous-deployment
   database: forward-fix-or-approved-reversible-migration
   queues: pause-consumer-redrive-after-fix
+  replayCompatibility: pnpm run validate:replay
+  projectionRecovery: node scripts/validators/projection-recovery-validator.mjs
+  queueLifecycle: pnpm run validate:queues
+  rollbackIntegrity: pnpm run validate:rollback
 driftValidation:
   command: node scripts/validators/production-readiness-validator.mjs
   requiredBeforePromotion: true

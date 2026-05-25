@@ -1,0 +1,138 @@
+{
+  "$schema": "config/runtime/cloudflare-binding-ownership.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "cloudflareDocs": [
+    "https://developers.cloudflare.com/workers/wrangler/environments/",
+    "https://developers.cloudflare.com/workers/wrangler/configuration/"
+  ],
+  "nonInheritableKeys": [
+    "vars",
+    "kv_namespaces",
+    "r2_buckets",
+    "queues",
+    "durable_objects",
+    "services",
+    "secrets"
+  ],
+  "workers": [
+    {
+      "runtimeRoot": "services/api-gateway",
+      "config": "services/api-gateway/wrangler.toml",
+      "environments": {
+        "dev": {
+          "workerName": "letbuyy-api-dev",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME"],
+          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE"],
+          "queueConsumers": [],
+          "kvNamespaces": ["CACHE"],
+          "r2Buckets": ["R2_BUCKET"],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        },
+        "staging": {
+          "workerName": "letbuyy-api-staging",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME"],
+          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE"],
+          "queueConsumers": [],
+          "kvNamespaces": ["CACHE"],
+          "r2Buckets": ["R2_BUCKET"],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        },
+        "production": {
+          "workerName": "letbuyy-api",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME"],
+          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE"],
+          "queueConsumers": [],
+          "kvNamespaces": ["CACHE"],
+          "r2Buckets": ["R2_BUCKET"],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        }
+      }
+    },
+    {
+      "runtimeRoot": "services/webhook-service",
+      "config": "services/webhook-service/wrangler.toml",
+      "environments": {
+        "dev": {
+          "workerName": "letbuyy-webhooks-dev",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
+          "queueProducers": [],
+          "queueConsumers": [],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        },
+        "staging": {
+          "workerName": "letbuyy-webhooks-staging",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
+          "queueProducers": [],
+          "queueConsumers": [],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        },
+        "production": {
+          "workerName": "letbuyy-webhooks",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
+          "queueProducers": [],
+          "queueConsumers": [],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        }
+      }
+    },
+    {
+      "runtimeRoot": "services/queue-workers",
+      "config": "services/queue-workers/wrangler.toml",
+      "environments": {
+        "dev": {
+          "workerName": "letbuyy-queue-workers-dev",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
+          "queueProducers": [],
+          "queueConsumers": ["letbuyy-events-dev", "letbuyy-analytics-dev", "letbuyy-search-indexing-dev", "letbuyy-notifications-dev", "letbuyy-dead-letters-dev"],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        },
+        "staging": {
+          "workerName": "letbuyy-queue-workers-staging",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
+          "queueProducers": [],
+          "queueConsumers": ["letbuyy-events-staging", "letbuyy-analytics-staging", "letbuyy-search-indexing-staging", "letbuyy-notifications-staging", "letbuyy-dead-letters-staging"],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        },
+        "production": {
+          "workerName": "letbuyy-queue-workers",
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
+          "queueProducers": [],
+          "queueConsumers": ["letbuyy-events", "letbuyy-analytics", "letbuyy-search-indexing", "letbuyy-notifications", "letbuyy-dead-letters"],
+          "kvNamespaces": [],
+          "r2Buckets": [],
+          "durableObjects": [],
+          "serviceBindings": [],
+          "telemetry": ["observability", "observability.logs"]
+        }
+      }
+    }
+  ],
+  "failurePolicy": "fail-closed"
+}

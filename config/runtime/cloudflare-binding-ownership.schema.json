@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Cloudflare Binding Ownership",
+  "type": "object",
+  "required": ["$schema", "manifestVersion", "mode", "nonInheritableKeys", "workers"],
+  "properties": {
+    "$schema": { "const": "config/runtime/cloudflare-binding-ownership.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "nonInheritableKeys": { "type": "array", "minItems": 1 },
+    "workers": { "type": "array", "minItems": 1 }
+  }
+}

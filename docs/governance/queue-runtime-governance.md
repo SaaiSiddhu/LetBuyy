@@ -18,3 +18,6 @@ Status: Phase 3 distributed queue foundation.
 - Consumers must heartbeat or release leases.
 - Retry schedules must be explicit and bounded.
 - Dead-letter redrive must go through operations control contracts.
+- Queue recovery must use caller-supplied deterministic runtime time. Package-local implicit clocks are forbidden for retry scheduling and recovery planning.
+- `config/runtime/queue-lifecycle-manifest.json` owns queue names, producer bindings, consumer retry policy, dead-letter routing, poison-message policy, and environment separation.
+- `scripts/validators/queue-lifecycle-validator.mjs` hard-fails queue/DLQ drift, retry drift, production queue crossover, and implicit recovery time.

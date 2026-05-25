@@ -32,9 +32,12 @@ for (const fragment of [
 const rollback = readFile("infrastructure/scripts/deploy/production-rollback.mjs");
 for (const fragment of [
   "--worker is required",
+  "--version-id is required for deterministic Worker rollback lineage",
+  "validate:rollback",
   "CLOUDFLARE_API_TOKEN is required for Worker rollback",
   "\"wrangler\", \"rollback\"",
   "\"--env\", environment",
+  "deployment-lineage-manifest.json",
 ]) {
   reporter.assert(rollback.includes(fragment), `Rollback wrapper missing safety fragment: ${fragment}`);
 }
@@ -54,6 +57,10 @@ for (const fragment of [
   "staging:",
   "production:",
   "rollbackCommand",
+  "rollbackIntegrity",
+  "replayCompatibility",
+  "projectionRecovery",
+  "queueLifecycle",
   "deploy-worker-runtime.mjs --config services/queue-workers/wrangler.toml --env production",
   "deploy-worker-runtime.mjs --config services/api-gateway/wrangler.toml --env production",
   "deploy-worker-runtime.mjs --config services/webhook-service/wrangler.toml --env production",
@@ -70,6 +77,8 @@ for (const fragment of [
   "pnpm run validate:replay",
   "pnpm run validate:migrations",
   "pnpm run validate:deployment",
+  "pnpm run validate:rollback",
+  "pnpm run validate:queues",
   "pnpm run validate:cloudflare",
   "pnpm run validate:security",
   "pnpm run test",

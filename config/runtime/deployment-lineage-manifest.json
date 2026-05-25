@@ -1,0 +1,91 @@
+{
+  "$schema": "config/runtime/deployment-lineage-manifest.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "promotionOrder": ["local", "dev", "staging", "production"],
+  "deploymentWrappers": [
+    {
+      "name": "worker-deploy",
+      "script": "infrastructure/scripts/deploy/deploy-worker-runtime.mjs",
+      "requiresExplicitEnv": true,
+      "allowedEnvironments": ["dev", "staging", "production"],
+      "rawWranglerDeployForbidden": true
+    },
+    {
+      "name": "production-orchestrator",
+      "script": "infrastructure/scripts/deploy/production-deploy.mjs",
+      "requiresGovernanceValidation": true,
+      "requiresRealBindingsForExecute": true,
+      "supportsPlanMode": true
+    },
+    {
+      "name": "worker-rollback",
+      "script": "infrastructure/scripts/deploy/production-rollback.mjs",
+      "requiresExplicitEnv": true,
+      "requiresVersionId": true,
+      "requiresReason": true,
+      "rawWranglerRollbackForbiddenOutsideWrapper": true
+    }
+  ],
+  "rollbackManifests": [
+    {
+      "runtimeRoot": "services/api-gateway",
+      "workerNames": {
+        "dev": "letbuyy-api-dev",
+        "staging": "letbuyy-api-staging",
+        "production": "letbuyy-api"
+      },
+      "config": "services/api-gateway/wrangler.toml",
+      "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
+      "replayValidation": "validate:replay",
+      "queueValidation": "validate:queues",
+      "migrationCompatibility": "forward-compatible-or-forward-fix-only",
+      "projectionCompatibility": "projection-recovery-validator",
+      "rollbackCorruptionPolicy": "block-if-event-schema-or-projection-version-incompatible"
+    },
+    {
+      "runtimeRoot": "services/webhook-service",
+      "workerNames": {
+        "dev": "letbuyy-webhooks-dev",
+        "staging": "letbuyy-webhooks-staging",
+        "production": "letbuyy-webhooks"
+      },
+      "config": "services/webhook-service/wrangler.toml",
+      "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-webhooks --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
+      "replayValidation": "validate:replay",
+      "queueValidation": "validate:queues",
+      "migrationCompatibility": "forward-compatible-or-forward-fix-only",
+      "projectionCompatibility": "projection-recovery-validator",
+      "rollbackCorruptionPolicy": "block-if-webhook-event-version-incompatible"
+    },
+    {
+      "runtimeRoot": "services/queue-workers",
+      "workerNames": {
+        "dev": "letbuyy-queue-workers-dev",
+        "staging": "letbuyy-queue-workers-staging",
+        "production": "letbuyy-queue-workers"
+      },
+      "config": "services/queue-workers/wrangler.toml",
+      "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-queue-workers --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
+      "replayValidation": "validate:replay",
+      "queueValidation": "validate:queues",
+      "migrationCompatibility": "forward-compatible-or-forward-fix-only",
+      "projectionCompatibility": "projection-recovery-validator",
+      "rollbackCorruptionPolicy": "block-if-queue-redrive-or-projection-version-incompatible"
+    }
+  ],
+  "lineageGates": [
+    "rollback-integrity-validator",
+    "deployment-lineage-validator",
+    "topology-drift-validator",
+    "deployment-safety-validator"
+  ],
+  "integrityRules": {
+    "rollbackRequiresPriorDeploymentVersion": true,
+    "rollbackMustNotMutateEventStore": true,
+    "rollbackMustNotDropMigrationState": true,
+    "rollbackMustPreserveQueueNames": true,
+    "rollbackMustPreserveProjectionVersionCompatibility": true
+  },
+  "failurePolicy": "fail-closed"
+}

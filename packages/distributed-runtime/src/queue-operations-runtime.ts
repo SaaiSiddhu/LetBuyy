@@ -125,8 +125,12 @@ export class QueueOperationsRuntime<TPayload = Record<string, unknown>> {
     return this.operations.snapshots(this.policy.queueName);
   }
 
-  async recoverExpired(messages: Array<DistributedQueueMessage<TPayload>>, context: RuntimeCorrelationContext): Promise<QueueRecoveryPlan[]> {
-    const plans = messages.map((message) => planQueueRecovery(message, this.policy));
+  async recoverExpired(
+    messages: Array<DistributedQueueMessage<TPayload>>,
+    context: RuntimeCorrelationContext,
+    nowMs: number,
+  ): Promise<QueueRecoveryPlan[]> {
+    const plans = messages.map((message) => planQueueRecovery(message, this.policy, nowMs));
     for (const plan of plans.filter((candidate) => candidate.action !== 'ignore')) {
       await this.operations.recover(plan, context);
     }

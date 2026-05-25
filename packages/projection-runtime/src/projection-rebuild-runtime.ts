@@ -1,4 +1,4 @@
-import type { CheckpointStorageRuntime, ReplayCursor, RuntimeCorrelationContext } from '@letbuyy/distributed-runtime';
+import { replayPayloadChecksum, type CheckpointStorageRuntime, type ReplayCursor, type RuntimeCorrelationContext } from '@letbuyy/distributed-runtime';
 import type { ProjectionIdentity, ProjectionStorePort, ProjectionStoreRecord } from './projection-store';
 
 export interface ProjectionRebuildPlan {
@@ -21,10 +21,56 @@ export interface ProjectionRebuildResult {
   skipped: number;
   failed: number;
   nextCursor?: ReplayCursor;
+  integrityHash?: string;
 }
 
 export interface ProjectionRebuilder<TReadModel = Record<string, unknown>> {
   rebuild(plan: ProjectionRebuildPlan, context: RuntimeCorrelationContext): Promise<Array<ProjectionStoreRecord<TReadModel>>>;
+}
+
+export interface ProjectionRecoverySnapshot {
+  projectionName: string;
+  projectionVersion: number;
+  objectType: string;
+  objectId: string;
+  sourceGlobalPosition: number;
+  integrityHash: string;
+}
+
+export function projectionIntegrityHash<TReadModel = Record<string, unknown>>(
+  record: ProjectionStoreRecord<TReadModel>,
+): string {
+  return replayPayloadChecksum({
+    freshness: record.freshness,
+    identity: record.identity,
+    readModel: record.readModel,
+  });
+}
+
+export function assertProjectionRecoverySnapshot<TReadModel = Record<string, unknown>>(
+  record: ProjectionStoreRecord<TReadModel>,
+  snapshot: ProjectionRecoverySnapshot,
+): void {
+  const actualHash = projectionIntegrityHash(record);
+  if (actualHash !== snapshot.integrityHash) {
+    throw new Error(`Projection recovery hash mismatch for ${snapshot.projectionName}:${snapshot.objectId}`);
+  }
+
+  if (record.identity.projectionName !== snapshot.projectionName) {
+    throw new Error(`Projection recovery snapshot projection mismatch for ${snapshot.objectId}`);
+  }
+
+  if (record.identity.projectionVersion !== snapshot.projectionVersion) {
+    throw new Error(`Projection recovery snapshot version mismatch for ${snapshot.objectId}`);
+  }
+
+  if (record.identity.objectType !== snapshot.objectType || record.identity.objectId !== snapshot.objectId) {
+    throw new Error(`Projection recovery snapshot identity mismatch for ${snapshot.objectType}:${snapshot.objectId}`);
+  }
+
+  if (record.freshness.sourceGlobalPosition !== snapshot.sourceGlobalPosition) {
+    throw new Error(`Projection recovery snapshot source position mismatch for ${snapshot.objectId}`);
+  }
 }
 
 export class ProjectionRebuildRuntime<TReadModel = Record<string, unknown>> {
@@ -96,6 +142,7 @@ export class ProjectionRebuildRuntime<TReadModel = Record<string, unknown>> {
       updated,
       skipped: 0,
       failed,
+      integrityHash: replayPayloadChecksum(records.map((record) => projectionIntegrityHash(record)).sort()),
     };
 
     await this.checkpoint.record({

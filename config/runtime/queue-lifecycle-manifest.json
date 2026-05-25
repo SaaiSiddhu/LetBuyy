@@ -1,0 +1,146 @@
+{
+  "$schema": "config/runtime/queue-lifecycle-manifest.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "producerRuntime": "services/api-gateway",
+  "consumerRuntime": "services/queue-workers",
+  "producerConfig": "services/api-gateway/wrangler.toml",
+  "consumerConfig": "services/queue-workers/wrangler.toml",
+  "environments": {
+    "dev": {
+      "suffix": "-dev",
+      "deploymentEnv": "dev",
+      "mustNotReferenceProductionQueues": true
+    },
+    "staging": {
+      "suffix": "-staging",
+      "deploymentEnv": "staging",
+      "mustNotReferenceProductionQueues": true
+    },
+    "production": {
+      "suffix": "",
+      "deploymentEnv": "production",
+      "mustNotReferenceLowerEnvironmentQueues": true
+    }
+  },
+  "queues": [
+    {
+      "logicalName": "events",
+      "producerBinding": "EVENT_QUEUE",
+      "producerRoot": "services/api-gateway",
+      "consumerRoot": "services/queue-workers",
+      "names": {
+        "dev": "letbuyy-events-dev",
+        "staging": "letbuyy-events-staging",
+        "production": "letbuyy-events"
+      },
+      "deadLetterNames": {
+        "dev": "letbuyy-dead-letters-dev",
+        "staging": "letbuyy-dead-letters-staging",
+        "production": "letbuyy-dead-letters"
+      },
+      "orderingKey": "siteId+aggregateId+streamPosition",
+      "retry": {
+        "maxRetries": { "dev": 6, "staging": 10, "production": 10 },
+        "retryDelaySeconds": 30,
+        "backoff": "provider-fixed-delay"
+      },
+      "poisonMessagePolicy": "dead-letter-after-retry-exhaustion",
+      "replayIntegrity": "idempotency-key-and-event-position-required"
+    },
+    {
+      "logicalName": "analytics",
+      "producerBinding": "ANALYTICS_QUEUE",
+      "producerRoot": "services/api-gateway",
+      "consumerRoot": "services/queue-workers",
+      "names": {
+        "dev": "letbuyy-analytics-dev",
+        "staging": "letbuyy-analytics-staging",
+        "production": "letbuyy-analytics"
+      },
+      "deadLetterNames": {
+        "dev": "letbuyy-dead-letters-dev",
+        "staging": "letbuyy-dead-letters-staging",
+        "production": "letbuyy-dead-letters"
+      },
+      "orderingKey": "siteId+eventType",
+      "retry": {
+        "maxRetries": { "dev": 6, "staging": 8, "production": 8 },
+        "retryDelaySeconds": 30,
+        "backoff": "provider-fixed-delay"
+      },
+      "poisonMessagePolicy": "dead-letter-after-retry-exhaustion",
+      "replayIntegrity": "analytics-events-must-not-mutate-source-events"
+    },
+    {
+      "logicalName": "search-indexing",
+      "producerBinding": "SEARCH_QUEUE",
+      "producerRoot": "services/api-gateway",
+      "consumerRoot": "services/queue-workers",
+      "names": {
+        "dev": "letbuyy-search-indexing-dev",
+        "staging": "letbuyy-search-indexing-staging",
+        "production": "letbuyy-search-indexing"
+      },
+      "deadLetterNames": {
+        "dev": "letbuyy-dead-letters-dev",
+        "staging": "letbuyy-dead-letters-staging",
+        "production": "letbuyy-dead-letters"
+      },
+      "orderingKey": "siteId+objectType+objectId",
+      "retry": {
+        "maxRetries": { "dev": 6, "staging": 8, "production": 8 },
+        "retryDelaySeconds": 45,
+        "backoff": "provider-fixed-delay"
+      },
+      "poisonMessagePolicy": "dead-letter-after-retry-exhaustion",
+      "replayIntegrity": "projection-rebuild-required-after-redrive"
+    },
+    {
+      "logicalName": "notifications",
+      "producerBinding": "NOTIFICATION_QUEUE",
+      "producerRoot": "services/api-gateway",
+      "consumerRoot": "services/queue-workers",
+      "names": {
+        "dev": "letbuyy-notifications-dev",
+        "staging": "letbuyy-notifications-staging",
+        "production": "letbuyy-notifications"
+      },
+      "deadLetterNames": {
+        "dev": "letbuyy-dead-letters-dev",
+        "staging": "letbuyy-dead-letters-staging",
+        "production": "letbuyy-dead-letters"
+      },
+      "orderingKey": "siteId+recipientId+template",
+      "retry": {
+        "maxRetries": { "dev": 5, "staging": 6, "production": 6 },
+        "retryDelaySeconds": 60,
+        "backoff": "provider-fixed-delay"
+      },
+      "poisonMessagePolicy": "dead-letter-after-retry-exhaustion",
+      "replayIntegrity": "notification-side-effects-require-idempotency-key"
+    }
+  ],
+  "deadLetterQueue": {
+    "logicalName": "dead-letters",
+    "names": {
+      "dev": "letbuyy-dead-letters-dev",
+      "staging": "letbuyy-dead-letters-staging",
+      "production": "letbuyy-dead-letters"
+    },
+    "redrivePolicy": "operator-approved-dry-run-before-mutating-redrive",
+    "maxRetries": { "dev": 3, "staging": 3, "production": 3 },
+    "retryDelaySeconds": 300
+  },
+  "deterministicRecovery": {
+    "clockSource": "caller-supplied-runtime-time",
+    "retryAvailableAt": "queueRetryAvailableAt(attempt, policy, nowMs)",
+    "failIfClockImplicit": true
+  },
+  "gates": [
+    "queue-lifecycle-validator",
+    "cloudflare-binding-validator",
+    "runtime-topology-validator"
+  ],
+  "failurePolicy": "fail-closed"
+}

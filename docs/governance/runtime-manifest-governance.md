@@ -67,6 +67,7 @@ Required fields:
 - execution and Phase 3 distributed ownership fields are missing or do not match app/service runtime category
 - queue, checkpoint, cache, coordination, CQRS, telemetry, audit, resilience, regional, tenant scaling, replay, recovery, or projection ownership drifts from the package-owned execution model
 - platform console and platform operations portal actor boundaries blur
+- runtime topology drifts from queue lifecycle, replay evolution, projection recovery, or rollback lineage manifests
 
 ## Change Process
 

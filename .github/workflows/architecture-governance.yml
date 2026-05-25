@@ -64,6 +64,12 @@ jobs:
       - name: Validate deployment safety
         run: pnpm run validate:deployment
 
+      - name: Validate rollback integrity
+        run: pnpm run validate:rollback
+
+      - name: Validate queue lifecycle
+        run: pnpm run validate:queues
+
       - name: Validate runtime topology
         run: pnpm run validate:topology
 

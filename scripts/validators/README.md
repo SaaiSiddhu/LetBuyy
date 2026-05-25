@@ -13,4 +13,9 @@ Enterprise dependency and execution hardening is enforced by:
 - `package-export-validator.mjs` for explicit package public APIs.
 - `supply-chain-validator.mjs` for npm/npx leakage prevention in governed execution paths.
 - `ci-simulation-validator.mjs` for required workflow and release-promotion gates.
+- `replay-evolution-validator.mjs` and `event-versioning-validator.mjs` for additive event evolution and deterministic replay compatibility.
+- `projection-recovery-validator.mjs` for projection rebuild, checkpoint, and integrity hash contracts.
+- `queue-lifecycle-validator.mjs` for queue retry, dead-letter, poison-message, and recovery time governance.
+- `rollback-integrity-validator.mjs`, `deployment-lineage-validator.mjs`, and `topology-drift-validator.mjs` for rollback-safe deployment lineage.
+- `cloudflare-binding-validator.mjs` for explicit Wrangler environment binding ownership.
 - `survivability-governance-validator.mjs` for plan-vs-execute proof boundaries, measured live evidence status, observability contracts, and multi-region runtime contracts.

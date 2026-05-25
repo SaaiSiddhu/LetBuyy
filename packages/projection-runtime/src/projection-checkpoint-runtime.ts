@@ -20,10 +20,13 @@ export interface ProjectionCheckpoint {
 export class ProjectionCheckpointRuntime {
   constructor(private readonly checkpoints: CheckpointStorageRuntime<ProjectionCheckpoint>) {}
 
-  async record(input: Omit<ProjectionCheckpoint, 'recordedAt'>, context: RuntimeCorrelationContext): Promise<ProjectionCheckpoint> {
+  async record(input: ProjectionCheckpoint, context: RuntimeCorrelationContext): Promise<ProjectionCheckpoint> {
+    if (!input.recordedAt) {
+      throw new Error('Projection checkpoint requires caller-supplied recordedAt for deterministic recovery');
+    }
+
     const checkpoint: ProjectionCheckpoint = {
       ...input,
-      recordedAt: new Date().toISOString(),
     };
     await this.checkpoints.record({
       checkpointId: checkpoint.checkpointId,

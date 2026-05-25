@@ -33,6 +33,11 @@ export interface QueueExecutionPolicy {
   backpressureThreshold: number;
 }
 
+export interface QueueRuntimeClock {
+  nowIso(): string;
+  nowMs(): number;
+}
+
 export interface DistributedQueueMessage<TPayload = Record<string, unknown>> {
   messageId: string;
   queueName: string;
@@ -109,15 +114,23 @@ export function queueRetryDelayMs(attempt: number, policy: QueueRetryPolicy): nu
   return Math.min(policy.initialDelayMs * multiplier, policy.maxDelayMs);
 }
 
-export function queueRetryAvailableAt(attempt: number, policy: QueueRetryPolicy, now = Date.now()): string {
-  return new Date(now + queueRetryDelayMs(attempt, policy)).toISOString();
+export function queueRetryAvailableAt(attempt: number, policy: QueueRetryPolicy, nowMs: number): string {
+  if (!Number.isFinite(nowMs)) {
+    throw new Error('Queue retry scheduling requires caller-supplied deterministic runtime time');
+  }
+
+  return new Date(nowMs + queueRetryDelayMs(attempt, policy)).toISOString();
 }
 
 export function planQueueRecovery<TPayload = Record<string, unknown>>(
   message: DistributedQueueMessage<TPayload>,
   policy: QueueExecutionPolicy,
-  now = new Date(),
+  nowMs: number,
 ): QueueRecoveryPlan {
+  if (!Number.isFinite(nowMs)) {
+    throw new Error('Queue recovery requires caller-supplied deterministic runtime time');
+  }
+
   if (message.status === 'completed' || message.status === 'cancelled' || message.status === 'dead-lettered') {
     return {
       queueName: message.queueName,
@@ -140,7 +153,7 @@ export function planQueueRecovery<TPayload = Record<string, unknown>>(
     queueName: message.queueName,
     messageId: message.messageId,
     action: message.status === 'leased' ? 'release-expired-lease' : 'retry',
-    availableAt: queueRetryAvailableAt(message.attempts + 1, policy.retry, now.getTime()),
+    availableAt: queueRetryAvailableAt(message.attempts + 1, policy.retry, nowMs),
     reason: message.status === 'leased' ? 'queue lease expired before completion' : 'queue message requires retry',
   };
 }
@@ -159,7 +172,8 @@ export function createQueueMessage<TPayload = Record<string, unknown>>(input: {
   correlation: RuntimeCorrelationContext;
   policy: QueueExecutionPolicy;
   aggregateId?: string | null;
-  availableAt?: string;
+  availableAt: string;
+  createdAt: string;
   traceparent?: string | null;
 }): DistributedQueueMessage<TPayload> {
   const partition = routeQueuePartition({
@@ -173,15 +187,15 @@ export function createQueueMessage<TPayload = Record<string, unknown>>(input: {
     queueName: input.policy.queueName,
     jobType: input.jobType,
     payload: input.payload,
-    status: input.availableAt ? 'scheduled' : 'available',
-    availableAt: input.availableAt || new Date().toISOString(),
+    status: input.availableAt > input.createdAt ? 'scheduled' : 'available',
+    availableAt: input.availableAt,
     attempts: 0,
     idempotencyKey: input.idempotencyKey,
     tenant: input.tenant || null,
     partition,
     correlation: input.correlation,
     traceparent: input.traceparent || null,
-    createdAt: new Date().toISOString(),
+    createdAt: input.createdAt,
   };
 }
 
@@ -189,6 +203,7 @@ export class QueueRuntime<TPayload = Record<string, unknown>> {
   constructor(
     private readonly store: QueueRuntimeStorePort<TPayload>,
     private readonly policy: QueueExecutionPolicy,
+    private readonly clock: QueueRuntimeClock,
   ) {}
 
   enqueue(message: DistributedQueueMessage<TPayload>): Promise<void> {
@@ -215,7 +230,7 @@ export class QueueRuntime<TPayload = Record<string, unknown>> {
       return;
     }
 
-    await this.store.retry(lease, queueRetryAvailableAt(message.attempts + 1, this.policy.retry), result);
+    await this.store.retry(lease, queueRetryAvailableAt(message.attempts + 1, this.policy.retry, this.clock.nowMs()), result);
   }
 
   heartbeat(lease: QueueLease): Promise<QueueLease> {
@@ -231,7 +246,7 @@ export class QueueRuntime<TPayload = Record<string, unknown>> {
     limit: number,
     handler: QueueExecutionHandler<TPayload>,
   ): Promise<QueueExecutionMetrics> {
-    const startedAt = new Date().toISOString();
+    const startedAt = this.clock.nowIso();
     const claimed = await this.claim(workerId, limit);
     const metrics: QueueExecutionMetrics = {
       queueName: this.policy.queueName,
@@ -266,7 +281,7 @@ export class QueueRuntime<TPayload = Record<string, unknown>> {
       }
     }
 
-    metrics.finishedAt = new Date().toISOString();
+    metrics.finishedAt = this.clock.nowIso();
     return metrics;
   }
 }

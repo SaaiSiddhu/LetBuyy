@@ -75,6 +75,12 @@ jobs:
       - name: Deployment safety gates
         run: pnpm run validate:deployment
 
+      - name: Rollback integrity gates
+        run: pnpm run validate:rollback
+
+      - name: Queue lifecycle gates
+        run: pnpm run validate:queues
+
       - name: Runtime topology gates
         run: pnpm run validate:topology
 

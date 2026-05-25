@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Deployment Lineage Manifest",
+  "type": "object",
+  "required": ["$schema", "manifestVersion", "mode", "promotionOrder", "deploymentWrappers", "rollbackManifests", "lineageGates"],
+  "properties": {
+    "$schema": { "const": "config/runtime/deployment-lineage-manifest.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "promotionOrder": { "type": "array", "minItems": 4 },
+    "deploymentWrappers": { "type": "array", "minItems": 1 },
+    "rollbackManifests": { "type": "array", "minItems": 1 },
+    "lineageGates": { "type": "array", "minItems": 1 }
+  }
+}
