@@ -80,5 +80,16 @@
   "resilienceOwnership": "No resilience policy ownership; provider retries, circuit breakers, fallback execution, and degradation handling delegate to service runtimes, packages/distributed-runtime, and packages/infrastructure.",
   "regionalOwnership": "No regional execution ownership; region-aware routing, tenant affinity, and failover delegate to Cloudflare/service runtime boundaries and packages/distributed-runtime.",
   "tenantScalingOwnership": "No tenant workload governance ownership; quotas, partitioning, noisy-neighbor protection, and runtime metrics delegate to service execution containers and packages/distributed-runtime.",
-  "auditOwnership": "No execution audit ownership; privileged actions and durable execution audit trails delegate to service runtimes and packages/distributed-runtime."
+  "auditOwnership": "No execution audit ownership; privileged actions and durable execution audit trails delegate to service runtimes and packages/distributed-runtime.",
+  "operationalOwnership": "No operational runtime ownership; deployment, recovery, diagnostics, and control-plane execution delegate to service runtimes and packages/distributed-runtime.",
+  "telemetryExecutionOwnership": "No telemetry execution ownership; apps propagate trace and request metadata while service runtimes execute spans, metrics, and structured log persistence.",
+  "replayExecutionOwnership": "No replay execution ownership; replay scheduling, authorization, dry-runs, and rollback coordination delegate to service execution containers.",
+  "queueExecutionOwnership": "No queue execution ownership; durable queue inspection, recovery, redrive, retry, and dead-letter operations delegate to queue worker and API service runtimes.",
+  "resilienceExecutionOwnership": "No resilience execution ownership; circuit breakers, adaptive retries, degraded mode, failover, and provider recovery execute in service runtimes and infrastructure adapters.",
+  "regionalExecutionOwnership": "No regional execution ownership; region routing, tenant affinity, replication diagnostics, and failover execution delegate to service runtimes and deployment topology metadata.",
+  "auditExecutionOwnership": "No audit execution ownership; runtime audit persistence and operational security telemetry delegate to backend service runtimes.",
+  "cacheExecutionOwnership": "No cache execution ownership; cache invalidation, consistency checks, replay invalidation, and lifecycle metrics delegate to runtime-composition, projection-runtime, and service runtimes.",
+  "coordinationExecutionOwnership": "No distributed coordination execution ownership; worker leases, fencing tokens, leader election, and ownership transfer delegate to service runtimes using packages/distributed-runtime.",
+  "diagnosticsOwnership": "May surface user-safe diagnostics returned by service APIs; runtime diagnostics persistence and incident metadata delegate to operational service runtimes.",
+  "operationalControlPlaneOwnership": "No operational control-plane ownership; replay, workflow, queue, resilience, telemetry, tenant, and recovery commands delegate to platform service runtimes."
 }

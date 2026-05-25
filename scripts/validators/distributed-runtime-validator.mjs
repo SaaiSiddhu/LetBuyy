@@ -37,6 +37,16 @@ const requiredFiles = [
   "packages/distributed-runtime/src/cache-runtime.ts",
   "packages/distributed-runtime/src/global-execution-runtime.ts",
   "packages/distributed-runtime/src/security-runtime.ts",
+  "packages/distributed-runtime/src/deployment-topology-runtime.ts",
+  "packages/distributed-runtime/src/queue-operations-runtime.ts",
+  "packages/distributed-runtime/src/replay-operations-runtime.ts",
+  "packages/distributed-runtime/src/telemetry-operations-runtime.ts",
+  "packages/distributed-runtime/src/observability-operations-runtime.ts",
+  "packages/distributed-runtime/src/tenant-operations-runtime.ts",
+  "packages/distributed-runtime/src/cache-operations-runtime.ts",
+  "packages/distributed-runtime/src/coordination-operations-runtime.ts",
+  "packages/distributed-runtime/src/regional-operations-runtime.ts",
+  "packages/distributed-runtime/src/control-plane-runtime.ts",
   "packages/projection-runtime/package.json",
   "packages/projection-runtime/AGENTS.md",
   "packages/projection-runtime/src/projection-store.ts",
@@ -50,10 +60,15 @@ const requiredFiles = [
   "packages/projection-runtime/src/projection-lifecycle-runtime.ts",
   "packages/projection-runtime/src/projection-checkpoint-runtime.ts",
   "packages/projection-runtime/src/projection-consistency-runtime.ts",
+  "packages/projection-runtime/src/projection-operations-runtime.ts",
   "packages/orchestration/src/workflow-continuation-runtime.ts",
+  "packages/orchestration/src/workflow-operations-runtime.ts",
   "packages/infrastructure/provider-resilience-adapter/index.ts",
+  "config/runtime/deployment-topology.schema.json",
+  "config/runtime/deployment-topology.json",
   "database/supabase/migrations/059_distributed_runtime_operations_foundation.sql",
   "database/supabase/migrations/060_operational_runtime_finalization.sql",
+  "database/supabase/migrations/061_operational_readiness_runtime.sql",
 ];
 
 for (const file of requiredFiles) {
@@ -81,6 +96,17 @@ const phase3ManifestFields = [
   "recoveryOwnership",
   "coordinationOwnership",
   "cqrsOwnership",
+  "operationalOwnership",
+  "telemetryExecutionOwnership",
+  "replayExecutionOwnership",
+  "queueExecutionOwnership",
+  "resilienceExecutionOwnership",
+  "regionalExecutionOwnership",
+  "auditExecutionOwnership",
+  "cacheExecutionOwnership",
+  "coordinationExecutionOwnership",
+  "diagnosticsOwnership",
+  "operationalControlPlaneOwnership",
 ];
 
 for (const runtimeRoot of canonicalRuntimeRoots) {
@@ -156,6 +182,74 @@ for (const functionName of [
   );
 }
 
+const operationalMigration = readFile("database/supabase/migrations/061_operational_readiness_runtime.sql");
+for (const tableName of [
+  "runtime_deployment_topology_records",
+  "runtime_diagnostics",
+  "queue_operation_snapshots",
+  "queue_recovery_operations",
+  "replay_operation_schedules",
+  "replay_dry_run_results",
+  "workflow_operation_snapshots",
+  "runtime_alert_evaluations",
+  "tenant_operation_projections",
+  "cache_operation_snapshots",
+  "coordination_operation_diagnostics",
+  "regional_execution_diagnostics",
+  "projection_operation_snapshots",
+  "provider_recovery_plans",
+]) {
+  reporter.assert(
+    operationalMigration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    `Phase 3 operations migration must create ${tableName}`,
+  );
+  reporter.assert(
+    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(operationalMigration),
+    `Phase 3 operations table must enable RLS: ${tableName}`,
+  );
+}
+
+for (const functionName of [
+  "inspect_distributed_queue",
+  "recover_stuck_distributed_queue_leases",
+  "redrive_distributed_dead_letters",
+  "schedule_runtime_replay_operation",
+  "authorize_runtime_replay_operation",
+  "record_runtime_diagnostic",
+  "record_projection_operation_snapshot",
+  "record_tenant_operation_projection",
+  "record_provider_recovery_plan",
+  "claim_operational_control_command",
+]) {
+  reporter.assert(
+    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(operationalMigration),
+    `Phase 3 operations migration must create operational helper function ${functionName}`,
+  );
+}
+
+const deploymentTopology = readJson("config/runtime/deployment-topology.json");
+const topologyRoots = new Set((deploymentTopology?.nodes || []).map((node) => node.runtimeRoot));
+for (const runtimeRoot of canonicalRuntimeRoots) {
+  reporter.assert(
+    topologyRoots.has(runtimeRoot),
+    `Deployment topology must include canonical runtime root: ${runtimeRoot}`,
+  );
+}
+
+const topologyNames = new Set((deploymentTopology?.nodes || []).map((node) => node.runtimeName));
+for (const node of deploymentTopology?.nodes || []) {
+  reporter.assert(
+    node.health?.checkName && node.scaling?.scaleMetric && Array.isArray(node.regions) && node.regions.length > 0,
+    `Deployment topology node must declare health, scaling, and regions: ${node.runtimeRoot}`,
+  );
+}
+for (const edge of deploymentTopology?.dependencies || []) {
+  reporter.assert(
+    topologyNames.has(edge.fromRuntime) && topologyNames.has(edge.toRuntime),
+    `Deployment topology dependency references unknown runtime: ${edge.fromRuntime} -> ${edge.toRuntime}`,
+  );
+}
+
 const sourceFiles = workspaceFiles.filter((file) => sourceExtensions.has(path.extname(file)));
 
 for (const file of sourceFiles) {
@@ -195,6 +289,13 @@ for (const file of sourceFiles) {
 
   if (root !== "packages/distributed-runtime") {
     reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:DeploymentTopology|QueueOperations|ReplayOperations|TelemetryOperations|ObservabilityOperations|TenantOperations|CacheOperations|CoordinationOperations|RegionalOperations|OperationalControlPlane)\b/.test(content),
+      `Operational runtime execution contracts must live in packages/distributed-runtime: ${file}`,
+    );
+  }
+
+  if (root !== "packages/distributed-runtime") {
+    reporter.assert(
       !/\b(?:interface|class)\s+\w*(?:DistributedCoordination|ExecutionLease|ExecutionHeartbeat|TenantScalability|CacheOrchestration)\b/.test(content),
       `Coordination, tenant scalability, and cache orchestration contracts must live in packages/distributed-runtime: ${file}`,
     );
@@ -204,6 +305,24 @@ for (const file of sourceFiles) {
     reporter.assert(
       !/\b(?:interface|class)\s+\w*(?:WorkflowContinuation|WorkflowHeartbeat|WorkflowLifecycle)\b/.test(content),
       `Workflow recovery and continuation contracts must live in packages/orchestration: ${file}`,
+    );
+    reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:WorkflowOperations|WorkflowOperational|WorkflowDiagnostic)\b/.test(content),
+      `Workflow operational recovery contracts must live in packages/orchestration: ${file}`,
+    );
+  }
+
+  if (root !== "packages/projection-runtime") {
+    reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:ProjectionOperations|ProjectionOperational|ProjectionDrift|ProjectionRepair)\b/.test(content),
+      `CQRS projection operations contracts must live in packages/projection-runtime: ${file}`,
+    );
+  }
+
+  if (root !== "packages/infrastructure") {
+    reporter.assert(
+      !/\b(?:interface|class)\s+\w*(?:ProviderResilienceOperations|ProviderRecoveryPlan)\b/.test(content),
+      `Provider resilience operations contracts must live in packages/infrastructure: ${file}`,
     );
   }
 

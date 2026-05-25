@@ -45,3 +45,6 @@ jobs:
 
       - name: Validate governance
         run: node scripts/validate-governance.mjs
+
+      - name: Validate operational runtime topology
+        run: node scripts/validators/distributed-runtime-validator.mjs

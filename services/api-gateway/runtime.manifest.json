@@ -93,5 +93,16 @@
   "resilienceOwnership": "Owns runtime resilience wiring for retries, circuit breakers, provider fallback, degradation handling, and provider health telemetry through packages/distributed-runtime and packages/infrastructure.",
   "regionalOwnership": "Owns runtime region-aware execution wiring, Cloudflare deployment locality, tenant affinity, and failover metadata while global routing contracts live in packages/distributed-runtime.",
   "tenantScalingOwnership": "Owns tenant-aware execution wiring for quotas, rate governance, queue partitioning, noisy-neighbor protection, and tenant runtime metrics using packages/distributed-runtime contracts.",
-  "auditOwnership": "Owns execution audit emission for privileged runtime operations, replay authorization, provider execution, queue redrive, and workflow recovery using packages/distributed-runtime security contracts."
+  "auditOwnership": "Owns execution audit emission for privileged runtime operations, replay authorization, provider execution, queue redrive, and workflow recovery using packages/distributed-runtime security contracts.",
+  "operationalOwnership": "Owns execution-container operational wiring for runtime health, diagnostics, recovery orchestration, deployment topology participation, and operational command handling.",
+  "telemetryExecutionOwnership": "Owns execution-container telemetry emission for traces, metrics, structured logs, diagnostics, queue/replay/workflow spans, and exporter abstraction wiring.",
+  "replayExecutionOwnership": "Owns replay execution-container wiring for scheduling, authorization checks, dry-runs, checkpoint coordination, rollback planning, and replay telemetry.",
+  "queueExecutionOwnership": "Owns queue operational execution for inspection, recovery, retry orchestration, visibility timeout repair, dead-letter redrive, partition balancing, and throughput diagnostics.",
+  "resilienceExecutionOwnership": "Owns resilience execution wiring for circuit breakers, adaptive retries, provider failover, degraded mode, outage coordination, fallback execution, and recovery telemetry.",
+  "regionalExecutionOwnership": "Owns region-aware execution wiring for locality, failover, regional queue ownership, replication diagnostics, and global execution metadata.",
+  "auditExecutionOwnership": "Owns runtime audit execution for replay authorization, provider execution, queue redrive, workflow recovery, tenant runtime operations, and control-plane commands.",
+  "cacheExecutionOwnership": "Owns service-side cache execution for invalidation, stale-while-revalidate coordination, replay-aware invalidation, cache diagnostics, and tenant cache partitioning.",
+  "coordinationExecutionOwnership": "Owns distributed coordination execution for worker leases, locks, fencing tokens, heartbeats, leader election, failover transfer, and collision recovery.",
+  "diagnosticsOwnership": "Owns runtime diagnostics persistence for queue, replay, workflow, projection, cache, provider, regional, tenant, telemetry, and deployment health.",
+  "operationalControlPlaneOwnership": "Owns operational control-plane command execution for replay, workflow, queue, diagnostics, resilience, telemetry, tenant runtime, governance, and recovery orchestration."
 }

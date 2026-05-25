@@ -41,6 +41,17 @@ const requiredStringFields = [
   "regionalOwnership",
   "tenantScalingOwnership",
   "auditOwnership",
+  "operationalOwnership",
+  "telemetryExecutionOwnership",
+  "replayExecutionOwnership",
+  "queueExecutionOwnership",
+  "resilienceExecutionOwnership",
+  "regionalExecutionOwnership",
+  "auditExecutionOwnership",
+  "cacheExecutionOwnership",
+  "coordinationExecutionOwnership",
+  "diagnosticsOwnership",
+  "operationalControlPlaneOwnership",
 ];
 
 const requiredObjectFields = [
@@ -225,6 +236,24 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /none|delegate|service|audit|telemetry|distributed-runtime/i.test(manifest.auditOwnership),
       `App manifest auditOwnership must delegate execution audit ownership out of the app: ${manifestPath}`,
     );
+    for (const field of [
+      "operationalOwnership",
+      "telemetryExecutionOwnership",
+      "replayExecutionOwnership",
+      "queueExecutionOwnership",
+      "resilienceExecutionOwnership",
+      "regionalExecutionOwnership",
+      "auditExecutionOwnership",
+      "cacheExecutionOwnership",
+      "coordinationExecutionOwnership",
+      "diagnosticsOwnership",
+      "operationalControlPlaneOwnership",
+    ]) {
+      reporter.assert(
+        /none|delegate|service|runtime|distributed-runtime|control-plane|diagnostics|telemetry|cache|coordination|regional|audit|queue|replay|resilience/i.test(manifest[field]),
+        `App manifest ${field} must delegate operational execution out of the app: ${manifestPath}`,
+      );
+    }
   }
 
   if (runtimeRoot.startsWith("services/")) {
@@ -304,6 +333,24 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
       /audit|execution|security|telemetry|distributed-runtime|runtime/i.test(manifest.auditOwnership),
       `Service manifest auditOwnership must describe execution audit ownership: ${manifestPath}`,
     );
+    for (const field of [
+      "operationalOwnership",
+      "telemetryExecutionOwnership",
+      "replayExecutionOwnership",
+      "queueExecutionOwnership",
+      "resilienceExecutionOwnership",
+      "regionalExecutionOwnership",
+      "auditExecutionOwnership",
+      "cacheExecutionOwnership",
+      "coordinationExecutionOwnership",
+      "diagnosticsOwnership",
+      "operationalControlPlaneOwnership",
+    ]) {
+      reporter.assert(
+        /own|execution|runtime|control-plane|diagnostics|telemetry|cache|coordination|regional|audit|queue|replay|resilience|recovery|provider|tenant/i.test(manifest[field]),
+        `Service manifest ${field} must describe operational execution ownership: ${manifestPath}`,
+      );
+    }
   }
 
   reporter.assert(
@@ -330,6 +377,25 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
     /audit|security|execution|delegate|none|runtime/i.test(manifest.auditOwnership),
     `Runtime manifest auditOwnership must describe audit ownership or explicit delegation: ${manifestPath}`,
   );
+
+  for (const field of [
+    "operationalOwnership",
+    "telemetryExecutionOwnership",
+    "replayExecutionOwnership",
+    "queueExecutionOwnership",
+    "resilienceExecutionOwnership",
+    "regionalExecutionOwnership",
+    "auditExecutionOwnership",
+    "cacheExecutionOwnership",
+    "coordinationExecutionOwnership",
+    "diagnosticsOwnership",
+    "operationalControlPlaneOwnership",
+  ]) {
+    reporter.assert(
+      /operational|execution|runtime|control-plane|diagnostics|telemetry|cache|coordination|regional|audit|queue|replay|resilience|delegate|none|service/i.test(manifest[field]),
+      `Runtime manifest ${field} must describe operational runtime ownership or explicit delegation: ${manifestPath}`,
+    );
+  }
 
   const schema = manifest.environmentAuthority?.schema;
   reporter.assert(
