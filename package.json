@@ -12,6 +12,7 @@
         "lint": "turbo lint",
         "validate:architecture": "node scripts/validate-architecture.mjs",
         "validate:governance": "node scripts/validate-governance.mjs",
+        "validate:workspace": "node scripts/validators/workspace-lifecycle-validator.mjs",
         "validate:lifecycle": "node scripts/validators/operational-lifecycle-validator.mjs",
         "validate:production": "node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production",
         "validate:cloudflare": "node scripts/validators/cloudflare-environment-validator.mjs",
@@ -40,8 +41,8 @@
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {
-        "turbo": "^2.5.0",
-        "typescript": "^5.9.3"
+        "turbo": "2.8.9",
+        "typescript": "5.9.3"
     },
     "pnpm": {
         "overrides": {

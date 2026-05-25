@@ -5,6 +5,8 @@ LetBuyy builds must be reproducible from `pnpm-lock.yaml`, package manifests, ro
 ## Rules
 
 - CI and hosted installs must use `pnpm install --frozen-lockfile`.
+- `.npmrc` sets `frozen-lockfile=true`, `node-linker=isolated`, `shamefully-hoist=false`, `strict-peer-dependencies=true`, `auto-install-peers=false`, and `shared-workspace-lockfile=true`.
+- Root monorepo toolchain versions are exact pins; internal package links use `workspace:*`.
 - Vercel install commands must not delete local `node_modules` or rely on app-local dependency cleanup.
 - Package builds use composite TypeScript projects and declaration output under package-local `dist/`.
 - Turborepo build tasks depend on upstream package typechecks and builds.
@@ -14,6 +16,7 @@ LetBuyy builds must be reproducible from `pnpm-lock.yaml`, package manifests, ro
 ## Validation
 
 - `pnpm run validate:governance`
+- `pnpm run validate:workspace`
 - `pnpm run validate:typescript`
 - `pnpm run validate:dependencies`
 - `pnpm run test`

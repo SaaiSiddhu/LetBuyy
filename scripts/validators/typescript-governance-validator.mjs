@@ -30,6 +30,7 @@ for (const manifestPath of packageManifests) {
   reporter.assert(tsconfig?.extends === normalizedExpectedExtends, `Package tsconfig must extend root base config: ${tsconfigPath}`);
   reporter.assert(compilerOptions.composite === true, `Package tsconfig must enable composite builds: ${tsconfigPath}`);
   reporter.assert(compilerOptions.declaration === true, `Package tsconfig must emit declarations: ${tsconfigPath}`);
+  reporter.assert(compilerOptions.declarationMap === true, `Package tsconfig must emit declaration maps: ${tsconfigPath}`);
   reporter.assert(compilerOptions.emitDeclarationOnly === true, `Package tsconfig must emit declarations only for package builds: ${tsconfigPath}`);
   reporter.assert(typeof compilerOptions.outDir === "string" && compilerOptions.outDir.includes("dist"), `Package tsconfig must isolate build output under dist: ${tsconfigPath}`);
   reporter.assert(Boolean(manifest?.scripts?.build), `Package manifest must define build script: ${manifestPath}`);
