@@ -10,13 +10,52 @@ function valueFor(prefix) {
 }
 
 const tests = [
-  "infrastructure/scripts/load/k6-checkout-concurrency.js",
-  "infrastructure/scripts/load/k6-queue-throughput.js",
-  "infrastructure/scripts/load/k6-replay-stress.js",
+  {
+    tool: "k6",
+    command: "k6",
+    args: ["run", "infrastructure/scripts/load/k6-checkout-concurrency.js"],
+  },
+  {
+    tool: "k6",
+    command: "k6",
+    args: ["run", "infrastructure/scripts/load/k6-queue-throughput.js"],
+  },
+  {
+    tool: "k6",
+    command: "k6",
+    args: ["run", "infrastructure/scripts/load/k6-replay-stress.js"],
+  },
+  {
+    tool: "locust",
+    command: "locust",
+    args: [
+      "--headless",
+      "-f",
+      "infrastructure/scripts/load/locust-checkout-concurrency.py",
+      "-u",
+      "100",
+      "-r",
+      "10",
+      "-t",
+      "1m",
+    ],
+  },
+  {
+    tool: "gatling",
+    command: "gatling",
+    args: [
+      "-s",
+      "CheckoutConcurrencySimulation",
+      "-sf",
+      "infrastructure/scripts/load/gatling",
+      "-rf",
+      "artifacts/live-certification/gatling",
+    ],
+  },
 ];
 
 if (!execute) {
-  for (const test of tests) console.log(`[load-suite] planned k6 run ${test} for ${environment}`);
+  for (const test of tests) console.log(`[load-suite] planned ${test.tool} ${test.args.join(" ")} for ${environment}`);
   process.exit(0);
 }
 
@@ -25,7 +64,12 @@ if (!process.env.LETBUYY_OPERATIONS_TOKEN) {
 }
 
 for (const test of tests) {
-  const result = spawnSync("k6", ["run", test], {
+  const toolCheck = spawnSync("bash", ["-lc", `command -v ${test.command}`], { stdio: "ignore" });
+  if (toolCheck.status !== 0) {
+    throw new Error(`${test.tool} is required for executable load validation`);
+  }
+
+  const result = spawnSync(test.command, test.args, {
     stdio: "inherit",
     env: {
       ...process.env,

@@ -21,3 +21,4 @@ Chaos experiments validate recovery mechanisms without expanding blast radius be
 - Failed guardrails abort the experiment and open or link an incident.
 - Executable chaos entrypoint: `infrastructure/scripts/chaos/run-chaos-experiment.mjs`.
 - Operator procedure: `docs/runbooks/chaos-drill.md`.
+- Chaos certification must also satisfy `docs/governance/chaos-governance.md` and the hard-fail operational certification policy.

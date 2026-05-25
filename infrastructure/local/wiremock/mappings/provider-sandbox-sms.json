@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "POST",
+    "url": "/sms/send"
+  },
+  "response": {
+    "status": 202,
+    "jsonBody": {
+      "provider": "sms-sandbox",
+      "status": "queued",
+      "message_id": "sms_sandbox_{{randomValue length=12 type='ALPHANUMERIC'}}",
+      "production_side_effect": false
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

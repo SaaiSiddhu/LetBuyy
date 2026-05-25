@@ -59,6 +59,9 @@ jobs:
       - name: Governance gates
         run: pnpm run validate:governance
 
+      - name: Operational lifecycle gates
+        run: pnpm run validate:lifecycle
+
       - name: Typecheck
         run: pnpm run typecheck
 

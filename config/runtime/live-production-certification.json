@@ -75,9 +75,9 @@
     },
     "supabase": {
       "required": true,
-      "planMode": "Validate operational migrations and verification SQL.",
-      "executeMode": "Run production verification SQL against Supabase/Postgres.",
-      "source": "database/supabase/verification/063_absolute_production_operationalization.sql"
+      "planMode": "Validate operational, certification, and SDLC lifecycle migrations plus verification SQL.",
+      "executeMode": "Run production verification SQL against Supabase/Postgres for operational and SDLC lifecycle tables.",
+      "source": "database/supabase/verification/065_enterprise_sdlc_lifecycle.sql"
     },
     "observability": {
       "required": true,
@@ -105,8 +105,8 @@
     },
     "load": {
       "required": true,
-      "planMode": "Validate k6 queue, replay, and checkout load scripts.",
-      "executeMode": "Run k6 load suite and record throughput, latency, and error-rate evidence.",
+      "planMode": "Validate k6, Locust, and Gatling queue, replay, and checkout load scripts.",
+      "executeMode": "Run k6, Locust, and Gatling load suite and record throughput, latency, and error-rate evidence.",
       "source": "load_test_runs"
     },
     "security": {

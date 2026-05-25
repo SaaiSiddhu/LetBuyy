@@ -25,6 +25,9 @@ on:
       - "pnpm-workspace.yaml"
       - ".github/CODEOWNERS"
       - ".github/workflows/architecture-governance.yml"
+      - ".github/workflows/environment-lifecycle.yml"
+      - ".github/workflows/live-production-certification.yml"
+      - ".github/workflows/production-rollout.yml"
   push:
     branches:
       - main

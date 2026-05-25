@@ -9,3 +9,4 @@ Rules:
 - Readiness gates must include version, environment, runtime root, status, and evidence metadata.
 - Stale readiness evidence blocks live certification until a new report is generated.
 - Operator workflows must preserve plan mode for no-credential environments and execute mode for authenticated rollout.
+- `node scripts/validators/operational-lifecycle-validator.mjs` is a readiness gate for local, development, staging, rollout, sandbox provider, and stale certification contracts.

@@ -13,3 +13,5 @@ Status: Phase 3 global execution preparation.
 - Reads may route to healthy replicas only when the query consistency contract allows it.
 - Replay and projection rebuilds must declare source region, target regions, max lag, and whether failover requires replay.
 - Regional failover must be explicit and auditable.
+- Environment lifecycle contracts require staging and production readiness descriptors for India, APAC failover, US, and EU regions.
+- Declared regional readiness is not live verification; execute-mode failover and replication evidence must exist before certification.

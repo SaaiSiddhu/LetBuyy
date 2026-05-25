@@ -17,3 +17,5 @@ Production readiness requires SLOs, error budgets, health scoring, escalation po
 - Deployment health gates and readiness gate runs are SRE evidence and must be persisted before production promotion.
 - Phase 4 ultimate validation is the production readiness gate for provider contracts, Supabase operational verification, observability rollout, security gates, load validation, and runtime health checks.
 - Live validation must persist readiness, deployment health, dashboard, and security evidence before a production deployment can be considered operationally proven.
+- Operational lifecycle validation must pass before SRE certification.
+- Stale certification evidence is a hard failure, not a warning.

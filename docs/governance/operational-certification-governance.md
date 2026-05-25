@@ -9,3 +9,5 @@ Rules:
 - Certification reports expire after the configured evidence window and must be regenerated from live evidence.
 - Report persistence requires the operations control-plane and service-role-backed runtime projections.
 - CI artifacts may contain reports, but source authority remains the operations projection table.
+- `config/runtime/operational-certification-policy.json` requires hard-fail behavior, 10/10 repository and live scores, and fresh evidence across deployment, observability, failover, chaos, load, security, SRE, event-store, multi-region, and replay categories.
+- `credential-gated-plan-ready` is not a live certification.

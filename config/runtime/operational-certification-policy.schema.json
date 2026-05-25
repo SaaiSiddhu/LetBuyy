@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/operational-certification-policy.schema.json",
+  "title": "LetBuyy Operational Certification Policy",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "policyVersion",
+    "hardFail",
+    "minimumScores",
+    "evidenceExpirationHours",
+    "requiredCategories",
+    "staleEvidencePolicy"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "policyVersion": { "type": "integer", "minimum": 1 },
+    "hardFail": { "const": true },
+    "minimumScores": { "type": "object" },
+    "evidenceExpirationHours": { "type": "integer", "minimum": 1 },
+    "requiredCategories": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "staleEvidencePolicy": { "type": "string", "minLength": 1 },
+    "certificationModes": { "type": "object" },
+    "evidenceSources": { "type": "object" }
+  }
+}

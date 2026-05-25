@@ -24,7 +24,8 @@
       "database/supabase/migrations/061_operational_readiness_runtime.sql",
       "database/supabase/migrations/062_production_rollout_operations.sql",
       "database/supabase/migrations/063_absolute_production_operationalization.sql",
-      "database/supabase/migrations/064_live_production_certification.sql"
+      "database/supabase/migrations/064_live_production_certification.sql",
+      "database/supabase/migrations/065_enterprise_sdlc_lifecycle.sql"
     ],
     "verificationSql": "database/supabase/verification/063_absolute_production_operationalization.sql",
     "verificationScript": "infrastructure/scripts/database/verify-supabase-operations.mjs",

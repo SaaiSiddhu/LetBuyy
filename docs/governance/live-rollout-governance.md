@@ -9,3 +9,5 @@ Rules:
 - Execute mode must fail closed when any provider credential, operations token, or required tool is missing.
 - Worker, queue, app, migration, health-gate, and rollback execution must pass through governed deployment scripts.
 - Provider deployment may not be described as completed unless the execute-mode command succeeds.
+- `config/runtime/rollout-lifecycle.json` owns canary, blue/green, shadow traffic, sandbox provider, and deployment-gate contracts.
+- `scripts/validators/operational-lifecycle-validator.mjs` must hard-fail missing rollout contracts before live certification can run.

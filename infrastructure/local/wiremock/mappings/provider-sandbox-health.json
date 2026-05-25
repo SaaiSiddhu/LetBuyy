@@ -1,0 +1,17 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/health"
+  },
+  "response": {
+    "status": 200,
+    "jsonBody": {
+      "status": "healthy",
+      "providers": ["stripe", "razorpay", "paypal", "sms"],
+      "sideEffects": "sandbox-only"
+    },
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

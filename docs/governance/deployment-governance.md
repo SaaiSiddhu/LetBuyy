@@ -11,6 +11,7 @@ Production deployment uses environment promotion, health gates, and rollback own
 ## Release Gates
 
 - `node scripts/validate-governance.mjs`
+- `node scripts/validators/operational-lifecycle-validator.mjs`
 - `node scripts/validators/production-readiness-validator.mjs`
 - `node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production`
 - `node infrastructure/scripts/cloudflare/verify-provider-contracts.mjs --environment=production`
@@ -22,6 +23,7 @@ Production deployment uses environment promotion, health gates, and rollback own
 - Supabase migration dry run against staging.
 - Worker health, storefront health, queue lag, and error-budget checks.
 - Deployment health gate results must be persisted through `/v1/operations/runtime/deployment-health-gates`.
+- Canary, blue/green, shadow traffic, and feature flag rollout gates must match `config/runtime/rollout-lifecycle.json`.
 
 ## Rollback
 

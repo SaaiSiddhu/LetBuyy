@@ -51,7 +51,7 @@ const capabilityGroups = [
   },
   {
     name: "load-testing",
-    tools: ["k6"],
+    tools: ["k6", "locust", "gatling"],
   },
 ];
 
