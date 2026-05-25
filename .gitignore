@@ -72,6 +72,8 @@ phase4-live-certification-report.json
 certification-report.json
 artifacts/live-certification/
 artifacts/local-operational-proof/
+load/reports/
+chaos/reports/
 
 # Cloud Functions
 functions/node_modules/

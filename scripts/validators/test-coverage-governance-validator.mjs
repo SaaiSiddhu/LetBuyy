@@ -22,6 +22,7 @@ const requiredTestFiles = [
   "tests/security/execution-mode.test.mjs",
   "tests/survivability/survivability-governance.test.mjs",
   "tests/survivability/local-operational-proof.test.mjs",
+  "tests/survivability/operational-proof-surface.test.mjs",
 ];
 
 for (const file of requiredTestFiles) {

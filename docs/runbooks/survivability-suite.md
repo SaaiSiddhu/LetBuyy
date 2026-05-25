@@ -36,3 +36,16 @@ pnpm run proof:local
 This executes the local replay runtime, local HTTP load, replay determinism stress, and queue recovery stress. It writes ignored evidence to `artifacts/local-operational-proof/report.json`.
 
 The report has `scope: "local-only"` and `certification: false`. It is useful execution evidence for local runtime behavior, but it is not production or internet-scale certification.
+
+## Load and Chaos Proof Surfaces
+
+Operator-facing load scenarios live under `load/`; chaos experiments live under `chaos/`.
+
+```bash
+pnpm run load:plan
+pnpm run chaos:plan
+```
+
+Execute mode is fail-closed. Load execution requires `LETBUYY_API_BASE_URL`, `LETBUYY_OPERATIONS_TOKEN`, and the real k6, Locust, and Gatling tools. Chaos execution requires `LETBUYY_CHAOS_EXECUTION_APPROVED=true`, `LETBUYY_OPERATIONS_TOKEN`, and `LETBUYY_API_BASE_URL`. Production execution also requires `LETBUYY_SURVIVABILITY_EXECUTION_APPROVED=true`.
+
+Reports are written under ignored `load/reports/` and `chaos/reports/`. These reports are evidence inputs only; production certification still requires fresh operations control-plane records and survivability gates.

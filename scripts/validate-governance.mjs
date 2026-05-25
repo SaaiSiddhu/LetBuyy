@@ -23,6 +23,7 @@ const validators = [
   "migration-safety-validator.mjs",
   "test-coverage-governance-validator.mjs",
   "survivability-governance-validator.mjs",
+  "operational-proof-validator.mjs",
   "ci-simulation-validator.mjs",
   "domain-boundary-validator.mjs",
   "environment-validator.mjs",

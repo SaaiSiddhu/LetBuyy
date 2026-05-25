@@ -18,6 +18,10 @@ const requiredFiles = [
   "infrastructure/scripts/operations/run-local-operational-proof.mjs",
   "infrastructure/scripts/operations/generate-certification-report.mjs",
   "infrastructure/scripts/operations/run-live-drills.mjs",
+  "load/run-load-evidence.mjs",
+  "load/scenarios/internet-scale-load.json",
+  "chaos/run-chaos-evidence.mjs",
+  "chaos/scenarios/failure-matrix.json",
   "docs/governance/operational-resilience-governance.md",
   "docs/governance/deployment-proof-governance.md",
   "docs/governance/deterministic-runtime-governance.md",
@@ -157,6 +161,17 @@ reporter.assert(
   packageJson?.scripts?.["proof:local"] === "node infrastructure/scripts/operations/run-local-operational-proof.mjs",
   "Root package must expose proof:local",
 );
+reporter.assert(
+  packageJson?.scripts?.["validate:operational-proof"] === "node scripts/validators/operational-proof-validator.mjs",
+  "Root package must expose validate:operational-proof",
+);
+
+const loadProof = readFile("load/run-load-evidence.mjs");
+const chaosProof = readFile("chaos/run-chaos-evidence.mjs");
+for (const fragment of ["certification: false", "LETBUYY_SURVIVABILITY_EXECUTION_APPROVED"]) {
+  reporter.assert(loadProof.includes(fragment), `Load proof runner missing survivability fragment: ${fragment}`);
+  reporter.assert(chaosProof.includes(fragment), `Chaos proof runner missing survivability fragment: ${fragment}`);
+}
 
 const rootPackage = readJson("package.json");
 reporter.assert(

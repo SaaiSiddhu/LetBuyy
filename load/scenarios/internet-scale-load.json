@@ -1,0 +1,95 @@
+{
+  "contractVersion": 1,
+  "name": "letbuyy-internet-scale-load",
+  "evidenceDirectory": "load/reports",
+  "certification": false,
+  "certificationReason": "Load execution produces measured evidence inputs only. Production certification requires operations control-plane evidence and survivability gates.",
+  "executeRequires": [
+    "LETBUYY_API_BASE_URL",
+    "LETBUYY_OPERATIONS_TOKEN",
+    "k6",
+    "locust",
+    "gatling",
+    "LETBUYY_SURVIVABILITY_EXECUTION_APPROVED=true for production"
+  ],
+  "forbidden": [
+    "synthetic passed reports",
+    "planned load marked as measured",
+    "load certification without p50/p95/p99/error-rate evidence",
+    "production load without operator approval"
+  ],
+  "scenarios": [
+    {
+      "id": "black-friday-api-spike",
+      "category": "black-friday",
+      "tool": "k6",
+      "script": "load/k6/black-friday-commerce.js",
+      "args": ["run", "load/k6/black-friday-commerce.js"],
+      "requiredMetrics": ["p50", "p95", "p99", "throughput", "error_rate"]
+    },
+    {
+      "id": "checkout-flood",
+      "category": "checkout-flood",
+      "tool": "locust",
+      "script": "load/locust/checkout_flood.py",
+      "args": ["--headless", "-f", "load/locust/checkout_flood.py", "-u", "250", "-r", "25", "-t", "5m"],
+      "requiredMetrics": ["p50", "p95", "p99", "requests_per_second", "failures"]
+    },
+    {
+      "id": "replay-flood",
+      "category": "replay-flood",
+      "tool": "k6",
+      "script": "infrastructure/scripts/load/k6-replay-stress.js",
+      "args": ["run", "infrastructure/scripts/load/k6-replay-stress.js"],
+      "requiredMetrics": ["replay_throughput", "p95", "p99", "error_rate"]
+    },
+    {
+      "id": "queue-saturation",
+      "category": "queue-saturation",
+      "tool": "k6",
+      "script": "infrastructure/scripts/load/k6-queue-throughput.js",
+      "args": ["run", "infrastructure/scripts/load/k6-queue-throughput.js"],
+      "requiredMetrics": ["queue_lag", "dead_letters", "p95", "error_rate"]
+    },
+    {
+      "id": "worker-saturation",
+      "category": "worker-saturation",
+      "tool": "gatling",
+      "script": "load/gatling/WorkerSaturationSimulation.scala",
+      "args": ["-s", "WorkerSaturationSimulation", "-sf", "load/gatling", "-rf", "load/reports/gatling"],
+      "requiredMetrics": ["worker_errors", "p95", "p99", "throughput"]
+    },
+    {
+      "id": "db-saturation",
+      "category": "db-saturation",
+      "tool": "k6",
+      "script": "load/k6/runtime-saturation.js",
+      "args": ["run", "load/k6/runtime-saturation.js"],
+      "requiredMetrics": ["db_latency", "p95", "p99", "error_rate"]
+    },
+    {
+      "id": "webhook-flood",
+      "category": "webhook-flood",
+      "tool": "k6",
+      "script": "load/k6/webhook-flood.js",
+      "args": ["run", "load/k6/webhook-flood.js"],
+      "requiredMetrics": ["signature_failures", "accepted_events", "p95", "error_rate"]
+    },
+    {
+      "id": "cache-saturation",
+      "category": "cache-saturation",
+      "tool": "k6",
+      "script": "load/k6/runtime-saturation.js",
+      "args": ["run", "load/k6/runtime-saturation.js"],
+      "requiredMetrics": ["cache_hit_ratio", "p95", "p99", "error_rate"]
+    },
+    {
+      "id": "deployment-saturation",
+      "category": "deployment-saturation",
+      "tool": "k6",
+      "script": "load/k6/runtime-saturation.js",
+      "args": ["run", "load/k6/runtime-saturation.js"],
+      "requiredMetrics": ["deployment_gate_latency", "rollback_readiness", "p95", "error_rate"]
+    }
+  ]
+}
