@@ -70,6 +70,9 @@ jobs:
       - name: Validate durable execution recovery
         run: pnpm run validate:durable-execution
 
+      - name: Validate distributed survivability finalization
+        run: pnpm run validate:distributed-survivability
+
       - name: Validate replay safety
         run: pnpm run validate:replay
 

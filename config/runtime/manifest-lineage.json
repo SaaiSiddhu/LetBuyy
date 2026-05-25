@@ -62,7 +62,7 @@
       "path": "config/runtime/durable-execution-contract.json",
       "owner": "durable-distributed-execution",
       "compatibility": "wal-lease-fencing-and-recovery-compatible",
-      "checksum": "1564ffb86ab64fb1540f1be1eb13eabb32ca522465a363e72149ad9641d4c1a6"
+      "checksum": "ded756199dd623947e846a41b3a7461c77f47c23151d40a49c59261d65455790"
     },
     {
       "path": "config/runtime/distributed-consistency-contract.json",

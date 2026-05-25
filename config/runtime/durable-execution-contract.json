@@ -100,6 +100,101 @@
     "executionLeaseOwnership": "durable-object-namespace-per-worker-environment",
     "remoteReconciliationPolicy": "plan-only-until-execute-mode-credentials-exist"
   },
+  "walLifecycle": {
+    "engineSource": "packages/distributed-runtime/src/wal-lifecycle-runtime.ts",
+    "segmentFunction": "segmentExecutionWal",
+    "planFunction": "compileWalLifecyclePlan",
+    "restorationFunction": "restoreWalEntriesFromCursor",
+    "assertionFunction": "assertWalLifecycleDeterministic",
+    "rotationPolicy": "deterministic-sequence-window-rotation",
+    "compactionPolicy": "replay-safe-snapshot-before-compaction",
+    "corruptionPolicy": "checksum-lineage-hard-fail",
+    "cursorPolicy": "replay-cursor-restored-from-segment-boundary",
+    "archivalPolicy": "wal-ancestry-required-before-cold-archive"
+  },
+  "leaseHeartbeat": {
+    "engineSource": "packages/distributed-runtime/src/lease-heartbeat-runtime.ts",
+    "heartbeatFunction": "recordLeaseHeartbeat",
+    "reconciliationFunction": "reconcileLeaseHeartbeats",
+    "assertionFunction": "assertLeaseHeartbeatSafe",
+    "heartbeatPolicy": "monotonic-heartbeat-sequence-per-lease-owner",
+    "staleExecutorPolicy": "evict-expired-heartbeat-before-takeover",
+    "starvationPolicy": "oldest-expired-lease-takeover-before-new-work",
+    "driftPolicy": "heartbeat-checksum-and-epoch-validation-required"
+  },
+  "splitBrainPrevention": {
+    "engineSource": "packages/distributed-runtime/src/lease-heartbeat-runtime.ts",
+    "simulationFunction": "simulateSplitBrain",
+    "assertionFunction": "assertLeaseHeartbeatSafe",
+    "authorityPolicy": "single-authoritative-owner-after-fencing-replay",
+    "conflictPolicy": "higher-epoch-then-higher-fencing-token-wins",
+    "recoveryPolicy": "reject-stale-executor-and-replay-authoritative-heartbeat",
+    "failurePolicy": "hard-fail-if-concurrent-authority-survives"
+  },
+  "resumableExecution": {
+    "engineSource": "packages/distributed-runtime/src/resumable-dag-execution-runtime.ts",
+    "cursorFunction": "compileResumableDagCursor",
+    "restoreFunction": "restoreExecutionContinuation",
+    "assertionFunction": "assertResumableDagExecution",
+    "cursorPolicy": "persisted-orchestration-cursor-per-checkpoint",
+    "continuationPolicy": "dependencies-completed-before-next-node",
+    "branchPolicy": "execution-branch-continuation-checksum-required",
+    "survives": ["restart", "interruption", "partial-compensation", "replay-continuation"]
+  },
+  "distributedConflictArbitration": {
+    "engineSource": "packages/distributed-runtime/src/distributed-conflict-arbitration-runtime.ts",
+    "arbitrationFunction": "arbitrateDistributedConflicts",
+    "assertionFunction": "assertDistributedConflictArbitration",
+    "authorityPolicy": "lowest-authority-rank-then-highest-version-wins",
+    "staleAuthorityPolicy": "selected-owner-removes-stale-authorities",
+    "replayPolicy": "conflict-lineage-checksum-required",
+    "mergePolicy": "deterministic-arbitration-dag-before-reconciliation"
+  },
+  "crdtConvergence": {
+    "engineSource": "packages/distributed-runtime/src/crdt-convergence-runtime.ts",
+    "mergeFunction": "mergeCrdtLattice",
+    "assertionFunction": "assertCrdtConvergence",
+    "mergePolicy": "monotonic-lattice-join",
+    "orderingPolicy": "replay-safe-lexicographic-merge-order",
+    "oscillationPolicy": "monotonic-state-only",
+    "proofPolicy": "lattice-checksum-required"
+  },
+  "adaptiveRecoveryThrottling": {
+    "engineSource": "packages/distributed-runtime/src/adaptive-recovery-throttling-runtime.ts",
+    "allocatorFunction": "allocateAdaptiveRecoveryBudgets",
+    "assertionFunction": "assertAdaptiveRecoveryThrottling",
+    "governorPolicy": "deterministic-token-bucket-recovery-governor",
+    "stormPrevention": ["replay", "compensation", "queue-rebuild"],
+    "budgetPolicy": "weighted-by-backlog-error-rate-and-priority",
+    "starvationPolicy": "at-least-one-token-per-active-kind"
+  },
+  "durableObjectRecovery": {
+    "engineSource": "packages/distributed-runtime/src/durable-object-recovery-runtime.ts",
+    "planFunction": "compileDurableObjectRecoveryPlan",
+    "assertionFunction": "assertDurableObjectRecovery",
+    "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
+    "requiredEnvironments": ["dev", "staging", "production"],
+    "migrationPolicy": "durable-object-migration-lineage-per-environment",
+    "resurrectionPolicy": "snapshot-and-replay-cursor-required",
+    "bindingPolicy": "non-inheritable-binding-explicit-per-environment"
+  },
+  "convergenceProof": {
+    "engineSource": "packages/distributed-runtime/src/convergence-proof-runtime.ts",
+    "proofFunction": "compileConvergenceProof",
+    "assertionFunction": "assertConvergenceProof",
+    "boundedPolicy": "observed-iterations-must-not-exceed-max-iterations",
+    "livenessPolicy": "positive-bound-required-for-orchestration-liveness",
+    "deadlockPolicy": "acyclic-dag-and-terminal-fixed-point-required",
+    "equilibriumPolicy": "fixed-point-and-theorem-checksum-required"
+  },
+  "recoveryDrillGovernance": {
+    "engineSource": "packages/distributed-runtime/src/recovery-drill-runtime.ts",
+    "runtimeFunction": "replayRecoveryDrill",
+    "assertionFunction": "assertRecoveryDrillLineage",
+    "drillKinds": ["replay-restoration", "wal-corruption", "checkpoint-corruption", "lease-failover", "compensation-interruption", "queue-reconstruction", "orchestration-replay"],
+    "lineagePolicy": "deterministic-drill-lineage-checksum-required",
+    "evidencePolicy": "governance-drills-are-not-live-operational-evidence"
+  },
   "validators": [
     "durable-execution-validator",
     "lease-governance-validator",
@@ -110,7 +205,17 @@
     "operational-storage-validator",
     "recovery-simulation-validator",
     "execution-reconciliation-validator",
-    "durable-cloudflare-runtime-validator"
+    "durable-cloudflare-runtime-validator",
+    "wal-lifecycle-validator",
+    "lease-heartbeat-validator",
+    "split-brain-validator",
+    "resumable-execution-validator",
+    "distributed-conflict-validator",
+    "crdt-convergence-validator",
+    "adaptive-throttling-validator",
+    "durable-object-recovery-validator",
+    "convergence-proof-validator",
+    "recovery-drill-validator"
   ],
   "failurePolicy": "fail-closed"
 }

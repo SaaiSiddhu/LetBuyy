@@ -78,6 +78,9 @@ jobs:
       - name: Durable execution recovery gates
         run: pnpm run validate:durable-execution
 
+      - name: Distributed survivability finalization gates
+        run: pnpm run validate:distributed-survivability
+
       - name: Replay safety gates
         run: pnpm run validate:replay
 
