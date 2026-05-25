@@ -8,7 +8,7 @@
     "manifestVersion": { "type": "integer", "minimum": 1 },
     "mode": { "const": "governance-contract-not-live-evidence" },
     "checksumAlgorithm": { "const": "sha256" },
-    "entries": { "type": "array", "minItems": 16 },
+    "entries": { "type": "array", "minItems": 17 },
     "failurePolicy": { "const": "fail-closed" }
   }
 }

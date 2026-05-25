@@ -2,6 +2,7 @@
   "$schema": "config/runtime/distributed-execution-contract.schema.json",
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
+  "durableExecutionContract": "config/runtime/durable-execution-contract.json",
   "executionEngine": {
     "engineSource": "packages/distributed-runtime/src/distributed-execution-runtime.ts",
     "planner": "planDistributedExecution",

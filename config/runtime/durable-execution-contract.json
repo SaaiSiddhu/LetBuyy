@@ -1,0 +1,116 @@
+{
+  "$schema": "config/runtime/durable-execution-contract.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "durableExecution": {
+    "engineSource": "packages/distributed-runtime/src/durable-execution-runtime.ts",
+    "baseExecutionContract": "config/runtime/distributed-execution-contract.json",
+    "walFactory": "createExecutionWal",
+    "walAppender": "appendExecutionWalEntry",
+    "walFromPlan": "buildExecutionWalFromPlan",
+    "restoreFunction": "restoreExecutionFromWal",
+    "crashRecoveryFunction": "recoverExecutionAfterInterruption",
+    "integrityAssertion": "assertExecutionWalIntegrity",
+    "walPolicy": "append-only-execution-journal",
+    "requiredStepFields": ["executionId", "orchestrationId", "executionSequence", "executionCheckpoint", "executionJournalEntry", "executionCausalityReference", "executionChecksum"],
+    "survives": ["process-restart", "runtime-interruption", "partial-execution-failure", "replay-reconstruction"],
+    "checkpointLineagePolicy": "previousWalChecksum-links-every-entry"
+  },
+  "leaseGovernance": {
+    "engineSource": "packages/distributed-runtime/src/lease-fencing-runtime.ts",
+    "arbitrationFunction": "arbitrateOrchestrationLease",
+    "checkpointFunction": "reconcileLeaseCheckpoint",
+    "revocationFunction": "revokeOrchestrationLease",
+    "singleExecutorAssertion": "assertSingleAuthoritativeExecutor",
+    "leasePolicy": "one-authoritative-executor-per-orchestration",
+    "takeoverPolicy": "expired-lease-only-with-monotonic-fencing-token",
+    "renewalPolicy": "same-owner-or-expired-takeover-only",
+    "splitBrainPolicy": "hard-fail-on-active-owner-overlap"
+  },
+  "fencingGovernance": {
+    "engineSource": "packages/distributed-runtime/src/lease-fencing-runtime.ts",
+    "tokenFunction": "createFencingToken",
+    "validationFunction": "validateFencingToken",
+    "tokenPolicy": "monotonic-increment-only",
+    "epochLineage": "workerEpoch-plus-leaseVersion-plus-fencingToken",
+    "staleTokenPolicy": "reject-before-operation-apply"
+  },
+  "sagaRecovery": {
+    "engineSource": "packages/distributed-runtime/src/saga-recovery-runtime.ts",
+    "baseCompensationEngine": "packages/distributed-runtime/src/compensation-saga-runtime.ts",
+    "walAppender": "appendSagaWalEntry",
+    "recoveryFunction": "recoverPersistentSaga",
+    "assertionFunction": "assertSagaRecoverySafe",
+    "compensationWalPolicy": "append-only-compensation-wal",
+    "irreversibleOperationRegistry": "irreversibleOperationIds-in-checkpoint",
+    "resumptionPolicy": "remaining-steps-derived-from-compensation-wal"
+  },
+  "distributedClock": {
+    "engineSource": "packages/distributed-runtime/src/distributed-clock-runtime.ts",
+    "lamportTick": "tickLamportClock",
+    "lamportMerge": "mergeLamportClock",
+    "vectorMerge": "mergeVectorClock",
+    "timestampArbitration": "arbitrateCausalityTimestamp",
+    "assertionFunction": "assertTemporalOrderingStable",
+    "clockPolicy": "producer-time-plus-lamport-and-vector-clock",
+    "forbiddenTemporalSources": ["Date.now", "new Date()", "Math.random"],
+    "replayTemporalPolicy": "logical-clock-ordering-precedes-wall-clock-observation"
+  },
+  "executionIsolation": {
+    "engineSource": "packages/distributed-runtime/src/execution-isolation-runtime.ts",
+    "graphCompiler": "compileExecutionAuthorityGraph",
+    "assertionFunction": "assertExecutionIsolation",
+    "capabilityModel": "deny-by-default-capability-token",
+    "authorityPolicy": "one-runtime-owner-per-operation",
+    "sandboxPolicy": "manifest-granted-or-deny-by-default",
+    "trustDomains": ["worker-runtime", "queue-runtime", "replay-runtime", "projection-runtime", "deployment-runtime"]
+  },
+  "operationalStorage": {
+    "engineSource": "packages/distributed-runtime/src/operational-storage-runtime.ts",
+    "topologyCompiler": "compileOperationalStorageTopology",
+    "assertionFunction": "assertOperationalStorageGovernance",
+    "stateClasses": ["execution-wal", "saga-wal", "replay-checkpoint", "lineage-archive", "lease-checkpoint"],
+    "retentionPolicy": "retention-days-required-for-every-state-class",
+    "archivalPolicy": "wal-hot-then-cold-with-provenance-required",
+    "persistenceProvenance": "archivalLineageChecksum"
+  },
+  "recoverySimulation": {
+    "engineSource": "packages/distributed-runtime/src/recovery-simulation-runtime.ts",
+    "simulationFunction": "simulateRecoveryPlayback",
+    "assertionFunction": "assertRecoverySimulationStable",
+    "simulationKinds": ["orchestration-recovery", "replay-restoration", "compensation-recovery", "checkpoint-restoration", "lease-failover", "wal-replay", "execution-continuation"],
+    "playbackPolicy": "expected-checksum-must-match-deterministic-playback",
+    "equilibriumPolicy": "all-recovery-paths-converge-before-execute-mode"
+  },
+  "executionReconciliation": {
+    "engineSource": "packages/distributed-runtime/src/execution-reconciliation-runtime.ts",
+    "reconciliationFunction": "reconcileExecutionState",
+    "assertionFunction": "assertExecutionReconciliationStable",
+    "inputs": ["runtime-state", "execution-wal", "lease", "saga"],
+    "fixedPointPolicy": "wal-runtime-lease-saga-fixed-point-required",
+    "oscillationPolicy": "duplicate-reconciliation-actions-hard-fail"
+  },
+  "cloudflareDurableRuntime": {
+    "engineSource": "packages/distributed-runtime/src/durable-cloudflare-runtime.ts",
+    "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
+    "compiler": "compileCloudflareDurableExecutionLineage",
+    "assertionFunction": "assertCloudflareDurableExecutionLineage",
+    "requiredExplicitBindings": ["vars", "kv_namespaces", "r2_buckets", "queues", "durable_objects", "services", "telemetry"],
+    "durableObjectPolicy": "namespace-and-migration-owned-per-environment",
+    "executionLeaseOwnership": "durable-object-namespace-per-worker-environment",
+    "remoteReconciliationPolicy": "plan-only-until-execute-mode-credentials-exist"
+  },
+  "validators": [
+    "durable-execution-validator",
+    "lease-governance-validator",
+    "fencing-token-validator",
+    "saga-recovery-validator",
+    "distributed-clock-validator",
+    "execution-isolation-validator",
+    "operational-storage-validator",
+    "recovery-simulation-validator",
+    "execution-reconciliation-validator",
+    "durable-cloudflare-runtime-validator"
+  ],
+  "failurePolicy": "fail-closed"
+}

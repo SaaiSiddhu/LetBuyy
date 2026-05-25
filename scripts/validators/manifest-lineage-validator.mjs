@@ -41,6 +41,7 @@ const requiredEntries = [
   "config/runtime/cloudflare-binding-ownership.json",
   "config/runtime/deployment-topology.json",
   "config/runtime/distributed-execution-contract.json",
+  "config/runtime/durable-execution-contract.json",
   "config/runtime/distributed-consistency-contract.json",
   "config/runtime/runtime-causality-graph.json",
   "config/runtime/runtime-saturation-contract.json",

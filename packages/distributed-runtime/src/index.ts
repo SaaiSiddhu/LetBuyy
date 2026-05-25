@@ -43,6 +43,27 @@ export * from './runtime-memory-model-runtime';
 export * from './failure-domain-runtime';
 export * from './convergence-math-runtime';
 export * from './cloudflare-execution-governance-runtime';
+export * from './durable-execution-runtime';
+export type {
+  LeaseArbitrationDecision,
+  LeaseArbitrationInput,
+  OrchestrationLease,
+} from './lease-fencing-runtime';
+export {
+  arbitrateOrchestrationLease,
+  assertSingleAuthoritativeExecutor,
+  createFencingToken as createLeaseFencingToken,
+  reconcileLeaseCheckpoint,
+  revokeOrchestrationLease,
+  validateFencingToken,
+} from './lease-fencing-runtime';
+export * from './saga-recovery-runtime';
+export * from './distributed-clock-runtime';
+export * from './execution-isolation-runtime';
+export * from './operational-storage-runtime';
+export * from './recovery-simulation-runtime';
+export * from './execution-reconciliation-runtime';
+export * from './durable-cloudflare-runtime';
 export * from './queue-operations-runtime';
 export * from './replay-operations-runtime';
 export * from './telemetry-operations-runtime';

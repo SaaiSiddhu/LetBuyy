@@ -85,6 +85,11 @@
         "path": "config/runtime/runtime-survivability-intelligence.json",
         "parentChecksum": "374e485f4e9df3e5fde1fde6fae63b6fdf5453c9aed16836bcf2a07a7ad1dace",
         "owner": "runtime-survivability"
+      },
+      {
+        "path": "config/runtime/durable-execution-contract.json",
+        "parentChecksum": "964941585bab9b6f10b403722174d4831249ab264b8ed561c1e2098447cb9e7b",
+        "owner": "durable-distributed-execution"
       }
     ]
   },

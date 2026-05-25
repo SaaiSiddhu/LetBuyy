@@ -14,7 +14,7 @@
       "path": "config/runtime/runtime-survivability-intelligence.json",
       "owner": "runtime-survivability",
       "compatibility": "deterministic-convergence-intelligence",
-      "checksum": "7ad0f9cc0367a9b6c378861e8b925d29bff61f0cb38de72e2a44958188412131"
+      "checksum": "c78862711adacb4620e0d072e218362b0dec6d7350dbebe6ed4be68878d1baae"
     },
     {
       "path": "config/runtime/replay-evolution-manifest.json",
@@ -56,7 +56,13 @@
       "path": "config/runtime/distributed-execution-contract.json",
       "owner": "distributed-execution",
       "compatibility": "execution-checkpoint-compatible",
-      "checksum": "7e883434f42ebaf6b364b44bbfd1da583dde2c87bf70a0bec37cbcfc914fa133"
+      "checksum": "964941585bab9b6f10b403722174d4831249ab264b8ed561c1e2098447cb9e7b"
+    },
+    {
+      "path": "config/runtime/durable-execution-contract.json",
+      "owner": "durable-distributed-execution",
+      "compatibility": "wal-lease-fencing-and-recovery-compatible",
+      "checksum": "1564ffb86ab64fb1540f1be1eb13eabb32ca522465a363e72149ad9641d4c1a6"
     },
     {
       "path": "config/runtime/distributed-consistency-contract.json",
