@@ -9,6 +9,7 @@
     "SUPABASE_ANON_KEY": { "type": "string" },
     "SUPABASE_SERVICE_ROLE_KEY": { "type": "string" },
     "AUTH_SECRET": { "type": "string" },
+    "CSRF_SECRET": { "type": "string" },
     "INTERNAL_API_SECRET": { "type": "string" },
     "LETBUYY_INTERNAL_API_SECRET": { "type": "string" },
     "ENVIRONMENT": { "enum": ["local", "staging", "production"] },

@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { authMiddleware } from './middleware/auth';
 import { rateLimit, authRateLimit } from './middleware/rateLimit';
-import { securityHeaders, inputValidation, requestId, errorResponseSanitizer } from './middleware/security';
+import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { observability } from './middleware/observability';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
@@ -50,6 +50,7 @@ export interface Env {
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
     STRIPE_SECRET_KEY: string;
     AUTH_SECRET?: string;
+    CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;
     R2_BUCKET: R2Bucket;
     CACHE?: KVNamespace;
@@ -142,6 +143,7 @@ api.route('/app-store', appStoreRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
+api.use('/*', csrfProtection);
 api.use('/*', rateLimit({ max: 300 }));
 
 // Mount routers

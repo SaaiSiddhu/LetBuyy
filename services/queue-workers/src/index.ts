@@ -96,12 +96,38 @@ async function recordQueueMetric(env: Env, input: Required<QueuePayload>, status
   });
 }
 
+async function recordQueueLagMetric(
+  env: Env,
+  input: Required<QueuePayload>,
+  message: QueueBatchMessage,
+): Promise<void> {
+  const lagMilliseconds = Math.max(0, Date.now() - message.timestamp.getTime());
+  await insertSupabaseRows(env, 'runtime_telemetry_metrics', {
+    metric_name: 'cloudflare.queue.delivery.lag',
+    metric_value: lagMilliseconds,
+    unit: 'milliseconds',
+    runtime_name: env.RUNTIME_NAME || 'Queue Workers',
+    site_id: input.siteId,
+    dimensions: {
+      queue_name: input.queueName,
+      job_type: input.jobType,
+      provider: 'cloudflare-queues',
+      region: env.PRIMARY_REGION || 'global-edge',
+      attempts: message.attempts,
+    },
+    request_id: input.requestId,
+    correlation_id: input.correlationId,
+    trace_id: input.traceId,
+  });
+}
+
 async function handleMessage(env: Env, batch: MessageBatch<QueuePayload | Record<string, unknown>>, message: QueueBatchMessage): Promise<void> {
   const normalized = normalizePayload(message, batch);
   const status = batch.queue === 'letbuyy-dead-letters' ? 'dead-lettered' : 'completed';
 
   await persistQueueMessage(env, normalized, status);
   await recordQueueMetric(env, normalized, status);
+  await recordQueueLagMetric(env, normalized, message);
 }
 
 function writeQueueLog(level: 'info' | 'error', fields: Record<string, unknown>): void {

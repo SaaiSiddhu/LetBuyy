@@ -1,3 +1,15 @@
+import {
+    Activity,
+    BarChart3,
+    ClipboardList,
+    CreditCard,
+    Gauge,
+    Settings,
+    Shield,
+    Store,
+    Users,
+} from 'lucide-react';
+
 export default function DashboardLayout({
     children,
 }: {
@@ -14,14 +26,15 @@ export default function DashboardLayout({
                     </span>
                 </div>
                 <nav className="space-y-1 p-4">
-                    <ConsoleNavLink href="/dashboard" label="Dashboard" icon="📊" />
-                    <ConsoleNavLink href="/users" label="Users" icon="👤" />
-                    <ConsoleNavLink href="/stores" label="Stores" icon="🏪" />
-                    <ConsoleNavLink href="/subscriptions" label="Subscriptions" icon="💳" />
-                    <ConsoleNavLink href="/employees" label="Employees" icon="👥" />
-                    <ConsoleNavLink href="/analytics" label="Analytics" icon="📈" />
-                    <ConsoleNavLink href="/settings" label="Settings" icon="⚙️" />
-                    <ConsoleNavLink href="/audit-logs" label="Audit Logs" icon="📋" />
+                    <ConsoleNavLink href="/dashboard" label="Dashboard" icon={<Gauge size={16} />} />
+                    <ConsoleNavLink href="/operations" label="Operations" icon={<Activity size={16} />} />
+                    <ConsoleNavLink href="/users" label="Users" icon={<Users size={16} />} />
+                    <ConsoleNavLink href="/stores" label="Stores" icon={<Store size={16} />} />
+                    <ConsoleNavLink href="/subscriptions" label="Subscriptions" icon={<CreditCard size={16} />} />
+                    <ConsoleNavLink href="/employees" label="Employees" icon={<Shield size={16} />} />
+                    <ConsoleNavLink href="/analytics" label="Analytics" icon={<BarChart3 size={16} />} />
+                    <ConsoleNavLink href="/settings" label="Settings" icon={<Settings size={16} />} />
+                    <ConsoleNavLink href="/audit-logs" label="Audit Logs" icon={<ClipboardList size={16} />} />
                 </nav>
             </aside>
 
@@ -33,13 +46,13 @@ export default function DashboardLayout({
     );
 }
 
-function ConsoleNavLink({ href, label, icon }: { href: string; label: string; icon: string }) {
+function ConsoleNavLink({ href, label, icon }: { href: string; label: string; icon: React.ReactNode }) {
     return (
         <a
             href={href}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-100"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
         >
-            <span>{icon}</span>
+            <span className="grid h-5 w-5 place-items-center">{icon}</span>
             {label}
         </a>
     );

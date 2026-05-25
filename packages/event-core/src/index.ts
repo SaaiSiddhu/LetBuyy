@@ -177,6 +177,84 @@ export const RecordDeploymentPromotionSchema = z.object({
   health_gates: z.array(JsonRecordSchema).default([]),
 });
 
+export const RecordProductionReadinessGateSchema = z.object({
+  gate_run_id: z.string().trim().min(8).max(120),
+  environment: z.enum(['staging', 'production']),
+  version: z.string().trim().min(1).max(120),
+  status: z.enum(['planned', 'running', 'passed', 'failed', 'blocked']),
+  gates: z.array(JsonRecordSchema).default([]),
+  failure_summary: z.string().trim().min(1).max(1000).nullable().optional(),
+});
+
+export const RecordDeploymentHealthGateSchema = z.object({
+  gate_id: z.string().trim().min(8).max(120),
+  promotion_id: z.string().trim().min(1).max(120).nullable().optional(),
+  runtime_root: z.string().trim().min(1).max(200),
+  environment: z.enum(['staging', 'production']),
+  gate_name: z.string().trim().min(1).max(120),
+  status: z.enum(['passed', 'failed', 'skipped', 'blocked']),
+  observed_value: JsonRecordSchema.default({}),
+  threshold: JsonRecordSchema.default({}),
+  evidence_url: z.string().url().nullable().optional(),
+});
+
+export const ValidateEventStoreIntegritySchema = z.object({
+  stream_name: z.string().trim().min(1).max(160),
+  environment: z.enum(['staging', 'production']).default('production'),
+  limit: z.number().int().min(1).max(100000).default(10000),
+});
+
+export const ArchiveDistributedEventsSchema = z.object({
+  before: z.string().datetime(),
+  limit: z.number().int().min(1).max(100000).default(10000),
+});
+
+export const RecordOperationalDashboardSnapshotSchema = z.object({
+  snapshot_id: z.string().trim().min(8).max(120),
+  dashboard_name: z.string().trim().min(1).max(120),
+  environment: z.enum(['staging', 'production']),
+  status: z.enum(['healthy', 'degraded', 'unavailable']),
+  source_api: z.string().trim().min(1).max(240),
+  source_projection: z.string().trim().min(1).max(160),
+  panels: z.array(JsonRecordSchema).default([]),
+});
+
+export const RecordSreErrorBudgetSnapshotSchema = z.object({
+  budget_id: z.string().trim().min(8).max(120),
+  runtime_name: z.string().trim().min(1).max(120),
+  slo_id: z.string().trim().min(1).max(120),
+  environment: z.enum(['staging', 'production']),
+  window: z.string().trim().min(1).max(80),
+  target_percent: z.number().min(0).max(100),
+  observed_percent: z.number().min(0).max(100),
+  remaining_budget_percent: z.number().min(0).max(100),
+  burn_rate: z.number().min(0).default(0),
+  status: z.enum(['healthy', 'watch', 'freeze', 'exhausted']),
+});
+
+export const RecordSecurityEnforcementEventSchema = z.object({
+  enforcement_id: z.string().trim().min(8).max(120),
+  environment: z.enum(['staging', 'production']),
+  control_name: z.string().trim().min(1).max(160),
+  runtime_root: z.string().trim().min(1).max(200),
+  status: z.enum(['passed', 'failed', 'waived', 'remediated']),
+  severity: z.enum(['critical', 'high', 'medium', 'low']),
+  evidence: JsonRecordSchema.default({}),
+});
+
+export const RecordRegionalRoutingOverrideSchema = z.object({
+  override_id: z.string().trim().min(8).max(120),
+  environment: z.enum(['staging', 'production']),
+  tenant_site_id: z.string().uuid().nullable().optional(),
+  runtime_root: z.string().trim().min(1).max(200),
+  source_region: z.string().trim().min(1).max(80),
+  target_region: z.string().trim().min(1).max(80),
+  reason: z.string().trim().min(8).max(500),
+  status: z.enum(['planned', 'active', 'restored', 'cancelled']),
+  expires_at: z.string().datetime().nullable().optional(),
+  metadata: JsonRecordSchema.default({}),
+});
+
 export interface DomainOutboxEvent {
   id: string;
   store_id?: string | null;
@@ -240,3 +318,11 @@ export type RecordFailoverDrillInput = z.infer<typeof RecordFailoverDrillSchema>
 export type RecordChaosExperimentInput = z.infer<typeof RecordChaosExperimentSchema>;
 export type RecordLoadTestRunInput = z.infer<typeof RecordLoadTestRunSchema>;
 export type RecordDeploymentPromotionInput = z.infer<typeof RecordDeploymentPromotionSchema>;
+export type RecordProductionReadinessGateInput = z.infer<typeof RecordProductionReadinessGateSchema>;
+export type RecordDeploymentHealthGateInput = z.infer<typeof RecordDeploymentHealthGateSchema>;
+export type ValidateEventStoreIntegrityInput = z.infer<typeof ValidateEventStoreIntegritySchema>;
+export type ArchiveDistributedEventsInput = z.infer<typeof ArchiveDistributedEventsSchema>;
+export type RecordOperationalDashboardSnapshotInput = z.infer<typeof RecordOperationalDashboardSnapshotSchema>;
+export type RecordSreErrorBudgetSnapshotInput = z.infer<typeof RecordSreErrorBudgetSnapshotSchema>;
+export type RecordSecurityEnforcementEventInput = z.infer<typeof RecordSecurityEnforcementEventSchema>;
+export type RecordRegionalRoutingOverrideInput = z.infer<typeof RecordRegionalRoutingOverrideSchema>;

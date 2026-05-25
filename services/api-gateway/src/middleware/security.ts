@@ -219,6 +219,70 @@ export const inputValidation = createMiddleware<{ Bindings: Env }>(
     }
 );
 
+function parseCookie(header: string | undefined, name: string): string | null {
+    if (!header) return null;
+
+    for (const part of header.split(';')) {
+        const [rawKey, ...rawValue] = part.trim().split('=');
+        if (rawKey === name) return decodeURIComponent(rawValue.join('=') || '');
+    }
+
+    return null;
+}
+
+function timingSafeEqualText(left: string, right: string): boolean {
+    if (left.length !== right.length) return false;
+
+    let mismatch = 0;
+    for (let index = 0; index < left.length; index += 1) {
+        mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+    }
+
+    return mismatch === 0;
+}
+
+export const csrfProtection = createMiddleware<{ Bindings: Env }>(
+    async (c, next) => {
+        if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method)) {
+            await next();
+            return;
+        }
+
+        if (c.req.header('Authorization')?.startsWith('Bearer ')) {
+            await next();
+            return;
+        }
+
+        if (c.req.header('X-LetBuyy-Internal-Signature')) {
+            await next();
+            return;
+        }
+
+        const cookieHeader = c.req.header('cookie');
+        if (!cookieHeader) {
+            await next();
+            return;
+        }
+
+        const cookieToken = parseCookie(cookieHeader, 'letbuyy_csrf');
+        const headerToken = c.req.header('X-CSRF-Token') || c.req.header('X-LetBuyy-CSRF-Token');
+
+        if (!cookieToken || !headerToken || !timingSafeEqualText(cookieToken, headerToken)) {
+            return c.json(
+                {
+                    error: {
+                        code: 'CSRF_TOKEN_INVALID',
+                        message: 'CSRF token validation failed',
+                    },
+                },
+                403
+            );
+        }
+
+        await next();
+    }
+);
+
 // ── Request ID ──────────────────────────────────────────────
 // Assigns a unique request ID for tracing
 export const requestId = createMiddleware<{ Bindings: Env }>(

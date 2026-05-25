@@ -14,10 +14,16 @@ import {
     OperationsListQuerySchema,
     AuthorizeRuntimeReplaySchema,
     RecordChaosExperimentSchema,
+    RecordDeploymentHealthGateSchema,
     RecordDeploymentPromotionSchema,
     RecordFailoverDrillSchema,
     RecordLoadTestRunSchema,
+    RecordOperationalDashboardSnapshotSchema,
     RecordProductionIncidentSchema,
+    RecordProductionReadinessGateSchema,
+    RecordRegionalRoutingOverrideSchema,
+    RecordSecurityEnforcementEventSchema,
+    RecordSreErrorBudgetSnapshotSchema,
     RecordUsageSchema,
     RuntimeDeadLetterRedriveSchema,
     RuntimeQueueRecoverySchema,
@@ -25,6 +31,8 @@ import {
     SubmitRuntimeControlCommandSchema,
     UpdateProductionIncidentStatusSchema,
     UpdateWebhookSubscriptionSchema,
+    ValidateEventStoreIntegritySchema,
+    ArchiveDistributedEventsSchema,
     type DispatchOutboxInput,
     type DispatchWebhookDeliveriesInput,
     type OperationsListQuery,
@@ -411,6 +419,12 @@ router.get('/runtime/overview', async (c) => {
         chaos,
         load,
         slo,
+        readiness,
+        eventIntegrity,
+        dashboards,
+        errorBudgets,
+        security,
+        regionalOverrides,
     ] = await Promise.all([
         db.from('runtime_health_projections')
             .select('runtime_name, status, region, dependencies, checked_at, metadata')
@@ -459,9 +473,39 @@ router.get('/runtime/overview', async (c) => {
             .eq('active', true)
             .order('runtime_name', { ascending: true })
             .limit(50),
+        db.from('production_readiness_gate_runs')
+            .select('gate_run_id, environment, version, status, gates, failure_summary, started_at, finished_at, created_at')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(20),
+        db.from('event_store_integrity_checks')
+            .select('check_id, stream_name, environment, status, checked_events, gap_count, duplicate_count, checked_at')
+            .is('deleted_at', null)
+            .order('checked_at', { ascending: false })
+            .limit(20),
+        db.from('operational_dashboard_snapshots')
+            .select('snapshot_id, dashboard_name, environment, status, source_api, source_projection, sampled_at')
+            .is('deleted_at', null)
+            .order('sampled_at', { ascending: false })
+            .limit(20),
+        db.from('sre_error_budget_snapshots')
+            .select('budget_id, runtime_name, slo_id, environment, window, target_percent, observed_percent, remaining_budget_percent, burn_rate, status, sampled_at')
+            .is('deleted_at', null)
+            .order('sampled_at', { ascending: false })
+            .limit(20),
+        db.from('security_enforcement_events')
+            .select('enforcement_id, environment, control_name, runtime_root, status, severity, recorded_at')
+            .is('deleted_at', null)
+            .order('recorded_at', { ascending: false })
+            .limit(20),
+        db.from('regional_routing_overrides')
+            .select('override_id, environment, tenant_site_id, runtime_root, source_region, target_region, status, expires_at, activated_at, restored_at, created_at')
+            .is('deleted_at', null)
+            .order('created_at', { ascending: false })
+            .limit(20),
     ]);
 
-    for (const result of [health, queues, alerts, incidents, deployments, failover, chaos, load, slo]) {
+    for (const result of [health, queues, alerts, incidents, deployments, failover, chaos, load, slo, readiness, eventIntegrity, dashboards, errorBudgets, security, regionalOverrides]) {
         if (result.error) throw new Error(`Runtime overview query failed: ${result.error.message}`);
     }
 
@@ -475,6 +519,12 @@ router.get('/runtime/overview', async (c) => {
         chaos_experiments: chaos.data || [],
         load_tests: load.data || [],
         slos: slo.data || [],
+        readiness_gates: readiness.data || [],
+        event_store_integrity: eventIntegrity.data || [],
+        dashboards: dashboards.data || [],
+        error_budgets: errorBudgets.data || [],
+        security_events: security.data || [],
+        regional_routing_overrides: regionalOverrides.data || [],
     }));
 });
 
@@ -807,6 +857,210 @@ router.post('/runtime/deployments', async (c) => {
     if (error) throw new Error(`Deployment promotion recording failed: ${error.message}`);
 
     return c.json(success({ deployment: data }), 201);
+});
+
+router.post('/runtime/readiness-gates', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordProductionReadinessGateSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid production readiness gate request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_production_readiness_gate_run', {
+        p_gate_run_id: parsed.data.gate_run_id,
+        p_environment: parsed.data.environment,
+        p_version: parsed.data.version,
+        p_status: parsed.data.status,
+        p_gates: parsed.data.gates,
+        p_failure_summary: parsed.data.failure_summary || null,
+    });
+
+    if (error) throw new Error(`Production readiness gate recording failed: ${error.message}`);
+
+    return c.json(success({ gate_run: data }), 201);
+});
+
+router.post('/runtime/deployment-health-gates', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordDeploymentHealthGateSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid deployment health gate request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_deployment_health_gate_result', {
+        p_gate_id: parsed.data.gate_id,
+        p_promotion_id: parsed.data.promotion_id || null,
+        p_runtime_root: parsed.data.runtime_root,
+        p_environment: parsed.data.environment,
+        p_gate_name: parsed.data.gate_name,
+        p_status: parsed.data.status,
+        p_observed_value: parsed.data.observed_value,
+        p_threshold: parsed.data.threshold,
+        p_evidence_url: parsed.data.evidence_url || null,
+    });
+
+    if (error) throw new Error(`Deployment health gate recording failed: ${error.message}`);
+
+    return c.json(success({ gate: data }), 201);
+});
+
+router.get('/runtime/event-store/integrity', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('event_store_integrity_checks')
+        .select('check_id, stream_name, environment, status, checked_events, min_stream_position, max_stream_position, gap_count, duplicate_count, retention_class, result, checked_at')
+        .is('deleted_at', null)
+        .order('checked_at', { ascending: false })
+        .limit(parseLimit(c));
+
+    if (error) throw new Error(`Event store integrity list failed: ${error.message}`);
+
+    return c.json(success({ checks: data || [] }));
+});
+
+router.post('/runtime/event-store/integrity', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = ValidateEventStoreIntegritySchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid event-store integrity request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('validate_event_stream_consistency', {
+        p_stream_name: parsed.data.stream_name,
+        p_environment: parsed.data.environment,
+        p_limit: parsed.data.limit,
+    });
+
+    if (error) throw new Error(`Event stream consistency validation failed: ${error.message}`);
+
+    return c.json(success({ check: data }), 201);
+});
+
+router.post('/runtime/event-store/archive', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = ArchiveDistributedEventsSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid event archival request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('archive_distributed_events', {
+        p_before: parsed.data.before,
+        p_limit: parsed.data.limit,
+    });
+
+    if (error) throw new Error(`Event archival failed: ${error.message}`);
+
+    return c.json(success({ archived_count: data }));
+});
+
+router.post('/runtime/dashboards', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordOperationalDashboardSnapshotSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid operational dashboard snapshot request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_operational_dashboard_snapshot', {
+        p_snapshot_id: parsed.data.snapshot_id,
+        p_dashboard_name: parsed.data.dashboard_name,
+        p_environment: parsed.data.environment,
+        p_status: parsed.data.status,
+        p_source_api: parsed.data.source_api,
+        p_source_projection: parsed.data.source_projection,
+        p_panels: parsed.data.panels,
+    });
+
+    if (error) throw new Error(`Operational dashboard snapshot recording failed: ${error.message}`);
+
+    return c.json(success({ snapshot: data }), 201);
+});
+
+router.post('/runtime/sre/error-budgets', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordSreErrorBudgetSnapshotSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid SRE error budget snapshot request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_sre_error_budget_snapshot', {
+        p_budget_id: parsed.data.budget_id,
+        p_runtime_name: parsed.data.runtime_name,
+        p_slo_id: parsed.data.slo_id,
+        p_environment: parsed.data.environment,
+        p_window: parsed.data.window,
+        p_target_percent: parsed.data.target_percent,
+        p_observed_percent: parsed.data.observed_percent,
+        p_remaining_budget_percent: parsed.data.remaining_budget_percent,
+        p_burn_rate: parsed.data.burn_rate,
+        p_status: parsed.data.status,
+    });
+
+    if (error) throw new Error(`SRE error budget snapshot recording failed: ${error.message}`);
+
+    return c.json(success({ budget: data }), 201);
+});
+
+router.post('/runtime/security/enforcement-events', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordSecurityEnforcementEventSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid security enforcement event request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_security_enforcement_event', {
+        p_enforcement_id: parsed.data.enforcement_id,
+        p_environment: parsed.data.environment,
+        p_control_name: parsed.data.control_name,
+        p_runtime_root: parsed.data.runtime_root,
+        p_status: parsed.data.status,
+        p_severity: parsed.data.severity,
+        p_evidence: parsed.data.evidence,
+    });
+
+    if (error) throw new Error(`Security enforcement event recording failed: ${error.message}`);
+
+    return c.json(success({ event: data }), 201);
+});
+
+router.post('/runtime/regional-routing-overrides', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = RecordRegionalRoutingOverrideSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid regional routing override request', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db.rpc('record_regional_routing_override', {
+        p_override_id: parsed.data.override_id,
+        p_environment: parsed.data.environment,
+        p_tenant_site_id: parsed.data.tenant_site_id || null,
+        p_runtime_root: parsed.data.runtime_root,
+        p_source_region: parsed.data.source_region,
+        p_target_region: parsed.data.target_region,
+        p_reason: parsed.data.reason,
+        p_status: parsed.data.status,
+        p_expires_at: parsed.data.expires_at || null,
+        p_metadata: parsed.data.metadata,
+    });
+
+    if (error) throw new Error(`Regional routing override recording failed: ${error.message}`);
+
+    return c.json(success({ override: data }), 201);
 });
 
 export default router;
