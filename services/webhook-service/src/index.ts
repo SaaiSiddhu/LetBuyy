@@ -24,6 +24,10 @@ interface Env {
     RAZORPAY_KEY_SECRET?: string;
     STRIPE_WEBHOOK_SECRET: string;
     ENVIRONMENT: string;
+    APP_ENV?: string;
+    NODE_ENV?: string;
+    DEPLOYMENT_ENV?: string;
+    TELEMETRY_ENV?: string;
 }
 
 const app = new Hono<{ Bindings: Env }>();

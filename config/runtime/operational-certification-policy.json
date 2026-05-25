@@ -26,6 +26,7 @@
   ],
   "staleEvidencePolicy": "Any live-certified category with missing, expired, or unlinked evidence is a hard failure. Plan-ready contracts are not live certifications and must remain explicitly labeled credential-gated.",
   "certificationModes": {
+    "dev": "Non-production development evidence validates isolated dev routes, queues, storage, telemetry, secrets, rollback, and promotion readiness only.",
     "plan": "Executable workflows and evidence contracts exist, but live operational maturity is not certified.",
     "execute": "Provider credentials, tools, telemetry, drills, load tests, security gates, and evidence recording must complete successfully before certification."
   },

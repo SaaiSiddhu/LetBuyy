@@ -60,6 +60,17 @@ export interface Env {
     NOTIFICATION_QUEUE?: Queue<Record<string, unknown>>;
     RESEND_API_KEY: string;
     ENVIRONMENT: string;
+    APP_ENV?: string;
+    NODE_ENV?: string;
+    DEPLOYMENT_ENV?: string;
+    TELEMETRY_ENV?: string;
+    RUNTIME_NAME?: string;
+    PRIMARY_REGION?: string;
+    FAILOVER_REGION?: string;
+    EVENT_QUEUE_NAME?: string;
+    ANALYTICS_QUEUE_NAME?: string;
+    SEARCH_QUEUE_NAME?: string;
+    NOTIFICATION_QUEUE_NAME?: string;
     // Future: Upstash Redis for distributed rate limiting
     UPSTASH_REDIS_REST_URL: string;
     UPSTASH_REDIS_REST_TOKEN: string;
@@ -234,9 +245,10 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
         })
         .then(async (outboxResult) => {
             const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing'], 50);
+            const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
             await eventQueue?.enqueue({
                 id: crypto.randomUUID(),
-                queueName: 'letbuyy-events',
+                queueName: eventQueueName,
                 payload: {
                     event_type: 'runtime.scheduled_dispatch.completed',
                     dispatcher_id: dispatcherId,
@@ -244,6 +256,8 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
                     outbox_result: outboxResult,
                     queue_result: queueResult,
                     environment: env.ENVIRONMENT,
+                    deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+                    telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
                 },
                 attempts: 0,
                 correlationId: dispatcherId,

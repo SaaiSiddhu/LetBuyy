@@ -1,0 +1,119 @@
+name: Dev Runtime Deployment
+
+on:
+  pull_request:
+    paths:
+      - "services/api-gateway/**"
+      - "services/queue-workers/**"
+      - "services/webhook-service/**"
+      - "infrastructure/cloudflare/**"
+      - "infrastructure/scripts/**"
+      - "config/runtime/**"
+      - "config/env/**"
+      - "scripts/validators/**"
+      - ".github/workflows/dev-runtime-deployment.yml"
+  push:
+    branches:
+      - dev
+      - develop
+      - "codex/**"
+    paths:
+      - "services/api-gateway/**"
+      - "services/queue-workers/**"
+      - "services/webhook-service/**"
+      - "infrastructure/cloudflare/**"
+      - "infrastructure/scripts/**"
+      - "config/runtime/**"
+      - "config/env/**"
+      - "scripts/validators/**"
+      - ".github/workflows/dev-runtime-deployment.yml"
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: Deploy dev Workers instead of plan-only validation
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dev-runtime-deployment-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-dev-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Governance gates
+        run: pnpm run validate:governance
+
+      - name: Lifecycle gates
+        run: pnpm run validate:lifecycle
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Dev operational validation plan
+        run: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=dev
+
+      - name: Dev Worker deploy plan
+        env:
+          LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: "00000000000000000000000000000000"
+        run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --skip-validation
+
+  deploy-dev-runtime:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.execute }}
+    needs: validate-dev-runtime
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Apply dev Cloudflare primitives
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute --skip-validation
+
+      - name: Deploy dev Workers
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
+          LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+        run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute --skip-validation

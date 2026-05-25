@@ -9,6 +9,7 @@ on:
         default: production
         type: choice
         options:
+          - dev
           - staging
           - production
       mode:
@@ -71,6 +72,7 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
           SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
           PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
           GRAFANA_URL: ${{ secrets.GRAFANA_URL }}

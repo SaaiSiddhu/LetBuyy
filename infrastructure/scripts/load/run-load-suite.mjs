@@ -9,6 +9,10 @@ function valueFor(prefix) {
   return arg ? arg.slice(prefix.length + 1) : null;
 }
 
+if (!["dev", "staging", "production"].includes(environment)) {
+  throw new Error("--environment must be dev, staging, or production");
+}
+
 const tests = [
   {
     tool: "k6",
@@ -73,7 +77,13 @@ for (const test of tests) {
     stdio: "inherit",
     env: {
       ...process.env,
-      LETBUYY_API_BASE_URL: process.env.LETBUYY_API_BASE_URL || (environment === "production" ? "https://api.letbuyy.store" : "https://api.staging.letbuyy.store"),
+      LETBUYY_API_BASE_URL: process.env.LETBUYY_API_BASE_URL || (
+        environment === "production"
+          ? "https://api.letbuyy.store"
+          : environment === "staging"
+            ? "https://api.staging.letbuyy.store"
+            : "https://api-dev.letbuyy.store"
+      ),
     },
   });
   if (result.status !== 0) process.exit(result.status ?? 1);

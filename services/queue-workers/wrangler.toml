@@ -14,6 +14,10 @@ invocation_logs = true
 
 [vars]
 ENVIRONMENT = "local"
+APP_ENV = "local"
+NODE_ENV = "development"
+DEPLOYMENT_ENV = "local"
+TELEMETRY_ENV = "local"
 RUNTIME_NAME = "Queue Workers"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
@@ -70,6 +74,76 @@ port = 8791
 inspector_port = 9234
 local_protocol = "http"
 
+[env.dev]
+name = "letbuyy-queue-workers-dev"
+workers_dev = false
+
+[env.dev.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.dev.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.dev.vars]
+ENVIRONMENT = "development"
+APP_ENV = "development"
+NODE_ENV = "development"
+DEPLOYMENT_ENV = "dev"
+TELEMETRY_ENV = "development"
+RUNTIME_NAME = "Queue Workers"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[[env.dev.queues.consumers]]
+queue = "letbuyy-events-dev"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 5
+max_retries = 6
+retry_delay = 30
+dead_letter_queue = "letbuyy-dead-letters-dev"
+
+[[env.dev.queues.consumers]]
+queue = "letbuyy-analytics-dev"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 5
+max_retries = 6
+retry_delay = 30
+dead_letter_queue = "letbuyy-dead-letters-dev"
+
+[[env.dev.queues.consumers]]
+queue = "letbuyy-search-indexing-dev"
+max_batch_size = 15
+max_batch_timeout = 10
+max_concurrency = 5
+max_retries = 6
+retry_delay = 45
+dead_letter_queue = "letbuyy-dead-letters-dev"
+
+[[env.dev.queues.consumers]]
+queue = "letbuyy-notifications-dev"
+max_batch_size = 15
+max_batch_timeout = 10
+max_concurrency = 3
+max_retries = 5
+retry_delay = 60
+dead_letter_queue = "letbuyy-dead-letters-dev"
+
+[[env.dev.queues.consumers]]
+queue = "letbuyy-dead-letters-dev"
+max_batch_size = 10
+max_batch_timeout = 30
+max_concurrency = 2
+max_retries = 3
+retry_delay = 300
+
+[env.dev.placement]
+mode = "smart"
+
 [env.staging]
 name = "letbuyy-queue-workers-staging"
 workers_dev = false
@@ -85,6 +159,10 @@ invocation_logs = true
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
+APP_ENV = "staging"
+NODE_ENV = "production"
+DEPLOYMENT_ENV = "staging"
+TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Queue Workers"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
@@ -151,6 +229,10 @@ invocation_logs = true
 
 [env.production.vars]
 ENVIRONMENT = "production"
+APP_ENV = "production"
+NODE_ENV = "production"
+DEPLOYMENT_ENV = "production"
+TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Queue Workers"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"

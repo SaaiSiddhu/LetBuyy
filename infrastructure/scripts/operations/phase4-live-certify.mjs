@@ -99,7 +99,7 @@ function run(command, commandArgs) {
   assert(result.status === 0, `${printable} failed with status ${result.status}`);
 }
 
-assert(environment === "staging" || environment === "production", "--environment must be staging or production");
+assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 assert(["auto", "plan", "execute"].includes(requestedMode), "--mode must be auto, plan, or execute");
 
 const capabilities = evaluateCapabilities();
@@ -126,13 +126,20 @@ const commonArgs = [`--environment=${environment}`, `--version=${version}`];
 const reportOutputArgs = reportOutput ? [`--output=${reportOutput}`] : [];
 
 if (mode === "execute") {
-  run("node", ["infrastructure/scripts/security/rotate-secrets.mjs", `--environment=${environment}`, "--execute"]);
-  run("node", ["infrastructure/scripts/operations/phase4-ultimate-validate.mjs", ...commonArgs, "--execute"]);
-  run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=all", "--execute", "--skip-validation"]);
+  if (environment === "dev") {
+    run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=cloudflare", "--execute", "--skip-validation"]);
+    run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=workers", "--execute", "--skip-validation"]);
+    run("node", ["infrastructure/scripts/security/rotate-secrets.mjs", `--environment=${environment}`, "--execute"]);
+    run("node", ["infrastructure/scripts/operations/phase4-ultimate-validate.mjs", ...commonArgs, "--execute"]);
+  } else {
+    run("node", ["infrastructure/scripts/security/rotate-secrets.mjs", `--environment=${environment}`, "--execute"]);
+    run("node", ["infrastructure/scripts/operations/phase4-ultimate-validate.mjs", ...commonArgs, "--execute"]);
+    run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=all", "--execute", "--skip-validation"]);
+  }
   run("node", ["infrastructure/scripts/operations/verify-live-operations.mjs", `--environment=${environment}`, "--execute"]);
   run("node", ["infrastructure/scripts/operations/run-live-drills.mjs", ...commonArgs, "--execute"]);
   run("node", ["infrastructure/scripts/operations/generate-certification-report.mjs", ...commonArgs, "--mode=execute", "--record", ...reportOutputArgs]);
-  console.log(`[phase4-live] ${environment} live production certification executed`);
+  console.log(`[phase4-live] ${environment} ${environment === "production" ? "live production" : "non-production"} certification executed`);
 } else {
   run("node", ["infrastructure/scripts/security/rotate-secrets.mjs", `--environment=${environment}`]);
   run("node", ["infrastructure/scripts/operations/phase4-ultimate-validate.mjs", ...commonArgs]);
@@ -140,5 +147,5 @@ if (mode === "execute") {
   run("node", ["infrastructure/scripts/operations/run-live-drills.mjs", ...commonArgs]);
   run("node", ["infrastructure/scripts/operations/generate-certification-report.mjs", ...commonArgs, "--mode=plan", ...reportOutputArgs]);
   run("node", ["infrastructure/scripts/deploy/production-deploy.mjs", `--environment=${environment}`, "--target=workers", "--skip-validation"]);
-  console.log(`[phase4-live] ${environment} live certification plan passed; execute mode remains credential-gated`);
+  console.log(`[phase4-live] ${environment} certification plan passed; execute mode remains credential-gated`);
 }

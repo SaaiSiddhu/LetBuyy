@@ -24,7 +24,7 @@ async function fetchOk(url, options = {}) {
   return response;
 }
 
-assert(environment === "staging" || environment === "production", "--environment must be staging or production");
+assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 
 const topology = JSON.parse(read("config/runtime/production-topology.json"));
 const collector = read(topology.observabilityStack.collector);

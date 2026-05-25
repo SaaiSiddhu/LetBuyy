@@ -136,6 +136,23 @@ reporter.assert(
   "Development lifecycle must be explicitly unstable",
 );
 reporter.assert(
+  environments.get("development")?.topology?.cloudflareEnvironment === "dev",
+  "Development lifecycle must map to the Cloudflare Wrangler dev environment",
+);
+for (const developmentResource of [
+  "api-dev.letbuyy.store",
+  "letbuyy-api-dev",
+  "letbuyy-events-dev",
+  "letbuyy-dead-letters-dev",
+  "letbuyy-runtime-cache-dev",
+  "letbuyy-dev-storage",
+]) {
+  reporter.assert(
+    JSON.stringify(environments.get("development")?.topology || {}).includes(developmentResource),
+    `Development lifecycle topology must declare isolated ${developmentResource}`,
+  );
+}
+reporter.assert(
   environments.get("staging")?.topology?.mirrorProductionTopology === true,
   "Staging lifecycle must mirror production topology",
 );

@@ -21,8 +21,8 @@ if (!worker) {
   throw new Error("--worker is required, for example --worker=letbuyy-api");
 }
 
-if (!["staging", "production"].includes(environment)) {
-  throw new Error("--environment must be staging or production");
+if (!["dev", "staging", "production"].includes(environment)) {
+  throw new Error("--environment must be dev, staging, or production");
 }
 
 if (!process.env.CLOUDFLARE_API_TOKEN) {

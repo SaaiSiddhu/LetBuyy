@@ -17,6 +17,10 @@ type QueueBatchMessage = Message<QueuePayload | Record<string, unknown>>;
 
 export interface Env extends SupabaseServiceEnv {
   ENVIRONMENT: 'development' | 'staging' | 'production';
+  APP_ENV?: string;
+  NODE_ENV?: string;
+  DEPLOYMENT_ENV?: string;
+  TELEMETRY_ENV?: string;
   RUNTIME_NAME?: string;
   PRIMARY_REGION?: string;
   FAILOVER_REGION?: string;
@@ -89,6 +93,8 @@ async function recordQueueMetric(env: Env, input: Required<QueuePayload>, status
       job_type: input.jobType,
       provider: 'cloudflare-queues',
       region: env.PRIMARY_REGION || 'global-edge',
+      deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+      telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
     },
     request_id: input.requestId,
     correlation_id: input.correlationId,
@@ -114,6 +120,8 @@ async function recordQueueLagMetric(
       provider: 'cloudflare-queues',
       region: env.PRIMARY_REGION || 'global-edge',
       attempts: message.attempts,
+      deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+      telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
     },
     request_id: input.requestId,
     correlation_id: input.correlationId,
@@ -123,7 +131,7 @@ async function recordQueueLagMetric(
 
 async function handleMessage(env: Env, batch: MessageBatch<QueuePayload | Record<string, unknown>>, message: QueueBatchMessage): Promise<void> {
   const normalized = normalizePayload(message, batch);
-  const status = batch.queue === 'letbuyy-dead-letters' ? 'dead-lettered' : 'completed';
+  const status = batch.queue.includes('dead-letters') ? 'dead-lettered' : 'completed';
 
   await persistQueueMessage(env, normalized, status);
   await recordQueueMetric(env, normalized, status);

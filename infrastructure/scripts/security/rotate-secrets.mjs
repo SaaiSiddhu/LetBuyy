@@ -33,7 +33,7 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-assert(environment === "staging" || environment === "production", "--environment must be staging or production");
+assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 
 for (const secretName of requiredSecretNames) {
   const envName = `ROTATE_SECRET_${secretName}`;

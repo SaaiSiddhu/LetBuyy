@@ -11,3 +11,4 @@ Rules:
 - CI artifacts may contain reports, but source authority remains the operations projection table.
 - `config/runtime/operational-certification-policy.json` requires hard-fail behavior, 10/10 repository and live scores, and fresh evidence across deployment, observability, failover, chaos, load, security, SRE, event-store, multi-region, and replay categories.
 - `credential-gated-plan-ready` is not a live certification.
+- Dev certification reports are allowed only as non-production SDLC evidence. A dev report must use `environment=dev`, isolated dev Cloudflare routes/resources, and must not set or imply production live certification.

@@ -9,6 +9,7 @@ on:
         default: staging
         type: choice
         options:
+          - dev
           - staging
           - production
       target:
@@ -107,6 +108,7 @@ jobs:
           GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
           GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
           OTEL_COLLECTOR_HEALTH_URL: ${{ secrets.OTEL_COLLECTOR_HEALTH_URL }}
+          LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}

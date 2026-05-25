@@ -22,6 +22,7 @@ function readJson(path) {
 
 const topology = readJson("config/runtime/production-topology.json");
 assert(topology.environment === "production", "production topology must target production");
+assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 
 const requiredFiles = [
   topology.queueProvider.terraform,
@@ -57,9 +58,14 @@ const endpoints = environment === "production"
       "https://letbuyy.store/",
       "https://console.letbuyy.store/",
     ]
-  : [
+  : environment === "staging"
+    ? [
       "https://api.staging.letbuyy.store/v1/health",
       "https://webhooks.staging.letbuyy.store/health",
+    ]
+    : [
+      "https://api-dev.letbuyy.store/v1/health",
+      "https://webhooks-dev.letbuyy.store/health",
     ];
 
 for (const endpoint of endpoints) {
@@ -75,7 +81,11 @@ for (const endpoint of endpoints) {
 }
 
 if (process.env.LETBUYY_OPERATIONS_TOKEN) {
-  const apiBase = environment === "production" ? "https://api.letbuyy.store" : "https://api.staging.letbuyy.store";
+  const apiBase = environment === "production"
+    ? "https://api.letbuyy.store"
+    : environment === "staging"
+      ? "https://api.staging.letbuyy.store"
+      : "https://api-dev.letbuyy.store";
   const response = await fetch(`${apiBase}/v1/operations/runtime/overview?limit=10`, {
     headers: {
       Authorization: `Bearer ${process.env.LETBUYY_OPERATIONS_TOKEN}`,

@@ -27,8 +27,7 @@
 
 ## Promotion Rules
 
-- Local, staging, and production values are separate. Never reuse production secrets in local templates.
+- Local, dev, staging, and production values are separate. Never reuse production secrets in local templates or the Cloudflare `env.dev` Worker environment.
 - Promote variable names through code review; promote values through provider secret stores.
 - Rotate secrets after accidental exposure and record the rotation task in `tasks/todo.md`.
 - Historical `all.env` references are treated as incident memory. The file must remain ignored and must not be regenerated with real values.
-

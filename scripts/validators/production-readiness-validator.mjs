@@ -16,6 +16,7 @@ const requiredFiles = [
   "infrastructure/cloudflare/queues.tf",
   "infrastructure/cloudflare/storage.tf",
   "infrastructure/cloudflare/workers-topology.md",
+  ".github/workflows/dev-runtime-deployment.yml",
   "infrastructure/deployment/kubernetes/namespace.yaml",
   "infrastructure/deployment/kubernetes/runtime-health-probes.yaml",
   "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
@@ -33,6 +34,7 @@ const requiredFiles = [
   "infrastructure/security/production-security-controls.yaml",
   "infrastructure/monitoring/slo-catalog.yaml",
   "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
+  "infrastructure/scripts/cloudflare/materialize-wrangler-config.mjs",
   "infrastructure/scripts/database/verify-supabase-operations.mjs",
   "infrastructure/scripts/deploy/production-deploy.mjs",
   "infrastructure/scripts/deploy/production-rollback.mjs",
@@ -70,6 +72,7 @@ const requiredFiles = [
   "docs/runbooks/chaos-drill.md",
   "docs/runbooks/live-certification-execute.md",
   "docs/operations/production-certification.md",
+  "docs/operations/dev-environment-operationalization-report.md",
   "docs/operations/phase4-live-execution-evidence.md",
   "docs/governance/live-rollout-governance.md",
   "docs/governance/production-certification-governance.md",
@@ -287,7 +290,46 @@ for (const category of requiredLiveEvidenceCategories) {
 
 const apiWrangler = readFile("services/api-gateway/wrangler.toml");
 const queueWrangler = readFile("services/queue-workers/wrangler.toml");
+const webhookWrangler = readFile("services/webhook-service/wrangler.toml");
 const queueTerraform = readFile("infrastructure/cloudflare/queues.tf");
+const storageTerraform = readFile("infrastructure/cloudflare/storage.tf");
+
+function tableBlock(toml, table) {
+  const marker = `[${table}]`;
+  const start = toml.indexOf(marker);
+  if (start < 0) return "";
+  const bodyStart = start + marker.length;
+  const next = toml.indexOf("\n[", bodyStart);
+  return toml.slice(bodyStart, next >= 0 ? next : toml.length);
+}
+
+function arrayTableBlocks(toml, table) {
+  const marker = `[[${table}]]`;
+  const blocks = [];
+  let index = toml.indexOf(marker);
+  while (index >= 0) {
+    const start = index + marker.length;
+    const nextArray = toml.indexOf("[[", start);
+    const nextTable = toml.indexOf("\n[", start);
+    const candidates = [nextArray, nextTable].filter((candidate) => candidate >= 0);
+    const end = candidates.length > 0 ? Math.min(...candidates) : toml.length;
+    blocks.push(toml.slice(start, end));
+    index = toml.indexOf(marker, end);
+  }
+  return blocks;
+}
+
+function stringValue(block, key) {
+  return block.match(new RegExp(`^\\s*${key}\\s*=\\s*"([^"]+)"`, "m"))?.[1] || "";
+}
+
+function environmentQueueName(queueName, environment) {
+  return environment === "production" ? queueName : `${queueName}-${environment}`;
+}
+
+function terraformStringAssignmentExists(key, value) {
+  return new RegExp(`\\b${key}\\s*=\\s*"${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`).test(storageTerraform);
+}
 
 for (const queueName of [
   "letbuyy-events",
@@ -309,12 +351,97 @@ for (const producerBinding of ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE",
   );
 }
 
-for (const wranglerEnv of ["env.staging", "env.production"]) {
+for (const wranglerEnv of ["env.dev", "env.staging", "env.production"]) {
   reporter.assert(
-    apiWrangler.includes(`[${wranglerEnv}]`) && queueWrangler.includes(`[${wranglerEnv}]`),
-    `Wrangler config must define ${wranglerEnv} for API and queue workers`,
+    apiWrangler.includes(`[${wranglerEnv}]`) && queueWrangler.includes(`[${wranglerEnv}]`) && webhookWrangler.includes(`[${wranglerEnv}]`),
+    `Wrangler config must define ${wranglerEnv} for API, webhook, and queue workers`,
   );
 }
+
+const baseRuntimeQueues = [
+  "letbuyy-events",
+  "letbuyy-analytics",
+  "letbuyy-search-indexing",
+  "letbuyy-notifications",
+  "letbuyy-dead-letters",
+];
+const environmentRoutes = {
+  dev: {
+    api: "api-dev.letbuyy.store",
+    webhooks: "webhooks-dev.letbuyy.store",
+    cache: "letbuyy-runtime-cache-dev",
+    r2: "letbuyy-dev-storage",
+  },
+  staging: {
+    api: "api.staging.letbuyy.store",
+    webhooks: "webhooks.staging.letbuyy.store",
+    cache: "letbuyy-runtime-cache-staging",
+    r2: "letbuyy-staging-storage",
+  },
+  production: {
+    api: "api.letbuyy.store",
+    webhooks: "webhooks.letbuyy.store",
+    cache: "letbuyy-runtime-cache",
+    r2: "letbuyy-production-storage",
+  },
+};
+
+const seenQueueNames = new Map();
+const seenRoutes = new Map();
+const seenStorageNames = new Map();
+
+for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
+  const apiEnvBlock = tableBlock(apiWrangler, `env.${environmentName}`);
+  const webhookEnvBlock = tableBlock(webhookWrangler, `env.${environmentName}`);
+  reporter.assert(
+    stringValue(apiEnvBlock, "name") === (environmentName === "production" ? "letbuyy-api" : `letbuyy-api-${environmentName}`),
+    `API Gateway Worker name must be isolated for ${environmentName}`,
+  );
+  reporter.assert(
+    stringValue(webhookEnvBlock, "name") === (environmentName === "production" ? "letbuyy-webhooks" : `letbuyy-webhooks-${environmentName}`),
+    `Webhook Worker name must be isolated for ${environmentName}`,
+  );
+  reporter.assert(apiWrangler.includes(isolation.api), `API Gateway route missing for ${environmentName}: ${isolation.api}`);
+  reporter.assert(webhookWrangler.includes(isolation.webhooks), `Webhook route missing for ${environmentName}: ${isolation.webhooks}`);
+  for (const route of [isolation.api, isolation.webhooks]) {
+    reporter.assert(!seenRoutes.has(route), `Cloudflare route is shared by ${seenRoutes.get(route)} and ${environmentName}: ${route}`);
+    seenRoutes.set(route, environmentName);
+  }
+
+  reporter.assert(terraformStringAssignmentExists("title", isolation.cache), `Cloudflare KV namespace missing for ${environmentName}: ${isolation.cache}`);
+  reporter.assert(terraformStringAssignmentExists("name", isolation.r2), `Cloudflare R2 bucket missing for ${environmentName}: ${isolation.r2}`);
+  for (const storageName of [isolation.cache, isolation.r2]) {
+    reporter.assert(!seenStorageNames.has(storageName), `Cloudflare storage name is shared by ${seenStorageNames.get(storageName)} and ${environmentName}: ${storageName}`);
+    seenStorageNames.set(storageName, environmentName);
+  }
+
+  const producerQueues = arrayTableBlocks(apiWrangler, `env.${environmentName}.queues.producers`).map((block) => stringValue(block, "queue"));
+  const consumerQueues = arrayTableBlocks(queueWrangler, `env.${environmentName}.queues.consumers`).map((block) => stringValue(block, "queue"));
+  for (const baseQueue of baseRuntimeQueues) {
+    const queueName = environmentQueueName(baseQueue, environmentName);
+    reporter.assert(queueTerraform.includes(queueName), `Cloudflare Terraform missing ${environmentName} queue ${queueName}`);
+    reporter.assert(consumerQueues.includes(queueName), `Queue worker missing ${environmentName} consumer ${queueName}`);
+    if (!baseQueue.includes("dead-letters")) {
+      reporter.assert(producerQueues.includes(queueName), `API Gateway missing ${environmentName} producer ${queueName}`);
+    }
+    reporter.assert(!seenQueueNames.has(queueName), `Cloudflare queue is shared by ${seenQueueNames.get(queueName)} and ${environmentName}: ${queueName}`);
+    seenQueueNames.set(queueName, environmentName);
+  }
+}
+
+const devVars = tableBlock(apiWrangler, "env.dev.vars");
+for (const devVar of [
+  'APP_ENV = "development"',
+  'NODE_ENV = "development"',
+  'DEPLOYMENT_ENV = "dev"',
+  'TELEMETRY_ENV = "development"',
+]) {
+  reporter.assert(devVars.includes(devVar), `API Gateway dev vars must include ${devVar}`);
+}
+reporter.assert(
+  apiWrangler.includes('binding = "CACHE"') && apiWrangler.includes("__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__"),
+  "API Gateway dev Worker must declare an isolated CACHE KV binding resolved from Terraform output during deploy",
+);
 
 for (const requiredQueueSetting of ["max_concurrency", "retry_delay", "dead_letter_queue"]) {
   reporter.assert(
@@ -532,12 +659,30 @@ for (const ciFragment of [
   );
 }
 
+const devCi = readFile(".github/workflows/dev-runtime-deployment.yml");
+for (const ciFragment of [
+  "--environment=dev",
+  "production-deploy.mjs",
+  "phase4-ultimate-validate.mjs",
+  "validate:governance",
+  "validate:lifecycle",
+  "typecheck",
+  "LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID",
+]) {
+  reporter.assert(
+    devCi.includes(ciFragment),
+    `Dev runtime deployment workflow must include ${ciFragment}`,
+  );
+}
+
 const deployScript = readFile("infrastructure/scripts/deploy/production-deploy.mjs");
 for (const deployFragment of [
   "phase4-ultimate-validate.mjs",
   "--execute",
   "--skip-validation",
   "WRANGLER_LOG_PATH",
+  "materialize-wrangler-config.mjs",
+  '"dev"',
 ]) {
   reporter.assert(
     deployScript.includes(deployFragment),

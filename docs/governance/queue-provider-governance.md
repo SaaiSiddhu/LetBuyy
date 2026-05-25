@@ -13,6 +13,19 @@ Cloudflare Queues is the selected Phase 4 production queue provider.
 
 ## Required Queues
 
+- Development:
+  - `letbuyy-events-dev`
+  - `letbuyy-analytics-dev`
+  - `letbuyy-search-indexing-dev`
+  - `letbuyy-notifications-dev`
+  - `letbuyy-dead-letters-dev`
+- Staging:
+  - `letbuyy-events-staging`
+  - `letbuyy-analytics-staging`
+  - `letbuyy-search-indexing-staging`
+  - `letbuyy-notifications-staging`
+  - `letbuyy-dead-letters-staging`
+- Production:
 - `letbuyy-events`
 - `letbuyy-analytics`
 - `letbuyy-search-indexing`
@@ -22,6 +35,7 @@ Cloudflare Queues is the selected Phase 4 production queue provider.
 ## Rules
 
 - Every production queue must have a DLQ unless it is itself a DLQ.
+- Development, staging, and production queue names must be unique and must not share producers, consumers, DLQs, or telemetry labels.
 - Redrive requires operator authorization and audit through `/v1/operations/runtime/queues/:queueName/redrive-dead-letters`.
 - Queue consumers must emit telemetry and persist retry/dead-letter state.
 - Consumer concurrency, retry delay, batch size, and DLQ routing must be explicit in `services/queue-workers/wrangler.toml`.

@@ -81,7 +81,9 @@ function evaluateCapabilities() {
 
 function apiBase() {
   if (process.env.LETBUYY_API_BASE_URL) return process.env.LETBUYY_API_BASE_URL.replace(/\/$/, "");
-  return environment === "production" ? "https://api.letbuyy.store" : "https://api.staging.letbuyy.store";
+  if (environment === "production") return "https://api.letbuyy.store";
+  if (environment === "staging") return "https://api.staging.letbuyy.store";
+  return "https://api-dev.letbuyy.store";
 }
 
 async function operationsRequest(method, path, body) {
@@ -176,7 +178,7 @@ function planEvidenceSummary(categories) {
   );
 }
 
-assert(environment === "staging" || environment === "production", "--environment must be staging or production");
+assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 assert(["plan", "execute"].includes(requestedMode), "--mode must be plan or execute");
 
 const certification = readJson("config/runtime/live-production-certification.json");
@@ -215,10 +217,10 @@ const report = {
   capabilities,
   evidence_summary: evidenceSummary,
   conclusion: liveCertified
-    ? "Live production certification evidence is present and fresh."
+    ? `${environment === "production" ? "Live production" : "Non-production"} certification evidence is present and fresh.`
     : requestedMode === "execute"
-      ? "Live production certification failed because required evidence is missing or stale."
-      : "Repository is plan-ready; live certification remains credential-gated and unclaimed.",
+      ? `${environment === "production" ? "Live production" : "Non-production"} certification failed because required evidence is missing or stale.`
+      : "Repository is plan-ready; certification remains credential-gated and unclaimed.",
 };
 
 if (record) {

@@ -1,8 +1,16 @@
 environments:
   dev:
     promotionSource: feature-branch
-    secrets: local-only
-    deploy: preview
+    secrets: provider-dev
+    deploy: isolated-worker-dev
+    deploymentCommand: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute
+    rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=dev --worker=letbuyy-api-dev
+    healthGates:
+      - governance-validation
+      - lifecycle-validation
+      - typecheck
+      - cloudflare-provider-contract-validation-dev
+      - worker-health-dev
   staging:
     promotionSource: main
     secrets: provider-staging
@@ -34,6 +42,15 @@ environments:
       - chaos-suite-approved
       - load-suite-current
 startupSequence:
+  - name: dev-workers
+    command: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute
+    owns:
+      - dev-api-worker
+      - dev-queue-workers
+      - dev-webhook-worker
+      - dev-queue-bindings
+      - dev-kv-cache
+      - dev-r2-storage
   - name: phase4-ultimate-preflight
     command: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production
     owns:

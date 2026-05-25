@@ -10,6 +10,7 @@ const skipValidation = args.has("--skip-validation");
 const environment = valueFor("--environment") || "production";
 const target = valueFor("--target") || "all";
 const wranglerLogPath = process.env.WRANGLER_LOG_PATH || path.join(os.tmpdir(), "letbuyy-wrangler-logs");
+const supportedEnvironments = ["dev", "staging", "production"];
 
 fs.mkdirSync(wranglerLogPath, { recursive: true });
 
@@ -54,8 +55,8 @@ function cleanWranglerArtifacts() {
   }
 }
 
-if (!["staging", "production"].includes(environment)) {
-  throw new Error("--environment must be staging or production");
+if (!supportedEnvironments.includes(environment)) {
+  throw new Error("--environment must be dev, staging, or production");
 }
 
 cleanWranglerArtifacts();
@@ -91,7 +92,18 @@ if (shouldRun("workers")) {
     "services/webhook-service/wrangler.toml",
     "services/queue-workers/wrangler.toml",
   ]) {
-    run("npx", ["wrangler", "deploy", "--config", config, "--env", environment, "--keep-vars", ...deployFlag]);
+    let deployConfig = config;
+    if (config === "services/api-gateway/wrangler.toml") {
+      deployConfig = `services/api-gateway/.wrangler/api-gateway-${environment}.wrangler.toml`;
+      run("node", [
+        "infrastructure/scripts/cloudflare/materialize-wrangler-config.mjs",
+        `--config=${config}`,
+        `--environment=${environment}`,
+        `--output=${deployConfig}`,
+        ...(execute ? ["--require-real-bindings"] : []),
+      ]);
+    }
+    run("npx", ["wrangler", "deploy", "--config", deployConfig, "--env", environment, "--keep-vars", ...deployFlag]);
   }
   cleanWranglerArtifacts();
 

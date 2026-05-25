@@ -3,7 +3,13 @@ const experimentType = valueFor("--type");
 const environment = valueFor("--environment") || "staging";
 const blastRadius = valueFor("--blast-radius") || "single-runtime";
 const status = valueFor("--status") || "planned";
-const apiBase = process.env.LETBUYY_API_BASE_URL || (environment === "production" ? "https://api.letbuyy.store" : "https://api.staging.letbuyy.store");
+const apiBase = process.env.LETBUYY_API_BASE_URL || (
+  environment === "production"
+    ? "https://api.letbuyy.store"
+    : environment === "staging"
+      ? "https://api.staging.letbuyy.store"
+      : "https://api-dev.letbuyy.store"
+);
 
 const supportedTypes = new Set([
   "queue-outage",
@@ -26,7 +32,7 @@ function assert(condition, message) {
 }
 
 assert(supportedTypes.has(experimentType), `--type must be one of: ${Array.from(supportedTypes).join(", ")}`);
-assert(["staging", "production"].includes(environment), "--environment must be staging or production");
+assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
 assert(process.env.LETBUYY_OPERATIONS_TOKEN, "LETBUYY_OPERATIONS_TOKEN is required");
 
 const experimentId = valueFor("--id") || `${experimentType}-${environment}-${Date.now()}`;
