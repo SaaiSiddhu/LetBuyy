@@ -8,6 +8,7 @@
     "mode",
     "budgets",
     "boundedConvergence",
+    "executionCertificationBudgets",
     "failurePolicy"
   ],
   "properties": {
@@ -16,6 +17,7 @@
     "mode": { "const": "local-executable-evidence-not-production-certification" },
     "budgets": { "type": "object" },
     "boundedConvergence": { "type": "object" },
+    "executionCertificationBudgets": { "type": "object" },
     "failurePolicy": { "const": "fail-closed" }
   }
 }

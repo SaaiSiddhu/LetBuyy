@@ -110,13 +110,13 @@
       "path": "config/runtime/operational-certification-evidence.json",
       "owner": "operational-certification",
       "compatibility": "local-evidence-contract-compatible",
-      "checksum": "4a5e032544432e8be3058945bd82859e8b42abb035de7059d8852a1b612d2685"
+      "checksum": "a0092f93511b9a16d1cc58b2c89711d43710a3fdc973be2d02420ec480f241a2"
     },
     {
       "path": "config/runtime/recovery-slo-contract.json",
       "owner": "recovery-slo",
       "compatibility": "bounded-recovery-budget-compatible",
-      "checksum": "703626d54f82bc2d7f23be98bbcebec034147e73e7c699408801645660a76021"
+      "checksum": "f0db4771fa11360d36938c494529d66fc11713de60437c5c292bcc8b507abe75"
     }
   ],
   "failurePolicy": "fail-closed"

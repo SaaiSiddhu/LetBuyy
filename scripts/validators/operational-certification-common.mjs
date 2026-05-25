@@ -52,7 +52,7 @@ export function validateOperationalCertification(kind) {
   );
 
   reporter.assert(
-    packageJson?.scripts?.["validate:operational-certification"] === "node scripts/validators/replay-certification-validator.mjs && node scripts/validators/rollback-certification-validator.mjs && node scripts/validators/queue-certification-validator.mjs && node scripts/validators/wal-certification-validator.mjs && node scripts/validators/failover-certification-validator.mjs && node scripts/validators/recovery-slo-validator.mjs && node scripts/validators/operational-evidence-validator.mjs && node scripts/validators/telemetry-lineage-validator.mjs && node scripts/validators/durable-object-certification-validator.mjs && node scripts/validators/recovery-budget-validator.mjs",
+    packageJson?.scripts?.["validate:operational-certification"] === "node scripts/validators/replay-certification-validator.mjs && node scripts/validators/rollback-certification-validator.mjs && node scripts/validators/queue-certification-validator.mjs && node scripts/validators/wal-certification-validator.mjs && node scripts/validators/failover-certification-validator.mjs && node scripts/validators/recovery-slo-validator.mjs && node scripts/validators/operational-evidence-validator.mjs && node scripts/validators/telemetry-lineage-validator.mjs && node scripts/validators/durable-object-certification-validator.mjs && node scripts/validators/recovery-budget-validator.mjs && node scripts/validators/persistence-certification-validator.mjs && node scripts/validators/replay-throughput-validator.mjs && node scripts/validators/queue-rebuild-execution-validator.mjs && node scripts/validators/rollback-execution-validator.mjs && node scripts/validators/telemetry-pipeline-validator.mjs && node scripts/validators/benchmark-lineage-validator.mjs && node scripts/validators/operational-evidence-lineage-validator.mjs && node scripts/validators/cloudflare-execution-certification-validator.mjs && node scripts/validators/recovery-drill-execution-validator.mjs && node scripts/validators/lease-contention-validator.mjs",
     "Root package must expose the full operational certification validator chain",
   );
   reporter.assert(
@@ -111,6 +111,22 @@ export function validateOperationalCertification(kind) {
     reporter.assert(harness.includes("assertSloBudgets"), "Operational certification harness must compare observed timings to recovery budgets");
     reporter.assert(harness.includes("within_budget"), "Operational certification evidence must record within_budget results");
     reporter.assert(slo?.recoveryBudgetGovernance?.productionCertificationPolicy?.includes("not production SLO certification"), "Recovery budget governance must distinguish local evidence from production SLO certification");
+  }
+
+  if (kind.finalValidator) {
+    reporter.assert(
+      evidence?.finalCertificationValidators?.includes(kind.finalValidator),
+      `Operational evidence contract missing final certification validator: ${kind.finalValidator}`,
+    );
+    for (const fragment of kind.harnessFragments || []) {
+      reporter.assert(harness.includes(fragment), `Operational certification harness missing execution fragment: ${fragment}`);
+    }
+    for (const field of kind.contractFields || []) {
+      reporter.assert(Boolean(field.split(".").reduce((value, key) => value?.[key], evidence)), `Operational evidence contract missing field: ${field}`);
+    }
+    for (const field of kind.sloFields || []) {
+      reporter.assert(Boolean(field.split(".").reduce((value, key) => value?.[key], slo)), `Recovery SLO contract missing field: ${field}`);
+    }
   }
 
   reporter.finish(kind.summary);

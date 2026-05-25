@@ -23,5 +23,12 @@
     "budgetComparison": "observed-local-duration-must-not-exceed-budget",
     "productionCertificationPolicy": "local timing evidence is not production SLO certification"
   },
+  "executionCertificationBudgets": {
+    "replayThroughputEventsPerSecondMinimum": 1,
+    "queueRebuildMessagesPerSecondMinimum": 1,
+    "restartRestorationRequired": true,
+    "persistentBackendRequired": true,
+    "telemetryPipelineRequired": true
+  },
   "failurePolicy": "fail-closed"
 }

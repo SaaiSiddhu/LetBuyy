@@ -8,9 +8,12 @@
     "mode",
     "harness",
     "telemetry",
+    "persistenceBackends",
     "certificationCategories",
     "validators",
     "artifactPolicy",
+    "benchmarkLineage",
+    "finalCertificationValidators",
     "failurePolicy"
   ],
   "properties": {
@@ -19,9 +22,12 @@
     "mode": { "const": "local-executable-evidence-not-production-certification" },
     "harness": { "type": "object" },
     "telemetry": { "type": "object" },
+    "persistenceBackends": { "type": "object" },
     "certificationCategories": { "type": "array", "minItems": 7 },
     "validators": { "type": "array", "minItems": 10 },
     "artifactPolicy": { "type": "object" },
+    "benchmarkLineage": { "type": "object" },
+    "finalCertificationValidators": { "type": "array", "minItems": 10 },
     "failurePolicy": { "const": "fail-closed" }
   }
 }

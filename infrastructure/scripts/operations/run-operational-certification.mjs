@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
+import { spawnSync } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import { performance } from "node:perf_hooks";
@@ -10,6 +11,7 @@ const output = valueFor("--output") || "artifacts/operational-certification/repo
 const replayEvents = Number(valueFor("--replay-events") || 6000);
 const queueMessages = Number(valueFor("--queue-messages") || 12000);
 const walEntries = Number(valueFor("--wal-entries") || 128);
+const storageDir = valueFor("--storage-dir") || path.join(path.dirname(output), "persistent-store");
 const fixedStartedAt = "2026-05-25T00:00:00.000Z";
 
 function valueFor(prefix) {
@@ -37,13 +39,97 @@ function readJson(relPath) {
   return JSON.parse(fs.readFileSync(relPath, "utf8"));
 }
 
+function appendRecord(collection, record) {
+  fs.mkdirSync(storageDir, { recursive: true });
+  const file = path.join(storageDir, `${collection}.jsonl`);
+  const sequence = fs.existsSync(file)
+    ? fs.readFileSync(file, "utf8").split("\n").filter(Boolean).length + 1
+    : 1;
+  const previousChecksum = sequence > 1
+    ? JSON.parse(fs.readFileSync(file, "utf8").trim().split("\n").at(-1)).record_checksum
+    : null;
+  const persisted = {
+    ...record,
+    storage_sequence: sequence,
+    previous_record_checksum: previousChecksum,
+  };
+  persisted.record_checksum = sha256(persisted);
+  fs.appendFileSync(file, `${JSON.stringify(persisted)}\n`);
+  return persisted;
+}
+
+function readRecords(collection) {
+  const file = path.join(storageDir, `${collection}.jsonl`);
+  if (!fs.existsSync(file)) return [];
+  return fs.readFileSync(file, "utf8").split("\n").filter(Boolean).map((line) => JSON.parse(line));
+}
+
+function writeSnapshot(name, value) {
+  fs.mkdirSync(storageDir, { recursive: true });
+  const snapshot = {
+    name,
+    value,
+    snapshot_checksum: sha256({ name, value }),
+  };
+  fs.writeFileSync(path.join(storageDir, `${name}.snapshot.json`), `${JSON.stringify(snapshot, null, 2)}\n`);
+  return snapshot;
+}
+
+function verifyAppendOnly(records, collection) {
+  let previous = null;
+  for (const record of records) {
+    const { record_checksum: recordChecksum, ...checksumInput } = record;
+    if (sha256(checksumInput) !== recordChecksum) {
+      throw new Error(`${collection} record checksum mismatch at sequence ${record.storage_sequence}`);
+    }
+    if (record.previous_record_checksum !== previous) {
+      throw new Error(`${collection} append-only lineage mismatch at sequence ${record.storage_sequence}`);
+    }
+    previous = recordChecksum;
+  }
+  return previous;
+}
+
+function buildRestorationReport() {
+  const collections = [
+    "wal",
+    "replay-events",
+    "replay-checkpoints",
+    "queue-checkpoints",
+    "rollback-steps",
+    "lease-heartbeats",
+    "durable-object-snapshots",
+    "orchestration-checkpoints",
+    "telemetry",
+  ];
+  const restored = {};
+  for (const collection of collections) {
+    const records = readRecords(collection);
+    restored[collection] = {
+      count: records.length,
+      append_only_tail_checksum: verifyAppendOnly(records, collection),
+      collection_checksum: sha256(records.map((record) => record.record_checksum)),
+    };
+  }
+  assert(restored.wal.count > 0, "persistent WAL restoration missing");
+  assert(restored["replay-checkpoints"].count > 0, "persistent replay checkpoint restoration missing");
+  assert(restored["queue-checkpoints"].count > 0, "persistent queue checkpoint restoration missing");
+  assert(restored["lease-heartbeats"].count > 0, "persistent lease heartbeat restoration missing");
+  assert(restored.telemetry.count >= 7, "persistent telemetry restoration incomplete");
+  return {
+    restored,
+    restart_backed: true,
+    restoration_hash: sha256(restored),
+  };
+}
+
 function measure(category, operation, traceId, input, run) {
   const started = performance.now();
   const result = run();
   const durationMs = Number((performance.now() - started).toFixed(3));
   const inputChecksum = sha256(input);
   const resultChecksum = sha256(result);
-  return {
+  const measured = {
     result,
     telemetry: {
       trace_id: traceId,
@@ -59,6 +145,8 @@ function measure(category, operation, traceId, input, run) {
       causality_checksum: sha256({ traceId, inputChecksum, resultChecksum }),
     },
   };
+  appendRecord("telemetry", measured.telemetry);
+  return measured;
 }
 
 function replay(events) {
@@ -94,6 +182,13 @@ function certifyReplayExecution(count) {
   const second = replay(structuredClone(events));
   assert(first.state_checksum === second.state_checksum, "replay divergence exists");
   assert(first.projection_checksum === second.projection_checksum, "projection mismatch exists");
+  for (const event of events) appendRecord("replay-events", event);
+  appendRecord("replay-checkpoints", {
+    stream: "local-certification-orders",
+    event_count: events.length,
+    state_checksum: first.state_checksum,
+    projection_checksum: first.projection_checksum,
+  });
   return {
     outcome: "verified",
     event_count: events.length,
@@ -116,6 +211,12 @@ function certifyRollbackExecution() {
   for (const step of dag) {
     assert(step.dependsOn.every((dependency) => completed.has(dependency)), `rollback dependency missing for ${step.id}`);
     completed.add(step.id);
+    appendRecord("rollback-steps", {
+      step: step.id,
+      dependsOn: step.dependsOn,
+      reversible: step.reversible,
+      completed: true,
+    });
   }
   return {
     outcome: "verified",
@@ -143,6 +244,7 @@ function certifyQueueRebuild(total) {
       checkpoint: sha256({ index, attempts, poison }),
     });
   }
+  for (const checkpoint of checkpoints) appendRecord("queue-checkpoints", checkpoint);
   return {
     outcome: "verified",
     total,
@@ -172,6 +274,7 @@ function certifyWalRecovery(count) {
   for (let index = 0; index < count; index += 1) {
     appendWalEntry(wal, index === count - 1 ? "checkpoint-written" : "step-applied", { operationId: `op_${index}` });
   }
+  for (const entry of wal.entries) appendRecord("wal", entry);
   const cursor = { next_sequence: Math.floor(count / 2) + 1, cursor_checksum: sha256({ execution_id: wal.execution_id, next: Math.floor(count / 2) + 1 }) };
   const restored = wal.entries.filter((entry) => entry.sequence >= cursor.next_sequence);
   const corrupted = structuredClone(wal);
@@ -211,6 +314,14 @@ function certifyLeaseFailover() {
   ];
   const authoritative = [...heartbeats].sort((left, right) => right.epoch - left.epoch || right.fencing - left.fencing || right.heartbeat - left.heartbeat)[0];
   const staleEvicted = heartbeats.filter((heartbeat) => heartbeat.executor !== authoritative.executor).length;
+  for (const heartbeat of heartbeats) appendRecord("lease-heartbeats", heartbeat);
+  appendRecord("lease-heartbeats", {
+    executor: authoritative.executor,
+    epoch: authoritative.epoch,
+    fencing: authoritative.fencing,
+    heartbeat: authoritative.heartbeat + 1,
+    authority: "selected",
+  });
   return {
     outcome: "verified",
     authoritative_executor: authoritative.executor,
@@ -226,6 +337,12 @@ function certifyDurableObjectRecovery() {
   const environments = ["dev", "staging", "production"];
   const workerNames = environments.map((env) => `letbuyy-api-gateway-${env}`);
   assert(new Set(workerNames).size === workerNames.length, "Durable Object worker ownership ambiguous");
+  const snapshot = writeSnapshot("durable-object-recovery", {
+    object: "runtime-coordinator",
+    sequence: 12,
+    workerNames,
+  });
+  appendRecord("durable-object-snapshots", snapshot);
   return {
     outcome: "verified",
     local_model_only: true,
@@ -241,6 +358,7 @@ function certifyDurableObjectRecovery() {
 
 function certifyOrchestrationRecovery() {
   const cursor = { executionId: "orchestration-local-certification", nextNode: "resume-traffic", completed: ["pause-traffic", "disable-release", "restore-worker"] };
+  appendRecord("orchestration-checkpoints", cursor);
   return {
     outcome: "verified",
     resumable_cursor_checksum: sha256(cursor),
@@ -267,6 +385,82 @@ function assertSloBudgets(results, slo) {
   }));
 }
 
+function buildBenchmarkResults(measured) {
+  const byCategory = new Map(measured.map((entry) => [entry.category, entry]));
+  const replay = byCategory.get("replay");
+  const queue = byCategory.get("queue");
+  const wal = byCategory.get("wal");
+  const rollback = byCategory.get("rollback");
+  const failover = byCategory.get("failover");
+  const orchestration = byCategory.get("orchestration");
+  return [
+    {
+      id: "replay-throughput",
+      dataset_version: "local-certification-v1",
+      execution_environment: "local-node-process",
+      observed_events: replay?.result?.event_count || 0,
+      duration_ms: replay?.telemetry?.duration_ms || 0,
+      throughput_per_second: Number(((replay?.result?.event_count || 0) / Math.max(0.001, (replay?.telemetry?.duration_ms || 0) / 1000)).toFixed(2)),
+      evidence_hash: replay?.telemetry?.result_checksum,
+    },
+    {
+      id: "queue-rebuild-throughput",
+      dataset_version: "local-certification-v1",
+      execution_environment: "local-node-process",
+      observed_messages: queue?.result?.total || 0,
+      duration_ms: queue?.telemetry?.duration_ms || 0,
+      throughput_per_second: Number(((queue?.result?.total || 0) / Math.max(0.001, (queue?.telemetry?.duration_ms || 0) / 1000)).toFixed(2)),
+      evidence_hash: queue?.telemetry?.result_checksum,
+    },
+    {
+      id: "wal-restoration",
+      dataset_version: "local-certification-v1",
+      execution_environment: "local-node-process",
+      restored_entries: wal?.result?.restored_entries || 0,
+      duration_ms: wal?.telemetry?.duration_ms || 0,
+      evidence_hash: wal?.telemetry?.result_checksum,
+    },
+    {
+      id: "rollback-timing",
+      dataset_version: "local-certification-v1",
+      execution_environment: "local-node-process",
+      duration_ms: rollback?.telemetry?.duration_ms || 0,
+      evidence_hash: rollback?.telemetry?.result_checksum,
+    },
+    {
+      id: "lease-failover-timing",
+      dataset_version: "local-certification-v1",
+      execution_environment: "local-node-process",
+      duration_ms: failover?.telemetry?.duration_ms || 0,
+      evidence_hash: failover?.telemetry?.result_checksum,
+    },
+    {
+      id: "orchestration-recovery-timing",
+      dataset_version: "local-certification-v1",
+      execution_environment: "local-node-process",
+      duration_ms: orchestration?.telemetry?.duration_ms || 0,
+      evidence_hash: orchestration?.telemetry?.result_checksum,
+    },
+  ];
+}
+
+function runRestartRestoration(outputPath) {
+  const restoreOutput = path.join(storageDir, "restart-restore-report.json");
+  const restored = spawnSync(process.execPath, [
+    process.argv[1],
+    "--mode=restore",
+    `--storage-dir=${storageDir}`,
+    `--output=${restoreOutput}`,
+  ], {
+    cwd: process.cwd(),
+    encoding: "utf8",
+  });
+  if (restored.status !== 0) {
+    throw new Error(`restart-backed restoration failed for ${outputPath}: ${restored.stderr || restored.stdout}`);
+  }
+  return JSON.parse(fs.readFileSync(restoreOutput, "utf8"));
+}
+
 function buildReport() {
   assert(replayEvents > 0 && queueMessages > 0 && walEntries > 0, "certification sizes must be positive");
   const contract = readJson("config/runtime/operational-certification-evidence.json");
@@ -286,6 +480,8 @@ function buildReport() {
   }));
   const budget_results = assertSloBudgets(measured, slo);
   assert(budget_results.every((entry) => entry.within_budget), "recovery budget exceeded");
+  const restartRestoration = runRestartRestoration(output);
+  const benchmark_results = buildBenchmarkResults(measured);
   const evidence = {
     generated_at: new Date().toISOString(),
     deterministic_started_at: fixedStartedAt,
@@ -299,6 +495,13 @@ function buildReport() {
     trace_id: traceId,
     categories: measured,
     budget_results,
+    benchmark_results,
+    persistent_backend: {
+      backend: "local-jsonl-append-only",
+      storage_dir: storageDir,
+      restart_restoration_hash: restartRestoration.restoration_hash,
+      restart_backed: restartRestoration.restart_backed,
+    },
     blocked_live_evidence: [
       "Cloudflare deploy and Durable Object production recovery require credentials",
       "Supabase restore and PITR require database credentials",
@@ -316,12 +519,22 @@ function buildReport() {
       trace_id: evidence.trace_id,
       category_hashes: measured.map((entry) => entry.telemetry.result_checksum),
       budget_results,
+      benchmark_results,
+      restart_restoration_hash: restartRestoration.restoration_hash,
     }),
   };
 }
 
 if (mode === "plan") {
   console.log("planned operational certification harness; no evidence was recorded and no certification was claimed");
+  process.exit(0);
+}
+
+if (mode === "restore") {
+  const restoration = buildRestorationReport();
+  fs.mkdirSync(path.dirname(output), { recursive: true });
+  fs.writeFileSync(output, `${JSON.stringify(restoration, null, 2)}\n`);
+  console.log(JSON.stringify(restoration, null, 2));
   process.exit(0);
 }
 

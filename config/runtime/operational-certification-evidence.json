@@ -7,9 +7,53 @@
     "defaultMode": "local",
     "defaultOutput": "artifacts/operational-certification/report.json",
     "planMode": "prints executable certification plan without evidence claims",
-    "localMode": "executes deterministic in-memory recovery scenarios and writes ignored local evidence",
+    "localMode": "executes deterministic persistent recovery scenarios and writes ignored local evidence",
+    "restoreMode": "restores append-only local evidence from persisted JSONL collections in a separate process",
     "executeMode": "refuses live evidence recording; provider execution remains owned by phase4-live-certify.mjs",
     "productionCertification": false
+  },
+  "persistenceBackends": {
+    "local": {
+      "kind": "local-jsonl-append-only",
+      "storageCollections": [
+        "wal",
+        "replay-events",
+        "replay-checkpoints",
+        "queue-checkpoints",
+        "rollback-steps",
+        "lease-heartbeats",
+        "durable-object-snapshots",
+        "orchestration-checkpoints",
+        "telemetry"
+      ],
+      "restartBacked": true,
+      "appendOnly": true
+    },
+    "sqlite": {
+      "kind": "sqlite",
+      "status": "adapter-contract",
+      "localCertificationCompatible": true
+    },
+    "postgres": {
+      "kind": "postgres",
+      "status": "adapter-contract",
+      "executeModeRequiresCredentials": true
+    },
+    "cloudflareD1": {
+      "kind": "cloudflare-d1",
+      "status": "adapter-contract",
+      "executeModeRequiresCredentials": true
+    },
+    "r2Snapshots": {
+      "kind": "cloudflare-r2",
+      "status": "snapshot-contract",
+      "executeModeRequiresCredentials": true
+    },
+    "kvCheckpoints": {
+      "kind": "cloudflare-kv",
+      "status": "checkpoint-contract",
+      "executeModeRequiresCredentials": true
+    }
   },
   "telemetry": {
     "schemaVersion": 1,
@@ -97,5 +141,33 @@
     "liveCertificationRequiresProviderEvidence": true,
     "localEvidenceCertification": false
   },
+  "benchmarkLineage": {
+    "requiredFields": [
+      "dataset_version",
+      "execution_environment",
+      "duration_ms",
+      "evidence_hash"
+    ],
+    "requiredBenchmarks": [
+      "replay-throughput",
+      "queue-rebuild-throughput",
+      "wal-restoration",
+      "rollback-timing",
+      "lease-failover-timing",
+      "orchestration-recovery-timing"
+    ]
+  },
+  "finalCertificationValidators": [
+    "persistence-certification-validator",
+    "replay-throughput-validator",
+    "queue-rebuild-execution-validator",
+    "rollback-execution-validator",
+    "telemetry-pipeline-validator",
+    "benchmark-lineage-validator",
+    "operational-evidence-lineage-validator",
+    "cloudflare-execution-certification-validator",
+    "recovery-drill-execution-validator",
+    "lease-contention-validator"
+  ],
   "failurePolicy": "fail-closed"
 }
