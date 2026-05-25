@@ -1,11 +1,16 @@
 #!/usr/bin/env node
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
 
 const args = new Set(process.argv.slice(2));
 const execute = args.has("--execute");
 const environment = valueFor("--environment") || "production";
 const target = valueFor("--target") || "all";
+const wranglerLogPath = process.env.WRANGLER_LOG_PATH || path.join(os.tmpdir(), "letbuyy-wrangler-logs");
+
+fs.mkdirSync(wranglerLogPath, { recursive: true });
 
 function valueFor(prefix) {
   const arg = process.argv.slice(2).find((candidate) => candidate.startsWith(`${prefix}=`));
@@ -19,7 +24,7 @@ function run(command, commandArgs, options = {}) {
   const result = spawnSync(command, commandArgs, {
     stdio: "inherit",
     cwd: options.cwd || process.cwd(),
-    env: process.env,
+    env: { ...process.env, WRANGLER_LOG_PATH: wranglerLogPath },
   });
 
   if (result.status !== 0) {
