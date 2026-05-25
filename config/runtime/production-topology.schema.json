@@ -13,6 +13,7 @@
     "observabilityStack",
     "deploymentPipeline",
     "securityOperations",
+    "liveCertification",
     "operationalDashboards",
     "runbooks",
     "chaosEngineering",
@@ -106,6 +107,33 @@
         "securityGateScript": { "type": "string", "minLength": 1 },
         "secretRotationScript": { "type": "string", "minLength": 1 },
         "secretRotationRunbook": { "type": "string", "minLength": 1 }
+      }
+    },
+    "liveCertification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflow",
+        "certificationConfig",
+        "certificationScript",
+        "operationsVerificationScript",
+        "drillScript",
+        "certificationDoc",
+        "evidenceGovernanceDocs"
+      ],
+      "properties": {
+        "workflow": { "type": "string", "minLength": 1 },
+        "certificationConfig": { "type": "string", "minLength": 1 },
+        "certificationScript": { "type": "string", "minLength": 1 },
+        "operationsVerificationScript": { "type": "string", "minLength": 1 },
+        "drillScript": { "type": "string", "minLength": 1 },
+        "certificationDoc": { "type": "string", "minLength": 1 },
+        "evidenceGovernanceDocs": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
       }
     },
     "operationalDashboards": {

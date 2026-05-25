@@ -556,6 +556,26 @@
     "secretRotationScript": "infrastructure/scripts/security/rotate-secrets.mjs",
     "secretRotationRunbook": "docs/runbooks/secret-rotation.md"
   },
+  "liveCertification": {
+    "workflow": ".github/workflows/live-production-certification.yml",
+    "certificationConfig": "config/runtime/live-production-certification.json",
+    "certificationScript": "infrastructure/scripts/operations/phase4-live-certify.mjs",
+    "operationsVerificationScript": "infrastructure/scripts/operations/verify-live-operations.mjs",
+    "drillScript": "infrastructure/scripts/operations/run-live-drills.mjs",
+    "certificationDoc": "docs/operations/production-certification.md",
+    "evidenceGovernanceDocs": [
+      "docs/governance/live-rollout-governance.md",
+      "docs/governance/production-certification-governance.md",
+      "docs/governance/operational-evidence-governance.md",
+      "docs/governance/deployment-execution-governance.md",
+      "docs/governance/failover-certification-governance.md",
+      "docs/governance/chaos-certification-governance.md",
+      "docs/governance/observability-certification-governance.md",
+      "docs/governance/security-certification-governance.md",
+      "docs/governance/sre-certification-governance.md",
+      "docs/governance/global-operations-governance.md"
+    ]
+  },
   "operationalDashboards": [
     "infrastructure/observability/grafana-runtime-dashboard.json",
     "infrastructure/observability/grafana-queue-dashboard.json",

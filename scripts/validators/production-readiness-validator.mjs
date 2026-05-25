@@ -11,6 +11,8 @@ const reporter = createReporter("Production readiness validator");
 const requiredFiles = [
   "config/runtime/production-topology.schema.json",
   "config/runtime/production-topology.json",
+  "config/runtime/live-production-certification.schema.json",
+  "config/runtime/live-production-certification.json",
   "infrastructure/cloudflare/queues.tf",
   "infrastructure/cloudflare/storage.tf",
   "infrastructure/cloudflare/workers-topology.md",
@@ -37,6 +39,9 @@ const requiredFiles = [
   "infrastructure/scripts/deploy/verify-health-gates.mjs",
   "infrastructure/scripts/observability/verify-observability-rollout.mjs",
   "infrastructure/scripts/operations/phase4-ultimate-validate.mjs",
+  "infrastructure/scripts/operations/phase4-live-certify.mjs",
+  "infrastructure/scripts/operations/verify-live-operations.mjs",
+  "infrastructure/scripts/operations/run-live-drills.mjs",
   "infrastructure/scripts/security/verify-security-gates.mjs",
   "infrastructure/scripts/security/rotate-secrets.mjs",
   "infrastructure/scripts/chaos/queue-outage.mjs",
@@ -60,6 +65,18 @@ const requiredFiles = [
   "docs/runbooks/deployment-rollback.md",
   "docs/runbooks/secret-rotation.md",
   "docs/runbooks/chaos-drill.md",
+  "docs/operations/production-certification.md",
+  "docs/operations/phase4-live-execution-evidence.md",
+  "docs/governance/live-rollout-governance.md",
+  "docs/governance/production-certification-governance.md",
+  "docs/governance/operational-evidence-governance.md",
+  "docs/governance/deployment-execution-governance.md",
+  "docs/governance/failover-certification-governance.md",
+  "docs/governance/chaos-certification-governance.md",
+  "docs/governance/observability-certification-governance.md",
+  "docs/governance/security-certification-governance.md",
+  "docs/governance/sre-certification-governance.md",
+  "docs/governance/global-operations-governance.md",
   "docs/governance/production-runtime-governance.md",
   "docs/governance/deployment-governance.md",
   "docs/governance/observability-infrastructure-governance.md",
@@ -115,6 +132,7 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
 }
 
 const productionTopology = readJson("config/runtime/production-topology.json");
+const liveCertification = readJson("config/runtime/live-production-certification.json");
 const productionRuntimeRoots = new Set((productionTopology?.runtimes || []).map((runtime) => runtime.runtimeRoot));
 
 for (const runtimeRoot of canonicalRuntimeRoots) {
@@ -158,15 +176,84 @@ for (const file of [
   productionTopology?.securityOperations?.securityGateScript,
   productionTopology?.securityOperations?.secretRotationScript,
   productionTopology?.securityOperations?.secretRotationRunbook,
+  productionTopology?.liveCertification?.workflow,
+  productionTopology?.liveCertification?.certificationConfig,
+  productionTopology?.liveCertification?.certificationScript,
+  productionTopology?.liveCertification?.operationsVerificationScript,
+  productionTopology?.liveCertification?.drillScript,
+  productionTopology?.liveCertification?.certificationDoc,
   productionTopology?.chaosEngineering?.runner,
   productionTopology?.loadTesting?.runner,
   ...(productionTopology?.observabilityStack?.dashboards || []),
   ...(productionTopology?.operationalDashboards || []),
   ...(productionTopology?.runbooks || []),
+  ...(productionTopology?.liveCertification?.evidenceGovernanceDocs || []),
   ...(productionTopology?.loadTesting?.scripts || []),
   ...(productionTopology?.eventStoreProvider?.migrations || []),
 ].filter(Boolean)) {
   reporter.assert(exists(file), `Production topology references missing source file: ${file}`);
+}
+
+for (const liveFile of [
+  liveCertification?.workflow,
+  liveCertification?.modeDetection?.script,
+  liveCertification?.scripts?.certification,
+  liveCertification?.scripts?.deployment,
+  liveCertification?.scripts?.operationsVerification,
+  liveCertification?.scripts?.drills,
+  liveCertification?.scripts?.security,
+  liveCertification?.scripts?.observability,
+  liveCertification?.scripts?.database,
+  liveCertification?.scripts?.cloudflare,
+  liveCertification?.scripts?.load,
+].filter(Boolean)) {
+  reporter.assert(exists(liveFile), `Live certification references missing source file: ${liveFile}`);
+}
+
+reporter.assert(
+  liveCertification?.certificationMode === "credential-gated-plan-ready" || liveCertification?.certificationMode === "live-certified",
+  "Live certification mode must be credential-gated-plan-ready or live-certified",
+);
+
+const requiredLiveEvidenceCategories = [
+  "deployment",
+  "cloudflare",
+  "supabase",
+  "observability",
+  "incident",
+  "failover",
+  "chaos",
+  "load",
+  "security",
+  "dashboards",
+  "control-plane",
+  "sre",
+  "event-store",
+  "multi-region",
+];
+
+for (const category of requiredLiveEvidenceCategories) {
+  const evidence = liveCertification?.evidenceCategories?.[category];
+  reporter.assert(evidence?.required === true, `Live certification evidence category must be required: ${category}`);
+  reporter.assert(
+    typeof evidence?.planMode === "string" && evidence.planMode.length > 0,
+    `Live certification evidence category must define planMode: ${category}`,
+  );
+  reporter.assert(
+    typeof evidence?.executeMode === "string" && evidence.executeMode.length > 0,
+    `Live certification evidence category must define executeMode: ${category}`,
+  );
+  reporter.assert(
+    typeof evidence?.source === "string" && evidence.source.length > 0,
+    `Live certification evidence category must define source: ${category}`,
+  );
+
+  if (liveCertification?.certificationMode === "live-certified") {
+    reporter.assert(
+      typeof evidence?.lastVerifiedAt === "string" && typeof evidence?.evidenceId === "string",
+      `Live-certified mode requires concrete evidence timestamp and id: ${category}`,
+    );
+  }
 }
 
 const apiWrangler = readFile("services/api-gateway/wrangler.toml");
@@ -364,10 +451,26 @@ for (const ciFragment of [
   );
 }
 
+const liveCi = readFile(".github/workflows/live-production-certification.yml");
+for (const ciFragment of [
+  "phase4-live-certify.mjs",
+  "Setup k6",
+  "ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY",
+  "LETBUYY_OPERATIONS_TOKEN",
+  "attest-build-provenance",
+  "Generate SBOM",
+]) {
+  reporter.assert(
+    liveCi.includes(ciFragment),
+    `Live production certification workflow must include ${ciFragment}`,
+  );
+}
+
 const deployScript = readFile("infrastructure/scripts/deploy/production-deploy.mjs");
 for (const deployFragment of [
   "phase4-ultimate-validate.mjs",
   "--execute",
+  "--skip-validation",
   "WRANGLER_LOG_PATH",
 ]) {
   reporter.assert(
@@ -382,11 +485,31 @@ for (const ultimateFragment of [
   "verify-supabase-operations.mjs",
   "verify-observability-rollout.mjs",
   "verify-security-gates.mjs",
+  "verify-live-operations.mjs",
+  "run-live-drills.mjs",
   "LETBUYY_OPERATIONS_TOKEN",
 ]) {
   reporter.assert(
     ultimateScript.includes(ultimateFragment),
     `Phase 4 ultimate validation must include ${ultimateFragment}`,
+  );
+}
+
+const liveScript = readFile("infrastructure/scripts/operations/phase4-live-certify.mjs");
+for (const liveFragment of [
+  "requestedMode",
+  "credential",
+  "cloudflare",
+  "supabase",
+  "observability",
+  "secret-rotation",
+  "production-deploy.mjs",
+  "verify-live-operations.mjs",
+  "run-live-drills.mjs",
+]) {
+  reporter.assert(
+    liveScript.includes(liveFragment),
+    `Live certification script must include ${liveFragment}`,
   );
 }
 
