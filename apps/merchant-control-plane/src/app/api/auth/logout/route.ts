@@ -1,0 +1,60 @@
+import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
+
+/**
+ * POST /api/auth/logout
+ * Admin-side logout route.
+ * - Reads lb_session from cookie
+ * - Delegates session destruction to the accounts app
+ * - Clears the lb_session cookie
+ * - Returns redirect URL to accounts login
+ */
+export async function POST() {
+    try {
+        const cookieStore = await cookies()
+        const sessionToken = cookieStore.get('lb_session')?.value
+        const accountsUrl =
+            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+
+        if (sessionToken) {
+            await fetch(`${accountsUrl}/api/auth/logout`, {
+                method: 'POST',
+                headers: {
+                    Cookie: `lb_session=${encodeURIComponent(sessionToken)}`,
+                    Origin: process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3002',
+                },
+                cache: 'no-store',
+            }).catch(() => null)
+        }
+
+        // Clear the session cookie
+        const isProduction = process.env.NODE_ENV === 'production'
+        const cookieDomain = isProduction ? (process.env.COOKIE_DOMAIN || '.letbuyy.store') : undefined
+        cookieStore.set('lb_session', '', {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: 'lax',
+            ...(cookieDomain ? { domain: cookieDomain } : {}),
+            path: '/',
+            maxAge: 0, // Expire immediately
+        })
+
+        // NOTE: Do NOT clear lb_accounts here — it stores the multi-account
+        // picker list and should persist across logouts so the lookup page
+        // can display previously used accounts.
+
+        return NextResponse.json({
+            success: true,
+            redirectTo: `${accountsUrl}/lookup`,
+        })
+    } catch (error) {
+        console.error('Logout error:', error)
+        // Even if DB delete fails, still redirect
+        const accountsUrl =
+            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+        return NextResponse.json({
+            success: true,
+            redirectTo: `${accountsUrl}/lookup`,
+        })
+    }
+}

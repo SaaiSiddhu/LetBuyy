@@ -1,0 +1,28 @@
+# LetBuyy platform ownership boundaries.
+#
+# This file encodes runtime and governance review lanes. It intentionally uses
+# broad platform ownership until dedicated GitHub teams exist.
+
+* @saai-sidd
+
+/.gitattributes @saai-sidd
+/.gitignore @saai-sidd
+/apps/storefront-runtime/ @saai-sidd
+/apps/merchant-control-plane/ @saai-sidd
+/apps/identity-platform/ @saai-sidd
+/apps/app-marketplace/ @saai-sidd
+/apps/theme-marketplace/ @saai-sidd
+/apps/marketing-site/ @saai-sidd
+/apps/platform-console/ @saai-sidd
+/apps/platform-operations-portal/ @saai-sidd
+/apps/mobile/ @saai-sidd
+
+/services/ @saai-sidd
+/packages/ @saai-sidd
+/database/ @saai-sidd
+/infrastructure/ @saai-sidd
+/config/env/ @saai-sidd
+/docs/governance/ @saai-sidd
+/scripts/validate-architecture.mjs @saai-sidd
+/scripts/validate-governance.mjs @saai-sidd
+/scripts/validators/ @saai-sidd

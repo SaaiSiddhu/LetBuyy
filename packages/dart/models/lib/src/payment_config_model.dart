@@ -17,9 +17,9 @@ DateTime? _parseTimestamp(dynamic value) {
 }
 
 /// Payment mode for store payments
-enum PaymentMode { 
-  shared,      // Uses Letbuyy's shared Razorpay account
-  ownAccount   // Uses seller's own Razorpay account (Professional only)
+enum PaymentMode {
+  shared, // Uses Letbuyy's shared Razorpay account
+  ownAccount, // Uses seller's own Razorpay account (Professional only)
 }
 
 /// Model for store payment configuration
@@ -27,28 +27,29 @@ enum PaymentMode {
 class PaymentConfigModel {
   final String storeId;
   final PaymentMode mode;
-  
-  // Razorpay keys (encrypted, only for ownAccount mode)
-  final String? razorpayKeyId;      // Encrypted public key
-  final String? razorpayKeySecret;  // Encrypted secret key
-  
+
+  // Razorpay key metadata. The backend returns only a masked key id; secrets never
+  // come back to Flutter once saved.
+  final String? razorpayKeyId;
+  final String? razorpayKeySecret;
+
   // Validation status
   final bool verified;
   final DateTime? verifiedAt;
   final String? verificationError;
-  
+
   // Test mode for sandbox testing
   final bool testMode;
-  
+
   // Webhook configuration
   final String? webhookSecret;
   final bool webhookConfigured;
-  
+
   // Connection metadata
   final DateTime? connectedAt;
   final DateTime? lastUsedAt;
-  final String? razorpayAccountId;  // Razorpay account identifier
-  final String? businessName;       // Business name from Razorpay
+  final String? razorpayAccountId; // Razorpay account identifier
+  final String? businessName; // Business name from Razorpay
 
   const PaymentConfigModel({
     required this.storeId,
@@ -68,24 +69,38 @@ class PaymentConfigModel {
   });
 
   // ============================================================
-  // FACTORY: From Firestore
+  // FACTORY: From backend response or legacy Firestore document
   // ============================================================
   factory PaymentConfigModel.fromMap(Map<String, dynamic> map, String storeId) {
+    final paymentSettings = map['payment_settings'];
+    final settings = paymentSettings is Map
+        ? Map<String, dynamic>.from(paymentSettings)
+        : map;
+    final razorpayValue = settings['razorpay'];
+    final razorpay = razorpayValue is Map
+        ? Map<String, dynamic>.from(razorpayValue)
+        : <String, dynamic>{};
+
     return PaymentConfigModel(
       storeId: storeId,
-      mode: _parseMode(map['mode']),
-      razorpayKeyId: map['razorpayKeyId'],
-      razorpayKeySecret: map['razorpayKeySecret'],
-      verified: map['verified'] ?? false,
-      verifiedAt: _parseTimestamp(map['verifiedAt']),
-      verificationError: map['verificationError'],
-      testMode: map['testMode'] ?? false,
-      webhookSecret: map['webhookSecret'],
-      webhookConfigured: map['webhookConfigured'] ?? false,
-      connectedAt: _parseTimestamp(map['connectedAt']),
+      mode: _parseMode(settings['mode'] as String?),
+      razorpayKeyId:
+          razorpay['key_id'] as String? ?? map['razorpayKeyId'] as String?,
+      razorpayKeySecret: map['razorpayKeySecret'] as String?,
+      verified:
+          razorpay['verified'] as bool? ?? map['verified'] as bool? ?? false,
+      verifiedAt: _parseTimestamp(razorpay['verified_at'] ?? map['verifiedAt']),
+      verificationError: map['verificationError'] as String?,
+      testMode:
+          razorpay['test_mode'] as bool? ?? map['testMode'] as bool? ?? false,
+      webhookSecret: map['webhookSecret'] as String?,
+      webhookConfigured: map['webhookConfigured'] as bool? ?? false,
+      connectedAt: _parseTimestamp(
+        razorpay['connected_at'] ?? map['connectedAt'],
+      ),
       lastUsedAt: _parseTimestamp(map['lastUsedAt']),
-      razorpayAccountId: map['razorpayAccountId'],
-      businessName: map['businessName'],
+      razorpayAccountId: map['razorpayAccountId'] as String?,
+      businessName: map['businessName'] as String?,
     );
   }
 
@@ -103,7 +118,9 @@ class PaymentConfigModel {
       'testMode': testMode,
       'webhookSecret': webhookSecret,
       'webhookConfigured': webhookConfigured,
-      'connectedAt': connectedAt != null ? Timestamp.fromDate(connectedAt!) : null,
+      'connectedAt': connectedAt != null
+          ? Timestamp.fromDate(connectedAt!)
+          : null,
       'lastUsedAt': lastUsedAt != null ? Timestamp.fromDate(lastUsedAt!) : null,
       'razorpayAccountId': razorpayAccountId,
       'businessName': businessName,
@@ -113,12 +130,13 @@ class PaymentConfigModel {
   // ============================================================
   // COMPUTED PROPERTIES
   // ============================================================
-  
+
   /// Check if using own Razorpay account
   bool get isOwnAccount => mode == PaymentMode.ownAccount;
 
   /// Check if payment config is ready to use
-  bool get isReady => mode == PaymentMode.shared || 
+  bool get isReady =>
+      mode == PaymentMode.shared ||
       (mode == PaymentMode.ownAccount && verified);
 
   /// Get status display text
@@ -146,13 +164,13 @@ class PaymentConfigModel {
   // ============================================================
   // HELPER: Parse Mode
   // ============================================================
-  
+
   static PaymentMode _parseMode(String? mode) {
     switch (mode?.toLowerCase()) {
-      case 'ownaccount': 
-      case 'own_account': 
+      case 'ownaccount':
+      case 'own_account':
         return PaymentMode.ownAccount;
-      default: 
+      default:
         return PaymentMode.shared;
     }
   }
@@ -160,7 +178,7 @@ class PaymentConfigModel {
   // ============================================================
   // COPY WITH
   // ============================================================
-  
+
   PaymentConfigModel copyWith({
     PaymentMode? mode,
     String? razorpayKeyId,
@@ -197,7 +215,7 @@ class PaymentConfigModel {
   // ============================================================
   // FACTORY: Default Shared Config
   // ============================================================
-  
+
   factory PaymentConfigModel.defaultShared(String storeId) {
     return PaymentConfigModel(
       storeId: storeId,
@@ -209,9 +227,10 @@ class PaymentConfigModel {
   // ============================================================
   // DEBUG INFO
   // ============================================================
-  
+
   @override
-  String toString() => '''
+  String toString() =>
+      '''
 PaymentConfigModel(
   storeId: $storeId,
   mode: ${mode.name},

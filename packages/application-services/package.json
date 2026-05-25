@@ -1,0 +1,41 @@
+{
+  "name": "@letbuyy/application-services",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./auth-application": "./auth-application/index.ts",
+    "./commerce-application": "./commerce-application/index.ts",
+    "./checkout-application": "./checkout-application/index.ts",
+    "./tenant-application": "./tenant-application/index.ts",
+    "./cms-application": "./cms-application/index.ts",
+    "./theme-application": "./theme-application/index.ts",
+    "./billing-application": "./billing-application/index.ts",
+    "./notification-application": "./notification-application/index.ts",
+    "./search-application": "./search-application/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/billing-core": "workspace:*",
+    "@letbuyy/checkout-core": "workspace:*",
+    "@letbuyy/cms-core": "workspace:*",
+    "@letbuyy/commerce-core": "workspace:*",
+    "@letbuyy/event-core": "workspace:*",
+    "@letbuyy/notification-core": "workspace:*",
+    "@letbuyy/orchestration": "workspace:*",
+    "@letbuyy/search-core": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
+    "@letbuyy/tenant-core": "workspace:*",
+    "@letbuyy/theme-engine": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

@@ -1,6 +1,22 @@
 // lib/core/utils/snackbar_helper.dart
 import 'package:flutter/material.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+
+class _CoreSnackbarColors {
+  static const Color success = Color(0xFFA4E500);
+  static const Color error = Color(0xFFB02525);
+  static const Color warning = Color(0xFFFBBF24);
+  static const Color info = Color(0xFF00B3B3);
+  static const Color textPrimary = Color(0xFF1A1A2E);
+}
+
+class _CoreSnackbarTextStyles {
+  static const TextStyle bodyMedium = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: Color(0xFF1A1A2E),
+    height: 1.5,
+  );
+}
 
 class SnackbarHelper {
   // Small helper: safely get a ScaffoldMessengerState without throwing.
@@ -36,12 +52,14 @@ class SnackbarHelper {
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              style: _CoreSnackbarTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
       ),
-      backgroundColor: AppColors.success,
+      backgroundColor: _CoreSnackbarColors.success,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -60,12 +78,14 @@ class SnackbarHelper {
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              style: _CoreSnackbarTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
       ),
-      backgroundColor: AppColors.error,
+      backgroundColor: _CoreSnackbarColors.error,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -84,12 +104,14 @@ class SnackbarHelper {
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.black),
+              style: _CoreSnackbarTextStyles.bodyMedium.copyWith(
+                color: Colors.black,
+              ),
             ),
           ),
         ],
       ),
-      backgroundColor: AppColors.warning,
+      backgroundColor: _CoreSnackbarColors.warning,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -108,12 +130,14 @@ class SnackbarHelper {
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              style: _CoreSnackbarTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
       ),
-      backgroundColor: AppColors.info,
+      backgroundColor: _CoreSnackbarColors.info,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -142,12 +166,14 @@ class SnackbarHelper {
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              style: _CoreSnackbarTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
       ),
-      backgroundColor: backgroundColor ?? AppColors.textPrimary,
+      backgroundColor: backgroundColor ?? _CoreSnackbarColors.textPrimary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -168,9 +194,9 @@ class SnackbarHelper {
     final snack = SnackBar(
       content: Text(
         message,
-        style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+        style: _CoreSnackbarTextStyles.bodyMedium.copyWith(color: Colors.white),
       ),
-      backgroundColor: backgroundColor ?? AppColors.textPrimary,
+      backgroundColor: backgroundColor ?? _CoreSnackbarColors.textPrimary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),
@@ -201,12 +227,14 @@ class SnackbarHelper {
           Expanded(
             child: Text(
               message,
-              style: AppTextStyles.bodyMedium.copyWith(color: Colors.white),
+              style: _CoreSnackbarTextStyles.bodyMedium.copyWith(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
       ),
-      backgroundColor: AppColors.textPrimary,
+      backgroundColor: _CoreSnackbarColors.textPrimary,
       behavior: SnackBarBehavior.floating,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.all(16),

@@ -1,0 +1,312 @@
+import { z } from 'zod';
+import { PaginationQuery, SeoSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+
+export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
+
+export const ListPagesQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  status: z.enum(['all', 'draft', 'published', 'archived']).default('all'),
+});
+
+export const CreatePageSchema = z.object({
+  store_id: UuidSchema,
+  title: z.string().min(1).max(200).trim(),
+  slug: SlugSchema.optional(),
+  body: z.string().max(200000).default(''),
+  page_type: z.string().min(1).max(50).default('custom'),
+  status: PageStatusSchema.default('draft'),
+  show_in_nav: z.boolean().default(false),
+  seo_title: z.string().max(70).optional().nullable(),
+  seo_description: z.string().max(160).optional().nullable(),
+  display_order: z.number().int().min(0).default(0),
+});
+
+export const UpdatePageSchema = z.object({
+  title: z.string().min(1).max(200).trim().optional(),
+  slug: SlugSchema.optional(),
+  body: z.string().max(200000).optional(),
+  page_type: z.string().min(1).max(50).optional(),
+  status: PageStatusSchema.optional(),
+  show_in_nav: z.boolean().optional(),
+  seo_title: z.string().max(70).optional().nullable(),
+  seo_description: z.string().max(160).optional().nullable(),
+  display_order: z.number().int().min(0).optional(),
+});
+
+export const PolicyTypeSchema = z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']);
+
+export const ListPoliciesQuery = z.object({
+  store_id: UuidSchema,
+  status: z.enum(['all', 'draft', 'published', 'archived']).default('all'),
+});
+
+export const CreatePolicySchema = z.object({
+  store_id: UuidSchema,
+  policy_type: PolicyTypeSchema,
+  slug: SlugSchema.optional(),
+  title: z.string().min(1).max(200).trim(),
+  body: z.string().max(200000).default(''),
+  status: PageStatusSchema.default('draft'),
+  seo_title: z.string().max(70).optional().nullable(),
+  seo_description: z.string().max(160).optional().nullable(),
+});
+
+export const UpdatePolicySchema = z.object({
+  policy_type: PolicyTypeSchema.optional(),
+  slug: SlugSchema.optional(),
+  title: z.string().min(1).max(200).trim().optional(),
+  body: z.string().max(200000).optional(),
+  status: PageStatusSchema.optional(),
+  seo_title: z.string().max(70).optional().nullable(),
+  seo_description: z.string().max(160).optional().nullable(),
+});
+
+export const NavigationLocationSchema = z.string().min(1).max(40).regex(/^[a-z0-9_-]+$/);
+
+export const NavigationItemSchema = z.object({
+  id: z.string().uuid().optional(),
+  label: z.string().min(1).max(120).trim(),
+  url: z.string().min(1).max(300).default('#'),
+  target_type: z.string().min(1).max(40).default('url'),
+  target_resource_id: z.string().max(120).optional().nullable(),
+  parent_item_id: z.string().uuid().optional().nullable(),
+  sort_order: z.number().int().min(0).default(0),
+  is_visible: z.boolean().default(true),
+  open_in_new_tab: z.boolean().default(false),
+});
+
+export const ListNavigationQuery = z.object({
+  store_id: UuidSchema,
+  location: NavigationLocationSchema.default('main'),
+});
+
+export const ReplaceNavigationSchema = z.object({
+  store_id: UuidSchema,
+  location: NavigationLocationSchema.default('main'),
+  name: z.string().min(1).max(120).optional(),
+  items: z.array(NavigationItemSchema).max(100).default([]),
+});
+
+export const CreateBlogPostSchema = z.object({
+  store_id: UuidSchema,
+  title: z.string().min(1).max(300).trim(),
+  slug: SlugSchema.optional(),
+  excerpt: z.string().max(500).optional(),
+  content: z.string().max(100000),
+  content_html: z.string().max(150000).optional(),
+  featured_image: UrlSchema.optional().nullable(),
+  category_id: UuidSchema.optional().nullable(),
+  tag_ids: z.array(UuidSchema).max(20).default([]),
+  status: z.enum(['draft', 'published', 'scheduled']).default('draft'),
+  scheduled_at: z.coerce.date().optional().nullable(),
+  allow_comments: z.boolean().default(true),
+  is_featured: z.boolean().default(false),
+  is_pinned: z.boolean().default(false),
+  reading_time_min: z.number().int().min(0).max(1000).optional().nullable(),
+  ...SeoSchema.shape,
+});
+
+export const UpdateBlogPostSchema = z.object({
+  title: z.string().min(1).max(300).trim().optional(),
+  slug: SlugSchema.optional(),
+  excerpt: z.string().max(500).optional(),
+  content: z.string().max(100000).optional(),
+  content_html: z.string().max(150000).optional(),
+  featured_image: UrlSchema.optional().nullable(),
+  category_id: UuidSchema.optional().nullable(),
+  tag_ids: z.array(UuidSchema).max(20).optional(),
+  status: z.enum(['draft', 'published', 'scheduled', 'archived']).optional(),
+  scheduled_at: z.coerce.date().optional().nullable(),
+  allow_comments: z.boolean().optional(),
+  is_featured: z.boolean().optional(),
+  is_pinned: z.boolean().optional(),
+  reading_time_min: z.number().int().min(0).max(1000).optional().nullable(),
+  version: z.number().int().positive('Version required').optional(),
+  ...SeoSchema.shape,
+});
+
+export const CreateBlogCategorySchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100).trim(),
+  slug: SlugSchema.optional(),
+  description: z.string().max(500).optional(),
+  parent_id: UuidSchema.optional().nullable(),
+});
+
+export const CreateBlogTagSchema = z.object({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(50).trim(),
+});
+
+export const ListBlogPostsQuery = PaginationQuery.extend({
+  store_id: UuidSchema.optional(),
+  status: z.enum(['draft', 'published', 'scheduled', 'archived']).optional(),
+  category_id: UuidSchema.optional(),
+  search: z.string().max(200).optional(),
+});
+
+export const ListBlogCommentsQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  status: z.enum(['all', 'pending', 'approved', 'spam', 'rejected']).default('all'),
+});
+
+export const UpdateBlogCommentSchema = z.object({
+  status: z.enum(['pending', 'approved', 'spam', 'rejected']),
+});
+
+export const FormSubmissionStatusSchema = z.enum([
+  'new',
+  'read',
+  'replied',
+  'contacted',
+  'converted',
+  'archived',
+  'spam',
+]);
+
+export const ListFormSubmissionsQuery = PaginationQuery.extend({
+  store_id: UuidSchema,
+  type: z.enum(['all', 'contact', 'lead']).default('all'),
+  status: z.enum(['all', 'new', 'read', 'replied', 'contacted', 'converted', 'archived', 'spam']).default('all'),
+});
+
+export const UpdateFormSubmissionSchema = z.object({
+  status: FormSubmissionStatusSchema,
+});
+
+export const UploadMediaSchema = z.object({
+  store_id: UuidSchema,
+  alt_text: z.string().max(500).optional(),
+  folder: z.string().max(200).optional(),
+  tags: z.array(z.string().max(50)).max(20).default([]),
+});
+
+export const UpdateMediaSchema = z.object({
+  alt_text: z.string().max(500).optional(),
+  folder: z.string().max(200).optional(),
+  tags: z.array(z.string().max(50)).max(20).optional(),
+});
+
+export const ListMediaQuery = PaginationQuery.extend({
+  store_id: UuidSchema.optional(),
+  folder: z.string().max(200).optional(),
+  type: z.enum(['image', 'video', 'document', 'all']).default('all'),
+  search: z.string().max(200).optional(),
+});
+
+export const BulkDeleteMediaSchema = z.object({
+  ids: z.array(UuidSchema).min(1).max(100),
+});
+
+export interface PortfolioProject {
+  id: string;
+  store_id?: string;
+  title: string;
+  slug?: string;
+  description?: string;
+  content?: string;
+  cover_image?: string;
+  image?: string;
+  images?: string[];
+  video_url?: string;
+  client_name?: string;
+  project_date?: string;
+  project_url?: string;
+  github_url?: string;
+  technologies?: string[];
+  categories?: string[];
+  tags?: string[];
+  link?: string;
+  linkLabel?: string;
+  is_featured?: boolean;
+  display_order?: number;
+  status?: 'draft' | 'published';
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Skill {
+  id: string;
+  store_id: string;
+  name: string;
+  category?: string;
+  proficiency: 1 | 2 | 3 | 4 | 5;
+  years_experience?: number;
+  icon?: string;
+  display_order: number;
+}
+
+export interface SkillItem {
+  id: string;
+  name: string;
+  level: number;
+  category?: string;
+}
+
+export interface Education {
+  id: string;
+  store_id: string;
+  institution: string;
+  degree?: string;
+  field_of_study?: string;
+  start_date?: string;
+  end_date?: string;
+  is_current: boolean;
+  gpa?: string;
+  description?: string;
+  logo_url?: string;
+  display_order: number;
+}
+
+export interface WorkExperience {
+  id: string;
+  store_id: string;
+  company: string;
+  position: string;
+  location?: string;
+  start_date?: string;
+  end_date?: string;
+  is_current: boolean;
+  description?: string;
+  achievements: string[];
+  company_logo?: string;
+  display_order: number;
+}
+
+export interface ServiceItem {
+  id: string;
+  icon?: string;
+  title: string;
+  description: string;
+  link?: string;
+}
+
+export interface ExperienceItem {
+  id: string;
+  title: string;
+  company: string;
+  startDate: string;
+  endDate?: string;
+  description?: string;
+  isCurrent?: boolean;
+}
+
+export type PageStatus = z.infer<typeof PageStatusSchema>;
+export type PolicyType = z.infer<typeof PolicyTypeSchema>;
+export type CreatePageInput = z.infer<typeof CreatePageSchema>;
+export type UpdatePageInput = z.infer<typeof UpdatePageSchema>;
+export type CreatePolicyInput = z.infer<typeof CreatePolicySchema>;
+export type UpdatePolicyInput = z.infer<typeof UpdatePolicySchema>;
+export type ReplaceNavigationInput = z.infer<typeof ReplaceNavigationSchema>;
+export type CreateBlogPostInput = z.infer<typeof CreateBlogPostSchema>;
+export type UpdateBlogPostInput = z.infer<typeof UpdateBlogPostSchema>;
+export type ListBlogPostsInput = z.infer<typeof ListBlogPostsQuery>;
+export type ListBlogCommentsInput = z.infer<typeof ListBlogCommentsQuery>;
+export type UpdateBlogCommentInput = z.infer<typeof UpdateBlogCommentSchema>;
+export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
+export type ListFormSubmissionsInput = z.infer<typeof ListFormSubmissionsQuery>;
+export type UpdateFormSubmissionInput = z.infer<typeof UpdateFormSubmissionSchema>;
+export type UploadMediaInput = z.infer<typeof UploadMediaSchema>;
+export type UpdateMediaInput = z.infer<typeof UpdateMediaSchema>;
+export type ListMediaInput = z.infer<typeof ListMediaQuery>;
+export type BulkDeleteMediaInput = z.infer<typeof BulkDeleteMediaSchema>;

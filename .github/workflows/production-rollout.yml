@@ -1,0 +1,124 @@
+name: Production Rollout
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: staging
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+      target:
+        description: Deployment target
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - cloudflare
+          - workers
+          - apps
+      execute:
+        description: Execute changes instead of plan-only validation
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: production-rollout-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  rollout:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Governance gates
+        run: pnpm run validate:governance
+
+      - name: Operational lifecycle gates
+        run: pnpm run validate:lifecycle
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Security gates
+        run: node infrastructure/scripts/security/verify-security-gates.mjs
+
+      - name: Dependency vulnerability scan
+        run: npm audit --audit-level=high --omit=dev
+
+      - name: Phase 4 ultimate validation plan
+        if: ${{ !inputs.execute }}
+        run: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=${{ inputs.environment }}
+
+      - name: Phase 4 ultimate validation execute
+        if: ${{ inputs.execute }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+          OTEL_COLLECTOR_HEALTH_URL: ${{ secrets.OTEL_COLLECTOR_HEALTH_URL }}
+          LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+        run: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=${{ inputs.environment }} --execute
+
+      - name: Production rollout plan
+        if: ${{ !inputs.execute }}
+        run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=${{ inputs.environment }} --target=${{ inputs.target }}
+
+      - name: Production rollout execute
+        if: ${{ inputs.execute }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+          OTEL_COLLECTOR_HEALTH_URL: ${{ secrets.OTEL_COLLECTOR_HEALTH_URL }}
+          LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+        run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=${{ inputs.environment }} --target=${{ inputs.target }} --execute
+
+      - name: Generate SBOM
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+
+      - name: Upload SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-${{ inputs.environment }}
+          path: sbom.cdx.json

@@ -2,10 +2,21 @@
     "name": "letbuyy-store",
     "private": true,
     "scripts": {
-        "preinstall": "if [ \"$VERCEL\" = \"1\" ]; then rm -rf apps/web/consumer/storefront/node_modules/next apps/web/consumer/admin/node_modules/next apps/web/consumer/accounts/node_modules/next apps/web/consumer/landing/node_modules/next 2>/dev/null || true; fi",
+        "preinstall": "if [ \"$VERCEL\" = \"1\" ]; then rm -rf apps/storefront-runtime/node_modules/next apps/merchant-control-plane/node_modules/next apps/identity-platform/node_modules/next apps/marketing-site/node_modules/next 2>/dev/null || true; fi",
         "build": "turbo build",
-        "dev": "turbo dev",
+        "dev": "turbo dev --concurrency 15",
+        "local:bootstrap": "node infrastructure/scripts/local/bootstrap-local.mjs",
+        "local:up": "node infrastructure/scripts/local/start-local-stack.mjs",
+        "local:health": "node infrastructure/scripts/local/health-local-stack.mjs",
+        "local:reset": "node infrastructure/scripts/local/reset-local-stack.mjs",
+        "local:seed": "node infrastructure/scripts/local/seed-local-data.mjs",
         "lint": "turbo lint",
+        "validate:architecture": "node scripts/validate-architecture.mjs",
+        "validate:governance": "node scripts/validate-governance.mjs",
+        "validate:lifecycle": "node scripts/validators/operational-lifecycle-validator.mjs",
+        "validate:production": "node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production",
+        "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
+        "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {

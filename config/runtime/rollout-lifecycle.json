@@ -1,0 +1,64 @@
+{
+  "$schema": "config/runtime/rollout-lifecycle.schema.json",
+  "rolloutVersion": 1,
+  "featureFlags": {
+    "sdk": "packages/shared-types/src/index.ts",
+    "adminControlPlane": "apps/platform-console operations surfaces backed by /v1/operations",
+    "runtimeEvaluation": "deterministic tenant, actor, region, environment, internal, and percentage evaluation",
+    "scopes": ["tenant", "percentage", "internal", "region", "environment"],
+    "instantDisablement": "kill_switch overrides all rollout rules",
+    "exposureTelemetry": "operational_feature_flag_exposures and local_feature_flag_exposures",
+    "auditTrail": "operational_feature_flag_audit_events",
+    "rollback": "disable flag or set percentage to 0 without redeploying"
+  },
+  "canary": {
+    "strategy": "health-gated incremental promotion",
+    "steps": [1, 5, 25, 50, 100],
+    "minimumObservationMinutes": 30,
+    "gates": ["queue-health", "replay-health", "p95-latency", "error-rate", "cpu", "database-saturation", "queue-lag", "SLO-burn-rate"],
+    "automaticRollback": true,
+    "evidence": ["deployment_health_gate_results", "deployment_promotion_runs", "production_readiness_gate_runs"]
+  },
+  "blueGreen": {
+    "strategy": "dual-environment health-gated traffic switch",
+    "requiredChecks": ["runtime-compatibility", "schema-compatibility", "shadow-consistency", "health-gates", "rollback-switchback"],
+    "rollback": "switch traffic to previous color and preserve replay/queue cursor state",
+    "evidence": ["deployment_promotion_runs", "deployment_health_gate_results"]
+  },
+  "shadowTraffic": {
+    "strategy": "silent production traffic mirroring without side effects",
+    "sideEffectPolicy": "shadow events, queues, provider calls, and writes must be tagged and non-mutating",
+    "uses": ["replay runtime upgrades", "provider migration", "queue migration", "event-store evolution", "infrastructure migration"],
+    "comparison": ["response-shape", "latency", "error-rate", "event-count", "queue-lag", "projection-drift"],
+    "evidence": ["shadow_traffic_comparison_runs", "event_store_integrity_checks", "operational_dashboard_snapshots"]
+  },
+  "sandboxProviders": {
+    "stripe": "test mode only outside production execute mode",
+    "razorpay": "test mode only outside production execute mode",
+    "paypal": "sandbox only outside production execute mode",
+    "email": "mailpit locally, isolated sender domains remotely",
+    "sms": "wiremock locally, sandbox gateway remotely",
+    "queues": "elasticmq locally, isolated Cloudflare queue namespaces remotely",
+    "guardrail": "provider side effects are forbidden unless environment is production and certification mode is execute"
+  },
+  "deploymentGates": [
+    "lint",
+    "typecheck",
+    "tests",
+    "governance",
+    "topology-drift",
+    "dev-worker-isolation",
+    "dev-queue-isolation",
+    "dev-storage-isolation",
+    "replay-validation",
+    "queue-validation",
+    "telemetry-validation",
+    "load-validation",
+    "observability-validation",
+    "migration-validation",
+    "failover-validation",
+    "security-validation",
+    "staging-rehearsal",
+    "live-certification"
+  ]
+}

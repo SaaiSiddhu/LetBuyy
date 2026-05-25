@@ -1,0 +1,97 @@
+environments:
+  dev:
+    promotionSource: feature-branch
+    secrets: provider-dev
+    deploy: isolated-worker-dev
+    deploymentCommand: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute
+    rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=dev --worker=letbuyy-api-dev
+    healthGates:
+      - governance-validation
+      - lifecycle-validation
+      - typecheck
+      - cloudflare-provider-contract-validation-dev
+      - worker-health-dev
+  staging:
+    promotionSource: main
+    secrets: provider-staging
+    deploy: canary
+    healthGates:
+      - governance-validation
+      - typecheck
+      - migration-plan
+      - smoke-tests
+  production:
+    promotionSource: signed-release-tag
+    secrets: provider-production
+    deploy: blue-green
+    deploymentCommand: node infrastructure/scripts/deploy/production-deploy.mjs --environment=production --target=all --execute
+    rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api
+    healthGates:
+      - governance-validation
+      - phase4-ultimate-validation
+      - production-readiness-validator
+      - cloudflare-provider-contract-validation
+      - database-migration-dry-run
+      - supabase-operational-verification
+      - observability-rollout-verification
+      - worker-health
+      - storefront-health
+      - queue-lag
+      - error-budget
+      - security-gates
+      - chaos-suite-approved
+      - load-suite-current
+startupSequence:
+  - name: dev-workers
+    command: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute
+    owns:
+      - dev-api-worker
+      - dev-queue-workers
+      - dev-webhook-worker
+      - dev-queue-bindings
+      - dev-kv-cache
+      - dev-r2-storage
+  - name: phase4-ultimate-preflight
+    command: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production
+    owns:
+      - provider-contract-validation
+      - supabase-operational-verification
+      - observability-rollout-verification
+  - name: cloudflare-primitives
+    command: terraform -chdir=infrastructure/cloudflare apply -input=false
+    owns:
+      - queues
+      - kv-cache
+      - r2-storage
+    requires:
+      - phase4-ultimate-preflight
+  - name: database-migrations
+    command: node infrastructure/scripts/deploy/verify-health-gates.mjs --environment=production --preflight
+    requires:
+      - cloudflare-primitives
+  - name: queue-workers
+    command: npx wrangler deploy --config services/queue-workers/wrangler.toml --env production --keep-vars
+    requires:
+      - cloudflare-primitives
+      - database-migrations
+  - name: api-gateway
+    command: npx wrangler deploy --config services/api-gateway/wrangler.toml --env production --keep-vars
+    requires:
+      - queue-workers
+  - name: webhook-service
+    command: npx wrangler deploy --config services/webhook-service/wrangler.toml --env production --keep-vars
+    requires:
+      - api-gateway
+  - name: web-runtimes
+    command: npx vercel deploy --prod --yes
+    requires:
+      - api-gateway
+      - webhook-service
+rollback:
+  apiGateway: wrangler-rollback-previous-version
+  webApps: vercel-promote-previous-deployment
+  database: forward-fix-or-approved-reversible-migration
+  queues: pause-consumer-redrive-after-fix
+driftValidation:
+  command: node scripts/validators/production-readiness-validator.mjs
+  requiredBeforePromotion: true

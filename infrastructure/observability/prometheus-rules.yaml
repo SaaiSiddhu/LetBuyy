@@ -1,0 +1,66 @@
+groups:
+  - name: letbuyy-production-slo
+    rules:
+      - alert: LetBuyyApiGatewayHighErrorRate
+        expr: sum(rate(http_server_errors_total{runtime="api-gateway"}[5m])) / sum(rate(http_requests_total{runtime="api-gateway"}[5m])) > 0.01
+        for: 10m
+        labels:
+          severity: critical
+          owner: services/api-gateway
+        annotations:
+          summary: API Gateway 5xx rate is above 1 percent.
+          runbook: docs/governance/incident-response-governance.md
+      - alert: LetBuyyQueueDeadLetterGrowth
+        expr: increase(letbuyy_queue_dead_letter_total[15m]) > 0
+        for: 5m
+        labels:
+          severity: high
+          owner: services/queue-workers
+        annotations:
+          summary: Cloudflare Queue messages are reaching the dead-letter queue.
+          runbook: docs/governance/queue-provider-governance.md
+      - alert: LetBuyyReplayLagHigh
+        expr: max(letbuyy_replay_lag_seconds) > 300
+        for: 10m
+        labels:
+          severity: high
+          owner: services/event-bus
+        annotations:
+          summary: Replay lag exceeds five minutes.
+          runbook: docs/governance/event-store-governance.md
+      - alert: LetBuyyDeploymentGateFailed
+        expr: increase(letbuyy_deployment_health_gate_failed_total[10m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          owner: platform-sre
+        annotations:
+          summary: A production deployment health gate failed.
+          runbook: docs/runbooks/deployment-rollback.md
+      - alert: LetBuyyEventStoreIntegrityFailed
+        expr: max(letbuyy_event_store_integrity_failures) > 0
+        for: 5m
+        labels:
+          severity: critical
+          owner: services/event-bus
+        annotations:
+          summary: Event store stream consistency validation failed.
+          runbook: docs/runbooks/event-replay.md
+      - alert: LetBuyyErrorBudgetFreeze
+        expr: max(letbuyy_slo_remaining_error_budget_percent) < 25
+        for: 15m
+        labels:
+          severity: high
+          owner: platform-sre
+        annotations:
+          summary: Runtime error budget is below deployment freeze threshold.
+          runbook: docs/governance/sre-governance.md
+      - alert: LetBuyyRegionalOverrideActive
+        expr: max(letbuyy_regional_routing_override_active) > 0
+        for: 30m
+        labels:
+          severity: high
+          owner: platform-sre
+        annotations:
+          summary: Regional routing override has been active longer than the observation window.
+          runbook: docs/runbooks/regional-failover.md

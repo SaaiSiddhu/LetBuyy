@@ -54,10 +54,23 @@ app.*.map.json
 # Firebase
 .firebase/
 firebase-debug.log
+**/firebase-debug.log
 firestore-debug.log
+**/firestore-debug.log
 ui-debug.log
 storage-debug.log
 pubsub-debug.log
+**/*debug*.log
+*.trace
+*.trace.json
+**/*.trace
+**/*.trace.json
+
+# Local governance/debug scan output
+docs/architecture/validation/
+phase4-live-certification-report.json
+certification-report.json
+artifacts/live-certification/
 
 # Cloud Functions
 functions/node_modules/
@@ -67,21 +80,52 @@ functions/lib/
 .env
 .env.*
 *.env
+all.env
+.dev.vars
+**/.dev.vars
 
 # Node
 node_modules/
+apps/**/node_modules/
+services/**/node_modules/
+packages/**/node_modules/
+.next/
+apps/**/.next/
+**/.next/
+.turbo/
+**/.turbo/
+**/.cache/
+**/coverage/
+coverage/
+dist/
+services/**/dist/
+packages/**/dist/
+**/dist/
+out/
+**/out/
+.pnpm-store/
+*.tsbuildinfo
+**/.wrangler/tmp/
+**/.wrangler/
+services/**/.wrangler/
+**/supabase/.temp/
+packages/typescript/*/dist/
 
 # Gemini Agent artifacts (local only)
 .gemini/
 key.jks
 *.jks
 **/build/
+apps/mobile/**/build/
+packages/dart/**/build/
 *.dill
 *.dill.track.dill
+*.track.dill
 
 # Build artifacts (APKs, etc.)
 *.apk
 *.aab
 *.ipa
 .vercel
+**/.vercel/
 .env*.local

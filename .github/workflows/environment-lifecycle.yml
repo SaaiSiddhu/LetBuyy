@@ -1,0 +1,64 @@
+name: Environment Lifecycle
+
+on:
+  pull_request:
+    paths:
+      - "config/runtime/environment-lifecycle.json"
+      - "config/runtime/rollout-lifecycle.json"
+      - "config/runtime/operational-certification-policy.json"
+      - "infrastructure/local/**"
+      - "infrastructure/scripts/local/**"
+      - "infrastructure/scripts/load/**"
+      - "scripts/validators/operational-lifecycle-validator.mjs"
+      - "package.json"
+      - ".github/workflows/environment-lifecycle.yml"
+  workflow_dispatch:
+    inputs:
+      run_local_stack:
+        description: Start Docker Compose local stack in CI
+        required: true
+        default: false
+        type: boolean
+
+jobs:
+  lifecycle-contracts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate lifecycle contracts
+        run: node scripts/validators/operational-lifecycle-validator.mjs
+
+      - name: Governance gates
+        run: node scripts/validate-governance.mjs
+
+  local-stack-smoke:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.run_local_stack }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Bootstrap local environment
+        run: node infrastructure/scripts/local/bootstrap-local.mjs
+
+      - name: Start local stack
+        run: node infrastructure/scripts/local/start-local-stack.mjs
+
+      - name: Seed local data
+        run: node infrastructure/scripts/local/seed-local-data.mjs
+
+      - name: Validate local health
+        run: node infrastructure/scripts/local/health-local-stack.mjs

@@ -1,0 +1,42 @@
+{
+  "$schema": "config/runtime/operational-certification-policy.schema.json",
+  "policyVersion": 1,
+  "hardFail": true,
+  "minimumScores": {
+    "repository": 10,
+    "live": 10
+  },
+  "evidenceExpirationHours": 24,
+  "requiredCategories": [
+    "deployment",
+    "cloudflare",
+    "supabase",
+    "observability",
+    "incident",
+    "failover",
+    "chaos",
+    "load",
+    "security",
+    "dashboards",
+    "control-plane",
+    "sre",
+    "event-store",
+    "multi-region",
+    "replay-runtime"
+  ],
+  "staleEvidencePolicy": "Any live-certified category with missing, expired, or unlinked evidence is a hard failure. Plan-ready contracts are not live certifications and must remain explicitly labeled credential-gated.",
+  "certificationModes": {
+    "dev": "Non-production development evidence validates isolated dev routes, queues, storage, telemetry, secrets, rollback, and promotion readiness only.",
+    "plan": "Executable workflows and evidence contracts exist, but live operational maturity is not certified.",
+    "execute": "Provider credentials, tools, telemetry, drills, load tests, security gates, and evidence recording must complete successfully before certification."
+  },
+  "evidenceSources": {
+    "deployment": "deployment_health_gate_results",
+    "failover": "failover_drill_runs",
+    "chaos": "chaos_experiment_runs",
+    "load": "load_test_runs",
+    "security": "security_enforcement_events",
+    "sre": "sre_error_budget_snapshots",
+    "certification": "operational_certification_reports"
+  }
+}

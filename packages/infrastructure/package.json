@@ -1,0 +1,39 @@
+{
+  "name": "@letbuyy/infrastructure",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./stripe-adapter": "./stripe-adapter/index.ts",
+    "./razorpay-adapter": "./razorpay-adapter/index.ts",
+    "./paypal-adapter": "./paypal-adapter/index.ts",
+    "./supabase-adapter": "./supabase-adapter/index.ts",
+    "./cloudflare-adapter": "./cloudflare-adapter/index.ts",
+    "./resend-adapter": "./resend-adapter/index.ts",
+    "./storage-adapter": "./storage-adapter/index.ts",
+    "./queue-adapter": "./queue-adapter/index.ts",
+    "./analytics-adapter": "./analytics-adapter/index.ts",
+    "./cache-adapter": "./cache-adapter/index.ts",
+    "./search-provider-adapter": "./search-provider-adapter/index.ts",
+    "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.8.0",
+    "@supabase/supabase-js": "^2.95.2",
+    "@upstash/ratelimit": "^2.0.8",
+    "@upstash/redis": "^1.36.2",
+    "resend": "^6.9.2",
+    "stripe": "^20.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "typescript": "^5.9.3"
+  }
+}

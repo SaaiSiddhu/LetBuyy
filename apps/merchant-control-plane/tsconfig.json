@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "react-jsx",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@letbuyy/api-types": ["../../packages/typescript/api-types/src/index.ts"],
+      "@letbuyy/app-engine": ["../../packages/app-engine/src/index.ts"],
+      "@letbuyy/auth-core": ["../../packages/auth-core/src/index.ts"],
+      "@letbuyy/billing-core": ["../../packages/billing-core/src/index.ts"],
+      "@letbuyy/checkout-core": ["../../packages/checkout-core/src/index.ts"],
+      "@letbuyy/cms-core": ["../../packages/cms-core/src/index.ts"],
+      "@letbuyy/commerce-core": ["../../packages/commerce-core/src/index.ts"],
+      "@letbuyy/event-core": ["../../packages/event-core/src/index.ts"],
+      "@letbuyy/notification-core": ["../../packages/notification-core/src/index.ts"],
+      "@letbuyy/search-core": ["../../packages/search-core/src/index.ts"],
+      "@letbuyy/shared-types": ["../../packages/shared-types/src/index.ts"],
+      "@letbuyy/tenant-core": ["../../packages/tenant-core/src/index.ts"],
+      "@letbuyy/theme-engine": ["../../packages/theme-engine/src/index.ts"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    ".next/dev/types/**/*.ts",
+    "**/*.mts"
+  ],
+  "exclude": ["node_modules"]
+}

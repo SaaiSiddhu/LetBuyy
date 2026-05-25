@@ -1,0 +1,34 @@
+{
+  "title": "LetBuyy Incident Operations",
+  "uid": "letbuyy-incident-operations",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["letbuyy", "incident", "sre"],
+  "panels": [
+    {
+      "type": "table",
+      "title": "Active Incidents",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select incident_id, severity, status, title, affected_runtimes, affected_regions, started_at from production_incidents where deleted_at is null and status <> 'closed' order by started_at desc" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Incident Timeline",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select incident_id, event_type, summary, recorded_at from production_incident_events where deleted_at is null order by recorded_at desc limit 100" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Security Enforcement",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select control_name, runtime_root, status, severity, recorded_at from security_enforcement_events where deleted_at is null order by recorded_at desc limit 50" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+slos:
+  - name: api-gateway-availability
+    owner: services/api-gateway
+    sli: successful_http_requests / total_http_requests
+    target: 99.9
+    window: 30d
+    errorBudgetPolicy: freeze-risky-deployments-below-25-percent
+    evidenceTable: sre_error_budget_snapshots
+  - name: checkout-mutation-latency
+    owner: services/checkout-runtime
+    sli: p95_checkout_mutation_latency_ms
+    target: 1500
+    window: 30d
+    errorBudgetPolicy: require-staff-sre-approval-below-25-percent
+    evidenceTable: sre_error_budget_snapshots
+  - name: queue-processing-lag
+    owner: services/queue-workers
+    sli: p95_queue_lag_seconds
+    target: 60
+    window: 7d
+    errorBudgetPolicy: pause-noncritical-replays-below-25-percent
+    evidenceTable: sre_error_budget_snapshots
+  - name: storefront-availability
+    owner: apps/storefront-runtime
+    sli: successful_storefront_requests / total_storefront_requests
+    target: 99.9
+    window: 30d
+    errorBudgetPolicy: freeze-theme-runtime-rollouts-below-25-percent
+    evidenceTable: sre_error_budget_snapshots
+  - name: event-store-integrity
+    owner: services/event-bus
+    sli: successful_event_store_integrity_checks / total_event_store_integrity_checks
+    target: 100
+    window: 7d
+    errorBudgetPolicy: block-replays-and-deployments-on-integrity-failure
+    evidenceTable: event_store_integrity_checks
+  - name: deployment-gate-success
+    owner: platform-sre
+    sli: successful_deployment_health_gates / total_deployment_health_gates
+    target: 100
+    window: 30d
+    errorBudgetPolicy: block-production-promotion-on-failed-gate
+    evidenceTable: deployment_health_gate_results

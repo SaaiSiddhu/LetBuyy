@@ -1,0 +1,63 @@
+name: Architecture Governance
+
+on:
+  pull_request:
+    paths:
+      - "apps/**"
+      - "services/**"
+      - "packages/**"
+      - "database/**"
+      - "config/env/**"
+      - "config/runtime/**"
+      - "infrastructure/**"
+      - "docs/governance/**"
+      - "scripts/validators/**"
+      - "scripts/governance/**"
+      - "scripts/generators/**"
+      - "scripts/migration/**"
+      - "scripts/utilities/**"
+      - "scripts/validate-governance.mjs"
+      - "scripts/validate-architecture.mjs"
+      - "AGENTS.md"
+      - "**/AGENTS.md"
+      - "**/runtime.manifest.json"
+      - "package.json"
+      - "pnpm-workspace.yaml"
+      - ".github/CODEOWNERS"
+      - ".github/workflows/architecture-governance.yml"
+      - ".github/workflows/environment-lifecycle.yml"
+      - ".github/workflows/dev-runtime-deployment.yml"
+      - ".github/workflows/live-production-certification.yml"
+      - ".github/workflows/production-rollout.yml"
+  push:
+    branches:
+      - main
+      - master
+      - "codex/**"
+
+jobs:
+  validate-architecture:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate governance
+        run: node scripts/validate-governance.mjs
+
+      - name: Validate operational runtime topology
+        run: node scripts/validators/distributed-runtime-validator.mjs
+
+      - name: Validate production readiness topology
+        run: node scripts/validators/production-readiness-validator.mjs
+
+      - name: Generate SBOM
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+
+      - name: Dependency audit
+        run: npm audit --audit-level=high

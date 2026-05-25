@@ -8,20 +8,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_models/src/order_model.dart';
 import 'package:letbuyy_models/src/order_timeline_model.dart';
-import 'package:letbuyy_models/src/cart_item_model.dart'; // ✅ ADDED: For groupBySeller() extension
-import 'package:letbuyy_models/src/analytics_event.dart'; // ✅ ADDED: For TrafficSource enum
-import '../database_service.dart';
 import '../auth_service.dart';
-import '../order_notification_service.dart';
-import '../stock_service.dart';
-import '../seller_analytics_service.dart'; // ✅ ADDED: For order tracking
 
 
 class OrderProvider with ChangeNotifier {
-  final DatabaseService _databaseService = DatabaseService();
   final AuthService _authService = AuthService();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final StockService _stockService = StockService();
 
   List<OrderModel> _orders = [];
   OrderModel? _selectedOrder;
@@ -125,120 +117,10 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<String?> createOrder(OrderModel order) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      debugPrint('📦 Creating order: ${order.orderNumber}');
-
-      // 1️⃣ REDUCE STOCK ATOMICALLY (NEW)
-      debugPrint('📉 Reducing stock for ${order.items.length} items...');
-      final stockResult = await _stockService.reduceStock(order.items);
-      
-      if (!stockResult.success) {
-        debugPrint('❌ Stock reduction failed: ${stockResult.error}');
-        _error = 'Stock unavailable: ${stockResult.failedItems.map((i) => i.message).join(', ')}';
-        _isLoading = false;
-        notifyListeners();
-        return null;
-      }
-      debugPrint('✅ Stock reduced successfully');
-
-      // 2️⃣ Create order document
-      String? orderId;
-      try {
-        orderId = await _databaseService.createOrder(order);
-      } catch (orderError) {
-        // ROLLBACK: Restore stock if order creation fails
-        debugPrint('❌ Order creation failed, rolling back stock...');
-        await _stockService.restoreStock(order.items);
-        rethrow;
-      }
-
-      _orders.insert(0, order);
-      
-      // 3️⃣ SEND ORDER CREATION NOTIFICATION TO BUYER
-      await OrderNotificationService.sendOrderNotification(
-        userId: order.userId,
-        orderId: orderId,
-        orderNumber: order.orderNumber,
-        title: 'Order Created',
-        body: 'Your order #${order.orderNumber} has been created successfully!',
-      );
-
-      // 4️⃣ NOTIFY EACH SELLER ABOUT THEIR PORTION OF THE ORDER
-      try {
-        final sellerGroups = order.items.groupBySeller();
-        
-        for (final entry in sellerGroups.entries) {
-          final sellerId = entry.key;
-          final sellerItems = entry.value;
-          
-          // Skip if seller ID is unknown or empty
-          if (sellerId == 'unknown' || sellerId.isEmpty) {
-            debugPrint('⚠️ Skipping notification for unknown seller');
-            continue;
-          }
-          
-          // Calculate seller-specific totals
-          final sellerTotal = sellerItems.fold(0.0, (sum, item) => sum + item.subtotal);
-          final sellerItemCount = sellerItems.fold(0, (sum, item) => sum + item.quantity);
-          
-          // Get customer name from delivery address
-          final customerName = order.deliveryAddress.name;
-          
-          debugPrint('📤 Notifying seller: $sellerId for $sellerItemCount items, total: ₹$sellerTotal');
-          
-          await OrderNotificationService.notifySellerNewOrder(
-            sellerId: sellerId,
-            orderId: orderId,
-            orderNumber: order.orderNumber,
-            total: sellerTotal,
-            itemCount: sellerItemCount,
-            customerName: customerName,
-          );
-        }
-        
-        debugPrint('✅ All seller notifications sent');
-      } catch (sellerError) {
-        // Don't fail the order if seller notification fails
-        debugPrint('⚠️ Error notifying sellers: $sellerError');
-      }
-
-      // 5️⃣ TRACK SELLER ANALYTICS FOR EACH ITEM
-      try {
-        for (final item in order.items) {
-          final sellerId = item.sellerId ?? order.sellerId;
-          if (sellerId != null && sellerId.isNotEmpty && sellerId != 'unknown') {
-            await SellerAnalyticsService.trackOrder(
-              sellerId: sellerId,
-              productId: item.productId,
-              source: TrafficSource.organic,
-              userId: order.userId,
-              quantity: item.quantity,
-              revenue: item.price * item.quantity,
-            );
-          }
-        }
-        debugPrint('📊 SellerAnalytics: Tracked order for ${order.items.length} items');
-      } catch (analyticsError) {
-        // Don't fail the order if analytics fails
-        debugPrint('⚠️ Error tracking analytics: $analyticsError');
-      }
-
-      debugPrint('✅ Order created: $orderId (stock reduced, analytics tracked)');
-
-      _isLoading = false;
-      notifyListeners();
-      return orderId;
-    } catch (e) {
-      debugPrint('❌ Error: $e');
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return null;
-    }
+    _error = 'Orders must be created through the backend checkout workflow.';
+    _isLoading = false;
+    notifyListeners();
+    return null;
   }
 
   Future<void> loadOrderById(String orderId) async {
@@ -340,71 +222,17 @@ class OrderProvider with ChangeNotifier {
     return _orders.where((order) => order.orderStatus == 'refunded').toList();
   }
 
+  bool _blockOrderMutation(String message) {
+    _error = message;
+    _isLoading = false;
+    notifyListeners();
+    return false;
+  }
+
   Future<bool> cancelOrder(String orderId, String reason) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      debugPrint('❌ Cancelling order: $orderId');
-
-      // 1️⃣ Get the order details first (for stock restoration)
-      final orderDoc = await _firestore.collection('orders').doc(orderId).get();
-      if (!orderDoc.exists) {
-        throw Exception('Order not found');
-      }
-      final orderToCancel = OrderModel.fromMap(orderDoc.data()!, orderId);
-
-      // 2️⃣ RESTORE STOCK (NEW)
-      debugPrint('📈 Restoring stock for cancelled order...');
-      final stockRestored = await _stockService.restoreStock(orderToCancel.items);
-      if (stockRestored) {
-        debugPrint('✅ Stock restored successfully');
-      } else {
-        debugPrint('⚠️ Stock restoration failed, continuing with cancellation');
-      }
-
-      // 3️⃣ Update order status
-      await _firestore.collection('orders').doc(orderId).update({
-        'orderStatus': 'cancelled',
-        'updatedAt': FieldValue.serverTimestamp(),
-        'cancellationReason': reason,
-        'stockRestored': stockRestored,
-      });
-
-      // 4️⃣ Add timeline entry
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .collection('timeline')
-          .add({
-        'status': 'cancelled',
-        'title': 'Order Cancelled',
-        'description': reason,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      // 5️⃣ SEND CANCELLATION NOTIFICATION
-      await OrderNotificationService.sendCancellationNotification(
-        userId: orderToCancel.userId,
-        orderId: orderId,
-        orderNumber: orderToCancel.orderNumber,
-        reason: reason,
-      );
-
-      await loadOrderById(orderId);
-
-      debugPrint('✅ Order cancelled (stock restored: $stockRestored)');
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      debugPrint('❌ Error: $e');
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
+    return _blockOrderMutation(
+      'Order cancellation must use the backend order state machine.',
+    );
   }
 
   Future<bool> updateOrderStatus(
@@ -412,56 +240,9 @@ class OrderProvider with ChangeNotifier {
     String newStatus, {
     String? description,
   }) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      debugPrint('📦 Updating order status: $orderId -> $newStatus');
-
-      await _firestore.collection('orders').doc(orderId).update({
-        'orderStatus': newStatus,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-
-      final timelineData = {
-        'status': newStatus,
-        'title': _getStatusTitle(newStatus),
-        'description': description ?? _getStatusDescription(newStatus),
-        'timestamp': FieldValue.serverTimestamp(),
-      };
-
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .collection('timeline')
-          .add(timelineData);
-
-      // ✅ SEND STATUS UPDATE NOTIFICATION
-      final order = _selectedOrder;
-      if (order != null) {
-        await OrderNotificationService.sendOrderStatusNotification(
-          userId: order.userId,
-          orderId: orderId,
-          orderNumber: order.orderNumber,
-          status: newStatus,
-          statusMessage: description ?? _getStatusDescription(newStatus),
-        );
-      }
-
-      await loadOrderById(orderId);
-
-      debugPrint('✅ Order status updated');
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      debugPrint('❌ Error: $e');
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
+    return _blockOrderMutation(
+      'Order status changes must use the backend order state machine.',
+    );
   }
 
   String _getStatusTitle(String status) {
@@ -507,44 +288,9 @@ class OrderProvider with ChangeNotifier {
   }
 
   Future<bool> returnOrder(String orderId, String reason) async {
-    try {
-      _isLoading = true;
-      _error = null;
-      notifyListeners();
-
-      debugPrint('🔄 Initiating return for order: $orderId');
-
-      await _firestore.collection('orders').doc(orderId).update({
-        'orderStatus': 'returned',
-        'updatedAt': FieldValue.serverTimestamp(),
-        'returnReason': reason,
-        'returnInitiatedAt': FieldValue.serverTimestamp(),
-      });
-
-      await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .collection('timeline')
-          .add({
-        'status': 'returned',
-        'title': 'Return Initiated',
-        'description': reason,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
-      await loadOrderById(orderId);
-
-      debugPrint('✅ Return initiated');
-      _isLoading = false;
-      notifyListeners();
-      return true;
-    } catch (e) {
-      debugPrint('❌ Error: $e');
-      _error = e.toString();
-      _isLoading = false;
-      notifyListeners();
-      return false;
-    }
+    return _blockOrderMutation(
+      'Returns must use the backend returns workflow.',
+    );
   }
 
   List<OrderModel> searchOrders(String query) {

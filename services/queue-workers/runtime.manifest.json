@@ -1,0 +1,125 @@
+{
+  "$schema": "config/runtime/runtime-manifest.schema.json",
+  "runtimeName": "Queue Workers",
+  "runtimeRoot": "services/queue-workers",
+  "actorType": [
+    "service"
+  ],
+  "runtimeCategory": "reserved-service",
+  "runtimeClassification": "async-worker-plane",
+  "ownership": {
+    "sourceAuthority": "services/queue-workers",
+    "businessAuthority": "Reserved background queue worker authority for asynchronous commerce jobs.",
+    "governanceDocs": [
+      "docs/governance/runtime-boundaries.md",
+      "docs/governance/observability-governance.md",
+      "docs/governance/production-runtime-governance.md",
+      "docs/governance/deployment-governance.md",
+      "docs/governance/observability-infrastructure-governance.md",
+      "docs/governance/incident-response-governance.md",
+      "docs/governance/failover-governance.md",
+      "docs/governance/chaos-engineering-governance.md",
+      "docs/governance/sre-governance.md",
+      "docs/governance/queue-provider-governance.md",
+      "docs/governance/event-store-governance.md",
+      "docs/governance/security-operations-governance.md",
+      "docs/governance/multi-region-runtime-governance.md",
+      "docs/governance/deployment-pipeline-governance.md",
+      "docs/governance/runtime-observability-governance.md",
+      "docs/governance/operational-dashboard-governance.md"
+    ]
+  },
+  "allowedDependencies": {
+    "workspacePackages": [
+      "@letbuyy/infrastructure"
+    ],
+    "runtimeImports": []
+  },
+  "forbiddenDependencies": [
+    "apps/*",
+    "services/*",
+    "legacy/*",
+    "infrastructure/*",
+    "generated-artifacts"
+  ],
+  "deploymentAuthority": {
+    "platform": "Cloudflare Workers and Cloudflare Queues",
+    "config": [
+      "services/queue-workers/wrangler.toml",
+      "infrastructure/cloudflare/queues.tf"
+    ]
+  },
+  "environmentAuthority": {
+    "schema": "config/env/schemas/worker.schema.json",
+    "template": "config/env/templates/worker.env.example",
+    "secretStore": "Cloudflare Worker secrets"
+  },
+  "observabilityAuthority": {
+    "correlationId": "X-Request-ID",
+    "logging": "structured redacted queue worker logs",
+    "audit": "job side effects must preserve event IDs and retry state"
+  },
+  "executionAuthority": {
+    "executionRole": "Execution container for APIs, workers, webhooks, schedulers, queue consumers, and runtime bootstrapping.",
+    "orchestrationRole": "Delegates business workflow sequencing to packages/application-services; owns transport invocation and runtime transactions only.",
+    "infrastructureOwnership": "May wire packages/infrastructure adapters to runtime bindings and secrets; does not import provider SDKs directly.",
+    "eventOwnership": "Owns runtime event ingestion, dispatch, acknowledgement, and handler execution for declared service responsibilities.",
+    "queryOwnership": "May execute service-side read models through application-services or runtime-composition contracts.",
+    "compositionOwnership": "No UI composition authority; composes execution handlers and response envelopes only."
+  },
+  "orchestrationAuthority": "Transport and handler invocation only; business orchestration delegates to packages/application-services and event flow delegates to packages/orchestration.",
+  "eventAuthority": "Owns runtime event ingress, handler execution, acknowledgement, and correlation propagation for this service boundary; event contracts live in packages/orchestration and packages/event-core.",
+  "workflowAuthority": "Workflows, use cases, sequencing, and cross-domain coordination are owned by packages/application-services, not this runtime.",
+  "queryAuthority": "Executes service-side reads through application-services or runtime-composition contracts; does not own cross-domain projection assembly.",
+  "compositionAuthority": "Owns API, worker, webhook, scheduler, queue, and response-envelope composition only; no UI or business workflow composition.",
+  "executionOwnership": "Execution container for APIs, workers, schedulers, queues, webhooks, event handlers, transport, and runtime bootstrapping only.",
+  "distributedExecutionOwnership": "Owns execution-container wiring for durable distributed execution while event persistence, queues, checkpoints, coordination, resilience, cache, telemetry, tenant scaling, and regional contracts are defined in packages/distributed-runtime.",
+  "queueOwnership": "Owns queue execution containers, retry scheduling, visibility timeout handling, dead-letter redrive, and worker coordination for declared service responsibilities using packages/distributed-runtime contracts.",
+  "providerOwnership": "May bind packages/infrastructure adapters to deployment secrets and runtime bindings; direct provider SDK imports are forbidden outside packages/infrastructure.",
+  "executionBoundaries": "Execution-container boundary: APIs, workers, queues, schedulers, webhooks, runtime bootstrapping, and execution adapters only.",
+  "asyncExecutionOwnership": "Owns runtime async containers only: queue consumers, webhook handlers, schedulers, and event workers while workflow policy delegates to application-services/orchestration.",
+  "observabilityOwnership": "Propagates request, correlation, trace, and audit metadata across API, queue, webhook, scheduler, and execution adapter boundaries.",
+  "telemetryOwnership": "Owns execution-container telemetry emission for traces, queue/workflow/replay spans, metrics, structured logs, and correlation propagation using packages/distributed-runtime contracts.",
+  "workflowRecoveryOwnership": "Owns execution-container checkpoint and recovery wiring only; workflow recovery policy delegates to packages/application-services and packages/orchestration.",
+  "recoveryOwnership": "Owns runtime recovery wiring for queue retries, workflow continuation, replay checkpoints, projection rebuilds, and dead-letter redrive while policy delegates to application-services/orchestration/distributed-runtime.",
+  "replayOwnership": "Owns replay execution containers when worker, scheduler, webhook, or API runtime requires them; replay policy and contracts delegate to packages/orchestration.",
+  "checkpointOwnership": "Owns runtime checkpoint persistence wiring for workflows, queue consumers, replays, and projections while checkpoint contracts live in packages/distributed-runtime and projection-runtime.",
+  "projectionOwnership": "No local projection policy ownership; service-side read models and projections use packages/runtime-composition contracts.",
+  "cqrsOwnership": "Owns execution-container command/query wiring only; command authority delegates to application-services and read-model/projection consistency delegates to runtime-composition/projection-runtime.",
+  "cacheOwnership": "Owns service-side cache invalidation and projection cache coordination for declared runtime responsibilities; cache policy contracts live in runtime-composition, projection-runtime, and distributed-runtime.",
+  "coordinationOwnership": "Owns runtime coordination wiring for worker leases, execution locks, fencing tokens, heartbeats, leader election metadata, and ownership failover using packages/distributed-runtime.",
+  "resilienceOwnership": "Owns runtime resilience wiring for retries, circuit breakers, provider fallback, degradation handling, and provider health telemetry through packages/distributed-runtime and packages/infrastructure.",
+  "regionalOwnership": "Owns runtime region-aware execution wiring, Cloudflare deployment locality, tenant affinity, and failover metadata while global routing contracts live in packages/distributed-runtime.",
+  "tenantScalingOwnership": "Owns tenant-aware execution wiring for quotas, rate governance, queue partitioning, noisy-neighbor protection, and tenant runtime metrics using packages/distributed-runtime contracts.",
+  "auditOwnership": "Owns execution audit emission for privileged runtime operations, replay authorization, provider execution, queue redrive, and workflow recovery using packages/distributed-runtime security contracts.",
+  "operationalOwnership": "Owns execution-container operational wiring for runtime health, diagnostics, recovery orchestration, deployment topology participation, and operational command handling.",
+  "telemetryExecutionOwnership": "Owns execution-container telemetry emission for traces, metrics, structured logs, diagnostics, queue/replay/workflow spans, and exporter abstraction wiring.",
+  "replayExecutionOwnership": "Owns replay execution-container wiring for scheduling, authorization checks, dry-runs, checkpoint coordination, rollback planning, and replay telemetry.",
+  "queueExecutionOwnership": "Owns queue operational execution for inspection, recovery, retry orchestration, visibility timeout repair, dead-letter redrive, partition balancing, and throughput diagnostics.",
+  "resilienceExecutionOwnership": "Owns resilience execution wiring for circuit breakers, adaptive retries, provider failover, degraded mode, outage coordination, fallback execution, and recovery telemetry.",
+  "regionalExecutionOwnership": "Owns region-aware execution wiring for locality, failover, regional queue ownership, replication diagnostics, and global execution metadata.",
+  "auditExecutionOwnership": "Owns runtime audit execution for replay authorization, provider execution, queue redrive, workflow recovery, tenant runtime operations, and control-plane commands.",
+  "cacheExecutionOwnership": "Owns service-side cache execution for invalidation, stale-while-revalidate coordination, replay-aware invalidation, cache diagnostics, and tenant cache partitioning.",
+  "coordinationExecutionOwnership": "Owns distributed coordination execution for worker leases, locks, fencing tokens, heartbeats, leader election, failover transfer, and collision recovery.",
+  "diagnosticsOwnership": "Owns runtime diagnostics persistence for queue, replay, workflow, projection, cache, provider, regional, tenant, telemetry, and deployment health.",
+  "operationalControlPlaneOwnership": "Owns operational control-plane command execution for replay, workflow, queue, diagnostics, resilience, telemetry, tenant runtime, governance, and recovery orchestration.",
+  "deploymentOwnership": "Owns production execution deployment wiring for Queue Workers; provider manifests are declared in runtime topology and service deployment config.",
+  "observabilityInfrastructureOwnership": "Emits correlated runtime telemetry to the OpenTelemetry, Prometheus, Tempo, Loki, and Grafana stack declared in infrastructure/observability.",
+  "queueProviderOwnership": "Owns Cloudflare Queues consumer execution, dead-letter persistence, retry visibility, and queue telemetry for production queues.",
+  "eventStoreOwnership": "Delegates event persistence to packages/distributed-runtime contracts backed by Supabase Postgres append-only event store.",
+  "failoverOwnership": "Owns runtime failover participation through control-plane commands, health checks, and regional diagnostics.",
+  "incidentOwnership": "Participates in incident metadata, diagnostics, alert routing, and audit records through production incident governance.",
+  "deploymentTopologyOwnership": "Must match config/runtime/deployment-topology.json and config/runtime/production-topology.json; topology drift is a hard validation failure.",
+  "securityOwnership": "Owns runtime secret binding, RBAC enforcement, audit emission, and operational authorization for service execution.",
+  "chaosOwnership": "Participates in approved chaos experiments recorded in chaos_experiment_runs with guardrails and rollback commands.",
+  "loadTestingOwnership": "Participates in k6/Gatling/Locust production-readiness benchmarks recorded in load_test_runs.",
+  "controlPlaneOwnership": "Owns service-side operational command execution or projection through /v1/operations/runtime and runtime_control_commands.",
+  "regionalRoutingOwnership": "Owns region-aware execution metadata, tenant affinity, failover routing, and regional diagnostics for service work.",
+  "productionOwnership": "Owns production execution-container readiness, deployment health, runtime diagnostics, and operational recovery for this service boundary.",
+  "deploymentPipelineOwnership": "Owns deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
+  "telemetryInfrastructureOwnership": "Owns telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
+  "dashboardOwnership": "Owns operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
+  "operationalDashboardOwnership": "Owns operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
+  "sreOwnership": "Owns SRE ownership for SLOs, error budgets, escalation paths, readiness scoring, and incident runbook participation.",
+  "replayOperationsOwnership": "Owns or participates in replay-safe execution, authorization, checkpointing, dry-run validation, recovery telemetry, and event-store integrity checks."
+}

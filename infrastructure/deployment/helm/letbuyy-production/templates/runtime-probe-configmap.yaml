@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-runtime-probes
+  labels:
+    app.kubernetes.io/name: letbuyy-runtime-probes
+data:
+  primary-region: {{ .Values.primaryRegion | quote }}
+  failover-region: {{ .Values.failoverRegion | quote }}
+  probes.yaml: |
+    probes:
+    {{- range .Values.runtimeHealthProbe.urls }}
+      - url: {{ . | quote }}
+    {{- end }}

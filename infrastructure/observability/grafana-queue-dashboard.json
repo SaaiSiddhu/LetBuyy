@@ -1,0 +1,34 @@
+{
+  "title": "LetBuyy Queue Operations",
+  "uid": "letbuyy-queue-operations",
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "tags": ["letbuyy", "queues", "cloudflare"],
+  "panels": [
+    {
+      "type": "timeseries",
+      "title": "Cloudflare Queue Delivery Lag",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum(rate(cloudflare_queue_lag_milliseconds_bucket[5m])) by (le, queue_name))", "legendFormat": "{{queue_name}} p95" }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Dead Letter Growth",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "increase(letbuyy_queue_dead_letter_total[15m])", "legendFormat": "{{queue_name}}" }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Queue Recovery Operations",
+      "datasource": { "type": "postgres", "uid": "supabase-ops" },
+      "targets": [
+        { "rawSql": "select queue_name, operation_type, status, affected_count, created_at from queue_recovery_operations where deleted_at is null order by created_at desc limit 50" }
+      ]
+    }
+  ]
+}

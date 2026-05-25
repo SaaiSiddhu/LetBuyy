@@ -1,5 +1,29 @@
 packages:
-  - "apps/web/administrative/*"
-  - "apps/web/consumer/*"
+  - "apps/*"
+  - "apps/mobile/*"
+  - "packages/shared-types"
+  - "packages/tenant-core"
+  - "packages/commerce-core"
+  - "packages/checkout-core"
+  - "packages/auth-core"
+  - "packages/app-engine"
+  - "packages/theme-engine"
+  - "packages/cms-core"
+  - "packages/event-core"
+  - "packages/notification-core"
+  - "packages/search-core"
+  - "packages/billing-core"
+  - "packages/application-services"
+  - "packages/distributed-runtime"
+  - "packages/projection-runtime"
+  - "packages/infrastructure"
+  - "packages/orchestration"
+  - "packages/runtime-composition"
   - "packages/typescript/*"
-  - "backend/workers/*"
+  - "services/*"
+
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - unrs-resolver
+  - workerd

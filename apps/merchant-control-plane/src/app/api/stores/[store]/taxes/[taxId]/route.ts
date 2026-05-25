@@ -1,0 +1,53 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+
+export async function PATCH(
+    request: NextRequest,
+    { params }: { params: Promise<{ store: string; taxId: string }> }
+) {
+    try {
+        const { store, taxId } = await params
+        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+
+        if (resolved.error) return resolved.error
+
+        const body = await request.json()
+        const workerResponse = await workerFetch(`/shipping-tax/taxes/${encodeURIComponent(taxId)}`, {
+            method: 'PATCH',
+            body: JSON.stringify(body),
+        })
+        const payload = await readWorkerJson(workerResponse)
+
+        return NextResponse.json(payload)
+    } catch (err) {
+        return NextResponse.json(
+            { error: 'Unable to update tax rate' },
+            { status: 500 }
+        )
+    }
+}
+
+export async function DELETE(
+    _request: NextRequest,
+    { params }: { params: Promise<{ store: string; taxId: string }> }
+) {
+    try {
+        const { store, taxId } = await params
+        const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
+
+        if (resolved.error) return resolved.error
+
+        const workerResponse = await workerFetch(`/shipping-tax/taxes/${encodeURIComponent(taxId)}`, {
+            method: 'DELETE',
+        })
+        const payload = await readWorkerJson(workerResponse)
+
+        return NextResponse.json(payload)
+    } catch (err) {
+        return NextResponse.json(
+            { error: 'Unable to delete tax rate' },
+            { status: 500 }
+        )
+    }
+}

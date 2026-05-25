@@ -1,5 +1,34 @@
 import 'package:flutter/material.dart';
-import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+
+class _CoreDialogColors {
+  static const Color primary = Color(0xFF00B3B3);
+  static const Color success = Color(0xFFA4E500);
+  static const Color error = Color(0xFFB02525);
+  static const Color surface = Color(0xFFFFFFFF);
+  static const Color textSecondary = Color(0xFF4A5568);
+}
+
+class _CoreDialogTextStyles {
+  static const TextStyle headlineMedium = TextStyle(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+    color: Color(0xFF1A1A2E),
+    height: 1.3,
+  );
+
+  static const TextStyle bodyMedium = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.normal,
+    color: Color(0xFF1A1A2E),
+    height: 1.5,
+  );
+
+  static const TextStyle buttonMedium = TextStyle(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.5,
+  );
+}
 
 class DialogHelper {
   // Show confirmation dialog
@@ -15,33 +44,25 @@ class DialogHelper {
     return showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(
-          title,
-          style: AppTextStyles.headlineMedium,
-        ),
-        content: Text(
-          message,
-          style: AppTextStyles.bodyMedium,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: _CoreDialogTextStyles.headlineMedium),
+        content: Text(message, style: _CoreDialogTextStyles.bodyMedium),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
             child: Text(
               cancelText,
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.textSecondary,
+              style: _CoreDialogTextStyles.buttonMedium.copyWith(
+                color: _CoreDialogColors.textSecondary,
               ),
             ),
           ),
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isDangerous 
-                  ? AppColors.error 
-                  : (confirmColor ?? AppColors.primary),
+              backgroundColor: isDangerous
+                  ? _CoreDialogColors.error
+                  : (confirmColor ?? _CoreDialogColors.primary),
             ),
             child: Text(confirmText),
           ),
@@ -49,7 +70,7 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Show delete confirmation
   static Future<bool?> showDeleteConfirmation(
     BuildContext context, {
@@ -59,13 +80,14 @@ class DialogHelper {
     return showConfirmation(
       context,
       title: title,
-      message: 'Are you sure you want to delete "$itemName"? This action cannot be undone.',
+      message:
+          'Are you sure you want to delete "$itemName"? This action cannot be undone.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
       isDangerous: true,
     );
   }
-  
+
   // Show info dialog
   static Future<void> showInfo(
     BuildContext context, {
@@ -76,17 +98,9 @@ class DialogHelper {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(
-          title,
-          style: AppTextStyles.headlineMedium,
-        ),
-        content: Text(
-          message,
-          style: AppTextStyles.bodyMedium,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: _CoreDialogTextStyles.headlineMedium),
+        content: Text(message, style: _CoreDialogTextStyles.bodyMedium),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
@@ -96,7 +110,7 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Show error dialog
   static Future<void> showError(
     BuildContext context, {
@@ -107,30 +121,25 @@ class DialogHelper {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.error, color: AppColors.error, size: 28),
+            const Icon(Icons.error, color: _CoreDialogColors.error, size: 28),
             const SizedBox(width: 12),
             Text(
               title,
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.error,
+              style: _CoreDialogTextStyles.headlineMedium.copyWith(
+                color: _CoreDialogColors.error,
               ),
             ),
           ],
         ),
-        content: Text(
-          message,
-          style: AppTextStyles.bodyMedium,
-        ),
+        content: Text(message, style: _CoreDialogTextStyles.bodyMedium),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
+              backgroundColor: _CoreDialogColors.error,
             ),
             child: Text(buttonText),
           ),
@@ -138,7 +147,7 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Show success dialog
   static Future<void> showSuccess(
     BuildContext context, {
@@ -149,30 +158,29 @@ class DialogHelper {
     return showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Row(
           children: [
-            const Icon(Icons.check_circle, color: AppColors.success, size: 28),
+            const Icon(
+              Icons.check_circle,
+              color: _CoreDialogColors.success,
+              size: 28,
+            ),
             const SizedBox(width: 12),
             Text(
               title,
-              style: AppTextStyles.headlineMedium.copyWith(
-                color: AppColors.success,
+              style: _CoreDialogTextStyles.headlineMedium.copyWith(
+                color: _CoreDialogColors.success,
               ),
             ),
           ],
         ),
-        content: Text(
-          message,
-          style: AppTextStyles.bodyMedium,
-        ),
+        content: Text(message, style: _CoreDialogTextStyles.bodyMedium),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.of(context).pop(),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.success,
+              backgroundColor: _CoreDialogColors.success,
             ),
             child: Text(buttonText),
           ),
@@ -180,7 +188,7 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Show loading dialog
   static void showLoading(
     BuildContext context, {
@@ -202,7 +210,7 @@ class DialogHelper {
               const SizedBox(height: 16),
               Text(
                 message,
-                style: AppTextStyles.bodyMedium,
+                style: _CoreDialogTextStyles.bodyMedium,
                 textAlign: TextAlign.center,
               ),
             ],
@@ -211,12 +219,12 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Hide loading dialog
   static void hideLoading(BuildContext context) {
     Navigator.of(context, rootNavigator: true).pop();
   }
-  
+
   // Show input dialog
   static Future<String?> showInput(
     BuildContext context, {
@@ -231,17 +239,12 @@ class DialogHelper {
   }) async {
     final controller = TextEditingController(text: initialValue);
     final formKey = GlobalKey<FormState>();
-    
+
     return showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(
-          title,
-          style: AppTextStyles.headlineMedium,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: _CoreDialogTextStyles.headlineMedium),
         content: Form(
           key: formKey,
           child: TextFormField(
@@ -249,10 +252,7 @@ class DialogHelper {
             autofocus: true,
             keyboardType: keyboardType,
             maxLength: maxLength,
-            decoration: InputDecoration(
-              hintText: hint,
-              counterText: '',
-            ),
+            decoration: InputDecoration(hintText: hint, counterText: ''),
             validator: validator,
           ),
         ),
@@ -261,8 +261,8 @@ class DialogHelper {
             onPressed: () => Navigator.of(context).pop(),
             child: Text(
               cancelText,
-              style: AppTextStyles.buttonMedium.copyWith(
-                color: AppColors.textSecondary,
+              style: _CoreDialogTextStyles.buttonMedium.copyWith(
+                color: _CoreDialogColors.textSecondary,
               ),
             ),
           ),
@@ -278,7 +278,7 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Show choice dialog (radio buttons)
   static Future<int?> showChoice(
     BuildContext context, {
@@ -289,13 +289,8 @@ class DialogHelper {
     return showDialog<int>(
       context: context,
       builder: (context) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        title: Text(
-          title,
-          style: AppTextStyles.headlineMedium,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(title, style: _CoreDialogTextStyles.headlineMedium),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: options.asMap().entries.map((entry) {
@@ -312,7 +307,7 @@ class DialogHelper {
       ),
     );
   }
-  
+
   // Show bottom sheet dialog
   static Future<T?> showBottomSheet<T>(
     BuildContext context, {
@@ -328,16 +323,14 @@ class DialogHelper {
       backgroundColor: Colors.transparent,
       builder: (context) => Container(
         decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(
-            top: Radius.circular(20),
-          ),
+          color: _CoreDialogColors.surface,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
         child: child,
       ),
     );
   }
-  
+
   // Show custom dialog
   static Future<T?> showCustom<T>(
     BuildContext context, {

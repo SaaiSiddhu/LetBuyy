@@ -1,4 +1,8 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import {
+    createSupabaseAnonClient,
+    createSupabaseServiceClient,
+    type SupabaseClient,
+} from '@letbuyy/infrastructure/supabase-adapter';
 
 let supabaseClient: SupabaseClient | null = null;
 
@@ -17,7 +21,10 @@ export function getSupabaseClient(): SupabaseClient {
         throw new Error('Missing Supabase environment variables');
     }
 
-    supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    supabaseClient = createSupabaseAnonClient({
+        SUPABASE_URL: supabaseUrl,
+        SUPABASE_ANON_KEY: supabaseAnonKey,
+    });
     return supabaseClient;
 }
 
@@ -32,12 +39,13 @@ export function getSupabaseAdmin(): SupabaseClient {
         throw new Error('Missing Supabase admin environment variables');
     }
 
-    return createClient(supabaseUrl, supabaseServiceKey, {
-        auth: {
-            autoRefreshToken: false,
-            persistSession: false,
-        },
+    return createSupabaseServiceClient({
+        SUPABASE_URL: supabaseUrl,
+        SUPABASE_SERVICE_ROLE_KEY: supabaseServiceKey,
     });
 }
 
-export { createClient, type SupabaseClient };
+export {
+    createSupabaseAnonClient as createClient,
+    type SupabaseClient,
+};

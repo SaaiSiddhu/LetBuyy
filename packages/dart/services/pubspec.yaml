@@ -64,7 +64,6 @@ dependencies:
   intl: ^0.20.2
   uuid: ^4.5.1
 
-  letbuyy_ui_kit: any
   crypto: any
   url_launcher: any
   video_player: any

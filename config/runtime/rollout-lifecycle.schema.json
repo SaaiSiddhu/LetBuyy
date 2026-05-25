@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://letbuyy.internal/schemas/rollout-lifecycle.schema.json",
+  "title": "LetBuyy Enterprise Rollout Lifecycle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "rolloutVersion",
+    "featureFlags",
+    "canary",
+    "blueGreen",
+    "shadowTraffic",
+    "sandboxProviders",
+    "deploymentGates"
+  ],
+  "properties": {
+    "$schema": { "type": "string" },
+    "rolloutVersion": { "type": "integer", "minimum": 1 },
+    "featureFlags": { "type": "object" },
+    "canary": { "type": "object" },
+    "blueGreen": { "type": "object" },
+    "shadowTraffic": { "type": "object" },
+    "sandboxProviders": { "type": "object" },
+    "deploymentGates": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    }
+  }
+}

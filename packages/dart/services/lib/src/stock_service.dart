@@ -146,137 +146,14 @@ class StockService {
   /// Reduce stock for all items atomically using Firestore transaction
   /// This ensures either all stock reductions succeed or none do
   Future<StockReduceResult> reduceStock(List<CartItemModel> items) async {
-    if (items.isEmpty) {
-      return StockReduceResult.succeeded();
-    }
-
-    try {
-      debugPrint('📦 Reducing stock for ${items.length} items...');
-
-      // Group items by product ID
-      final Map<String, int> reductions = {};
-      final Map<String, String> productNames = {};
-
-      for (final item in items) {
-        final currentQty = reductions[item.productId] ?? 0;
-        reductions[item.productId] = currentQty + item.quantity;
-        productNames[item.productId] = item.productName;
-      }
-
-      // Use Firestore transaction for atomicity
-      final result = await _firestore.runTransaction<StockReduceResult>((transaction) async {
-        final List<StockIssue> issues = [];
-
-        // Phase 1: Read all products and validate stock
-        final Map<String, DocumentSnapshot> productDocs = {};
-
-        for (final productId in reductions.keys) {
-          final docRef = _firestore.collection('products').doc(productId);
-          final doc = await transaction.get(docRef);
-          productDocs[productId] = doc;
-
-          if (!doc.exists) {
-            issues.add(StockIssue(
-              productId: productId,
-              productName: productNames[productId] ?? 'Unknown',
-              requestedQuantity: reductions[productId]!,
-              availableStock: 0,
-            ));
-            continue;
-          }
-
-          final data = doc.data() as Map<String, dynamic>;
-          final currentStock = (data['stock'] as num?)?.toInt() ?? 0;
-          final requiredQty = reductions[productId]!;
-
-          if (currentStock < requiredQty) {
-            issues.add(StockIssue(
-              productId: productId,
-              productName: data['name'] ?? productNames[productId] ?? 'Unknown',
-              requestedQuantity: requiredQty,
-              availableStock: currentStock,
-            ));
-          }
-        }
-
-        // If any issues, abort transaction
-        if (issues.isNotEmpty) {
-          return StockReduceResult.failed(
-            'Insufficient stock for ${issues.length} item(s)',
-            issues,
-          );
-        }
-
-        // Phase 2: Write all stock reductions
-        for (final entry in reductions.entries) {
-          final productId = entry.key;
-          final reduceBy = entry.value;
-          final docRef = _firestore.collection('products').doc(productId);
-
-          transaction.update(docRef, {
-            'stock': FieldValue.increment(-reduceBy),
-            'updatedAt': FieldValue.serverTimestamp(),
-          });
-
-          debugPrint('   📉 $productId: -$reduceBy');
-        }
-
-        return StockReduceResult.succeeded();
-      });
-
-      if (result.success) {
-        debugPrint('✅ Stock reduced successfully for ${reductions.length} products');
-      } else {
-        debugPrint('❌ Stock reduction failed: ${result.error}');
-      }
-
-      return result;
-    } catch (e) {
-      debugPrint('❌ Error reducing stock: $e');
-      return StockReduceResult.failed('Transaction failed: ${e.toString()}');
-    }
+    return StockReduceResult.failed(
+      'Stock mutations must use the backend inventory ledger workflow',
+    );
   }
 
   /// Restore stock for all items (used when order is cancelled or RTO completed)
   Future<bool> restoreStock(List<CartItemModel> items) async {
-    if (items.isEmpty) {
-      return true;
-    }
-
-    try {
-      debugPrint('📦 Restoring stock for ${items.length} items...');
-
-      // Group items by product ID
-      final Map<String, int> restorations = {};
-
-      for (final item in items) {
-        final currentQty = restorations[item.productId] ?? 0;
-        restorations[item.productId] = currentQty + item.quantity;
-      }
-
-      // Use batch write for efficiency
-      final batch = _firestore.batch();
-
-      for (final entry in restorations.entries) {
-        final productId = entry.key;
-        final restoreBy = entry.value;
-        final docRef = _firestore.collection('products').doc(productId);
-
-        batch.update(docRef, {
-          'stock': FieldValue.increment(restoreBy),
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
-
-        debugPrint('   📈 $productId: +$restoreBy');
-      }
-
-      await batch.commit();
-      debugPrint('✅ Stock restored successfully for ${restorations.length} products');
-      return true;
-    } catch (e) {
-      debugPrint('❌ Error restoring stock: $e');
-      return false;
-    }
+    return false;
   }
 
   /// Restore stock for a return request (after QC pass)
@@ -285,20 +162,7 @@ class StockService {
     required int quantity,
     String? productName,
   }) async {
-    try {
-      debugPrint('📦 Restoring stock for return: $productId x$quantity');
-
-      await _firestore.collection('products').doc(productId).update({
-        'stock': FieldValue.increment(quantity),
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-
-      debugPrint('✅ Stock restored for return: $productId +$quantity');
-      return true;
-    } catch (e) {
-      debugPrint('❌ Error restoring stock from return: $e');
-      return false;
-    }
+    return false;
   }
 
   /// Get current stock for a product

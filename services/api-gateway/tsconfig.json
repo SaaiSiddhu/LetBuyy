@@ -1,0 +1,96 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "lib": [
+            "ES2022"
+        ],
+        "types": [
+            "@cloudflare/workers-types"
+        ],
+        "strict": true,
+        "noEmit": true,
+        "skipLibCheck": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "noUnusedLocals": false,
+        "noUnusedParameters": false,
+        "noFallthroughCasesInSwitch": true,
+        "forceConsistentCasingInFileNames": true,
+        "declaration": true,
+        "declarationMap": true,
+        "baseUrl": ".",
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ],
+            "@letbuyy/api-types": [
+                "../../packages/typescript/api-types/src/index.ts"
+            ],
+            "@letbuyy/app-engine": [
+                "../../packages/app-engine/src/index.ts"
+            ],
+            "@letbuyy/application-services": [
+                "../../packages/application-services/src/index.ts"
+            ],
+            "@letbuyy/auth-core": [
+                "../../packages/auth-core/src/index.ts"
+            ],
+            "@letbuyy/checkout-core": [
+                "../../packages/checkout-core/src/index.ts"
+            ],
+            "@letbuyy/cms-core": [
+                "../../packages/cms-core/src/index.ts"
+            ],
+            "@letbuyy/commerce-core": [
+                "../../packages/commerce-core/src/index.ts"
+            ],
+            "@letbuyy/distributed-runtime": [
+                "../../packages/distributed-runtime/src/index.ts"
+            ],
+            "@letbuyy/event-core": [
+                "../../packages/event-core/src/index.ts"
+            ],
+            "@letbuyy/infrastructure/*": [
+                "../../packages/infrastructure/*/index.ts"
+            ],
+            "@letbuyy/notification-core": [
+                "../../packages/notification-core/src/index.ts"
+            ],
+            "@letbuyy/orchestration": [
+                "../../packages/orchestration/src/index.ts"
+            ],
+            "@letbuyy/projection-runtime": [
+                "../../packages/projection-runtime/src/index.ts"
+            ],
+            "@letbuyy/runtime-composition": [
+                "../../packages/runtime-composition/src/index.ts"
+            ],
+            "@letbuyy/search-core": [
+                "../../packages/search-core/src/index.ts"
+            ],
+            "@letbuyy/billing-core": [
+                "../../packages/billing-core/src/index.ts"
+            ],
+            "@letbuyy/shared-types": [
+                "../../packages/shared-types/src/index.ts"
+            ],
+            "@letbuyy/tenant-core": [
+                "../../packages/tenant-core/src/index.ts"
+            ],
+            "@letbuyy/theme-engine": [
+                "../../packages/theme-engine/src/index.ts"
+            ]
+        }
+    },
+    "include": [
+        "src/**/*.ts"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
+}

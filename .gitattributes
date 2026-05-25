@@ -1,0 +1,16 @@
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.pdf binary
+
+*.apk -diff -merge
+*.aab -diff -merge
+*.ipa -diff -merge
+*.tar.zst -diff -merge
+*.dill -diff -merge
+*.track.dill -diff -merge

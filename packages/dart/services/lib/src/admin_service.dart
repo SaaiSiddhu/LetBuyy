@@ -99,16 +99,7 @@ class AdminService {
   }
 
   Future<void> updateOrderStatus(String orderId, String status) async {
-    try {
-      await _firestore.collection('orders').doc(orderId).update({
-        'status': status,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
-      debugPrint('✅ Order status updated: $orderId to $status');
-    } catch (e) {
-      debugPrint('❌ Error updating order status: $e');
-      throw Exception('Failed to update order status: $e');
-    }
+    throw Exception('Order status changes must use the backend order state machine.');
   }
 
   // ============================================

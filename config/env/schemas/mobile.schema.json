@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Mobile Build Defines",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "SUPABASE_URL": { "type": "string", "format": "uri" },
+    "SUPABASE_ANON_KEY": { "type": "string" },
+    "API_BASE_URL": { "type": "string", "format": "uri" },
+    "RAZORPAY_KEY_ID": { "type": "string" },
+    "ENVIRONMENT": { "enum": ["local", "staging", "production"] }
+  }
+}

@@ -1,0 +1,35 @@
+{
+    "name": "@letbuyy/api-gateway",
+    "version": "0.0.1",
+    "private": true,
+    "scripts": {
+        "dev": "wrangler dev --inspector-port 9231",
+        "deploy": "wrangler deploy",
+        "typecheck": "tsc --noEmit"
+    },
+    "dependencies": {
+        "@letbuyy/api-types": "workspace:*",
+        "@letbuyy/app-engine": "workspace:*",
+        "@letbuyy/application-services": "workspace:*",
+        "@letbuyy/auth-core": "workspace:*",
+        "@letbuyy/billing-core": "workspace:*",
+        "@letbuyy/checkout-core": "workspace:*",
+        "@letbuyy/cms-core": "workspace:*",
+        "@letbuyy/commerce-core": "workspace:*",
+        "@letbuyy/event-core": "workspace:*",
+        "@letbuyy/infrastructure": "workspace:*",
+        "@letbuyy/orchestration": "workspace:*",
+        "@letbuyy/runtime-composition": "workspace:*",
+        "@letbuyy/shared-types": "workspace:*",
+        "@letbuyy/tenant-core": "workspace:*",
+        "@letbuyy/theme-engine": "workspace:*",
+        "bcryptjs": "^3.0.3",
+        "hono": "^4.7.0",
+        "zod": "^4.3.6"
+    },
+    "devDependencies": {
+        "@cloudflare/workers-types": "^4.20250204.0",
+        "typescript": "^5.7.0",
+        "wrangler": "^3.105.0"
+    }
+}

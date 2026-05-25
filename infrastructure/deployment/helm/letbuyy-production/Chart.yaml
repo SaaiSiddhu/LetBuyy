@@ -1,0 +1,6 @@
+apiVersion: v2
+name: letbuyy-production
+description: LetBuyy production operational backbone for probes, SLO exporters, and control-plane jobs.
+type: application
+version: 0.1.0
+appVersion: "phase4"

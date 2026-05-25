@@ -1,0 +1,64 @@
+controls:
+  secrets:
+    store: cloudflare-worker-secrets-and-vercel-project-env
+    rotationWindowDays: 90
+    emergencyRotationWindowHours: 4
+    rotationCommand: node infrastructure/scripts/security/rotate-secrets.mjs --environment=production --execute
+    forbiddenInRepository:
+      - service role keys
+      - webhook secrets
+      - provider tokens
+      - customer session secrets
+  deploymentSigning:
+    required: true
+    ciProvider: github-actions
+    artifactAttestation: required
+    sbom: required
+  scanning:
+    dependencyScan: npm-audit-and-pnpm-audit
+    secretScan: governance-environment-validator
+    sbomGenerator: cyclonedx
+  access:
+    platformConsole:
+      mfa: required
+      allowlist: required
+      audit: runtime_control_commands
+    operationsPortal:
+      mfa: required
+      roleScopes:
+        - incident.read
+        - incident.write
+        - queue.inspect
+        - queue.redrive
+        - replay.schedule
+        - deployment.promote
+  runtimeEnforcement:
+    csrf:
+      boundary: services/api-gateway/src/middleware/security.ts
+      mode: double-submit-cookie-for-cookie-backed-mutations
+    webhooks:
+      boundary: services/webhook-service/src/index.ts
+      requiredProviders:
+        - razorpay
+        - stripe
+    authRateLimiting:
+      boundary: services/api-gateway/src/middleware/rateLimit.ts
+      provider: upstash-redis-rest
+    securityEvidence:
+      table: security_enforcement_events
+      api: /v1/operations/runtime/security/enforcement-events
+    liveCertification:
+      modeDetection: infrastructure/scripts/operations/phase4-live-certify.mjs
+      credentialGated: true
+      executeRequires:
+        - cloudflare api token
+        - supabase database url
+        - observability endpoints
+        - operations api token
+        - vercel deployment token
+        - secret rotation payloads
+      evidence:
+        config: config/runtime/live-production-certification.json
+        api: /v1/operations/runtime
+        reportApi: /v1/operations/runtime/certification-reports
+        reportProjection: operational_certification_reports

@@ -1,0 +1,32 @@
+migrationPolicy:
+  engine: supabase-postgres
+  root: database/supabase/migrations
+  preflight:
+    - validate sequential migration numbering
+    - run governance validation
+    - run SQL dry run against staging branch
+    - verify rollback notes for destructive operations
+  production:
+    lock: advisory-migration-lock
+    window: approved-change-window
+    backup: require-pitr-checkpoint-before-apply
+    rollbackManifest: database/supabase/migrations/063_absolute_production_operationalization.sql
+    connectionPooling:
+      pooler: supabase-pgbouncer
+      maxClientConnections: governed-by-supabase-project-plan
+      idleTimeout: 300s
+    readReplicas:
+      primary: ap-south-1
+      failover: ap-southeast-1
+      lagAlertThresholdMs: 5000
+    verification:
+      - schema version recorded
+      - RLS enabled on new tables
+      - updated_at triggers use update_updated_at()
+      - service-role policies exist for operational tables
+      - event-store integrity check recorded
+      - production readiness gate run recorded
+  rollback:
+    strategy: forward-fix-preferred
+    approval: principal-engineer-and-sre
+    command: node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-api

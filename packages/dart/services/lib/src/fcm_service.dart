@@ -23,8 +23,8 @@ class FCMService {
   String? _currentToken;
   String? get currentToken => _currentToken;
 
-  // ✅ Your VAPID key
-  static const String _vapidKey = 'BOe57aGDa_k374ps-OOGLibtGfUpFdYEpCbD-gfzOvXmSHkDIzm63T9N8u7bRxinGM8XpbwcE_dMbWyPd8J_QKY';
+  static const String _vapidKey =
+      String.fromEnvironment('FIREBASE_WEB_VAPID_KEY');
 
   Future<void> initialize() async {
     print('🔔 Initializing FCM...');
@@ -57,7 +57,9 @@ class FCMService {
     // Get FCM token with VAPID key
     String? token;
     if (kIsWeb) {
-      token = await _messaging.getToken(vapidKey: _vapidKey);
+      token = _vapidKey.isEmpty
+          ? await _messaging.getToken()
+          : await _messaging.getToken(vapidKey: _vapidKey);
     } else {
       token = await _messaging.getToken();
     }
@@ -117,9 +119,11 @@ class FCMService {
   Future<void> saveSellerToken(String sellerId) async {
     try {
       // Get fresh token
-      String? token;
-      if (kIsWeb) {
-        token = await _messaging.getToken(vapidKey: _vapidKey);
+    String? token;
+    if (kIsWeb) {
+      token = _vapidKey.isEmpty
+          ? await _messaging.getToken()
+          : await _messaging.getToken(vapidKey: _vapidKey);
       } else {
         token = await _messaging.getToken();
       }
@@ -186,4 +190,3 @@ class FCMService {
     );
   }
 }
-

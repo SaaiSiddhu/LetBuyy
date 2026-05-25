@@ -1,0 +1,114 @@
+name = "letbuyy-webhooks"
+main = "src/index.ts"
+compatibility_date = "2026-05-01"
+workers_dev = true
+
+[observability]
+enabled = true
+head_sampling_rate = 1
+
+[observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[dev]
+port = 8788
+inspector_port = 9232
+
+[vars]
+ENVIRONMENT = "local"
+APP_ENV = "local"
+NODE_ENV = "development"
+DEPLOYMENT_ENV = "local"
+TELEMETRY_ENV = "local"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.dev]
+name = "letbuyy-webhooks-dev"
+workers_dev = false
+routes = [
+  { pattern = "webhooks-dev.letbuyy.store", custom_domain = true }
+]
+
+[env.dev.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.dev.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.dev.vars]
+ENVIRONMENT = "development"
+APP_ENV = "development"
+NODE_ENV = "development"
+DEPLOYMENT_ENV = "dev"
+TELEMETRY_ENV = "development"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.dev.placement]
+mode = "smart"
+
+[env.staging]
+name = "letbuyy-webhooks-staging"
+workers_dev = false
+routes = [
+  { pattern = "webhooks.staging.letbuyy.store", custom_domain = true }
+]
+
+[env.staging.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.staging.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+APP_ENV = "staging"
+NODE_ENV = "production"
+DEPLOYMENT_ENV = "staging"
+TELEMETRY_ENV = "staging"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.staging.placement]
+mode = "smart"
+
+[env.production]
+name = "letbuyy-webhooks"
+workers_dev = false
+routes = [
+  { pattern = "webhooks.letbuyy.store", custom_domain = true }
+]
+
+[env.production.observability]
+enabled = true
+head_sampling_rate = 1
+
+[env.production.observability.logs]
+enabled = true
+head_sampling_rate = 1
+invocation_logs = true
+
+[env.production.vars]
+ENVIRONMENT = "production"
+APP_ENV = "production"
+NODE_ENV = "production"
+DEPLOYMENT_ENV = "production"
+TELEMETRY_ENV = "production"
+RUNTIME_NAME = "Webhook Service"
+PRIMARY_REGION = "ap-south-1"
+FAILOVER_REGION = "ap-southeast-1"
+
+[env.production.placement]
+mode = "smart"

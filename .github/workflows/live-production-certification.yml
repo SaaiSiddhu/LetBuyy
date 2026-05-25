@@ -1,0 +1,114 @@
+name: Live Production Certification
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        required: true
+        default: production
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+      mode:
+        description: Certification mode
+        required: true
+        default: auto
+        type: choice
+        options:
+          - auto
+          - plan
+          - execute
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+concurrency:
+  group: live-production-certification-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  certify:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Setup k6
+        uses: grafana/setup-k6-action@v1
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Governance gates
+        run: pnpm run validate:governance
+
+      - name: Operational lifecycle gates
+        run: pnpm run validate:lifecycle
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Live production certification
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
+          GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
+          GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}
+          OTEL_COLLECTOR_HEALTH_URL: ${{ secrets.OTEL_COLLECTOR_HEALTH_URL }}
+          LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY }}
+          ROTATE_SECRET_AUTH_SECRET: ${{ secrets.ROTATE_SECRET_AUTH_SECRET }}
+          ROTATE_SECRET_CSRF_SECRET: ${{ secrets.ROTATE_SECRET_CSRF_SECRET }}
+          ROTATE_SECRET_CUSTOMER_SESSION_SECRET: ${{ secrets.ROTATE_SECRET_CUSTOMER_SESSION_SECRET }}
+          ROTATE_SECRET_RAZORPAY_KEY_SECRET: ${{ secrets.ROTATE_SECRET_RAZORPAY_KEY_SECRET }}
+          ROTATE_SECRET_STRIPE_WEBHOOK_SECRET: ${{ secrets.ROTATE_SECRET_STRIPE_WEBHOOK_SECRET }}
+          ROTATE_SECRET_RAZORPAY_WEBHOOK_SECRET: ${{ secrets.ROTATE_SECRET_RAZORPAY_WEBHOOK_SECRET }}
+          ROTATE_SECRET_PAYPAL_WEBHOOK_SECRET: ${{ secrets.ROTATE_SECRET_PAYPAL_WEBHOOK_SECRET }}
+          ROTATE_SECRET_UPSTASH_REDIS_REST_TOKEN: ${{ secrets.ROTATE_SECRET_UPSTASH_REDIS_REST_TOKEN }}
+          ROTATE_SECRET_RESEND_API_KEY: ${{ secrets.ROTATE_SECRET_RESEND_API_KEY }}
+        run: node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=${{ inputs.environment }} --mode=${{ inputs.mode }} --report-output=phase4-live-certification-report.json
+
+      - name: Generate SBOM
+        run: npx --yes @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json
+
+      - name: Attest SBOM
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: sbom.cdx.json
+
+      - name: Upload certification SBOM
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-certification-sbom-${{ inputs.environment }}
+          path: sbom.cdx.json
+
+      - name: Upload certification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: live-certification-report-${{ inputs.environment }}
+          path: phase4-live-certification-report.json
