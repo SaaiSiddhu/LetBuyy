@@ -9,3 +9,5 @@ Operational dashboards are production control surfaces. They must render real ru
 - Missing API tokens, failed health gates, or absent projections must render as unavailable or empty states, not green success.
 - Queue, DLQ, replay, event-store integrity, deployment, incident, SRE, security, and regional panels are mandatory production views.
 - Dashboard snapshots are recorded in `operational_dashboard_snapshots` when used as production evidence.
+- Runtime manifests must declare both `dashboardOwnership` and `operationalDashboardOwnership`; topology drift is a hard validation failure.
+- Live Phase 4 validation records dashboard health evidence through `/v1/operations/runtime/dashboards`.

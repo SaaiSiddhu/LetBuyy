@@ -12,6 +12,10 @@ Production deployment uses environment promotion, health gates, and rollback own
 
 - `node scripts/validate-governance.mjs`
 - `node scripts/validators/production-readiness-validator.mjs`
+- `node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production`
+- `node infrastructure/scripts/cloudflare/verify-provider-contracts.mjs --environment=production`
+- `node infrastructure/scripts/database/verify-supabase-operations.mjs --environment=production`
+- `node infrastructure/scripts/observability/verify-observability-rollout.mjs --environment=production`
 - `node infrastructure/scripts/security/verify-security-gates.mjs`
 - `node infrastructure/scripts/deploy/verify-health-gates.mjs --environment=production --preflight`
 - Runtime typecheck for changed packages/services/apps.
@@ -29,5 +33,6 @@ Production deployment uses environment promotion, health gates, and rollback own
 ## Execution
 
 - Plan production Workers with `node infrastructure/scripts/deploy/production-deploy.mjs --environment=production --target=workers`.
+- Plan the complete Phase 4 production gate with `npm run validate:production`.
 - Execute only through GitHub environment approval or an equivalent audited operator shell with provider credentials.
 - Cloudflare Worker rollback uses `node infrastructure/scripts/deploy/production-rollback.mjs`.

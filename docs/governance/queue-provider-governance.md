@@ -9,6 +9,7 @@ Cloudflare Queues is the selected Phase 4 production queue provider.
 - Consumer bindings: `services/queue-workers/wrangler.toml`
 - Consumer source: `services/queue-workers/src/index.ts`
 - Operational persistence: `distributed_queue_messages`, `queue_operation_snapshots`, and `queue_recovery_operations`
+- Provider validation: `infrastructure/scripts/cloudflare/verify-provider-contracts.mjs`
 
 ## Required Queues
 
@@ -24,4 +25,5 @@ Cloudflare Queues is the selected Phase 4 production queue provider.
 - Redrive requires operator authorization and audit through `/v1/operations/runtime/queues/:queueName/redrive-dead-letters`.
 - Queue consumers must emit telemetry and persist retry/dead-letter state.
 - Consumer concurrency, retry delay, batch size, and DLQ routing must be explicit in `services/queue-workers/wrangler.toml`.
+- Cloudflare provider validation must prove Terraform queue declarations, Worker producer bindings, consumer DLQ routing, retry settings, and optional live Cloudflare account resources before production promotion.
 - Queue outage and DLQ recovery procedures live in `docs/runbooks/queue-dlq-redrive.md`.

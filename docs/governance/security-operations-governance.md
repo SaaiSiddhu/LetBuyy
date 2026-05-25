@@ -18,4 +18,11 @@ Security operations cover secrets, RBAC, audit, deployment signing, scanning, an
 - SBOM: CI CycloneDX generation
 - Production controls catalog: `infrastructure/security/production-security-controls.yaml`
 - Security gate script: `infrastructure/scripts/security/verify-security-gates.mjs`
+- Secret rotation script: `infrastructure/scripts/security/rotate-secrets.mjs`
 - Secret rotation runbook: `docs/runbooks/secret-rotation.md`
+
+## Secret Rotation Execution
+
+- Rotation execution is credential-gated and uses `ROTATE_SECRET_<NAME>` environment variables as input.
+- Worker secrets are rotated through Wrangler against each runtime `wrangler.toml`; secret values must never be printed or stored in repository files.
+- Rotation evidence must be recorded through `/v1/operations/runtime/security/enforcement-events` during live production validation.
