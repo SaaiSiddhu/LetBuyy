@@ -23,7 +23,10 @@
       "docs/governance/queue-provider-governance.md",
       "docs/governance/event-store-governance.md",
       "docs/governance/security-operations-governance.md",
-      "docs/governance/multi-region-runtime-governance.md"
+      "docs/governance/multi-region-runtime-governance.md",
+      "docs/governance/deployment-pipeline-governance.md",
+      "docs/governance/runtime-observability-governance.md",
+      "docs/governance/operational-dashboard-governance.md"
     ]
   },
   "allowedDependencies": {
@@ -112,5 +115,11 @@
   "chaosOwnership": "Participates in approved chaos experiments recorded in chaos_experiment_runs with guardrails and rollback commands.",
   "loadTestingOwnership": "Participates in k6/Gatling/Locust production-readiness benchmarks recorded in load_test_runs.",
   "controlPlaneOwnership": "Uses operator UI/API surfaces for control-plane visibility and delegates execution to service runtimes.",
-  "regionalRoutingOwnership": "Uses global-edge routing and delegates stateful regional execution to service and data runtimes."
+  "regionalRoutingOwnership": "Uses global-edge routing and delegates stateful regional execution to service and data runtimes.",
+  "productionOwnership": "Delegates production execution to service APIs, provider platforms, deployment topology, and runtime manifests while owning presentation availability.",
+  "deploymentPipelineOwnership": "Delegates deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
+  "telemetryInfrastructureOwnership": "Delegates telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
+  "operationalDashboardOwnership": "Delegates operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
+  "sreOwnership": "Delegates SRE ownership for SLOs, error budgets, escalation paths, readiness scoring, and incident runbook participation.",
+  "replayOperationsOwnership": "Delegates replay execution, authorization, checkpointing, and recovery to services/event-bus, services/api-gateway, and distributed-runtime packages."
 }

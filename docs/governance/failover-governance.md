@@ -17,3 +17,9 @@ LetBuyy failover is active/passive for stateful data and active/active at the ed
 - Telemetry outage
 - Provider outage
 - Database failover rehearsal
+
+## Execution
+
+- Failover evidence is recorded in `failover_drill_runs`.
+- Regional overrides are recorded in `regional_routing_overrides`.
+- Operator procedure lives in `docs/runbooks/regional-failover.md`.

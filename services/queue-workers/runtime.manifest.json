@@ -23,7 +23,10 @@
       "docs/governance/queue-provider-governance.md",
       "docs/governance/event-store-governance.md",
       "docs/governance/security-operations-governance.md",
-      "docs/governance/multi-region-runtime-governance.md"
+      "docs/governance/multi-region-runtime-governance.md",
+      "docs/governance/deployment-pipeline-governance.md",
+      "docs/governance/runtime-observability-governance.md",
+      "docs/governance/operational-dashboard-governance.md"
     ]
   },
   "allowedDependencies": {
@@ -111,5 +114,11 @@
   "chaosOwnership": "Participates in approved chaos experiments recorded in chaos_experiment_runs with guardrails and rollback commands.",
   "loadTestingOwnership": "Participates in k6/Gatling/Locust production-readiness benchmarks recorded in load_test_runs.",
   "controlPlaneOwnership": "Owns service-side operational command execution or projection through /v1/operations/runtime and runtime_control_commands.",
-  "regionalRoutingOwnership": "Owns region-aware execution metadata, tenant affinity, failover routing, and regional diagnostics for service work."
+  "regionalRoutingOwnership": "Owns region-aware execution metadata, tenant affinity, failover routing, and regional diagnostics for service work.",
+  "productionOwnership": "Owns production execution-container readiness, deployment health, runtime diagnostics, and operational recovery for this service boundary.",
+  "deploymentPipelineOwnership": "Owns deployment pipeline gates through infrastructure/deployment, production-rollout workflow, health gates, rollback runbooks, and production topology validation.",
+  "telemetryInfrastructureOwnership": "Owns telemetry infrastructure integration through OpenTelemetry, runtime telemetry tables, Prometheus alerts, and dashboard projections.",
+  "operationalDashboardOwnership": "Owns operational dashboard projection exposure through platform-console operations UI and Grafana dashboards without local mock data.",
+  "sreOwnership": "Owns SRE ownership for SLOs, error budgets, escalation paths, readiness scoring, and incident runbook participation.",
+  "replayOperationsOwnership": "Owns or participates in replay-safe execution, authorization, checkpointing, dry-run validation, recovery telemetry, and event-store integrity checks."
 }

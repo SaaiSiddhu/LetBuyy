@@ -15,6 +15,7 @@ Incidents are operational records, not chat-only events. Production incidents mu
 - Timeline entries in `production_incident_events`
 - Alert evidence in `runtime_alert_evaluations`
 - Related control commands in `runtime_control_commands`
+- Security, deployment, queue, replay, and regional evidence linked from operational projection tables
 
 ## Response Flow
 
@@ -23,3 +24,5 @@ Incidents are operational records, not chat-only events. Production incidents mu
 3. Execute mitigations through `/v1/operations/runtime/control-commands`.
 4. Record mitigation and resolution timestamps.
 5. Close only after recovery verification and postmortem link are available for `sev1` and `sev2`.
+
+Runbook: `docs/runbooks/incident-sev1.md`.

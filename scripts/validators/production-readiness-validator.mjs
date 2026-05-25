@@ -12,6 +12,7 @@ const requiredFiles = [
   "config/runtime/production-topology.schema.json",
   "config/runtime/production-topology.json",
   "infrastructure/cloudflare/queues.tf",
+  "infrastructure/cloudflare/storage.tf",
   "infrastructure/cloudflare/workers-topology.md",
   "infrastructure/deployment/kubernetes/namespace.yaml",
   "infrastructure/deployment/kubernetes/runtime-health-probes.yaml",
@@ -22,16 +23,37 @@ const requiredFiles = [
   "infrastructure/observability/otel-collector.yaml",
   "infrastructure/observability/prometheus-rules.yaml",
   "infrastructure/observability/grafana-runtime-dashboard.json",
+  "infrastructure/observability/grafana-queue-dashboard.json",
+  "infrastructure/observability/grafana-replay-dashboard.json",
+  "infrastructure/observability/grafana-incident-dashboard.json",
+  "infrastructure/observability/grafana-deployment-dashboard.json",
+  "infrastructure/observability/grafana-sre-dashboard.json",
   "infrastructure/security/production-security-controls.yaml",
   "infrastructure/monitoring/slo-catalog.yaml",
+  "infrastructure/scripts/deploy/production-deploy.mjs",
+  "infrastructure/scripts/deploy/production-rollback.mjs",
+  "infrastructure/scripts/deploy/verify-health-gates.mjs",
+  "infrastructure/scripts/security/verify-security-gates.mjs",
   "infrastructure/scripts/chaos/queue-outage.mjs",
   "infrastructure/scripts/chaos/provider-outage.mjs",
+  "infrastructure/scripts/chaos/run-chaos-experiment.mjs",
   "infrastructure/scripts/load/k6-checkout-concurrency.js",
   "infrastructure/scripts/load/k6-queue-throughput.js",
+  "infrastructure/scripts/load/k6-replay-stress.js",
+  "infrastructure/scripts/load/run-load-suite.mjs",
   "services/queue-workers/package.json",
   "services/queue-workers/wrangler.toml",
   "services/queue-workers/src/index.ts",
   "database/supabase/migrations/062_production_rollout_operations.sql",
+  "database/supabase/migrations/063_absolute_production_operationalization.sql",
+  "apps/platform-console/src/app/(dashboard)/operations/page.tsx",
+  "docs/runbooks/incident-sev1.md",
+  "docs/runbooks/queue-dlq-redrive.md",
+  "docs/runbooks/event-replay.md",
+  "docs/runbooks/regional-failover.md",
+  "docs/runbooks/deployment-rollback.md",
+  "docs/runbooks/secret-rotation.md",
+  "docs/runbooks/chaos-drill.md",
   "docs/governance/production-runtime-governance.md",
   "docs/governance/deployment-governance.md",
   "docs/governance/observability-infrastructure-governance.md",
@@ -43,6 +65,9 @@ const requiredFiles = [
   "docs/governance/event-store-governance.md",
   "docs/governance/security-operations-governance.md",
   "docs/governance/multi-region-runtime-governance.md",
+  "docs/governance/deployment-pipeline-governance.md",
+  "docs/governance/runtime-observability-governance.md",
+  "docs/governance/operational-dashboard-governance.md",
 ];
 
 for (const file of requiredFiles) {
@@ -50,7 +75,13 @@ for (const file of requiredFiles) {
 }
 
 const phase4ManifestFields = [
+  "productionOwnership",
   "deploymentOwnership",
+  "deploymentPipelineOwnership",
+  "telemetryInfrastructureOwnership",
+  "operationalDashboardOwnership",
+  "sreOwnership",
+  "replayOperationsOwnership",
   "observabilityInfrastructureOwnership",
   "queueProviderOwnership",
   "eventStoreOwnership",
@@ -106,7 +137,20 @@ for (const file of [
   productionTopology?.queueProvider?.consumerConfig,
   productionTopology?.observabilityStack?.collector,
   productionTopology?.observabilityStack?.alerts,
+  productionTopology?.deploymentPipeline?.workflow,
+  productionTopology?.deploymentPipeline?.releasePromotion,
+  productionTopology?.deploymentPipeline?.deployScript,
+  productionTopology?.deploymentPipeline?.rollbackScript,
+  productionTopology?.deploymentPipeline?.healthGateScript,
+  productionTopology?.securityOperations?.controls,
+  productionTopology?.securityOperations?.securityGateScript,
+  productionTopology?.securityOperations?.secretRotationRunbook,
+  productionTopology?.chaosEngineering?.runner,
+  productionTopology?.loadTesting?.runner,
   ...(productionTopology?.observabilityStack?.dashboards || []),
+  ...(productionTopology?.operationalDashboards || []),
+  ...(productionTopology?.runbooks || []),
+  ...(productionTopology?.loadTesting?.scripts || []),
   ...(productionTopology?.eventStoreProvider?.migrations || []),
 ].filter(Boolean)) {
   reporter.assert(exists(file), `Production topology references missing source file: ${file}`);
@@ -133,6 +177,20 @@ for (const producerBinding of ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE",
   reporter.assert(
     apiWrangler.includes(producerBinding),
     `API Gateway must declare Cloudflare Queue producer binding: ${producerBinding}`,
+  );
+}
+
+for (const wranglerEnv of ["env.staging", "env.production"]) {
+  reporter.assert(
+    apiWrangler.includes(`[${wranglerEnv}]`) && queueWrangler.includes(`[${wranglerEnv}]`),
+    `Wrangler config must define ${wranglerEnv} for API and queue workers`,
+  );
+}
+
+for (const requiredQueueSetting of ["max_concurrency", "retry_delay", "dead_letter_queue"]) {
+  reporter.assert(
+    queueWrangler.includes(requiredQueueSetting),
+    `Queue worker config must include production queue setting: ${requiredQueueSetting}`,
   );
 }
 
@@ -165,6 +223,43 @@ for (const tableName of [
   );
 }
 
+const finalMigration = readFile("database/supabase/migrations/063_absolute_production_operationalization.sql");
+for (const tableName of [
+  "production_readiness_gate_runs",
+  "deployment_health_gate_results",
+  "event_store_integrity_checks",
+  "runtime_event_retention_policies",
+  "operational_dashboard_snapshots",
+  "sre_error_budget_snapshots",
+  "security_enforcement_events",
+  "regional_routing_overrides",
+]) {
+  reporter.assert(
+    finalMigration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    `Phase 4.final migration must create ${tableName}`,
+  );
+  reporter.assert(
+    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(finalMigration),
+    `Phase 4.final table must enable RLS: ${tableName}`,
+  );
+}
+
+for (const functionName of [
+  "record_production_readiness_gate_run",
+  "record_deployment_health_gate_result",
+  "validate_event_stream_consistency",
+  "archive_distributed_events",
+  "record_operational_dashboard_snapshot",
+  "record_sre_error_budget_snapshot",
+  "record_security_enforcement_event",
+  "record_regional_routing_override",
+]) {
+  reporter.assert(
+    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(finalMigration),
+    `Phase 4.final migration must create operational helper function ${functionName}`,
+  );
+}
+
 for (const functionName of [
   "record_production_incident",
   "update_production_incident_status",
@@ -190,10 +285,34 @@ for (const routeFragment of [
   "/runtime/chaos-experiments",
   "/runtime/load-tests",
   "/runtime/deployments",
+  "/runtime/readiness-gates",
+  "/runtime/deployment-health-gates",
+  "/runtime/event-store/integrity",
+  "/runtime/event-store/archive",
+  "/runtime/dashboards",
+  "/runtime/sre/error-budgets",
+  "/runtime/security/enforcement-events",
+  "/runtime/regional-routing-overrides",
 ]) {
   reporter.assert(
     operationsRoute.includes(routeFragment),
     `Operations API must expose production control-plane route: ${routeFragment}`,
+  );
+}
+
+const securityMiddleware = readFile("services/api-gateway/src/middleware/security.ts");
+for (const securityFragment of ["csrfProtection", "CSRF_TOKEN_INVALID", "Strict-Transport-Security", "errorResponseSanitizer"]) {
+  reporter.assert(
+    securityMiddleware.includes(securityFragment),
+    `API security middleware must include ${securityFragment}`,
+  );
+}
+
+const webhookService = readFile("services/webhook-service/src/index.ts");
+for (const webhookFragment of ["RAZORPAY_WEBHOOK_SECRET", "STRIPE_WEBHOOK_SECRET", "timingSafeEqual", "signature_valid: true"]) {
+  reporter.assert(
+    webhookService.includes(webhookFragment),
+    `Webhook service must enforce provider signature evidence: ${webhookFragment}`,
   );
 }
 
@@ -202,5 +321,19 @@ reporter.assert(
   ci.includes("production-readiness-validator.mjs"),
   "CI must run the production readiness validator",
 );
+
+const rolloutCi = readFile(".github/workflows/production-rollout.yml");
+for (const ciFragment of [
+  "verify-security-gates.mjs",
+  "production-deploy.mjs",
+  "validate:governance",
+  "typecheck",
+  "Generate SBOM",
+]) {
+  reporter.assert(
+    rolloutCi.includes(ciFragment),
+    `Production rollout workflow must include ${ciFragment}`,
+  );
+}
 
 reporter.finish(`${requiredFiles.length} Phase 4 files, ${canonicalRuntimeRoots.length} manifests, and production topology checked`);

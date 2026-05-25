@@ -32,5 +32,8 @@ The production topology must map every canonical runtime to:
 - failover and regional routing ownership,
 - incident and control-plane ownership,
 - security, chaos, and load-testing ownership.
+- deployment pipeline, operational dashboard, replay operations, and SRE ownership.
 
 Topology drift is a hard validation failure. Runtime source may not claim production ownership unless the backing infrastructure file exists under `infrastructure/*`, `config/runtime/*`, `database/supabase/migrations/*`, or the runtime-owned deployment config.
+
+Phase 4.final topology also requires executable deploy, rollback, health-gate, security-gate, chaos, and load-test scripts plus runbook references.

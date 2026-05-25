@@ -19,3 +19,5 @@ Chaos experiments validate recovery mechanisms without expanding blast radius be
 - Single-tenant and staging tests are preferred.
 - Experiments must write `chaos_experiment_runs` before execution and after completion.
 - Failed guardrails abort the experiment and open or link an incident.
+- Executable chaos entrypoint: `infrastructure/scripts/chaos/run-chaos-experiment.mjs`.
+- Operator procedure: `docs/runbooks/chaos-drill.md`.

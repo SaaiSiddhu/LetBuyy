@@ -23,3 +23,5 @@ Cloudflare Queues is the selected Phase 4 production queue provider.
 - Every production queue must have a DLQ unless it is itself a DLQ.
 - Redrive requires operator authorization and audit through `/v1/operations/runtime/queues/:queueName/redrive-dead-letters`.
 - Queue consumers must emit telemetry and persist retry/dead-letter state.
+- Consumer concurrency, retry delay, batch size, and DLQ routing must be explicit in `services/queue-workers/wrangler.toml`.
+- Queue outage and DLQ recovery procedures live in `docs/runbooks/queue-dlq-redrive.md`.

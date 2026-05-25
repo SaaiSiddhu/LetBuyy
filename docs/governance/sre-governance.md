@@ -5,7 +5,7 @@ Production readiness requires SLOs, error budgets, health scoring, escalation po
 ## SLO Sources
 
 - Catalog: `infrastructure/monitoring/slo-catalog.yaml`
-- Persistence: `runtime_slo_definitions`
+- Persistence: `runtime_slo_definitions` and `sre_error_budget_snapshots`
 - Alerts: `runtime_alert_evaluations`
 
 ## Standards
@@ -14,3 +14,4 @@ Production readiness requires SLOs, error budgets, health scoring, escalation po
 - Error budget below 25 percent freezes risky deployments for the affected runtime.
 - Checkout, auth, API gateway, storefront, queue workers, and webhooks are critical SLO surfaces.
 - Health scoring must combine request success, latency, queue lag, provider health, replay lag, and dependency health.
+- Deployment health gates and readiness gate runs are SRE evidence and must be persisted before production promotion.

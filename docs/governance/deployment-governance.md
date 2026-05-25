@@ -12,9 +12,12 @@ Production deployment uses environment promotion, health gates, and rollback own
 
 - `node scripts/validate-governance.mjs`
 - `node scripts/validators/production-readiness-validator.mjs`
+- `node infrastructure/scripts/security/verify-security-gates.mjs`
+- `node infrastructure/scripts/deploy/verify-health-gates.mjs --environment=production --preflight`
 - Runtime typecheck for changed packages/services/apps.
 - Supabase migration dry run against staging.
 - Worker health, storefront health, queue lag, and error-budget checks.
+- Deployment health gate results must be persisted through `/v1/operations/runtime/deployment-health-gates`.
 
 ## Rollback
 
@@ -22,3 +25,9 @@ Production deployment uses environment promotion, health gates, and rollback own
 - Vercel apps: promote the last healthy deployment.
 - Database: prefer forward-fix migrations; destructive rollback needs SRE and data-owner approval.
 - Queues: pause consumers before redrive if poison-message rate is rising.
+
+## Execution
+
+- Plan production Workers with `node infrastructure/scripts/deploy/production-deploy.mjs --environment=production --target=workers`.
+- Execute only through GitHub environment approval or an equivalent audited operator shell with provider credentials.
+- Cloudflare Worker rollback uses `node infrastructure/scripts/deploy/production-rollback.mjs`.

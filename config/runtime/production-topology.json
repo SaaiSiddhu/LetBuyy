@@ -21,7 +21,8 @@
       "database/supabase/migrations/059_distributed_runtime_operations_foundation.sql",
       "database/supabase/migrations/060_operational_runtime_finalization.sql",
       "database/supabase/migrations/061_operational_readiness_runtime.sql",
-      "database/supabase/migrations/062_production_rollout_operations.sql"
+      "database/supabase/migrations/062_production_rollout_operations.sql",
+      "database/supabase/migrations/063_absolute_production_operationalization.sql"
     ],
     "retentionPolicy": "hot/warm/archive/legal-hold retention classes in distributed_event_store"
   },
@@ -36,7 +37,12 @@
     "traces": "tempo",
     "logs": "loki",
     "dashboards": [
-      "infrastructure/observability/grafana-runtime-dashboard.json"
+      "infrastructure/observability/grafana-runtime-dashboard.json",
+      "infrastructure/observability/grafana-queue-dashboard.json",
+      "infrastructure/observability/grafana-replay-dashboard.json",
+      "infrastructure/observability/grafana-incident-dashboard.json",
+      "infrastructure/observability/grafana-deployment-dashboard.json",
+      "infrastructure/observability/grafana-sre-dashboard.json"
     ],
     "alerts": "infrastructure/observability/prometheus-rules.yaml"
   },
@@ -65,7 +71,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Event Bus",
@@ -84,7 +94,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Queue Workers",
@@ -103,7 +117,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "API Gateway",
@@ -122,7 +140,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Webhook Service",
@@ -141,7 +163,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Analytics Pipeline",
@@ -160,7 +186,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Checkout Runtime",
@@ -179,7 +209,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Media Service",
@@ -198,7 +232,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Notification Service",
@@ -217,7 +255,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Search Service",
@@ -236,7 +278,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Identity Platform",
@@ -255,7 +301,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Merchant Control Plane",
@@ -274,7 +324,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Storefront Runtime",
@@ -293,7 +347,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Marketing Site",
@@ -312,7 +370,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "App Marketplace",
@@ -331,7 +393,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Theme Marketplace",
@@ -350,7 +416,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Platform Console",
@@ -369,7 +439,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Platform Operations Portal",
@@ -388,7 +462,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Mobile Shopper App",
@@ -407,7 +485,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Mobile Merchant App",
@@ -426,7 +508,11 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
       "runtimeName": "Mobile Operator App",
@@ -445,7 +531,62 @@
       "chaos": "Chaos validation recorded in chaos_experiment_runs",
       "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
       "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata"
+      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
+      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
+      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
+      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
+      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     }
-  ]
+  ],
+  "deploymentPipeline": {
+    "workflow": ".github/workflows/production-rollout.yml",
+    "releasePromotion": "infrastructure/deployment/release-promotion.yaml",
+    "deployScript": "infrastructure/scripts/deploy/production-deploy.mjs",
+    "rollbackScript": "infrastructure/scripts/deploy/production-rollback.mjs",
+    "healthGateScript": "infrastructure/scripts/deploy/verify-health-gates.mjs"
+  },
+  "securityOperations": {
+    "controls": "infrastructure/security/production-security-controls.yaml",
+    "securityGateScript": "infrastructure/scripts/security/verify-security-gates.mjs",
+    "secretRotationRunbook": "docs/runbooks/secret-rotation.md"
+  },
+  "operationalDashboards": [
+    "infrastructure/observability/grafana-runtime-dashboard.json",
+    "infrastructure/observability/grafana-queue-dashboard.json",
+    "infrastructure/observability/grafana-replay-dashboard.json",
+    "infrastructure/observability/grafana-incident-dashboard.json",
+    "infrastructure/observability/grafana-deployment-dashboard.json",
+    "infrastructure/observability/grafana-sre-dashboard.json",
+    "apps/platform-console/src/app/(dashboard)/operations/page.tsx"
+  ],
+  "runbooks": [
+    "docs/runbooks/incident-sev1.md",
+    "docs/runbooks/queue-dlq-redrive.md",
+    "docs/runbooks/event-replay.md",
+    "docs/runbooks/regional-failover.md",
+    "docs/runbooks/deployment-rollback.md",
+    "docs/runbooks/secret-rotation.md",
+    "docs/runbooks/chaos-drill.md"
+  ],
+  "chaosEngineering": {
+    "runner": "infrastructure/scripts/chaos/run-chaos-experiment.mjs",
+    "experiments": [
+      "queue-outage",
+      "provider-outage",
+      "replay-corruption",
+      "cache-failure",
+      "regional-outage",
+      "workflow-recovery",
+      "dlq-flood",
+      "telemetry-outage"
+    ]
+  },
+  "loadTesting": {
+    "runner": "infrastructure/scripts/load/run-load-suite.mjs",
+    "scripts": [
+      "infrastructure/scripts/load/k6-checkout-concurrency.js",
+      "infrastructure/scripts/load/k6-queue-throughput.js",
+      "infrastructure/scripts/load/k6-replay-stress.js"
+    ]
+  }
 }

@@ -11,6 +11,12 @@
     "eventStoreProvider",
     "cacheProviders",
     "observabilityStack",
+    "deploymentPipeline",
+    "securityOperations",
+    "operationalDashboards",
+    "runbooks",
+    "chaosEngineering",
+    "loadTesting",
     "regions",
     "runtimes"
   ],
@@ -74,6 +80,68 @@
         "alerts": { "type": "string", "minLength": 1 }
       }
     },
+    "deploymentPipeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["workflow", "releasePromotion", "deployScript", "rollbackScript", "healthGateScript"],
+      "properties": {
+        "workflow": { "type": "string", "minLength": 1 },
+        "releasePromotion": { "type": "string", "minLength": 1 },
+        "deployScript": { "type": "string", "minLength": 1 },
+        "rollbackScript": { "type": "string", "minLength": 1 },
+        "healthGateScript": { "type": "string", "minLength": 1 }
+      }
+    },
+    "securityOperations": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["controls", "securityGateScript", "secretRotationRunbook"],
+      "properties": {
+        "controls": { "type": "string", "minLength": 1 },
+        "securityGateScript": { "type": "string", "minLength": 1 },
+        "secretRotationRunbook": { "type": "string", "minLength": 1 }
+      }
+    },
+    "operationalDashboards": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "runbooks": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "chaosEngineering": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runner", "experiments"],
+      "properties": {
+        "runner": { "type": "string", "minLength": 1 },
+        "experiments": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
+    "loadTesting": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["runner", "scripts"],
+      "properties": {
+        "runner": { "type": "string", "minLength": 1 },
+        "scripts": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      }
+    },
     "regions": {
       "type": "object",
       "additionalProperties": false,
@@ -107,6 +175,10 @@
           "security",
           "chaos",
           "loadTesting",
+          "deploymentPipeline",
+          "operationalDashboard",
+          "sre",
+          "replayOperations",
           "controlPlane",
           "regionalRouting"
         ],
@@ -128,6 +200,10 @@
           "security": { "type": "string", "minLength": 1 },
           "chaos": { "type": "string", "minLength": 1 },
           "loadTesting": { "type": "string", "minLength": 1 },
+          "deploymentPipeline": { "type": "string", "minLength": 1 },
+          "operationalDashboard": { "type": "string", "minLength": 1 },
+          "sre": { "type": "string", "minLength": 1 },
+          "replayOperations": { "type": "string", "minLength": 1 },
           "controlPlane": { "type": "string", "minLength": 1 },
           "regionalRouting": { "type": "string", "minLength": 1 }
         }

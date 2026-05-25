@@ -15,3 +15,5 @@ LetBuyy is India-primary with global edge execution and an APAC failover region.
 - Cache keys must include tenant partitioning and region metadata where consistency matters.
 - Regional diagnostics are written to `regional_execution_diagnostics`.
 - Region failover and restore commands must be submitted through `runtime_control_commands`.
+- Runtime or tenant routing overrides are written to `regional_routing_overrides`.
+- Regional failover procedure lives in `docs/runbooks/regional-failover.md`.
