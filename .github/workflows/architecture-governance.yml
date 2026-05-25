@@ -76,6 +76,9 @@ jobs:
       - name: Validate operational certification evidence
         run: pnpm run validate:operational-certification
 
+      - name: Validate provider production certification gates
+        run: pnpm run validate:production-certification
+
       - name: Validate replay safety
         run: pnpm run validate:replay
 

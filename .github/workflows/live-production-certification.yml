@@ -84,6 +84,9 @@ jobs:
       - name: Operational certification evidence gates
         run: pnpm run validate:operational-certification
 
+      - name: Provider production certification gates
+        run: pnpm run validate:production-certification
+
       - name: Replay safety gates
         run: pnpm run validate:replay
 
@@ -131,6 +134,8 @@ jobs:
           OTEL_COLLECTOR_HEALTH_URL: ${{ secrets.OTEL_COLLECTOR_HEALTH_URL }}
           LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
           LETBUYY_SURVIVABILITY_EXECUTION_APPROVED: ${{ secrets.LETBUYY_SURVIVABILITY_EXECUTION_APPROVED }}
+          LETBUYY_PROVIDER_CERTIFICATION_APPROVED: ${{ secrets.LETBUYY_PROVIDER_CERTIFICATION_APPROVED }}
+          LETBUYY_PROVIDER_MUTATION_APPROVED: ${{ secrets.LETBUYY_PROVIDER_MUTATION_APPROVED }}
           VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
           ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY }}
@@ -143,7 +148,7 @@ jobs:
           ROTATE_SECRET_PAYPAL_WEBHOOK_SECRET: ${{ secrets.ROTATE_SECRET_PAYPAL_WEBHOOK_SECRET }}
           ROTATE_SECRET_UPSTASH_REDIS_REST_TOKEN: ${{ secrets.ROTATE_SECRET_UPSTASH_REDIS_REST_TOKEN }}
           ROTATE_SECRET_RESEND_API_KEY: ${{ secrets.ROTATE_SECRET_RESEND_API_KEY }}
-        run: node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=${{ inputs.environment }} --mode=${{ inputs.mode }} --report-output=phase4-live-certification-report.json
+        run: node infrastructure/scripts/operations/run-provider-production-certification.mjs --environment=${{ inputs.environment }} --mode=${{ inputs.mode }} --output=phase4-live-certification-report.json
 
       - name: Generate SBOM
         run: pnpm dlx @cyclonedx/cyclonedx-npm --output-file sbom.cdx.json

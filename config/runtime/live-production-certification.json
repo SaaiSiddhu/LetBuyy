@@ -18,12 +18,15 @@
       "LetBuyy operations API token",
       "Vercel deployment credentials",
       "Wrangler secret rotation payloads",
+      "Provider production certification approval and provider mutation approval",
+      "Node.js >=22.0.0 for Wrangler v4 provider execution",
       "terraform, psql, pnpm, k6, locust, and gatling local tools",
       "LETBUYY_SURVIVABILITY_EXECUTION_APPROVED=true for survivability-suite execute mode"
     ]
   },
   "scripts": {
     "certification": "infrastructure/scripts/operations/phase4-live-certify.mjs",
+    "providerCertification": "infrastructure/scripts/operations/run-provider-production-certification.mjs",
     "deployment": "infrastructure/scripts/deploy/production-deploy.mjs",
     "operationsVerification": "infrastructure/scripts/operations/verify-live-operations.mjs",
     "drills": "infrastructure/scripts/operations/run-live-drills.mjs",

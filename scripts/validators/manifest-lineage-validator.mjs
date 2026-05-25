@@ -51,6 +51,7 @@ const requiredEntries = [
   "config/runtime/convergence-invariants.json",
   "config/runtime/operational-certification-evidence.json",
   "config/runtime/recovery-slo-contract.json",
+  "config/runtime/production-certification-execution.json",
 ];
 
 const entries = manifest?.entries || [];

@@ -73,6 +73,7 @@ certification-report.json
 artifacts/live-certification/
 artifacts/local-operational-proof/
 artifacts/operational-certification/
+artifacts/production-certification/
 load/reports/
 chaos/reports/
 

@@ -117,6 +117,12 @@
       "owner": "recovery-slo",
       "compatibility": "bounded-recovery-budget-compatible",
       "checksum": "f0db4771fa11360d36938c494529d66fc11713de60437c5c292bcc8b507abe75"
+    },
+    {
+      "path": "config/runtime/production-certification-execution.json",
+      "owner": "provider-production-certification",
+      "compatibility": "provider-evidence-execute-compatible",
+      "checksum": "7096fbc01ee60ffd36324f2a44ab73498a9830ca422de00db792bc3ae4aad539"
     }
   ],
   "failurePolicy": "fail-closed"

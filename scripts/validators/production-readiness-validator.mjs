@@ -659,11 +659,13 @@ for (const ciFragment of [
 
 const liveCi = readFile(".github/workflows/live-production-certification.yml");
 for (const ciFragment of [
-  "phase4-live-certify.mjs",
+  "run-provider-production-certification.mjs",
   "phase4-live-certification-report.json",
   "Setup k6",
   "ROTATE_SECRET_SUPABASE_SERVICE_ROLE_KEY",
   "LETBUYY_OPERATIONS_TOKEN",
+  "LETBUYY_PROVIDER_CERTIFICATION_APPROVED",
+  "LETBUYY_PROVIDER_MUTATION_APPROVED",
   "attest-build-provenance",
   "Generate SBOM",
 ]) {

@@ -1,0 +1,153 @@
+{
+  "$schema": "config/runtime/production-certification-execution.schema.json",
+  "contractVersion": 1,
+  "mode": "provider-backed-execute-required",
+  "certificationMode": "credential-gated-provider-required",
+  "runner": {
+    "script": "infrastructure/scripts/operations/run-provider-production-certification.mjs",
+    "defaultMode": "auto",
+    "defaultOutput": "artifacts/production-certification/report.json",
+    "planMode": "prints provider execution plan and missing capabilities without evidence claims",
+    "executeMode": "runs provider-backed certification only after explicit approval and real provider capability checks",
+    "providerCertification": false
+  },
+  "executeRequires": {
+    "approvals": [
+      "LETBUYY_PROVIDER_CERTIFICATION_APPROVED=true",
+      "LETBUYY_PROVIDER_MUTATION_APPROVED=true"
+    ],
+    "nodeRuntime": ">=22.0.0 for Wrangler v4",
+    "environmentVariables": [
+      "CLOUDFLARE_API_TOKEN",
+      "CLOUDFLARE_ACCOUNT_ID",
+      "SUPABASE_DB_URL|DATABASE_URL",
+      "LETBUYY_OPERATIONS_TOKEN",
+      "OTEL_COLLECTOR_HEALTH_URL"
+    ],
+    "tools": [
+      "wrangler",
+      "psql",
+      "curl",
+      "pnpm"
+    ]
+  },
+  "providerEvidence": {
+    "requiredFields": [
+      "provider",
+      "environment",
+      "command",
+      "exit_status",
+      "duration_ms",
+      "stdout_hash",
+      "stderr_hash",
+      "artifact_hash",
+      "trace_id"
+    ],
+    "categories": [
+      {
+        "id": "provider-execution",
+        "validator": "provider-execution-validator",
+        "requiredEvidence": ["wrangler-auth", "cloudflare-account", "provider-command-artifacts", "no-secret-output"]
+      },
+      {
+        "id": "distributed-contention",
+        "validator": "distributed-contention-validator",
+        "requiredEvidence": ["multi-executor-contention", "fencing-token-lineage", "single-authority-result"]
+      },
+      {
+        "id": "replay-scale",
+        "validator": "replay-scale-validator",
+        "requiredEvidence": ["10000-events", "100000-events", "1000000-events", "projection-equivalence"]
+      },
+      {
+        "id": "crash-recovery",
+        "validator": "crash-recovery-validator",
+        "requiredEvidence": ["process-interruption", "wal-restoration", "checkpoint-restoration", "continuation-proof"]
+      },
+      {
+        "id": "telemetry-ingestion",
+        "validator": "telemetry-ingestion-validator",
+        "requiredEvidence": ["otel-health", "trace-ingestion", "trace-correlation", "evidence-linkage"]
+      },
+      {
+        "id": "benchmark-certification",
+        "validator": "benchmark-certification-validator",
+        "requiredEvidence": ["runtime-config-snapshot", "infrastructure-metadata", "timing-lineage", "provider-artifact-hash"]
+      },
+      {
+        "id": "provider-failover",
+        "validator": "provider-failover-certification-validator",
+        "requiredEvidence": ["executor-failover", "stale-executor-eviction", "lease-ownership-restoration", "fencing-replay"]
+      },
+      {
+        "id": "partition-recovery",
+        "validator": "partition-recovery-validator",
+        "requiredEvidence": ["partition-isolation", "partition-reconciliation", "split-brain-rejection", "replay-safe-recovery"]
+      },
+      {
+        "id": "immutable-evidence",
+        "validator": "immutable-evidence-validator",
+        "requiredEvidence": ["sha256-artifact-hash", "immutable-snapshot", "provenance-lineage", "signature-required-before-live-certified"]
+      },
+      {
+        "id": "production-recovery-drill",
+        "validator": "production-recovery-drill-validator",
+        "requiredEvidence": ["replay-restoration-drill", "wal-corruption-drill", "queue-rebuild-drill", "durable-object-recovery-drill"]
+      }
+    ]
+  },
+  "benchmarkDatasets": {
+    "mode": "execute-mode-only",
+    "eventCounts": [10000, 100000, 1000000],
+    "requiredMeasurements": [
+      "replay_duration_ms",
+      "projection_equivalence_hash",
+      "queue_convergence_hash",
+      "wal_restoration_ms",
+      "failover_duration_ms",
+      "provider_artifact_hash"
+    ]
+  },
+  "cloudflareExecution": {
+    "requiresNonInheritableBindings": true,
+    "requiredBindingClasses": [
+      "vars",
+      "kv_namespaces",
+      "r2_buckets",
+      "d1_databases",
+      "durable_objects",
+      "queues",
+      "services",
+      "telemetry"
+    ],
+    "requiredEvidence": [
+      "wrangler-whoami",
+      "durable-object-recovery",
+      "queue-producer-consumer",
+      "kv-checkpoint-restoration",
+      "r2-snapshot-restoration",
+      "d1-checkpoint-restoration"
+    ]
+  },
+  "artifactPolicy": {
+    "trackedArtifactsForbidden": true,
+    "ignoredDirectory": "artifacts/production-certification/",
+    "hashAlgorithm": "sha256",
+    "liveCertificationRequiresProviderEvidence": true,
+    "localEvidenceCertification": false,
+    "requiresImmutableArchive": true
+  },
+  "validators": [
+    "provider-execution-validator",
+    "distributed-contention-validator",
+    "replay-scale-validator",
+    "crash-recovery-validator",
+    "telemetry-ingestion-validator",
+    "benchmark-certification-validator",
+    "provider-failover-certification-validator",
+    "partition-recovery-validator",
+    "immutable-evidence-validator",
+    "production-recovery-drill-validator"
+  ],
+  "failurePolicy": "fail-closed"
+}

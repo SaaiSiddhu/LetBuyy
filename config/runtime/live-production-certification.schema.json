@@ -46,6 +46,7 @@
       "additionalProperties": false,
       "required": [
         "certification",
+        "providerCertification",
         "deployment",
         "operationsVerification",
         "drills",
@@ -58,6 +59,7 @@
       ],
       "properties": {
         "certification": { "type": "string", "minLength": 1 },
+        "providerCertification": { "type": "string", "minLength": 1 },
         "deployment": { "type": "string", "minLength": 1 },
         "operationsVerification": { "type": "string", "minLength": 1 },
         "drills": { "type": "string", "minLength": 1 },

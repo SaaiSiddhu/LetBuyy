@@ -96,6 +96,7 @@ const requiredTestFiles = [
   "tests/survivability/benchmark-lineage.test.mjs",
   "tests/survivability/operational-evidence-lineage.test.mjs",
   "tests/survivability/recovery-drill-execution.test.mjs",
+  "tests/production-certification/provider-production-certification.test.mjs",
 ];
 
 for (const file of requiredTestFiles) {
