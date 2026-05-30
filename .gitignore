@@ -84,10 +84,14 @@ functions/lib/
 # Environment & Secrets
 .env
 .env.*
+.env.local
+**/.env.local
 *.env
 all.env
 .dev.vars
 **/.dev.vars
+.dart-defines.local
+**/.dart-defines.local
 
 # Node
 node_modules/
