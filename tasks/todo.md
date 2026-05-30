@@ -222,3 +222,9 @@ SKIP: Start local infrastructure — Reason: `docker-compose` is not installed a
 ## TYPECHECK BASELINE — PHASE 0
 
 - `pnpm turbo typecheck` completed successfully: 53 tasks succeeded, 0 TypeScript errors, command exit code 0.
+
+---
+
+## GOVERNANCE FAILURES — PHASE 1 VERIFICATION
+
+- `pnpm run validate:governance` failed in `Stale artifact validator`: untracked/generated/forbidden topology artifacts were detected at app/package-local `.turbo`, `dist`, and `node_modules` paths after dependency install and typecheck/build verification, including `apps/*/.turbo`, `apps/*/node_modules`, `packages/app-engine/.turbo`, `packages/app-engine/dist`, `packages/app-engine/node_modules`, and `packages/application-services/.turbo`. All other governance validators reported pass before this stale artifact failure. Verification command exit code: 1.
