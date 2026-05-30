@@ -12,6 +12,7 @@ import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver'
 import { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-engine';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
+import { buildStoreMetadata } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -49,11 +50,14 @@ export async function generateMetadata({ params }: { params: Promise<{ subdomain
     }
 
     return {
-        title: store.seoTitle || store.name,
-        description: store.seoDescription || `Shop at ${store.name}`,
+        ...buildStoreMetadata(store, {
+            title: store.seoTitle || store.name,
+            description: store.seoDescription || store.tagline || `Shop at ${store.name}`,
+            path: '/',
+        }),
         icons: {
             icon: store.logoUrl || '/favicon.ico',
-        }
+        },
     };
 }
 

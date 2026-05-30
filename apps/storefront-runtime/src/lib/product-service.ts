@@ -124,6 +124,8 @@ function mapSupabaseToProduct(data: Record<string, unknown>): ProductModel {
         tags: (data.tags as string[]) || [],
         variants: ((data.variants as Array<{ id: string; name: string; options: Record<string, string>; price?: number; stock?: number }>) || []),
         stock: stockValue === undefined || stockValue === null ? 999 : Number(stockValue),
+        seoTitle: data.seo_title as string,
+        seoDescription: data.seo_description as string,
         isActive: (data.is_active as boolean) ?? data.status === 'active',
         isFeatured: (data.is_featured as boolean) ?? false,
         rating: data.avg_rating ? Number(data.avg_rating) : undefined,

@@ -438,6 +438,8 @@ export interface ProductModel {
   variantOptions?: VariantOption[];
   tags?: string[];
   specifications?: Record<string, string>;
+  seoTitle?: string;
+  seoDescription?: string;
   isFeatured?: boolean;
   isTrending?: boolean;
   isNew?: boolean;

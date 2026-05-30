@@ -433,15 +433,15 @@ function requestedAmountMinorUnits(input: { amount?: number; amountMinorUnits?: 
 }
 
 const STOREFRONT_SITE_SELECT: string =
-    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,currency,theme_id,template_config,status,published_at,created_at,updated_at';
+    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,currency,theme_id,template_config,status,published_at,created_at,updated_at,seo_title,seo_description';
 const STOREFRONT_SITE_RELEASE_SELECT: string =
     `${STOREFRONT_SITE_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
-    'id,store_id,name,slug,description,images,price,compare_price,compare_at_price,currency,stock,quantity,stock_quantity,is_active,is_featured,status,category,tags,variants,avg_rating,review_count,display_order,created_at,updated_at';
+    'id,store_id,name,slug,description,images,price,compare_price,compare_at_price,currency,stock,quantity,stock_quantity,is_active,is_featured,status,category,tags,variants,avg_rating,review_count,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_COMPAT: string =
-    'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,is_active,is_featured,status,category,tags,variants,display_order,created_at,updated_at';
+    'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,is_active,is_featured,status,category,tags,variants,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_MINIMAL: string =
-    'id,store_id,name,description,images,price,category,tags,created_at,updated_at';
+    'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
 
 type DatabaseErrorLike = {
     message?: string;
@@ -2931,9 +2931,52 @@ router.get('/:subdomain/blog', async (c) => {
     const limit = Math.min(parseInt(c.req.query('limit') || '10'), 50);
     const store = await loadPublishedStore(c, c.req.param('subdomain'));
     if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,created_at,is_pinned', { count: 'exact' })
+    const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
         .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
     return c.json(paginated(data || [], count || 0, page, limit));
+});
+
+// GET /storefront/:subdomain/blog/:slug
+router.get('/:subdomain/blog/:slug', async (c) => {
+    const db = getSupabaseAdmin(c);
+    const store = await loadPublishedStore(c, c.req.param('subdomain'));
+    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+    const slug = normalizePublicRouteToken(c.req.param('slug'));
+    if (!slug) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid blog post slug' } }, 400);
+    }
+
+    const { data, error } = await db.from('blog_posts')
+        .select('id,title,slug,excerpt,content,content_html,featured_image,published_at,updated_at,seo_title,seo_description,og_image_url,canonical_url')
+        .eq('store_id', store.id)
+        .eq('status', 'published')
+        .eq('slug', slug)
+        .maybeSingle();
+
+    if (error) return c.json(dbFailureBody(), 500);
+    if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Blog post not found' } }, 404);
+
+    return c.json(success({
+        id: data.id,
+        title: data.title,
+        slug: data.slug,
+        page_type: 'blog_post',
+        content: {
+            body: data.content || '',
+            html: data.content_html || '',
+            image: data.featured_image || '',
+            excerpt: data.excerpt || '',
+        },
+        seo: {
+            title: data.seo_title || data.title,
+            description: data.seo_description || data.excerpt || '',
+            ogImage: data.og_image_url || data.featured_image || '',
+            canonicalUrl: data.canonical_url || '',
+        },
+        published_at: data.published_at,
+        updated_at: data.updated_at,
+    }));
 });
 
 // POST /storefront/:subdomain/contact — Public contact form

@@ -5,9 +5,24 @@ import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { createProductListingFallbackSection } from '@/lib/theme-engine/product-route';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
+import { buildStoreMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
+    const { subdomain } = await params;
+    const store = await StoreService.getStoreBySubdomain(subdomain);
+
+    if (!store) return { title: 'Collection Not Found' };
+
+    return buildStoreMetadata(store, {
+        title: `Products | ${store.name}`,
+        description: `Shop the product catalog from ${store.name}.`,
+        path: '/products',
+    });
+}
 
 /**
  * /store/[subdomain]/products — All Products page

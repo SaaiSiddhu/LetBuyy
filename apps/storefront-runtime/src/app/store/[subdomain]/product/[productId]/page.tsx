@@ -5,6 +5,28 @@ import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
 import { createProductDetailFallbackSection } from '@/lib/theme-engine/product-route';
 import type { SectionRenderData } from '@/lib/theme-engine/types';
+import { buildProductJsonLd, buildStoreMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: Promise<{ subdomain: string; productId: string }> }): Promise<Metadata> {
+    const { subdomain, productId } = await params;
+    const [product, store] = await Promise.all([
+        ProductService.getProductById(productId, subdomain),
+        StoreService.getStoreBySubdomain(subdomain),
+    ]);
+
+    if (!product || !store) return { title: 'Product Not Found' };
+
+    const description = product.seoDescription || product.description || `${product.name} from ${store.name}.`;
+    const title = product.seoTitle || `${product.name} | ${store.name}`;
+
+    return buildStoreMetadata(store, {
+        title,
+        description,
+        path: `/product/${product.id}`,
+        image: product.images[0],
+    });
+}
 
 export default async function ProductPage({ params }: { params: Promise<{ subdomain: string; productId: string }> }) {
     const { subdomain, productId } = await params;
@@ -29,5 +51,15 @@ export default async function ProductPage({ params }: { params: Promise<{ subdom
         sectionData.set(section.id, { product });
     }
 
-    return <StorefrontCompositionEngine store={store} plan={plan} sectionData={sectionData} />;
+    const productJsonLd = JSON.stringify(buildProductJsonLd(store, product)).replace(/</g, '\\u003c');
+
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: productJsonLd }}
+            />
+            <StorefrontCompositionEngine store={store} plan={plan} sectionData={sectionData} />
+        </>
+    );
 }

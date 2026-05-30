@@ -15,6 +15,16 @@ export type StorefrontContentResource = {
     updatedAt?: string | null;
 };
 
+export type StorefrontBlogPostSummary = {
+    id: string;
+    title: string;
+    slug: string;
+    excerpt?: string | null;
+    featuredImage?: string | null;
+    publishedAt?: string | null;
+    updatedAt?: string | null;
+};
+
 type WorkerContentPayload = Record<string, unknown> & {
     id?: string;
     title?: string;
@@ -49,6 +59,18 @@ function mapContentResource(data: WorkerContentPayload): StorefrontContentResour
     };
 }
 
+function mapBlogPostSummary(data: Record<string, unknown>): StorefrontBlogPostSummary {
+    return {
+        id: (data.id as string) || '',
+        title: (data.title as string) || 'Untitled post',
+        slug: (data.slug as string) || '',
+        excerpt: data.excerpt as string | null,
+        featuredImage: data.featured_image as string | null,
+        publishedAt: (data.published_at as string) || (data.created_at as string) || null,
+        updatedAt: data.updated_at as string | null,
+    };
+}
+
 async function fetchContent(path: string): Promise<StorefrontContentResource | null> {
     const response = await workerFetch(path);
     if (response.status === 404) return null;
@@ -59,8 +81,32 @@ async function fetchContent(path: string): Promise<StorefrontContentResource | n
 }
 
 export const ContentService = {
+    async listPages(subdomain: string) {
+        const response = await workerFetch(`/storefront/${encodeURIComponent(subdomain)}/pages`);
+        if (response.status === 404) return [];
+        const payload = await readWorkerJson(response);
+        const data = payload?.data;
+        return Array.isArray(data)
+            ? data.map((item) => mapContentResource(item as WorkerContentPayload))
+            : [];
+    },
+
+    async listBlogPosts(subdomain: string) {
+        const response = await workerFetch(`/storefront/${encodeURIComponent(subdomain)}/blog?limit=100`);
+        if (response.status === 404) return [];
+        const payload = await readWorkerJson(response);
+        const data = payload?.data;
+        return Array.isArray(data)
+            ? data.map((item) => mapBlogPostSummary(item as Record<string, unknown>))
+            : [];
+    },
+
     async getPageBySlug(subdomain: string, slug: string) {
         return fetchContent(`/storefront/${encodeURIComponent(subdomain)}/pages/${encodeURIComponent(slug)}`);
+    },
+
+    async getBlogPostBySlug(subdomain: string, slug: string) {
+        return fetchContent(`/storefront/${encodeURIComponent(subdomain)}/blog/${encodeURIComponent(slug)}`);
     },
 
     async getPolicy(subdomain: string, policyType: string) {

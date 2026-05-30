@@ -5,9 +5,25 @@ import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { composeStorefrontRuntimeProjection } from '@letbuyy/runtime-composition/storefront-query-layer';
+import { buildStoreMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
+
+export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
+    const { subdomain } = await params;
+    const store = await StoreService.getStoreBySubdomainAnyStatus(subdomain);
+
+    if (!store) return { title: 'Store Not Found' };
+
+    return buildStoreMetadata(store, {
+        title: store.seoTitle || store.name,
+        description: store.seoDescription || store.tagline || `Shop ${store.name} on LetBuyy.`,
+        path: '/',
+        noIndex: store.status !== 'published',
+    });
+}
 
 export default async function StorePage({
     params,
