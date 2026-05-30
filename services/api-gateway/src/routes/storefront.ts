@@ -63,6 +63,8 @@ type OrderRpcResult = {
 type StorefrontRazorpayOrderBody = {
     orderId: string;
     idempotencyKey: string;
+    amount?: number;
+    amountMinorUnits?: number;
 };
 
 type StorefrontRazorpayVerifyBody = {
@@ -422,6 +424,12 @@ async function listPublicProductReviews(c: AppContext) {
 
 function getRequestId(c: AppContext): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function requestedAmountMinorUnits(input: { amount?: number; amountMinorUnits?: number }): number | null {
+    if (typeof input.amountMinorUnits === 'number') return input.amountMinorUnits;
+    if (typeof input.amount === 'number') return Math.round(input.amount * 100);
+    return null;
 }
 
 const STOREFRONT_SITE_SELECT: string =
@@ -1629,6 +1637,15 @@ router.post(
         const db = getSupabaseAdmin(c);
         const paymentService = new PaymentExecutionAdapter(db);
         const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amountMinorUnits = Math.round(Number(order.total) * 100);
+        const requestedMinorUnits = requestedAmountMinorUnits(body);
+        if (requestedMinorUnits !== null && requestedMinorUnits !== amountMinorUnits) {
+            return c.json(
+                { success: false, error: { code: 'AMOUNT_MISMATCH', message: 'Order amount changed. Please refresh checkout and try again.' } },
+                400
+            );
+        }
+
         const idempotency = new IdempotencyExecutionAdapter(db);
         const claim = await idempotency.begin({
             siteId: store.id,
@@ -1641,8 +1658,6 @@ router.post(
         if (claim.kind === 'replay') {
             return c.json(claim.responseBody as any, claim.statusCode as any);
         }
-
-        const amountMinorUnits = Math.round(Number(order.total) * 100);
 
         try {
             const providerOrder = await createRazorpayOrder(

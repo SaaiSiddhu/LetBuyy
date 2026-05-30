@@ -211,6 +211,8 @@
 
 SKIP: Start local infrastructure — Reason: `docker-compose` is not installed and the installed Docker CLI does not provide the `docker compose` plugin, so the local stack cannot be started without installing Docker Compose tooling. Resume point: Phase 0 Task 0.4.
 
+SKIP: Razorpay provider order creation smoke test — Reason: Razorpay test credentials (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`) are not available in this environment, so live provider order creation and webhook smoke testing cannot be executed safely. Resume point: Phase 2 Task 2.5 after configuring Razorpay test credentials.
+
 ---
 
 ## GOVERNANCE FAILURES — PHASE 0

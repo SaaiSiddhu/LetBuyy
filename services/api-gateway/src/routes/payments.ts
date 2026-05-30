@@ -7,6 +7,7 @@ import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
 import { ForbiddenError, ConflictError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
@@ -45,6 +46,32 @@ type RazorpayOrderCreateResponse = {
     currency?: string;
     error?: { description?: string };
 };
+
+type ClientAmountFields = {
+    amount?: number;
+    amountMinorUnits?: number;
+    amount_minor_units?: number;
+};
+
+function getRequestId(c: AppContext): string {
+    return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function requestedAmountMinorUnits(input: ClientAmountFields): number | null {
+    if (typeof input.amountMinorUnits === 'number') return input.amountMinorUnits;
+    if (typeof input.amount_minor_units === 'number') return input.amount_minor_units;
+    if (typeof input.amount === 'number') return Math.round(input.amount * 100);
+    return null;
+}
+
+function amountMismatchBody() {
+    return {
+        error: {
+            code: 'AMOUNT_MISMATCH',
+            message: 'Order amount changed. Please refresh checkout and try again.',
+        },
+    };
+}
 
 // GET /payments/plans — Fetch active subscription plans through the worker boundary
 router.get('/plans', validate('query', PlanListQuerySchema), async (c) => {
@@ -446,7 +473,12 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
 // POST /payments/razorpay/order — Create a Razorpay order
 router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) => {
     const auth = c.get('auth');
-    const body = c.get('validatedBody') as { order_id: string; idempotency_key: string };
+    const body = c.get('validatedBody') as {
+        order_id: string;
+        idempotency_key: string;
+        amount?: number;
+        amount_minor_units?: number;
+    };
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -461,10 +493,27 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
         );
     }
 
-    try {
-        const order = await loadPayableOrder(c, body.order_id, customUser.id, auth.user.storeId);
-        const amountMinorUnits = Math.round(order.total * 100);
+    const order = await loadPayableOrder(c, body.order_id, customUser.id, auth.user.storeId);
+    const amountMinorUnits = Math.round(order.total * 100);
+    const requestedMinorUnits = requestedAmountMinorUnits(body);
+    if (requestedMinorUnits !== null && requestedMinorUnits !== amountMinorUnits) {
+        return c.json(amountMismatchBody(), 400);
+    }
 
+    const idempotency = new IdempotencyExecutionAdapter(db);
+    const claim = await idempotency.begin({
+        siteId: order.store_id,
+        key: body.idempotency_key,
+        scope: `payment.razorpay.order:${body.order_id}`,
+        requestBody: body,
+        requestId: getRequestId(c),
+    });
+
+    if (claim.kind === 'replay') {
+        return c.json(claim.responseBody as never, claim.statusCode as never);
+    }
+
+    try {
         const razorpayOrder = await createRazorpayOrder(
             { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
             {
@@ -479,9 +528,10 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
         );
 
         if (!razorpayOrder.id) {
+            await idempotency.fail(claim.id);
             return c.json(
                 { error: { code: 'PAYMENT_ERROR', message: 'Failed to create payment order' } },
-                500
+                502
             );
         }
 
@@ -490,23 +540,31 @@ router.post('/razorpay/order', validate('json', RazorpayOrderSchema), async (c) 
             orderId: body.order_id,
             provider: 'razorpay',
             providerOrderId: razorpayOrder.id,
-            requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
+            requestId: getRequestId(c),
             idempotencyKey: body.idempotency_key,
         });
 
-        return c.json({
+        const responseBody = {
             data: {
                 razorpay_order_id: razorpayOrder.id,
-                amount: razorpayOrder.amount,
-                currency: razorpayOrder.currency,
+                amount: razorpayOrder.amount ?? amountMinorUnits,
+                currency: razorpayOrder.currency || order.currency || 'INR',
                 key_id: c.env.RAZORPAY_KEY_ID,
             },
+        };
+
+        await idempotency.complete({
+            id: claim.id,
+            responseBody,
+            statusCode: 200,
+            resourceType: 'order',
+            resourceId: body.order_id,
         });
+
+        return c.json(responseBody);
     } catch (err) {
-        return c.json(
-            { error: { code: 'PAYMENT_ERROR', message: 'Payment service unavailable' } },
-            503
-        );
+        await idempotency.fail(claim.id);
+        throw err;
     }
 });
 

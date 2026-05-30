@@ -62,6 +62,8 @@ export const StorefrontCreateOrderSchema = z.object({
 export const StorefrontRazorpayOrderSchema = z.object({
   orderId: UuidSchema,
   idempotencyKey: z.string().min(8).max(200),
+  amount: MoneySchema.optional(),
+  amountMinorUnits: z.number().int().positive().optional(),
 });
 
 export const StorefrontRazorpayVerifySchema = z.object({
@@ -198,6 +200,8 @@ export const RazorpayVerifySchema = z.object({
 export const RazorpayOrderSchema = z.object({
   order_id: UuidSchema,
   idempotency_key: z.string().min(8).max(200),
+  amount: MoneySchema.optional(),
+  amount_minor_units: z.number().int().positive().optional(),
 });
 
 export const StripeCheckoutSchema = z.object({

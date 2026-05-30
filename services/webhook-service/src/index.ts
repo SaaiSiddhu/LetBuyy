@@ -510,7 +510,7 @@ app.post("/razorpay", async (c) => {
 
     if (!signature) {
         console.error("[Razorpay] Missing x-razorpay-signature header");
-        return c.json({ error: "Missing signature" }, 401);
+        return c.json({ error: "Missing signature" }, 400);
     }
 
     // Step 1: Verify signature (HMAC-SHA256 of raw body with webhook secret)
@@ -518,7 +518,7 @@ app.post("/razorpay", async (c) => {
 
     if (!timingSafeEqual(signature, expectedSignature)) {
         console.error("[Razorpay] Invalid signature");
-        return c.json({ error: "Invalid signature" }, 401);
+        return c.json({ error: "Invalid signature" }, 400);
     }
 
     // Step 2: Parse and validate the event
