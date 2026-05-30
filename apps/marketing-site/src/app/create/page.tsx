@@ -10,6 +10,31 @@ const siteTypes = [
     { id: 'landing', title: 'Landing Page', description: 'Marketing page with forms and analytics', icon: '🚀' },
 ]
 
+function getApiBaseUrl(): string {
+    const configuredUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://api.letbuyy.store/v1').replace(/\/$/, '')
+
+    try {
+        const url = new URL(configuredUrl)
+        const path = url.pathname.replace(/\/$/, '')
+
+        if (path === '' || path === '/') {
+            url.pathname = '/v1'
+            return url.toString().replace(/\/$/, '')
+        }
+
+        if (!path.endsWith('/v1')) {
+            url.pathname = `${path}/v1`
+            return url.toString().replace(/\/$/, '')
+        }
+    } catch {
+        if (!configuredUrl.endsWith('/v1')) {
+            return `${configuredUrl}/v1`
+        }
+    }
+
+    return configuredUrl
+}
+
 export default function CreateStorePage() {
     const [step, setStep] = useState(1)
     const [siteType, setSiteType] = useState('')
@@ -28,8 +53,7 @@ export default function CreateStorePage() {
     const checkSubdomain = async () => {
         if (!subdomain) return
         try {
-            const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'https://api.letbuyy.store'
-            const res = await fetch(`${apiUrl}/stores/public/${subdomain}`)
+            const res = await fetch(`${getApiBaseUrl()}/stores/public/${subdomain}`)
             setSubdomainAvailable(res.status === 404) // 404 = available
         } catch {
             setSubdomainAvailable(true) // Assume available on error
