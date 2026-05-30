@@ -230,3 +230,9 @@ SKIP: Razorpay provider order creation smoke test — Reason: Razorpay test cred
 ## GOVERNANCE FAILURES — PHASE 1 VERIFICATION
 
 - `pnpm run validate:governance` failed in `Stale artifact validator`: untracked/generated/forbidden topology artifacts were detected at app/package-local `.turbo`, `dist`, and `node_modules` paths after dependency install and typecheck/build verification, including `apps/*/.turbo`, `apps/*/node_modules`, `packages/app-engine/.turbo`, `packages/app-engine/dist`, `packages/app-engine/node_modules`, and `packages/application-services/.turbo`. All other governance validators reported pass before this stale artifact failure. Verification command exit code: 1.
+
+---
+
+## GOVERNANCE FAILURES — PHASE 2 VERIFICATION
+
+- `pnpm run validate:governance` failed in `Stale artifact validator`: untracked/generated/forbidden topology artifacts were detected at local install/build cache paths, including `apps/app-marketplace/.turbo`, `apps/app-marketplace/node_modules`, `apps/identity-platform/.turbo`, `apps/identity-platform/node_modules`, `apps/marketing-site/.turbo`, `apps/marketing-site/node_modules`, `apps/merchant-control-plane/.turbo`, `apps/merchant-control-plane/node_modules`, `apps/platform-console/.turbo`, `apps/platform-console/node_modules`, `apps/platform-operations-portal/.turbo`, `apps/platform-operations-portal/node_modules`, `apps/storefront-runtime/.turbo`, `apps/storefront-runtime/node_modules`, `apps/theme-marketplace/.turbo`, `apps/theme-marketplace/node_modules`, `packages/app-engine/.turbo`, `packages/app-engine/dist`, `packages/app-engine/node_modules`, and `packages/application-services/.turbo`. All other governance validators reported pass before this stale artifact failure. Verification command exit code: 1.
