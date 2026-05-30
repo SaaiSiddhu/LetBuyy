@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { accountWorkerFetch, getAccountWorkerFailureMessage } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateOTPToken } from '@/lib/auth/tokens'
 import { validateCsrf } from '@/lib/auth/csrf'
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
     try {
         const ip = request.headers.get('x-forwarded-for') || 'unknown'
 
-        // Rate limit (stricter for OTP — 5 attempts per 10 min)
+        // Rate limit (stricter for OTP — 5 attempts per 15 min)
         const rl = await checkRateLimit('verify_otp', ip)
         if (!rl.allowed) {
             return NextResponse.json(
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
         // Validate OTP
         const result = await validateOTPToken(email.toLowerCase().trim(), otp)
 
-        if (!result) {
+        if (!result?.user_id) {
             return NextResponse.json(
                 { error: 'Invalid or expired verification code' },
                 { status: 400 }
@@ -49,10 +49,28 @@ export async function POST(request: NextRequest) {
         }
 
         // Mark email as verified
-        await accountWorkerFetch('/auth/custom/users/verify-email', {
+        const verifyResponse = await accountWorkerFetch('/auth/custom/users/verify-email', {
             method: 'POST',
-            body: JSON.stringify({ email: result.email }),
+            body: JSON.stringify({ user_id: result.user_id, email: result.email }),
         })
+        const verifyPayload = await verifyResponse.json().catch(() => null) as {
+            data?: {
+                id: string
+                email: string
+                email_verified: boolean
+            } | null
+            error?: {
+                message?: string
+            }
+        } | null
+
+        if (!verifyResponse.ok || !verifyPayload?.data) {
+            const message = getAccountWorkerFailureMessage(
+                verifyPayload,
+                'Unable to verify email. Please request a new code.'
+            )
+            return NextResponse.json({ error: message }, { status: verifyResponse.status || 500 })
+        }
 
         return NextResponse.json({
             success: true,
