@@ -18,12 +18,12 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
-function readTerraformCacheNamespaceIds() {
+function readTerraformOutput(outputName) {
   const result = spawnSync("terraform", [
     "-chdir=infrastructure/cloudflare",
     "output",
     "-json",
-    "letbuyy_runtime_cache_namespace_ids",
+    outputName,
   ], {
     encoding: "utf8",
     stdio: ["ignore", "pipe", "pipe"],
@@ -38,12 +38,29 @@ function readTerraformCacheNamespaceIds() {
   }
 }
 
+function readTerraformCacheNamespaceIds() {
+  return readTerraformOutput("letbuyy_runtime_cache_namespace_ids");
+}
+
+function readTerraformD1DatabaseIds() {
+  return readTerraformOutput("letbuyy_runtime_d1_database_ids");
+}
+
 function cacheNamespaceIdFor(envName) {
   const envKey = envName.toUpperCase();
   const explicit = process.env[`LETBUYY_RUNTIME_CACHE_${envKey}_NAMESPACE_ID`];
   if (explicit) return explicit;
 
   const terraformIds = readTerraformCacheNamespaceIds();
+  return terraformIds[envName] || "";
+}
+
+function d1DatabaseIdFor(envName) {
+  const envKey = envName.toUpperCase();
+  const explicit = process.env[`LETBUYY_RUNTIME_D1_${envKey}_DATABASE_ID`];
+  if (explicit) return explicit;
+
+  const terraformIds = readTerraformD1DatabaseIds();
   return terraformIds[envName] || "";
 }
 
@@ -73,6 +90,20 @@ if (config.includes(placeholder)) {
     console.warn(`[materialize-wrangler] leaving ${placeholder} unresolved for plan-only ${environment} config`);
   } else {
     config = config.replaceAll(placeholder, namespaceId);
+  }
+}
+
+const d1Placeholder = `__LETBUYY_RUNTIME_D1_${environment.toUpperCase()}_DATABASE_ID__`;
+if (config.includes(d1Placeholder)) {
+  const databaseId = d1DatabaseIdFor(environment);
+  if (!databaseId) {
+    assert(
+      !requireRealBindings,
+      `Missing D1 database id for ${environment}. Set LETBUYY_RUNTIME_D1_${environment.toUpperCase()}_DATABASE_ID or apply infrastructure/cloudflare Terraform first.`,
+    );
+    console.warn(`[materialize-wrangler] leaving ${d1Placeholder} unresolved for plan-only ${environment} config`);
+  } else {
+    config = config.replaceAll(d1Placeholder, databaseId);
   }
 }
 

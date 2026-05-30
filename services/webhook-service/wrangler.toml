@@ -1,6 +1,7 @@
 name = "letbuyy-webhooks"
 main = "src/index.ts"
-compatibility_date = "2026-05-01"
+compatibility_date = "2026-05-25"
+compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 [observability]
@@ -52,6 +53,14 @@ RUNTIME_NAME = "Webhook Service"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
 
+[[env.dev.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api-dev"
+
+[[env.dev.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-dev-telemetry"
+
 [env.dev.placement]
 mode = "smart"
 
@@ -81,6 +90,14 @@ RUNTIME_NAME = "Webhook Service"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
 
+[[env.staging.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api-staging"
+
+[[env.staging.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-staging-telemetry"
+
 [env.staging.placement]
 mode = "smart"
 
@@ -109,6 +126,14 @@ TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Webhook Service"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
+
+[[env.production.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api"
+
+[[env.production.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-production-telemetry"
 
 [env.production.placement]
 mode = "smart"

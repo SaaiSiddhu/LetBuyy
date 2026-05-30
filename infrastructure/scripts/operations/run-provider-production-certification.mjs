@@ -8,7 +8,7 @@ import { performance } from "node:perf_hooks";
 const args = new Set(process.argv.slice(2));
 const modeArg = valueFor("--mode") || (args.has("--execute") ? "execute" : "auto");
 const environment = valueFor("--environment") || "production";
-const output = valueFor("--output") || "artifacts/production-certification/report.json";
+const output = valueFor("--output") || `artifacts/provider-evidence/${environment}/provider-execution-report.json`;
 const artifactDir = valueFor("--artifact-dir") || path.dirname(output);
 const version = valueFor("--version") || process.env.GITHUB_SHA || `local-${Date.now()}`;
 const traceId = sha256({ version, environment, started_at: "provider-production-certification" });
@@ -32,7 +32,7 @@ const capabilityGroups = [
   {
     name: "cloudflare",
     env: ["CLOUDFLARE_API_TOKEN", "CLOUDFLARE_ACCOUNT_ID"],
-    tools: ["wrangler"],
+    tools: ["pnpm"],
   },
   {
     name: "supabase",
@@ -145,7 +145,7 @@ function runCommandStep(id, command, commandArgs, options = {}) {
 
 function plannedProviderSteps() {
   return [
-    "wrangler whoami",
+    "pnpm --dir services/api-gateway exec wrangler whoami",
     "phase4-live-certify execute with provider mutation approval",
     "Supabase certification verification SQL via psql",
     "OpenTelemetry collector health and trace ingestion verification",
@@ -189,7 +189,7 @@ if (mode !== "execute") {
 }
 
 const evidence = [];
-evidence.push(runCommandStep("cloudflare-whoami", "wrangler", ["whoami"], { provider: "cloudflare" }));
+evidence.push(runCommandStep("cloudflare-whoami", "pnpm", ["--dir", "services/api-gateway", "exec", "wrangler", "whoami"], { provider: "cloudflare" }));
 evidence.push(runCommandStep("phase4-live-certify", process.execPath, [
   "infrastructure/scripts/operations/phase4-live-certify.mjs",
   `--environment=${environment}`,

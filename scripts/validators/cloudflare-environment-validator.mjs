@@ -61,6 +61,12 @@ const productionQueues = [
   "letbuyy-dead-letters",
 ];
 
+const foundationQueues = {
+  dev: ["letbuyy-dev-queue", "letbuyy-dev-dead-letter-queue"],
+  staging: ["letbuyy-staging-queue", "letbuyy-staging-dead-letter-queue"],
+  production: ["letbuyy-production-queue", "letbuyy-production-dead-letter-queue"],
+};
+
 const expectedWorkerNames = {
   "services/api-gateway": {
     dev: "letbuyy-api-dev",
@@ -85,6 +91,8 @@ for (const worker of workerConfigs) {
   const topLevel = text.split(/\n\[env\.dev\]/)[0] ?? "";
   const manifest = readJson(`${worker.root}/package.json`);
 
+  reporter.assert(text.includes('compatibility_flags = ["nodejs_compat"]'), `Worker config must enable Node.js compatibility explicitly: ${worker.config}`);
+  reporter.assert(text.includes('compatibility_date = "2026-05-25"'), `Worker config must use governed compatibility date 2026-05-25: ${worker.config}`);
   reporter.assert(
     manifest?.scripts?.deploy?.includes("deploy-worker-runtime.mjs") && !/wrangler deploy(\s|$)/.test(manifest.scripts.deploy),
     `Worker deploy script must require explicit --env through deploy-worker-runtime.mjs: ${worker.root}/package.json`,
@@ -124,13 +132,29 @@ for (const worker of workerConfigs) {
           reporter.assert(envSection.includes(exactQueue(`${queue}-${environment}`)), `Worker ${marker} must bind isolated queue ${queue}-${environment}: ${worker.config}`);
         }
       }
+
+      if (worker.requiresProducerQueues) {
+        const runtimeQueue = foundationQueues[environment][0];
+        reporter.assert(envSection.includes(exactQueue(runtimeQueue)), `Worker ${marker} must bind isolated runtime queue ${runtimeQueue}: ${worker.config}`);
+      }
+      if (worker.requiresConsumers) {
+        for (const queue of foundationQueues[environment]) {
+          reporter.assert(envSection.includes(exactQueue(queue)), `Worker ${marker} must consume isolated runtime queue ${queue}: ${worker.config}`);
+        }
+      }
+      for (const [otherEnvironment, queues] of Object.entries(foundationQueues)) {
+        if (otherEnvironment === environment) continue;
+        for (const queue of queues) {
+          reporter.assert(!envSection.includes(exactQueue(queue)), `Worker ${marker} must not bind ${otherEnvironment} runtime queue ${queue}: ${worker.config}`);
+        }
+      }
     }
 
     if (worker.requiresR2) {
-      const expectedBucket = environment === "production" ? "letbuyy-production-storage" : `letbuyy-${environment}-storage`;
+      const expectedBucket = environment === "production" ? "letbuyy-production-r2" : `letbuyy-${environment}-r2`;
       reporter.assert(envSection.includes(`bucket_name = "${expectedBucket}"`), `Worker ${marker} must bind isolated R2 bucket ${expectedBucket}: ${worker.config}`);
       if (environment !== "production") {
-        reporter.assert(!envSection.includes('bucket_name = "letbuyy-production-storage"'), `Worker ${marker} must not bind production R2 bucket: ${worker.config}`);
+        reporter.assert(!envSection.includes('bucket_name = "letbuyy-production-r2"'), `Worker ${marker} must not bind production R2 bucket: ${worker.config}`);
       }
     }
 
@@ -138,6 +162,8 @@ for (const worker of workerConfigs) {
       const placeholder = `__LETBUYY_RUNTIME_CACHE_${environment.toUpperCase()}_NAMESPACE_ID__`;
       reporter.assert(envSection.includes(`id = "${placeholder}"`), `Worker ${marker} must bind environment-specific KV namespace placeholder ${placeholder}: ${worker.config}`);
     }
+
+    reporter.assert(envSection.includes(`[[env.${environment}.analytics_engine_datasets]]`), `Worker ${marker} must declare isolated telemetry dataset binding: ${worker.config}`);
   }
 
   if (topLevel.includes('ENVIRONMENT = "local"')) {
@@ -146,7 +172,7 @@ for (const worker of workerConfigs) {
     reporter.assert(!topLevel.includes('queue = "letbuyy-search-indexing"'), `Local top-level config must not bind production search queue: ${worker.config}`);
     reporter.assert(!topLevel.includes('queue = "letbuyy-notifications"'), `Local top-level config must not bind production notification queue: ${worker.config}`);
     reporter.assert(!topLevel.includes('queue = "letbuyy-dead-letters"'), `Local top-level config must not bind production DLQ: ${worker.config}`);
-    reporter.assert(!topLevel.includes('bucket_name = "letbuyy-production-storage"'), `Local top-level config must not bind production R2 bucket: ${worker.config}`);
+    reporter.assert(!topLevel.includes('bucket_name = "letbuyy-production-r2"'), `Local top-level config must not bind production R2 bucket: ${worker.config}`);
   }
 }
 

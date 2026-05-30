@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "provider": "cloudflare",
+  "sourceTopology": "config/runtime/cloudflare-topology.json",
+  "owners": {
+    "workers": "service-wrangler-config",
+    "d1": "infrastructure/cloudflare/storage.tf",
+    "kv": "infrastructure/cloudflare/storage.tf",
+    "r2": "infrastructure/cloudflare/storage.tf",
+    "queues": "infrastructure/cloudflare/queues.tf",
+    "durableObjects": "services/api-gateway/wrangler.toml",
+    "serviceBindings": "service-wrangler-config",
+    "telemetry": "service-wrangler-config",
+    "secrets": "cloudflare-secrets-and-github-environments"
+  },
+  "environmentResources": {
+    "dev": {
+      "worker": "letbuyy-dev-worker",
+      "d1": "letbuyy-dev-d1",
+      "kv": "letbuyy-dev-kv",
+      "r2": "letbuyy-dev-r2",
+      "runtimeQueue": "letbuyy-dev-queue",
+      "deadLetterQueue": "letbuyy-dev-dead-letter-queue",
+      "durableObjectNamespace": "letbuyy-dev-runtime-coordinator",
+      "telemetryDataset": "letbuyy-dev-telemetry",
+      "replayStorage": "letbuyy-dev-replay",
+      "walStorage": "letbuyy-dev-wal"
+    },
+    "staging": {
+      "worker": "letbuyy-staging-worker",
+      "d1": "letbuyy-staging-d1",
+      "kv": "letbuyy-staging-kv",
+      "r2": "letbuyy-staging-r2",
+      "runtimeQueue": "letbuyy-staging-queue",
+      "deadLetterQueue": "letbuyy-staging-dead-letter-queue",
+      "durableObjectNamespace": "letbuyy-staging-runtime-coordinator",
+      "telemetryDataset": "letbuyy-staging-telemetry",
+      "replayStorage": "letbuyy-staging-replay",
+      "walStorage": "letbuyy-staging-wal"
+    },
+    "production": {
+      "worker": "letbuyy-production-worker",
+      "d1": "letbuyy-production-d1",
+      "kv": "letbuyy-production-kv",
+      "r2": "letbuyy-production-r2",
+      "runtimeQueue": "letbuyy-production-queue",
+      "deadLetterQueue": "letbuyy-production-dead-letter-queue",
+      "durableObjectNamespace": "letbuyy-production-runtime-coordinator",
+      "telemetryDataset": "letbuyy-production-telemetry",
+      "replayStorage": "letbuyy-production-replay",
+      "walStorage": "letbuyy-production-wal"
+    }
+  },
+  "isolationPolicy": {
+    "noSharedNamesAcrossEnvironments": true,
+    "productionNamesForbiddenInLowerEnvironmentConfigs": true,
+    "lowerEnvironmentNamesForbiddenInProductionConfig": true,
+    "providerIdsMayOnlyEnterWranglerThroughMaterialization": true
+  },
+  "failurePolicy": "fail-closed"
+}

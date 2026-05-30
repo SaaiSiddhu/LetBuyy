@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { accountWorkerFetch, getAccountWorkerFailureMessage } from '@/lib/api/worker-client'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 /**
@@ -36,10 +36,15 @@ export async function POST(request: NextRequest) {
                 password_hash?: string | null
                 email_verified?: boolean | null
             } | null
+            error?: {
+                code?: string
+                message?: string
+            }
         } | null
 
         if (!response.ok) {
-            return NextResponse.json({ error: 'Unable to look up account' }, { status: response.status })
+            const message = getAccountWorkerFailureMessage(payload, 'Unable to look up account')
+            return NextResponse.json({ error: message }, { status: response.status })
         }
 
         const user = payload?.data

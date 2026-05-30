@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "sourceTopology": "config/runtime/deployment-topology.json",
+  "cloudflareTopology": "config/runtime/cloudflare-topology.json",
+  "environmentLineage": "config/runtime/environment-lineage.json",
+  "resourceOwnership": "config/runtime/resource-ownership-manifest.json",
+  "runtimeOrder": [
+    "cloudflare-primitives",
+    "d1-migrations",
+    "queue-workers",
+    "api-gateway",
+    "webhook-service",
+    "provider-evidence-capture"
+  ],
+  "deploymentRules": {
+    "wranglerDeployRequiresEnv": true,
+    "rawWranglerDeployForbidden": true,
+    "productionRequiresApproval": true,
+    "providerEvidenceRequiredForExecuteCertification": true,
+    "planModeMustNotClaimProviderEvidence": true
+  },
+  "recoveryRules": {
+    "replayStoragePerEnvironment": true,
+    "walStoragePerEnvironment": true,
+    "queueDlqPerEnvironment": true,
+    "d1BackupBeforeMigration": true,
+    "durableObjectCheckpointBeforeRestoration": true
+  },
+  "failurePolicy": "fail-closed"
+}

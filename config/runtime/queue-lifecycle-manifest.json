@@ -25,6 +25,30 @@
   },
   "queues": [
     {
+      "logicalName": "runtime",
+      "producerBinding": "RUNTIME_QUEUE",
+      "producerRoot": "services/api-gateway",
+      "consumerRoot": "services/queue-workers",
+      "names": {
+        "dev": "letbuyy-dev-queue",
+        "staging": "letbuyy-staging-queue",
+        "production": "letbuyy-production-queue"
+      },
+      "deadLetterNames": {
+        "dev": "letbuyy-dev-dead-letter-queue",
+        "staging": "letbuyy-staging-dead-letter-queue",
+        "production": "letbuyy-production-dead-letter-queue"
+      },
+      "orderingKey": "environment+runtimeName+traceId",
+      "retry": {
+        "maxRetries": { "dev": 6, "staging": 8, "production": 10 },
+        "retryDelaySeconds": 30,
+        "backoff": "provider-fixed-delay"
+      },
+      "poisonMessagePolicy": "dead-letter-after-retry-exhaustion",
+      "replayIntegrity": "provider-runtime-events-require-trace-and-idempotency-key"
+    },
+    {
       "logicalName": "events",
       "producerBinding": "EVENT_QUEUE",
       "producerRoot": "services/api-gateway",

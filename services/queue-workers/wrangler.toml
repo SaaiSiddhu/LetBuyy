@@ -1,6 +1,7 @@
 name = "letbuyy-queue-workers"
 main = "src/index.ts"
-compatibility_date = "2026-05-01"
+compatibility_date = "2026-05-25"
+compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 
 [observability]
@@ -60,6 +61,23 @@ dead_letter_queue = "letbuyy-dead-letters-local"
 
 [[queues.consumers]]
 queue = "letbuyy-dead-letters-local"
+max_batch_size = 25
+max_batch_timeout = 30
+max_concurrency = 5
+max_retries = 3
+retry_delay = 300
+
+[[queues.consumers]]
+queue = "letbuyy-local-queue"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 5
+max_retries = 6
+retry_delay = 30
+dead_letter_queue = "letbuyy-local-dead-letter-queue"
+
+[[queues.consumers]]
+queue = "letbuyy-local-dead-letter-queue"
 max_batch_size = 25
 max_batch_timeout = 30
 max_concurrency = 5
@@ -141,6 +159,31 @@ max_concurrency = 2
 max_retries = 3
 retry_delay = 300
 
+[[env.dev.queues.consumers]]
+queue = "letbuyy-dev-queue"
+max_batch_size = 25
+max_batch_timeout = 10
+max_concurrency = 5
+max_retries = 6
+retry_delay = 30
+dead_letter_queue = "letbuyy-dev-dead-letter-queue"
+
+[[env.dev.queues.consumers]]
+queue = "letbuyy-dev-dead-letter-queue"
+max_batch_size = 10
+max_batch_timeout = 30
+max_concurrency = 2
+max_retries = 3
+retry_delay = 300
+
+[[env.dev.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api-dev"
+
+[[env.dev.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-dev-telemetry"
+
 [env.dev.placement]
 mode = "smart"
 
@@ -211,6 +254,31 @@ max_concurrency = 3
 max_retries = 3
 retry_delay = 300
 
+[[env.staging.queues.consumers]]
+queue = "letbuyy-staging-queue"
+max_batch_size = 50
+max_batch_timeout = 10
+max_concurrency = 10
+max_retries = 8
+retry_delay = 30
+dead_letter_queue = "letbuyy-staging-dead-letter-queue"
+
+[[env.staging.queues.consumers]]
+queue = "letbuyy-staging-dead-letter-queue"
+max_batch_size = 25
+max_batch_timeout = 30
+max_concurrency = 3
+max_retries = 3
+retry_delay = 300
+
+[[env.staging.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api-staging"
+
+[[env.staging.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-staging-telemetry"
+
 [env.staging.placement]
 mode = "smart"
 
@@ -280,6 +348,31 @@ max_batch_timeout = 30
 max_concurrency = 5
 max_retries = 3
 retry_delay = 300
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-production-queue"
+max_batch_size = 50
+max_batch_timeout = 10
+max_concurrency = 20
+max_retries = 10
+retry_delay = 30
+dead_letter_queue = "letbuyy-production-dead-letter-queue"
+
+[[env.production.queues.consumers]]
+queue = "letbuyy-production-dead-letter-queue"
+max_batch_size = 25
+max_batch_timeout = 30
+max_concurrency = 5
+max_retries = 3
+retry_delay = 300
+
+[[env.production.services]]
+binding = "API_GATEWAY_SERVICE"
+service = "letbuyy-api"
+
+[[env.production.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-production-telemetry"
 
 [env.production.placement]
 mode = "smart"

@@ -13,7 +13,9 @@
       "letbuyy-analytics",
       "letbuyy-search-indexing",
       "letbuyy-notifications",
-      "letbuyy-dead-letters"
+      "letbuyy-dead-letters",
+      "letbuyy-production-queue",
+      "letbuyy-production-dead-letter-queue"
     ]
   },
   "eventStoreProvider": {

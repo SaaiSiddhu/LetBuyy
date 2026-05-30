@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "promotionOrder": ["dev", "staging", "production"],
+  "lineageRules": {
+    "devMayPromoteTo": ["staging"],
+    "stagingMayPromoteTo": ["production"],
+    "productionMayPromoteTo": [],
+    "productionRequiresExplicitApproval": true,
+    "productionMutationsRequireProviderEvidence": true,
+    "lowerEnvironmentsMustNotReferenceProductionResources": true
+  },
+  "environmentEvidence": {
+    "dev": {
+      "certificationClass": "provider-plan-or-dev-execute-only",
+      "resourcePrefix": "letbuyy-dev",
+      "liveProductionEvidence": false
+    },
+    "staging": {
+      "certificationClass": "provider-staging-execute-only",
+      "resourcePrefix": "letbuyy-staging",
+      "liveProductionEvidence": false
+    },
+    "production": {
+      "certificationClass": "provider-production-execute-only",
+      "resourcePrefix": "letbuyy-production",
+      "liveProductionEvidence": true
+    }
+  },
+  "requiredEvidenceArtifacts": [
+    "wrangler-whoami",
+    "provider-resource-inventory",
+    "deployment-version-lineage",
+    "d1-migration-lineage",
+    "durable-object-migration-lineage",
+    "queue-recovery-lineage",
+    "rollback-lineage",
+    "secret-redaction-proof"
+  ],
+  "failurePolicy": "fail-closed"
+}

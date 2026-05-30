@@ -144,8 +144,10 @@ for (const developmentResource of [
   "letbuyy-api-dev",
   "letbuyy-events-dev",
   "letbuyy-dead-letters-dev",
-  "letbuyy-runtime-cache-dev",
-  "letbuyy-dev-storage",
+  "letbuyy-dev-kv",
+  "letbuyy-dev-r2",
+  "letbuyy-dev-d1",
+  "letbuyy-dev-queue",
 ]) {
   reporter.assert(
     JSON.stringify(environments.get("development")?.topology || {}).includes(developmentResource),

@@ -1,0 +1,144 @@
+{
+  "$schema": "config/runtime/cloudflare-topology.schema.json",
+  "manifestVersion": 1,
+  "mode": "governance-contract-not-live-evidence",
+  "provider": "cloudflare",
+  "docs": [
+    "https://developers.cloudflare.com/workers/wrangler/configuration/",
+    "https://developers.cloudflare.com/durable-objects/reference/durable-objects-migrations/"
+  ],
+  "wrangler": {
+    "requiredMajor": 4,
+    "currentLatestChecked": "4.94.0",
+    "nodeMajor": 22,
+    "packageManager": "pnpm@10.6.2",
+    "configFormat": "toml",
+    "mustUseExplicitEnv": true,
+    "sourceOfTruth": "service-wrangler-config-plus-cloudflare-topology"
+  },
+  "environments": {
+    "dev": {
+      "deploymentEnv": "dev",
+      "applicationEnv": "development",
+      "resourcePrefix": "letbuyy-dev",
+      "worker": "letbuyy-dev-worker",
+      "d1": "letbuyy-dev-d1",
+      "kv": "letbuyy-dev-kv",
+      "r2": "letbuyy-dev-r2",
+      "runtimeQueue": "letbuyy-dev-queue",
+      "deadLetterQueue": "letbuyy-dev-dead-letter-queue",
+      "durableObjectNamespace": "letbuyy-dev-runtime-coordinator",
+      "telemetryDataset": "letbuyy-dev-telemetry",
+      "replayStorage": "letbuyy-dev-replay",
+      "walStorage": "letbuyy-dev-wal",
+      "workers": {
+        "apiGateway": "letbuyy-api-dev",
+        "webhookService": "letbuyy-webhooks-dev",
+        "queueWorkers": "letbuyy-queue-workers-dev"
+      },
+      "routes": {
+        "apiGateway": "api-dev.letbuyy.store",
+        "webhookService": "webhooks-dev.letbuyy.store"
+      }
+    },
+    "staging": {
+      "deploymentEnv": "staging",
+      "applicationEnv": "staging",
+      "resourcePrefix": "letbuyy-staging",
+      "worker": "letbuyy-staging-worker",
+      "d1": "letbuyy-staging-d1",
+      "kv": "letbuyy-staging-kv",
+      "r2": "letbuyy-staging-r2",
+      "runtimeQueue": "letbuyy-staging-queue",
+      "deadLetterQueue": "letbuyy-staging-dead-letter-queue",
+      "durableObjectNamespace": "letbuyy-staging-runtime-coordinator",
+      "telemetryDataset": "letbuyy-staging-telemetry",
+      "replayStorage": "letbuyy-staging-replay",
+      "walStorage": "letbuyy-staging-wal",
+      "workers": {
+        "apiGateway": "letbuyy-api-staging",
+        "webhookService": "letbuyy-webhooks-staging",
+        "queueWorkers": "letbuyy-queue-workers-staging"
+      },
+      "routes": {
+        "apiGateway": "api.staging.letbuyy.store",
+        "webhookService": "webhooks.staging.letbuyy.store"
+      }
+    },
+    "production": {
+      "deploymentEnv": "production",
+      "applicationEnv": "production",
+      "resourcePrefix": "letbuyy-production",
+      "worker": "letbuyy-production-worker",
+      "d1": "letbuyy-production-d1",
+      "kv": "letbuyy-production-kv",
+      "r2": "letbuyy-production-r2",
+      "runtimeQueue": "letbuyy-production-queue",
+      "deadLetterQueue": "letbuyy-production-dead-letter-queue",
+      "durableObjectNamespace": "letbuyy-production-runtime-coordinator",
+      "telemetryDataset": "letbuyy-production-telemetry",
+      "replayStorage": "letbuyy-production-replay",
+      "walStorage": "letbuyy-production-wal",
+      "workers": {
+        "apiGateway": "letbuyy-api",
+        "webhookService": "letbuyy-webhooks",
+        "queueWorkers": "letbuyy-queue-workers"
+      },
+      "routes": {
+        "apiGateway": "api.letbuyy.store",
+        "webhookService": "webhooks.letbuyy.store"
+      }
+    }
+  },
+  "bindings": {
+    "apiGateway": {
+      "runtimeRoot": "services/api-gateway",
+      "config": "services/api-gateway/wrangler.toml",
+      "d1Binding": "RUNTIME_DB",
+      "kvBinding": "CACHE",
+      "r2Binding": "R2_BUCKET",
+      "durableObjectBinding": "RUNTIME_COORDINATOR",
+      "durableObjectClass": "LetbuyyRuntimeDurableObject",
+      "runtimeQueueProducerBinding": "RUNTIME_QUEUE",
+      "serviceBindings": ["WEBHOOK_SERVICE"],
+      "telemetryBinding": "RUNTIME_TELEMETRY"
+    },
+    "webhookService": {
+      "runtimeRoot": "services/webhook-service",
+      "config": "services/webhook-service/wrangler.toml",
+      "serviceBindings": ["API_GATEWAY_SERVICE"],
+      "telemetryBinding": "RUNTIME_TELEMETRY"
+    },
+    "queueWorkers": {
+      "runtimeRoot": "services/queue-workers",
+      "config": "services/queue-workers/wrangler.toml",
+      "runtimeQueueConsumer": true,
+      "serviceBindings": ["API_GATEWAY_SERVICE"],
+      "telemetryBinding": "RUNTIME_TELEMETRY"
+    }
+  },
+  "d1": {
+    "migrationsDir": "database/cloudflare/d1/migrations",
+    "lineagePolicy": "sequential-forward-compatible-migrations-with-provider-id-capture",
+    "rollbackPolicy": "forward-fix-only-after-provider-snapshot",
+    "backupPolicy": "provider-export-before-mutating-migration"
+  },
+  "durableObjects": {
+    "className": "LetbuyyRuntimeDurableObject",
+    "migrationTag": "v1-runtime-coordinator",
+    "storageBackend": "sqlite",
+    "checkpointPolicy": "snapshot-and-replay-cursor-required-before-restoration",
+    "namespacePolicy": "worker-environment-isolated"
+  },
+  "evidence": {
+    "artifactRoot": "artifacts/provider-evidence",
+    "liveEvidenceTracked": false,
+    "executeModeRequires": [
+      "CLOUDFLARE_API_TOKEN",
+      "CLOUDFLARE_ACCOUNT_ID",
+      "LETBUYY_PROVIDER_MUTATION_APPROVED"
+    ],
+    "mustRedactSecrets": true
+  },
+  "failurePolicy": "fail-closed"
+}

@@ -70,15 +70,19 @@ async function cloudflareGet(accountId, path) {
 }
 
 const topology = readJson("config/runtime/production-topology.json");
-const expectedQueues = topology.queueProvider.queues;
+const cloudflareTopology = readJson("config/runtime/cloudflare-topology.json");
+const foundationProductionQueues = new Set(["letbuyy-production-queue", "letbuyy-production-dead-letter-queue"]);
+const expectedQueues = topology.queueProvider.queues.filter((queue) => !foundationProductionQueues.has(queue));
 const deadLetterQueue = expectedQueues.find((queue) => queue.includes("dead-letters"));
 const primaryQueues = expectedQueues.filter((queue) => queue !== deadLetterQueue);
 const apiWrangler = read(topology.queueProvider.producerConfig);
 const queueWrangler = read(topology.queueProvider.consumerConfig);
 const queueTerraform = read(topology.queueProvider.terraform);
 const storageTerraform = read("infrastructure/cloudflare/storage.tf");
+const cloudflareEnv = cloudflareTopology.environments?.[environment];
 
 assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(Boolean(cloudflareEnv), `Cloudflare topology missing environment ${environment}`);
 assert(deadLetterQueue, "production topology must declare a dead-letter queue");
 
 function environmentQueueName(queue) {
@@ -106,14 +110,15 @@ function webhookRouteForEnvironment() {
 }
 
 function cacheTitleForEnvironment() {
-  if (environment === "production") return "letbuyy-runtime-cache";
-  return `letbuyy-runtime-cache-${environment}`;
+  return cloudflareEnv.kv;
 }
 
 function r2BucketForEnvironment() {
-  if (environment === "production") return "letbuyy-production-storage";
-  if (environment === "staging") return "letbuyy-staging-storage";
-  return "letbuyy-dev-storage";
+  return cloudflareEnv.r2;
+}
+
+function d1DatabaseForEnvironment() {
+  return cloudflareEnv.d1;
 }
 
 const producerTable = `env.${environment}.queues.producers`;
@@ -156,20 +161,33 @@ for (const queue of expectedQueues) {
   const environmentQueue = environmentQueueName(queue);
   assert(queueTerraform.includes(environmentQueue), `Terraform must declare Cloudflare queue ${environmentQueue}`);
 }
+for (const queue of [cloudflareEnv.runtimeQueue, cloudflareEnv.deadLetterQueue]) {
+  if (queue === cloudflareEnv.runtimeQueue) {
+    assert(producers.some((producer) => producer.queue === queue), `API Gateway must produce to runtime queue ${queue}`);
+  }
+  assert(consumers.some((consumer) => consumer.queue === queue), `Queue worker must consume runtime queue ${queue}`);
+  assert(queueTerraform.includes(queue), `Terraform must declare Cloudflare runtime queue ${queue}`);
+}
 
 assert(apiWrangler.includes(apiRouteForEnvironment()), `API Gateway route missing for ${environment}`);
 assert(read("services/webhook-service/wrangler.toml").includes(webhookRouteForEnvironment()), `Webhook route missing for ${environment}`);
 assert(storageTerraform.includes(cacheTitleForEnvironment()), `Cloudflare KV namespace missing for ${environment}`);
 assert(storageTerraform.includes(r2BucketForEnvironment()), `Cloudflare R2 bucket missing for ${environment}`);
+assert(storageTerraform.includes(d1DatabaseForEnvironment()), `Cloudflare D1 database missing for ${environment}`);
+assert(apiWrangler.includes(d1DatabaseForEnvironment()), `API Gateway D1 binding missing for ${environment}`);
+assert(apiWrangler.includes(cloudflareEnv.telemetryDataset), `API Gateway telemetry dataset missing for ${environment}`);
 
 for (const terraformFragment of [
   'resource "cloudflare_queue" "runtime"',
   'resource "cloudflare_queue" "dead_letters"',
   'resource "cloudflare_queue_consumer" "runtime"',
   'resource "cloudflare_queue_consumer" "dead_letters"',
+  'resource "cloudflare_queue" "foundation_runtime"',
+  'resource "cloudflare_queue" "foundation_dead_letters"',
 ]) {
   assert(queueTerraform.includes(terraformFragment), `Cloudflare Terraform missing ${terraformFragment}`);
 }
+assert(storageTerraform.includes('resource "cloudflare_d1_database" "runtime_d1"'), "Cloudflare Terraform missing D1 runtime database");
 
 if (execute) {
   requireEnv(["CLOUDFLARE_API_TOKEN"]);
@@ -182,6 +200,9 @@ if (execute) {
     const environmentQueue = environmentQueueName(queue);
     assert(queueNames.has(environmentQueue), `Cloudflare account is missing queue ${environmentQueue}`);
   }
+  for (const queue of [cloudflareEnv.runtimeQueue, cloudflareEnv.deadLetterQueue]) {
+    assert(queueNames.has(queue), `Cloudflare account is missing queue ${queue}`);
+  }
 
   const kvNamespaces = await cloudflareGet(accountId, "/storage/kv/namespaces");
   const kvTitles = new Set((Array.isArray(kvNamespaces) ? kvNamespaces : []).map((namespace) => namespace.title || namespace.name));
@@ -190,6 +211,10 @@ if (execute) {
   const r2Buckets = await cloudflareGet(accountId, "/r2/buckets");
   const r2BucketNames = new Set((Array.isArray(r2Buckets?.buckets) ? r2Buckets.buckets : Array.isArray(r2Buckets) ? r2Buckets : []).map((bucket) => bucket.name));
   assert(r2BucketNames.has(r2BucketForEnvironment()), `Cloudflare account is missing R2 bucket ${r2BucketForEnvironment()}`);
+
+  const d1Databases = await cloudflareGet(accountId, "/d1/database");
+  const d1DatabaseNames = new Set((Array.isArray(d1Databases) ? d1Databases : Array.isArray(d1Databases?.result) ? d1Databases.result : []).map((database) => database.name));
+  assert(d1DatabaseNames.has(d1DatabaseForEnvironment()), `Cloudflare account is missing D1 database ${d1DatabaseForEnvironment()}`);
 
   for (const baseScriptName of ["letbuyy-api", "letbuyy-webhooks", "letbuyy-queue-workers"]) {
     await cloudflareGet(accountId, `/workers/scripts/${scriptName(baseScriptName)}`);

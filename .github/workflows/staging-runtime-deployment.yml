@@ -1,0 +1,85 @@
+name: Staging Runtime Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      execute:
+        description: Deploy staging Cloudflare primitives and Workers
+        required: true
+        default: false
+        type: boolean
+  push:
+    branches:
+      - main
+      - "release/**"
+    paths:
+      - "services/api-gateway/**"
+      - "services/queue-workers/**"
+      - "services/webhook-service/**"
+      - "infrastructure/cloudflare/**"
+      - "infrastructure/scripts/**"
+      - "config/runtime/**"
+      - "scripts/validators/**"
+      - ".github/workflows/staging-runtime-deployment.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: staging-runtime-deployment
+  cancel-in-progress: false
+
+jobs:
+  validate-staging-runtime:
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      - name: Install dependencies
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
+
+      - name: Governance gates
+        run: pnpm run validate:governance
+
+      - name: Runtime and Cloudflare gates
+        run: |
+          pnpm run validate:runtime
+          pnpm run validate:cloudflare
+          pnpm run validate:deployment
+          pnpm run validate:rollback
+          pnpm run validate:replay
+          pnpm run validate:queues
+
+      - name: Typecheck
+        run: pnpm run typecheck
+
+      - name: Staging bootstrap plan
+        if: ${{ !inputs.execute }}
+        run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=staging --target=all --skip-validation
+
+      - name: Staging bootstrap execute
+        if: ${{ inputs.execute }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID }}
+          LETBUYY_RUNTIME_D1_STAGING_DATABASE_ID: ${{ secrets.LETBUYY_RUNTIME_D1_STAGING_DATABASE_ID }}
+          LETBUYY_PROVIDER_MUTATION_APPROVED: ${{ secrets.LETBUYY_PROVIDER_MUTATION_APPROVED }}
+          LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+        run: node infrastructure/scripts/cloudflare/bootstrap-staging.mjs --execute

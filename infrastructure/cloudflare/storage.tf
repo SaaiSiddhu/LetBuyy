@@ -1,34 +1,49 @@
 resource "cloudflare_kv_namespace" "runtime_cache" {
   account_id = var.cloudflare_account_id
-  title      = "letbuyy-runtime-cache"
+  title      = "letbuyy-production-kv"
 }
 
 resource "cloudflare_kv_namespace" "runtime_cache_staging" {
   account_id = var.cloudflare_account_id
-  title      = "letbuyy-runtime-cache-staging"
+  title      = "letbuyy-staging-kv"
 }
 
 resource "cloudflare_kv_namespace" "runtime_cache_dev" {
   account_id = var.cloudflare_account_id
-  title      = "letbuyy-runtime-cache-dev"
+  title      = "letbuyy-dev-kv"
 }
 
 resource "cloudflare_r2_bucket" "runtime_storage" {
   account_id = var.cloudflare_account_id
-  name       = "letbuyy-production-storage"
+  name       = "letbuyy-production-r2"
   location   = "APAC"
 }
 
 resource "cloudflare_r2_bucket" "runtime_storage_staging" {
   account_id = var.cloudflare_account_id
-  name       = "letbuyy-staging-storage"
+  name       = "letbuyy-staging-r2"
   location   = "APAC"
 }
 
 resource "cloudflare_r2_bucket" "runtime_storage_dev" {
   account_id = var.cloudflare_account_id
-  name       = "letbuyy-dev-storage"
+  name       = "letbuyy-dev-r2"
   location   = "APAC"
+}
+
+resource "cloudflare_d1_database" "runtime_d1" {
+  account_id = var.cloudflare_account_id
+  name       = "letbuyy-production-d1"
+}
+
+resource "cloudflare_d1_database" "runtime_d1_staging" {
+  account_id = var.cloudflare_account_id
+  name       = "letbuyy-staging-d1"
+}
+
+resource "cloudflare_d1_database" "runtime_d1_dev" {
+  account_id = var.cloudflare_account_id
+  name       = "letbuyy-dev-d1"
 }
 
 output "letbuyy_runtime_cache_namespace_ids" {
@@ -45,5 +60,14 @@ output "letbuyy_runtime_storage_bucket_names" {
     dev        = cloudflare_r2_bucket.runtime_storage_dev.name
     production = cloudflare_r2_bucket.runtime_storage.name
     staging    = cloudflare_r2_bucket.runtime_storage_staging.name
+  }
+}
+
+output "letbuyy_runtime_d1_database_ids" {
+  sensitive = true
+  value = {
+    dev        = cloudflare_d1_database.runtime_d1_dev.id
+    production = cloudflare_d1_database.runtime_d1.id
+    staging    = cloudflare_d1_database.runtime_d1_staging.id
   }
 }

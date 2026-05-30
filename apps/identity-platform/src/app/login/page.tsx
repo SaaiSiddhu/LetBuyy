@@ -224,8 +224,8 @@ function LoginContent() {
             if (error) {
                 setError(error.message || 'Failed to start sign in')
             }
-        } catch {
-            setError('Failed to start sign in')
+        } catch (error) {
+            setError(error instanceof Error && error.message ? error.message : 'Failed to start sign in')
         }
     }, [])
 

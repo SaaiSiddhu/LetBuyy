@@ -39,6 +39,7 @@ import operationsRouter from './routes/operations';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
+export { LetbuyyRuntimeDurableObject } from './durable/runtime-coordinator';
 
 // Environment bindings
 export interface Env {
@@ -53,11 +54,16 @@ export interface Env {
     CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;
     R2_BUCKET: R2Bucket;
+    RUNTIME_DB?: D1Database;
     CACHE?: KVNamespace;
+    RUNTIME_COORDINATOR?: DurableObjectNamespace;
     EVENT_QUEUE?: Queue<Record<string, unknown>>;
     ANALYTICS_QUEUE?: Queue<Record<string, unknown>>;
     SEARCH_QUEUE?: Queue<Record<string, unknown>>;
     NOTIFICATION_QUEUE?: Queue<Record<string, unknown>>;
+    RUNTIME_QUEUE?: Queue<Record<string, unknown>>;
+    WEBHOOK_SERVICE?: Fetcher;
+    RUNTIME_TELEMETRY?: AnalyticsEngineDataset;
     RESEND_API_KEY: string;
     ENVIRONMENT: string;
     APP_ENV?: string;
@@ -71,6 +77,7 @@ export interface Env {
     ANALYTICS_QUEUE_NAME?: string;
     SEARCH_QUEUE_NAME?: string;
     NOTIFICATION_QUEUE_NAME?: string;
+    RUNTIME_QUEUE_NAME?: string;
     // Future: Upstash Redis for distributed rate limiting
     UPSTASH_REDIS_REST_URL: string;
     UPSTASH_REDIS_REST_TOKEN: string;

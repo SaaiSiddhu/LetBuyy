@@ -109,12 +109,36 @@ for (const worker of manifest?.workers || []) {
     }
     reporter.assert(r2Blocks.length === (expected?.r2Buckets || []).length, `Wrangler env R2 binding count must match ownership manifest: ${worker.config} ${environment}`);
 
+    const d1Blocks = arrayTableBlocks(envSection, `env.${environment}.d1_databases`);
+    for (const binding of expected?.d1Databases || []) {
+      reporter.assert(d1Blocks.some((block) => stringValue(block, "binding") === binding), `Wrangler env missing D1 binding ${binding}: ${worker.config} ${environment}`);
+    }
+    reporter.assert(d1Blocks.length === (expected?.d1Databases || []).length, `Wrangler env D1 binding count must match ownership manifest: ${worker.config} ${environment}`);
+
+    const durableObjectBlocks = arrayTableBlocks(envSection, `env.${environment}.durable_objects.bindings`);
+    for (const binding of expected?.durableObjects || []) {
+      reporter.assert(durableObjectBlocks.some((block) => stringValue(block, "name") === binding), `Wrangler env missing Durable Object binding ${binding}: ${worker.config} ${environment}`);
+    }
+    reporter.assert(durableObjectBlocks.length === (expected?.durableObjects || []).length, `Wrangler env Durable Object binding count must match ownership manifest: ${worker.config} ${environment}`);
+
+    const serviceBlocks = arrayTableBlocks(envSection, `env.${environment}.services`);
+    for (const binding of expected?.serviceBindings || []) {
+      reporter.assert(serviceBlocks.some((block) => stringValue(block, "binding") === binding), `Wrangler env missing service binding ${binding}: ${worker.config} ${environment}`);
+    }
+    reporter.assert(serviceBlocks.length === (expected?.serviceBindings || []).length, `Wrangler env service binding count must match ownership manifest: ${worker.config} ${environment}`);
+
+    const analyticsBlocks = arrayTableBlocks(envSection, `env.${environment}.analytics_engine_datasets`);
+    for (const binding of expected?.analyticsEngineDatasets || []) {
+      reporter.assert(analyticsBlocks.some((block) => stringValue(block, "binding") === binding), `Wrangler env missing Analytics Engine binding ${binding}: ${worker.config} ${environment}`);
+    }
+    reporter.assert(analyticsBlocks.length === (expected?.analyticsEngineDatasets || []).length, `Wrangler env Analytics Engine binding count must match ownership manifest: ${worker.config} ${environment}`);
+
     for (const telemetryTable of expected?.telemetry || []) {
       reporter.assert(hasTable(envSection, `env.${environment}.${telemetryTable}`), `Wrangler env missing telemetry table ${telemetryTable}: ${worker.config} ${environment}`);
     }
 
     if ((expected?.durableObjects || []).length === 0) {
-      reporter.assert(!hasTable(envSection, `env.${environment}.durable_objects`), `Wrangler env has unowned Durable Object bindings: ${worker.config} ${environment}`);
+      reporter.assert(!hasArrayTable(envSection, `env.${environment}.durable_objects.bindings`), `Wrangler env has unowned Durable Object bindings: ${worker.config} ${environment}`);
     }
     if ((expected?.serviceBindings || []).length === 0) {
       reporter.assert(!hasArrayTable(envSection, `env.${environment}.services`), `Wrangler env has unowned service bindings: ${worker.config} ${environment}`);

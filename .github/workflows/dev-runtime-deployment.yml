@@ -151,5 +151,7 @@ jobs:
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
+          LETBUYY_RUNTIME_D1_DEV_DATABASE_ID: ${{ secrets.LETBUYY_RUNTIME_D1_DEV_DATABASE_ID }}
           LETBUYY_OPERATIONS_TOKEN: ${{ secrets.LETBUYY_OPERATIONS_TOKEN }}
+          LETBUYY_PROVIDER_MUTATION_APPROVED: ${{ secrets.LETBUYY_PROVIDER_MUTATION_APPROVED }}
         run: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute --skip-validation

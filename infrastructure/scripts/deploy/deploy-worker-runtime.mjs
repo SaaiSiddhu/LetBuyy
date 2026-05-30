@@ -24,6 +24,19 @@ if (!config) fail("--config is required for governed Worker deployment");
 if (!environment) fail("--env is required for governed Worker deployment");
 if (!governedEnvironments.has(environment)) fail(`invalid --env ${environment}; expected dev, staging, or production`);
 
+const capabilityCheck = spawnSync(process.execPath, [
+  path.join(repoRoot, "infrastructure/scripts/cloudflare/provider-capability-validator.mjs"),
+  `--environment=${environment}`,
+  "--execute",
+], {
+  stdio: "inherit",
+  shell: process.platform === "win32",
+});
+
+if (capabilityCheck.status !== 0) {
+  process.exit(capabilityCheck.status ?? 1);
+}
+
 const configPath = path.resolve(config);
 const relativeConfigPath = path.relative(repoRoot, configPath).split(path.sep).join("/");
 const configSegments = relativeConfigPath.split("/");

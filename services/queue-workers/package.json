@@ -15,8 +15,8 @@
     "@letbuyy/infrastructure": "workspace:*"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250204.0",
+    "@cloudflare/workers-types": "^4.20260524.1",
     "typescript": "^5.7.0",
-    "wrangler": "^3.105.0"
+    "wrangler": "^4.94.0"
   }
 }

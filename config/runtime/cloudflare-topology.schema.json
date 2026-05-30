@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LetBuyy Cloudflare Runtime Topology",
+  "type": "object",
+  "required": [
+    "$schema",
+    "manifestVersion",
+    "mode",
+    "provider",
+    "environments",
+    "failurePolicy"
+  ],
+  "properties": {
+    "$schema": { "const": "config/runtime/cloudflare-topology.schema.json" },
+    "manifestVersion": { "type": "integer", "minimum": 1 },
+    "mode": { "const": "governance-contract-not-live-evidence" },
+    "provider": { "const": "cloudflare" },
+    "environments": {
+      "type": "object",
+      "required": ["dev", "staging", "production"],
+      "additionalProperties": false
+    },
+    "failurePolicy": { "const": "fail-closed" }
+  }
+}

@@ -19,7 +19,7 @@ export interface CloudflareQueueSendOptions {
 }
 
 export interface CloudflareQueueBinding<TPayload = unknown> {
-  send(message: TPayload, options?: CloudflareQueueSendOptions): Promise<void>;
+  send(message: TPayload, options?: CloudflareQueueSendOptions): Promise<unknown>;
 }
 
 export interface CloudflareQueueProducerPort {
@@ -38,7 +38,7 @@ export function createCloudflareQueueProducer(
         attempts: message.attempts,
         availableAt: message.availableAt || null,
         correlationId: message.correlationId || null,
-      }, options);
+      }, options).then(() => undefined);
     },
   };
 }

@@ -124,7 +124,8 @@
       { "queueName": "letbuyy-events", "maxRetrying": 250, "maxDeadLetteredBeforeQuarantine": 25, "maxPoisonMessages": 0 },
       { "queueName": "letbuyy-analytics", "maxRetrying": 500, "maxDeadLetteredBeforeQuarantine": 50, "maxPoisonMessages": 0 },
       { "queueName": "letbuyy-search-indexing", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 },
-      { "queueName": "letbuyy-notifications", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 }
+      { "queueName": "letbuyy-notifications", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 },
+      { "queueName": "letbuyy-production-queue", "maxRetrying": 200, "maxDeadLetteredBeforeQuarantine": 20, "maxPoisonMessages": 0 }
     ]
   },
   "replayRecovery": {

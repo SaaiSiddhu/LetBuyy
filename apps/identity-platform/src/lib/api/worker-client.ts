@@ -8,6 +8,36 @@ interface WorkerFetchInit extends RequestInit {
     sessionToken?: string
 }
 
+interface WorkerErrorPayload {
+    error?: string | {
+        code?: string
+        message?: string
+    }
+}
+
+function getWorkerError(payload: unknown): { code?: string; message?: string } | null {
+    if (!payload || typeof payload !== 'object' || !('error' in payload)) return null
+
+    const { error } = payload as WorkerErrorPayload
+    if (!error) return null
+
+    if (typeof error === 'string') return { message: error }
+    return {
+        code: error.code,
+        message: error.message,
+    }
+}
+
+export function getAccountWorkerFailureMessage(payload: unknown, fallback: string): string {
+    const error = getWorkerError(payload)
+
+    if (process.env.NODE_ENV !== 'production' && error?.code === 'SERVER_MISCONFIGURED') {
+        return 'Auth service is not configured locally. Set INTERNAL_API_SECRET or AUTH_SECRET for the identity app and API worker, then restart the dev server.'
+    }
+
+    return fallback
+}
+
 function getWorkerBaseUrl(): string {
     const configuredUrl = (
         process.env.LETBUYY_API_URL ||

@@ -383,20 +383,29 @@ const environmentRoutes = {
   dev: {
     api: "api-dev.letbuyy.store",
     webhooks: "webhooks-dev.letbuyy.store",
-    cache: "letbuyy-runtime-cache-dev",
-    r2: "letbuyy-dev-storage",
+    cache: "letbuyy-dev-kv",
+    r2: "letbuyy-dev-r2",
+    d1: "letbuyy-dev-d1",
+    runtimeQueue: "letbuyy-dev-queue",
+    runtimeDlq: "letbuyy-dev-dead-letter-queue",
   },
   staging: {
     api: "api.staging.letbuyy.store",
     webhooks: "webhooks.staging.letbuyy.store",
-    cache: "letbuyy-runtime-cache-staging",
-    r2: "letbuyy-staging-storage",
+    cache: "letbuyy-staging-kv",
+    r2: "letbuyy-staging-r2",
+    d1: "letbuyy-staging-d1",
+    runtimeQueue: "letbuyy-staging-queue",
+    runtimeDlq: "letbuyy-staging-dead-letter-queue",
   },
   production: {
     api: "api.letbuyy.store",
     webhooks: "webhooks.letbuyy.store",
-    cache: "letbuyy-runtime-cache",
-    r2: "letbuyy-production-storage",
+    cache: "letbuyy-production-kv",
+    r2: "letbuyy-production-r2",
+    d1: "letbuyy-production-d1",
+    runtimeQueue: "letbuyy-production-queue",
+    runtimeDlq: "letbuyy-production-dead-letter-queue",
   },
 };
 
@@ -424,7 +433,8 @@ for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
 
   reporter.assert(terraformStringAssignmentExists("title", isolation.cache), `Cloudflare KV namespace missing for ${environmentName}: ${isolation.cache}`);
   reporter.assert(terraformStringAssignmentExists("name", isolation.r2), `Cloudflare R2 bucket missing for ${environmentName}: ${isolation.r2}`);
-  for (const storageName of [isolation.cache, isolation.r2]) {
+  reporter.assert(terraformStringAssignmentExists("name", isolation.d1), `Cloudflare D1 database missing for ${environmentName}: ${isolation.d1}`);
+  for (const storageName of [isolation.cache, isolation.r2, isolation.d1]) {
     reporter.assert(!seenStorageNames.has(storageName), `Cloudflare storage name is shared by ${seenStorageNames.get(storageName)} and ${environmentName}: ${storageName}`);
     seenStorageNames.set(storageName, environmentName);
   }
@@ -437,6 +447,16 @@ for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
     reporter.assert(consumerQueues.includes(queueName), `Queue worker missing ${environmentName} consumer ${queueName}`);
     if (!baseQueue.includes("dead-letters")) {
       reporter.assert(producerQueues.includes(queueName), `API Gateway missing ${environmentName} producer ${queueName}`);
+    }
+    reporter.assert(!seenQueueNames.has(queueName), `Cloudflare queue is shared by ${seenQueueNames.get(queueName)} and ${environmentName}: ${queueName}`);
+    seenQueueNames.set(queueName, environmentName);
+  }
+
+  for (const queueName of [isolation.runtimeQueue, isolation.runtimeDlq]) {
+    reporter.assert(queueTerraform.includes(queueName), `Cloudflare Terraform missing ${environmentName} runtime queue ${queueName}`);
+    reporter.assert(consumerQueues.includes(queueName), `Queue worker missing ${environmentName} runtime consumer ${queueName}`);
+    if (queueName === isolation.runtimeQueue) {
+      reporter.assert(producerQueues.includes(queueName), `API Gateway missing ${environmentName} runtime queue producer ${queueName}`);
     }
     reporter.assert(!seenQueueNames.has(queueName), `Cloudflare queue is shared by ${seenQueueNames.get(queueName)} and ${environmentName}: ${queueName}`);
     seenQueueNames.set(queueName, environmentName);

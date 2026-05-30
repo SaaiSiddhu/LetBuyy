@@ -30,6 +30,39 @@ locals {
   consumer_worker_dev     = "letbuyy-queue-workers-dev"
   consumer_worker_staging = "letbuyy-queue-workers-staging"
 
+  foundation_runtime_queues = {
+    dev = {
+      queue_name             = "letbuyy-dev-queue"
+      dead_letter_queue_name = "letbuyy-dev-dead-letter-queue"
+      consumer_worker        = local.consumer_worker_dev
+      batch_size             = 25
+      max_concurrency        = 5
+      max_retries            = 6
+      wait_ms                = 10000
+      retry_delay            = 30
+    }
+    staging = {
+      queue_name             = "letbuyy-staging-queue"
+      dead_letter_queue_name = "letbuyy-staging-dead-letter-queue"
+      consumer_worker        = local.consumer_worker_staging
+      batch_size             = 50
+      max_concurrency        = 10
+      max_retries            = 8
+      wait_ms                = 10000
+      retry_delay            = 30
+    }
+    production = {
+      queue_name             = "letbuyy-production-queue"
+      dead_letter_queue_name = "letbuyy-production-dead-letter-queue"
+      consumer_worker        = local.consumer_worker
+      batch_size             = 50
+      max_concurrency        = 20
+      max_retries            = 10
+      wait_ms                = 10000
+      retry_delay            = 30
+    }
+  }
+
   queues = {
     events = {
       name            = "letbuyy-events"
@@ -289,6 +322,59 @@ resource "cloudflare_queue_consumer" "dead_letters_staging" {
   }
 }
 
+resource "cloudflare_queue" "foundation_runtime" {
+  for_each   = local.foundation_runtime_queues
+  account_id = var.cloudflare_account_id
+  queue_name = each.value.queue_name
+
+  settings = {
+    message_retention_period = local.queue_retention_seconds
+  }
+}
+
+resource "cloudflare_queue" "foundation_dead_letters" {
+  for_each   = local.foundation_runtime_queues
+  account_id = var.cloudflare_account_id
+  queue_name = each.value.dead_letter_queue_name
+
+  settings = {
+    message_retention_period = local.queue_retention_seconds
+  }
+}
+
+resource "cloudflare_queue_consumer" "foundation_runtime" {
+  for_each          = local.foundation_runtime_queues
+  account_id        = var.cloudflare_account_id
+  queue_id          = cloudflare_queue.foundation_runtime[each.key].queue_id
+  script_name       = each.value.consumer_worker
+  type              = "worker"
+  dead_letter_queue = cloudflare_queue.foundation_dead_letters[each.key].queue_name
+
+  settings = {
+    batch_size       = each.value.batch_size
+    max_concurrency  = each.value.max_concurrency
+    max_retries      = each.value.max_retries
+    max_wait_time_ms = each.value.wait_ms
+    retry_delay      = each.value.retry_delay
+  }
+}
+
+resource "cloudflare_queue_consumer" "foundation_dead_letters" {
+  for_each    = local.foundation_runtime_queues
+  account_id  = var.cloudflare_account_id
+  queue_id    = cloudflare_queue.foundation_dead_letters[each.key].queue_id
+  script_name = each.value.consumer_worker
+  type        = "worker"
+
+  settings = {
+    batch_size       = 25
+    max_concurrency  = 5
+    max_retries      = 3
+    max_wait_time_ms = 30000
+    retry_delay      = 300
+  }
+}
+
 output "letbuyy_queue_names" {
   value = concat(
     [cloudflare_queue.dead_letters.queue_name],
@@ -297,5 +383,7 @@ output "letbuyy_queue_names" {
     [for queue in cloudflare_queue.runtime_dev : queue.queue_name],
     [cloudflare_queue.dead_letters_staging.queue_name],
     [for queue in cloudflare_queue.runtime_staging : queue.queue_name],
+    [for queue in cloudflare_queue.foundation_runtime : queue.queue_name],
+    [for queue in cloudflare_queue.foundation_dead_letters : queue.queue_name],
   )
 }

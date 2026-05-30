@@ -1,6 +1,7 @@
 name = "letbuyy-api"
 main = "src/index.ts"
-compatibility_date = "2026-05-01"
+compatibility_date = "2026-05-25"
+compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 [observability]
@@ -15,6 +16,10 @@ invocation_logs = true
 [triggers]
 crons = ["*/1 * * * *"]
 
+[[migrations]]
+tag = "v1-runtime-coordinator"
+new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]
+
 [vars]
 ENVIRONMENT = "local"
 APP_ENV = "local"
@@ -28,6 +33,7 @@ EVENT_QUEUE_NAME = "letbuyy-events-local"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-local"
 SEARCH_QUEUE_NAME = "letbuyy-search-indexing-local"
 NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-local"
+RUNTIME_QUEUE_NAME = "letbuyy-local-queue"
 
 [[queues.producers]]
 binding = "EVENT_QUEUE"
@@ -44,6 +50,10 @@ queue = "letbuyy-search-indexing-local"
 [[queues.producers]]
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications-local"
+
+[[queues.producers]]
+binding = "RUNTIME_QUEUE"
+queue = "letbuyy-local-queue"
 
 [[r2_buckets]]
 binding = "R2_BUCKET"
@@ -90,6 +100,7 @@ EVENT_QUEUE_NAME = "letbuyy-events-dev"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-dev"
 SEARCH_QUEUE_NAME = "letbuyy-search-indexing-dev"
 NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-dev"
+RUNTIME_QUEUE_NAME = "letbuyy-dev-queue"
 
 [[env.dev.queues.producers]]
 binding = "EVENT_QUEUE"
@@ -107,6 +118,10 @@ queue = "letbuyy-search-indexing-dev"
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications-dev"
 
+[[env.dev.queues.producers]]
+binding = "RUNTIME_QUEUE"
+queue = "letbuyy-dev-queue"
+
 [[env.dev.kv_namespaces]]
 binding = "CACHE"
 id = "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__"
@@ -114,7 +129,25 @@ preview_id = "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__"
 
 [[env.dev.r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-dev-storage"
+bucket_name = "letbuyy-dev-r2"
+
+[[env.dev.d1_databases]]
+binding = "RUNTIME_DB"
+database_name = "letbuyy-dev-d1"
+database_id = "__LETBUYY_RUNTIME_D1_DEV_DATABASE_ID__"
+migrations_dir = "../../database/cloudflare/d1/migrations"
+
+[[env.dev.durable_objects.bindings]]
+name = "RUNTIME_COORDINATOR"
+class_name = "LetbuyyRuntimeDurableObject"
+
+[[env.dev.services]]
+binding = "WEBHOOK_SERVICE"
+service = "letbuyy-webhooks-dev"
+
+[[env.dev.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-dev-telemetry"
 
 [env.dev.placement]
 mode = "smart"
@@ -151,6 +184,7 @@ EVENT_QUEUE_NAME = "letbuyy-events-staging"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics-staging"
 SEARCH_QUEUE_NAME = "letbuyy-search-indexing-staging"
 NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-staging"
+RUNTIME_QUEUE_NAME = "letbuyy-staging-queue"
 
 [[env.staging.queues.producers]]
 binding = "EVENT_QUEUE"
@@ -168,6 +202,10 @@ queue = "letbuyy-search-indexing-staging"
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications-staging"
 
+[[env.staging.queues.producers]]
+binding = "RUNTIME_QUEUE"
+queue = "letbuyy-staging-queue"
+
 [[env.staging.kv_namespaces]]
 binding = "CACHE"
 id = "__LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID__"
@@ -175,7 +213,25 @@ preview_id = "__LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID__"
 
 [[env.staging.r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-staging-storage"
+bucket_name = "letbuyy-staging-r2"
+
+[[env.staging.d1_databases]]
+binding = "RUNTIME_DB"
+database_name = "letbuyy-staging-d1"
+database_id = "__LETBUYY_RUNTIME_D1_STAGING_DATABASE_ID__"
+migrations_dir = "../../database/cloudflare/d1/migrations"
+
+[[env.staging.durable_objects.bindings]]
+name = "RUNTIME_COORDINATOR"
+class_name = "LetbuyyRuntimeDurableObject"
+
+[[env.staging.services]]
+binding = "WEBHOOK_SERVICE"
+service = "letbuyy-webhooks-staging"
+
+[[env.staging.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-staging-telemetry"
 
 [env.staging.placement]
 mode = "smart"
@@ -212,6 +268,7 @@ EVENT_QUEUE_NAME = "letbuyy-events"
 ANALYTICS_QUEUE_NAME = "letbuyy-analytics"
 SEARCH_QUEUE_NAME = "letbuyy-search-indexing"
 NOTIFICATION_QUEUE_NAME = "letbuyy-notifications"
+RUNTIME_QUEUE_NAME = "letbuyy-production-queue"
 
 [[env.production.queues.producers]]
 binding = "EVENT_QUEUE"
@@ -229,6 +286,10 @@ queue = "letbuyy-search-indexing"
 binding = "NOTIFICATION_QUEUE"
 queue = "letbuyy-notifications"
 
+[[env.production.queues.producers]]
+binding = "RUNTIME_QUEUE"
+queue = "letbuyy-production-queue"
+
 [[env.production.kv_namespaces]]
 binding = "CACHE"
 id = "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__"
@@ -236,7 +297,25 @@ preview_id = "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__"
 
 [[env.production.r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-production-storage"
+bucket_name = "letbuyy-production-r2"
+
+[[env.production.d1_databases]]
+binding = "RUNTIME_DB"
+database_name = "letbuyy-production-d1"
+database_id = "__LETBUYY_RUNTIME_D1_PRODUCTION_DATABASE_ID__"
+migrations_dir = "../../database/cloudflare/d1/migrations"
+
+[[env.production.durable_objects.bindings]]
+name = "RUNTIME_COORDINATOR"
+class_name = "LetbuyyRuntimeDurableObject"
+
+[[env.production.services]]
+binding = "WEBHOOK_SERVICE"
+service = "letbuyy-webhooks"
+
+[[env.production.analytics_engine_datasets]]
+binding = "RUNTIME_TELEMETRY"
+dataset = "letbuyy-production-telemetry"
 
 [env.production.placement]
 mode = "smart"

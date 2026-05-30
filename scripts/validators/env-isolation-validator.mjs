@@ -57,7 +57,9 @@ for (const file of [
     'queue = "letbuyy-search-indexing"',
     'queue = "letbuyy-notifications"',
     'queue = "letbuyy-dead-letters"',
-    'bucket_name = "letbuyy-production-storage"',
+    'queue = "letbuyy-production-queue"',
+    'queue = "letbuyy-production-dead-letter-queue"',
+    'bucket_name = "letbuyy-production-r2"',
   ]) {
     reporter.assert(!topLevel.includes(forbiddenProductionResource), `${file}: local/top-level config must not bind ${forbiddenProductionResource}`);
   }

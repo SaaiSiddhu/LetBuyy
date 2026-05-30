@@ -22,36 +22,42 @@
       "environments": {
         "dev": {
           "workerName": "letbuyy-api-dev",
-          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME"],
-          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE"],
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME", "RUNTIME_QUEUE_NAME"],
+          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE", "RUNTIME_QUEUE"],
           "queueConsumers": [],
           "kvNamespaces": ["CACHE"],
           "r2Buckets": ["R2_BUCKET"],
-          "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "d1Databases": ["RUNTIME_DB"],
+          "durableObjects": ["RUNTIME_COORDINATOR"],
+          "serviceBindings": ["WEBHOOK_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "staging": {
           "workerName": "letbuyy-api-staging",
-          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME"],
-          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE"],
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME", "RUNTIME_QUEUE_NAME"],
+          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE", "RUNTIME_QUEUE"],
           "queueConsumers": [],
           "kvNamespaces": ["CACHE"],
           "r2Buckets": ["R2_BUCKET"],
-          "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "d1Databases": ["RUNTIME_DB"],
+          "durableObjects": ["RUNTIME_COORDINATOR"],
+          "serviceBindings": ["WEBHOOK_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "production": {
           "workerName": "letbuyy-api",
-          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME"],
-          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE"],
+          "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION", "EVENT_QUEUE_NAME", "ANALYTICS_QUEUE_NAME", "SEARCH_QUEUE_NAME", "NOTIFICATION_QUEUE_NAME", "RUNTIME_QUEUE_NAME"],
+          "queueProducers": ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE", "NOTIFICATION_QUEUE", "RUNTIME_QUEUE"],
           "queueConsumers": [],
           "kvNamespaces": ["CACHE"],
           "r2Buckets": ["R2_BUCKET"],
-          "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "d1Databases": ["RUNTIME_DB"],
+          "durableObjects": ["RUNTIME_COORDINATOR"],
+          "serviceBindings": ["WEBHOOK_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         }
       }
     },
@@ -66,9 +72,11 @@
           "queueConsumers": [],
           "kvNamespaces": [],
           "r2Buckets": [],
+          "d1Databases": [],
           "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "serviceBindings": ["API_GATEWAY_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "staging": {
           "workerName": "letbuyy-webhooks-staging",
@@ -77,9 +85,11 @@
           "queueConsumers": [],
           "kvNamespaces": [],
           "r2Buckets": [],
+          "d1Databases": [],
           "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "serviceBindings": ["API_GATEWAY_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "production": {
           "workerName": "letbuyy-webhooks",
@@ -88,9 +98,11 @@
           "queueConsumers": [],
           "kvNamespaces": [],
           "r2Buckets": [],
+          "d1Databases": [],
           "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "serviceBindings": ["API_GATEWAY_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         }
       }
     },
@@ -102,34 +114,40 @@
           "workerName": "letbuyy-queue-workers-dev",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
-          "queueConsumers": ["letbuyy-events-dev", "letbuyy-analytics-dev", "letbuyy-search-indexing-dev", "letbuyy-notifications-dev", "letbuyy-dead-letters-dev"],
+          "queueConsumers": ["letbuyy-events-dev", "letbuyy-analytics-dev", "letbuyy-search-indexing-dev", "letbuyy-notifications-dev", "letbuyy-dead-letters-dev", "letbuyy-dev-queue", "letbuyy-dev-dead-letter-queue"],
           "kvNamespaces": [],
           "r2Buckets": [],
+          "d1Databases": [],
           "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "serviceBindings": ["API_GATEWAY_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "staging": {
           "workerName": "letbuyy-queue-workers-staging",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
-          "queueConsumers": ["letbuyy-events-staging", "letbuyy-analytics-staging", "letbuyy-search-indexing-staging", "letbuyy-notifications-staging", "letbuyy-dead-letters-staging"],
+          "queueConsumers": ["letbuyy-events-staging", "letbuyy-analytics-staging", "letbuyy-search-indexing-staging", "letbuyy-notifications-staging", "letbuyy-dead-letters-staging", "letbuyy-staging-queue", "letbuyy-staging-dead-letter-queue"],
           "kvNamespaces": [],
           "r2Buckets": [],
+          "d1Databases": [],
           "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "serviceBindings": ["API_GATEWAY_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "production": {
           "workerName": "letbuyy-queue-workers",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
-          "queueConsumers": ["letbuyy-events", "letbuyy-analytics", "letbuyy-search-indexing", "letbuyy-notifications", "letbuyy-dead-letters"],
+          "queueConsumers": ["letbuyy-events", "letbuyy-analytics", "letbuyy-search-indexing", "letbuyy-notifications", "letbuyy-dead-letters", "letbuyy-production-queue", "letbuyy-production-dead-letter-queue"],
           "kvNamespaces": [],
           "r2Buckets": [],
+          "d1Databases": [],
           "durableObjects": [],
-          "serviceBindings": [],
-          "telemetry": ["observability", "observability.logs"]
+          "serviceBindings": ["API_GATEWAY_SERVICE"],
+          "telemetry": ["observability", "observability.logs"],
+          "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         }
       }
     }
