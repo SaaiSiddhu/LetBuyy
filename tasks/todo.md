@@ -204,3 +204,21 @@
 - [ ] Real-time collaboration on store editing
 - [ ] White-label / enterprise deployment
 - [ ] Public API for third-party integrations
+
+---
+
+## SKIPPED — NEEDS HUMAN
+
+SKIP: Start local infrastructure — Reason: `docker-compose` is not installed and the installed Docker CLI does not provide the `docker compose` plugin, so the local stack cannot be started without installing Docker Compose tooling. Resume point: Phase 0 Task 0.4.
+
+---
+
+## GOVERNANCE FAILURES — PHASE 0
+
+- `pnpm run validate:governance` failed in `Stale artifact validator`: untracked/generated/forbidden topology artifacts were detected at app/package-local `node_modules` paths, including `apps/app-marketplace/node_modules`, `apps/identity-platform/node_modules`, `apps/marketing-site/node_modules`, `apps/merchant-control-plane/node_modules`, `apps/platform-console/node_modules`, `apps/platform-operations-portal/node_modules`, `apps/storefront-runtime/node_modules`, `apps/theme-marketplace/node_modules`, and multiple `packages/*/node_modules` directories. Baseline command exit code: 1.
+
+---
+
+## TYPECHECK BASELINE — PHASE 0
+
+- `pnpm turbo typecheck` completed successfully: 53 tasks succeeded, 0 TypeScript errors, command exit code 0.
