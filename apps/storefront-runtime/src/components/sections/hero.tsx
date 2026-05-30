@@ -10,9 +10,57 @@ interface Props {
     theme?: ThemeSettings;
 }
 
+interface BannerSettings {
+    heading?: string;
+    subheading?: string;
+    buttonText?: string;
+    buttonLink?: string;
+    imageUrl?: string;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function textSetting(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+}
+
+function numberSetting(value: unknown, fallback: number): number {
+    const parsed = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function heightSetting(value: unknown): 'small' | 'medium' | 'large' | 'full' {
+    return value === 'small' || value === 'medium' || value === 'large' || value === 'full'
+        ? value
+        : 'medium';
+}
+
+function alignSetting(value: unknown): 'left' | 'center' | 'right' {
+    return value === 'left' || value === 'center' || value === 'right'
+        ? value
+        : 'left';
+}
+
+function normalizeBanner(value: unknown): BannerSettings {
+    const banner = asRecord(value);
+    return {
+        heading: textSetting(banner.heading),
+        subheading: textSetting(banner.subheading),
+        buttonText: textSetting(banner.buttonText),
+        buttonLink: textSetting(banner.buttonLink),
+        imageUrl: textSetting(banner.imageUrl),
+    };
+}
+
 export default function HeroSection({ section, theme }: Props) {
-    const settings = section.settings as Record<string, any>;
-    const banners = settings.banners as any[] | undefined;
+    const settings = section.settings;
+    const banners = Array.isArray(settings.banners)
+        ? settings.banners.map(normalizeBanner)
+        : undefined;
     const colors = theme || DEFAULT_THEME_SETTINGS;
 
     // If multiple banners, use carousel
@@ -21,12 +69,12 @@ export default function HeroSection({ section, theme }: Props) {
             <BannerCarousel
                 banners={banners}
                 autoplay={settings.autoplay !== false}
-                interval={settings.autoplayInterval || 5000}
+                interval={numberSetting(settings.autoplayInterval, 5000)}
                 showIndicators={settings.showIndicators !== false}
                 showArrows={settings.showArrows !== false}
-                height={settings.height || 'medium'}
-                textAlign={settings.textAlign || 'left'}
-                overlay={settings.overlay ?? 0.4}
+                height={heightSetting(settings.height)}
+                textAlign={alignSetting(settings.textAlign)}
+                overlay={numberSetting(settings.overlay, 0.4)}
                 theme={colors}
             />
         );
@@ -39,18 +87,17 @@ export default function HeroSection({ section, theme }: Props) {
     if (hasBanners) {
         const firstBanner = banners[0];
         // Allow empty text when banner has empty fields
-        heading = firstBanner.heading || '';
-        subheading = firstBanner.subheading || '';
-        ctaText = firstBanner.buttonText || '';
-        ctaLink = firstBanner.buttonLink || '#products';
-        backgroundImage = firstBanner.imageUrl || '';
+        heading = textSetting(firstBanner.heading);
+        subheading = textSetting(firstBanner.subheading);
+        ctaText = textSetting(firstBanner.buttonText);
+        ctaLink = textSetting(firstBanner.buttonLink, '#products');
+        backgroundImage = textSetting(firstBanner.imageUrl);
     } else {
-        // Legacy format or no banners - use defaults as placeholder
-        heading = settings.heading || settings.title || 'Welcome to Our Store';
-        subheading = settings.subheading || settings.subtitle || 'Discover amazing products at great prices';
-        ctaText = settings.ctaText || settings.buttonText || 'Shop Now';
-        ctaLink = settings.ctaLink || '#products';
-        backgroundImage = settings.image || settings.imageUrl || settings.backgroundImage || '';
+        heading = textSetting(settings.heading, textSetting(settings.title, 'Welcome to Our Store'));
+        subheading = textSetting(settings.subheading, textSetting(settings.subtitle, 'Discover amazing products at great prices'));
+        ctaText = textSetting(settings.ctaText, textSetting(settings.buttonText, 'Shop Now'));
+        ctaLink = textSetting(settings.ctaLink, '#products');
+        backgroundImage = textSetting(settings.image, textSetting(settings.imageUrl, textSetting(settings.backgroundImage)));
     }
 
     const container = {

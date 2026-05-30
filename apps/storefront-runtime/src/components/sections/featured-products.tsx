@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function FeaturedProducts({ section, products, theme }: Props) {
-    const settings = section.settings as Record<string, any>;
+    const settings = section.settings;
     const params = useParams();
     const subdomain = params.subdomain as string;
     const basePath = subdomain ? `/store/${subdomain}` : '';
@@ -26,7 +26,9 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
     const [wishlist, setWishlist] = useState<Set<string>>(new Set());
 
     const colors = theme || DEFAULT_THEME_SETTINGS;
-    const title = settings.title || 'Featured';
+    const title = typeof settings.title === 'string' && settings.title.trim().length > 0
+        ? settings.title
+        : 'Featured';
 
     // Fixed: 4 products only, horizontal scroll
     const displayProducts = products.slice(0, 4);

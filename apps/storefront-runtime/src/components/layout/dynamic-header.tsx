@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, TrendingUp, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import AccountBottomSheet from '@/components/account/account-bottom-sheet';
+import CartDrawer from '@/components/cart/cart-drawer';
 import { getStoreBasePath, resolveStoreHref } from '@/lib/store-paths';
 import { HeaderSettings, NavPage, StoreModel, ThemeSettings, ProductModel, SiteType } from '@/types/store';
 
@@ -38,7 +39,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const [searchResults, setSearchResults] = useState<ProductModel[]>([]);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchContainerRef = useRef<HTMLDivElement>(null);
-    const { cartCount } = useCart();
+    const { cartCount, setIsOpen: setCartOpen } = useCart();
 
     // Get theme settings from store
     const theme: ThemeSettings = store.templateConfig?.themeSettings || {
@@ -150,8 +151,6 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const logoUrl = getLogoUrl();
     const hasValidLogo = logoUrl !== null;
 
-    const cartUrl = `${basePath}/cart`;
-
     return (
         <>
             {/* ENHANCED PROFESSIONAL HEADER */}
@@ -259,27 +258,28 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             </motion.button>
                         )}
                         {showCart && (
-                            <Link href={cartUrl}>
-                                <motion.div
-                                    whileTap={{ scale: 0.9 }}
-                                    className={`relative p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
-                                >
-                                    <ShoppingBag size={20} strokeWidth={1.5} />
-                                    <AnimatePresence>
-                                        {cartCount > 0 && (
-                                            <motion.span
-                                                initial={{ scale: 0 }}
-                                                animate={{ scale: 1 }}
-                                                exit={{ scale: 0 }}
-                                                className="absolute -top-0.5 -right-0.5 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full"
-                                                style={{ backgroundColor: theme.accentColor || '#ff4757' }}
-                                            >
-                                                {cartCount > 9 ? '9+' : cartCount}
-                                            </motion.span>
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-                            </Link>
+                            <motion.button
+                                type="button"
+                                aria-label={`Open cart${cartCount > 0 ? ` with ${cartCount} items` : ''}`}
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => setCartOpen(true)}
+                                className={`relative p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                            >
+                                <ShoppingBag size={20} strokeWidth={1.5} />
+                                <AnimatePresence>
+                                    {cartCount > 0 && (
+                                        <motion.span
+                                            initial={{ scale: 0 }}
+                                            animate={{ scale: 1 }}
+                                            exit={{ scale: 0 }}
+                                            className="absolute -top-0.5 -right-0.5 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full"
+                                            style={{ backgroundColor: theme.accentColor || '#ff4757' }}
+                                        >
+                                            {cartCount > 9 ? '9+' : cartCount}
+                                        </motion.span>
+                                    )}
+                                </AnimatePresence>
+                            </motion.button>
                         )}
                     </div>
                 </div>
@@ -459,14 +459,17 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                         <div className="border-t border-card p-4 space-y-3">
                             {isStoreSite ? (
                                 <>
-                                    <Link
-                                        href={cartUrl}
-                                        onClick={() => setMobileMenuOpen(false)}
-                                        className="w-full flex items-center justify-center gap-2 py-2.5 text-card-muted card-theme-secondary rounded-lg text-sm font-medium hover:bg-surface-hover"
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setMobileMenuOpen(false);
+                                            setCartOpen(true);
+                                        }}
+                                        className="w-full flex min-h-11 items-center justify-center gap-2 py-2.5 text-card-muted card-theme-secondary rounded-lg text-sm font-medium hover:bg-surface-hover"
                                     >
                                         <ShoppingBag size={16} />
                                         Cart {cartCount > 0 && `(${cartCount})`}
-                                    </Link>
+                                    </button>
                                     <Link href={`${basePath}/shop`} onClick={() => setMobileMenuOpen(false)}>
                                         <div
                                             className="w-full py-3 text-center text-white font-semibold text-sm rounded-lg"
@@ -499,6 +502,10 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                     storeId={store.id}
                     subdomain={store.subdomain}
                 />
+            )}
+
+            {showCart && (
+                <CartDrawer basePath={basePath} primaryColor={theme.primaryColor} />
             )}
         </>
     );

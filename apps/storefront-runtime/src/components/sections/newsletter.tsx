@@ -10,15 +10,21 @@ interface Props {
     theme?: ThemeSettings;
 }
 
+function textSetting(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+}
+
 export default function NewsletterSection({ section, theme }: Props) {
-    const settings = section.settings as Record<string, any>;
+    const settings = section.settings;
     const [email, setEmail] = useState('');
     const [isSubmitted, setIsSubmitted] = useState(false);
     const colors = theme || DEFAULT_THEME_SETTINGS;
 
-    const title = settings.title || 'Stay Updated';
-    const subtitle = settings.subtitle || 'Subscribe to our newsletter for exclusive offers and updates.';
-    const buttonText = settings.buttonText || 'Subscribe';
+    const title = textSetting(settings.title, 'Stay Updated');
+    const subtitle = textSetting(settings.subtitle, 'Subscribe to our newsletter for exclusive offers and updates.');
+    const buttonText = textSetting(settings.buttonText, 'Subscribe');
+    const placeholder = textSetting(settings.placeholder, 'Enter your email');
+    const successMessage = textSetting(settings.successMessage, 'Subscribed!');
 
     // Helper to create rgba from hex
     const hexToRgba = (hex: string, alpha: number) => {
@@ -31,7 +37,6 @@ export default function NewsletterSection({ section, theme }: Props) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (email) {
-            // TODO: Integrate with email service
             setIsSubmitted(true);
             setTimeout(() => {
                 setEmail('');
@@ -79,7 +84,7 @@ export default function NewsletterSection({ section, theme }: Props) {
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="Enter your email"
+                        placeholder={placeholder}
                         className="flex-1 px-5 py-3 rounded-full border outline-none transition-all"
                         style={{
                             borderColor: hexToRgba(colors.primaryColor, 0.2),
@@ -95,7 +100,7 @@ export default function NewsletterSection({ section, theme }: Props) {
                     >
                         {isSubmitted ? (
                             <>
-                                <CheckCircle size={18} /> Subscribed!
+                                <CheckCircle size={18} /> {successMessage}
                             </>
                         ) : (
                             <>

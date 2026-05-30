@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 
 export default function Marquee() {
     const items = [
-        "Free Shipping on all orders over ₹999",
+        "Free Shipping on all orders over INR 999",
         "New Collection Dropping Soon",
         "Premium Quality Guaranteed",
         "30-Day Easy Returns",

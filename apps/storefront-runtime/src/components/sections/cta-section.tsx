@@ -10,13 +10,17 @@ interface Props {
     theme: ThemeSettings;
 }
 
+function textSetting(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+}
+
 export default function CtaSection({ section, theme }: Props) {
     const settings = section.settings || {};
-    const heading = settings.heading as string || 'Ready to get started?';
-    const subheading = settings.subheading as string || '';
-    const ctaText = settings.ctaText as string || 'Get Started';
-    const ctaLink = settings.ctaLink as string || '#';
-    const style = (settings.style as string) || 'primary';
+    const heading = textSetting(settings.heading, textSetting(settings.title, 'Ready to get started?'));
+    const subheading = textSetting(settings.subheading, textSetting(settings.body));
+    const ctaText = textSetting(settings.ctaText, textSetting(settings.buttonText, 'Get Started'));
+    const ctaLink = textSetting(settings.ctaLink, textSetting(settings.buttonLink, '#'));
+    const style = textSetting(settings.style, 'primary');
 
     const bgStyles: Record<string, React.CSSProperties> = {
         primary: { backgroundColor: theme.primaryColor },

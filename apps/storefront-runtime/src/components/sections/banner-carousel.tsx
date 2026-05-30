@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence, PanInfo } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import Link from 'next/link';
 import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
 import { ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
@@ -102,7 +102,7 @@ export default function BannerCarousel({
     }, [autoplay, isPaused, interval, totalSlides, paginate]);
 
     // Handle swipe
-    const handleDragEnd = (_: any, info: PanInfo) => {
+    const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         const threshold = 50;
         if (info.offset.x > threshold) {
             paginate(-1);

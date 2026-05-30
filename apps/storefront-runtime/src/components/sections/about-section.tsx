@@ -8,14 +8,18 @@ interface Props {
     theme?: ThemeSettings;
 }
 
+function textSetting(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+}
+
 export default function AboutSection({ section, theme }: Props) {
-    const settings = section.settings as Record<string, any>;
+    const settings = section.settings;
     const colors = theme || DEFAULT_THEME_SETTINGS;
 
-    const title = settings.title || 'About Us';
-    const content = settings.content || '';
-    const imageUrl = settings.imageUrl || '';
-    const layout = settings.layout || 'left'; // left, right, center
+    const title = textSetting(settings.title, textSetting(settings.heading, 'About Us'));
+    const content = textSetting(settings.content, textSetting(settings.body, textSetting(settings.description)));
+    const imageUrl = textSetting(settings.imageUrl, textSetting(settings.image));
+    const layout = textSetting(settings.layout, textSetting(settings.imagePosition, 'left'));
 
     return (
         <section

@@ -40,6 +40,11 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
     const title = (settings.title as string) || 'Shop by Category';
     const subtitle = (settings.subtitle as string) || '';
     const columns = Math.min(Math.max(Number(settings.columns) || 3, 2), 4);
+    const gridCols = columns === 2
+        ? 'sm:grid-cols-2 lg:grid-cols-2'
+        : columns === 4
+            ? 'sm:grid-cols-2 lg:grid-cols-4'
+            : 'sm:grid-cols-2 lg:grid-cols-3';
 
     return (
         <section className="py-10 md:py-14 px-4 md:px-8 bg-white">
@@ -63,10 +68,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                     </Link>
                 </div>
 
-                <div
-                    className="grid gap-3 md:gap-4"
-                    style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}
-                >
+                <div className={`grid grid-cols-1 ${gridCols} gap-3 md:gap-4`}>
                     {categories.map((category) => (
                         <Link
                             key={category.slug}
