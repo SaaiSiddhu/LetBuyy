@@ -3,6 +3,24 @@ import type { Env } from '../index';
 
 const router = new Hono<{ Bindings: Env }>();
 
+function isProductionEnv(env: Env): boolean {
+    return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
+        .some((value) => value === 'production');
+}
+
+function arrayBufferToBase64(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    const chunkSize = 0x8000;
+
+    for (let offset = 0; offset < bytes.length; offset += chunkSize) {
+        const chunk = bytes.subarray(offset, offset + chunkSize);
+        binary += String.fromCharCode(...chunk);
+    }
+
+    return btoa(binary);
+}
+
 // POST /upload — Upload file to R2
 router.post('/', async (c) => {
     const auth = c.get('auth');
@@ -40,7 +58,23 @@ router.post('/', async (c) => {
         const ext = file.name.split('.').pop() || 'bin';
         const key = `${folder}/${auth.user.id}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}.${ext}`;
 
-        // Upload to R2
+        if (!c.env.R2_BUCKET) {
+            if (isProductionEnv(c.env)) {
+                return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'File storage is not configured' } }, 503);
+            }
+
+            const base64 = arrayBufferToBase64(await file.arrayBuffer());
+            return c.json({
+                data: {
+                    url: `data:${file.type || 'application/octet-stream'};base64,${base64}`,
+                    key: `local-dev/${key}`,
+                    size: file.size,
+                    content_type: file.type,
+                    storage: 'local-dev-inline',
+                },
+            }, 201);
+        }
+
         await c.env.R2_BUCKET.put(key, file.stream(), {
             httpMetadata: { contentType: file.type },
         });
@@ -70,6 +104,14 @@ router.delete('/*', async (c) => {
     }
 
     try {
+        if (!c.env.R2_BUCKET) {
+            if (isProductionEnv(c.env)) {
+                return c.json({ error: { code: 'STORAGE_UNAVAILABLE', message: 'File storage is not configured' } }, 503);
+            }
+
+            return c.json({ data: { deleted: true, storage: 'local-dev-inline' } });
+        }
+
         await c.env.R2_BUCKET.delete(key);
         return c.json({ data: { deleted: true } });
     } catch (err) {

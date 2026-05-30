@@ -31,7 +31,9 @@ export async function GET(
         if (searchParams.get('search')) query.set('search', searchParams.get('search')!)
         if (searchParams.get('category')) query.set('category', searchParams.get('category')!)
 
-        const workerResponse = await workerFetch(`/products?${query.toString()}`)
+        const workerResponse = await workerFetch(`/products?${query.toString()}`, {
+            requireSession: true,
+        })
         const payload = await readWorkerJson(workerResponse)
 
         return NextResponse.json(payload)
@@ -56,6 +58,7 @@ export async function POST(
         const body = await request.json()
         const workerResponse = await workerFetch('/products', {
             method: 'POST',
+            requireSession: true,
             body: JSON.stringify({
                 ...body,
                 store_id: resolved.storeId,

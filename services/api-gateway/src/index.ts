@@ -53,7 +53,7 @@ export interface Env {
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;
-    R2_BUCKET: R2Bucket;
+    R2_BUCKET?: R2Bucket;
     RUNTIME_DB?: D1Database;
     CACHE?: KVNamespace;
     RUNTIME_COORDINATOR?: DurableObjectNamespace;

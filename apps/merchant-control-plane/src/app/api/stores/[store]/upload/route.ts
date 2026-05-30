@@ -22,6 +22,7 @@ export async function POST(
 
         const uploadResponse = await workerFetch('/upload', {
             method: 'POST',
+            requireSession: true,
             body: formData,
         })
         const uploadPayload = await readWorkerJson(uploadResponse)
@@ -30,6 +31,7 @@ export async function POST(
         if (uploaded?.url) {
             await workerFetch('/media', {
                 method: 'POST',
+                requireSession: true,
                 body: JSON.stringify({
                     store_id: resolved.storeId,
                     filename: uploaded.key || (file as File).name,
