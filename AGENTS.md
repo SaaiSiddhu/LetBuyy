@@ -372,3 +372,7 @@ flowchart TB
 | Hono route modules | 30 | Worker route modules under services/api-gateway/src/routes |
 | Supabase migrations | 65 | Numeric prefix conflicts: 0 |
 | Environment variable names referenced | 149 | Names only, no values printed |
+
+## Security
+
+- The `/api/seed` route in storefront-runtime is guarded by `NODE_ENV` and `SEED_SECRET`. Never remove these guards.
