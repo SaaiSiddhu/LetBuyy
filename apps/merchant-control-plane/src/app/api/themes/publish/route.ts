@@ -26,10 +26,15 @@ export async function POST(request: NextRequest) {
             )
         }
 
+        const encodedStoreId = encodeURIComponent(storeId)
         const response = action === 'publish'
-            ? await workerFetch(`/stores/${storeId}/publish`, { method: 'POST' })
-            : await workerFetch(`/stores/${storeId}`, {
+            ? await workerFetch(`/stores/${encodedStoreId}/publish`, {
+                method: 'POST',
+                requireSession: true,
+            })
+            : await workerFetch(`/stores/${encodedStoreId}`, {
                 method: 'PATCH',
+                requireSession: true,
                 body: JSON.stringify({ status: 'draft' }),
             })
 
