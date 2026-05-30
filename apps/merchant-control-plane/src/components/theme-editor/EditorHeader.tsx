@@ -8,9 +8,11 @@ interface EditorHeaderProps {
     themeId: string
     isDirty: boolean
     isSaving: boolean
+    isPublishing: boolean
     canUndo: boolean
     canRedo: boolean
     onSave: () => void
+    onPublish: () => void
     onUndo: () => void
     onRedo: () => void
 }
@@ -20,9 +22,11 @@ export default function EditorHeader({
     themeName,
     isDirty,
     isSaving,
+    isPublishing,
     canUndo,
     canRedo,
     onSave,
+    onPublish,
     onUndo,
     onRedo,
 }: EditorHeaderProps) {
@@ -47,7 +51,7 @@ export default function EditorHeader({
                 </div>
             </div>
 
-            {/* Center: Page selector placeholder */}
+            {/* Center: Page selector */}
             <div className="te-header-center">
                 <div className="te-header-page-selector">
                     <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>description</span>
@@ -78,7 +82,7 @@ export default function EditorHeader({
                 <button
                     className={`te-header-save ${isDirty ? 'te-header-save--dirty' : ''}`}
                     onClick={onSave}
-                    disabled={isSaving || !isDirty}
+                    disabled={isSaving || isPublishing || !isDirty}
                 >
                     {isSaving ? (
                         <>
@@ -87,6 +91,20 @@ export default function EditorHeader({
                         </>
                     ) : (
                         'Save'
+                    )}
+                </button>
+                <button
+                    className="te-header-publish"
+                    onClick={onPublish}
+                    disabled={isSaving || isPublishing}
+                >
+                    {isPublishing ? (
+                        <>
+                            <span className="te-spinner" />
+                            Publishing...
+                        </>
+                    ) : (
+                        'Publish'
                     )}
                 </button>
             </div>

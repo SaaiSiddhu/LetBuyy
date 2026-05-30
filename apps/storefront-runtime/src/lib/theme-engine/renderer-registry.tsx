@@ -57,6 +57,7 @@ const APPROVED_SECTION_RENDERERS: Record<string, SectionRenderer> = {
         <DynamicFooter
             store={store}
             settings={section.settings as Partial<FooterSettings> as FooterSettings}
+            blocks={section.blocks}
         />
     ),
     'core.hero': ({ section, theme }) => <HeroSection section={section} theme={theme} />,

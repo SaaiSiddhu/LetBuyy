@@ -150,6 +150,9 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
 
     const logoUrl = getLogoUrl();
     const hasValidLogo = logoUrl !== null;
+    const brandName = typeof settings?.storeName === 'string' && settings.storeName.trim().length > 0
+        ? settings.storeName.trim()
+        : store.name;
 
     return (
         <>
@@ -203,7 +206,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             <div className="h-8 md:h-9 flex items-center">
                                 <Image
                                     src={logoUrl!}
-                                    alt={store.name}
+                                    alt={brandName}
                                     width={160}
                                     height={36}
                                     className="h-full w-auto max-h-8 md:max-h-9 object-contain"
@@ -217,7 +220,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 className="font-bold text-lg md:text-xl tracking-tight"
                                 style={{ color: scrolled ? 'var(--text)' : 'white' }}
                             >
-                                {store.name}
+                                {brandName}
                             </span>
                         )}
                     </Link>

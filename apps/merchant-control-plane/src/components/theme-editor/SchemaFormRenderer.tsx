@@ -1,15 +1,16 @@
 'use client'
 
-import { useCallback } from 'react'
+import { useCallback, useState, type ChangeEvent } from 'react'
 import type { SchemaField } from '@/lib/theme-schemas'
 
 interface SchemaFormRendererProps {
     schema: Record<string, SchemaField>
     values: Record<string, unknown>
     onChange: (key: string, value: unknown) => void
+    storeName?: string
 }
 
-export default function SchemaFormRenderer({ schema, values, onChange }: SchemaFormRendererProps) {
+export default function SchemaFormRenderer({ schema, values, onChange, storeName }: SchemaFormRendererProps) {
     return (
         <div className="te-form">
             {Object.entries(schema).map(([key, field]) => (
@@ -19,6 +20,7 @@ export default function SchemaFormRenderer({ schema, values, onChange }: SchemaF
                     field={field}
                     value={values[key] ?? field.default ?? ''}
                     onChange={onChange}
+                    storeName={storeName}
                 />
             ))}
         </div>
@@ -32,9 +34,10 @@ interface FieldRendererProps {
     field: SchemaField
     value: unknown
     onChange: (key: string, value: unknown) => void
+    storeName?: string
 }
 
-function FieldRenderer({ fieldKey, field, value, onChange }: FieldRendererProps) {
+function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRendererProps) {
     const handleChange = useCallback(
         (v: unknown) => onChange(fieldKey, v),
         [fieldKey, onChange]
@@ -51,11 +54,21 @@ function FieldRenderer({ fieldKey, field, value, onChange }: FieldRendererProps)
                 />
             )
         case 'textarea':
+        case 'richtext':
             return (
                 <TextareaInput
                     label={field.label}
                     value={String(value ?? '')}
                     maxLength={field.maxLength}
+                    onChange={handleChange}
+                />
+            )
+        case 'radio':
+            return (
+                <RadioInput
+                    label={field.label}
+                    value={String(value ?? '')}
+                    options={field.options || []}
                     onChange={handleChange}
                 />
             )
@@ -73,6 +86,7 @@ function FieldRenderer({ fieldKey, field, value, onChange }: FieldRendererProps)
                     label={field.label}
                     value={String(value ?? '')}
                     onChange={handleChange}
+                    storeName={storeName}
                 />
             )
         case 'select':
@@ -186,9 +200,68 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
     )
 }
 
-function ImageInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function uploadedImageUrl(payload: unknown): string | null {
+    if (!payload || typeof payload !== 'object') {
+        return null
+    }
+
+    const data = (payload as { data?: unknown }).data
+    if (!data || typeof data !== 'object') {
+        return null
+    }
+
+    const url = (data as { url?: unknown }).url
+    return typeof url === 'string' && url.length > 0 ? url : null
+}
+
+function ImageInput({ label, value, onChange, storeName }: { label: string; value: string; onChange: (v: string) => void; storeName?: string }) {
+    const [isUploading, setIsUploading] = useState(false)
+    const [uploadError, setUploadError] = useState<string | null>(null)
+
+    const handleFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        event.target.value = ''
+
+        if (!file) {
+            return
+        }
+
+        if (!storeName) {
+            setUploadError('Store context is unavailable for uploads.')
+            return
+        }
+
+        setIsUploading(true)
+        setUploadError(null)
+
+        try {
+            const formData = new FormData()
+            formData.append('file', file)
+
+            const response = await fetch(`/api/stores/${encodeURIComponent(storeName)}/upload`, {
+                method: 'POST',
+                body: formData,
+            })
+            const payload = await response.json().catch(() => null)
+            const url = uploadedImageUrl(payload)
+
+            if (!response.ok || !url) {
+                const message = payload && typeof payload === 'object' && typeof (payload as { error?: unknown }).error === 'string'
+                    ? (payload as { error: string }).error
+                    : 'Image upload failed.'
+                throw new Error(message)
+            }
+
+            onChange(url)
+        } catch (err) {
+            setUploadError(err instanceof Error ? err.message : 'Image upload failed.')
+        } finally {
+            setIsUploading(false)
+        }
+    }
+
     return (
-        <label className="te-field">
+        <div className="te-field">
             <span className="te-field-label">{label}</span>
             <div className="te-field-image-wrapper">
                 {value ? (
@@ -211,8 +284,22 @@ function ImageInput({ label, value, onChange }: { label: string; value: string; 
                     placeholder="Image URL…"
                     onChange={(e) => onChange(e.target.value)}
                 />
+                <label className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''}`}>
+                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
+                        {isUploading ? 'hourglass_top' : 'cloud_upload'}
+                    </span>
+                    {isUploading ? 'Uploading...' : 'Upload image'}
+                    <input
+                        className="te-field-file-input"
+                        type="file"
+                        accept="image/*"
+                        disabled={isUploading}
+                        onChange={handleFileChange}
+                    />
+                </label>
+                {uploadError ? <p className="te-field-error">{uploadError}</p> : null}
             </div>
-        </label>
+        </div>
     )
 }
 
@@ -232,6 +319,26 @@ function SelectInput({ label, value, options, onChange }: { label: string; value
                 ))}
             </select>
         </label>
+    )
+}
+
+function RadioInput({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+    return (
+        <div className="te-field">
+            <span className="te-field-label">{label}</span>
+            <div className="te-field-radio-group">
+                {options.map((opt) => (
+                    <button
+                        key={opt}
+                        type="button"
+                        className={`te-field-radio ${value === opt ? 'te-field-radio--selected' : ''}`}
+                        onClick={() => onChange(opt)}
+                    >
+                        {opt.charAt(0).toUpperCase() + opt.slice(1).replace(/_/g, ' ')}
+                    </button>
+                ))}
+            </div>
+        </div>
     )
 }
 

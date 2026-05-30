@@ -232,6 +232,7 @@ export interface ProductGridSettings {
 
 export interface HeaderSettings {
   behavior: 'sticky' | 'scroll' | 'hide-on-scroll';
+  storeName?: string;
   logoPlacement: 'left' | 'center';
   logoUrl?: string;
   displayMode: 'logo' | 'name' | 'both';

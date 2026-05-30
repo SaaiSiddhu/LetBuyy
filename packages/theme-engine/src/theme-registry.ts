@@ -123,7 +123,7 @@ const productGrid: SectionSchema = {
     settings_schema: {
         title: { type: 'text', label: 'Section Title', maxLength: 80 },
         subtitle: { type: 'text', label: 'Subtitle', maxLength: 120 },
-        columns: { type: 'range', label: 'Columns', min: 2, max: 5, step: 1 },
+        columns: { type: 'range', label: 'Columns', min: 2, max: 4, step: 1 },
         rows: { type: 'range', label: 'Rows', min: 1, max: 4, step: 1 },
         showPrice: { type: 'toggle', label: 'Show Price' },
         showRating: { type: 'toggle', label: 'Show Rating' },
@@ -245,11 +245,14 @@ const header: SectionSchema = {
     name: 'Header',
     type: 'header',
     description: 'Sticky site header with logo, navigation, search, and cart icons',
-    defaults: { behavior: 'sticky', logoPlacement: 'left', displayMode: 'name', navPlacement: 'right', showSearch: true, showCart: true, showAccount: false },
+    defaults: { behavior: 'sticky', storeName: '', logoPlacement: 'left', logoUrl: '', displayMode: 'name', navPlacement: 'right', showSearch: true, showCart: true, showAccount: false },
     settings_schema: {
         behavior: { type: 'select', label: 'Header Behavior', options: ['sticky', 'scroll', 'hide-on-scroll'] },
+        storeName: { type: 'text', label: 'Store Name', maxLength: 80 },
+        logoUrl: { type: 'image', label: 'Logo' },
         logoPlacement: { type: 'select', label: 'Logo Position', options: ['left', 'center'] },
         displayMode: { type: 'select', label: 'Display Mode', options: ['logo', 'name', 'both'] },
+        navPlacement: { type: 'select', label: 'Navigation Position', options: ['left', 'right'] },
         showSearch: { type: 'toggle', label: 'Show Search Icon' },
         showCart: { type: 'toggle', label: 'Show Cart Icon' },
         showAccount: { type: 'toggle', label: 'Show Account Icon' },
@@ -278,6 +281,20 @@ const footer: SectionSchema = {
         instagramUrl: { type: 'url', label: 'Instagram URL' },
         twitterUrl: { type: 'url', label: 'Twitter/X URL' },
         contactEmail: { type: 'text', label: 'Contact Email' },
+    },
+    sample_blocks: [
+        { type: 'footerLink', settings: { label: 'Shop', href: '/shop', openInNewTab: false } },
+        { type: 'footerLink', settings: { label: 'Shipping', href: '/shipping', openInNewTab: false } },
+    ],
+    blocks_schema: {
+        footerLink: {
+            name: 'Footer Link',
+            fields: {
+                label: { type: 'text', label: 'Label', maxLength: 40 },
+                href: { type: 'text', label: 'URL' },
+                openInNewTab: { type: 'toggle', label: 'Open in new tab' },
+            },
+        },
     },
 }
 

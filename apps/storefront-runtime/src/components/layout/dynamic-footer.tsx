@@ -2,16 +2,25 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { StoreModel, FooterSettings, ThemeSettings } from '@/types/store';
+import { StoreModel, FooterSettings, ThemeSettings, BlockModel } from '@/types/store';
 import { resolveStoreHref } from '@/lib/store-paths';
 import { Mail, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from 'lucide-react';
 
 interface DynamicFooterProps {
     store: StoreModel;
     settings?: FooterSettings;
+    blocks?: BlockModel[];
 }
 
-export default function DynamicFooter({ store, settings }: DynamicFooterProps) {
+function textSetting(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim().length > 0 ? value : fallback;
+}
+
+function booleanSetting(value: unknown, fallback = false): boolean {
+    return typeof value === 'boolean' ? value : fallback;
+}
+
+export default function DynamicFooter({ store, settings, blocks = [] }: DynamicFooterProps) {
     const theme: ThemeSettings = store.templateConfig?.themeSettings || {
         primaryColor: '#00B3B3',
         secondaryColor: '#008080',
@@ -39,7 +48,19 @@ export default function DynamicFooter({ store, settings }: DynamicFooterProps) {
     // Contact email
     const contactEmail = settings?.contactEmail || 'help@letbuyy.com';
 
-    const quickLinks = store.navigation?.footer?.length
+    const footerBlockLinks = blocks
+        .filter((block) => block.type === 'footerLink' && block.isVisible !== false)
+        .map((block) => ({
+            id: block.id,
+            label: textSetting(block.settings.label, 'Link'),
+            href: textSetting(block.settings.href, '/'),
+            openInNewTab: booleanSetting(block.settings.openInNewTab),
+        }))
+        .filter((link) => link.label.length > 0 && link.href.length > 0);
+
+    const quickLinks = footerBlockLinks.length
+        ? footerBlockLinks
+        : store.navigation?.footer?.length
         ? store.navigation.footer
         : store.navigation?.main || [];
 

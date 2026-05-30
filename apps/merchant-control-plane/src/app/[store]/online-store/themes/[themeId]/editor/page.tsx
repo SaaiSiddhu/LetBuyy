@@ -99,6 +99,7 @@ function ThemeEditorInner() {
     const [isLoading, setIsLoading] = useState(true)
     const [isDirty, setIsDirty] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
+    const [isPublishing, setIsPublishing] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [showAddModal, setShowAddModal] = useState(false)
     const [previewToken, setPreviewToken] = useState<string | null>(null)
@@ -250,6 +251,71 @@ function ThemeEditorInner() {
         setIsDirty(true)
     }, [state, pushState])
 
+    const updateBlockSetting = useCallback((sectionId: string, blockId: string, key: string, value: unknown) => {
+        const next = structuredClone(state)
+        const update = (section: SectionEntry) => {
+            if (section.id !== sectionId) return false
+            const block = section.blocks?.find(entry => entry.id === blockId)
+            if (!block) return true
+            block.settings[key] = value
+            return true
+        }
+
+        if (!update(next.sections.header) && !update(next.sections.footer)) {
+            next.sections.template.forEach(update)
+        }
+
+        pushState(next)
+        setIsDirty(true)
+    }, [state, pushState])
+
+    const addBlock = useCallback((sectionId: string, blockType: string) => {
+        const next = structuredClone(state)
+        const add = (section: SectionEntry) => {
+            if (section.id !== sectionId) return false
+            const sectionSchema = sectionSchemas[section.type]
+            const blockSchema = sectionSchema?.blocks_schema?.[blockType]
+            if (!blockSchema) return true
+
+            const settings = Object.fromEntries(
+                Object.entries(blockSchema.fields).map(([key, field]) => [key, field.default ?? ''])
+            )
+
+            section.blocks = [
+                ...(section.blocks || []),
+                {
+                    id: `${blockType}-${Date.now()}`,
+                    type: blockType,
+                    settings,
+                },
+            ]
+            return true
+        }
+
+        if (!add(next.sections.header) && !add(next.sections.footer)) {
+            next.sections.template.forEach(add)
+        }
+
+        pushState(next)
+        setIsDirty(true)
+    }, [sectionSchemas, state, pushState])
+
+    const deleteBlock = useCallback((sectionId: string, blockId: string) => {
+        const next = structuredClone(state)
+        const remove = (section: SectionEntry) => {
+            if (section.id !== sectionId) return false
+            section.blocks = (section.blocks || []).filter(block => block.id !== blockId)
+            return true
+        }
+
+        if (!remove(next.sections.header) && !remove(next.sections.footer)) {
+            next.sections.template.forEach(remove)
+        }
+
+        pushState(next)
+        setIsDirty(true)
+    }, [state, pushState])
+
     const saveDraft = useCallback(async () => {
         const res = await fetch(
             `/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}`,
@@ -279,6 +345,30 @@ function ThemeEditorInner() {
             setIsSaving(false)
         }
     }, [saveDraft])
+
+    const handlePublish = useCallback(async () => {
+        setIsPublishing(true)
+        try {
+            const res = await fetch(
+                `/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`,
+                {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ templateConfig: state }),
+                }
+            )
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok) {
+                throw new Error(data.error?.message || (typeof data.error === 'string' ? data.error : res.statusText))
+            }
+            setLoadError(null)
+            setIsDirty(false)
+        } catch (err) {
+            setLoadError(err instanceof Error ? err.message : 'Failed to publish theme')
+        } finally {
+            setIsPublishing(false)
+        }
+    }, [themeId, store, state])
 
     useEffect(() => {
         if (!store || !themeId || isLoading || loadError) return
@@ -348,9 +438,11 @@ function ThemeEditorInner() {
                 themeId={themeId}
                 isDirty={isDirty}
                 isSaving={isSaving}
+                isPublishing={isPublishing}
                 canUndo={canUndo}
                 canRedo={canRedo}
                 onSave={handleSave}
+                onPublish={handlePublish}
                 onUndo={undo}
                 onRedo={redo}
             />
@@ -402,7 +494,11 @@ function ThemeEditorInner() {
                         section={selectedSectionEntry}
                         sectionSchemas={sectionSchemas}
                         onSettingChange={updateSetting}
+                        onBlockSettingChange={updateBlockSetting}
+                        onAddBlock={addBlock}
+                        onDeleteBlock={deleteBlock}
                         onClose={() => setSelectedSection(null)}
+                        storeName={store}
                     />
                 )}
             </div>

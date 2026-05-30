@@ -7137,6 +7137,31 @@ body {
   cursor: default;
 }
 
+.te-header-publish {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  background: var(--text-primary, #1a1a2e);
+  color: var(--bg, #fff);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: inherit;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.te-header-publish:hover:not(:disabled) {
+  background: var(--primary, #8b5cf6);
+}
+
+.te-header-publish:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 /* --- Spinner --- */
 .te-spinner {
   display: inline-block;
@@ -7564,6 +7589,78 @@ body {
   justify-content: center;
 }
 
+.te-field-upload-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  border-radius: 8px;
+  border: 1px dashed var(--border, #e5e5e5);
+  color: var(--text-secondary, #666);
+  background: var(--bg-secondary, #f4f4f5);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+
+.te-field-upload-btn:hover {
+  border-color: var(--primary, #8b5cf6);
+  color: var(--primary, #8b5cf6);
+}
+
+.te-field-upload-btn--busy {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.te-field-file-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.te-field-error {
+  margin: 0;
+  color: var(--error, #ef4444);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.te-field-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.te-field-radio {
+  min-height: 32px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border, #e5e5e5);
+  background: var(--bg, #fff);
+  color: var(--text-secondary, #666);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.te-field-radio:hover {
+  border-color: var(--primary, #8b5cf6);
+  color: var(--primary, #8b5cf6);
+}
+
+.te-field-radio--selected {
+  border-color: var(--primary, #8b5cf6);
+  background: rgba(139, 92, 246, 0.08);
+  color: var(--primary, #8b5cf6);
+}
+
 /* Toggle */
 .te-toggle {
   position: relative;
@@ -7615,6 +7712,109 @@ body {
   color: var(--text-primary);
   min-width: 38px;
   text-align: right;
+}
+
+.te-block-editor {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border, #e5e5e5);
+}
+
+.te-block-editor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.te-block-editor-title {
+  margin: 0;
+  color: var(--text-primary, #1a1a2e);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.te-block-editor-empty {
+  margin: 0 0 12px;
+  color: var(--text-tertiary, #999);
+  font-size: 12px;
+}
+
+.te-block-editor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.te-block-card {
+  border: 1px solid var(--border, #e5e5e5);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--bg-secondary, #f4f4f5);
+}
+
+.te-block-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.te-block-card-title {
+  margin: 0;
+  color: var(--text-primary, #1a1a2e);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.te-block-card-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #666);
+  cursor: pointer;
+}
+
+.te-block-card-delete:hover {
+  color: var(--error, #ef4444);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+.te-block-editor-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.te-block-editor-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 36px;
+  border: 1px dashed var(--border, #e5e5e5);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-secondary, #666);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+
+.te-block-editor-add:hover {
+  border-color: var(--primary, #8b5cf6);
+  color: var(--primary, #8b5cf6);
+  background: rgba(139, 92, 246, 0.04);
 }
 
 /* --- Center Panel --- */
