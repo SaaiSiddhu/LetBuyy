@@ -5,45 +5,58 @@ const redisConfig = {
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
 }
 
+type AuthRateLimitConfig = {
+    limit: number
+    window: `${number} ${'s' | 'm' | 'h' | 'd'}`
+    prefix: string
+}
+
 /**
  * Rate limiter configurations for different auth endpoints.
  * Uses sliding window algorithm for smooth rate limiting.
  */
-const limiters: Record<string, RateLimiterPort | null> = {
+export const AUTH_RATE_LIMITS = {
     // Lookup: 10 requests per 15 minutes
-    lookup: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 10, window: '15 m', prefix: 'rl:lookup' }),
+    lookup: { limit: 10, window: '15 m', prefix: 'rl:lookup' },
 
     // Signup: 3 requests per hour
-    signup: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 3, window: '1 h', prefix: 'rl:signup' }),
+    signup: { limit: 3, window: '1 h', prefix: 'rl:signup' },
 
     // Login: 5 requests per 15 minutes
-    login: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 5, window: '15 m', prefix: 'rl:login' }),
+    login: { limit: 5, window: '15 m', prefix: 'rl:login' },
 
     // Send magic link: 3 per 15 minutes
-    'send-magic': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 3, window: '15 m', prefix: 'rl:magic' }),
+    'send-magic': { limit: 3, window: '15 m', prefix: 'rl:magic' },
 
     // Send reset: 3 per 15 minutes
-    'send-reset': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 3, window: '15 m', prefix: 'rl:reset' }),
+    'send-reset': { limit: 3, window: '15 m', prefix: 'rl:reset' },
 
     // Set password: 5 per 15 minutes
-    'set-password': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 5, window: '15 m', prefix: 'rl:setpw' }),
+    'set-password': { limit: 5, window: '15 m', prefix: 'rl:setpw' },
 
     // Reset password: 5 per 15 minutes
-    'reset-password': createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 5, window: '15 m', prefix: 'rl:resetpw' }),
+    'reset-password': { limit: 5, window: '15 m', prefix: 'rl:resetpw' },
 
     // Verify: 10 per 15 minutes
-    verify: createUpstashSlidingWindowLimiter({ ...redisConfig, limit: 10, window: '15 m', prefix: 'rl:verify' }),
-}
+    verify: { limit: 10, window: '15 m', prefix: 'rl:verify' },
 
-/**
- * Check rate limit for a given endpoint and identifier (usually IP or email).
- * Returns { allowed: true } if the request is allowed, or { allowed: false, retryAfter } if rate limited.
- */
-export async function checkRateLimit(
+    // OTP verification: 5 attempts per 15 minutes
+    verify_otp: { limit: 5, window: '15 m', prefix: 'rl:verify_otp' },
+} satisfies Record<string, AuthRateLimitConfig>
+
+const limiters: Record<string, RateLimiterPort | null> = Object.fromEntries(
+    Object.entries(AUTH_RATE_LIMITS).map(([endpoint, config]) => [
+        endpoint,
+        createUpstashSlidingWindowLimiter({ ...redisConfig, ...config }),
+    ])
+)
+
+export async function checkRateLimitWithLimiters(
+    registeredLimiters: Record<string, RateLimiterPort | null>,
     endpoint: string,
     identifier: string
 ): Promise<{ allowed: boolean; retryAfter?: number }> {
-    const limiter = limiters[endpoint]
+    const limiter = registeredLimiters[endpoint]
     if (!limiter) {
         // No Redis configured — allow all in development
         return { allowed: true }
@@ -59,4 +72,15 @@ export async function checkRateLimit(
     }
 
     return { allowed: true }
+}
+
+/**
+ * Check rate limit for a given endpoint and identifier (usually IP or email).
+ * Returns { allowed: true } if the request is allowed, or { allowed: false, retryAfter } if rate limited.
+ */
+export async function checkRateLimit(
+    endpoint: string,
+    identifier: string
+): Promise<{ allowed: boolean; retryAfter?: number }> {
+    return checkRateLimitWithLimiters(limiters, endpoint, identifier)
 }
