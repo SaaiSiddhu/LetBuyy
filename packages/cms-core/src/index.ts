@@ -109,9 +109,25 @@ export interface CmsStorefrontPageRecord {
   assigned_template_key?: string | null;
 }
 
+export interface CmsStorefrontPageRevisionRecord {
+  id: string;
+  title: string;
+  slug: string;
+  seo?: Record<string, unknown> | null;
+  content?: Record<string, unknown> | null;
+  template_key?: string | null;
+  created_at?: string | null;
+}
+
+export interface CmsStorefrontRoutePageRecord extends CmsStorefrontPageRecord {
+  published_revision_id?: string | null;
+  is_homepage?: boolean | null;
+  display_order?: number | null;
+}
+
 export interface CmsPolicyRecord {
   id: string;
-  store_id: string;
+  store_id?: string | null;
   policy_type: string;
   slug: string;
   title: string;
@@ -136,6 +152,17 @@ export interface CmsNavigationItemRecord {
   open_in_new_tab?: boolean | null;
   metadata?: Record<string, unknown> | null;
   updated_at?: string | null;
+}
+
+export interface PublicNavigationItem {
+  id: string;
+  label: string;
+  href: string;
+  targetType: string;
+  targetResourceId: string | null;
+  openInNewTab: boolean;
+  children: PublicNavigationItem[];
+  metadata: Record<string, unknown>;
 }
 
 export function getCmsString(data: Record<string, unknown>, key: string): string | null {
@@ -233,6 +260,125 @@ export function normalizeNavigationItemRecord(row: CmsNavigationItemRecord) {
     open_in_new_tab: row.open_in_new_tab === true,
     metadata: row.metadata || {},
     updated_at: row.updated_at || null,
+  };
+}
+
+export function normalizeStorefrontRouteContent(
+  content: Record<string, unknown> | null | undefined,
+  body?: string | null,
+  html?: string | null,
+): Record<string, unknown> {
+  const normalized = { ...(content && typeof content === 'object' && !Array.isArray(content) ? content : {}) };
+
+  if (body && typeof body === 'string' && body.trim()) {
+    normalized.body = body;
+  } else if (html && typeof html === 'string' && html.trim()) {
+    normalized.html = html;
+  }
+
+  return normalized;
+}
+
+export function normalizeStorefrontRoutePage(
+  page: CmsStorefrontRoutePageRecord,
+  revision?: CmsStorefrontPageRevisionRecord | null,
+) {
+  return {
+    id: page.id,
+    title: revision?.title || page.title || 'Untitled page',
+    slug: revision?.slug || page.slug || '',
+    page_type: page.page_type || 'page',
+    status: page.status || 'published',
+    seo: revision?.seo || page.seo || {},
+    content: revision?.content || normalizeStorefrontRouteContent(page.content, page.body, page.html_content),
+    assigned_template_key: revision?.template_key || page.assigned_template_key || null,
+    is_homepage: Boolean(page.is_homepage),
+    show_in_nav: page.show_in_nav !== false,
+    display_order: page.display_order || 0,
+    published_at: page.published_at || revision?.created_at || null,
+    updated_at: page.updated_at || revision?.created_at || null,
+  };
+}
+
+export function normalizeStorefrontRoutePolicy(policy: CmsPolicyRecord) {
+  return {
+    id: policy.id,
+    policy_type: policy.policy_type,
+    slug: policy.slug,
+    title: policy.title,
+    status: policy.status || 'published',
+    seo: policy.seo || {},
+    content: policy.body || {},
+    published_at: policy.published_at || null,
+    updated_at: policy.updated_at || null,
+  };
+}
+
+export function navigationHrefForCmsItem(item: Pick<CmsNavigationItemRecord, 'url' | 'target_type' | 'target_resource_id'>): string {
+  if (item.url) return item.url;
+
+  const resource = item.target_resource_id || '';
+  switch (item.target_type) {
+    case 'home':
+      return '/';
+    case 'product':
+      return resource ? `/product/${resource}` : '/shop';
+    case 'collection':
+      return resource ? `/collections/${resource}` : '/shop';
+    case 'page':
+      return resource ? `/${resource}` : '#';
+    case 'policy':
+      return resource ? `/${resource}` : '#';
+    case 'cart':
+      return '/cart';
+    case 'search':
+      return '/shop';
+    default:
+      return resource ? `/${resource}` : '#';
+  }
+}
+
+export function buildPublicNavigationTree(items: CmsNavigationItemRecord[]): PublicNavigationItem[] {
+  const nodes = new Map<string, PublicNavigationItem>();
+  const roots: PublicNavigationItem[] = [];
+
+  for (const item of items) {
+    nodes.set(item.id, {
+      id: item.id,
+      label: item.label,
+      href: navigationHrefForCmsItem(item),
+      targetType: item.target_type || 'url',
+      targetResourceId: item.target_resource_id || null,
+      openInNewTab: item.open_in_new_tab === true,
+      children: [],
+      metadata: item.metadata || {},
+    });
+  }
+
+  for (const item of items) {
+    const node = nodes.get(item.id);
+    if (!node) continue;
+
+    if (item.parent_item_id && nodes.has(item.parent_item_id)) {
+      nodes.get(item.parent_item_id)?.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
+
+export function storefrontPageToNavigationItem(page: ReturnType<typeof normalizeStorefrontRoutePage>): PublicNavigationItem {
+  return {
+    id: page.id,
+    label: page.title,
+    href: page.is_homepage ? '/' : `/${page.slug}`,
+    targetType: page.page_type || 'page',
+    targetResourceId: page.id,
+    openInNewTab: false,
+    children: [],
+    metadata: {},
   };
 }
 

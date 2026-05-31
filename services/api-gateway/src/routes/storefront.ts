@@ -29,6 +29,16 @@ import {
     type CouponRecord,
     type CouponValidationFailureCode,
 } from '@letbuyy/checkout-core';
+import {
+    buildPublicNavigationTree,
+    normalizeStorefrontRoutePage,
+    normalizeStorefrontRoutePolicy,
+    storefrontPageToNavigationItem,
+    type CmsNavigationItemRecord,
+    type CmsPolicyRecord,
+    type CmsStorefrontPageRevisionRecord,
+    type CmsStorefrontRoutePageRecord,
+} from '@letbuyy/cms-core';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -254,77 +264,12 @@ type InternalPaymentFailureBody = {
     idempotencyKey?: string | null;
 };
 
-type StorefrontPageRow = {
-    id: string;
-    title: string;
-    slug: string;
-    status?: string | null;
-    page_type?: string | null;
-    seo?: Record<string, unknown> | null;
-    content?: Record<string, unknown> | null;
-    assigned_template_key?: string | null;
-    published_revision_id?: string | null;
-    published_at?: string | null;
-    updated_at?: string | null;
-    is_homepage?: boolean | null;
-    display_order?: number | null;
-    show_in_nav?: boolean | null;
-    body?: string | null;
-    html_content?: string | null;
-};
-
-type StorefrontPageRevisionRow = {
-    id: string;
-    title: string;
-    slug: string;
-    seo?: Record<string, unknown> | null;
-    content?: Record<string, unknown> | null;
-    template_key?: string | null;
-    created_at?: string | null;
-};
-
-type StorefrontPolicyRow = {
-    id: string;
-    policy_type: string;
-    slug: string;
-    title: string;
-    body?: Record<string, unknown> | null;
-    status?: string | null;
-    seo?: Record<string, unknown> | null;
-    published_at?: string | null;
-    updated_at?: string | null;
-};
-
 type NavigationMenuRow = {
     id: string;
     handle: string;
     name: string;
     location: string;
     metadata?: Record<string, unknown> | null;
-};
-
-type NavigationMenuItemRow = {
-    id: string;
-    menu_id: string;
-    parent_item_id?: string | null;
-    label: string;
-    url?: string | null;
-    target_type: string;
-    target_resource_id?: string | null;
-    sort_order: number;
-    open_in_new_tab?: boolean | null;
-    metadata?: Record<string, unknown> | null;
-};
-
-type PublicNavigationItem = {
-    id: string;
-    label: string;
-    href: string;
-    targetType: string;
-    targetResourceId: string | null;
-    openInNewTab: boolean;
-    children: PublicNavigationItem[];
-    metadata: Record<string, unknown>;
 };
 
 function isMissingTableError(error: DatabaseErrorLike, tableName: string): boolean {
@@ -618,49 +563,9 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
     return { data: [], count: 0, error: lastError };
 }
 
-function toObjectRecord(value: unknown): Record<string, unknown> {
-    return value && typeof value === 'object' && !Array.isArray(value)
-        ? value as Record<string, unknown>
-        : {};
-}
-
 function normalizePublicRouteToken(value: string): string | null {
     const normalized = value.trim().toLowerCase();
     return /^[a-z0-9][a-z0-9-_]{0,120}$/.test(normalized) ? normalized : null;
-}
-
-function normalizeCmsContent(
-    content: Record<string, unknown> | null | undefined,
-    body?: string | null,
-    html?: string | null
-): Record<string, unknown> {
-    const normalized = { ...toObjectRecord(content) };
-
-    if (body && typeof body === 'string' && body.trim()) {
-        normalized.body = body;
-    } else if (html && typeof html === 'string' && html.trim()) {
-        normalized.html = html;
-    }
-
-    return normalized;
-}
-
-function normalizeStorefrontPage(page: StorefrontPageRow, revision?: StorefrontPageRevisionRow | null) {
-    return {
-        id: page.id,
-        title: revision?.title || page.title,
-        slug: revision?.slug || page.slug,
-        page_type: page.page_type || 'page',
-        status: page.status || 'published',
-        seo: revision?.seo || page.seo || {},
-        content: revision?.content || normalizeCmsContent(page.content, page.body, page.html_content),
-        assigned_template_key: revision?.template_key || page.assigned_template_key || null,
-        is_homepage: Boolean(page.is_homepage),
-        show_in_nav: page.show_in_nav !== false,
-        display_order: page.display_order || 0,
-        published_at: page.published_at || revision?.created_at || null,
-        updated_at: page.updated_at || revision?.created_at || null,
-    };
 }
 
 async function listLegacyStorefrontPages(
@@ -692,8 +597,8 @@ async function listLegacyStorefrontPages(
 
         if (!result.error) {
             return (result.data || []).map((row, index) => {
-                const page = row as unknown as StorefrontPageRow;
-                return normalizeStorefrontPage({
+                const page = row as unknown as CmsStorefrontRoutePageRecord;
+                return normalizeStorefrontRoutePage({
                     ...page,
                     page_type: page.page_type || 'page',
                     display_order: page.display_order || index,
@@ -724,7 +629,7 @@ async function listStorefrontPages(c: AppContext, storeId: string, options: { na
         .order('published_at', { ascending: false });
 
     if (!error) {
-        const pages = (data || []).map((page) => normalizeStorefrontPage(page as StorefrontPageRow));
+        const pages = (data || []).map((page) => normalizeStorefrontRoutePage(page as CmsStorefrontRoutePageRecord));
         if (pages.length > 0) return pages;
         return listLegacyStorefrontPages(c, storeId, options);
     }
@@ -748,8 +653,8 @@ async function loadStorefrontPageBySlug(c: AppContext, storeId: string, slug: st
         .maybeSingle();
 
     if (!error && data) {
-        const page = data as StorefrontPageRow;
-        let revision: StorefrontPageRevisionRow | null = null;
+        const page = data as CmsStorefrontRoutePageRecord;
+        let revision: CmsStorefrontPageRevisionRecord | null = null;
 
         if (page.published_revision_id) {
             const revisionResult = await db
@@ -760,11 +665,11 @@ async function loadStorefrontPageBySlug(c: AppContext, storeId: string, slug: st
                 .maybeSingle();
 
             if (!revisionResult.error && revisionResult.data) {
-                revision = revisionResult.data as StorefrontPageRevisionRow;
+                revision = revisionResult.data as CmsStorefrontPageRevisionRecord;
             }
         }
 
-        return normalizeStorefrontPage(page, revision);
+        return normalizeStorefrontRoutePage(page, revision);
     }
 
     if (error && !(isMissingTableError(error, 'storefront_pages') || isSchemaMismatchError(error))) {
@@ -773,20 +678,6 @@ async function loadStorefrontPageBySlug(c: AppContext, storeId: string, slug: st
 
     const legacyPages = await listLegacyStorefrontPages(c, storeId);
     return legacyPages.find((page) => page.slug === slug) || null;
-}
-
-function normalizePolicy(policy: StorefrontPolicyRow) {
-    return {
-        id: policy.id,
-        policy_type: policy.policy_type,
-        slug: policy.slug,
-        title: policy.title,
-        status: policy.status || 'published',
-        seo: policy.seo || {},
-        content: policy.body || {},
-        published_at: policy.published_at || null,
-        updated_at: policy.updated_at || null,
-    };
 }
 
 async function listStorefrontPolicies(c: AppContext, storeId: string) {
@@ -799,7 +690,7 @@ async function listStorefrontPolicies(c: AppContext, storeId: string) {
         .is('deleted_at', null)
         .order('policy_type', { ascending: true });
 
-    if (!error) return (data || []).map((policy) => normalizePolicy(policy as StorefrontPolicyRow));
+    if (!error) return (data || []).map((policy) => normalizeStorefrontRoutePolicy(policy as CmsPolicyRecord));
     if (isMissingTableError(error, 'storefront_policies') || isSchemaMismatchError(error)) return [];
     throw new Error(error.message);
 }
@@ -807,74 +698,6 @@ async function listStorefrontPolicies(c: AppContext, storeId: string) {
 async function loadStorefrontPolicy(c: AppContext, storeId: string, token: string) {
     const policies = await listStorefrontPolicies(c, storeId);
     return policies.find((policy) => policy.policy_type === token || policy.slug === token) || null;
-}
-
-function navigationHrefForItem(item: NavigationMenuItemRow): string {
-    if (item.url) return item.url;
-
-    const resource = item.target_resource_id || '';
-    switch (item.target_type) {
-        case 'home':
-            return '/';
-        case 'product':
-            return resource ? `/product/${resource}` : '/shop';
-        case 'collection':
-            return resource ? `/collections/${resource}` : '/shop';
-        case 'page':
-            return resource ? `/${resource}` : '#';
-        case 'policy':
-            return resource ? `/${resource}` : '#';
-        case 'cart':
-            return '/cart';
-        case 'search':
-            return '/shop';
-        default:
-            return resource ? `/${resource}` : '#';
-    }
-}
-
-function buildNavigationTree(items: NavigationMenuItemRow[]): PublicNavigationItem[] {
-    const nodes = new Map<string, PublicNavigationItem>();
-    const roots: PublicNavigationItem[] = [];
-
-    for (const item of items) {
-        nodes.set(item.id, {
-            id: item.id,
-            label: item.label,
-            href: navigationHrefForItem(item),
-            targetType: item.target_type,
-            targetResourceId: item.target_resource_id || null,
-            openInNewTab: item.open_in_new_tab === true,
-            children: [],
-            metadata: item.metadata || {},
-        });
-    }
-
-    for (const item of items) {
-        const node = nodes.get(item.id);
-        if (!node) continue;
-
-        if (item.parent_item_id && nodes.has(item.parent_item_id)) {
-            nodes.get(item.parent_item_id)?.children.push(node);
-        } else {
-            roots.push(node);
-        }
-    }
-
-    return roots;
-}
-
-function pageToNavigationItem(page: ReturnType<typeof normalizeStorefrontPage>): PublicNavigationItem {
-    return {
-        id: page.id,
-        label: page.title,
-        href: page.is_homepage ? '/' : `/${page.slug}`,
-        targetType: page.page_type || 'page',
-        targetResourceId: page.id,
-        openInNewTab: false,
-        children: [],
-        metadata: {},
-    };
 }
 
 async function loadNavigationMenu(c: AppContext, storeId: string, location: string) {
@@ -907,7 +730,7 @@ async function loadNavigationMenu(c: AppContext, storeId: string, location: stri
 
         return {
             menu: activeMenu,
-            items: buildNavigationTree((itemResult.data || []) as NavigationMenuItemRow[]),
+            items: buildPublicNavigationTree((itemResult.data || []) as CmsNavigationItemRecord[]),
             source: 'navigation_menus',
         };
     }
@@ -919,7 +742,7 @@ async function loadNavigationMenu(c: AppContext, storeId: string, location: stri
     const pages = await listLegacyStorefrontPages(c, storeId, { navOnly: true });
     return {
         menu: null,
-        items: pages.filter((page) => page.show_in_nav).map(pageToNavigationItem),
+        items: pages.filter((page) => page.show_in_nav).map(storefrontPageToNavigationItem),
         source: 'legacy_pages',
     };
 }
