@@ -6,8 +6,11 @@ import { validate } from '../middleware/validation';
 import {
     ListFormSubmissionsQuery,
     UpdateFormSubmissionSchema,
-    type FormSubmissionStatus,
 } from '../schemas/form-submission.schema';
+import {
+    normalizeFormSubmissionRecord,
+    type CmsFormSubmissionRecord,
+} from '@letbuyy/cms-core';
 import type { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -19,25 +22,6 @@ interface FormSubmissionOwnerRow {
     id: string;
     store_id?: string | null;
     stores?: unknown;
-}
-
-interface FormSubmissionRow extends FormSubmissionOwnerRow {
-    form_type?: string | null;
-    form_name?: string | null;
-    data?: Record<string, unknown> | null;
-    source_url?: string | null;
-    status?: FormSubmissionStatus | string | null;
-    read_at?: string | null;
-    replied_at?: string | null;
-    internal_notes?: string | null;
-    full_name?: string | null;
-    email?: string | null;
-    phone?: string | null;
-    subject?: string | null;
-    message?: string | null;
-    source?: string | null;
-    created_at?: string | null;
-    updated_at?: string | null;
 }
 
 type DatabaseErrorLike = {
@@ -103,7 +87,7 @@ router.get('/', validate('query', ListFormSubmissionsQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated((data || []).map(normalizeSubmission), count || 0, query.page, query.limit));
+    return c.json(paginated(((data || []) as CmsFormSubmissionRecord[]).map(normalizeFormSubmissionRecord), count || 0, query.page, query.limit));
 });
 
 router.patch('/:id', validate('json', UpdateFormSubmissionSchema), async (c) => {
@@ -149,7 +133,7 @@ router.patch('/:id', validate('json', UpdateFormSubmissionSchema), async (c) => 
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error?.message || 'Unable to update submission' } }, 500);
     }
 
-    return c.json(success(normalizeSubmission(data)));
+    return c.json(success(normalizeFormSubmissionRecord(data as CmsFormSubmissionRecord)));
 });
 
 router.delete('/:id', async (c) => {
@@ -190,26 +174,5 @@ router.delete('/:id', async (c) => {
 
     return c.json(success({ deleted: true }));
 });
-
-function normalizeSubmission(row: FormSubmissionRow) {
-    const { stores: _stores, data, ...submission } = row;
-    const payload = data || {};
-
-    return {
-        ...submission,
-        data: payload,
-        full_name: submission.full_name || getString(payload, 'full_name') || getString(payload, 'name') || 'Unknown',
-        email: submission.email || getString(payload, 'email') || '',
-        phone: submission.phone || getString(payload, 'phone'),
-        subject: submission.subject || getString(payload, 'subject') || submission.form_name || null,
-        message: submission.message || getString(payload, 'message') || getString(payload, 'body') || '',
-        source: submission.source || getString(payload, 'source') || submission.source_url || submission.form_type || 'form',
-    };
-}
-
-function getString(data: Record<string, unknown>, key: string) {
-    const value = data[key];
-    return typeof value === 'string' && value.trim() ? value : null;
-}
 
 export default router;

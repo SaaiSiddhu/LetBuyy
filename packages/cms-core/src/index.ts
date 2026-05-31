@@ -165,9 +165,36 @@ export interface PublicNavigationItem {
   metadata: Record<string, unknown>;
 }
 
+export interface CmsFormSubmissionRecord {
+  id: string;
+  store_id?: string | null;
+  stores?: unknown;
+  form_type?: string | null;
+  form_name?: string | null;
+  data?: Record<string, unknown> | null;
+  source_url?: string | null;
+  status?: string | null;
+  read_at?: string | null;
+  replied_at?: string | null;
+  internal_notes?: string | null;
+  full_name?: string | null;
+  email?: string | null;
+  phone?: string | null;
+  subject?: string | null;
+  message?: string | null;
+  source?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
 export function getCmsString(data: Record<string, unknown>, key: string): string | null {
   const value = data[key];
   return typeof value === 'string' ? value : null;
+}
+
+export function getCmsNonEmptyString(data: Record<string, unknown>, key: string): string | null {
+  const value = data[key];
+  return typeof value === 'string' && value.trim() ? value : null;
 }
 
 export function seoFromPageInput(input: CmsSeoInput): { title: string | null; description: string | null } {
@@ -260,6 +287,22 @@ export function normalizeNavigationItemRecord(row: CmsNavigationItemRecord) {
     open_in_new_tab: row.open_in_new_tab === true,
     metadata: row.metadata || {},
     updated_at: row.updated_at || null,
+  };
+}
+
+export function normalizeFormSubmissionRecord(row: CmsFormSubmissionRecord) {
+  const { stores: _stores, data, ...submission } = row;
+  const payload = data || {};
+
+  return {
+    ...submission,
+    data: payload,
+    full_name: submission.full_name || getCmsNonEmptyString(payload, 'full_name') || getCmsNonEmptyString(payload, 'name') || 'Unknown',
+    email: submission.email || getCmsNonEmptyString(payload, 'email') || '',
+    phone: submission.phone || getCmsNonEmptyString(payload, 'phone'),
+    subject: submission.subject || getCmsNonEmptyString(payload, 'subject') || submission.form_name || null,
+    message: submission.message || getCmsNonEmptyString(payload, 'message') || getCmsNonEmptyString(payload, 'body') || '',
+    source: submission.source || getCmsNonEmptyString(payload, 'source') || submission.source_url || submission.form_type || 'form',
   };
 }
 
