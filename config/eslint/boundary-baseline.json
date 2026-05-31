@@ -126,14 +126,6 @@
   "supabaseImports": [],
   "domainTypes": [
     "apps/marketing-site/src/components/ThemeProvider.tsx:Theme",
-    "apps/merchant-control-plane/src/app/[store]/coupons/page.tsx:Coupon",
-    "apps/merchant-control-plane/src/app/[store]/customers/page.tsx:Customer",
-    "apps/merchant-control-plane/src/app/[store]/orders/page.tsx:Order",
-    "apps/merchant-control-plane/src/app/[store]/products/collections/page.tsx:Collection",
-    "apps/merchant-control-plane/src/app/[store]/products/page.tsx:Product",
-    "apps/storefront-runtime/src/app/store/[subdomain]/account/addresses/page.tsx:Address",
-    "apps/storefront-runtime/src/app/store/[subdomain]/account/orders/page.tsx:Order",
-    "apps/storefront-runtime/src/lib/customer-service.ts:Address",
     "apps/theme-marketplace/src/components/theme-provider.tsx:Theme"
   ]
 }
