@@ -8,7 +8,7 @@
       "path": "config/runtime/runtime-orchestration-manifest.json",
       "owner": "runtime-orchestration",
       "compatibility": "additive-or-explicit-migration",
-      "checksum": "41cf04a9c56ddff83172f493866e2b98bf78e67f3dac089c13795ed5cf717556"
+      "checksum": "49346411a15c623cadc951fab7999c1c3089b24e945211b5779ee4e608e465d2"
     },
     {
       "path": "config/runtime/runtime-survivability-intelligence.json",
@@ -32,19 +32,19 @@
       "path": "config/runtime/queue-lifecycle-manifest.json",
       "owner": "queue-runtime",
       "compatibility": "dead-letter-and-retry-compatible",
-      "checksum": "70155930936dff739122d79dfda07d1f7015337fb42356e2d4c0383364893ad4"
+      "checksum": "60a508cd8085747103c669763ad10655c6c99d08c1e80431d502a0d94be08457"
     },
     {
       "path": "config/runtime/deployment-lineage-manifest.json",
       "owner": "deployment-runtime",
       "compatibility": "rollback-lineage-compatible",
-      "checksum": "2a00c99a92d8fddbec23ae0929b9db235fc25c7a4652bd315e1deaf51a38a10f"
+      "checksum": "0c7f959310f956a53b347ac0af3d2b2601718b40eea2556232d6807ddb1e7360"
     },
     {
       "path": "config/runtime/cloudflare-binding-ownership.json",
       "owner": "cloudflare-runtime",
       "compatibility": "explicit-env-binding-compatible",
-      "checksum": "5d57897a37b2b5fe1823ccd1dfeb1d454df57fe8d812dc16f16f1e4ad1aba27b"
+      "checksum": "71c01605eee4f926bf176cfc882932600d85b2fd50607aef008170424fdca8a5"
     },
     {
       "path": "config/runtime/deployment-topology.json",

@@ -83,7 +83,7 @@
       {
         "environment": "production",
         "runtimeRoot": "services/webhook-service",
-        "workerName": "letbuyy-webhooks",
+        "workerName": "letbuyy-webhook",
         "order": 1,
         "requiredGates": ["validate:rollback", "validate:replay", "validate:queues", "validate:migrations"],
         "preserves": ["replay", "projection", "queue", "migration", "deployment-lineage"]
@@ -121,10 +121,10 @@
     "deadLetterPolicy": "operator-approved-dry-run-before-mutating-redrive",
     "retryPolicy": "deterministic-retry-sequencing-from-manifest",
     "policies": [
-      { "queueName": "letbuyy-events", "maxRetrying": 250, "maxDeadLetteredBeforeQuarantine": 25, "maxPoisonMessages": 0 },
-      { "queueName": "letbuyy-analytics", "maxRetrying": 500, "maxDeadLetteredBeforeQuarantine": 50, "maxPoisonMessages": 0 },
-      { "queueName": "letbuyy-search-indexing", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 },
-      { "queueName": "letbuyy-notifications", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 },
+      { "queueName": "letbuyy-events-production", "maxRetrying": 250, "maxDeadLetteredBeforeQuarantine": 25, "maxPoisonMessages": 0 },
+      { "queueName": "letbuyy-analytics-queue-production", "maxRetrying": 500, "maxDeadLetteredBeforeQuarantine": 50, "maxPoisonMessages": 0 },
+      { "queueName": "letbuyy-search-queue-production", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 },
+      { "queueName": "letbuyy-notifications-queue-production", "maxRetrying": 300, "maxDeadLetteredBeforeQuarantine": 30, "maxPoisonMessages": 0 },
       { "queueName": "letbuyy-production-queue", "maxRetrying": 200, "maxDeadLetteredBeforeQuarantine": 20, "maxPoisonMessages": 0 }
     ]
   },

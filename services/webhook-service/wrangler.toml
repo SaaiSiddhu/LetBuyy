@@ -1,8 +1,11 @@
-name = "letbuyy-webhooks"
+name = "letbuyy-webhook"
 main = "src/index.ts"
 compatibility_date = "2026-05-25"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
+
+[build]
+command = "pnpm build"
 
 [observability]
 enabled = true
@@ -65,10 +68,10 @@ dataset = "letbuyy-dev-telemetry"
 mode = "smart"
 
 [env.staging]
-name = "letbuyy-webhooks-staging"
+name = "letbuyy-webhook-staging"
 workers_dev = false
 routes = [
-  { pattern = "webhooks.staging.letbuyy.store", custom_domain = true }
+  { pattern = "webhooks-staging.letbuyy.store/*", zone_name = "letbuyy.store" }
 ]
 
 [env.staging.observability]
@@ -102,10 +105,10 @@ dataset = "letbuyy-staging-telemetry"
 mode = "smart"
 
 [env.production]
-name = "letbuyy-webhooks"
+name = "letbuyy-webhook"
 workers_dev = false
 routes = [
-  { pattern = "webhooks.letbuyy.store", custom_domain = true }
+  { pattern = "webhooks.letbuyy.store/*", zone_name = "letbuyy.store" }
 ]
 
 [env.production.observability]

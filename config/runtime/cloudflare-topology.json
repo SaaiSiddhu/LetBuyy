@@ -47,8 +47,8 @@
       "resourcePrefix": "letbuyy-staging",
       "worker": "letbuyy-staging-worker",
       "d1": "letbuyy-staging-d1",
-      "kv": "letbuyy-staging-kv",
-      "r2": "letbuyy-staging-r2",
+      "kv": "letbuyy-cache-staging",
+      "r2": "letbuyy-media-staging",
       "runtimeQueue": "letbuyy-staging-queue",
       "deadLetterQueue": "letbuyy-staging-dead-letter-queue",
       "durableObjectNamespace": "letbuyy-staging-runtime-coordinator",
@@ -57,12 +57,12 @@
       "walStorage": "letbuyy-staging-wal",
       "workers": {
         "apiGateway": "letbuyy-api-staging",
-        "webhookService": "letbuyy-webhooks-staging",
+        "webhookService": "letbuyy-webhook-staging",
         "queueWorkers": "letbuyy-queue-workers-staging"
       },
       "routes": {
-        "apiGateway": "api.staging.letbuyy.store",
-        "webhookService": "webhooks.staging.letbuyy.store"
+        "apiGateway": "api-staging.letbuyy.store",
+        "webhookService": "webhooks-staging.letbuyy.store"
       }
     },
     "production": {
@@ -71,8 +71,8 @@
       "resourcePrefix": "letbuyy-production",
       "worker": "letbuyy-production-worker",
       "d1": "letbuyy-production-d1",
-      "kv": "letbuyy-production-kv",
-      "r2": "letbuyy-production-r2",
+      "kv": "letbuyy-cache-production",
+      "r2": "letbuyy-media-production",
       "runtimeQueue": "letbuyy-production-queue",
       "deadLetterQueue": "letbuyy-production-dead-letter-queue",
       "durableObjectNamespace": "letbuyy-production-runtime-coordinator",
@@ -81,7 +81,7 @@
       "walStorage": "letbuyy-production-wal",
       "workers": {
         "apiGateway": "letbuyy-api",
-        "webhookService": "letbuyy-webhooks",
+        "webhookService": "letbuyy-webhook",
         "queueWorkers": "letbuyy-queue-workers"
       },
       "routes": {

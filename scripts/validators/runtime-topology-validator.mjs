@@ -54,11 +54,11 @@ reporter.assert(productionTopology?.eventStoreProvider?.provider === "supabase-p
 reporter.assert(productionTopology?.regions?.replayIntegrity?.failClosedOnDivergence === true, "Production topology must fail closed on replay divergence");
 
 for (const queue of [
-  "letbuyy-events",
-  "letbuyy-analytics",
-  "letbuyy-search-indexing",
-  "letbuyy-notifications",
-  "letbuyy-dead-letters",
+  "letbuyy-events-production",
+  "letbuyy-analytics-queue-production",
+  "letbuyy-search-queue-production",
+  "letbuyy-notifications-queue-production",
+  "letbuyy-dead-letters-production",
 ]) {
   reporter.assert(productionTopology?.queueProvider?.queues?.includes(queue), `Production topology missing queue: ${queue}`);
 }

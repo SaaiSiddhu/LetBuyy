@@ -9,11 +9,11 @@
     "consumerConfig": "services/queue-workers/wrangler.toml",
     "validationScript": "infrastructure/scripts/cloudflare/verify-provider-contracts.mjs",
     "queues": [
-      "letbuyy-events",
-      "letbuyy-analytics",
-      "letbuyy-search-indexing",
-      "letbuyy-notifications",
-      "letbuyy-dead-letters",
+      "letbuyy-events-production",
+      "letbuyy-analytics-queue-production",
+      "letbuyy-search-queue-production",
+      "letbuyy-notifications-queue-production",
+      "letbuyy-dead-letters-production",
       "letbuyy-production-queue",
       "letbuyy-production-dead-letter-queue"
     ]

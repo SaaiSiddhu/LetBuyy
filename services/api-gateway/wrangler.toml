@@ -4,6 +4,9 @@ compatibility_date = "2026-05-25"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
+[build]
+command = "pnpm build"
+
 [observability]
 enabled = true
 head_sampling_rate = 1
@@ -156,7 +159,7 @@ mode = "smart"
 name = "letbuyy-api-staging"
 workers_dev = false
 routes = [
-  { pattern = "api.staging.letbuyy.store", custom_domain = true }
+  { pattern = "api-staging.letbuyy.store/*", zone_name = "letbuyy.store" }
 ]
 
 [env.staging.observability]
@@ -177,13 +180,13 @@ APP_ENV = "staging"
 NODE_ENV = "production"
 DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
-RUNTIME_NAME = "API Gateway"
+RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
 EVENT_QUEUE_NAME = "letbuyy-events-staging"
-ANALYTICS_QUEUE_NAME = "letbuyy-analytics-staging"
-SEARCH_QUEUE_NAME = "letbuyy-search-indexing-staging"
-NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-staging"
+ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-staging"
+SEARCH_QUEUE_NAME = "letbuyy-search-queue-staging"
+NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-queue-staging"
 RUNTIME_QUEUE_NAME = "letbuyy-staging-queue"
 
 [[env.staging.queues.producers]]
@@ -192,15 +195,15 @@ queue = "letbuyy-events-staging"
 
 [[env.staging.queues.producers]]
 binding = "ANALYTICS_QUEUE"
-queue = "letbuyy-analytics-staging"
+queue = "letbuyy-analytics-queue-staging"
 
 [[env.staging.queues.producers]]
 binding = "SEARCH_QUEUE"
-queue = "letbuyy-search-indexing-staging"
+queue = "letbuyy-search-queue-staging"
 
 [[env.staging.queues.producers]]
 binding = "NOTIFICATION_QUEUE"
-queue = "letbuyy-notifications-staging"
+queue = "letbuyy-notifications-queue-staging"
 
 [[env.staging.queues.producers]]
 binding = "RUNTIME_QUEUE"
@@ -208,12 +211,16 @@ queue = "letbuyy-staging-queue"
 
 [[env.staging.kv_namespaces]]
 binding = "CACHE"
-id = "__LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID__"
-preview_id = "__LETBUYY_RUNTIME_CACHE_STAGING_NAMESPACE_ID__"
+id = "STAGING_CACHE_KV_ID_PLACEHOLDER"
+preview_id = "STAGING_CACHE_KV_ID_PLACEHOLDER"
 
 [[env.staging.r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-staging-r2"
+bucket_name = "letbuyy-media-staging"
+
+[[env.staging.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "STAGING_HYPERDRIVE_ID_PLACEHOLDER"
 
 [[env.staging.d1_databases]]
 binding = "RUNTIME_DB"
@@ -227,7 +234,7 @@ class_name = "LetbuyyRuntimeDurableObject"
 
 [[env.staging.services]]
 binding = "WEBHOOK_SERVICE"
-service = "letbuyy-webhooks-staging"
+service = "letbuyy-webhook-staging"
 
 [[env.staging.analytics_engine_datasets]]
 binding = "RUNTIME_TELEMETRY"
@@ -240,7 +247,7 @@ mode = "smart"
 name = "letbuyy-api"
 workers_dev = false
 routes = [
-  { pattern = "api.letbuyy.store", custom_domain = true }
+  { pattern = "api.letbuyy.store/*", zone_name = "letbuyy.store" }
 ]
 
 [env.production.observability]
@@ -261,30 +268,30 @@ APP_ENV = "production"
 NODE_ENV = "production"
 DEPLOYMENT_ENV = "production"
 TELEMETRY_ENV = "production"
-RUNTIME_NAME = "API Gateway"
+RUNTIME_NAME = "LetBuyy API"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-EVENT_QUEUE_NAME = "letbuyy-events"
-ANALYTICS_QUEUE_NAME = "letbuyy-analytics"
-SEARCH_QUEUE_NAME = "letbuyy-search-indexing"
-NOTIFICATION_QUEUE_NAME = "letbuyy-notifications"
+EVENT_QUEUE_NAME = "letbuyy-events-production"
+ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-production"
+SEARCH_QUEUE_NAME = "letbuyy-search-queue-production"
+NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-queue-production"
 RUNTIME_QUEUE_NAME = "letbuyy-production-queue"
 
 [[env.production.queues.producers]]
 binding = "EVENT_QUEUE"
-queue = "letbuyy-events"
+queue = "letbuyy-events-production"
 
 [[env.production.queues.producers]]
 binding = "ANALYTICS_QUEUE"
-queue = "letbuyy-analytics"
+queue = "letbuyy-analytics-queue-production"
 
 [[env.production.queues.producers]]
 binding = "SEARCH_QUEUE"
-queue = "letbuyy-search-indexing"
+queue = "letbuyy-search-queue-production"
 
 [[env.production.queues.producers]]
 binding = "NOTIFICATION_QUEUE"
-queue = "letbuyy-notifications"
+queue = "letbuyy-notifications-queue-production"
 
 [[env.production.queues.producers]]
 binding = "RUNTIME_QUEUE"
@@ -292,12 +299,16 @@ queue = "letbuyy-production-queue"
 
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__"
-preview_id = "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__"
+id = "PRODUCTION_CACHE_KV_ID_PLACEHOLDER"
+preview_id = "PRODUCTION_CACHE_KV_ID_PLACEHOLDER"
 
 [[env.production.r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-production-r2"
+bucket_name = "letbuyy-media-production"
+
+[[env.production.hyperdrive]]
+binding = "HYPERDRIVE"
+id = "PRODUCTION_HYPERDRIVE_ID_PLACEHOLDER"
 
 [[env.production.d1_databases]]
 binding = "RUNTIME_DB"
@@ -311,7 +322,7 @@ class_name = "LetbuyyRuntimeDurableObject"
 
 [[env.production.services]]
 binding = "WEBHOOK_SERVICE"
-service = "letbuyy-webhooks"
+service = "letbuyy-webhook"
 
 [[env.production.analytics_engine_datasets]]
 binding = "RUNTIME_TELEMETRY"

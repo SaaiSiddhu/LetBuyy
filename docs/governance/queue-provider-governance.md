@@ -21,16 +21,16 @@ Cloudflare Queues is the selected Phase 4 production queue provider.
   - `letbuyy-dead-letters-dev`
 - Staging:
   - `letbuyy-events-staging`
-  - `letbuyy-analytics-staging`
-  - `letbuyy-search-indexing-staging`
-  - `letbuyy-notifications-staging`
+  - `letbuyy-analytics-queue-staging`
+  - `letbuyy-search-queue-staging`
+  - `letbuyy-notifications-queue-staging`
   - `letbuyy-dead-letters-staging`
 - Production:
-- `letbuyy-events`
-- `letbuyy-analytics`
-- `letbuyy-search-indexing`
-- `letbuyy-notifications`
-- `letbuyy-dead-letters`
+  - `letbuyy-events-production`
+  - `letbuyy-analytics-queue-production`
+  - `letbuyy-search-queue-production`
+  - `letbuyy-notifications-queue-production`
+  - `letbuyy-dead-letters-production`
 
 ## Rules
 

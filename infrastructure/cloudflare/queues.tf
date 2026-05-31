@@ -65,7 +65,7 @@ locals {
 
   queues = {
     events = {
-      name            = "letbuyy-events"
+      name            = "letbuyy-events-production"
       batch_size      = 50
       max_concurrency = 25
       max_retries     = 10
@@ -73,7 +73,7 @@ locals {
       retry_delay     = 30
     }
     analytics = {
-      name            = "letbuyy-analytics"
+      name            = "letbuyy-analytics-queue-production"
       batch_size      = 50
       max_concurrency = 20
       max_retries     = 8
@@ -81,7 +81,7 @@ locals {
       retry_delay     = 30
     }
     search = {
-      name            = "letbuyy-search-indexing"
+      name            = "letbuyy-search-queue-production"
       batch_size      = 25
       max_concurrency = 20
       max_retries     = 8
@@ -89,7 +89,7 @@ locals {
       retry_delay     = 45
     }
     notifications = {
-      name            = "letbuyy-notifications"
+      name            = "letbuyy-notifications-queue-production"
       batch_size      = 25
       max_concurrency = 10
       max_retries     = 6
@@ -143,7 +143,7 @@ locals {
       retry_delay     = 30
     }
     analytics = {
-      name            = "letbuyy-analytics-staging"
+      name            = "letbuyy-analytics-queue-staging"
       batch_size      = 50
       max_concurrency = 10
       max_retries     = 8
@@ -151,7 +151,7 @@ locals {
       retry_delay     = 30
     }
     search = {
-      name            = "letbuyy-search-indexing-staging"
+      name            = "letbuyy-search-queue-staging"
       batch_size      = 25
       max_concurrency = 10
       max_retries     = 8
@@ -159,7 +159,7 @@ locals {
       retry_delay     = 45
     }
     notifications = {
-      name            = "letbuyy-notifications-staging"
+      name            = "letbuyy-notifications-queue-staging"
       batch_size      = 25
       max_concurrency = 5
       max_retries     = 6
@@ -171,7 +171,7 @@ locals {
 
 resource "cloudflare_queue" "dead_letters" {
   account_id = var.cloudflare_account_id
-  queue_name = "letbuyy-dead-letters"
+  queue_name = "letbuyy-dead-letters-production"
 
   settings = {
     message_retention_period = local.queue_retention_seconds

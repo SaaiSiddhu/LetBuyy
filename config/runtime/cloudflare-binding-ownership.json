@@ -79,7 +79,7 @@
           "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "staging": {
-          "workerName": "letbuyy-webhooks-staging",
+          "workerName": "letbuyy-webhook-staging",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
           "queueConsumers": [],
@@ -92,7 +92,7 @@
           "analyticsEngineDatasets": ["RUNTIME_TELEMETRY"]
         },
         "production": {
-          "workerName": "letbuyy-webhooks",
+          "workerName": "letbuyy-webhook",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
           "queueConsumers": [],
@@ -127,7 +127,7 @@
           "workerName": "letbuyy-queue-workers-staging",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
-          "queueConsumers": ["letbuyy-events-staging", "letbuyy-analytics-staging", "letbuyy-search-indexing-staging", "letbuyy-notifications-staging", "letbuyy-dead-letters-staging", "letbuyy-staging-queue", "letbuyy-staging-dead-letter-queue"],
+          "queueConsumers": ["letbuyy-events-staging", "letbuyy-analytics-queue-staging", "letbuyy-search-queue-staging", "letbuyy-notifications-queue-staging", "letbuyy-dead-letters-staging", "letbuyy-staging-queue", "letbuyy-staging-dead-letter-queue"],
           "kvNamespaces": [],
           "r2Buckets": [],
           "d1Databases": [],
@@ -140,7 +140,7 @@
           "workerName": "letbuyy-queue-workers",
           "vars": ["ENVIRONMENT", "APP_ENV", "NODE_ENV", "DEPLOYMENT_ENV", "TELEMETRY_ENV", "RUNTIME_NAME", "PRIMARY_REGION", "FAILOVER_REGION"],
           "queueProducers": [],
-          "queueConsumers": ["letbuyy-events", "letbuyy-analytics", "letbuyy-search-indexing", "letbuyy-notifications", "letbuyy-dead-letters", "letbuyy-production-queue", "letbuyy-production-dead-letter-queue"],
+          "queueConsumers": ["letbuyy-events-production", "letbuyy-analytics-queue-production", "letbuyy-search-queue-production", "letbuyy-notifications-queue-production", "letbuyy-dead-letters-production", "letbuyy-production-queue", "letbuyy-production-dead-letter-queue"],
           "kvNamespaces": [],
           "r2Buckets": [],
           "d1Databases": [],

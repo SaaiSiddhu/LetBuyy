@@ -29,6 +29,11 @@ reporter.assert(JSON.stringify(lineage?.promotionOrder) === JSON.stringify(["dev
 
 const seenResourceNames = new Map();
 const resourceKeys = ["worker", "d1", "kv", "r2", "runtimeQueue", "deadLetterQueue", "durableObjectNamespace", "telemetryDataset", "replayStorage", "walStorage"];
+const cacheKvPlaceholders = {
+  dev: "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__",
+  staging: "STAGING_CACHE_KV_ID_PLACEHOLDER",
+  production: "PRODUCTION_CACHE_KV_ID_PLACEHOLDER",
+};
 
 for (const environment of ["dev", "staging", "production"]) {
   const env = topology.environments?.[environment];
@@ -37,7 +42,11 @@ for (const environment of ["dev", "staging", "production"]) {
 
   for (const key of resourceKeys) {
     const value = env?.[key];
-    reporter.assert(typeof value === "string" && value.startsWith(env.resourcePrefix), `Cloudflare ${environment}.${key} must use prefix ${env.resourcePrefix}`);
+    const environmentToken = environment === "dev" ? "dev" : environment;
+    const isEnvironmentScoped =
+      typeof value === "string" &&
+      (value.startsWith(env.resourcePrefix) || value.endsWith(`-${environmentToken}`) || value.includes(`-${environmentToken}-`));
+    reporter.assert(isEnvironmentScoped, `Cloudflare ${environment}.${key} must be scoped to ${environment}`);
     const collision = seenResourceNames.get(value);
     reporter.assert(!collision, `Cloudflare resource name shared across environments: ${value}`);
     seenResourceNames.set(value, `${environment}.${key}`);
@@ -47,7 +56,7 @@ for (const environment of ["dev", "staging", "production"]) {
   reporter.assert(webhookWrangler.includes(`name = "${env.workers.webhookService}"`), `Webhook wrangler missing Worker ${env.workers.webhookService}`);
   reporter.assert(queueWrangler.includes(`name = "${env.workers.queueWorkers}"`), `Queue wrangler missing Worker ${env.workers.queueWorkers}`);
   reporter.assert(apiWrangler.includes(env.d1), `API Gateway wrangler missing D1 ${env.d1}`);
-  reporter.assert(apiWrangler.includes(env.kv === "letbuyy-production-kv" ? "__LETBUYY_RUNTIME_CACHE_PRODUCTION_NAMESPACE_ID__" : `__LETBUYY_RUNTIME_CACHE_${environment.toUpperCase()}_NAMESPACE_ID__`), `API Gateway wrangler missing KV placeholder for ${environment}`);
+  reporter.assert(apiWrangler.includes(cacheKvPlaceholders[environment]), `API Gateway wrangler missing KV placeholder for ${environment}`);
   reporter.assert(apiWrangler.includes(env.r2), `API Gateway wrangler missing R2 ${env.r2}`);
   reporter.assert(apiWrangler.includes(env.runtimeQueue), `API Gateway wrangler missing runtime queue ${env.runtimeQueue}`);
   reporter.assert(queueWrangler.includes(env.runtimeQueue), `Queue wrangler missing runtime queue ${env.runtimeQueue}`);

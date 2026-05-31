@@ -84,6 +84,7 @@ functions/lib/
 # Environment & Secrets
 .env
 .env.*
+.env-setup-state
 .env.local
 **/.env.local
 *.env

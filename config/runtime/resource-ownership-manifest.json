@@ -31,8 +31,8 @@
     "staging": {
       "worker": "letbuyy-staging-worker",
       "d1": "letbuyy-staging-d1",
-      "kv": "letbuyy-staging-kv",
-      "r2": "letbuyy-staging-r2",
+      "kv": "letbuyy-cache-staging",
+      "r2": "letbuyy-media-staging",
       "runtimeQueue": "letbuyy-staging-queue",
       "deadLetterQueue": "letbuyy-staging-dead-letter-queue",
       "durableObjectNamespace": "letbuyy-staging-runtime-coordinator",
@@ -43,8 +43,8 @@
     "production": {
       "worker": "letbuyy-production-worker",
       "d1": "letbuyy-production-d1",
-      "kv": "letbuyy-production-kv",
-      "r2": "letbuyy-production-r2",
+      "kv": "letbuyy-cache-production",
+      "r2": "letbuyy-media-production",
       "runtimeQueue": "letbuyy-production-queue",
       "deadLetterQueue": "letbuyy-production-dead-letter-queue",
       "durableObjectNamespace": "letbuyy-production-runtime-coordinator",

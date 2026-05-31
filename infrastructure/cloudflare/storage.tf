@@ -1,11 +1,11 @@
 resource "cloudflare_kv_namespace" "runtime_cache" {
   account_id = var.cloudflare_account_id
-  title      = "letbuyy-production-kv"
+  title      = "letbuyy-cache-production"
 }
 
 resource "cloudflare_kv_namespace" "runtime_cache_staging" {
   account_id = var.cloudflare_account_id
-  title      = "letbuyy-staging-kv"
+  title      = "letbuyy-cache-staging"
 }
 
 resource "cloudflare_kv_namespace" "runtime_cache_dev" {
@@ -15,13 +15,13 @@ resource "cloudflare_kv_namespace" "runtime_cache_dev" {
 
 resource "cloudflare_r2_bucket" "runtime_storage" {
   account_id = var.cloudflare_account_id
-  name       = "letbuyy-production-r2"
+  name       = "letbuyy-media-production"
   location   = "APAC"
 }
 
 resource "cloudflare_r2_bucket" "runtime_storage_staging" {
   account_id = var.cloudflare_account_id
-  name       = "letbuyy-staging-r2"
+  name       = "letbuyy-media-staging"
   location   = "APAC"
 }
 

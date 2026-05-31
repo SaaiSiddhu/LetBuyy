@@ -337,21 +337,35 @@ function stringValue(block, key) {
   return block.match(new RegExp(`^\\s*${key}\\s*=\\s*"([^"]+)"`, "m"))?.[1] || "";
 }
 
-function environmentQueueName(queueName, environment) {
-  return environment === "production" ? queueName : `${queueName}-${environment}`;
-}
+const workloadQueuesByEnvironment = {
+  dev: {
+    events: "letbuyy-events-dev",
+    analytics: "letbuyy-analytics-dev",
+    search: "letbuyy-search-indexing-dev",
+    notifications: "letbuyy-notifications-dev",
+    deadLetters: "letbuyy-dead-letters-dev",
+  },
+  staging: {
+    events: "letbuyy-events-staging",
+    analytics: "letbuyy-analytics-queue-staging",
+    search: "letbuyy-search-queue-staging",
+    notifications: "letbuyy-notifications-queue-staging",
+    deadLetters: "letbuyy-dead-letters-staging",
+  },
+  production: {
+    events: "letbuyy-events-production",
+    analytics: "letbuyy-analytics-queue-production",
+    search: "letbuyy-search-queue-production",
+    notifications: "letbuyy-notifications-queue-production",
+    deadLetters: "letbuyy-dead-letters-production",
+  },
+};
 
 function terraformStringAssignmentExists(key, value) {
   return new RegExp(`\\b${key}\\s*=\\s*"${value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"`).test(storageTerraform);
 }
 
-for (const queueName of [
-  "letbuyy-events",
-  "letbuyy-analytics",
-  "letbuyy-search-indexing",
-  "letbuyy-notifications",
-  "letbuyy-dead-letters",
-]) {
+for (const queueName of Object.values(workloadQueuesByEnvironment.production)) {
   reporter.assert(
     queueTerraform.includes(queueName) && queueWrangler.includes(queueName),
     `Cloudflare Queue must be declared in Terraform and consumer config: ${queueName}`,
@@ -373,11 +387,11 @@ for (const wranglerEnv of ["env.dev", "env.staging", "env.production"]) {
 }
 
 const baseRuntimeQueues = [
-  "letbuyy-events",
-  "letbuyy-analytics",
-  "letbuyy-search-indexing",
-  "letbuyy-notifications",
-  "letbuyy-dead-letters",
+  "events",
+  "analytics",
+  "search",
+  "notifications",
+  "deadLetters",
 ];
 const environmentRoutes = {
   dev: {
@@ -390,10 +404,10 @@ const environmentRoutes = {
     runtimeDlq: "letbuyy-dev-dead-letter-queue",
   },
   staging: {
-    api: "api.staging.letbuyy.store",
-    webhooks: "webhooks.staging.letbuyy.store",
-    cache: "letbuyy-staging-kv",
-    r2: "letbuyy-staging-r2",
+    api: "api-staging.letbuyy.store",
+    webhooks: "webhooks-staging.letbuyy.store",
+    cache: "letbuyy-cache-staging",
+    r2: "letbuyy-media-staging",
     d1: "letbuyy-staging-d1",
     runtimeQueue: "letbuyy-staging-queue",
     runtimeDlq: "letbuyy-staging-dead-letter-queue",
@@ -401,8 +415,8 @@ const environmentRoutes = {
   production: {
     api: "api.letbuyy.store",
     webhooks: "webhooks.letbuyy.store",
-    cache: "letbuyy-production-kv",
-    r2: "letbuyy-production-r2",
+    cache: "letbuyy-cache-production",
+    r2: "letbuyy-media-production",
     d1: "letbuyy-production-d1",
     runtimeQueue: "letbuyy-production-queue",
     runtimeDlq: "letbuyy-production-dead-letter-queue",
@@ -421,7 +435,7 @@ for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
     `API Gateway Worker name must be isolated for ${environmentName}`,
   );
   reporter.assert(
-    stringValue(webhookEnvBlock, "name") === (environmentName === "production" ? "letbuyy-webhooks" : `letbuyy-webhooks-${environmentName}`),
+    stringValue(webhookEnvBlock, "name") === (environmentName === "dev" ? "letbuyy-webhooks-dev" : environmentName === "production" ? "letbuyy-webhook" : `letbuyy-webhook-${environmentName}`),
     `Webhook Worker name must be isolated for ${environmentName}`,
   );
   reporter.assert(apiWrangler.includes(isolation.api), `API Gateway route missing for ${environmentName}: ${isolation.api}`);
@@ -442,10 +456,10 @@ for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
   const producerQueues = arrayTableBlocks(apiWrangler, `env.${environmentName}.queues.producers`).map((block) => stringValue(block, "queue"));
   const consumerQueues = arrayTableBlocks(queueWrangler, `env.${environmentName}.queues.consumers`).map((block) => stringValue(block, "queue"));
   for (const baseQueue of baseRuntimeQueues) {
-    const queueName = environmentQueueName(baseQueue, environmentName);
+    const queueName = workloadQueuesByEnvironment[environmentName][baseQueue];
     reporter.assert(queueTerraform.includes(queueName), `Cloudflare Terraform missing ${environmentName} queue ${queueName}`);
     reporter.assert(consumerQueues.includes(queueName), `Queue worker missing ${environmentName} consumer ${queueName}`);
-    if (!baseQueue.includes("dead-letters")) {
+    if (baseQueue !== "deadLetters") {
       reporter.assert(producerQueues.includes(queueName), `API Gateway missing ${environmentName} producer ${queueName}`);
     }
     reporter.assert(!seenQueueNames.has(queueName), `Cloudflare queue is shared by ${seenQueueNames.get(queueName)} and ${environmentName}: ${queueName}`);

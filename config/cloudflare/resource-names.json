@@ -1,0 +1,138 @@
+{
+  "account": {
+    "name": "LetBuyy",
+    "id": "CLOUDFLARE_ACCOUNT_ID_PLACEHOLDER"
+  },
+  "workers": {
+    "api-gateway": {
+      "staging": "letbuyy-api-staging",
+      "production": "letbuyy-api"
+    },
+    "webhook-service": {
+      "staging": "letbuyy-webhook-staging",
+      "production": "letbuyy-webhook"
+    },
+    "queue-workers": {
+      "staging": "letbuyy-queue-workers-staging",
+      "production": "letbuyy-queue-workers"
+    },
+    "checkout-runtime": {
+      "staging": "letbuyy-checkout-staging",
+      "production": "letbuyy-checkout"
+    },
+    "notification-service": {
+      "staging": "letbuyy-notifications-staging",
+      "production": "letbuyy-notifications"
+    },
+    "search-service": {
+      "staging": "letbuyy-search-staging",
+      "production": "letbuyy-search"
+    },
+    "media-service": {
+      "staging": "letbuyy-media-service-staging",
+      "production": "letbuyy-media-service"
+    },
+    "analytics-pipeline": {
+      "staging": "letbuyy-analytics-staging",
+      "production": "letbuyy-analytics"
+    },
+    "event-bus": {
+      "staging": "letbuyy-event-bus-staging",
+      "production": "letbuyy-event-bus"
+    }
+  },
+  "r2": {
+    "media": {
+      "staging": "letbuyy-media-staging",
+      "production": "letbuyy-media-production"
+    }
+  },
+  "kv": {
+    "sessions": {
+      "staging": "letbuyy-sessions-staging",
+      "production": "letbuyy-sessions-production"
+    },
+    "cache": {
+      "staging": "letbuyy-cache-staging",
+      "production": "letbuyy-cache-production"
+    },
+    "rate-limit": {
+      "staging": "letbuyy-rate-limit-staging",
+      "production": "letbuyy-rate-limit-production"
+    }
+  },
+  "queues": {
+    "events": {
+      "staging": "letbuyy-events-staging",
+      "production": "letbuyy-events-production"
+    },
+    "analytics": {
+      "staging": "letbuyy-analytics-queue-staging",
+      "production": "letbuyy-analytics-queue-production"
+    },
+    "notifications": {
+      "staging": "letbuyy-notifications-queue-staging",
+      "production": "letbuyy-notifications-queue-production"
+    },
+    "search-indexing": {
+      "staging": "letbuyy-search-queue-staging",
+      "production": "letbuyy-search-queue-production"
+    },
+    "dead-letters": {
+      "staging": "letbuyy-dead-letters-staging",
+      "production": "letbuyy-dead-letters-production"
+    },
+    "runtime": {
+      "staging": "letbuyy-staging-queue",
+      "production": "letbuyy-production-queue"
+    },
+    "runtime-dead-letters": {
+      "staging": "letbuyy-staging-dead-letter-queue",
+      "production": "letbuyy-production-dead-letter-queue"
+    }
+  },
+  "hyperdrive": {
+    "primary-db": {
+      "staging": "letbuyy-hyperdrive-staging",
+      "production": "letbuyy-hyperdrive-production"
+    }
+  },
+  "durable-objects": {
+    "runtime-coordinator": {
+      "staging": "RUNTIME_COORDINATOR_STAGING",
+      "production": "RUNTIME_COORDINATOR_PRODUCTION"
+    },
+    "cart": {
+      "staging": "CART_DO_STAGING",
+      "production": "CART_DO_PRODUCTION"
+    },
+    "checkout": {
+      "staging": "CHECKOUT_DO_STAGING",
+      "production": "CHECKOUT_DO_PRODUCTION"
+    }
+  },
+  "d1": {
+    "runtime": {
+      "staging": "letbuyy-staging-d1",
+      "production": "letbuyy-production-d1"
+    }
+  },
+  "domains": {
+    "staging": {
+      "api": "api-staging.letbuyy.store",
+      "webhooks": "webhooks-staging.letbuyy.store",
+      "storefront": "store-staging.letbuyy.store",
+      "accounts": "accounts-staging.letbuyy.store",
+      "admin": "admin-staging.letbuyy.store",
+      "console": "console-staging.letbuyy.store"
+    },
+    "production": {
+      "api": "api.letbuyy.store",
+      "webhooks": "webhooks.letbuyy.store",
+      "storefront": "store.letbuyy.store",
+      "accounts": "accounts.letbuyy.store",
+      "admin": "admin.letbuyy.store",
+      "console": "console.letbuyy.store"
+    }
+  }
+}

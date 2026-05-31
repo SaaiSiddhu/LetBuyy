@@ -47,11 +47,11 @@
       "runtimeRoot": "services/webhook-service",
       "workerNames": {
         "dev": "letbuyy-webhooks-dev",
-        "staging": "letbuyy-webhooks-staging",
-        "production": "letbuyy-webhooks"
+        "staging": "letbuyy-webhook-staging",
+        "production": "letbuyy-webhook"
       },
       "config": "services/webhook-service/wrangler.toml",
-      "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-webhooks --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
+      "rollbackCommand": "node infrastructure/scripts/deploy/production-rollback.mjs --environment=production --worker=letbuyy-webhook --version-id=$APPROVED_PREVIOUS_VERSION_ID --reason=$ROLLBACK_REASON",
       "replayValidation": "validate:replay",
       "queueValidation": "validate:queues",
       "migrationCompatibility": "forward-compatible-or-forward-fix-only",

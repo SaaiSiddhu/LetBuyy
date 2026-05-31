@@ -53,13 +53,41 @@ function exactQueue(queueName) {
   return `queue = "${queueName}"`;
 }
 
-const productionQueues = [
-  "letbuyy-events",
-  "letbuyy-analytics",
-  "letbuyy-search-indexing",
-  "letbuyy-notifications",
-  "letbuyy-dead-letters",
-];
+const workloadQueues = {
+  dev: [
+    "letbuyy-events-dev",
+    "letbuyy-analytics-dev",
+    "letbuyy-search-indexing-dev",
+    "letbuyy-notifications-dev",
+    "letbuyy-dead-letters-dev",
+  ],
+  staging: [
+    "letbuyy-events-staging",
+    "letbuyy-analytics-queue-staging",
+    "letbuyy-search-queue-staging",
+    "letbuyy-notifications-queue-staging",
+    "letbuyy-dead-letters-staging",
+  ],
+  production: [
+    "letbuyy-events-production",
+    "letbuyy-analytics-queue-production",
+    "letbuyy-search-queue-production",
+    "letbuyy-notifications-queue-production",
+    "letbuyy-dead-letters-production",
+  ],
+};
+
+const r2Buckets = {
+  dev: "letbuyy-dev-r2",
+  staging: "letbuyy-media-staging",
+  production: "letbuyy-media-production",
+};
+
+const kvPlaceholders = {
+  dev: "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__",
+  staging: "STAGING_CACHE_KV_ID_PLACEHOLDER",
+  production: "PRODUCTION_CACHE_KV_ID_PLACEHOLDER",
+};
 
 const foundationQueues = {
   dev: ["letbuyy-dev-queue", "letbuyy-dev-dead-letter-queue"],
@@ -75,8 +103,8 @@ const expectedWorkerNames = {
   },
   "services/webhook-service": {
     dev: "letbuyy-webhooks-dev",
-    staging: "letbuyy-webhooks-staging",
-    production: "letbuyy-webhooks",
+    staging: "letbuyy-webhook-staging",
+    production: "letbuyy-webhook",
   },
   "services/queue-workers": {
     dev: "letbuyy-queue-workers-dev",
@@ -120,16 +148,15 @@ for (const worker of workerConfigs) {
 
     if (worker.requiresProducerQueues || worker.requiresConsumers) {
       const queuesForWorker = worker.requiresConsumers
-        ? productionQueues
-        : productionQueues.filter((queue) => queue !== "letbuyy-dead-letters");
+        ? workloadQueues[environment]
+        : workloadQueues[environment].filter((queue) => !queue.includes("dead-letters"));
       for (const queue of queuesForWorker) {
-        if (environment === "production") {
-          reporter.assert(envSection.includes(exactQueue(queue)), `Worker ${marker} must bind production queue ${queue}: ${worker.config}`);
-          reporter.assert(!envSection.includes(exactQueue(`${queue}-dev`)), `Worker ${marker} must not bind dev queue ${queue}-dev: ${worker.config}`);
-          reporter.assert(!envSection.includes(exactQueue(`${queue}-staging`)), `Worker ${marker} must not bind staging queue ${queue}-staging: ${worker.config}`);
-        } else {
-          reporter.assert(!envSection.includes(exactQueue(queue)), `Worker ${marker} must not bind production queue ${queue}: ${worker.config}`);
-          reporter.assert(envSection.includes(exactQueue(`${queue}-${environment}`)), `Worker ${marker} must bind isolated queue ${queue}-${environment}: ${worker.config}`);
+        reporter.assert(envSection.includes(exactQueue(queue)), `Worker ${marker} must bind isolated queue ${queue}: ${worker.config}`);
+      }
+      for (const [otherEnvironment, queues] of Object.entries(workloadQueues)) {
+        if (otherEnvironment === environment) continue;
+        for (const queue of queues) {
+          reporter.assert(!envSection.includes(exactQueue(queue)), `Worker ${marker} must not bind ${otherEnvironment} queue ${queue}: ${worker.config}`);
         }
       }
 
@@ -151,15 +178,15 @@ for (const worker of workerConfigs) {
     }
 
     if (worker.requiresR2) {
-      const expectedBucket = environment === "production" ? "letbuyy-production-r2" : `letbuyy-${environment}-r2`;
+      const expectedBucket = r2Buckets[environment];
       reporter.assert(envSection.includes(`bucket_name = "${expectedBucket}"`), `Worker ${marker} must bind isolated R2 bucket ${expectedBucket}: ${worker.config}`);
       if (environment !== "production") {
-        reporter.assert(!envSection.includes('bucket_name = "letbuyy-production-r2"'), `Worker ${marker} must not bind production R2 bucket: ${worker.config}`);
+        reporter.assert(!envSection.includes(`bucket_name = "${r2Buckets.production}"`), `Worker ${marker} must not bind production R2 bucket: ${worker.config}`);
       }
     }
 
     if (worker.requiresKv) {
-      const placeholder = `__LETBUYY_RUNTIME_CACHE_${environment.toUpperCase()}_NAMESPACE_ID__`;
+      const placeholder = kvPlaceholders[environment];
       reporter.assert(envSection.includes(`id = "${placeholder}"`), `Worker ${marker} must bind environment-specific KV namespace placeholder ${placeholder}: ${worker.config}`);
     }
 
@@ -167,12 +194,10 @@ for (const worker of workerConfigs) {
   }
 
   if (topLevel.includes('ENVIRONMENT = "local"')) {
-    reporter.assert(!topLevel.includes('queue = "letbuyy-events"'), `Local top-level config must not bind production events queue: ${worker.config}`);
-    reporter.assert(!topLevel.includes('queue = "letbuyy-analytics"'), `Local top-level config must not bind production analytics queue: ${worker.config}`);
-    reporter.assert(!topLevel.includes('queue = "letbuyy-search-indexing"'), `Local top-level config must not bind production search queue: ${worker.config}`);
-    reporter.assert(!topLevel.includes('queue = "letbuyy-notifications"'), `Local top-level config must not bind production notification queue: ${worker.config}`);
-    reporter.assert(!topLevel.includes('queue = "letbuyy-dead-letters"'), `Local top-level config must not bind production DLQ: ${worker.config}`);
-    reporter.assert(!topLevel.includes('bucket_name = "letbuyy-production-r2"'), `Local top-level config must not bind production R2 bucket: ${worker.config}`);
+    for (const queue of workloadQueues.production) {
+      reporter.assert(!topLevel.includes(exactQueue(queue)), `Local top-level config must not bind production queue ${queue}: ${worker.config}`);
+    }
+    reporter.assert(!topLevel.includes(`bucket_name = "${r2Buckets.production}"`), `Local top-level config must not bind production R2 bucket: ${worker.config}`);
   }
 }
 

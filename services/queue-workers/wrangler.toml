@@ -4,6 +4,9 @@ compatibility_date = "2026-05-25"
 compatibility_flags = ["nodejs_compat"]
 workers_dev = false
 
+[build]
+command = "pnpm build"
+
 [observability]
 enabled = true
 head_sampling_rate = 1
@@ -220,7 +223,7 @@ retry_delay = 30
 dead_letter_queue = "letbuyy-dead-letters-staging"
 
 [[env.staging.queues.consumers]]
-queue = "letbuyy-analytics-staging"
+queue = "letbuyy-analytics-queue-staging"
 max_batch_size = 50
 max_batch_timeout = 10
 max_concurrency = 10
@@ -229,7 +232,7 @@ retry_delay = 30
 dead_letter_queue = "letbuyy-dead-letters-staging"
 
 [[env.staging.queues.consumers]]
-queue = "letbuyy-search-indexing-staging"
+queue = "letbuyy-search-queue-staging"
 max_batch_size = 25
 max_batch_timeout = 10
 max_concurrency = 10
@@ -238,7 +241,7 @@ retry_delay = 45
 dead_letter_queue = "letbuyy-dead-letters-staging"
 
 [[env.staging.queues.consumers]]
-queue = "letbuyy-notifications-staging"
+queue = "letbuyy-notifications-queue-staging"
 max_batch_size = 25
 max_batch_timeout = 10
 max_concurrency = 5
@@ -306,43 +309,43 @@ PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
 
 [[env.production.queues.consumers]]
-queue = "letbuyy-events"
+queue = "letbuyy-events-production"
 max_batch_size = 50
 max_batch_timeout = 10
 max_concurrency = 25
 max_retries = 10
 retry_delay = 30
-dead_letter_queue = "letbuyy-dead-letters"
+dead_letter_queue = "letbuyy-dead-letters-production"
 
 [[env.production.queues.consumers]]
-queue = "letbuyy-analytics"
+queue = "letbuyy-analytics-queue-production"
 max_batch_size = 50
 max_batch_timeout = 10
 max_concurrency = 20
 max_retries = 8
 retry_delay = 30
-dead_letter_queue = "letbuyy-dead-letters"
+dead_letter_queue = "letbuyy-dead-letters-production"
 
 [[env.production.queues.consumers]]
-queue = "letbuyy-search-indexing"
+queue = "letbuyy-search-queue-production"
 max_batch_size = 25
 max_batch_timeout = 10
 max_concurrency = 20
 max_retries = 8
 retry_delay = 45
-dead_letter_queue = "letbuyy-dead-letters"
+dead_letter_queue = "letbuyy-dead-letters-production"
 
 [[env.production.queues.consumers]]
-queue = "letbuyy-notifications"
+queue = "letbuyy-notifications-queue-production"
 max_batch_size = 25
 max_batch_timeout = 10
 max_concurrency = 10
 max_retries = 6
 retry_delay = 60
-dead_letter_queue = "letbuyy-dead-letters"
+dead_letter_queue = "letbuyy-dead-letters-production"
 
 [[env.production.queues.consumers]]
-queue = "letbuyy-dead-letters"
+queue = "letbuyy-dead-letters-production"
 max_batch_size = 25
 max_batch_timeout = 30
 max_concurrency = 5

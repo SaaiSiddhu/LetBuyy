@@ -52,14 +52,14 @@ for (const file of [
 
   const topLevel = text.split(/\n\[env\.dev\]/)[0] ?? "";
   for (const forbiddenProductionResource of [
-    'queue = "letbuyy-events"',
-    'queue = "letbuyy-analytics"',
-    'queue = "letbuyy-search-indexing"',
-    'queue = "letbuyy-notifications"',
-    'queue = "letbuyy-dead-letters"',
+    'queue = "letbuyy-events-production"',
+    'queue = "letbuyy-analytics-queue-production"',
+    'queue = "letbuyy-search-queue-production"',
+    'queue = "letbuyy-notifications-queue-production"',
+    'queue = "letbuyy-dead-letters-production"',
     'queue = "letbuyy-production-queue"',
     'queue = "letbuyy-production-dead-letter-queue"',
-    'bucket_name = "letbuyy-production-r2"',
+    'bucket_name = "letbuyy-media-production"',
   ]) {
     reporter.assert(!topLevel.includes(forbiddenProductionResource), `${file}: local/top-level config must not bind ${forbiddenProductionResource}`);
   }
