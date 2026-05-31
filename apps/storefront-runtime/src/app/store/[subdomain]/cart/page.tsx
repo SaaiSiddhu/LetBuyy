@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Package } from 'lucide-react';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
 
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 
@@ -33,7 +34,7 @@ export default function CartPage() {
                     <p className="text-theme-secondary mb-6 text-sm max-w-xs">Start shopping to add items to your bag</p>
                     <Link
                         href={`${basePath}/shop`}
-                        className="text-white px-6 py-3 rounded-xl font-semibold shadow-lg transition-all hover:-translate-y-0.5"
+                        className="inline-flex min-h-11 items-center justify-center rounded-xl px-6 py-3 font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5"
                         style={{ backgroundColor: primaryColor }}
                     >
                         Browse Products
@@ -60,7 +61,7 @@ export default function CartPage() {
                     </div>
                     <button
                         onClick={clearCart}
-                        className="text-sm hover:text-red-500 transition-colors"
+                        className="flex min-h-11 items-center px-2 text-sm hover:text-red-500 transition-colors"
                         style={{ color: 'var(--text-muted)' }}
                     >
                         Clear All
@@ -81,8 +82,15 @@ export default function CartPage() {
                                 >
                                     {/* Image - Compact */}
                                     <Link href={`${basePath}/product/${item.id}`} className="flex-shrink-0">
-                                        <div className="w-20 h-20 card-theme-secondary rounded-lg overflow-hidden">
-                                            <img src={item.images[0] || productImageFallback} alt={item.name} className="w-full h-full object-cover" />
+                                        <div className="relative h-20 w-20 overflow-hidden rounded-lg card-theme-secondary">
+                                            <Image
+                                                src={item.images[0] || productImageFallback}
+                                                alt={item.name}
+                                                fill
+                                                sizes="80px"
+                                                className="object-cover"
+                                                unoptimized
+                                            />
                                         </div>
                                     </Link>
 
@@ -106,7 +114,7 @@ export default function CartPage() {
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(item.id)}
-                                                className="p-1.5 text-card-muted hover:text-red-500 transition-colors"
+                                                className="flex h-11 w-11 items-center justify-center text-card-muted hover:text-red-500 transition-colors"
                                             >
                                                 <X size={16} />
                                             </button>
@@ -117,14 +125,14 @@ export default function CartPage() {
                                             <div className="flex items-center border border-card rounded-lg overflow-hidden">
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                                                    className="p-1.5 hover:bg-surface-hover transition-colors text-card"
+                                                    className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover transition-colors text-card"
                                                 >
                                                     <Minus size={12} />
                                                 </button>
                                                 <span className="text-xs font-semibold w-6 text-center text-card">{item.quantity}</span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                                                    className="p-1.5 hover:bg-surface-hover transition-colors text-card"
+                                                    className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover transition-colors text-card"
                                                 >
                                                     <Plus size={12} />
                                                 </button>
@@ -163,7 +171,7 @@ export default function CartPage() {
 
                             <Link
                                 href={`${basePath}/checkout`}
-                                className="w-full mt-4 py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition-all hover:opacity-90"
+                                className="mt-4 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-bold shadow-lg transition-all hover:opacity-90"
                                 style={{ backgroundColor: 'var(--card-bg)', color: 'var(--card-text)' }}
                             >
                                 Proceed to Checkout <ArrowRight size={18} />

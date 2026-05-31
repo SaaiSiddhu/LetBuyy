@@ -3,8 +3,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { ProductModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
 import { useCart } from '@/context/cart-context';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import Link from 'next/link';
 import {
     ArrowLeft, Minus, Plus, ShoppingBag, Heart, Share2,
@@ -31,9 +32,6 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
     const [specsOpen, setSpecsOpen] = useState(false);
     const [addedToCart, setAddedToCart] = useState(false);
     const [isWishlisted, setIsWishlisted] = useState(false);
-
-    // Variant selection state
-    const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
 
     // Calculate discount
     const discount = product.compareAtPrice && product.compareAtPrice > product.price
@@ -81,14 +79,13 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
     const variantGroups = getVariantGroups();
     const hasVariants = Object.keys(variantGroups).length > 0;
 
-    // Initialize selected variants with first option
-    useEffect(() => {
+    const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>(() => {
         const initial: Record<string, string> = {};
         Object.entries(variantGroups).forEach(([group, options]) => {
             if (options.length > 0) initial[group] = options[0];
         });
-        setSelectedVariants(initial);
-    }, []);
+        return initial;
+    });
 
     const handleQuantity = (delta: number) => {
         const newQty = quantity + delta;
@@ -149,16 +146,24 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                             style={{ backgroundColor: 'var(--card-bg-secondary)', borderRadius: `${colors.borderRadius}px` }}
                         >
                             <AnimatePresence mode="wait">
-                                <motion.img
+                                <motion.div
                                     key={selectedImage}
-                                    src={productImages[selectedImage] || productImageFallback}
-                                    alt={product.name}
                                     initial={{ opacity: 0, scale: 1.02 }}
                                     animate={{ opacity: 1, scale: 1 }}
                                     exit={{ opacity: 0, scale: 0.98 }}
                                     transition={{ duration: 0.3 }}
-                                    className="w-full h-full object-cover"
-                                />
+                                    className="absolute inset-0"
+                                >
+                                    <Image
+                                        src={productImages[selectedImage] || productImageFallback}
+                                        alt={product.name}
+                                        fill
+                                        sizes="(max-width: 1024px) 100vw, 50vw"
+                                        className="object-cover"
+                                        priority
+                                        unoptimized
+                                    />
+                                </motion.div>
                             </AnimatePresence>
 
                             {/* Badges */}
@@ -187,11 +192,11 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                             <div className="absolute top-3 right-3 flex flex-col gap-2">
                                 <button
                                     onClick={() => setIsWishlisted(!isWishlisted)}
-                                    className={`p-2 rounded-full shadow transition-all ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
+                                    className={`flex h-11 w-11 items-center justify-center rounded-full shadow transition-all ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
                                 >
                                     <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
                                 </button>
-                                <button className="p-2 card-theme rounded-full shadow text-theme-secondary">
+                                <button className="flex h-11 w-11 items-center justify-center rounded-full shadow card-theme text-theme-secondary">
                                     <Share2 size={18} />
                                 </button>
                             </div>
@@ -204,7 +209,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     <button
                                         key={i}
                                         onClick={() => setSelectedImage(i)}
-                                        className={`flex-shrink-0 w-16 h-16 overflow-hidden transition-all border-2 shadow-sm ${selectedImage === i
+                                        className={`relative h-16 w-16 flex-shrink-0 overflow-hidden transition-all border-2 shadow-sm ${selectedImage === i
                                             ? 'opacity-100'
                                             : 'opacity-60 hover:opacity-100 border-transparent'
                                             }`}
@@ -213,7 +218,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                             borderColor: selectedImage === i ? colors.primaryColor : 'transparent'
                                         }}
                                     >
-                                        <img src={img} alt="" className="w-full h-full object-cover" />
+                                        <Image src={img} alt="" fill sizes="64px" className="object-cover" unoptimized />
                                     </button>
                                 ))}
                             </div>
@@ -370,7 +375,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 <button
                                     onClick={() => handleQuantity(-1)}
                                     disabled={quantity <= 1}
-                                    className="p-2 hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                                 >
                                     <Minus size={16} />
                                 </button>
@@ -383,7 +388,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 <button
                                     onClick={() => handleQuantity(1)}
                                     disabled={quantity >= product.stock}
-                                    className="p-2 hover:bg-surface-hover disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                    className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
                                 >
                                     <Plus size={16} />
                                 </button>
@@ -396,7 +401,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 onClick={handleAddToCart}
                                 whileTap={{ scale: 0.98 }}
                                 disabled={product.stock === 0}
-                                className={`flex-1 py-3.5 font-semibold rounded-xl border-2 flex items-center justify-center gap-2 transition-all disabled:opacity-50 ${addedToCart
+                                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3.5 font-semibold transition-all disabled:opacity-50 ${addedToCart
                                     ? 'bg-green-500 border-green-500 text-white'
                                     : 'hover:bg-surface-hover'
                                     }`}
@@ -413,7 +418,7 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 onClick={handleBuyNow}
                                 whileTap={{ scale: 0.98 }}
                                 disabled={product.stock === 0}
-                                className="flex-1 py-3.5 text-white font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg disabled:opacity-50"
+                                className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-lg disabled:opacity-50"
                                 style={{ backgroundColor: colors.primaryColor }}
                             >
                                 <Zap size={18} />

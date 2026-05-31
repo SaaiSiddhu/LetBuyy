@@ -1,16 +1,16 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, TrendingUp, User } from 'lucide-react';
+import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, User } from 'lucide-react';
 import { useCart } from '@/context/cart-context';
 import AccountBottomSheet from '@/components/account/account-bottom-sheet';
 import CartDrawer from '@/components/cart/cart-drawer';
 import { getStoreBasePath, resolveStoreHref } from '@/lib/store-paths';
-import { HeaderSettings, NavPage, StoreModel, ThemeSettings, ProductModel, SiteType } from '@/types/store';
+import { HeaderSettings, NavPage, StoreModel, ThemeSettings, ProductModel } from '@/types/store';
 
 interface DynamicHeaderProps {
     store: StoreModel;
@@ -36,7 +36,6 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
     const [searchOpen, setSearchOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [accountOpen, setAccountOpen] = useState(false);
-    const [searchResults, setSearchResults] = useState<ProductModel[]>([]);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const searchContainerRef = useRef<HTMLDivElement>(null);
     const { cartCount, setIsOpen: setCartOpen } = useCart();
@@ -80,23 +79,19 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
         setScrolled(latest > 50);
     });
 
-    // Search functionality
-    useEffect(() => {
+    const searchResults = useMemo(() => {
         if (searchQuery.trim().length < 2) {
-            setSearchResults([]);
-            return;
+            return [];
         }
 
         const query = searchQuery.toLowerCase().trim();
-        const results = products.filter(product => {
+        return products.filter(product => {
             const nameMatch = product.name.toLowerCase().includes(query);
             const descMatch = product.description?.toLowerCase().includes(query);
             const categoryMatch = product.category?.toLowerCase().includes(query);
             const tagsMatch = product.tags?.some(tag => tag.toLowerCase().includes(query));
             return nameMatch || descMatch || categoryMatch || tagsMatch;
         }).slice(0, 6); // Limit to 6 results
-
-        setSearchResults(results);
     }, [searchQuery, products]);
 
     // Focus search input when opened
@@ -176,7 +171,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                     <motion.button
                         onClick={() => setMobileMenuOpen(true)}
                         whileTap={{ scale: 0.95 }}
-                        className={`p-2 rounded-lg lg:hidden transition-colors`}
+                        className="flex h-11 w-11 items-center justify-center rounded-lg transition-colors lg:hidden"
                         style={{ color: scrolled ? 'var(--text)' : 'white' }}
                     >
                         <Menu size={24} strokeWidth={1.5} />
@@ -246,7 +241,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setSearchOpen(!searchOpen)}
-                                className={`p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                                className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
                             >
                                 <Search size={20} strokeWidth={1.5} />
                             </motion.button>
@@ -255,7 +250,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setAccountOpen(true)}
-                                className={`p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                                className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
                             >
                                 <User size={20} strokeWidth={1.5} />
                             </motion.button>
@@ -266,7 +261,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 aria-label={`Open cart${cartCount > 0 ? ` with ${cartCount} items` : ''}`}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setCartOpen(true)}
-                                className={`relative p-2 rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
+                                className={`relative flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
                             >
                                 <ShoppingBag size={20} strokeWidth={1.5} />
                                 <AnimatePresence>
@@ -306,7 +301,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                         value={searchQuery}
                                         onChange={(e) => setSearchQuery(e.target.value)}
                                         placeholder="Search products..."
-                                        className={`w-full pl-10 pr-10 py-2.5 rounded-lg text-sm ${scrolled
+                                        className={`min-h-11 w-full rounded-lg py-2.5 pl-10 pr-10 text-sm ${scrolled
                                             ? 'input-theme'
                                             : 'bg-white/10 text-white placeholder-white/60'
                                             } outline-none`}
@@ -340,10 +335,14 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                                 className="flex items-center gap-3 p-3 hover:bg-surface-hover transition-colors"
                                             >
                                                 {product.images[0] && (
-                                                    <img
+                                                    <Image
                                                         src={product.images[0]}
                                                         alt={product.name}
-                                                        className="w-12 h-12 object-cover rounded-lg"
+                                                        width={48}
+                                                        height={48}
+                                                        sizes="48px"
+                                                        className="h-12 w-12 rounded-lg object-cover"
+                                                        unoptimized
                                                     />
                                                 )}
                                                 <div className="flex-1 min-w-0">
@@ -365,7 +364,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                         animate={{ opacity: 1 }}
                                         className="mt-2 p-4 card-theme rounded-lg shadow-xl text-center text-card-muted text-sm"
                                     >
-                                        No products found for "{searchQuery}"
+                                        No products found for &quot;{searchQuery}&quot;
                                     </motion.div>
                                 )}
                             </div>
@@ -402,7 +401,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             <span className="text-sm font-medium text-card-muted uppercase tracking-wider">Menu</span>
                             <button
                                 onClick={() => setMobileMenuOpen(false)}
-                                className="p-2 -mr-2 rounded-lg text-card-muted hover:bg-surface-hover"
+                                className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-card-muted hover:bg-surface-hover"
                             >
                                 <X size={20} />
                             </button>
@@ -427,7 +426,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
                                     placeholder="Search products..."
-                                    className="w-full pl-9 pr-4 py-2.5 card-theme-secondary rounded-lg text-sm text-card placeholder:text-card-muted outline-none"
+                                    className="min-h-11 w-full rounded-lg py-2.5 pl-9 pr-4 text-sm text-card placeholder:text-card-muted card-theme-secondary outline-none"
                                 />
                             </form>
                         </div>
@@ -444,7 +443,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                     <Link
                                         href={resolveStoreHref(store.subdomain, page.href)}
                                         onClick={() => setMobileMenuOpen(false)}
-                                        className="flex items-center justify-between px-4 py-3 text-card hover:bg-surface-hover"
+                                        className="flex min-h-11 items-center justify-between px-4 py-3 text-card hover:bg-surface-hover"
                                     >
                                         <div className="flex items-center gap-3">
                                             <span className="text-card-muted">
@@ -475,7 +474,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                     </button>
                                     <Link href={`${basePath}/shop`} onClick={() => setMobileMenuOpen(false)}>
                                         <div
-                                            className="w-full py-3 text-center text-white font-semibold text-sm rounded-lg"
+                                            className="flex min-h-11 w-full items-center justify-center rounded-lg py-3 text-center text-sm font-semibold text-white"
                                             style={{ backgroundColor: theme.primaryColor }}
                                         >
                                             Shop Now
@@ -484,10 +483,10 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 </>
                             ) : (
                                 <Link href={`#contact`} onClick={() => setMobileMenuOpen(false)}>
-                                    <div
-                                        className="w-full py-3 text-center text-white font-semibold text-sm rounded-lg"
-                                        style={{ backgroundColor: theme.primaryColor }}
-                                    >
+                                        <div
+                                            className="flex min-h-11 w-full items-center justify-center rounded-lg py-3 text-center text-sm font-semibold text-white"
+                                            style={{ backgroundColor: theme.primaryColor }}
+                                        >
                                         Get In Touch
                                     </div>
                                 </Link>

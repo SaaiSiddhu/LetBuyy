@@ -2,12 +2,12 @@
 
 import { motion } from 'framer-motion';
 import { SectionModel, ProductModel, ProductGridSettings, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
-import { ShoppingBag, Heart } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Heart } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
-import type { CSSProperties } from 'react';
 
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 
@@ -31,8 +31,17 @@ export default function ProductGrid({ section, products, theme, basePath: provid
     const showPrice = settings.showPrice !== false;
     const showAddToCart = settings.showAddToCart !== false;
     const columns = Math.max(1, Number(settings.columns || 3));
+    const gridColumns = Math.min(columns, 4);
     const rows = Math.max(1, Number(settings.rows || 2));
-    const displayProducts = products.slice(0, columns * rows);
+    const displayProducts = products.slice(0, gridColumns * rows);
+    const desktopGridClass =
+        gridColumns === 1
+            ? 'lg:grid-cols-1'
+            : gridColumns === 2
+                ? 'lg:grid-cols-2'
+                : gridColumns === 4
+                    ? 'lg:grid-cols-4'
+                    : 'lg:grid-cols-3';
 
     // Helper to create rgba from hex
     const hexToRgba = (hex: string, alpha: number) => {
@@ -79,18 +88,15 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                     </h2>
                     <Link
                         href={`${basePath}/shop`}
-                        className="text-sm font-semibold hover:underline"
+                        className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold hover:underline"
                         style={{ color: colors.secondaryColor }}
                     >
-                        View All →
+                        View All <ArrowRight size={14} />
                     </Link>
                 </div>
 
                 {/* 2x3 Grid */}
-                <div
-                    className="product-grid-dynamic"
-                    style={{ '--product-grid-columns': Math.min(columns, 5) } as CSSProperties}
-                >
+                <div className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${desktopGridClass}`}>
                     {displayProducts.map((product, i) => {
                         const discount = getDiscount(product);
                         const isWishlisted = isInWishlist(product.id);
@@ -113,10 +119,13 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                                             className="relative aspect-square overflow-hidden"
                                             style={{ backgroundColor: getCardBgColor(i) }}
                                         >
-                                            <img
+                                            <Image
                                                 src={product.images[0] || productImageFallback}
                                                 alt={product.name}
-                                                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                fill
+                                                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                unoptimized
                                             />
                                             {discount > 0 && (
                                                 <span
@@ -128,36 +137,36 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                                             {/* Heart icon - uses primaryColor */}
                                             <button
                                                 onClick={(e) => handleToggleWishlist(e, product.id)}
-                                                className="absolute top-1.5 right-1.5 p-1.5 rounded-full transition-all card-theme z-10"
+                                                className="absolute top-2 right-2 z-10 flex h-11 w-11 items-center justify-center rounded-full transition-all card-theme"
                                                 style={{
                                                     color: isWishlisted ? colors.primaryColor : colors.primaryColor,
                                                     opacity: isWishlisted ? 1 : undefined
                                                 }}
                                             >
-                                                <Heart size={12} fill={isWishlisted ? 'currentColor' : 'none'} />
+                                                <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
                                             </button>
                                             {showAddToCart && (
                                                 <button
                                                     onClick={(e) => handleQuickAdd(e, product)}
-                                                    className="absolute bottom-1.5 left-1.5 right-1.5 py-1.5 text-white text-xs font-semibold rounded transition-opacity flex items-center justify-center gap-1"
+                                                    className="absolute bottom-2 left-2 right-2 flex min-h-11 items-center justify-center gap-2 rounded text-sm font-semibold text-white transition-opacity"
                                                     style={{ backgroundColor: colors.primaryColor }}
                                                 >
-                                                    <ShoppingBag size={11} /> Add
+                                                    <ShoppingBag size={16} /> Add
                                                 </button>
                                             )}
                                         </div>
                                         {/* Info */}
-                                        <div className="p-2">
+                                        <div className="p-3">
                                             {/* Category label - uses primaryColor */}
                                             {product.category && (
                                                 <span
-                                                    className="text-[9px] font-bold uppercase tracking-wide"
+                                                    className="text-xs font-bold uppercase tracking-wide"
                                                     style={{ color: hexToRgba(colors.primaryColor, 0.6) }}
                                                 >
                                                     {product.category}
                                                 </span>
                                             )}
-                                            <h3 className="text-xs font-medium truncate" style={{ color: colors.textColor }}>
+                                            <h3 className="text-sm font-medium truncate" style={{ color: colors.textColor }}>
                                                 {product.name}
                                             </h3>
                                             {showPrice && (

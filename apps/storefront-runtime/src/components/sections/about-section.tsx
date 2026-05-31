@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { SectionModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
+import Image from 'next/image';
 
 interface Props {
     section: SectionModel;
@@ -50,11 +51,14 @@ export default function AboutSection({ section, theme }: Props) {
                             </p>
                         )}
                         {imageUrl && (
-                            <div className="mt-10">
-                                <img
+                            <div className="relative mx-auto mt-10 aspect-[16/10] w-full max-w-2xl overflow-hidden rounded-2xl shadow-xl">
+                                <Image
                                     src={imageUrl}
                                     alt={title}
-                                    className="w-full max-w-2xl mx-auto rounded-2xl shadow-xl"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 672px"
+                                    className="object-cover"
+                                    unoptimized
                                 />
                             </div>
                         )}
@@ -95,12 +99,15 @@ export default function AboutSection({ section, theme }: Props) {
                                 initial={{ opacity: 0, x: layout === 'right' ? -30 : 30 }}
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
-                                className={`${layout === 'right' ? 'md:order-1' : ''}`}
+                                className={`relative aspect-[4/3] overflow-hidden rounded-2xl shadow-xl ${layout === 'right' ? 'md:order-1' : ''}`}
                             >
-                                <img
+                                <Image
                                     src={imageUrl}
                                     alt={title}
-                                    className="w-full rounded-2xl shadow-xl"
+                                    fill
+                                    sizes="(max-width: 768px) 100vw, 50vw"
+                                    className="object-cover"
+                                    unoptimized
                                 />
                             </motion.div>
                         )}

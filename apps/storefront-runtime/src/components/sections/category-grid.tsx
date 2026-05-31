@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
 import type { SectionModel } from '@/types/store';
 
@@ -76,10 +77,13 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                             className="group relative block aspect-[3/4] md:aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
                         >
                             {category.image ? (
-                                <img
+                                <Image
                                     src={category.image}
                                     alt={category.name}
-                                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    fill
+                                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+                                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    unoptimized
                                 />
                             ) : (
                                 <div className="absolute inset-0 bg-gray-200" />

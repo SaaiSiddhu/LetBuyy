@@ -119,7 +119,7 @@ export default function HeroSection({ section, theme }: Props) {
 
     return (
         <section
-            className="relative h-[500px] flex items-center overflow-hidden"
+            className="relative flex h-[430px] w-full items-center overflow-hidden md:h-[500px]"
             style={{
                 background: backgroundImage
                     ? undefined
@@ -149,12 +149,12 @@ export default function HeroSection({ section, theme }: Props) {
                 variants={container}
                 initial="hidden"
                 animate="show"
-                className="relative z-10 container mx-auto px-6 max-w-4xl"
+                className="relative z-10 mx-auto w-full max-w-[calc(100vw-3rem)] px-6 md:container md:max-w-4xl"
             >
                 {heading && (
                     <motion.h1
                         variants={item}
-                        className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight"
+                        className="break-words text-3xl font-bold leading-tight text-white md:text-4xl lg:text-5xl"
                         style={{ fontFamily: 'var(--font-heading)' }}
                     >
                         {heading}
@@ -164,7 +164,7 @@ export default function HeroSection({ section, theme }: Props) {
                 {subheading && (
                     <motion.p
                         variants={item}
-                        className="mt-4 text-base md:text-lg text-white/90 max-w-xl"
+                        className="mt-4 max-w-[19rem] break-words text-base text-white/90 sm:max-w-md md:max-w-xl md:text-lg"
                     >
                         {subheading}
                     </motion.p>
@@ -177,7 +177,7 @@ export default function HeroSection({ section, theme }: Props) {
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="px-6 py-3 bg-white rounded-lg font-semibold text-base flex items-center gap-2 shadow-lg"
+                                className="flex min-h-11 items-center gap-2 rounded-lg bg-white px-6 py-3 text-base font-semibold shadow-lg"
                                 style={{ color: colors.primaryColor }}
                             >
                                 {ctaText}

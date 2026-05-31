@@ -3,6 +3,7 @@
 import { SectionModel, ThemeSettings, PortfolioProject } from '@/types/store';
 import { motion } from 'framer-motion';
 import { ExternalLink, ArrowUpRight } from 'lucide-react';
+import Image from 'next/image';
 
 interface Props {
     section: SectionModel;
@@ -14,7 +15,6 @@ export default function PortfolioGrid({ section, theme }: Props) {
     const title = settings.title as string || 'My Work';
     const subtitle = settings.subtitle as string || '';
     const columns = (settings.columns as number) || 3;
-    const layout = (settings.layout as string) || 'grid';
     const projects: PortfolioProject[] = (section.blocks || []).map(block => ({
         id: block.id,
         title: (block.settings.title as string) || 'Project',
@@ -54,11 +54,14 @@ export default function PortfolioGrid({ section, theme }: Props) {
                         >
                             {/* Project Image */}
                             {project.image && (
-                                <div className="aspect-[4/3] overflow-hidden">
-                                    <img
+                                <div className="relative aspect-[4/3] overflow-hidden">
+                                    <Image
                                         src={project.image}
                                         alt={project.title}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                        fill
+                                        sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                        className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                        unoptimized
                                     />
                                 </div>
                             )}

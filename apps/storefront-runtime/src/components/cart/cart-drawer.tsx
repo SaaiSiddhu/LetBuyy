@@ -3,6 +3,7 @@
 import { useCart } from '@/context/cart-context';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Minus, Plus, ShoppingBag, X } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect } from 'react';
 
@@ -127,12 +128,15 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                                     <Link
                                                         href={`${basePath}/product/${item.id}`}
                                                         onClick={closeDrawer}
-                                                        className="h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg card-theme-secondary"
+                                                        className="relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-lg card-theme-secondary"
                                                     >
-                                                        <img
+                                                        <Image
                                                             src={imageUrl}
                                                             alt={item.name}
-                                                            className="h-full w-full object-cover"
+                                                            fill
+                                                            sizes="80px"
+                                                            className="object-cover"
+                                                            unoptimized
                                                         />
                                                     </Link>
                                                     <div className="min-w-0 flex-1">
@@ -153,7 +157,7 @@ export default function CartDrawer({ basePath, primaryColor }: CartDrawerProps) 
                                                                 type="button"
                                                                 aria-label={`Remove ${item.name}`}
                                                                 onClick={() => removeFromCart(item.id)}
-                                                                className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg text-card-muted transition-colors hover:bg-surface-hover hover:text-red-500"
+                                                                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-lg text-card-muted transition-colors hover:bg-surface-hover hover:text-red-500"
                                                             >
                                                                 <X size={16} />
                                                             </button>

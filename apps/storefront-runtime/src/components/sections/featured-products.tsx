@@ -2,9 +2,10 @@
 
 import { motion } from 'framer-motion';
 import { SectionModel, ProductModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, ShoppingBag, Heart } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag, Heart, Star } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { useCart } from '@/context/cart-context';
 
@@ -91,10 +92,10 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                         <span
-                            className="text-[10px] font-bold uppercase px-2 py-0.5 rounded"
+                            className="flex h-7 w-7 items-center justify-center rounded"
                             style={{ backgroundColor: colors.primaryColor, color: '#fff' }}
                         >
-                            ★
+                            <Star size={14} fill="currentColor" />
                         </span>
                         <h2 className="text-lg md:text-xl font-bold" style={{ color: colors.textColor }}>
                             {title}
@@ -103,14 +104,14 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                     <div className="flex gap-1">
                         <button
                             onClick={() => scroll('left')}
-                            className="p-1.5 rounded-full border hover:bg-surface-hover"
+                            className="flex h-11 w-11 items-center justify-center rounded-full border hover:bg-surface-hover"
                             style={{ borderColor: hexToRgba(colors.primaryColor, 0.3) }}
                         >
                             <ChevronLeft size={16} style={{ color: colors.primaryColor }} />
                         </button>
                         <button
                             onClick={() => scroll('right')}
-                            className="p-1.5 rounded-full text-white"
+                            className="flex h-11 w-11 items-center justify-center rounded-full text-white"
                             style={{ backgroundColor: colors.primaryColor }}
                         >
                             <ChevronRight size={16} />
@@ -135,7 +136,7 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                 whileInView={{ opacity: 1, x: 0 }}
                                 viewport={{ once: true }}
                                 transition={{ delay: i * 0.05 }}
-                                className="flex-shrink-0 w-[160px] md:w-[180px]"
+                                className="w-[76vw] max-w-[220px] flex-shrink-0 sm:w-[180px]"
                                 style={{ scrollSnapAlign: 'start' }}
                             >
                                 <Link href={`${basePath}/product/${product.id}`}>
@@ -149,10 +150,13 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                                 className="relative aspect-square overflow-hidden"
                                                 style={{ backgroundColor: getCardBgColor(i) }}
                                             >
-                                                <img
+                                                <Image
                                                     src={product.images[0] || productImageFallback}
                                                     alt={product.name}
-                                                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                                    fill
+                                                    sizes="(max-width: 640px) 76vw, 180px"
+                                                    className="object-cover transition-transform duration-300 group-hover:scale-105"
+                                                    unoptimized
                                                 />
                                                 {discount > 0 && (
                                                     <span
@@ -165,30 +169,30 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                                 {/* Heart icon - uses primaryColor */}
                                                 <button
                                                     onClick={(e) => toggleWishlist(e, product.id)}
-                                                    className="absolute top-1.5 right-1.5 p-1.5 rounded-full transition-all card-theme"
+                                                    className="absolute top-2 right-2 flex h-11 w-11 items-center justify-center rounded-full transition-all card-theme"
                                                     style={{ color: colors.primaryColor }}
                                                 >
-                                                    <Heart size={11} fill={isWishlisted ? 'currentColor' : 'none'} />
+                                                    <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
                                                 </button>
                                                 <button
                                                     onClick={(e) => handleQuickAdd(e, product)}
-                                                    className="absolute bottom-1.5 left-1.5 right-1.5 py-1.5 text-white text-[10px] font-semibold rounded opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1"
+                                                    className="absolute bottom-2 left-2 right-2 flex min-h-11 items-center justify-center gap-2 rounded text-sm font-semibold text-white opacity-100 transition-opacity md:opacity-0 md:group-hover:opacity-100"
                                                     style={{ backgroundColor: colors.primaryColor }}
                                                 >
-                                                    <ShoppingBag size={10} /> Add
+                                                    <ShoppingBag size={16} /> Add
                                                 </button>
                                             </div>
-                                            <div className="p-2">
+                                            <div className="p-3">
                                                 {/* Category label - uses primaryColor */}
                                                 {product.category && (
                                                     <span
-                                                        className="text-[9px] font-bold uppercase tracking-wide"
+                                                        className="text-xs font-bold uppercase tracking-wide"
                                                         style={{ color: hexToRgba(colors.primaryColor, 0.6) }}
                                                     >
                                                         {product.category}
                                                     </span>
                                                 )}
-                                                <h3 className="text-xs font-medium truncate" style={{ color: colors.textColor }}>
+                                                <h3 className="text-sm font-medium truncate" style={{ color: colors.textColor }}>
                                                     {product.name}
                                                 </h3>
                                                 <div className="flex items-center gap-1 mt-0.5">

@@ -602,7 +602,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         </h2>
 
                                         <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-3">
+                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                                 <div>
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">Full Name *</label>
                                                     <div className="relative">
@@ -611,7 +611,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                             type="text"
                                                             value={formData.name}
                                                             onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                                            className={`w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.name ? 'ring-2 ring-red-300' : ''}`}
+                                                            className={`min-h-11 w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.name ? 'ring-2 ring-red-300' : ''}`}
                                                             placeholder="John Doe"
                                                         />
                                                     </div>
@@ -625,7 +625,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                             type="tel"
                                                             value={formData.phone}
                                                             onChange={e => setFormData({ ...formData, phone: e.target.value })}
-                                                            className={`w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.phone ? 'ring-2 ring-red-300' : ''}`}
+                                                            className={`min-h-11 w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.phone ? 'ring-2 ring-red-300' : ''}`}
                                                             placeholder="9876543210"
                                                         />
                                                     </div>
@@ -641,7 +641,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         type="email"
                                                         value={formData.email}
                                                         onChange={e => setFormData({ ...formData, email: e.target.value })}
-                                                        className={`w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.email ? 'ring-2 ring-red-300' : ''}`}
+                                                        className={`min-h-11 w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.email ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="john@example.com"
                                                     />
                                                 </div>
@@ -656,21 +656,21 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         value={formData.address}
                                                         onChange={e => setFormData({ ...formData, address: e.target.value })}
                                                         rows={2}
-                                                        className={`w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 resize-none ${errors.address ? 'ring-2 ring-red-300' : ''}`}
+                                                        className={`min-h-[88px] w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 resize-none ${errors.address ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="House/Flat No, Street, Landmark..."
                                                     />
                                                 </div>
                                                 {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
                                             </div>
 
-                                            <div className="grid grid-cols-3 gap-3">
+                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                                                 <div>
                                                     <label className="text-xs font-medium text-theme-secondary mb-1 block">City *</label>
                                                     <input
                                                         type="text"
                                                         value={formData.city}
                                                         onChange={e => setFormData({ ...formData, city: e.target.value })}
-                                                        className={`w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.city ? 'ring-2 ring-red-300' : ''}`}
+                                                        className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.city ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="Bengaluru"
                                                     />
                                                     {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
@@ -681,7 +681,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         type="text"
                                                         value={formData.state}
                                                         onChange={e => setFormData({ ...formData, state: e.target.value })}
-                                                        className={`w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.state ? 'ring-2 ring-red-300' : ''}`}
+                                                        className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.state ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="Karnataka"
                                                     />
                                                     {errors.state && <p className="text-red-500 text-xs mt-1">{errors.state}</p>}
@@ -693,7 +693,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         maxLength={6}
                                                         value={formData.pincode}
                                                         onChange={e => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '') })}
-                                                        className={`w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.pincode ? 'ring-2 ring-red-300' : ''}`}
+                                                        className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.pincode ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="560001"
                                                     />
                                                     {errors.pincode && <p className="text-red-500 text-xs mt-1">{errors.pincode}</p>}
@@ -707,10 +707,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 <Truck size={16} style={{ color: primaryColor }} />
                                                 Delivery Speed
                                             </h3>
-                                            <div className="grid grid-cols-2 gap-3">
+                                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                                 <button
                                                     onClick={() => setDeliveryOption('standard')}
-                                                    className={`p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'standard' ? 'border-opacity-100' : 'border-card'}`}
+                                                    className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'standard' ? 'border-opacity-100' : 'border-card'}`}
                                                     style={{ borderColor: deliveryOption === 'standard' ? primaryColor : undefined }}
                                                 >
                                                     <div className="flex items-center justify-between mb-1">
@@ -723,7 +723,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </button>
                                                 <button
                                                     onClick={() => setDeliveryOption('express')}
-                                                    className={`p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'express' ? 'border-opacity-100' : 'border-card'}`}
+                                                    className={`min-h-11 p-3 rounded-lg border-2 text-left transition-all ${deliveryOption === 'express' ? 'border-opacity-100' : 'border-card'}`}
                                                     style={{ borderColor: deliveryOption === 'express' ? primaryColor : undefined }}
                                                 >
                                                     <div className="flex items-center justify-between mb-1">
@@ -739,7 +739,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
 
                                         <button
                                             onClick={proceedToPayment}
-                                            className="w-full mt-6 text-white py-3.5 rounded-xl font-semibold flex items-center justify-center gap-2"
+                                            className="mt-6 flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white"
                                             style={{ backgroundColor: primaryColor }}
                                         >
                                             Continue to Payment
@@ -764,7 +764,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </h3>
                                                 <button
                                                     onClick={() => setStep(1)}
-                                                    className="text-xs font-medium"
+                                                    className="flex min-h-11 items-center text-xs font-medium"
                                                     style={{ color: primaryColor }}
                                                 >
                                                     Change
@@ -815,7 +815,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             <div className="space-y-2">
                                                 {onlinePaymentEnabled && (
                                                     <label
-                                                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50' : 'border-card hover:bg-surface-hover'}`}
+                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'online' ? 'border-indigo-500 bg-indigo-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('online')}
                                                     >
                                                         <input
@@ -833,7 +833,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 )}
                                                 {onlinePaymentEnabled && (
                                                     <label
-                                                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'stripe' ? 'border-purple-500 bg-purple-50' : 'border-card hover:bg-surface-hover'}`}
+                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'stripe' ? 'border-purple-500 bg-purple-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('stripe')}
                                                     >
                                                         <input
@@ -851,7 +851,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 )}
                                                 {onlinePaymentEnabled && (
                                                     <label
-                                                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : 'border-card hover:bg-surface-hover'}`}
+                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'paypal' ? 'border-blue-500 bg-blue-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('paypal')}
                                                     >
                                                         <input
@@ -869,7 +869,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 )}
                                                 {codEnabled && (
                                                     <label
-                                                        className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-card hover:bg-surface-hover'}`}
+                                                        className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border-2 p-3 transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50' : 'border-card hover:bg-surface-hover'}`}
                                                         onClick={() => setPaymentMethod('cod')}
                                                     >
                                                         <input
@@ -897,7 +897,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                             handleCODOrder
                                             }
                                             disabled={isProcessing || (paymentMethod === 'online' && !razorpayLoaded)}
-                                            className="w-full text-white py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-3 disabled:opacity-60 shadow-lg"
+                                            className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
                                             style={{ backgroundColor: paymentMethod === 'cod' ? '#16a34a' : paymentMethod === 'paypal' ? '#0070ba' : paymentMethod === 'stripe' ? '#6366f1' : '#1a1a2e' }}
                                         >
                                             {isProcessing ? (
@@ -999,13 +999,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         setCouponError('');
                                                     }}
                                                     placeholder="Coupon code"
-                                                    className="min-w-0 flex-1 px-3 py-2 input-theme rounded-lg text-sm outline-none"
+                                                    className="min-h-11 min-w-0 flex-1 px-3 py-2 input-theme rounded-lg text-sm outline-none"
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={applyCoupon}
                                                     disabled={isCheckingCoupon}
-                                                    className="px-3 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60"
+                                                    className="min-h-11 px-3 py-2 rounded-lg text-sm font-semibold text-white disabled:opacity-60"
                                                     style={{ backgroundColor: primaryColor }}
                                                 >
                                                     {isCheckingCoupon ? 'Checking' : 'Apply'}
