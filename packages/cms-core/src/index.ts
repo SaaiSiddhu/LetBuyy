@@ -196,6 +196,25 @@ export interface CmsBlogCommentRecord {
   blog_posts?: { title?: string | null } | null;
 }
 
+export const RESUME_CONTENT_SECTION_TABLES = {
+  skills: 'skills',
+  education: 'education',
+  work_experience: 'work_experience',
+  certifications: 'certifications',
+  testimonials: 'testimonials',
+  projects: 'portfolio_projects',
+} as const;
+
+export type ResumeContentSection = keyof typeof RESUME_CONTENT_SECTION_TABLES;
+
+export interface ResumeContentOwnerRecord {
+  store_id?: string | null;
+}
+
+export interface ResumeContentItemRecord extends ResumeContentOwnerRecord {
+  [key: string]: unknown;
+}
+
 export function getCmsString(data: Record<string, unknown>, key: string): string | null {
   const value = data[key];
   return typeof value === 'string' ? value : null;
@@ -323,6 +342,196 @@ export function normalizeBlogCommentRecord(row: CmsBlogCommentRecord) {
     content: comment.content || comment.body || '',
     post_title: blog_posts?.title || null,
   };
+}
+
+export function isResumeContentSection(section: string): section is ResumeContentSection {
+  return section in RESUME_CONTENT_SECTION_TABLES;
+}
+
+export function sanitizeResumeContentInput(
+  section: ResumeContentSection,
+  body: Record<string, unknown>,
+  storeId?: string,
+) {
+  const payload: Record<string, unknown> = {};
+  if (storeId) payload.store_id = storeId;
+
+  switch (section) {
+    case 'skills': {
+      copyCmsKeys(body, payload, ['name', 'category', 'display_order']);
+      const proficiency = toCmsNumber(body.proficiency ?? body.proficiency_level);
+      if (proficiency !== null) {
+        payload.proficiency = proficiency;
+        payload.proficiency_level = proficiency;
+      }
+      break;
+    }
+    case 'education':
+      copyCmsNullableKeys(body, payload, [
+        'institution',
+        'degree',
+        'field_of_study',
+        'start_date',
+        'end_date',
+        'grade',
+        'description',
+        'display_order',
+      ]);
+      break;
+    case 'work_experience': {
+      copyCmsNullableKeys(body, payload, [
+        'company',
+        'location',
+        'start_date',
+        'end_date',
+        'is_current',
+        'description',
+        'display_order',
+      ]);
+      const role = toCmsNullableString(body.role ?? body.position);
+      if (role !== undefined) {
+        payload.role = role;
+        payload.position = role;
+      }
+      break;
+    }
+    case 'certifications':
+      copyCmsNullableKeys(body, payload, [
+        'name',
+        'issuer',
+        'credential_id',
+        'credential_url',
+        'issue_date',
+        'expiry_date',
+        'display_order',
+      ]);
+      break;
+    case 'testimonials':
+      copyCmsNullableKeys(body, payload, [
+        'author_name',
+        'author_title',
+        'author_company',
+        'author_avatar',
+        'content',
+        'rating',
+        'is_featured',
+        'is_visible',
+        'display_order',
+      ]);
+      break;
+    case 'projects': {
+      copyCmsNullableKeys(body, payload, [
+        'title',
+        'description',
+        'image_url',
+        'start_date',
+        'end_date',
+        'is_visible',
+        'display_order',
+      ]);
+      const url = toCmsNullableString(body.url ?? body.live_url ?? body.project_url);
+      if (url !== undefined) {
+        payload.url = url;
+        payload.live_url = url;
+        payload.project_url = url;
+      }
+      const technologies = toCmsStringArray(body.technologies ?? body.tags ?? body.categories);
+      if (technologies) {
+        payload.technologies = technologies;
+        payload.tags = technologies;
+      }
+      break;
+    }
+  }
+
+  return payload;
+}
+
+export function normalizeResumeContentItem(section: ResumeContentSection, row: ResumeContentItemRecord) {
+  if (section === 'skills') {
+    return {
+      ...row,
+      proficiency: row.proficiency ?? row.proficiency_level ?? 50,
+    };
+  }
+
+  if (section === 'work_experience') {
+    return {
+      ...row,
+      role: row.role ?? row.position ?? '',
+      description: row.description ?? (Array.isArray(row.responsibilities) ? row.responsibilities.join('\n') : null),
+    };
+  }
+
+  if (section === 'education') {
+    return {
+      ...row,
+      grade: row.grade ?? (row.gpa != null ? String(row.gpa) : null),
+    };
+  }
+
+  if (section === 'testimonials') {
+    return {
+      ...row,
+      is_visible: row.is_visible !== false,
+    };
+  }
+
+  if (section === 'projects') {
+    return {
+      ...row,
+      url: row.url ?? row.live_url ?? row.project_url ?? null,
+      image_url: row.image_url ?? row.thumbnail_url ?? row.cover_image ?? null,
+      technologies: Array.isArray(row.technologies)
+        ? row.technologies
+        : Array.isArray(row.tags)
+          ? row.tags
+          : [],
+      is_visible: row.is_visible !== false,
+    };
+  }
+
+  return row;
+}
+
+function copyCmsKeys(source: Record<string, unknown>, target: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    if (source[key] !== undefined) target[key] = source[key];
+  }
+}
+
+function copyCmsNullableKeys(source: Record<string, unknown>, target: Record<string, unknown>, keys: string[]) {
+  for (const key of keys) {
+    if (source[key] === undefined) continue;
+    target[key] = source[key] === '' ? null : source[key];
+  }
+}
+
+function toCmsNumber(value: unknown) {
+  if (typeof value === 'number' && Number.isFinite(value)) return value;
+  if (typeof value === 'string' && value.trim()) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  }
+  return null;
+}
+
+function toCmsNullableString(value: unknown) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (typeof value !== 'string') return undefined;
+  return value.trim() ? value : null;
+}
+
+function toCmsStringArray(value: unknown) {
+  if (Array.isArray(value)) return value.filter((item): item is string => typeof item === 'string');
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+  return null;
 }
 
 export function normalizeStorefrontRouteContent(
