@@ -30,6 +30,11 @@ import {
     type CouponValidationFailureCode,
 } from '@letbuyy/checkout-core';
 import {
+    emptyPublicReviewsPayload,
+    summarizePublicProductReviews,
+    type PublicProductReviewRecord,
+} from '@letbuyy/commerce-core';
+import {
     buildPublicNavigationTree,
     normalizeStorefrontRoutePage,
     normalizeStorefrontRoutePolicy,
@@ -248,17 +253,6 @@ function isMissingColumnError(error: DatabaseErrorLike, columnName: string): boo
     );
 }
 
-function emptyPublicReviewsPayload() {
-    return {
-        reviews: [],
-        summary: {
-            totalReviews: 0,
-            averageRating: 0,
-            distribution: [5, 4, 3, 2, 1].map((star) => ({ star, count: 0 })),
-        },
-    };
-}
-
 async function listPublicProductReviews(c: AppContext) {
     const query = c.get('validatedQuery') as StorefrontProductReviewsQueryInput;
     const productId = query.product_id;
@@ -294,24 +288,8 @@ async function listPublicProductReviews(c: AppContext) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to load product reviews' } }, 500);
     }
 
-    const reviews = data || [];
-    const totalReviews = reviews.length;
-    const averageRating = totalReviews > 0
-        ? Math.round((reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / totalReviews) * 10) / 10
-        : 0;
-    const distribution = [5, 4, 3, 2, 1].map((star) => ({
-        star,
-        count: reviews.filter((review) => Number(review.rating) === star).length,
-    }));
-
-    return c.json(success({
-        reviews,
-        summary: {
-            totalReviews,
-            averageRating,
-            distribution,
-        },
-    }));
+    const reviews = (data || []) as PublicProductReviewRecord[];
+    return c.json(success(summarizePublicProductReviews(reviews)));
 }
 
 function getRequestId(c: AppContext): string {

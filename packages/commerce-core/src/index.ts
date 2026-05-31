@@ -551,6 +551,26 @@ export interface ProductReviewRecord {
   is_approved?: boolean | null;
 }
 
+export interface PublicProductReviewRecord {
+  rating?: number | string | null;
+}
+
+export interface ProductRatingDistributionBucket {
+  star: number;
+  count: number;
+}
+
+export interface PublicProductReviewsSummary {
+  totalReviews: number;
+  averageRating: number;
+  distribution: ProductRatingDistributionBucket[];
+}
+
+export interface PublicProductReviewsPayload<TReview extends PublicProductReviewRecord = PublicProductReviewRecord> {
+  reviews: TReview[];
+  summary: PublicProductReviewsSummary;
+}
+
 export interface CommerceCustomerSummary {
   id: string;
   customer_name: string;
@@ -705,6 +725,39 @@ export function normalizeProductReviewRecord<TReview extends ProductReviewRecord
     status,
     is_approved: status === 'approved',
     product_name: products?.name || 'Unknown product',
+  };
+}
+
+export function emptyPublicReviewsPayload(): PublicProductReviewsPayload<PublicProductReviewRecord> {
+  return {
+    reviews: [],
+    summary: {
+      totalReviews: 0,
+      averageRating: 0,
+      distribution: [5, 4, 3, 2, 1].map((star) => ({ star, count: 0 })),
+    },
+  };
+}
+
+export function summarizePublicProductReviews<TReview extends PublicProductReviewRecord>(
+  reviews: TReview[],
+): PublicProductReviewsPayload<TReview> {
+  const totalReviews = reviews.length;
+  const averageRating = totalReviews > 0
+    ? Math.round((reviews.reduce((sum, review) => sum + Number(review.rating || 0), 0) / totalReviews) * 10) / 10
+    : 0;
+  const distribution = [5, 4, 3, 2, 1].map((star) => ({
+    star,
+    count: reviews.filter((review) => Number(review.rating) === star).length,
+  }));
+
+  return {
+    reviews,
+    summary: {
+      totalReviews,
+      averageRating,
+      distribution,
+    },
   };
 }
 
