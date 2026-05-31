@@ -16,7 +16,7 @@ test("queue recovery policies cover production queues and quarantine poison mess
   const manifest = JSON.parse(fs.readFileSync("config/runtime/runtime-orchestration-manifest.json", "utf8"));
   const queueNames = new Set(manifest.queueRecovery.policies.map((policy) => policy.queueName));
 
-  assert.ok(queueNames.has("letbuyy-events"));
-  assert.ok(queueNames.has("letbuyy-analytics"));
+  assert.ok(queueNames.has("letbuyy-events-production"));
+  assert.ok(queueNames.has("letbuyy-analytics-queue-production"));
   for (const policy of manifest.queueRecovery.policies) assert.equal(policy.maxPoisonMessages, 0);
 });
