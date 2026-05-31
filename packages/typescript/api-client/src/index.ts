@@ -301,6 +301,30 @@ export type StorefrontCouponValidationResult = JsonRecord & {
   };
 };
 
+export type StorefrontOrderContactSummary = {
+  orders: JsonRecord[];
+  hasOrders: boolean;
+  hasPassword: boolean;
+  store_id?: string | null;
+};
+
+export type StorefrontOrderCredentialInput = {
+  store_id?: string | null;
+  subdomain?: string | null;
+  email_or_phone: string;
+  password: string;
+};
+
+export type StorefrontOrderCredentialSaveResult = {
+  saved: boolean;
+  store_id?: string | null;
+};
+
+export type StorefrontOrderCredentialLoginResult = {
+  valid: boolean;
+  store_id?: string | null;
+};
+
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
@@ -880,6 +904,12 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontCouponValidationResult>(`/storefront/${encodePathSegment(subdomain)}/coupons/validate`, { ...options, query }),
     validateCouponByStoreId: (storeId: string, query: StorefrontCouponValidationQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCouponValidationResult>(`/storefront/store/${encodePathSegment(storeId)}/coupons/validate`, { ...options, query }),
+    orderContactSummary: (subdomain: string, contact: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontOrderContactSummary>(`/storefront/${encodePathSegment(subdomain)}/orders/contact`, { ...options, query: { contact } }),
+    setOrderCredential: (input: StorefrontOrderCredentialInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontOrderCredentialSaveResult>('/storefront/customer/order-credential', { ...options, method: 'POST', body: input }),
+    verifyOrderCredential: (input: StorefrontOrderCredentialInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontOrderCredentialLoginResult>('/storefront/customer/order-credential/login', { ...options, method: 'POST', body: input }),
   };
 
   withOptions(options: Partial<LetbuyyApiClientOptions>): LetbuyyApiClient {

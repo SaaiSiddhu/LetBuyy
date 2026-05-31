@@ -4,7 +4,7 @@
 // ============================================================
 
 import { OrderModel, OrderItem, OrderPricing, OrderPayment, OrderStatus, ShippingAddress } from '@/types/store';
-import { readWorkerJson, workerFetch } from './worker-client';
+import { createStorefrontApiClient } from './worker-client';
 
 // ============================================================
 // ORDER RETRIEVAL
@@ -27,11 +27,9 @@ export async function getOrderContactSummary(
     subdomain: string,
     emailOrPhone: string
 ): Promise<{ orders: OrderModel[]; hasOrders: boolean; hasPassword: boolean }> {
-    const response = await workerFetch(
-        `/storefront/${encodeURIComponent(subdomain)}/orders/contact?contact=${encodeURIComponent(emailOrPhone)}`
-    );
-    const payload = await readWorkerJson(response);
-    const data = payload?.data || {};
+    const data = await createStorefrontApiClient()
+        .storefront
+        .orderContactSummary(subdomain, emailOrPhone);
     const rows = Array.isArray(data.orders) ? data.orders : [];
 
     return {
@@ -65,16 +63,14 @@ export async function setCustomerPassword(
     storeId?: string,
     subdomain?: string
 ): Promise<void> {
-    const response = await workerFetch('/storefront/customer/order-credential', {
-        method: 'POST',
-        body: JSON.stringify({
+    await createStorefrontApiClient()
+        .storefront
+        .setOrderCredential({
             store_id: storeId,
             subdomain,
             email_or_phone: emailOrPhone,
             password,
-        }),
-    });
-    await readWorkerJson(response);
+        });
 }
 
 export async function verifyCustomerPassword(
@@ -83,17 +79,15 @@ export async function verifyCustomerPassword(
     storeId?: string,
     subdomain?: string
 ): Promise<boolean> {
-    const response = await workerFetch('/storefront/customer/order-credential/login', {
-        method: 'POST',
-        body: JSON.stringify({
+    const data = await createStorefrontApiClient()
+        .storefront
+        .verifyOrderCredential({
             store_id: storeId,
             subdomain,
             email_or_phone: emailOrPhone,
             password,
-        }),
-    });
-    const payload = await readWorkerJson(response);
-    return Boolean(payload?.data?.valid);
+        });
+    return Boolean(data.valid);
 }
 
 export async function hasOrdersForContact(
