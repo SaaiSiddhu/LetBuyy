@@ -233,6 +233,8 @@ SKIP: Phase 4.5 Vercel production deployment — Reason: `VERCEL_TOKEN` is not a
 
 SKIP: Phase 4.5 production smoke tests — Reason: no production deployment was executed because Cloudflare and Vercel deployment credentials are unavailable, so post-deployment smoke tests would not validate this release. Resume point: Phase 4 Task 4.5 after production deployment completes.
 
+SKIP: Phase 4.6 live local Playwright journey execution — Reason: local dev web runtimes and database stack are not running because Docker Compose was skipped, so the Playwright specs were added with environment reachability skips until the local stack is available. Resume point: Phase 4 Task 4.6 after local infrastructure and app dev servers are running.
+
 ---
 
 ## GOVERNANCE FAILURES — PHASE 0

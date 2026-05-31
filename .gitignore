@@ -106,6 +106,8 @@ apps/**/.next/
 **/.cache/
 **/coverage/
 coverage/
+test-results/
+playwright-report/
 dist/
 services/**/dist/
 packages/**/dist/
