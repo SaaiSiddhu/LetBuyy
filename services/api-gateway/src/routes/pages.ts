@@ -14,6 +14,16 @@ import {
     UpdatePageSchema,
     UpdatePolicySchema,
 } from '../schemas/page.schema';
+import {
+    getCmsString,
+    normalizeLegacyPageRecord,
+    normalizeNavigationItemRecord,
+    normalizeStorefrontPageRecord,
+    normalizeStorefrontPolicyRecord,
+    pageBodyToContent,
+    seoFromPageInput,
+    slugifyCmsTitle,
+} from '@letbuyy/cms-core';
 import type { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -142,43 +152,6 @@ async function requireOwnedStore(c: AppContext, storeId: string) {
     return { db, ok: true as const, customUser };
 }
 
-function seoFromInput(input: {
-    seo_title?: string | null;
-    seo_description?: string | null;
-}) {
-    return {
-        title: input.seo_title || null,
-        description: input.seo_description || null,
-    };
-}
-
-function bodyToContent(body: string | undefined | null) {
-    return { body: body || '' };
-}
-
-function normalizeStorefrontPage(row: PageRow) {
-    const content = row.content || {};
-    const body = row.body || row.html_content || getString(content, 'body') || getString(content, 'html') || '';
-    const seo = row.seo || {};
-
-    return {
-        id: row.id,
-        store_id: row.store_id,
-        title: row.title || 'Untitled page',
-        slug: row.slug || '',
-        body,
-        content: content || { body },
-        page_type: row.page_type || 'custom',
-        status: row.status || 'draft',
-        show_in_nav: Boolean(row.show_in_nav),
-        seo_title: getString(seo, 'title'),
-        seo_description: getString(seo, 'description'),
-        assigned_template_key: row.assigned_template_key || null,
-        published_at: row.published_at || null,
-        updated_at: row.updated_at || null,
-    };
-}
-
 async function ensurePageRevision(
     db: ReturnType<typeof getSupabaseAdmin>,
     page: PageRow,
@@ -254,7 +227,7 @@ async function ensureNavigationMenu(
 
 async function syncPageNavigationItem(
     db: ReturnType<typeof getSupabaseAdmin>,
-    page: ReturnType<typeof normalizeStorefrontPage>,
+    page: ReturnType<typeof normalizeStorefrontPageRecord>,
 ) {
     const menu = await ensureNavigationMenu(db, page.store_id || '', 'main', 'Main menu');
     if (!menu) return;
@@ -321,7 +294,7 @@ router.get('/', validate('query', ListPagesQuery), async (c) => {
 
     if (!newPagesResult.error) {
         return c.json(paginated(
-            (newPagesResult.data || []).map((row) => normalizeStorefrontPage(row as PageRow)),
+            (newPagesResult.data || []).map((row) => normalizeStorefrontPageRecord(row as PageRow)),
             newPagesResult.count || 0,
             query.page,
             query.limit
@@ -357,7 +330,7 @@ router.get('/', validate('query', ListPagesQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated((data || []).map(normalizePage), count || 0, query.page, query.limit));
+    return c.json(paginated((data || []).map((row) => normalizeLegacyPageRecord(row as PageRow)), count || 0, query.page, query.limit));
 });
 
 router.post('/', validate('json', CreatePageSchema), async (c) => {
@@ -366,10 +339,10 @@ router.post('/', validate('json', CreatePageSchema), async (c) => {
     if (!ownership.ok) return ownership.response;
     const { db, customUser } = ownership;
 
-    const slug = body.slug || toSlug(body.title);
+    const slug = body.slug || slugifyCmsTitle(body.title);
     const now = new Date().toISOString();
-    const content = bodyToContent(body.body);
-    const seo = seoFromInput(body);
+    const content = pageBodyToContent(body.body);
+    const seo = seoFromPageInput(body);
 
     const newPageResult = await db
         .from('storefront_pages')
@@ -389,7 +362,7 @@ router.post('/', validate('json', CreatePageSchema), async (c) => {
         .single();
 
     if (!newPageResult.error && newPageResult.data) {
-        const page = normalizeStorefrontPage({ ...(newPageResult.data as PageRow), show_in_nav: body.show_in_nav });
+        const page = normalizeStorefrontPageRecord({ ...(newPageResult.data as PageRow), show_in_nav: body.show_in_nav });
         const revisionId = await ensurePageRevision(db, page as PageRow, content, seo);
         if (revisionId && body.status === 'published') {
             await db.from('storefront_pages').update({ published_revision_id: revisionId }).eq('id', page.id);
@@ -426,7 +399,7 @@ router.post('/', validate('json', CreatePageSchema), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success(normalizePage(data)), 201);
+    return c.json(success(normalizeLegacyPageRecord(data as PageRow)), 201);
 });
 
 router.get('/policies', validate('query', ListPoliciesQuery), async (c) => {
@@ -452,7 +425,7 @@ router.get('/policies', validate('query', ListPoliciesQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success((data || []).map(normalizePolicy)));
+    return c.json(success((data || []).map((row) => normalizeStorefrontPolicyRecord(row as StorefrontPolicyRow))));
 });
 
 router.post('/policies', validate('json', CreatePolicySchema), async (c) => {
@@ -470,9 +443,9 @@ router.post('/policies', validate('json', CreatePolicySchema), async (c) => {
             policy_type: body.policy_type,
             slug: policySlug,
             title: body.title,
-            body: bodyToContent(body.body),
+            body: pageBodyToContent(body.body),
             status: body.status,
-            seo: seoFromInput(body),
+            seo: seoFromPageInput(body),
             published_at: body.status === 'published' ? now : null,
             created_by: customUser.id,
             updated_by: customUser.id,
@@ -484,7 +457,7 @@ router.post('/policies', validate('json', CreatePolicySchema), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success(normalizePolicy(data as StorefrontPolicyRow)), 201);
+    return c.json(success(normalizeStorefrontPolicyRecord(data as StorefrontPolicyRow)), 201);
 });
 
 router.patch('/policies/:id', validate('json', UpdatePolicySchema), async (c) => {
@@ -515,12 +488,12 @@ router.patch('/policies/:id', validate('json', UpdatePolicySchema), async (c) =>
         ...('slug' in body ? { slug: body.slug } : {}),
         ...('title' in body ? { title: body.title } : {}),
         ...('status' in body ? { status: body.status } : {}),
-        ...('body' in body ? { body: bodyToContent(body.body) } : {}),
+        ...('body' in body ? { body: pageBodyToContent(body.body) } : {}),
         seo: {
             ...(policy.seo || {}),
-            ...seoFromInput({
-                seo_title: body.seo_title ?? getString(policy.seo || {}, 'title'),
-                seo_description: body.seo_description ?? getString(policy.seo || {}, 'description'),
+            ...seoFromPageInput({
+                seo_title: body.seo_title ?? getCmsString(policy.seo || {}, 'title'),
+                seo_description: body.seo_description ?? getCmsString(policy.seo || {}, 'description'),
             }),
         },
         updated_by: customUser.id,
@@ -538,7 +511,7 @@ router.patch('/policies/:id', validate('json', UpdatePolicySchema), async (c) =>
         return c.json({ success: false, error: { code: 'DB_ERROR', message: updated.error?.message || 'Unable to update policy' } }, 500);
     }
 
-    return c.json(success(normalizePolicy(updated.data as StorefrontPolicyRow)));
+    return c.json(success(normalizeStorefrontPolicyRecord(updated.data as StorefrontPolicyRow)));
 });
 
 router.delete('/policies/:id', async (c) => {
@@ -595,7 +568,7 @@ router.get('/navigation', validate('query', ListNavigationQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success({ menu, items: (data || []).map(normalizeNavigationItem) }));
+    return c.json(success({ menu, items: (data || []).map((row) => normalizeNavigationItemRecord(row as NavigationItemRow)) }));
 });
 
 router.put('/navigation/:location', validate('json', ReplaceNavigationSchema), async (c) => {
@@ -668,13 +641,13 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
             return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
         }
 
-        const previous = normalizeStorefrontPage(ownedPage);
-        const content = body.body !== undefined ? bodyToContent(body.body) : (ownedPage.content || {});
+        const previous = normalizeStorefrontPageRecord(ownedPage);
+        const content = body.body !== undefined ? pageBodyToContent(body.body) : (ownedPage.content || {});
         const seo = {
             ...ownedPage.seo,
-            ...seoFromInput({
-                seo_title: body.seo_title ?? getString(ownedPage.seo || {}, 'title'),
-                seo_description: body.seo_description ?? getString(ownedPage.seo || {}, 'description'),
+            ...seoFromPageInput({
+                seo_title: body.seo_title ?? getCmsString(ownedPage.seo || {}, 'title'),
+                seo_description: body.seo_description ?? getCmsString(ownedPage.seo || {}, 'description'),
             }),
         };
         const updates: Record<string, unknown> = {
@@ -700,7 +673,7 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
             return c.json({ success: false, error: { code: 'DB_ERROR', message: updated.error?.message || 'Unable to update page' } }, 500);
         }
 
-        const normalized = normalizeStorefrontPage({
+        const normalized = normalizeStorefrontPageRecord({
             ...(updated.data as PageRow),
             show_in_nav: body.show_in_nav ?? previous.show_in_nav,
         });
@@ -757,7 +730,7 @@ router.patch('/:id', validate('json', UpdatePageSchema), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error?.message || 'Unable to update page' } }, 500);
     }
 
-    return c.json(success(normalizePage(data)));
+    return c.json(success(normalizeLegacyPageRecord(data as PageRow)));
 });
 
 router.delete('/:id', async (c) => {
@@ -834,69 +807,5 @@ router.delete('/:id', async (c) => {
 
     return c.json(success({ deleted: true }));
 });
-
-function normalizePage(row: PageRow) {
-    const { stores: _stores, content, ...page } = row;
-    const body = page.body || page.html_content || getString(content || {}, 'body') || '';
-
-    return {
-        ...page,
-        content: content || { body },
-        body,
-        page_type: page.page_type || 'custom',
-        show_in_nav: Boolean(page.show_in_nav),
-    };
-}
-
-function normalizePolicy(row: StorefrontPolicyRow) {
-    const body = row.body || {};
-    const seo = row.seo || {};
-
-    return {
-        id: row.id,
-        store_id: row.store_id,
-        policy_type: row.policy_type,
-        slug: row.slug,
-        title: row.title,
-        body: getString(body, 'body') || getString(body, 'html') || '',
-        content: body,
-        status: row.status || 'draft',
-        seo_title: getString(seo, 'title'),
-        seo_description: getString(seo, 'description'),
-        published_at: row.published_at || null,
-        updated_at: row.updated_at || null,
-    };
-}
-
-function normalizeNavigationItem(row: NavigationItemRow) {
-    return {
-        id: row.id,
-        menu_id: row.menu_id,
-        store_id: row.store_id,
-        parent_item_id: row.parent_item_id || null,
-        label: row.label,
-        url: row.url || '#',
-        target_type: row.target_type || 'url',
-        target_resource_id: row.target_resource_id || null,
-        sort_order: row.sort_order || 0,
-        is_visible: row.is_visible !== false,
-        open_in_new_tab: row.open_in_new_tab === true,
-        metadata: row.metadata || {},
-        updated_at: row.updated_at || null,
-    };
-}
-
-function getString(data: Record<string, unknown>, key: string) {
-    const value = data[key];
-    return typeof value === 'string' ? value : null;
-}
-
-function toSlug(input: string) {
-    return input
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '')
-        .slice(0, 100);
-}
 
 export default router;

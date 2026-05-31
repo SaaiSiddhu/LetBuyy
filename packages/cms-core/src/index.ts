@@ -87,6 +87,155 @@ export const ReplaceNavigationSchema = z.object({
   items: z.array(NavigationItemSchema).max(100).default([]),
 });
 
+export interface CmsSeoInput {
+  seo_title?: string | null;
+  seo_description?: string | null;
+}
+
+export interface CmsStorefrontPageRecord {
+  id: string;
+  store_id?: string | null;
+  title?: string | null;
+  slug?: string | null;
+  body?: string | null;
+  content?: Record<string, unknown> | null;
+  html_content?: string | null;
+  status?: string | null;
+  page_type?: string | null;
+  show_in_nav?: boolean | null;
+  updated_at?: string | null;
+  published_at?: string | null;
+  seo?: Record<string, unknown> | null;
+  assigned_template_key?: string | null;
+}
+
+export interface CmsPolicyRecord {
+  id: string;
+  store_id: string;
+  policy_type: string;
+  slug: string;
+  title: string;
+  body?: Record<string, unknown> | null;
+  status?: string | null;
+  seo?: Record<string, unknown> | null;
+  published_at?: string | null;
+  updated_at?: string | null;
+}
+
+export interface CmsNavigationItemRecord {
+  id: string;
+  menu_id: string;
+  store_id: string;
+  parent_item_id?: string | null;
+  label: string;
+  url?: string | null;
+  target_type?: string | null;
+  target_resource_id?: string | null;
+  sort_order?: number | null;
+  is_visible?: boolean | null;
+  open_in_new_tab?: boolean | null;
+  metadata?: Record<string, unknown> | null;
+  updated_at?: string | null;
+}
+
+export function getCmsString(data: Record<string, unknown>, key: string): string | null {
+  const value = data[key];
+  return typeof value === 'string' ? value : null;
+}
+
+export function seoFromPageInput(input: CmsSeoInput): { title: string | null; description: string | null } {
+  return {
+    title: input.seo_title || null,
+    description: input.seo_description || null,
+  };
+}
+
+export function pageBodyToContent(body: string | undefined | null): { body: string } {
+  return { body: body || '' };
+}
+
+export function slugifyCmsTitle(input: string): string {
+  return input
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+    .slice(0, 100);
+}
+
+export function normalizeStorefrontPageRecord(row: CmsStorefrontPageRecord) {
+  const content = row.content || {};
+  const body = row.body || row.html_content || getCmsString(content, 'body') || getCmsString(content, 'html') || '';
+  const seo = row.seo || {};
+
+  return {
+    id: row.id,
+    store_id: row.store_id,
+    title: row.title || 'Untitled page',
+    slug: row.slug || '',
+    body,
+    content: content || { body },
+    page_type: row.page_type || 'custom',
+    status: row.status || 'draft',
+    show_in_nav: Boolean(row.show_in_nav),
+    seo_title: getCmsString(seo, 'title'),
+    seo_description: getCmsString(seo, 'description'),
+    assigned_template_key: row.assigned_template_key || null,
+    published_at: row.published_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+export function normalizeLegacyPageRecord(row: CmsStorefrontPageRecord & { stores?: unknown }) {
+  const { stores: _stores, content, ...page } = row;
+  const body = page.body || page.html_content || getCmsString(content || {}, 'body') || '';
+
+  return {
+    ...page,
+    content: content || { body },
+    body,
+    page_type: page.page_type || 'custom',
+    show_in_nav: Boolean(page.show_in_nav),
+  };
+}
+
+export function normalizeStorefrontPolicyRecord(row: CmsPolicyRecord) {
+  const body = row.body || {};
+  const seo = row.seo || {};
+
+  return {
+    id: row.id,
+    store_id: row.store_id,
+    policy_type: row.policy_type,
+    slug: row.slug,
+    title: row.title,
+    body: getCmsString(body, 'body') || getCmsString(body, 'html') || '',
+    content: body,
+    status: row.status || 'draft',
+    seo_title: getCmsString(seo, 'title'),
+    seo_description: getCmsString(seo, 'description'),
+    published_at: row.published_at || null,
+    updated_at: row.updated_at || null,
+  };
+}
+
+export function normalizeNavigationItemRecord(row: CmsNavigationItemRecord) {
+  return {
+    id: row.id,
+    menu_id: row.menu_id,
+    store_id: row.store_id,
+    parent_item_id: row.parent_item_id || null,
+    label: row.label,
+    url: row.url || '#',
+    target_type: row.target_type || 'url',
+    target_resource_id: row.target_resource_id || null,
+    sort_order: row.sort_order || 0,
+    is_visible: row.is_visible !== false,
+    open_in_new_tab: row.open_in_new_tab === true,
+    metadata: row.metadata || {},
+    updated_at: row.updated_at || null,
+  };
+}
+
 export const CreateBlogPostSchema = z.object({
   store_id: UuidSchema,
   title: z.string().min(1).max(300).trim(),
