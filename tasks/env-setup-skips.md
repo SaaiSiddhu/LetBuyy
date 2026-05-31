@@ -15,6 +15,7 @@ SKIP: Phase 5.9 Cloudflare Worker secret setup — Reason: Blocked by missing Le
 SKIP: Phase 5.10 GitHub repository and secret setup — Reason: `gh auth status` reports the active GitHub token is invalid and no replacement `GITHUB_TOKEN` is available. — Resume: Phase 5.10 after authenticating GitHub CLI or setting a valid `GITHUB_TOKEN`.
 SKIP: Phase 5.11 Vercel project creation — Reason: Vercel CLI is authenticated as `eleviq26`, no LetBuyy `VERCEL_ORG_ID` is available, and team discovery failed; creating projects in an unconfirmed account would break environment isolation. — Resume: Phase 5.11 after setting `VERCEL_TOKEN`, `VERCEL_ORG_ID`, and confirming the LetBuyy Vercel scope.
 SKIP: Phase 6 Supabase migrations and Urban Kicks seed — Reason: Staging and production Supabase `project_ref` values are still placeholders because Phase 5.6 project creation was skipped. — Resume: Phase 6 after `config/supabase/staging.json` and `config/supabase/production.json` contain real project refs and `database/supabase/seeds/urban-kicks-theme.sql` exists.
+SKIP: Phase 7 staging deployment — Reason: LetBuyy-scoped Cloudflare credentials, Vercel organization/project credentials, and materialized provider IDs are unavailable from Phase 5. — Resume: Phase 7 after Phases 5 and 6 complete with real resource IDs and secrets.
 
 ## COMPLETED
 
@@ -41,3 +42,4 @@ SKIP: Phase 6 Supabase migrations and Urban Kicks seed — Reason: Staging and p
 - Phase 4 verification: `pnpm run validate:governance` passed.
 - Phase 5 Task 5.1: Required CLIs checked. `gh` 2.89.0, Supabase CLI 2.101.0, Wrangler 4.92.0 via Node 22.22.1, and Vercel CLI repaired to 54.4.1.
 - Phase 6 verification: Skipped migrations logged because provider project refs are placeholders.
+- Phase 7 build gate: `CI=true pnpm install --frozen-lockfile` completed after network escalation; `pnpm turbo build` passed after network escalation for Google Fonts.
