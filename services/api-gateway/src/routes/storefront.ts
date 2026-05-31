@@ -24,6 +24,11 @@ import { ProductExecutionAdapter } from '../execution/product-execution.adapter'
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
+import {
+    planCouponValidation,
+    type CouponRecord,
+    type CouponValidationFailureCode,
+} from '@letbuyy/checkout-core';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -320,22 +325,6 @@ type PublicNavigationItem = {
     openInNewTab: boolean;
     children: PublicNavigationItem[];
     metadata: Record<string, unknown>;
-};
-
-type CouponValidationRow = {
-    code: string;
-    type?: string | null;
-    value?: number | string | null;
-    minimum_order_amount?: number | string | null;
-    maximum_discount?: number | string | null;
-    discount_type?: string | null;
-    discount_value?: number | string | null;
-    min_order_amount?: number | string | null;
-    max_discount?: number | string | null;
-    starts_at?: string | null;
-    expires_at?: string | null;
-    usage_limit?: number | string | null;
-    usage_count?: number | string | null;
 };
 
 function isMissingTableError(error: DatabaseErrorLike, tableName: string): boolean {
@@ -1873,6 +1862,21 @@ router.get('/:subdomain/coupons/validate', async (c) => {
     return validateCouponForStore(c, store.id);
 });
 
+function storefrontCouponError(code: CouponValidationFailureCode | undefined, minimumOrderAmount: number) {
+    switch (code) {
+        case 'expired':
+            return 'This coupon has expired';
+        case 'not_started':
+            return 'This coupon is not yet active';
+        case 'usage_limit_reached':
+            return 'This coupon has reached its usage limit';
+        case 'minimum_order_not_met':
+            return `Minimum purchase of ₹${minimumOrderAmount.toLocaleString('en-IN')} required`;
+        default:
+            return 'Invalid coupon code';
+    }
+}
+
 async function validateCouponForStore(c: AppContext, storeId: string) {
     const code = (c.req.query('code') || '').trim().toUpperCase();
     const subtotal = Number(c.req.query('subtotal') || 0);
@@ -1901,47 +1905,22 @@ async function validateCouponForStore(c: AppContext, storeId: string) {
     if (error) return c.json(dbFailureBody(), 500);
     if (!coupon) return c.json(success({ valid: false, error: 'Invalid coupon code' }));
 
-    const couponRow = coupon as CouponValidationRow;
-    const couponType = couponRow.type || couponRow.discount_type;
-    const couponValue = Number(couponRow.value ?? couponRow.discount_value ?? 0);
-    const minimumOrderAmount = Number(couponRow.minimum_order_amount ?? couponRow.min_order_amount ?? 0);
-    const maximumDiscount = couponRow.maximum_discount ?? couponRow.max_discount;
-
-    if (couponRow.expires_at && new Date(couponRow.expires_at) < new Date()) {
-        return c.json(success({ valid: false, error: 'This coupon has expired' }));
-    }
-
-    if (couponRow.starts_at && new Date(couponRow.starts_at) > new Date()) {
-        return c.json(success({ valid: false, error: 'This coupon is not yet active' }));
-    }
-
-    if (couponRow.usage_limit && Number(couponRow.usage_count || 0) >= Number(couponRow.usage_limit)) {
-        return c.json(success({ valid: false, error: 'This coupon has reached its usage limit' }));
-    }
-
-    if (minimumOrderAmount > 0 && subtotal < minimumOrderAmount) {
+    const plan = planCouponValidation(coupon as CouponRecord, { subtotal, enforceMinimumOrder: true });
+    if (!plan.valid) {
         return c.json(success({
             valid: false,
-            error: `Minimum purchase of ₹${minimumOrderAmount.toLocaleString('en-IN')} required`,
+            error: storefrontCouponError(plan.failureCode, plan.coupon.minimumOrderAmount),
         }));
-    }
-
-    let discount = 0;
-    if (couponType === 'percentage') {
-        discount = Math.round(subtotal * (couponValue / 100));
-        if (maximumDiscount) discount = Math.min(discount, Number(maximumDiscount));
-    } else if (couponType === 'fixed' || couponType === 'fixed_amount') {
-        discount = Math.min(couponValue, subtotal);
     }
 
     return c.json(success({
         valid: true,
         coupon: {
-            code: couponRow.code,
-            type: couponType,
-            value: couponValue,
-            discount,
-            freeShipping: couponType === 'free_shipping',
+            code: plan.coupon.code,
+            type: plan.coupon.type,
+            value: plan.coupon.value,
+            discount: plan.coupon.discount,
+            freeShipping: plan.coupon.freeShipping,
         },
     }));
 }

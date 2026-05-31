@@ -280,6 +280,216 @@ export const ListCouponsQuery = PaginationQuery.extend({
   status: z.enum(['active', 'expired', 'all']).default('all'),
 });
 
+export interface CouponRecord extends Record<string, unknown> {
+  code?: string | null;
+  type?: string | null;
+  value?: number | string | null;
+  minimum_order_amount?: number | string | null;
+  maximum_discount?: number | string | null;
+  per_customer_limit?: number | string | null;
+  discount_type?: string | null;
+  discount_value?: number | string | null;
+  min_order_amount?: number | string | null;
+  max_discount?: number | string | null;
+  per_user_limit?: number | string | null;
+  starts_at?: string | Date | null;
+  expires_at?: string | Date | null;
+  usage_limit?: number | string | null;
+  usage_count?: number | string | null;
+}
+
+export interface NormalizedCouponRecord extends CouponRecord {
+  type: string | null;
+  value: number | string | null;
+  minimum_order_amount: number | string | null;
+  maximum_discount: number | string | null;
+  per_customer_limit: number | string | null;
+}
+
+export interface CouponCreatePlan {
+  couponInsert: Record<string, unknown>;
+}
+
+export interface CouponUpdatePlan {
+  updates: Record<string, unknown>;
+}
+
+export type CouponValidationFailureCode =
+  | 'expired'
+  | 'not_started'
+  | 'usage_limit_reached'
+  | 'minimum_order_not_met';
+
+export interface CouponValidationPlan {
+  valid: boolean;
+  failureCode?: CouponValidationFailureCode;
+  coupon: {
+    code: string;
+    type: string | null;
+    value: number;
+    minimumOrderAmount: number;
+    maximumDiscount: number | null;
+    discount: number;
+    freeShipping: boolean;
+  };
+  pricingAuthority: 'checkout';
+}
+
+const COUPON_UPDATE_FIELDS = [
+  'code',
+  'type',
+  'description',
+  'value',
+  'minimum_order_amount',
+  'maximum_discount',
+  'usage_limit',
+  'per_customer_limit',
+  'starts_at',
+  'expires_at',
+  'is_active',
+] as const;
+
+const COUPON_COLUMN_MAP: Record<string, string> = {
+  type: 'discount_type',
+  value: 'discount_value',
+  minimum_order_amount: 'min_order_amount',
+  maximum_discount: 'max_discount',
+  per_customer_limit: 'per_user_limit',
+};
+
+function toCouponIsoTimestamp(value: unknown) {
+  if (value === undefined || value === null || value === '') {
+    return null;
+  }
+
+  const date = value instanceof Date ? value : new Date(String(value));
+  return Number.isNaN(date.getTime()) ? value : date.toISOString();
+}
+
+function toCouponNumber(value: number | string | null | undefined, fallback = 0) {
+  if (value === null || value === undefined || value === '') return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function toOptionalCouponNumber(value: number | string | null | undefined) {
+  if (value === null || value === undefined || value === '') return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function isCouponDateBefore(value: CouponRecord['expires_at'], date: Date) {
+  if (!value) return false;
+  const parsed = value instanceof Date ? value : new Date(String(value));
+  return !Number.isNaN(parsed.getTime()) && parsed < date;
+}
+
+function isCouponDateAfter(value: CouponRecord['starts_at'], date: Date) {
+  if (!value) return false;
+  const parsed = value instanceof Date ? value : new Date(String(value));
+  return !Number.isNaN(parsed.getTime()) && parsed > date;
+}
+
+export function normalizeCouponRecord(coupon: unknown): unknown {
+  if (!coupon || typeof coupon !== 'object') {
+    return coupon;
+  }
+
+  const row = coupon as CouponRecord;
+
+  return {
+    ...row,
+    type: row.type ?? row.discount_type ?? null,
+    value: row.value ?? row.discount_value ?? null,
+    minimum_order_amount: row.minimum_order_amount ?? row.min_order_amount ?? null,
+    maximum_discount: row.maximum_discount ?? row.max_discount ?? null,
+    per_customer_limit: row.per_customer_limit ?? row.per_user_limit ?? 1,
+  } satisfies NormalizedCouponRecord;
+}
+
+export function planCouponCreate(input: CreateCouponInput): CouponCreatePlan {
+  return {
+    couponInsert: {
+      store_id: input.store_id,
+      code: input.code,
+      description: input.description ?? null,
+      discount_type: input.type,
+      discount_value: input.value,
+      min_order_amount: input.minimum_order_amount ?? null,
+      max_discount: input.maximum_discount ?? null,
+      usage_limit: input.usage_limit ?? null,
+      usage_count: 0,
+      per_user_limit: input.per_customer_limit ?? 1,
+      starts_at: toCouponIsoTimestamp(input.starts_at),
+      expires_at: toCouponIsoTimestamp(input.expires_at),
+      is_active: input.is_active,
+    },
+  };
+}
+
+export function planCouponUpdate(patch: Record<string, unknown>): CouponUpdatePlan {
+  const updates: Record<string, unknown> = {};
+
+  for (const key of COUPON_UPDATE_FIELDS) {
+    if (patch[key] === undefined) continue;
+
+    const column = COUPON_COLUMN_MAP[key] || key;
+    updates[column] = key === 'starts_at' || key === 'expires_at'
+      ? toCouponIsoTimestamp(patch[key])
+      : patch[key];
+  }
+
+  return { updates };
+}
+
+export function planCouponValidation(
+  coupon: CouponRecord,
+  input: { subtotal?: number; now?: Date; enforceMinimumOrder?: boolean } = {},
+): CouponValidationPlan {
+  const now = input.now || new Date();
+  const subtotal = Number.isFinite(input.subtotal) ? Math.max(Number(input.subtotal), 0) : 0;
+  const type = coupon.type ?? coupon.discount_type ?? null;
+  const value = toCouponNumber(coupon.value ?? coupon.discount_value);
+  const minimumOrderAmount = toCouponNumber(coupon.minimum_order_amount ?? coupon.min_order_amount);
+  const maximumDiscount = toOptionalCouponNumber(coupon.maximum_discount ?? coupon.max_discount);
+  const usageLimit = toOptionalCouponNumber(coupon.usage_limit);
+  const usageCount = toCouponNumber(coupon.usage_count);
+
+  let failureCode: CouponValidationFailureCode | undefined;
+  if (isCouponDateBefore(coupon.expires_at, now)) {
+    failureCode = 'expired';
+  } else if (isCouponDateAfter(coupon.starts_at, now)) {
+    failureCode = 'not_started';
+  } else if (usageLimit !== null && usageLimit > 0 && usageCount >= usageLimit) {
+    failureCode = 'usage_limit_reached';
+  } else if (input.enforceMinimumOrder && minimumOrderAmount > 0 && subtotal < minimumOrderAmount) {
+    failureCode = 'minimum_order_not_met';
+  }
+
+  let discount = 0;
+  if (!failureCode && type === 'percentage') {
+    discount = Math.round(subtotal * (value / 100));
+    if (maximumDiscount !== null && maximumDiscount > 0) discount = Math.min(discount, maximumDiscount);
+  } else if (!failureCode && (type === 'fixed' || type === 'fixed_amount')) {
+    discount = Math.min(value, subtotal);
+  }
+
+  return {
+    valid: !failureCode,
+    failureCode,
+    coupon: {
+      code: coupon.code || '',
+      type,
+      value,
+      minimumOrderAmount,
+      maximumDiscount,
+      discount,
+      freeShipping: type === 'free_shipping',
+    },
+    pricingAuthority: 'checkout',
+  };
+}
+
 export const VALID_TRANSITIONS: Record<string, string[]> = {
   pending: ['confirmed', 'cancelled'],
   confirmed: ['processing', 'cancelled'],

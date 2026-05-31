@@ -12,106 +12,44 @@ import {
     ValidateCouponSchema,
     ListCouponsQuery,
 } from '../schemas/coupon.schema';
-import type { z } from 'zod';
+import {
+    normalizeCouponRecord,
+    planCouponCreate,
+    planCouponUpdate,
+    planCouponValidation,
+    type CouponRecord,
+    type CreateCouponInput,
+    type ListCouponsInput,
+} from '@letbuyy/checkout-core';
 
 const router = new Hono<{ Bindings: Env }>();
 
-type CreateCouponInput = z.infer<typeof CreateCouponSchema>;
-type ListCouponsQueryInput = z.infer<typeof ListCouponsQuery>;
 type CouponPatchInput = Partial<CreateCouponInput>;
-
-interface CouponRow extends Record<string, unknown> {
-    type?: string | null;
-    value?: number | string | null;
-    minimum_order_amount?: number | string | null;
-    maximum_discount?: number | string | null;
-    per_customer_limit?: number | string | null;
-    discount_type?: string | null;
-    discount_value?: number | string | null;
-    min_order_amount?: number | string | null;
-    max_discount?: number | string | null;
-    per_user_limit?: number | string | null;
-}
 
 interface CouponOwnerRow {
     id: string;
     store_id?: string | null;
 }
 
-function normalizeCoupon(coupon: unknown) {
-    if (!coupon || typeof coupon !== 'object') {
-        return coupon;
+function couponValidationReason(code: ReturnType<typeof planCouponValidation>['failureCode']) {
+    switch (code) {
+        case 'expired':
+            return 'Coupon has expired';
+        case 'not_started':
+            return 'Coupon is not yet active';
+        case 'usage_limit_reached':
+            return 'Coupon usage limit reached';
+        case 'minimum_order_not_met':
+            return 'Minimum order amount not met';
+        default:
+            return 'Coupon is invalid';
     }
-
-    const row = coupon as CouponRow;
-
-    return {
-        ...row,
-        type: row.type ?? row.discount_type ?? null,
-        value: row.value ?? row.discount_value ?? null,
-        minimum_order_amount: row.minimum_order_amount ?? row.min_order_amount ?? null,
-        maximum_discount: row.maximum_discount ?? row.max_discount ?? null,
-        per_customer_limit: row.per_customer_limit ?? row.per_user_limit ?? 1,
-    };
-}
-
-function toIsoTimestamp(value: unknown) {
-    if (value === undefined || value === null || value === '') {
-        return null;
-    }
-
-    const date = value instanceof Date ? value : new Date(String(value));
-    return Number.isNaN(date.getTime()) ? value : date.toISOString();
-}
-
-function toCouponInsert(body: CreateCouponInput) {
-    return {
-        store_id: body.store_id,
-        code: body.code,
-        description: body.description ?? null,
-        discount_type: body.type,
-        discount_value: body.value,
-        min_order_amount: body.minimum_order_amount ?? null,
-        max_discount: body.maximum_discount ?? null,
-        usage_limit: body.usage_limit ?? null,
-        usage_count: 0,
-        per_user_limit: body.per_customer_limit ?? 1,
-        starts_at: toIsoTimestamp(body.starts_at),
-        expires_at: toIsoTimestamp(body.expires_at),
-        is_active: body.is_active,
-    };
-}
-
-function toCouponUpdate(patch: Record<string, unknown>) {
-    const columnMap: Record<string, string> = {
-        type: 'discount_type',
-        value: 'discount_value',
-        minimum_order_amount: 'min_order_amount',
-        maximum_discount: 'max_discount',
-        per_customer_limit: 'per_user_limit',
-    };
-    const allowed = [
-        'code', 'type', 'description', 'value', 'minimum_order_amount', 'maximum_discount',
-        'usage_limit', 'per_customer_limit', 'starts_at', 'expires_at', 'is_active',
-    ];
-
-    const updates: Record<string, unknown> = {};
-    for (const key of allowed) {
-        if (patch[key] === undefined) continue;
-
-        const column = columnMap[key] || key;
-        updates[column] = key === 'starts_at' || key === 'expires_at'
-            ? toIsoTimestamp(patch[key])
-            : patch[key];
-    }
-
-    return updates;
 }
 
 // GET /coupons — List coupons for a store
 router.get('/', validate('query', ListCouponsQuery), async (c) => {
     const auth = c.get('auth');
-    const query = c.get('validatedQuery') as ListCouponsQueryInput;
+    const query = c.get('validatedQuery') as ListCouponsInput;
     const offset = (query.page - 1) * query.limit;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -152,7 +90,7 @@ router.get('/', validate('query', ListCouponsQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated((data || []).map(normalizeCoupon), count || 0, query.page, query.limit));
+    return c.json(paginated((data || []).map(normalizeCouponRecord), count || 0, query.page, query.limit));
 });
 
 // POST /coupons — Create a coupon
@@ -183,7 +121,7 @@ router.post('/', validate('json', CreateCouponSchema), async (c) => {
 
     const { data, error } = await db
         .from('coupons')
-        .insert(toCouponInsert(body))
+        .insert(planCouponCreate(body).couponInsert)
         .select()
         .single();
 
@@ -191,7 +129,7 @@ router.post('/', validate('json', CreateCouponSchema), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success(normalizeCoupon(data)), 201);
+    return c.json(success(normalizeCouponRecord(data)), 201);
 });
 
 // GET /coupons/:id — Get coupon details
@@ -215,7 +153,7 @@ router.get('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Coupon not found' } }, 404);
     }
 
-    return c.json(success(normalizeCoupon(data)));
+    return c.json(success(normalizeCouponRecord(data)));
 });
 
 // PATCH /coupons/:id — Update a coupon
@@ -238,7 +176,7 @@ router.patch('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const updates = toCouponUpdate(patch);
+    const updates = planCouponUpdate(patch).updates;
 
     if (Object.keys(updates).length === 0) {
         return c.json({ success: false, error: { code: 'VALIDATION_ERROR', message: 'No valid fields to update' } }, 400);
@@ -255,7 +193,7 @@ router.patch('/:id', async (c) => {
         return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Coupon not found' } }, 404);
     }
 
-    return c.json(success(normalizeCoupon(data)));
+    return c.json(success(normalizeCouponRecord(data)));
 });
 
 // DELETE /coupons/:id — Soft delete (deactivate)
@@ -310,31 +248,21 @@ router.post('/validate', validate('json', ValidateCouponSchema), async (c) => {
         return c.json(success({ valid: false, reason: 'Coupon not found or inactive' }));
     }
 
-    // Check expiry
-    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
-        return c.json(success({ valid: false, reason: 'Coupon has expired' }));
-    }
-
-    // Check start date
-    if (coupon.starts_at && new Date(coupon.starts_at) > new Date()) {
-        return c.json(success({ valid: false, reason: 'Coupon is not yet active' }));
-    }
-
-    // Check usage limit
-    if (coupon.usage_limit && coupon.usage_count >= coupon.usage_limit) {
-        return c.json(success({ valid: false, reason: 'Coupon usage limit reached' }));
+    const plan = planCouponValidation(coupon as CouponRecord);
+    if (!plan.valid) {
+        return c.json(success({ valid: false, reason: couponValidationReason(plan.failureCode) }));
     }
 
     return c.json(success({
         valid: true,
         coupon: {
-            code: coupon.code,
-            type: coupon.type || coupon.discount_type,
-            value: coupon.value || coupon.discount_value,
-            minimum_order_amount: coupon.minimum_order_amount || coupon.min_order_amount,
-            maximum_discount: coupon.maximum_discount || coupon.max_discount,
+            code: plan.coupon.code,
+            type: plan.coupon.type,
+            value: plan.coupon.value,
+            minimum_order_amount: plan.coupon.minimumOrderAmount,
+            maximum_discount: plan.coupon.maximumDiscount,
         },
-        pricing_authority: 'checkout',
+        pricing_authority: plan.pricingAuthority,
     }));
 });
 
