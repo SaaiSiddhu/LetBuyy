@@ -25,7 +25,7 @@ Canonical source boundary: `packages/typescript/api-types`.
 
 - Keep this boundary small, typed, and reusable. Do not import app-specific UI, env, or routing from shared packages.
 - Public exports must be intentional and documented in the local `src/index.ts` where present.
-- Shared API/domain types belong in the owning domain package or Dart model package, not app pages. `packages/typescript/api-types` is a compatibility aggregate.
+- This package is a compatibility aggregate. When legacy domain packages and `@letbuyy/shared-types` expose overlapping Store/Product/Order/Payment/Theme/Page DTO names, this package must resolve those names to `@letbuyy/shared-types`.
 - Shared UI must support light/dark themes, keyboard focus, disabled state, loading state, and error state.
 - Shared payment/auth utilities must not log secrets or expose provider details to the client.
 

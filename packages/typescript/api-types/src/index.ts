@@ -5,6 +5,28 @@
 // =============================================
 
 export * from '@letbuyy/shared-types';
+export {
+  PageStatusSchema,
+  PolicyTypeSchema,
+  ProductOptionSchema,
+  SiteTypeSchema,
+} from '@letbuyy/shared-types';
+export type {
+  FulfillmentStatus,
+  Order,
+  OrderItem,
+  OrderStatus,
+  PageStatus,
+  PaymentStatus,
+  PolicyType,
+  Product,
+  ProductOption,
+  ProductStatus,
+  ProductVariant,
+  SiteType,
+  Store,
+  StoreStatus,
+} from '@letbuyy/shared-types';
 export * from '@letbuyy/tenant-core';
 export * from '@letbuyy/commerce-core';
 export * from '@letbuyy/checkout-core';
