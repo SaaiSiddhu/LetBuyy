@@ -9,6 +9,8 @@ import type {
   Coupon,
   Customer,
   CustomerAddress,
+  FormSubmission,
+  FormSubmissionStatus,
   GiftCard,
   InventoryAdjustmentReason,
   InventoryLevel,
@@ -129,6 +131,11 @@ export interface BlogPostListQuery extends StoreScopedQuery {
 
 export interface BlogCommentListQuery extends StoreScopedQuery {
   status?: BlogCommentStatus | 'all';
+}
+
+export interface FormSubmissionListQuery extends StoreScopedQuery {
+  type?: 'all' | 'contact' | 'lead';
+  status?: FormSubmissionStatus | 'all';
 }
 
 export interface ProductListQuery extends StoreScopedQuery {
@@ -267,6 +274,7 @@ export type UpdateBlogPostInput = NewRecord<BlogPost> & {
   version?: number;
 };
 export type UpdateBlogCommentInput = Pick<BlogComment, 'status'>;
+export type UpdateFormSubmissionInput = Pick<FormSubmission, 'status'>;
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
@@ -482,6 +490,15 @@ export class LetbuyyApiClient {
       remove: (id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<{ deleted: boolean }>(`/blog/comments/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     },
+  };
+
+  readonly formSubmissions = {
+    list: (query: FormSubmissionListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<FormSubmission>('/form-submissions', { ...options, query }),
+    update: (id: string, input: UpdateFormSubmissionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<FormSubmission>(`/form-submissions/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    remove: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/form-submissions/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
   };
 
   readonly themes = {
@@ -776,6 +793,7 @@ export type {
   Coupon,
   Customer,
   CustomerAddress,
+  FormSubmission,
   GiftCard,
   InventoryLevel,
   LineItem,

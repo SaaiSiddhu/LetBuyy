@@ -184,6 +184,15 @@ export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
 export const PolicyTypeSchema = z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']);
 export const BlogPostStatusSchema = z.enum(['draft', 'published', 'scheduled', 'archived']);
 export const BlogCommentStatusSchema = z.enum(['pending', 'approved', 'spam', 'rejected']);
+export const FormSubmissionStatusSchema = z.enum([
+  'new',
+  'read',
+  'replied',
+  'contacted',
+  'converted',
+  'archived',
+  'spam',
+]);
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
 
@@ -600,6 +609,24 @@ export const BlogCommentSchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 }).passthrough();
 
+export const FormSubmissionSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  form_type: z.string().max(80).optional().nullable(),
+  form_name: z.string().max(160).optional().nullable(),
+  data: MetadataSchema.default({}),
+  source_url: z.string().max(2000).optional().nullable(),
+  status: FormSubmissionStatusSchema.default('new'),
+  read_at: z.string().datetime().optional().nullable(),
+  replied_at: z.string().datetime().optional().nullable(),
+  internal_notes: z.string().max(5000).optional().nullable(),
+  full_name: z.string().max(200).optional().nullable(),
+  email: z.string().max(320).optional().nullable(),
+  phone: z.string().max(40).optional().nullable(),
+  subject: z.string().max(300).optional().nullable(),
+  message: z.string().max(10000).optional().nullable(),
+  source: z.string().max(2000).optional().nullable(),
+}).passthrough();
+
 export const ThemeSettingFieldSchema = z.object({
   id: z.string().min(1).max(120),
   type: z.enum(['text', 'textarea', 'number', 'range', 'checkbox', 'select', 'color', 'image', 'url', 'font']),
@@ -829,6 +856,7 @@ export type PageStatus = z.infer<typeof PageStatusSchema>;
 export type PolicyType = z.infer<typeof PolicyTypeSchema>;
 export type BlogPostStatus = z.infer<typeof BlogPostStatusSchema>;
 export type BlogCommentStatus = z.infer<typeof BlogCommentStatusSchema>;
+export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
 export type ThemeCategory = z.infer<typeof ThemeCategorySchema>;
 export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
 export type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
@@ -859,6 +887,7 @@ export type NavigationResponse = z.infer<typeof NavigationResponseSchema>;
 export type ReplaceNavigationResult = z.infer<typeof ReplaceNavigationResultSchema>;
 export type BlogPost = z.infer<typeof BlogPostSchema>;
 export type BlogComment = z.infer<typeof BlogCommentSchema>;
+export type FormSubmission = z.infer<typeof FormSubmissionSchema>;
 export type ThemeSettingField = z.infer<typeof ThemeSettingFieldSchema>;
 export type ThemeSettings = z.infer<typeof ThemeSettingsSchema>;
 export type ThemeBlock = z.infer<typeof ThemeBlockSchema>;
