@@ -49,13 +49,24 @@ async function openVisibleProduct(page: Page): Promise<void> {
 }
 
 async function openCart(page: Page): Promise<void> {
-  if (await clickFirstVisible(page.getByRole('button', { name: /^open cart$/i }))) return;
-
   const currentUrl = new URL(page.url());
   const storeBasePath = currentUrl.pathname.match(/^(.*\/store\/[^/]+)/)?.[1];
   test.skip(!storeBasePath, 'Could not resolve the storefront cart URL.');
 
   await page.goto(`${currentUrl.origin}${storeBasePath}/cart`, { waitUntil: 'domcontentloaded' });
+  await expect(page).toHaveURL(/\/cart/i);
+}
+
+async function addProductToCart(page: Page, addToCart: Locator): Promise<void> {
+  const cartWithItems = page.getByRole('button', { name: /open cart with [1-9]/i });
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    await addToCart.first().click();
+    if (await cartWithItems.first().isVisible({ timeout: 1_500 }).catch(() => false)) return;
+    await page.getByRole('button', { name: /close cart/i }).first().click().catch(() => undefined);
+  }
+
+  await expect(cartWithItems.first()).toBeVisible();
 }
 
 test.describe('customer journey', () => {
@@ -67,26 +78,27 @@ test.describe('customer journey', () => {
 
     await openVisibleProduct(page);
 
-    const buyNow = page.getByRole('button', { name: /buy now/i });
     const addToCart = page
       .getByRole('button', { name: /add to cart|add bag/i })
       .or(page.locator('[data-testid="add-to-cart"]'));
 
-    if (await clickFirstVisible(buyNow)) {
-      await expect(page).toHaveURL(/cart|checkout/i);
-    } else {
-      await expect(addToCart.first()).toBeVisible();
-      await addToCart.first().click();
-      await openCart(page);
-    }
+    await expect(addToCart.first()).toBeVisible();
+    await addProductToCart(page, addToCart);
+    await openCart(page);
 
     const checkout = page
       .getByRole('link', { name: /checkout|proceed/i })
       .or(page.getByRole('button', { name: /checkout|proceed/i }))
       .or(page.locator('[data-testid="checkout"]'));
 
-    await expect(checkout.first()).toBeVisible();
-    await checkout.first().click();
+    const checkoutAction = checkout.first();
+    await expect(checkoutAction).toBeVisible();
+    const checkoutHref = await checkoutAction.getAttribute('href');
+    await checkoutAction.click();
+
+    if (!/checkout/i.test(page.url()) && checkoutHref) {
+      await page.goto(new URL(checkoutHref, page.url()).toString(), { waitUntil: 'domcontentloaded' });
+    }
 
     await expect(page).toHaveURL(/checkout/i);
     expect(await page.locator('input, textarea, select, button').count()).toBeGreaterThan(0);

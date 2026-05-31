@@ -20,27 +20,28 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: React.ReactNode }) {
     const [items, setItems] = useState<CartItem[]>([]);
     const [isOpen, setIsOpen] = useState(false);
-    const [isMounted, setIsMounted] = useState(false);
+    const [hasLoadedStorage, setHasLoadedStorage] = useState(false);
 
     // Initial load from local storage
     useEffect(() => {
-        setIsMounted(true);
         const saved = localStorage.getItem('lb_cart');
         if (saved) {
             try {
-                setItems(JSON.parse(saved));
+                const parsed = JSON.parse(saved) as CartItem[];
+                setItems(prev => (prev.length > 0 ? prev : parsed));
             } catch (e) {
                 console.error("Failed to parse cart", e);
             }
         }
+        setHasLoadedStorage(true);
     }, []);
 
     // Save to local storage
     useEffect(() => {
-        if (isMounted) {
+        if (hasLoadedStorage) {
             localStorage.setItem('lb_cart', JSON.stringify(items));
         }
-    }, [items, isMounted]);
+    }, [items, hasLoadedStorage]);
 
     const addToCart = (product: ProductModel) => {
         setItems(prev => {
