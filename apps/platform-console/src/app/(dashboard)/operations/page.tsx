@@ -1,4 +1,5 @@
 import { AlertTriangle, CheckCircle2, GitBranch, RadioTower, RotateCcw, ShieldAlert } from 'lucide-react';
+import { fetchConsoleApi, type ConsoleDataResponse } from '@/lib/console-api';
 
 type OperationsOverview = {
     health?: Array<{ runtime_name: string; status: string; region?: string | null; checked_at?: string | null }>;
@@ -13,40 +14,14 @@ type OperationsOverview = {
     certification_reports?: Array<{ certification_id: string; certification_mode: string; status: string; repository_maturity_score: number; live_maturity_score: number; generated_at?: string | null; expires_at?: string | null }>;
 };
 
-type ApiEnvelope = {
-    data?: OperationsOverview;
-    error?: {
-        code?: string;
-        message?: string;
-    };
-};
-
 async function loadOperationsOverview(): Promise<{ overview?: OperationsOverview; error?: string }> {
-    const token = process.env.PLATFORM_CONSOLE_API_TOKEN;
-    const apiBase = process.env.PLATFORM_CONSOLE_API_BASE_URL || process.env.NEXT_PUBLIC_API_URL || 'https://api.letbuyy.store';
-
-    if (!token) {
-        return { error: 'PLATFORM_CONSOLE_API_TOKEN is not configured for live operations access.' };
-    }
-
-    const response = await fetch(`${apiBase}/v1/operations/runtime/overview?limit=30`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'X-Request-ID': `platform-console-operations-${Date.now()}`,
-        },
-        cache: 'no-store',
+    const result = await fetchConsoleApi<ConsoleDataResponse<OperationsOverview>>('/operations/runtime/overview', {
+        limit: 30,
     });
 
-    if (!response.ok) {
-        return { error: `Operations API returned HTTP ${response.status}.` };
-    }
+    if (result.error) return { error: result.error };
 
-    const payload = (await response.json()) as ApiEnvelope;
-    if (payload.error) {
-        return { error: payload.error.message || payload.error.code || 'Operations API returned an error.' };
-    }
-
-    return { overview: payload.data || {} };
+    return { overview: result.data?.data || {} };
 }
 
 export default async function OperationsDashboardPage() {

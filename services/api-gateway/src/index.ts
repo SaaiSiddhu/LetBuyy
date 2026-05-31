@@ -36,6 +36,7 @@ import reviewsRouter from './routes/reviews';
 import formSubmissionsRouter from './routes/form-submissions';
 import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
+import internalConsoleRouter from './routes/internal-console';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
@@ -53,6 +54,7 @@ export interface Env {
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;
+    PLATFORM_CONSOLE_API_TOKEN?: string;
     R2_BUCKET?: R2Bucket;
     RUNTIME_DB?: D1Database;
     CACHE?: KVNamespace;
@@ -124,7 +126,7 @@ app.use(
             return 'https://letbuyy.store';
         },
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key'],
+        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'X-Platform-Console-Token'],
         exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-Response-Time'],
         maxAge: 86400,
         credentials: true,
@@ -158,6 +160,7 @@ api.route('/contacts', contactsRouter);
 api.route('/storefront', storefrontRouter);
 api.route('/themes', themesRouter);
 api.route('/app-store', appStoreRouter);
+api.route('/internal/console', internalConsoleRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
