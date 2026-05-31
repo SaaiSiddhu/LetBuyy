@@ -6,6 +6,15 @@ import {
     createSupabaseAnonClient,
     createSupabaseServiceClient,
 } from '@letbuyy/infrastructure/supabase-adapter';
+import {
+    employeeRemovalPatch,
+    isEmployeeInviteExpired,
+    planEmployeeInvite,
+    planEmployeeInviteAcceptance,
+    planEmployeeStaffCreate,
+    planEmployeeUpdate,
+    type EmployeeInviteRecord,
+} from '@letbuyy/auth-core';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -99,7 +108,7 @@ router.post('/auth/accept-invite', async (c) => {
     }
 
     // Check expiry
-    if (new Date(invite.expires_at) < new Date()) {
+    if (isEmployeeInviteExpired(invite as EmployeeInviteRecord, new Date())) {
         await db.from('employee_invites').update({ status: 'expired' }).eq('id', invite.id);
         return c.json({ error: { code: 'EXPIRED', message: 'Invite has expired' } }, 410);
     }
@@ -120,13 +129,7 @@ router.post('/auth/accept-invite', async (c) => {
     // Create employee record
     const { data: employee, error: empError } = await db
         .from('employees')
-        .insert({
-            user_id: authData.user.id,
-            store_id: invite.store_id,
-            email: invite.email,
-            role: invite.role || 'staff',
-            status: 'active',
-        })
+        .insert(planEmployeeInviteAcceptance(invite as EmployeeInviteRecord, authData.user.id))
         .select()
         .single();
 
@@ -191,30 +194,22 @@ router.get('/', async (c) => {
 // POST /employees — Create an invited store staff record from merchant admin
 router.post('/', async (c) => {
     const auth = c.get('auth');
-    const { email, store_id, role } = await c.req.json();
+    const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+    const createPlan = planEmployeeStaffCreate(body, customUser?.id || '');
 
-    if (!email || !store_id) {
-        return c.json({ error: { code: 'VALIDATION', message: 'email and store_id required' } }, 400);
+    if (!createPlan.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: createPlan.message } }, 400);
     }
 
-    if (!customUser || !(await verifySiteOwnership(db, store_id, customUser.id, auth.user.storeId))) {
+    if (!customUser || !(await verifySiteOwnership(db, createPlan.value.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
 
-    const normalizedEmail = String(email).trim().toLowerCase();
     const { data, error } = await db
         .from('employees')
-        .insert({
-            store_id,
-            email: normalizedEmail,
-            full_name: normalizedEmail,
-            role: role || 'editor',
-            status: 'invited',
-            is_active: true,
-            created_by: customUser.id,
-        })
+        .insert(createPlan.value)
         .select()
         .single();
 
@@ -259,30 +254,29 @@ router.get('/me', async (c) => {
 // POST /employees/invite — Invite an employee
 router.post('/invite', async (c) => {
     const auth = c.get('auth');
-    const { email, store_id, role } = await c.req.json();
+    const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+    const token = crypto.randomUUID();
+    const invitePlan = planEmployeeInvite(
+        body,
+        customUser?.id || '',
+        token,
+        new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
+    );
 
-    if (!email || !store_id) {
-        return c.json({ error: { code: 'VALIDATION', message: 'email and store_id required' } }, 400);
+    if (!invitePlan.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: invitePlan.message } }, 400);
     }
 
-    if (!customUser || !(await verifySiteOwnership(db, store_id, customUser.id, auth.user.storeId))) {
+    if (!customUser || !(await verifySiteOwnership(db, invitePlan.value.store_id, customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized for this store' } }, 403);
     }
 
     // Create invite
-    const token = crypto.randomUUID();
     const { data, error } = await db
         .from('employee_invites')
-        .insert({
-            store_id,
-            email,
-            role: role || 'staff',
-            token,
-            invited_by: customUser.id,
-            expires_at: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-        })
+        .insert(invitePlan.value)
         .select()
         .single();
 
@@ -357,7 +351,7 @@ router.get('/analytics', async (c) => {
 router.patch('/:id', async (c) => {
     const auth = c.get('auth');
     const employeeId = c.req.param('id');
-    const { role, permissions } = await c.req.json();
+    const body = await c.req.json() as Record<string, unknown>;
     const db = getSupabaseAdmin(c);
 
     const ownsEmployee = await verifyEmployeeOwnership(db, employeeId, auth.user);
@@ -365,9 +359,7 @@ router.patch('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const updates: Record<string, unknown> = {};
-    if (role) updates.role = role;
-    if (permissions) updates.permissions = permissions;
+    const updates = planEmployeeUpdate(body);
 
     const { data, error } = await db
         .from('employees')
@@ -396,7 +388,7 @@ router.delete('/:id', async (c) => {
 
     const { error } = await db
         .from('employees')
-        .update({ deleted_at: new Date().toISOString(), status: 'removed', is_active: false })
+        .update(employeeRemovalPatch(new Date().toISOString()))
         .eq('id', employeeId);
 
     if (error) {

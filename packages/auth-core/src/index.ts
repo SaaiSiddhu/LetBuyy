@@ -120,6 +120,45 @@ export interface CustomUserEnsurePlan {
   };
 }
 
+export interface EmployeeInviteRecord {
+  id: string;
+  store_id: string;
+  email: string;
+  role?: string | null;
+  expires_at: string;
+}
+
+export interface EmployeeInviteAcceptanceInsert {
+  user_id: string;
+  store_id: string;
+  email: string;
+  role: string;
+  status: 'active';
+}
+
+export interface EmployeeStaffCreateInsert {
+  store_id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  status: 'invited';
+  is_active: true;
+  created_by: string;
+}
+
+export interface EmployeeInviteInsert {
+  store_id: string;
+  email: string;
+  role: string;
+  token: string;
+  invited_by: string;
+  expires_at: string;
+}
+
+export type AuthPlanResult<T> =
+  | { ok: true; value: T }
+  | { ok: false; message: string };
+
 export function normalizeAuthEmail(value: unknown): string {
   return String(value || '').toLowerCase().trim();
 }
@@ -174,4 +213,87 @@ export function planCustomUserEnsure(body: Record<string, unknown>, updatedAt: s
       auth_provider: typeof body.auth_provider === 'string' ? body.auth_provider : 'email',
     },
   };
+}
+
+export function isEmployeeInviteExpired(invite: EmployeeInviteRecord, now: Date): boolean {
+  return new Date(invite.expires_at) < now;
+}
+
+export function planEmployeeInviteAcceptance(
+  invite: EmployeeInviteRecord,
+  authUserId: string,
+): EmployeeInviteAcceptanceInsert {
+  return {
+    user_id: authUserId,
+    store_id: invite.store_id,
+    email: invite.email,
+    role: invite.role || 'staff',
+    status: 'active',
+  };
+}
+
+export function planEmployeeStaffCreate(
+  body: Record<string, unknown>,
+  createdBy: string,
+): AuthPlanResult<EmployeeStaffCreateInsert> {
+  const email = normalizeAuthEmail(body.email);
+  const storeId = String(body.store_id || '');
+
+  if (!email || !storeId) {
+    return { ok: false, message: 'email and store_id required' };
+  }
+
+  const role = typeof body.role === 'string' && body.role ? body.role : 'editor';
+
+  return {
+    ok: true,
+    value: {
+      store_id: storeId,
+      email,
+      full_name: email,
+      role,
+      status: 'invited',
+      is_active: true,
+      created_by: createdBy,
+    },
+  };
+}
+
+export function planEmployeeInvite(
+  body: Record<string, unknown>,
+  invitedBy: string,
+  token: string,
+  expiresAt: string,
+): AuthPlanResult<EmployeeInviteInsert> {
+  const email = normalizeAuthEmail(body.email);
+  const storeId = String(body.store_id || '');
+
+  if (!email || !storeId) {
+    return { ok: false, message: 'email and store_id required' };
+  }
+
+  const role = typeof body.role === 'string' && body.role ? body.role : 'staff';
+
+  return {
+    ok: true,
+    value: {
+      store_id: storeId,
+      email,
+      role,
+      token,
+      invited_by: invitedBy,
+      expires_at: expiresAt,
+    },
+  };
+}
+
+export function planEmployeeUpdate(body: Record<string, unknown>): Record<string, unknown> {
+  const updates: Record<string, unknown> = {};
+  if (body.role) updates.role = body.role;
+  if (body.permissions) updates.permissions = body.permissions;
+  return updates;
+}
+
+export function employeeRemovalPatch(deletedAt: string): Record<string, unknown> {
+  return { deleted_at: deletedAt, status: 'removed', is_active: false };
 }
