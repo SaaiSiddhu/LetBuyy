@@ -1,12 +1,12 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { THEME_APPLICATION_WORKFLOWS, THEME_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
 import {
-    getDefaultStorefrontThemeTemplate,
+    asThemeRecord as asRecord,
+    collectThemeTemplateValidationIssues,
     hasRenderableThemeTemplate,
-    type SchemaField,
-    type SectionSchema,
-    type ThemeSettingsSchema,
-} from '@letbuyy/api-types';
+    mergeThemeIdentity,
+    resolveRenderableThemeTemplateConfig,
+} from '@letbuyy/theme-engine';
 import { ConflictError, ForbiddenError, NotFoundError, ValidationError } from '../lib/errors';
 import type {
     InstallThemeInput,
@@ -50,16 +50,6 @@ interface ThemeRecord extends DbRecord {
     renderer_key?: string | null;
     schema_version?: string | null;
     renderer_version?: string | null;
-}
-
-type SectionSchemas = Record<string, SectionSchema>;
-
-interface ThemeSectionConfig extends DbRecord {
-    id?: string;
-    type?: string;
-    visible?: boolean;
-    settings?: DbRecord | null;
-    blocks?: unknown;
 }
 
 interface DraftRecord extends DbRecord {
@@ -110,295 +100,6 @@ interface PublishReleaseSnapshotInput {
     makeStoreLive: boolean;
     requestId?: string | null;
     rollbackOfReleaseId?: string | null;
-}
-
-function asRecord(value: unknown): DbRecord {
-    return value && typeof value === 'object' && !Array.isArray(value)
-        ? (value as DbRecord)
-        : {};
-}
-
-function hasKeys(value: unknown): value is DbRecord {
-    return Object.keys(asRecord(value)).length > 0;
-}
-
-function isUnsafeThemeKey(key: string): boolean {
-    const normalized = key.toLowerCase();
-    return (
-        normalized === '__proto__' ||
-        normalized === 'prototype' ||
-        normalized === 'constructor' ||
-        normalized === 'dangerouslysetinnerhtml' ||
-        normalized === 'innerhtml' ||
-        normalized === 'outerhtml' ||
-        normalized === 'srcdoc' ||
-        normalized === 'script' ||
-        /^on[a-z]/.test(normalized)
-    );
-}
-
-function isUnsafeUrl(value: string): boolean {
-    const normalized = value.trim().toLowerCase();
-    return (
-        normalized.startsWith('javascript:') ||
-        normalized.startsWith('vbscript:') ||
-        normalized.startsWith('data:text/html') ||
-        normalized.startsWith('data:application/xhtml')
-    );
-}
-
-function validateSafeJson(value: unknown, path: string, issues: string[]) {
-    if (value === null || value === undefined) return;
-
-    if (Array.isArray(value)) {
-        if (value.length > 100) {
-            issues.push(`${path} exceeds the maximum array length`);
-            return;
-        }
-        value.forEach((item, index) => validateSafeJson(item, `${path}[${index}]`, issues));
-        return;
-    }
-
-    if (typeof value === 'object') {
-        for (const [key, child] of Object.entries(value as DbRecord)) {
-            if (isUnsafeThemeKey(key)) {
-                issues.push(`${path}.${key} is not allowed`);
-                continue;
-            }
-            validateSafeJson(child, `${path}.${key}`, issues);
-        }
-        return;
-    }
-
-    if (typeof value === 'string' && value.length > 5000) {
-        issues.push(`${path} exceeds the maximum text length`);
-    }
-}
-
-function validateFieldValue(field: SchemaField, value: unknown, path: string, issues: string[]) {
-    if (value === null || value === undefined || value === '') return;
-
-    switch (field.type) {
-        case 'toggle':
-            if (typeof value !== 'boolean') issues.push(`${path} must be a boolean`);
-            return;
-        case 'range':
-        case 'number': {
-            const numeric = typeof value === 'number' ? value : Number(value);
-            if (!Number.isFinite(numeric)) {
-                issues.push(`${path} must be a number`);
-                return;
-            }
-            if (typeof field.min === 'number' && numeric < field.min) {
-                issues.push(`${path} must be at least ${field.min}`);
-            }
-            if (typeof field.max === 'number' && numeric > field.max) {
-                issues.push(`${path} must be at most ${field.max}`);
-            }
-            return;
-        }
-        case 'select':
-        case 'radio':
-            if (typeof value !== 'string') {
-                issues.push(`${path} must be a string`);
-                return;
-            }
-            if (field.options && !field.options.includes(value)) {
-                issues.push(`${path} must be one of: ${field.options.join(', ')}`);
-            }
-            return;
-        case 'color':
-            if (typeof value !== 'string') {
-                issues.push(`${path} must be a color string`);
-                return;
-            }
-            if (!/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value) && !/^rgba?\(/i.test(value)) {
-                issues.push(`${path} must be a valid CSS color`);
-            }
-            return;
-        case 'url':
-        case 'image':
-            if (typeof value !== 'string') {
-                issues.push(`${path} must be a URL string`);
-                return;
-            }
-            if (isUnsafeUrl(value)) issues.push(`${path} contains an unsafe URL protocol`);
-            return;
-        default:
-            if (typeof value !== 'string') {
-                issues.push(`${path} must be text`);
-                return;
-            }
-            if (typeof field.maxLength === 'number' && value.length > field.maxLength) {
-                issues.push(`${path} must be ${field.maxLength} characters or less`);
-            }
-            if (isUnsafeUrl(value)) issues.push(`${path} contains an unsafe URL protocol`);
-    }
-}
-
-function validateSectionSettings(
-    schema: SectionSchema,
-    settings: DbRecord,
-    path: string,
-    issues: string[]
-) {
-    const fieldSchemas = schema.settings_schema || {};
-    const allowedKeys = new Set([
-        ...Object.keys(fieldSchemas),
-        ...Object.keys(asRecord(schema.defaults)),
-    ]);
-
-    for (const [key, value] of Object.entries(settings)) {
-        if (isUnsafeThemeKey(key)) {
-            issues.push(`${path}.${key} is not allowed`);
-            continue;
-        }
-
-        if (!allowedKeys.has(key)) {
-            issues.push(`${path}.${key} is not defined by the ${schema.type} schema`);
-            continue;
-        }
-
-        const field = fieldSchemas[key];
-        if (field) validateFieldValue(field, value, `${path}.${key}`, issues);
-        validateSafeJson(value, `${path}.${key}`, issues);
-    }
-}
-
-function validateBlocks(
-    schema: SectionSchema,
-    blocks: unknown,
-    path: string,
-    issues: string[]
-) {
-    if (blocks === undefined || blocks === null) return;
-    if (!Array.isArray(blocks)) {
-        issues.push(`${path} must be an array`);
-        return;
-    }
-    if (blocks.length > 50) {
-        issues.push(`${path} exceeds the maximum block count`);
-        return;
-    }
-
-    const blockSchemas = schema.blocks_schema || {};
-    blocks.forEach((block, index) => {
-        const record = asRecord(block);
-        const type = typeof record.type === 'string' ? record.type : '';
-        const blockSchema = blockSchemas[type];
-        if (!blockSchema) {
-            issues.push(`${path}[${index}].type is not defined by the ${schema.type} schema`);
-            return;
-        }
-
-        const settings = asRecord(record.settings);
-        for (const [key, value] of Object.entries(settings)) {
-            const field = blockSchema.fields[key];
-            if (!field) {
-                issues.push(`${path}[${index}].settings.${key} is not defined by the ${type} block schema`);
-                continue;
-            }
-            validateFieldValue(field, value, `${path}[${index}].settings.${key}`, issues);
-            validateSafeJson(value, `${path}[${index}].settings.${key}`, issues);
-        }
-    });
-}
-
-function validateThemeSection(
-    section: unknown,
-    sectionSchemas: SectionSchemas,
-    path: string,
-    issues: string[]
-) {
-    const record = asRecord(section) as ThemeSectionConfig;
-    if (!hasKeys(record)) {
-        issues.push(`${path} must be an object`);
-        return;
-    }
-
-    const type = typeof record.type === 'string' ? record.type : '';
-    const schema = sectionSchemas[type];
-    if (!schema) {
-        issues.push(`${path}.type "${type || 'unknown'}" is not registered for this theme`);
-        return;
-    }
-
-    if (record.id !== undefined && (typeof record.id !== 'string' || record.id.length > 100)) {
-        issues.push(`${path}.id must be a short string`);
-    }
-
-    if (record.visible !== undefined && typeof record.visible !== 'boolean') {
-        issues.push(`${path}.visible must be a boolean`);
-    }
-
-    validateSectionSettings(schema, asRecord(record.settings), `${path}.settings`, issues);
-    validateBlocks(schema, record.blocks, `${path}.blocks`, issues);
-    validateSafeJson(record, path, issues);
-}
-
-function validateThemeSettings(
-    settingsSchema: ThemeSettingsSchema,
-    settings: DbRecord,
-    issues: string[]
-) {
-    const settingsGroups = settingsSchema.settings ?? {};
-    const fields = Object.values(settingsGroups).reduce<Record<string, SchemaField>>((acc, group) => {
-        return { ...acc, ...(group.fields || {}) };
-    }, {});
-
-    for (const [key, value] of Object.entries(settings)) {
-        if (isUnsafeThemeKey(key)) {
-            issues.push(`themeSettings.${key} is not allowed`);
-            continue;
-        }
-
-        const field = fields[key];
-        if (!field) {
-            issues.push(`themeSettings.${key} is not defined by the theme settings schema`);
-            continue;
-        }
-
-        validateFieldValue(field, value, `themeSettings.${key}`, issues);
-        validateSafeJson(value, `themeSettings.${key}`, issues);
-    }
-}
-
-function getThemeDefaultTemplate(theme: ThemeRecord): DbRecord {
-    const config = asRecord(theme.config);
-    const defaultTemplate = asRecord(theme.default_template);
-    const configDefault = asRecord(config.default_template);
-
-    if (Object.keys(defaultTemplate).length > 0) return defaultTemplate;
-    if (Object.keys(configDefault).length > 0) return configDefault;
-
-    return getDefaultStorefrontThemeTemplate(theme.slug, config) as unknown as DbRecord;
-}
-
-function mergeThemeIdentity(templateConfig: DbRecord, theme: ThemeRecord): DbRecord {
-    return {
-        ...templateConfig,
-        themeId: theme.slug,
-    };
-}
-
-function resolveRenderableTemplateConfig(templateConfig: unknown, theme: ThemeRecord): DbRecord {
-    const existing = asRecord(templateConfig);
-    const existingThemeId = typeof existing.themeId === 'string' ? existing.themeId : null;
-
-    if (hasRenderableThemeTemplate(existing) && (!existingThemeId || existingThemeId === theme.slug)) {
-        return mergeThemeIdentity(existing, theme);
-    }
-
-    const fallback = getThemeDefaultTemplate(theme);
-    return {
-        ...existing,
-        ...fallback,
-        themeSettings: {
-            ...asRecord(fallback.themeSettings),
-            ...asRecord(existing.themeSettings),
-        },
-        themeId: theme.slug,
-    };
 }
 
 function isMissingDeletedAtError(
@@ -491,51 +192,16 @@ export class ThemeExecutionAdapter {
 
     private async validateTemplateConfig(templateConfig: DbRecord, theme: ThemeRecord): Promise<ThemeRuntimeSchema> {
         const runtime = await this.schemaRegistry.resolveThemeRuntime(theme);
-        const issues: string[] = [];
-        const serialized = JSON.stringify(templateConfig);
-
-        if (serialized.length > 256_000) {
-            throw new ValidationError('Theme template exceeds the maximum allowed size');
-        }
-
-        if (typeof templateConfig.themeId === 'string' && templateConfig.themeId !== theme.slug) {
-            issues.push(`themeId must match ${theme.slug}`);
-        }
-
-        const { sectionSchemas, settingsSchema } = runtime;
-        const sections = asRecord(templateConfig.sections);
-        const sectionKeys = Object.keys(sections);
-
-        for (const key of sectionKeys) {
-            if (!['header', 'footer', 'template'].includes(key)) {
-                issues.push(`sections.${key} is not a supported section slot`);
-            }
-        }
-
-        if (sections.header !== undefined) {
-            validateThemeSection(sections.header, sectionSchemas, 'sections.header', issues);
-        }
-
-        if (sections.footer !== undefined) {
-            validateThemeSection(sections.footer, sectionSchemas, 'sections.footer', issues);
-        }
-
-        if (sections.template !== undefined) {
-            if (!Array.isArray(sections.template)) {
-                issues.push('sections.template must be an array');
-            } else if (sections.template.length > 50) {
-                issues.push('sections.template exceeds the maximum section count');
-            } else {
-                sections.template.forEach((section, index) => {
-                    validateThemeSection(section, sectionSchemas, `sections.template[${index}]`, issues);
-                });
-            }
-        }
-
-        validateThemeSettings(settingsSchema, asRecord(templateConfig.themeSettings), issues);
-        validateSafeJson(templateConfig, 'template_config', issues);
+        const issues = collectThemeTemplateValidationIssues({
+            templateConfig,
+            runtime,
+            themeSlug: theme.slug,
+        });
 
         if (issues.length > 0) {
+            if (issues.includes('Theme template exceeds the maximum allowed size')) {
+                throw new ValidationError('Theme template exceeds the maximum allowed size', issues);
+            }
             throw new ValidationError('Theme template validation failed', issues);
         }
 
@@ -1128,7 +794,7 @@ export class ThemeExecutionAdapter {
             throw new Error(`Theme installation failed: ${error?.message || 'Unknown error'}`);
         }
 
-        const templateConfig = resolveRenderableTemplateConfig(store.template_config, theme);
+        const templateConfig = resolveRenderableThemeTemplateConfig(store.template_config, theme);
         const runtime = await this.validateTemplateConfig(templateConfig, theme);
         const themeInstance = await this.ensureThemeInstance(
             input.store_id,
@@ -1220,7 +886,7 @@ export class ThemeExecutionAdapter {
         const templateConfig =
             hasRenderableThemeTemplate((draft as DraftRecord | null)?.draft_config)
                 ? mergeThemeIdentity(asRecord((draft as DraftRecord).draft_config), theme)
-                : resolveRenderableTemplateConfig(store.template_config, theme);
+                : resolveRenderableThemeTemplateConfig(store.template_config, theme);
 
         const runtime = await this.schemaRegistry.resolveThemeRuntime(theme);
         const themeInstance = await this.ensureThemeInstance(
@@ -1451,7 +1117,7 @@ export class ThemeExecutionAdapter {
 
         const templateConfig = hasRenderableThemeTemplate(draftRecord?.draft_config)
             ? mergeThemeIdentity(asRecord(draftRecord?.draft_config), theme)
-            : resolveRenderableTemplateConfig(store.template_config, theme);
+            : resolveRenderableThemeTemplateConfig(store.template_config, theme);
         const runtime = await this.validateTemplateConfig(templateConfig, theme);
         const themeInstance = await this.ensureThemeInstance(
             input.store_id,

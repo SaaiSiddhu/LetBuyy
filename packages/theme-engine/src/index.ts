@@ -1,5 +1,12 @@
 import { z } from 'zod';
 import { SlugSchema, UuidSchema } from '@letbuyy/shared-types';
+import {
+  getDefaultStorefrontThemeTemplate,
+  hasRenderableThemeTemplate,
+  type SchemaField,
+  type SectionSchema,
+  type ThemeSettingsSchema,
+} from './theme-registry';
 
 export * from './theme-registry';
 export * from './execution-runtime';
@@ -197,6 +204,377 @@ export interface ThemePreviewSessionResult {
   preview_token: string;
   expires_at: string;
   draft_version: number;
+}
+
+export type ThemeTemplateRecord = Record<string, unknown>;
+
+export interface ThemeTemplateReference {
+  slug: string;
+  config?: ThemeTemplateRecord | null;
+  default_template?: ThemeTemplateRecord | null;
+}
+
+export interface ThemeTemplateValidationRuntime {
+  sectionSchemas: Record<string, SectionSchema>;
+  settingsSchema: ThemeSettingsSchema;
+}
+
+interface ThemeSectionConfig extends ThemeTemplateRecord {
+  id?: string;
+  type?: string;
+  visible?: boolean;
+  settings?: ThemeTemplateRecord | null;
+  blocks?: unknown;
+}
+
+export function asThemeRecord(value: unknown): ThemeTemplateRecord {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as ThemeTemplateRecord)
+    : {};
+}
+
+function hasThemeKeys(value: unknown): value is ThemeTemplateRecord {
+  return Object.keys(asThemeRecord(value)).length > 0;
+}
+
+function isUnsafeThemeKey(key: string): boolean {
+  const normalized = key.toLowerCase();
+  return (
+    normalized === '__proto__' ||
+    normalized === 'prototype' ||
+    normalized === 'constructor' ||
+    normalized === 'dangerouslysetinnerhtml' ||
+    normalized === 'innerhtml' ||
+    normalized === 'outerhtml' ||
+    normalized === 'srcdoc' ||
+    normalized === 'script' ||
+    /^on[a-z]/.test(normalized)
+  );
+}
+
+function isUnsafeThemeUrl(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  return (
+    normalized.startsWith('javascript:') ||
+    normalized.startsWith('vbscript:') ||
+    normalized.startsWith('data:text/html') ||
+    normalized.startsWith('data:application/xhtml')
+  );
+}
+
+function validateSafeThemeJson(value: unknown, path: string, issues: string[]) {
+  if (value === null || value === undefined) return;
+
+  if (Array.isArray(value)) {
+    if (value.length > 100) {
+      issues.push(`${path} exceeds the maximum array length`);
+      return;
+    }
+    value.forEach((item, index) => validateSafeThemeJson(item, `${path}[${index}]`, issues));
+    return;
+  }
+
+  if (typeof value === 'object') {
+    for (const [key, child] of Object.entries(value as ThemeTemplateRecord)) {
+      if (isUnsafeThemeKey(key)) {
+        issues.push(`${path}.${key} is not allowed`);
+        continue;
+      }
+      validateSafeThemeJson(child, `${path}.${key}`, issues);
+    }
+    return;
+  }
+
+  if (typeof value === 'string' && value.length > 5000) {
+    issues.push(`${path} exceeds the maximum text length`);
+  }
+}
+
+function validateThemeFieldValue(field: SchemaField, value: unknown, path: string, issues: string[]) {
+  if (value === null || value === undefined || value === '') return;
+
+  switch (field.type) {
+    case 'toggle':
+      if (typeof value !== 'boolean') issues.push(`${path} must be a boolean`);
+      return;
+    case 'range':
+    case 'number': {
+      const numeric = typeof value === 'number' ? value : Number(value);
+      if (!Number.isFinite(numeric)) {
+        issues.push(`${path} must be a number`);
+        return;
+      }
+      if (typeof field.min === 'number' && numeric < field.min) {
+        issues.push(`${path} must be at least ${field.min}`);
+      }
+      if (typeof field.max === 'number' && numeric > field.max) {
+        issues.push(`${path} must be at most ${field.max}`);
+      }
+      return;
+    }
+    case 'select':
+    case 'radio':
+      if (typeof value !== 'string') {
+        issues.push(`${path} must be a string`);
+        return;
+      }
+      if (field.options && !field.options.includes(value)) {
+        issues.push(`${path} must be one of: ${field.options.join(', ')}`);
+      }
+      return;
+    case 'color':
+      if (typeof value !== 'string') {
+        issues.push(`${path} must be a color string`);
+        return;
+      }
+      if (!/^#([0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i.test(value) && !/^rgba?\(/i.test(value)) {
+        issues.push(`${path} must be a valid CSS color`);
+      }
+      return;
+    case 'url':
+    case 'image':
+      if (typeof value !== 'string') {
+        issues.push(`${path} must be a URL string`);
+        return;
+      }
+      if (isUnsafeThemeUrl(value)) issues.push(`${path} contains an unsafe URL protocol`);
+      return;
+    default:
+      if (typeof value !== 'string') {
+        issues.push(`${path} must be text`);
+        return;
+      }
+      if (typeof field.maxLength === 'number' && value.length > field.maxLength) {
+        issues.push(`${path} must be ${field.maxLength} characters or less`);
+      }
+      if (isUnsafeThemeUrl(value)) issues.push(`${path} contains an unsafe URL protocol`);
+  }
+}
+
+function validateThemeSectionSettings(
+  schema: SectionSchema,
+  settings: ThemeTemplateRecord,
+  path: string,
+  issues: string[],
+) {
+  const fieldSchemas = schema.settings_schema || {};
+  const allowedKeys = new Set([
+    ...Object.keys(fieldSchemas),
+    ...Object.keys(asThemeRecord(schema.defaults)),
+  ]);
+
+  for (const [key, value] of Object.entries(settings)) {
+    if (isUnsafeThemeKey(key)) {
+      issues.push(`${path}.${key} is not allowed`);
+      continue;
+    }
+
+    if (!allowedKeys.has(key)) {
+      issues.push(`${path}.${key} is not defined by the ${schema.type} schema`);
+      continue;
+    }
+
+    const field = fieldSchemas[key];
+    if (field) validateThemeFieldValue(field, value, `${path}.${key}`, issues);
+    validateSafeThemeJson(value, `${path}.${key}`, issues);
+  }
+}
+
+function validateThemeBlocks(
+  schema: SectionSchema,
+  blocks: unknown,
+  path: string,
+  issues: string[],
+) {
+  if (blocks === undefined || blocks === null) return;
+  if (!Array.isArray(blocks)) {
+    issues.push(`${path} must be an array`);
+    return;
+  }
+  if (blocks.length > 50) {
+    issues.push(`${path} exceeds the maximum block count`);
+    return;
+  }
+
+  const blockSchemas = schema.blocks_schema || {};
+  blocks.forEach((block, index) => {
+    const record = asThemeRecord(block);
+    const type = typeof record.type === 'string' ? record.type : '';
+    const blockSchema = blockSchemas[type];
+    if (!blockSchema) {
+      issues.push(`${path}[${index}].type is not defined by the ${schema.type} schema`);
+      return;
+    }
+
+    const settings = asThemeRecord(record.settings);
+    for (const [key, value] of Object.entries(settings)) {
+      const field = blockSchema.fields[key];
+      if (!field) {
+        issues.push(`${path}[${index}].settings.${key} is not defined by the ${type} block schema`);
+        continue;
+      }
+      validateThemeFieldValue(field, value, `${path}[${index}].settings.${key}`, issues);
+      validateSafeThemeJson(value, `${path}[${index}].settings.${key}`, issues);
+    }
+  });
+}
+
+function validateThemeSection(
+  section: unknown,
+  sectionSchemas: Record<string, SectionSchema>,
+  path: string,
+  issues: string[],
+) {
+  const record = asThemeRecord(section) as ThemeSectionConfig;
+  if (!hasThemeKeys(record)) {
+    issues.push(`${path} must be an object`);
+    return;
+  }
+
+  const type = typeof record.type === 'string' ? record.type : '';
+  const schema = sectionSchemas[type];
+  if (!schema) {
+    issues.push(`${path}.type "${type || 'unknown'}" is not registered for this theme`);
+    return;
+  }
+
+  if (record.id !== undefined && (typeof record.id !== 'string' || record.id.length > 100)) {
+    issues.push(`${path}.id must be a short string`);
+  }
+
+  if (record.visible !== undefined && typeof record.visible !== 'boolean') {
+    issues.push(`${path}.visible must be a boolean`);
+  }
+
+  validateThemeSectionSettings(schema, asThemeRecord(record.settings), `${path}.settings`, issues);
+  validateThemeBlocks(schema, record.blocks, `${path}.blocks`, issues);
+  validateSafeThemeJson(record, path, issues);
+}
+
+function validateThemeSettings(
+  settingsSchema: ThemeSettingsSchema,
+  settings: ThemeTemplateRecord,
+  issues: string[],
+) {
+  const settingsGroups = settingsSchema.settings ?? {};
+  const fields = Object.values(settingsGroups).reduce<Record<string, SchemaField>>((acc, group) => {
+    return { ...acc, ...(group.fields || {}) };
+  }, {});
+
+  for (const [key, value] of Object.entries(settings)) {
+    if (isUnsafeThemeKey(key)) {
+      issues.push(`themeSettings.${key} is not allowed`);
+      continue;
+    }
+
+    const field = fields[key];
+    if (!field) {
+      issues.push(`themeSettings.${key} is not defined by the theme settings schema`);
+      continue;
+    }
+
+    validateThemeFieldValue(field, value, `themeSettings.${key}`, issues);
+    validateSafeThemeJson(value, `themeSettings.${key}`, issues);
+  }
+}
+
+export function getThemeDefaultTemplate(theme: ThemeTemplateReference): ThemeTemplateRecord {
+  const config = asThemeRecord(theme.config);
+  const defaultTemplate = asThemeRecord(theme.default_template);
+  const configDefault = asThemeRecord(config.default_template);
+
+  if (Object.keys(defaultTemplate).length > 0) return defaultTemplate;
+  if (Object.keys(configDefault).length > 0) return configDefault;
+
+  return getDefaultStorefrontThemeTemplate(theme.slug, config) as unknown as ThemeTemplateRecord;
+}
+
+export function mergeThemeIdentity(
+  templateConfig: ThemeTemplateRecord,
+  theme: Pick<ThemeTemplateReference, 'slug'>,
+): ThemeTemplateRecord {
+  return {
+    ...templateConfig,
+    themeId: theme.slug,
+  };
+}
+
+export function resolveRenderableThemeTemplateConfig(
+  templateConfig: unknown,
+  theme: ThemeTemplateReference,
+): ThemeTemplateRecord {
+  const existing = asThemeRecord(templateConfig);
+  const existingThemeId = typeof existing.themeId === 'string' ? existing.themeId : null;
+
+  if (hasRenderableThemeTemplate(existing) && (!existingThemeId || existingThemeId === theme.slug)) {
+    return mergeThemeIdentity(existing, theme);
+  }
+
+  const fallback = getThemeDefaultTemplate(theme);
+  return {
+    ...existing,
+    ...fallback,
+    themeSettings: {
+      ...asThemeRecord(fallback.themeSettings),
+      ...asThemeRecord(existing.themeSettings),
+    },
+    themeId: theme.slug,
+  };
+}
+
+export function collectThemeTemplateValidationIssues(input: {
+  templateConfig: ThemeTemplateRecord;
+  runtime: ThemeTemplateValidationRuntime;
+  themeSlug: string;
+  maxSerializedLength?: number;
+}): string[] {
+  const issues: string[] = [];
+  const serialized = JSON.stringify(input.templateConfig);
+  const maxLength = input.maxSerializedLength ?? 256_000;
+
+  if (serialized.length > maxLength) {
+    issues.push('Theme template exceeds the maximum allowed size');
+    return issues;
+  }
+
+  if (typeof input.templateConfig.themeId === 'string' && input.templateConfig.themeId !== input.themeSlug) {
+    issues.push(`themeId must match ${input.themeSlug}`);
+  }
+
+  const { sectionSchemas, settingsSchema } = input.runtime;
+  const sections = asThemeRecord(input.templateConfig.sections);
+  const sectionKeys = Object.keys(sections);
+
+  for (const key of sectionKeys) {
+    if (!['header', 'footer', 'template'].includes(key)) {
+      issues.push(`sections.${key} is not a supported section slot`);
+    }
+  }
+
+  if (sections.header !== undefined) {
+    validateThemeSection(sections.header, sectionSchemas, 'sections.header', issues);
+  }
+
+  if (sections.footer !== undefined) {
+    validateThemeSection(sections.footer, sectionSchemas, 'sections.footer', issues);
+  }
+
+  if (sections.template !== undefined) {
+    if (!Array.isArray(sections.template)) {
+      issues.push('sections.template must be an array');
+    } else if (sections.template.length > 50) {
+      issues.push('sections.template exceeds the maximum section count');
+    } else {
+      sections.template.forEach((section, index) => {
+        validateThemeSection(section, sectionSchemas, `sections.template[${index}]`, issues);
+      });
+    }
+  }
+
+  validateThemeSettings(settingsSchema, asThemeRecord(input.templateConfig.themeSettings), issues);
+  validateSafeThemeJson(input.templateConfig, 'template_config', issues);
+
+  return issues;
 }
 
 export interface HeroBannerSettings {
