@@ -516,6 +516,27 @@ export const PaymentSchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 });
 
+export const StorePaymentSettingsSchema = z.object({
+  mode: z.enum(['shared', 'ownAccount']).default('shared'),
+  gateways: z.array(z.string().min(1).max(80)).default(['razorpay']),
+  razorpay: z.object({
+    key_id: z.string().max(120).optional().nullable(),
+    test_mode: z.boolean().default(true),
+    verified: z.boolean().default(false),
+    connected_at: z.string().datetime().optional().nullable(),
+    updated_at: z.string().datetime().optional().nullable(),
+    secret_configured: z.boolean().default(false),
+  }).nullable().default(null),
+}).passthrough();
+
+export const StorePaymentConfigSchema = z.object({
+  store_id: UuidSchema,
+  online_payment_enabled: z.boolean().default(true),
+  cod_enabled: z.boolean().default(true),
+  payment_settings: StorePaymentSettingsSchema,
+  schema_ready: z.boolean().optional(),
+}).passthrough();
+
 export const CouponSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
   code: z.string().min(3).max(50),
@@ -969,6 +990,8 @@ export type LineItem = z.infer<typeof LineItemSchema>;
 export type OrderItem = LineItem;
 export type Order = z.infer<typeof OrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
+export type StorePaymentSettings = z.infer<typeof StorePaymentSettingsSchema>;
+export type StorePaymentConfig = z.infer<typeof StorePaymentConfigSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
 export type ShippingZone = z.infer<typeof ShippingZoneSchema>;
 export type ShippingRate = z.infer<typeof ShippingRateSchema>;

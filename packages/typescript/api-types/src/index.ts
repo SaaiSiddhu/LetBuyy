@@ -15,6 +15,8 @@ export {
   ReviewModerationStatusSchema,
   ShippingRateTypeSchema,
   SiteTypeSchema,
+  StorePaymentConfigSchema,
+  StorePaymentSettingsSchema,
   TaxAppliesToSchema,
 } from '@letbuyy/shared-types';
 export type {
@@ -40,6 +42,8 @@ export type {
   ShippingZone,
   SiteType,
   Store,
+  StorePaymentConfig,
+  StorePaymentSettings,
   StoreStatus,
   TaxAppliesTo,
   TaxRate,

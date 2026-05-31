@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { SaveStorePaymentConfigInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,15 +13,11 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/stores/${resolved.storeId}/payment-config`)
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().stores.paymentConfig.get(resolved.storeId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load payment config' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load payment config')
     }
 }
 
@@ -35,21 +32,17 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/stores/${resolved.storeId}/payment-config`, {
-            method: 'POST',
-            body: JSON.stringify({
+        const payload = await createWorkerApiClient().stores.paymentConfig.save(
+            resolved.storeId,
+            {
                 key_id: body.key_id,
                 key_secret: body.key_secret,
                 test_mode: Boolean(body.test_mode),
-            }),
-        })
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
-    } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save payment config' },
-            { status: 500 }
+            } as SaveStorePaymentConfigInput
         )
+
+        return NextResponse.json({ success: true, data: payload })
+    } catch (err) {
+        return workerErrorResponse(err, 'Unable to save payment config')
     }
 }

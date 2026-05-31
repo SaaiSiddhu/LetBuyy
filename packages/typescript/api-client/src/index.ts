@@ -36,6 +36,7 @@ import type {
   ShippingRate,
   ShippingZone,
   Store,
+  StorePaymentConfig,
   StoreStatus,
   TaxRate,
   Theme,
@@ -208,6 +209,11 @@ type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'delete
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
 export type UpdateStoreInput = Partial<NewRecord<Store>> & { status?: StoreStatus };
+export type SaveStorePaymentConfigInput = {
+  key_id: string;
+  key_secret: string;
+  test_mode?: boolean;
+};
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
 export type UpdateProductInput = NewRecord<Product>;
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
@@ -368,6 +374,12 @@ export class LetbuyyApiClient {
       this.requestData<Store>(`/stores/${encodePathSegment(id)}/publish`, { ...options, method: 'POST' }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ id: string }>(`/stores/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    paymentConfig: {
+      get: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, options),
+      save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
+    },
   };
 
   readonly products = {
@@ -894,6 +906,7 @@ export type {
   ShippingRate,
   ShippingZone,
   Store,
+  StorePaymentConfig,
   TaxRate,
   Theme,
   ThemeDraftSaveResult,
