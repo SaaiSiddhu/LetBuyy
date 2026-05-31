@@ -17,6 +17,7 @@ SKIP: Phase 5.11 Vercel project creation — Reason: Vercel CLI is authenticated
 SKIP: Phase 6 Supabase migrations and Urban Kicks seed — Reason: Staging and production Supabase `project_ref` values are still placeholders because Phase 5.6 project creation was skipped. — Resume: Phase 6 after `config/supabase/staging.json` and `config/supabase/production.json` contain real project refs and `database/supabase/seeds/urban-kicks-theme.sql` exists.
 SKIP: Phase 7 staging deployment — Reason: LetBuyy-scoped Cloudflare credentials, Vercel organization/project credentials, and materialized provider IDs are unavailable from Phase 5. — Resume: Phase 7 after Phases 5 and 6 complete with real resource IDs and secrets.
 SKIP: Phase 8 staging smoke tests — Reason: Staging deployment did not run in Phase 7 because LetBuyy provider credentials and resource IDs are unavailable. — Resume: Phase 8 immediately after a successful Phase 7 staging deployment.
+SKIP: Phase 9 production deployment — Reason: LetBuyy-scoped Cloudflare credentials, Vercel organization/project credentials, Supabase project refs, and materialized provider IDs are unavailable from Phase 5. — Resume: Phase 9 after Phases 5 through 8 succeed.
 
 ## COMPLETED
 
@@ -45,3 +46,4 @@ SKIP: Phase 8 staging smoke tests — Reason: Staging deployment did not run in 
 - Phase 6 verification: Skipped migrations logged because provider project refs are placeholders.
 - Phase 7 build gate: `CI=true pnpm install --frozen-lockfile` completed after network escalation; `pnpm turbo build` passed after network escalation for Google Fonts.
 - Phase 8 verification: Staging smoke tests skipped because no staging deployment exists in this run.
+- Phase 9 verification: Production deployment skipped because required provider credentials and resource IDs are unavailable.
