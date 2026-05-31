@@ -399,7 +399,7 @@ export interface InventoryLevel {
   id: string;
   product_id: string;
   variant_id?: string | null;
-  location_id: string;
+  location_id: string | null;
   product_name: string;
   variant_title?: string | null;
   sku?: string | null;
@@ -592,6 +592,46 @@ export interface CustomerOrderRecord {
 export interface CustomerSummaryFilters {
   search?: string;
   has_orders?: boolean;
+}
+
+export interface InventoryLevelSourceRow {
+  id: string;
+  product_id: string;
+  variant_id: string | null;
+  location_id: string;
+  available: number | string | null;
+  reserved: number | string | null;
+  incoming: number | string | null;
+  updated_at: string | null;
+  products?: {
+    id: string;
+    name: string;
+    sku?: string | null;
+    images?: string[] | null;
+    store_id: string;
+    track_inventory?: boolean | null;
+  } | null;
+  product_variants?: {
+    id: string;
+    title: string;
+    sku?: string | null;
+  } | null;
+  inventory_locations?: {
+    id: string;
+    name: string;
+    is_default?: boolean | null;
+    status?: string | null;
+  } | null;
+}
+
+export interface ProductInventoryFallbackRecord {
+  id: string;
+  name: string;
+  sku?: string | null;
+  images?: string[] | null;
+  stock?: number | string | null;
+  track_inventory?: boolean | null;
+  updated_at?: string | null;
 }
 
 export function generateProductSlug(name: string): string {
@@ -804,6 +844,68 @@ export function buildCustomerSummaries(
       const bDate = b.last_order_at || b.created_at || '';
       return bDate.localeCompare(aDate);
     });
+}
+
+export function mapInventoryAdjustmentReason(reason: InventoryAdjustmentInput['reason']): InventoryAdjustmentInput['reason'] {
+  switch (reason) {
+    case 'sold':
+      return 'sale';
+    case 'returned':
+      return 'return';
+    case 'received':
+    case 'correction':
+      return 'adjustment';
+    default:
+      return reason;
+  }
+}
+
+export function mapProductStockInventoryRecord(product: ProductInventoryFallbackRecord): InventoryLevel {
+  const stock = commerceNumber(product.stock);
+
+  return {
+    id: `product:${product.id}`,
+    product_id: product.id,
+    variant_id: null,
+    location_id: null,
+    product_name: product.name,
+    variant_title: null,
+    sku: product.sku || null,
+    images: product.images || [],
+    location_name: 'Default Location',
+    available: stock,
+    reserved: 0,
+    incoming: 0,
+    on_hand: stock,
+    sellable: stock,
+    track_inventory: product.track_inventory !== false,
+    updated_at: product.updated_at || null,
+  };
+}
+
+export function mapInventoryLevelRecord(level: InventoryLevelSourceRow): InventoryLevel {
+  const available = commerceNumber(level.available);
+  const reserved = commerceNumber(level.reserved);
+  const incoming = commerceNumber(level.incoming);
+
+  return {
+    id: level.id,
+    product_id: level.product_id,
+    variant_id: level.variant_id,
+    location_id: level.location_id,
+    product_name: level.products?.name || '',
+    variant_title: level.product_variants?.title || null,
+    sku: level.product_variants?.sku || level.products?.sku || null,
+    images: level.products?.images || [],
+    location_name: level.inventory_locations?.name || 'Default Location',
+    available,
+    reserved,
+    incoming,
+    on_hand: available + reserved,
+    sellable: Math.max(0, available - reserved),
+    track_inventory: level.products?.track_inventory !== false,
+    updated_at: level.updated_at,
+  };
 }
 
 export function planProductCreate(input: CreateProductCommand): ProductCreatePlan {

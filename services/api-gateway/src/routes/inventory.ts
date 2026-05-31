@@ -18,58 +18,23 @@ import {
     ReceivePurchaseOrderSchema,
     ReceiveTransferSchema,
     ShipTransferSchema,
+    mapInventoryAdjustmentReason,
+    mapInventoryLevelRecord,
+    mapProductStockInventoryRecord,
     type BulkAdjustInput,
     type CreateLocationInput,
     type CreatePurchaseOrderInput,
     type CreateSupplierInput,
     type CreateTransferInput,
     type InventoryAdjustmentInput,
+    type InventoryLevelSourceRow,
+    type ProductInventoryFallbackRecord,
     type ReceivePurchaseOrderInput,
     type ReceiveTransferInput,
     type ShipTransferInput,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-
-type InventoryLevelRow = {
-    id: string;
-    product_id: string;
-    variant_id: string | null;
-    location_id: string;
-    available: number;
-    reserved: number;
-    incoming: number;
-    updated_at: string | null;
-    products?: {
-        id: string;
-        name: string;
-        sku?: string | null;
-        images?: string[] | null;
-        store_id: string;
-        track_inventory?: boolean | null;
-    } | null;
-    product_variants?: {
-        id: string;
-        title: string;
-        sku?: string | null;
-    } | null;
-    inventory_locations?: {
-        id: string;
-        name: string;
-        is_default?: boolean | null;
-        status?: string | null;
-    } | null;
-};
-
-type ProductInventoryFallbackRow = {
-    id: string;
-    name: string;
-    sku?: string | null;
-    images?: string[] | null;
-    stock?: number | string | null;
-    track_inventory?: boolean | null;
-    updated_at?: string | null;
-};
 
 type ProductOwnerRow = {
     id: string;
@@ -120,20 +85,6 @@ function isInventorySchemaMissingError(error: DatabaseErrorLike): boolean {
     );
 }
 
-function mapInventoryReason(reason: InventoryAdjustmentInput['reason']) {
-    switch (reason) {
-        case 'sold':
-            return 'sale';
-        case 'returned':
-            return 'return';
-        case 'received':
-        case 'correction':
-            return 'adjustment';
-        default:
-            return reason;
-    }
-}
-
 async function listProductStockInventoryRows(
     db: ReturnType<typeof getSupabaseAdmin>,
     ownedStoreIds: string[],
@@ -182,28 +133,7 @@ async function listProductStockInventoryRows(
         return { data: [], count: 0, error };
     }
 
-    const rows = ((data || []) as unknown as ProductInventoryFallbackRow[]).map((product) => {
-        const stock = Number(product.stock || 0);
-
-        return {
-            id: `product:${product.id}`,
-            product_id: product.id,
-            variant_id: null,
-            location_id: null,
-            product_name: product.name,
-            variant_title: null,
-            sku: product.sku || null,
-            images: product.images || [],
-            location_name: 'Default Location',
-            available: stock,
-            reserved: 0,
-            incoming: 0,
-            on_hand: stock,
-            sellable: stock,
-            track_inventory: product.track_inventory !== false,
-            updated_at: product.updated_at || null,
-        };
-    });
+    const rows = ((data || []) as unknown as ProductInventoryFallbackRecord[]).map(mapProductStockInventoryRecord);
 
     return { data: rows, count: count || 0, error: null };
 }
@@ -697,24 +627,7 @@ router.get('/levels', async (c) => {
         return c.json(dbFailureBody(), 500);
     }
 
-    const rows = ((data || []) as unknown as InventoryLevelRow[]).map((level) => ({
-        id: level.id,
-        product_id: level.product_id,
-        variant_id: level.variant_id,
-        location_id: level.location_id,
-        product_name: level.products?.name || '',
-        variant_title: level.product_variants?.title || null,
-        sku: level.product_variants?.sku || level.products?.sku || null,
-        images: level.products?.images || [],
-        location_name: level.inventory_locations?.name || 'Default Location',
-        available: Number(level.available || 0),
-        reserved: Number(level.reserved || 0),
-        incoming: Number(level.incoming || 0),
-        on_hand: Number(level.available || 0) + Number(level.reserved || 0),
-        sellable: Math.max(0, Number(level.available || 0) - Number(level.reserved || 0)),
-        track_inventory: level.products?.track_inventory !== false,
-        updated_at: level.updated_at,
-    }));
+    const rows = ((data || []) as unknown as InventoryLevelSourceRow[]).map(mapInventoryLevelRecord);
 
     if (rows.length === 0) {
         const fallback = await listProductStockInventoryRows(db, ownedStoreIds, productId, lowStockOnly, page, limit);
@@ -753,7 +666,7 @@ router.post('/adjust', validate('json', AdjustInventorySchema), async (c) => {
         p_location_id: body.location_id || null,
         p_adjustment: body.adjustment,
         p_actor_id: customUser.id,
-        p_reason: mapInventoryReason(body.reason),
+        p_reason: mapInventoryAdjustmentReason(body.reason),
         p_notes: body.notes || null,
         p_request_id: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
     });
@@ -817,7 +730,7 @@ router.post('/bulk-adjust', validate('json', BulkAdjustSchema), async (c) => {
             p_location_id: adj.location_id || null,
             p_adjustment: adj.adjustment,
             p_actor_id: customUser.id,
-            p_reason: mapInventoryReason(adj.reason),
+            p_reason: mapInventoryAdjustmentReason(adj.reason),
             p_notes: adj.notes || null,
             p_request_id: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
         });
