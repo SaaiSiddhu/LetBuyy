@@ -224,6 +224,7 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 - CI must fail on app-to-app imports, package-to-runtime imports, undeclared dependency imports, non-exported package subpaths, circular package/runtime imports, npm/npx leakage in governed execution paths, tracked generated artifacts, local artifact pollution, missing runtime manifests, invalid dependency direction, unsafe migration history, tracked env files, invalid runtime roots, and legacy leakage.
 - Build, lint, typecheck, and test jobs should be added per runtime as blockers are retired.
 - CI must run survivability governance before production rollout or live certification. Plan-mode proof is not live certification; execute-mode evidence must be fresh, measured, and stored through the operations control plane.
+- CI must pass before any merge to main. Never merge with failing typecheck, lint, or tests.
 
 ## Documentation Governance
 

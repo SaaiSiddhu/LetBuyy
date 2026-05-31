@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build": "tsc --noEmit",
     "dev": "wrangler dev --inspector-port 9232",
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
     "typecheck": "tsc --noEmit"

@@ -17,6 +17,18 @@ const ListQuerySchema = z.object({
     date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
 
+const AuditLogWriteSchema = z.object({
+    actor_id: z.string().uuid().nullable().optional(),
+    actor_type: z.enum(['user', 'employee', 'super_admin', 'system']).default('super_admin'),
+    actor_email: z.string().email().nullable().optional(),
+    action: z.string().trim().min(1).max(120),
+    resource_type: z.string().trim().min(1).max(120),
+    resource_id: z.string().uuid().nullable().optional(),
+    metadata: z.record(z.string(), z.unknown()).optional(),
+    ip_address: z.string().trim().max(200).nullable().optional(),
+    user_agent: z.string().trim().max(500).nullable().optional(),
+});
+
 type ListQuery = z.infer<typeof ListQuerySchema>;
 
 interface RevenueSubscriptionRow {
@@ -336,6 +348,38 @@ router.get('/audit-logs', async (c) => {
     }
 
     return c.json(paginated(data || [], count || 0, query.page, query.limit));
+});
+
+router.post('/audit-logs', async (c) => {
+    const body = await c.req.json().catch(() => null);
+    const parsed = AuditLogWriteSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid platform console audit log payload', parsed.error.flatten());
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('audit_logs')
+        .insert({
+            actor_id: parsed.data.actor_id || null,
+            actor_type: parsed.data.actor_type,
+            actor_email: parsed.data.actor_email || null,
+            action: parsed.data.action,
+            resource_type: parsed.data.resource_type,
+            resource_id: parsed.data.resource_id || null,
+            metadata: parsed.data.metadata || {},
+            ip_address: parsed.data.ip_address || null,
+            user_agent: parsed.data.user_agent || null,
+        })
+        .select('id, created_at')
+        .single();
+
+    if (error) {
+        return c.json(dbError(error.message), 500);
+    }
+
+    return c.json(success(data), 201);
 });
 
 export default router;

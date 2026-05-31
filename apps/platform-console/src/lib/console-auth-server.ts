@@ -3,10 +3,8 @@ import 'server-only';
 import { createHmac } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import {
-    createSupabaseServerClient,
-    createSupabaseServiceClient,
-} from '@letbuyy/infrastructure/supabase-adapter';
+import { createSupabaseServerClient } from '@letbuyy/runtime-composition/identity-runtime-adapter';
+import { consoleApiBaseUrl } from './console-api';
 import {
     CONSOLE_SESSION_COOKIE,
     CONSOLE_SESSION_MAX_AGE_SECONDS,
@@ -191,32 +189,40 @@ export async function writeConsoleAuditLog(input: {
     session?: ConsoleSession | null;
     requestHeaders?: Headers;
 }) {
-    if (!configured(process.env.SUPABASE_URL) || !configured(process.env.SUPABASE_SERVICE_ROLE_KEY)) {
+    if (!configured(process.env.PLATFORM_CONSOLE_API_TOKEN)) {
         return;
     }
 
-    const supabase = createSupabaseServiceClient({
-        SUPABASE_URL: process.env.SUPABASE_URL || '',
-        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-    });
     const forwardedFor = input.requestHeaders?.get('x-forwarded-for');
     const ipAddress = forwardedFor?.split(',')[0]?.trim() || input.requestHeaders?.get('x-real-ip') || null;
     const userAgent = input.requestHeaders?.get('user-agent') || null;
 
-    const { error } = await supabase.from('audit_logs').insert({
-        actor_id: input.session?.userId || null,
-        actor_type: 'super_admin',
-        actor_email: normalizeConsoleEmail(input.email),
-        action: input.action,
-        resource_type: 'platform_console_session',
-        metadata: {
-            mfa_verified: input.session?.mfaVerified || false,
-        },
-        ip_address: ipAddress,
-        user_agent: userAgent,
-    });
+    try {
+        const response = await fetch(`${consoleApiBaseUrl()}/internal/console/audit-logs`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${process.env.PLATFORM_CONSOLE_API_TOKEN}`,
+                'Content-Type': 'application/json',
+                'X-Request-ID': `platform-console-audit-${Date.now()}`,
+            },
+            body: JSON.stringify({
+                actor_id: input.session?.userId || null,
+                actor_type: 'super_admin',
+                actor_email: normalizeConsoleEmail(input.email),
+                action: input.action,
+                resource_type: 'platform_console_session',
+                metadata: {
+                    mfa_verified: input.session?.mfaVerified || false,
+                },
+                ip_address: ipAddress,
+                user_agent: userAgent,
+            }),
+        });
 
-    if (error) {
-        console.error('[platform-console] audit insert failed:', error.message);
+        if (!response.ok) {
+            console.error('[platform-console] audit API failed:', response.status);
+        }
+    } catch (error) {
+        console.error('[platform-console] audit API failed:', error instanceof Error ? error.message : 'unknown');
     }
 }

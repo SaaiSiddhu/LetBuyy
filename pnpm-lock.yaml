@@ -250,9 +250,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
-      '@letbuyy/infrastructure':
+      '@letbuyy/runtime-composition':
         specifier: workspace:*
-        version: link:../../packages/infrastructure
+        version: link:../../packages/runtime-composition
       '@letbuyy/ui':
         specifier: workspace:*
         version: link:../../packages/typescript/ui
@@ -271,6 +271,9 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
       zod:
         specifier: ^4.3.6
         version: 4.3.6
