@@ -5,6 +5,13 @@
 
 * @saai-sidd
 
+# Foundation critical paths
+/.github/workflows/ @saai-sidd
+/database/supabase/migrations/ @saai-sidd
+/config/env/ @saai-sidd
+/services/api-gateway/src/routes/payments.ts @saai-sidd
+/services/webhook-service/ @saai-sidd
+
 /.gitattributes @saai-sidd
 /.gitignore @saai-sidd
 /apps/storefront-runtime/ @saai-sidd

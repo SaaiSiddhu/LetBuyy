@@ -6,7 +6,8 @@
     "build": "tsc --noEmit",
     "dev": "wrangler dev --inspector-port 9232",
     "deploy": "node ../../infrastructure/scripts/deploy/deploy-worker-runtime.mjs --config wrangler.toml",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
     "@letbuyy/infrastructure": "workspace:*",

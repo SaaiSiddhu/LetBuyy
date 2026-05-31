@@ -49,6 +49,7 @@
         "certify:production:provider": "node infrastructure/scripts/operations/run-provider-production-certification.mjs --environment=production --mode=auto",
         "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "test": "node --test tests/*/*.test.mjs",
+        "test:governance": "node --test tests/*/*.test.mjs",
         "test:workspaces": "turbo test",
         "proof:local": "node infrastructure/scripts/operations/run-local-operational-proof.mjs",
         "certify:operational:local": "node infrastructure/scripts/operations/run-operational-certification.mjs --mode=local",
@@ -60,6 +61,7 @@
         "typecheck": "turbo typecheck"
     },
     "devDependencies": {
+        "@cloudflare/workers-types": "4.20260525.1",
         "@playwright/test": "1.60.0",
         "turbo": "2.8.9",
         "typescript": "5.9.3"

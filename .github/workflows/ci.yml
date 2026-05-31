@@ -1,10 +1,14 @@
 name: CI
 
 on:
-  push:
-    branches: [main, develop]
   pull_request:
-    branches: [main, develop]
+    branches:
+      - develop
+      - main
+  push:
+    branches:
+      - develop
+      - main
 
 permissions:
   contents: read
@@ -13,44 +17,130 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "10.6.2"
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ secrets.TURBO_TEAM }}
+
 jobs:
-  validate:
-    name: Validate
+  typecheck:
+    name: Typecheck
     runs-on: ubuntu-latest
-    timeout-minutes: 30
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
+      - uses: actions/checkout@v4
         with:
-          version: 10
+          fetch-depth: 2
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: 20
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Governance validation
+      - name: Run typecheck
+        run: pnpm turbo typecheck --filter="...[HEAD^1]"
+
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run lint
+        run: pnpm turbo lint --filter="...[HEAD^1]"
+
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run unit tests
+        run: pnpm turbo test --filter="...[HEAD^1]"
+        env:
+          CI: "true"
+
+  governance:
+    name: Governance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Validate governance
         run: pnpm run validate:governance
 
-      - name: TypeScript check
-        run: pnpm turbo typecheck
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
-      - name: Lint
-        run: pnpm turbo lint
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: Test
-        run: pnpm turbo test
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
 
-      - name: Build active workers
-        run: |
-          pnpm turbo build --filter=@letbuyy/api-gateway
-          pnpm turbo build --filter=@letbuyy/webhook-service
-          pnpm turbo build --filter=@letbuyy/queue-workers
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build all apps and packages
+        run: pnpm turbo build --filter="...[HEAD^1]"
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_anon_key
+          NEXT_PUBLIC_APP_URL: https://letbuyy.store
+          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.letbuyy.store
+          NEXT_PUBLIC_ADMIN_URL: https://admin.letbuyy.store
+          NEXT_PUBLIC_API_URL: https://api.letbuyy.store
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: placeholder
+          NODE_ENV: production

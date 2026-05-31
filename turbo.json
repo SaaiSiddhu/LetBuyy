@@ -12,7 +12,8 @@
       "outputs": [
         ".next/**",
         "!.next/cache/**",
-        "dist/**"
+        "dist/**",
+        "build/**"
       ],
       "env": [
         "NEXT_PUBLIC_SUPABASE_URL",
@@ -36,10 +37,14 @@
     },
     "test": {
       "dependsOn": [
-        "^typecheck"
+        "^typecheck",
+        "^build"
       ],
       "outputs": [
         "coverage/**"
+      ],
+      "env": [
+        "CI"
       ]
     },
     "typecheck": {

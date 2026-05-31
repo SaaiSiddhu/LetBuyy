@@ -71,7 +71,8 @@ mode = "smart"
 name = "letbuyy-webhook-staging"
 workers_dev = false
 routes = [
-  { pattern = "webhooks-staging.letbuyy.store/*", zone_name = "letbuyy.store" }
+  { pattern = "webhooks-staging.letbuyy.store/*", zone_name = "letbuyy.store" },
+  { pattern = "webhooks.staging.letbuyy.store/*", zone_name = "letbuyy.store" }
 ]
 
 [env.staging.observability]
@@ -87,6 +88,8 @@ invocation_logs = true
 ENVIRONMENT = "staging"
 APP_ENV = "staging"
 NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "staging"
+WORKER_ENV = "staging"
 DEPLOYMENT_ENV = "staging"
 TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Webhook Service"
@@ -124,6 +127,8 @@ invocation_logs = true
 ENVIRONMENT = "production"
 APP_ENV = "production"
 NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "production"
+WORKER_ENV = "production"
 DEPLOYMENT_ENV = "production"
 TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Webhook Service"
