@@ -2,19 +2,19 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
 
-interface Coupon {
-    id: string
-    code: string
-    type: 'percentage' | 'fixed_amount' | 'free_shipping'
-    value: number
+type CouponDiscountKind = SharedCoupon['type'] | 'fixed_amount'
+
+type CouponRow = Omit<
+    Pick<SharedCoupon, 'id' | 'code' | 'value' | 'used_count' | 'starts_at' | 'expires_at' | 'is_active' | 'created_at'>,
+    'starts_at' | 'expires_at'
+> & {
+    type: CouponDiscountKind
     min_purchase: number | null
     max_uses: number | null
-    used_count: number
     starts_at: string | null
     expires_at: string | null
-    is_active: boolean
-    created_at: string
 }
 
 function getErrorMessage(payload: unknown, fallback: string) {
@@ -35,14 +35,14 @@ function getErrorMessage(payload: unknown, fallback: string) {
 export default function CouponsPage() {
     const { store } = useParams<{ store: string }>()
 
-    const [coupons, setCoupons] = useState<Coupon[]>([])
+    const [coupons, setCoupons] = useState<CouponRow[]>([])
     const [loading, setLoading] = useState(true)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formError, setFormError] = useState<string | null>(null)
     const [formData, setFormData] = useState({
-        code: '', type: 'percentage' as Coupon['type'], value: '', min_purchase: '', max_uses: '',
+        code: '', type: 'percentage' as CouponRow['type'], value: '', min_purchase: '', max_uses: '',
         starts_at: '', expires_at: '', is_active: true
     })
 
@@ -116,7 +116,7 @@ export default function CouponsPage() {
         loadCoupons()
     }
 
-    const toggleActive = async (coupon: Coupon) => {
+    const toggleActive = async (coupon: CouponRow) => {
         await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(coupon.id)}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -125,7 +125,7 @@ export default function CouponsPage() {
         loadCoupons()
     }
 
-    const startEdit = (c: Coupon) => {
+    const startEdit = (c: CouponRow) => {
         setEditingId(c.id)
         setFormError(null)
         setFormData({
@@ -139,7 +139,7 @@ export default function CouponsPage() {
         setShowForm(true)
     }
 
-    const isExpired = (c: Coupon) => c.expires_at && new Date(c.expires_at) < new Date()
+    const isExpired = (c: CouponRow) => c.expires_at && new Date(c.expires_at) < new Date()
     const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
 
     if (loading) {
@@ -191,7 +191,7 @@ export default function CouponsPage() {
                         <div>
                             <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Type</label>
                             <select value={formData.type}
-                                onChange={e => setFormData(f => ({ ...f, type: e.target.value as Coupon['type'] }))}
+                                onChange={e => setFormData(f => ({ ...f, type: e.target.value as CouponRow['type'] }))}
                                 style={inputStyle}>
                                 <option value="percentage">Percentage (%)</option>
                                 <option value="fixed_amount">Fixed Amount (₹)</option>

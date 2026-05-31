@@ -3,21 +3,17 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import type { Collection as SharedCollection } from '@letbuyy/shared-types'
 
-interface Collection {
-    id: string
-    title: string
-    description: string | null
-    image_url: string | null
+type CollectionRow = Pick<SharedCollection, 'id' | 'title' | 'description' | 'image_url' | 'created_at'> & {
     is_active: boolean
-    created_at: string
     product_count?: number
 }
 
 export default function CollectionsPage() {
     const { store } = useParams<{ store: string }>()
 
-    const [collections, setCollections] = useState<Collection[]>([])
+    const [collections, setCollections] = useState<CollectionRow[]>([])
     const [loading, setLoading] = useState(true)
     const [showCreate, setShowCreate] = useState(false)
     const [newTitle, setNewTitle] = useState('')

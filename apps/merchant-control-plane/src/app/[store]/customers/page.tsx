@@ -2,16 +2,13 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
 
-interface Customer {
-    id: string
+type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status' | 'created_at' | 'total_spent' | 'last_order_at'>, 'email' | 'phone' | 'last_order_at'> & {
     full_name: string
     email: string
     phone: string | null
-    total_orders: number
-    total_spent: number
-    status: string
-    created_at: string
+    total_orders: SharedCustomer['order_count']
     first_order_at: string | null
     last_order_at: string | null
     last_order_id: string | null
@@ -41,7 +38,7 @@ function formatDate(value: string | null) {
 export default function CustomersPage() {
     const { store } = useParams<{ store: string }>()
 
-    const [customers, setCustomers] = useState<Customer[]>([])
+    const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [loading, setLoading] = useState(true)
     const [searchQuery, setSearchQuery] = useState('')

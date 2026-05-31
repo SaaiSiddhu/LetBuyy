@@ -2,41 +2,43 @@
 
 import { Fragment, useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
 
-interface OrderItem {
-    product_id: string
-    variant_id?: string | null
-    title: string
-    variant_title?: string | null
-    sku?: string | null
-    quantity: number
-    unit_price: number
-    total: number
-    image?: string | null
+type OrderItemRow = Pick<
+    SharedLineItem,
+    'product_id' | 'variant_id' | 'variant_title' | 'sku' | 'quantity' | 'unit_price' | 'total'
+> & {
+    title: SharedLineItem['name']
+    image?: SharedLineItem['image_url']
 }
 
-interface Order {
-    id: string
-    order_number: string
-    customer_name: string
-    customer_email: string
-    customer_phone?: string | null
-    subtotal: number
-    shipping_cost: number
-    tax: number
-    discount: number
-    total: number
-    coupon_code?: string | null
-    coupon_discount?: number
-    status: string
-    payment_status: string
+type OrderRow = Omit<
+    Pick<
+        SharedOrder,
+        | 'id'
+        | 'order_number'
+        | 'customer_name'
+        | 'customer_email'
+        | 'customer_phone'
+        | 'subtotal'
+        | 'total'
+        | 'coupon_code'
+        | 'status'
+        | 'payment_status'
+        | 'shipping_method'
+        | 'created_at'
+        | 'tracking_number'
+    >,
+    never
+> & {
+    shipping_cost: SharedOrder['shipping_amount']
+    tax: SharedOrder['tax_amount']
+    discount: SharedOrder['discount_amount']
+    coupon_discount?: SharedOrder['discount_amount']
     payment_method: string
-    shipping_method?: string | null
     shipping_address?: Record<string, unknown>
-    items: OrderItem[]
+    items: OrderItemRow[]
     item_count: number
-    created_at: string
-    tracking_number?: string | null
 }
 
 function getErrorMessage(payload: unknown, fallback: string) {
@@ -73,7 +75,7 @@ function addressLine(address?: Record<string, unknown>) {
 
 export default function OrdersPage() {
     const { store } = useParams<{ store: string }>()
-    const [orders, setOrders] = useState<Order[]>([])
+    const [orders, setOrders] = useState<OrderRow[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [loading, setLoading] = useState(true)
     const [filter, setFilter] = useState<string>('all')
@@ -124,7 +126,7 @@ export default function OrdersPage() {
 
     useEffect(() => { loadOrders() }, [loadOrders])
 
-    const loadOrderDetail = async (order: Order) => {
+    const loadOrderDetail = async (order: OrderRow) => {
         if (expandedOrderId === order.id) {
             setExpandedOrderId(null)
             return
@@ -463,7 +465,7 @@ export default function OrdersPage() {
     )
 }
 
-function OrderDetail({ order, formatCurrency }: { order: Order; formatCurrency: (amount: number) => string }) {
+function OrderDetail({ order, formatCurrency }: { order: OrderRow; formatCurrency: (amount: number) => string }) {
     return (
         <div style={{ display: 'grid', gap: 16 }}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12 }}>

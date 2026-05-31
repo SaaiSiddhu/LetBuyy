@@ -3,28 +3,19 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
+import type { Product as SharedProduct } from '@letbuyy/shared-types'
 
-interface Product {
-    id: string
-    name: string
-    status: string
-    stock: number
-    price: number
-    compare_price: number | null
-    images: string[]
-    category: string | null
-    product_type: string | null
-    vendor: string | null
-    is_active: boolean
-    created_at: string
-}
+type ProductRow = Pick<
+    SharedProduct,
+    'id' | 'name' | 'status' | 'stock' | 'price' | 'compare_price' | 'images' | 'category' | 'product_type' | 'vendor' | 'is_active' | 'created_at'
+>
 
 type TabFilter = 'all' | 'active' | 'draft' | 'archived'
 
 export default function ProductsPage() {
     const { store } = useParams<{ store: string }>()
 
-    const [products, setProducts] = useState<Product[]>([])
+    const [products, setProducts] = useState<ProductRow[]>([])
     const [loading, setLoading] = useState(true)
     const [activeTab, setActiveTab] = useState<TabFilter>('all')
     const [searchQuery, setSearchQuery] = useState('')
@@ -51,7 +42,7 @@ export default function ProductsPage() {
         p.name.toLowerCase().includes(searchQuery.toLowerCase())
     )
 
-    const getStatusBadge = (product: Product) => {
+    const getStatusBadge = (product: ProductRow) => {
         const status = product.is_active ? 'active' : 'draft'
         return (
             <span className={`product-status-badge ${status}`}>
