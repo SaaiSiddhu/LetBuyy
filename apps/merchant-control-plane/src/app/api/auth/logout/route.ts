@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
 
 /**
  * POST /api/auth/logout
@@ -12,7 +13,7 @@ import { cookies } from 'next/headers'
 export async function POST() {
     try {
         const cookieStore = await cookies()
-        const sessionToken = cookieStore.get('lb_session')?.value
+        const sessionToken = cookieStore.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
         const accountsUrl =
             process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
 
@@ -20,7 +21,7 @@ export async function POST() {
             await fetch(`${accountsUrl}/api/auth/logout`, {
                 method: 'POST',
                 headers: {
-                    Cookie: `lb_session=${encodeURIComponent(sessionToken)}`,
+                    Cookie: `${LETBUYY_MERCHANT_SESSION_COOKIE}=${encodeURIComponent(sessionToken)}`,
                     Origin: process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3002',
                 },
                 cache: 'no-store',
@@ -30,7 +31,7 @@ export async function POST() {
         // Clear the session cookie
         const isProduction = process.env.NODE_ENV === 'production'
         const cookieDomain = isProduction ? (process.env.COOKIE_DOMAIN || '.letbuyy.store') : undefined
-        cookieStore.set('lb_session', '', {
+        cookieStore.set(LETBUYY_MERCHANT_SESSION_COOKIE, '', {
             httpOnly: true,
             secure: isProduction,
             sameSite: 'lax',

@@ -1,51 +1,27 @@
 import type { Context } from 'hono';
 import type { Env } from '../index';
-
-const INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
-const textEncoder = new TextEncoder();
+import {
+    bytesToHex,
+    getLetbuyyInternalAuthSecret,
+    hmacSha256Hex,
+    isFreshLetbuyyInternalTimestamp,
+    timingSafeEqualHex,
+    verifyLetbuyySignedPayload,
+} from '@letbuyy/auth-core';
 
 export function getInternalAuthSecret(env: Env): string | undefined {
-    return env.INTERNAL_API_SECRET || env.AUTH_SECRET;
+    return getLetbuyyInternalAuthSecret(env);
 }
 
-export function bytesToHex(bytes: ArrayBuffer): string {
-    return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-export function timingSafeEqualHex(left: string, right: string): boolean {
-    if (left.length !== right.length) return false;
-
-    let mismatch = 0;
-    for (let index = 0; index < left.length; index += 1) {
-        mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
-    }
-
-    return mismatch === 0;
-}
-
-export async function hmacSha256Hex(secret: string, payload: string): Promise<string> {
-    const key = await crypto.subtle.importKey(
-        'raw',
-        textEncoder.encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    );
-    const signature = await crypto.subtle.sign('HMAC', key, textEncoder.encode(payload));
-    return bytesToHex(signature);
-}
+export { bytesToHex, hmacSha256Hex, timingSafeEqualHex };
 
 export function isFreshInternalTimestamp(timestampHeader: string | undefined): boolean {
-    if (!timestampHeader) return false;
-    const timestamp = Number(timestampHeader);
-    return Number.isFinite(timestamp) && Math.abs(Date.now() - timestamp) <= INTERNAL_AUTH_MAX_AGE_MS;
+    return isFreshLetbuyyInternalTimestamp(timestampHeader);
 }
 
 export async function verifySignedPayload(env: Env, payload: string, signature: string | undefined): Promise<boolean> {
     const secret = getInternalAuthSecret(env);
-    if (!secret || !signature) return false;
-    const expectedSignature = await hmacSha256Hex(secret, payload);
-    return timingSafeEqualHex(expectedSignature, signature);
+    return verifyLetbuyySignedPayload(secret, payload, signature);
 }
 
 export async function verifyInternalAppRequest(c: Context<{ Bindings: Env }>, expectedApp: string): Promise<boolean> {

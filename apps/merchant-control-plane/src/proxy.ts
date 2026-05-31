@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
 /**
  * Admin proxy:
@@ -10,7 +11,8 @@ import { NextRequest, NextResponse } from 'next/server'
  */
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
-    const sessionCookie = request.cookies.get('lb_session')?.value
+    const sessionCookie = request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
+    const session = verifyLetbuyySessionCookieValue('merchant', sessionCookie)
 
     if (
         pathname === '/' ||
@@ -22,7 +24,7 @@ export function proxy(request: NextRequest) {
         return NextResponse.next()
     }
 
-    if (!sessionCookie) {
+    if (!session.accepted) {
         const accountsUrl =
             process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
         const returnUrl = encodeURIComponent(request.url)

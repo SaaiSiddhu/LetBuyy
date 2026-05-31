@@ -1,7 +1,11 @@
 import { getSessionCookie } from '@/lib/auth/cookies'
+import {
+    createLetbuyyInternalSessionHeaders,
+    getLetbuyyInternalAuthSecret,
+    hmacSha256Hex,
+} from '@letbuyy/auth-core'
 
 const DEFAULT_WORKER_BASE_URL = 'http://localhost:8787/v1'
-const textEncoder = new TextEncoder()
 
 interface WorkerFetchInit extends RequestInit {
     requireSession?: boolean
@@ -68,26 +72,6 @@ function getWorkerBaseUrl(): string {
     return configuredUrl
 }
 
-function getInternalAuthSecret(): string {
-    return process.env.INTERNAL_API_SECRET || process.env.AUTH_SECRET || ''
-}
-
-function bytesToHex(bytes: ArrayBuffer): string {
-    return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('')
-}
-
-async function hmacSha256Hex(secret: string, payload: string): Promise<string> {
-    const key = await crypto.subtle.importKey(
-        'raw',
-        textEncoder.encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    )
-    const signature = await crypto.subtle.sign('HMAC', key, textEncoder.encode(payload))
-    return bytesToHex(signature)
-}
-
 export async function accountWorkerFetch(path: string, init: WorkerFetchInit = {}): Promise<Response> {
     const headers = new Headers(init.headers)
     const useSessionAuth = Boolean(init.requireSession || init.sessionToken)
@@ -100,7 +84,10 @@ export async function accountWorkerFetch(path: string, init: WorkerFetchInit = {
         })
     }
 
-    const secret = getInternalAuthSecret()
+    const secret = getLetbuyyInternalAuthSecret({
+        INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
+        AUTH_SECRET: process.env.AUTH_SECRET,
+    })
     if (!secret) {
         return new Response(JSON.stringify({ error: { code: 'SERVER_MISCONFIGURED', message: 'Internal auth secret is not configured' } }), {
             status: 500,
@@ -109,14 +96,15 @@ export async function accountWorkerFetch(path: string, init: WorkerFetchInit = {
     }
 
     if (useSessionAuth) {
-        const signedSessionToken = sessionToken!
-        const timestamp = Date.now().toString()
-        const payload = `session.${signedSessionToken}.${timestamp}`
-        const signature = await hmacSha256Hex(secret, payload)
+        const headerPlan = await createLetbuyyInternalSessionHeaders(sessionToken, secret)
+        if (!headerPlan.ok || !headerPlan.headers) {
+            return new Response(JSON.stringify({ error: { code: 'UNAUTHORIZED', message: headerPlan.reason || 'Authentication required' } }), {
+                status: 401,
+                headers: { 'Content-Type': 'application/json' },
+            })
+        }
 
-        headers.set('X-LetBuyy-Internal-Session-Token', signedSessionToken)
-        headers.set('X-LetBuyy-Internal-Timestamp', timestamp)
-        headers.set('X-LetBuyy-Internal-Signature', signature)
+        Object.entries(headerPlan.headers).forEach(([key, value]) => headers.set(key, value))
     } else {
         const timestamp = Date.now().toString()
         const app = 'accounts'

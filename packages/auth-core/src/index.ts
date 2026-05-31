@@ -107,6 +107,73 @@ export const AUTH_TOKEN_EXPIRY_MS: Record<AuthTokenType, number> = {
 
 export const AUTH_OTP_EXPIRY_MS = 10 * 60 * 1000;
 export const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
+export const LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session';
+export const LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session';
+export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
+export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
+
+const SAFE_SESSION_TOKEN_PATTERN = /^[A-Za-z0-9._~-]+$/;
+const INTERNAL_SESSION_HEADER_PREFIX = 'X-LetBuyy-Internal';
+const textEncoder = new TextEncoder();
+const textDecoder = new TextDecoder();
+
+export type LetbuyyCookieSessionKind = 'merchant' | 'customer';
+
+export type LetbuyySessionVerificationStatus =
+  | 'accepted'
+  | 'missing'
+  | 'malformed'
+  | 'expired'
+  | 'invalid_signature'
+  | 'misconfigured';
+
+export interface LetbuyySessionVerificationResult<TPayload = unknown> {
+  accepted: boolean;
+  status: LetbuyySessionVerificationStatus;
+  kind: LetbuyyCookieSessionKind;
+  token?: string;
+  payload?: TPayload;
+  reason?: string;
+}
+
+export interface LetbuyyInternalSessionHeaderPlan {
+  ok: boolean;
+  status: LetbuyySessionVerificationStatus;
+  headers?: Record<string, string>;
+  signature?: string;
+  timestamp?: string;
+  reason?: string;
+}
+
+export interface LetbuyyInternalSessionHeaderInput {
+  sessionToken?: string | null;
+  timestamp?: string | null;
+  signature?: string | null;
+  secret?: string | null;
+  nowMs?: number;
+  maxAgeMs?: number;
+}
+
+export interface CustomerSessionSubject {
+  id: string;
+  storeId: string;
+  email: string;
+  fullName: string | null;
+}
+
+export interface LetbuyyCustomerSessionPayload {
+  sub: string;
+  storeId: string;
+  email: string;
+  name: string | null;
+  iat: number;
+  exp: number;
+}
+
+export interface CustomerSessionTokenOptions {
+  ttlSeconds?: number;
+  nowSeconds?: number;
+}
 
 export interface CustomUserEnsurePlan {
   email: string;
@@ -163,8 +230,286 @@ export function normalizeAuthEmail(value: unknown): string {
   return String(value || '').toLowerCase().trim();
 }
 
+export function getLetbuyyInternalAuthSecret(env: {
+  INTERNAL_API_SECRET?: string | null;
+  AUTH_SECRET?: string | null;
+}): string | undefined {
+  return env.INTERNAL_API_SECRET || env.AUTH_SECRET || undefined;
+}
+
 export function isAuthUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
+}
+
+export function isSafeAuthEmail(value: string | undefined): value is string {
+  return !!value && value.length <= 320 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export function verifyLetbuyySessionCookieValue(
+  kind: LetbuyyCookieSessionKind,
+  token: string | null | undefined,
+): LetbuyySessionVerificationResult {
+  if (!token) {
+    return { accepted: false, status: 'missing', kind, reason: 'Session cookie is missing' };
+  }
+
+  const normalizedToken = token.trim();
+  if (normalizedToken !== token || normalizedToken.length > 4096) {
+    return { accepted: false, status: 'malformed', kind, reason: 'Session cookie has invalid whitespace or length' };
+  }
+
+  if (kind === 'merchant' && normalizedToken.length < 32) {
+    return { accepted: false, status: 'malformed', kind, reason: 'Merchant session token is too short' };
+  }
+
+  if (kind === 'customer' && normalizedToken.split('.').length !== 3) {
+    return { accepted: false, status: 'malformed', kind, reason: 'Customer session token is not a JWT' };
+  }
+
+  if (!SAFE_SESSION_TOKEN_PATTERN.test(normalizedToken)) {
+    return { accepted: false, status: 'malformed', kind, reason: 'Session cookie contains unsupported characters' };
+  }
+
+  return { accepted: true, status: 'accepted', kind, token: normalizedToken };
+}
+
+export function isFreshLetbuyyInternalTimestamp(
+  timestampHeader: string | null | undefined,
+  nowMs = Date.now(),
+  maxAgeMs = LETBUYY_INTERNAL_AUTH_MAX_AGE_MS,
+): boolean {
+  if (!timestampHeader) return false;
+  const timestamp = Number(timestampHeader);
+  return Number.isFinite(timestamp) && Math.abs(nowMs - timestamp) <= maxAgeMs;
+}
+
+export function bytesToHex(bytes: ArrayBuffer | Uint8Array): string {
+  const view = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  return [...view].map((byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+export function timingSafeEqualHex(left: string | null | undefined, right: string | null | undefined): boolean {
+  if (!left || !right || left.length !== right.length) return false;
+
+  let mismatch = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+
+  return mismatch === 0;
+}
+
+export async function hmacSha256Hex(secret: string, payload: string): Promise<string> {
+  return bytesToHex(await hmacSha256Bytes(secret, payload));
+}
+
+export async function verifyLetbuyySignedPayload(
+  secret: string | null | undefined,
+  payload: string,
+  signature: string | null | undefined,
+): Promise<boolean> {
+  if (!secret || !signature) return false;
+  const expectedSignature = await hmacSha256Hex(secret, payload);
+  return timingSafeEqualHex(expectedSignature, signature);
+}
+
+export async function createLetbuyyInternalSessionHeaders(
+  sessionToken: string | null | undefined,
+  secret: string | null | undefined,
+  nowMs = Date.now(),
+): Promise<LetbuyyInternalSessionHeaderPlan> {
+  const verification = verifyLetbuyySessionCookieValue('merchant', sessionToken);
+  if (!verification.accepted || !verification.token) {
+    return { ok: false, status: verification.status, reason: verification.reason };
+  }
+
+  if (!secret) {
+    return { ok: false, status: 'misconfigured', reason: 'Internal auth secret is not configured' };
+  }
+
+  const timestamp = nowMs.toString();
+  const signature = await hmacSha256Hex(secret, internalSessionSigningPayload(verification.token, timestamp));
+
+  return {
+    ok: true,
+    status: 'accepted',
+    timestamp,
+    signature,
+    headers: {
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Session-Token`]: verification.token,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Timestamp`]: timestamp,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Signature`]: signature,
+    },
+  };
+}
+
+export async function verifyLetbuyyInternalSessionHeaders(
+  input: LetbuyyInternalSessionHeaderInput,
+): Promise<LetbuyySessionVerificationResult> {
+  const verification = verifyLetbuyySessionCookieValue('merchant', input.sessionToken);
+  if (!verification.accepted || !verification.token) return verification;
+
+  if (!input.secret) {
+    return { accepted: false, status: 'misconfigured', kind: 'merchant', reason: 'Internal auth secret is not configured' };
+  }
+
+  if (!isFreshLetbuyyInternalTimestamp(input.timestamp, input.nowMs, input.maxAgeMs)) {
+    return { accepted: false, status: 'expired', kind: 'merchant', reason: 'Internal session signature timestamp is stale' };
+  }
+
+  const signed = await verifyLetbuyySignedPayload(
+    input.secret,
+    internalSessionSigningPayload(verification.token, String(input.timestamp)),
+    input.signature,
+  );
+
+  if (!signed) {
+    return { accepted: false, status: 'invalid_signature', kind: 'merchant', reason: 'Internal session signature is invalid' };
+  }
+
+  return verification;
+}
+
+export async function createCustomerSessionToken(
+  customer: CustomerSessionSubject,
+  secret: string,
+  options: CustomerSessionTokenOptions = {},
+): Promise<string> {
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  const ttlSeconds = options.ttlSeconds ?? LETBUYY_CUSTOMER_SESSION_TTL_SECONDS;
+  const payload: LetbuyyCustomerSessionPayload = {
+    sub: customer.id,
+    storeId: customer.storeId,
+    email: customer.email,
+    name: customer.fullName,
+    iat: nowSeconds,
+    exp: nowSeconds + ttlSeconds,
+  };
+  const signingInput = `${base64UrlEncodeJson({ alg: 'HS256', typ: 'JWT' })}.${base64UrlEncodeJson(payload)}`;
+  const signature = base64UrlEncodeBytes(await hmacSha256Bytes(secret, signingInput));
+
+  return `${signingInput}.${signature}`;
+}
+
+export async function verifyCustomerSessionToken(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  options: CustomerSessionTokenOptions = {},
+): Promise<LetbuyySessionVerificationResult<LetbuyyCustomerSessionPayload>> {
+  const cookieVerification = verifyLetbuyySessionCookieValue('customer', token);
+  if (!cookieVerification.accepted || !cookieVerification.token) {
+    return cookieVerification as LetbuyySessionVerificationResult<LetbuyyCustomerSessionPayload>;
+  }
+
+  if (!secret) {
+    return { accepted: false, status: 'misconfigured', kind: 'customer', reason: 'Customer session secret is not configured' };
+  }
+
+  const [encodedHeader, encodedPayload, signature] = cookieVerification.token.split('.');
+  let header: Record<string, unknown>;
+  let payload: LetbuyyCustomerSessionPayload;
+
+  try {
+    header = JSON.parse(textDecoder.decode(base64UrlToBytes(encodedHeader))) as Record<string, unknown>;
+    payload = JSON.parse(textDecoder.decode(base64UrlToBytes(encodedPayload))) as LetbuyyCustomerSessionPayload;
+  } catch {
+    return { accepted: false, status: 'malformed', kind: 'customer', reason: 'Customer session payload is not valid JSON' };
+  }
+
+  if (header.alg !== 'HS256') {
+    return { accepted: false, status: 'malformed', kind: 'customer', reason: 'Customer session JWT algorithm is unsupported' };
+  }
+
+  const signed = await verifyCustomerJwtSignature(secret, `${encodedHeader}.${encodedPayload}`, signature);
+  if (!signed) {
+    return { accepted: false, status: 'invalid_signature', kind: 'customer', reason: 'Customer session signature is invalid' };
+  }
+
+  if (!isCustomerSessionPayload(payload)) {
+    return { accepted: false, status: 'malformed', kind: 'customer', reason: 'Customer session payload is incomplete' };
+  }
+
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  if (payload.exp <= nowSeconds) {
+    return { accepted: false, status: 'expired', kind: 'customer', reason: 'Customer session is expired' };
+  }
+
+  return {
+    accepted: true,
+    status: 'accepted',
+    kind: 'customer',
+    token: cookieVerification.token,
+    payload,
+  };
+}
+
+function internalSessionSigningPayload(sessionToken: string, timestamp: string): string {
+  return `session.${sessionToken}.${timestamp}`;
+}
+
+async function hmacSha256Bytes(secret: string, payload: string): Promise<Uint8Array> {
+  const key = await crypto.subtle.importKey(
+    'raw',
+    textEncoder.encode(secret),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  );
+  const signature = await crypto.subtle.sign('HMAC', key, textEncoder.encode(payload));
+  return new Uint8Array(signature);
+}
+
+function base64UrlEncodeJson(value: unknown): string {
+  return base64UrlEncodeBytes(textEncoder.encode(JSON.stringify(value)));
+}
+
+function base64UrlEncodeBytes(bytes: Uint8Array): string {
+  let binary = '';
+  for (const byte of bytes) {
+    binary += String.fromCharCode(byte);
+  }
+
+  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function base64UrlToBytes(value: string): Uint8Array {
+  const base64 = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=');
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+  return bytes;
+}
+
+async function verifyCustomerJwtSignature(secret: string, signingInput: string, signature: string): Promise<boolean> {
+  const expected = await hmacSha256Bytes(secret, signingInput);
+  return timingSafeEqualBase64Url(base64UrlEncodeBytes(expected), signature);
+}
+
+function timingSafeEqualBase64Url(left: string, right: string): boolean {
+  if (left.length !== right.length) return false;
+
+  let mismatch = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
+  }
+
+  return mismatch === 0;
+}
+
+function isCustomerSessionPayload(value: LetbuyyCustomerSessionPayload): value is LetbuyyCustomerSessionPayload {
+  return Boolean(
+    value &&
+    typeof value.sub === 'string' &&
+    value.sub.length > 0 &&
+    typeof value.storeId === 'string' &&
+    value.storeId.length > 0 &&
+    isSafeAuthEmail(value.email) &&
+    (value.name === null || typeof value.name === 'string') &&
+    Number.isFinite(value.iat) &&
+    Number.isFinite(value.exp),
+  );
 }
 
 export function isAuthTokenType(value: unknown): value is AuthTokenType {

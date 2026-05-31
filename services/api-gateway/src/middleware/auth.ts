@@ -3,6 +3,14 @@ import {
     createSupabaseAnonClient,
     createSupabaseServiceClient,
 } from '@letbuyy/infrastructure/supabase-adapter';
+import {
+    getLetbuyyInternalAuthSecret,
+    isAuthUuid,
+    isFreshLetbuyyInternalTimestamp,
+    isSafeAuthEmail,
+    verifyLetbuyyInternalSessionHeaders,
+    verifyLetbuyySignedPayload,
+} from '@letbuyy/auth-core';
 import type { Context } from 'hono';
 import type { Env } from '../index';
 
@@ -23,55 +31,8 @@ declare module 'hono' {
     }
 }
 
-const INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
-
-const textEncoder = new TextEncoder();
-
-function getInternalAuthSecret(env: Env): string | undefined {
-    return env.INTERNAL_API_SECRET || env.AUTH_SECRET;
-}
-
-function isUuid(value: string | undefined): value is string {
-    return !!value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
-}
-
-function isSafeEmail(value: string | undefined): value is string {
-    return !!value && value.length <= 320 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-}
-
-function isSafeSessionToken(value: string | undefined): value is string {
-    return !!value && value.length >= 32 && value.length <= 4096 && /^[A-Za-z0-9._~-]+$/.test(value);
-}
-
-function bytesToHex(bytes: ArrayBuffer): string {
-    return [...new Uint8Array(bytes)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-}
-
-function timingSafeEqualHex(left: string, right: string): boolean {
-    if (left.length !== right.length) return false;
-
-    let mismatch = 0;
-    for (let index = 0; index < left.length; index += 1) {
-        mismatch |= left.charCodeAt(index) ^ right.charCodeAt(index);
-    }
-
-    return mismatch === 0;
-}
-
-async function hmacSha256Hex(secret: string, payload: string): Promise<string> {
-    const key = await crypto.subtle.importKey(
-        'raw',
-        textEncoder.encode(secret),
-        { name: 'HMAC', hash: 'SHA-256' },
-        false,
-        ['sign']
-    );
-    const signature = await crypto.subtle.sign('HMAC', key, textEncoder.encode(payload));
-    return bytesToHex(signature);
-}
-
 async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
-    const secret = getInternalAuthSecret(c.env);
+    const secret = getLetbuyyInternalAuthSecret(c.env);
     if (!secret) return null;
 
     const userId = c.req.header('X-LetBuyy-Internal-User-ID');
@@ -80,23 +41,20 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
     const timestampHeader = c.req.header('X-LetBuyy-Internal-Timestamp');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
 
-    if (!isUuid(userId) || !isSafeEmail(email) || !timestampHeader || !signature) {
+    if (!userId || !isAuthUuid(userId) || !isSafeAuthEmail(email) || !timestampHeader || !signature) {
         return null;
     }
 
-    if (storeId && !isUuid(storeId)) {
+    if (storeId && !isAuthUuid(storeId)) {
         return null;
     }
 
-    const timestamp = Number(timestampHeader);
-    if (!Number.isFinite(timestamp) || Math.abs(Date.now() - timestamp) > INTERNAL_AUTH_MAX_AGE_MS) {
+    if (!isFreshLetbuyyInternalTimestamp(timestampHeader)) {
         return null;
     }
 
     const payload = `${userId}.${email}.${storeId || ''}.${timestampHeader}`;
-    const expectedSignature = await hmacSha256Hex(secret, payload);
-
-    if (!timingSafeEqualHex(expectedSignature, signature)) {
+    if (!(await verifyLetbuyySignedPayload(secret, payload, signature))) {
         return null;
     }
 
@@ -111,25 +69,20 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
 }
 
 async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
-    const secret = getInternalAuthSecret(c.env);
+    const secret = getLetbuyyInternalAuthSecret(c.env);
     if (!secret) return null;
 
     const sessionToken = c.req.header('X-LetBuyy-Internal-Session-Token');
     const timestampHeader = c.req.header('X-LetBuyy-Internal-Timestamp');
     const signature = c.req.header('X-LetBuyy-Internal-Signature');
+    const sessionVerification = await verifyLetbuyyInternalSessionHeaders({
+        sessionToken,
+        timestamp: timestampHeader,
+        signature,
+        secret,
+    });
 
-    if (!isSafeSessionToken(sessionToken) || !timestampHeader || !signature) {
-        return null;
-    }
-
-    const timestamp = Number(timestampHeader);
-    if (!Number.isFinite(timestamp) || Math.abs(Date.now() - timestamp) > INTERNAL_AUTH_MAX_AGE_MS) {
-        return null;
-    }
-
-    const payload = `session.${sessionToken}.${timestampHeader}`;
-    const expectedSignature = await hmacSha256Hex(secret, payload);
-    if (!timingSafeEqualHex(expectedSignature, signature)) {
+    if (!sessionVerification.accepted || !sessionVerification.token) {
         return null;
     }
 
@@ -138,7 +91,7 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
     const { data: session } = await supabase
         .from('sessions')
         .select('id, user_id, expires_at')
-        .eq('token', sessionToken)
+        .eq('token', sessionVerification.token)
         .maybeSingle();
 
     if (!session) {
@@ -156,7 +109,7 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
         .eq('id', session.user_id)
         .maybeSingle();
 
-    if (!user || !isSafeEmail(user.email)) {
+    if (!user || !isSafeAuthEmail(user.email)) {
         return null;
     }
 

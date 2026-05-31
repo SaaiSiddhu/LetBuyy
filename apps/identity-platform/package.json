@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@letbuyy/api-types": "workspace:*",
+    "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/runtime-composition": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "@react-email/components": "^1.0.7",

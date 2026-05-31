@@ -33,6 +33,7 @@
   "allowedDependencies": {
     "workspacePackages": [
       "@letbuyy/api-types",
+      "@letbuyy/auth-core",
       "@letbuyy/runtime-composition",
       "@letbuyy/utils"
     ],

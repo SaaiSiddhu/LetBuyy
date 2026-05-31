@@ -1,12 +1,13 @@
 import { cookies } from 'next/headers'
 import { SignJWT, jwtVerify } from 'jose'
+import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
 
 const AUTH_SECRET = process.env.AUTH_SECRET || ''
 const secret = new TextEncoder().encode(AUTH_SECRET)
 
 // Cookie names
 export const COOKIE_NAMES = {
-    session: 'lb_session',
+    session: LETBUYY_MERCHANT_SESSION_COOKIE,
     csrf: 'lb_csrf',
     accounts: 'lb_accounts',
     device: 'lb_device',

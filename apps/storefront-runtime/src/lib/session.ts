@@ -4,33 +4,34 @@
 // ============================================================
 
 import 'server-only';
-import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
 import { cookies } from 'next/headers';
+import {
+    LETBUYY_CUSTOMER_SESSION_COOKIE,
+    LETBUYY_CUSTOMER_SESSION_TTL_SECONDS,
+    createCustomerSessionToken,
+    verifyCustomerSessionToken,
+    type LetbuyyCustomerSessionPayload,
+} from '@letbuyy/auth-core';
 
 // ============================================================
 // Types
 // ============================================================
 
-export interface CustomerSessionPayload extends JWTPayload {
-    sub: string;       // customer ID
-    storeId: string;
-    email: string;
-    name: string | null;
-}
+export type CustomerSessionPayload = LetbuyyCustomerSessionPayload;
 
 // ============================================================
 // Constants
 // ============================================================
 
-const COOKIE_NAME = 'lb_customer_session';
-const SESSION_TTL = 7 * 24 * 60 * 60; // 7 days in seconds
+const COOKIE_NAME = LETBUYY_CUSTOMER_SESSION_COOKIE;
+const SESSION_TTL = LETBUYY_CUSTOMER_SESSION_TTL_SECONDS;
 
-function getSecret(): Uint8Array {
+function getSecret(): string {
     const secret = process.env.CUSTOMER_SESSION_SECRET;
     if (!secret) {
         throw new Error('[Session] CUSTOMER_SESSION_SECRET env var is required');
     }
-    return new TextEncoder().encode(secret);
+    return secret;
 }
 
 // ============================================================
@@ -43,18 +44,7 @@ export async function createSession(customer: {
     email: string;
     fullName: string | null;
 }): Promise<string> {
-    const secret = getSecret();
-
-    const token = await new SignJWT({
-        sub: customer.id,
-        storeId: customer.storeId,
-        email: customer.email,
-        name: customer.fullName,
-    })
-        .setProtectedHeader({ alg: 'HS256' })
-        .setIssuedAt()
-        .setExpirationTime(`${SESSION_TTL}s`)
-        .sign(secret);
+    const token = await createCustomerSessionToken(customer, getSecret());
 
     const cookieStore = await cookies();
     cookieStore.set(COOKIE_NAME, token, {
@@ -78,10 +68,8 @@ export async function getSession(): Promise<CustomerSessionPayload | null> {
         const cookie = cookieStore.get(COOKIE_NAME);
         if (!cookie?.value) return null;
 
-        const secret = getSecret();
-        const { payload } = await jwtVerify(cookie.value, secret);
-
-        return payload as CustomerSessionPayload;
+        const verification = await verifyCustomerSessionToken(cookie.value, process.env.CUSTOMER_SESSION_SECRET);
+        return verification.accepted && verification.payload ? verification.payload : null;
     } catch {
         return null;
     }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getAdminUrl } from '@/lib/config/urls'
+import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
 const PROTECTED_ROUTES = ['/onboarding', '/set-password']
 const PUBLIC_ROUTES = ['/check-email', '/api/']
@@ -7,10 +8,11 @@ const ACCIDENTAL_ADMIN_PATH = /^\/[^/]+\/(?:dashboard|analytics|products|orders|
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
-    const sessionToken = request.cookies.get('lb_session')?.value
+    const sessionToken = request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
+    const session = verifyLetbuyySessionCookieValue('merchant', sessionToken)
 
     if (pathname === '/') {
-        if (sessionToken) {
+        if (session.accepted) {
             return NextResponse.redirect(new URL('/select', request.url))
         }
 
@@ -30,7 +32,7 @@ export function proxy(request: NextRequest) {
         return NextResponse.next()
     }
 
-    if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) && !sessionToken) {
+    if (PROTECTED_ROUTES.some((route) => pathname.startsWith(route)) && !session.accepted) {
         const url = new URL('/lookup', request.url)
         url.searchParams.set('redirect', pathname)
         return NextResponse.redirect(url)
