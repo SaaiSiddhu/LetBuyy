@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { UpdateBlogCommentInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -13,18 +14,14 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/blog/comments/${encodeURIComponent(commentId)}`, {
-            method: 'PATCH',
-            body: JSON.stringify(body),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().blog.comments.update(commentId, body as UpdateBlogCommentInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({
+            success: true,
+            data: payload,
+        })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to update comment' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to update comment')
     }
 }
 
@@ -38,16 +35,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/blog/comments/${encodeURIComponent(commentId)}`, {
-            method: 'DELETE',
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().blog.comments.remove(commentId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to delete comment' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to delete comment')
     }
 }

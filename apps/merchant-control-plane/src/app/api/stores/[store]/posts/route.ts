@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { BlogPostListQuery, CreateBlogPostInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+
+function normalizeBlogPostStatus(value: string | null): BlogPostListQuery['status'] | undefined {
+    return value === 'draft' || value === 'published' || value === 'scheduled' || value === 'archived'
+        ? value
+        : undefined
+}
 
 export async function GET(
     request: NextRequest,
@@ -13,24 +20,29 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const { searchParams } = new URL(request.url)
-        const query = new URLSearchParams({
+        const page = Number(searchParams.get('page') || '1')
+        const limit = Number(searchParams.get('limit') || '100')
+        const payload = await createWorkerApiClient().blog.posts.list({
             store_id: resolved.storeId,
-            page: searchParams.get('page') || '1',
-            limit: searchParams.get('limit') || '100',
+            page,
+            limit,
+            status: normalizeBlogPostStatus(searchParams.get('status')),
         })
-        if (searchParams.get('status') && searchParams.get('status') !== 'all') {
-            query.set('status', searchParams.get('status')!)
-        }
 
-        const workerResponse = await workerFetch(`/blog/posts?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
+        return NextResponse.json({
+            success: true,
+            data: payload.data,
+            meta: {
+                page: payload.page,
+                per_page: payload.limit,
+                total: payload.total,
+                total_pages: Math.ceil(payload.total / Math.max(payload.limit, 1)),
+                has_next: payload.has_more,
+                has_prev: payload.page > 1,
+            },
+        })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load posts' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load posts')
     }
 }
 
@@ -45,21 +57,17 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/blog/posts', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-                content: body.content || '',
-            }),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().blog.posts.create({
+            ...body,
+            store_id: resolved.storeId,
+            content: typeof body.content === 'string' ? body.content : '',
+        } as CreateBlogPostInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({
+            success: true,
+            data: payload,
+        })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save post' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to save post')
     }
 }

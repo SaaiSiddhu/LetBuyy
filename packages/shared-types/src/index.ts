@@ -182,6 +182,8 @@ export const PaymentMethodSchema = z.enum([
 export const DiscountTypeSchema = z.enum(['percentage', 'fixed', 'free_shipping']);
 export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
 export const PolicyTypeSchema = z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']);
+export const BlogPostStatusSchema = z.enum(['draft', 'published', 'scheduled', 'archived']);
+export const BlogCommentStatusSchema = z.enum(['pending', 'approved', 'spam', 'rejected']);
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
 
@@ -561,6 +563,43 @@ export const ReplaceNavigationResultSchema = z.object({
   count: z.number().int().min(0),
 });
 
+export const BlogPostSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  author_id: UuidSchema.optional().nullable(),
+  title: z.string().min(1).max(300),
+  slug: SlugSchema,
+  excerpt: z.string().max(500).optional().nullable(),
+  content: z.string().max(100000).default(''),
+  content_html: z.string().max(150000).optional().nullable(),
+  featured_image: UrlSchema.optional().nullable(),
+  category_id: UuidSchema.optional().nullable(),
+  status: BlogPostStatusSchema.default('draft'),
+  scheduled_at: z.string().datetime().optional().nullable(),
+  published_at: z.string().datetime().optional().nullable(),
+  seo_title: z.string().max(70).optional().nullable(),
+  seo_description: z.string().max(160).optional().nullable(),
+  og_image_url: UrlSchema.optional().nullable(),
+  allow_comments: z.boolean().default(true),
+  is_featured: z.boolean().default(false),
+  is_pinned: z.boolean().default(false),
+  reading_time_min: z.number().int().min(0).max(1000).optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
+export const BlogCommentSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  post_id: UuidSchema.optional().nullable(),
+  post_title: z.string().max(300).optional().nullable(),
+  author_name: z.string().max(200).optional().nullable(),
+  author_email: z.string().email().max(320).optional().nullable(),
+  author_avatar: UrlSchema.optional().nullable(),
+  content: z.string().max(10000).default(''),
+  body: z.string().max(10000).optional().nullable(),
+  status: BlogCommentStatusSchema.default('pending'),
+  moderated_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).passthrough();
+
 export const ThemeSettingFieldSchema = z.object({
   id: z.string().min(1).max(120),
   type: z.enum(['text', 'textarea', 'number', 'range', 'checkbox', 'select', 'color', 'image', 'url', 'font']),
@@ -788,6 +827,8 @@ export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
 export type DiscountType = z.infer<typeof DiscountTypeSchema>;
 export type PageStatus = z.infer<typeof PageStatusSchema>;
 export type PolicyType = z.infer<typeof PolicyTypeSchema>;
+export type BlogPostStatus = z.infer<typeof BlogPostStatusSchema>;
+export type BlogCommentStatus = z.infer<typeof BlogCommentStatusSchema>;
 export type ThemeCategory = z.infer<typeof ThemeCategorySchema>;
 export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
 export type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
@@ -816,6 +857,8 @@ export type NavigationMenu = z.infer<typeof NavigationMenuSchema>;
 export type NavigationItem = z.infer<typeof NavigationItemSchema>;
 export type NavigationResponse = z.infer<typeof NavigationResponseSchema>;
 export type ReplaceNavigationResult = z.infer<typeof ReplaceNavigationResultSchema>;
+export type BlogPost = z.infer<typeof BlogPostSchema>;
+export type BlogComment = z.infer<typeof BlogCommentSchema>;
 export type ThemeSettingField = z.infer<typeof ThemeSettingFieldSchema>;
 export type ThemeSettings = z.infer<typeof ThemeSettingsSchema>;
 export type ThemeBlock = z.infer<typeof ThemeBlockSchema>;

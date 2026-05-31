@@ -1,5 +1,9 @@
 import type {
   ApiResponse,
+  BlogComment,
+  BlogCommentStatus,
+  BlogPost,
+  BlogPostStatus,
   Cart,
   Collection,
   Coupon,
@@ -116,6 +120,15 @@ export interface PolicyListQuery extends StoreScopedQuery {
 
 export interface CouponListQuery extends StoreScopedQuery {
   status?: 'active' | 'expired' | 'all';
+}
+
+export interface BlogPostListQuery extends StoreScopedQuery {
+  status?: BlogPostStatus;
+  category_id?: string;
+}
+
+export interface BlogCommentListQuery extends StoreScopedQuery {
+  status?: BlogCommentStatus | 'all';
 }
 
 export interface ProductListQuery extends StoreScopedQuery {
@@ -246,6 +259,14 @@ export type ReplaceNavigationInput = {
   name?: string;
   items?: NavigationItemInput[];
 };
+export type CreateBlogPostInput = Pick<BlogPost, 'store_id' | 'title' | 'content'> & NewRecord<BlogPost> & {
+  tag_ids?: string[];
+};
+export type UpdateBlogPostInput = NewRecord<BlogPost> & {
+  tag_ids?: string[];
+  version?: number;
+};
+export type UpdateBlogCommentInput = Pick<BlogComment, 'status'>;
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
@@ -438,6 +459,29 @@ export class LetbuyyApiClient {
       this.requestData<{ deleted: boolean }>(`/coupons/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     validate: (input: { store_id: string; code: string; cart_total?: number }, options?: LetbuyyRequestOptions) =>
       this.requestData<Coupon>('/coupons/validate', { ...options, method: 'POST', body: input }),
+  };
+
+  readonly blog = {
+    posts: {
+      list: (query?: BlogPostListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestPaginated<BlogPost>('/blog/posts', { ...options, query }),
+      get: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<BlogPost>(`/blog/posts/${encodePathSegment(id)}`, options),
+      create: (input: CreateBlogPostInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<BlogPost>('/blog/posts', { ...options, method: 'POST', body: input }),
+      update: (id: string, input: UpdateBlogPostInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<BlogPost>(`/blog/posts/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      remove: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/blog/posts/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    },
+    comments: {
+      list: (query: BlogCommentListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestPaginated<BlogComment>('/blog/comments', { ...options, query }),
+      update: (id: string, input: UpdateBlogCommentInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<BlogComment>(`/blog/comments/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      remove: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/blog/comments/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    },
   };
 
   readonly themes = {
@@ -725,6 +769,8 @@ function encodePathSegment(value: string): string {
 }
 
 export type {
+  BlogComment,
+  BlogPost,
   Cart,
   Collection,
   Coupon,
