@@ -4,7 +4,7 @@
 // ============================================================
 
 import 'server-only';
-import { readWorkerJson, workerFetch } from './worker-client';
+import { createStorefrontApiClient } from './worker-client';
 
 // ============================================================
 // Types
@@ -41,18 +41,6 @@ export interface Address {
     isDefault?: boolean;
 }
 
-type WorkerPayload<T> = {
-    data?: T;
-};
-
-function getWorkerData<T>(payload: unknown): T {
-    const data = (payload as WorkerPayload<T>).data;
-    if (!data) {
-        throw new Error('Worker response did not include data');
-    }
-    return data;
-}
-
 // ============================================================
 // FIND OR CREATE CUSTOMER (Guest Checkout Auto-Creation)
 // ============================================================
@@ -63,17 +51,18 @@ export async function findOrCreateCustomer(
     fullName?: string,
     phone?: string
 ): Promise<StoreCustomer> {
-    const response = await workerFetch('/storefront/customer/find-or-create', {
-        method: 'POST',
-        body: JSON.stringify({
+    const data = await createStorefrontApiClient()
+        .storefront
+        .findOrCreateCustomer({
             store_id: storeId,
             email,
             full_name: fullName || null,
             phone: phone || null,
-        }),
-    });
-    const payload = await readWorkerJson(response);
-    const data = getWorkerData<{ customer: Record<string, unknown> }>(payload);
+        });
+
+    if (!data.customer) {
+        throw new Error('Worker response did not include customer');
+    }
 
     return mapRow(data.customer);
 }
@@ -86,11 +75,9 @@ export async function getCustomerByEmail(
     storeId: string,
     email: string
 ): Promise<StoreCustomer | null> {
-    const response = await workerFetch(
-        `/storefront/customer/by-email?store_id=${encodeURIComponent(storeId)}&email=${encodeURIComponent(email)}`
-    );
-    const payload = await readWorkerJson(response);
-    const customer = payload?.data?.customer;
+    const { customer } = await createStorefrontApiClient()
+        .storefront
+        .customerByEmail({ store_id: storeId, email });
     return customer ? mapRow(customer) : null;
 }
 
@@ -102,11 +89,9 @@ export async function checkCustomerStatus(
     storeId: string,
     email: string
 ): Promise<{ exists: boolean; hasPassword: boolean; status: string }> {
-    const response = await workerFetch(
-        `/storefront/customer/status?store_id=${encodeURIComponent(storeId)}&email=${encodeURIComponent(email)}`
-    );
-    const payload = await readWorkerJson(response);
-    return payload?.data || { exists: false, hasPassword: false, status: 'none' };
+    return createStorefrontApiClient()
+        .storefront
+        .customerStatus({ store_id: storeId, email });
 }
 
 // ============================================================
@@ -118,15 +103,13 @@ export async function setCustomerPassword(
     email: string,
     password: string
 ): Promise<void> {
-    const response = await workerFetch('/storefront/customer/password', {
-        method: 'POST',
-        body: JSON.stringify({
+    await createStorefrontApiClient()
+        .storefront
+        .setCustomerPassword({
             store_id: storeId,
             email,
             password,
-        }),
-    });
-    await readWorkerJson(response);
+        });
 }
 
 // ============================================================
@@ -138,16 +121,13 @@ export async function verifyCustomerPassword(
     email: string,
     password: string
 ): Promise<StoreCustomer | null> {
-    const response = await workerFetch('/storefront/customer/login', {
-        method: 'POST',
-        body: JSON.stringify({
+    const { customer } = await createStorefrontApiClient()
+        .storefront
+        .verifyCustomerPassword({
             store_id: storeId,
             email,
             password,
-        }),
-    });
-    const payload = await readWorkerJson(response);
-    const customer = payload?.data?.customer;
+        });
     return customer ? mapRow(customer) : null;
 }
 
@@ -161,16 +141,14 @@ export async function updateCustomerStats(
     orderTotal: number,
     orderId: string
 ): Promise<void> {
-    const response = await workerFetch('/storefront/customer/order-stats', {
-        method: 'POST',
-        body: JSON.stringify({
+    await createStorefrontApiClient()
+        .storefront
+        .updateCustomerStats({
             store_id: storeId,
             email,
             order_total: orderTotal,
             order_id: orderId,
-        }),
-    });
-    await readWorkerJson(response);
+        });
 }
 
 // ============================================================
@@ -181,11 +159,10 @@ export async function getCustomerWishlist(
     customerId: string,
     storeId: string
 ): Promise<string[]> {
-    const response = await workerFetch(
-        `/storefront/customer/wishlist?customer_id=${encodeURIComponent(customerId)}&store_id=${encodeURIComponent(storeId)}`
-    );
-    const payload = await readWorkerJson(response);
-    return Array.isArray(payload?.data?.product_ids) ? payload.data.product_ids : [];
+    const data = await createStorefrontApiClient()
+        .storefront
+        .customerWishlist({ customer_id: customerId, store_id: storeId });
+    return Array.isArray(data.product_ids) ? data.product_ids : [];
 }
 
 export async function addToWishlist(
@@ -194,16 +171,14 @@ export async function addToWishlist(
     productId: string,
     variantId?: string
 ): Promise<void> {
-    const response = await workerFetch('/storefront/customer/wishlist', {
-        method: 'POST',
-        body: JSON.stringify({
+    await createStorefrontApiClient()
+        .storefront
+        .addCustomerWishlistItem({
             customer_id: customerId,
             store_id: storeId,
             product_id: productId,
             variant_id: variantId || null,
-        }),
-    });
-    await readWorkerJson(response);
+        });
 }
 
 export async function removeFromWishlist(
@@ -212,15 +187,13 @@ export async function removeFromWishlist(
     storeId?: string
 ): Promise<void> {
     if (!storeId) return;
-    const response = await workerFetch('/storefront/customer/wishlist', {
-        method: 'DELETE',
-        body: JSON.stringify({
+    await createStorefrontApiClient()
+        .storefront
+        .removeCustomerWishlistItem({
             customer_id: customerId,
             store_id: storeId,
             product_id: productId,
-        }),
-    });
-    await readWorkerJson(response);
+        });
 }
 
 export async function syncWishlistFromLocal(
@@ -230,15 +203,13 @@ export async function syncWishlistFromLocal(
 ): Promise<void> {
     if (!productIds.length) return;
 
-    const response = await workerFetch('/storefront/customer/wishlist/sync', {
-        method: 'POST',
-        body: JSON.stringify({
+    await createStorefrontApiClient()
+        .storefront
+        .syncCustomerWishlist({
             customer_id: customerId,
             store_id: storeId,
             product_ids: productIds,
-        }),
-    });
-    await readWorkerJson(response);
+        });
 }
 
 // ============================================================
@@ -249,11 +220,10 @@ export async function getCustomerOrders(
     storeId: string,
     email: string
 ): Promise<Record<string, unknown>[]> {
-    const response = await workerFetch(
-        `/storefront/customer/orders?store_id=${encodeURIComponent(storeId)}&email=${encodeURIComponent(email)}`
-    );
-    const payload = await readWorkerJson(response);
-    return Array.isArray(payload?.data?.orders) ? payload.data.orders : [];
+    const data = await createStorefrontApiClient()
+        .storefront
+        .customerOrders({ store_id: storeId, email });
+    return Array.isArray(data.orders) ? data.orders : [];
 }
 
 // ============================================================

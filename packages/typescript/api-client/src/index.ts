@@ -325,6 +325,68 @@ export type StorefrontOrderCredentialLoginResult = {
   store_id?: string | null;
 };
 
+export type StorefrontCustomerRecord = JsonRecord;
+
+export interface StorefrontCustomerLookupQuery extends QueryParams {
+  store_id: string;
+  email: string;
+}
+
+export type StorefrontCustomerFindOrCreateInput = StorefrontCustomerLookupQuery & {
+  full_name?: string | null;
+  phone?: string | null;
+};
+
+export type StorefrontCustomerPasswordInput = StorefrontCustomerLookupQuery & {
+  password: string;
+};
+
+export type StorefrontCustomerStatsInput = StorefrontCustomerLookupQuery & {
+  order_total: number;
+  order_id: string;
+};
+
+export type StorefrontCustomerStatusResult = {
+  exists: boolean;
+  hasPassword: boolean;
+  status: string;
+};
+
+export type StorefrontCustomerResult = {
+  customer: StorefrontCustomerRecord | null;
+  created?: boolean;
+};
+
+export type StorefrontCustomerPasswordResult = {
+  customer_id?: string | null;
+};
+
+export type StorefrontCustomerStatsResult = {
+  updated: boolean;
+};
+
+export interface StorefrontWishlistQuery extends QueryParams {
+  customer_id: string;
+  store_id: string;
+}
+
+export type StorefrontWishlistInput = StorefrontWishlistQuery & {
+  product_id: string;
+  variant_id?: string | null;
+};
+
+export type StorefrontWishlistSyncInput = StorefrontWishlistQuery & {
+  product_ids: string[];
+};
+
+export type StorefrontWishlistResult = {
+  product_ids: string[];
+};
+
+export type StorefrontCustomerOrdersResult = {
+  orders: JsonRecord[];
+};
+
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
@@ -910,6 +972,28 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontOrderCredentialSaveResult>('/storefront/customer/order-credential', { ...options, method: 'POST', body: input }),
     verifyOrderCredential: (input: StorefrontOrderCredentialInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontOrderCredentialLoginResult>('/storefront/customer/order-credential/login', { ...options, method: 'POST', body: input }),
+    findOrCreateCustomer: (input: StorefrontCustomerFindOrCreateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerResult>('/storefront/customer/find-or-create', { ...options, method: 'POST', body: input }),
+    customerByEmail: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerResult>('/storefront/customer/by-email', { ...options, query }),
+    customerStatus: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerStatusResult>('/storefront/customer/status', { ...options, query }),
+    setCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerPasswordResult>('/storefront/customer/password', { ...options, method: 'POST', body: input }),
+    verifyCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerResult>('/storefront/customer/login', { ...options, method: 'POST', body: input }),
+    updateCustomerStats: (input: StorefrontCustomerStatsInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerStatsResult>('/storefront/customer/order-stats', { ...options, method: 'POST', body: input }),
+    customerWishlist: (query: StorefrontWishlistQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontWishlistResult>('/storefront/customer/wishlist', { ...options, query }),
+    addCustomerWishlistItem: (input: StorefrontWishlistInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ saved: boolean }>('/storefront/customer/wishlist', { ...options, method: 'POST', body: input }),
+    removeCustomerWishlistItem: (input: StorefrontWishlistInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ removed: boolean }>('/storefront/customer/wishlist', { ...options, method: 'DELETE', body: input }),
+    syncCustomerWishlist: (input: StorefrontWishlistSyncInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ synced: number }>('/storefront/customer/wishlist/sync', { ...options, method: 'POST', body: input }),
+    customerOrders: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerOrdersResult>('/storefront/customer/orders', { ...options, query }),
   };
 
   withOptions(options: Partial<LetbuyyApiClientOptions>): LetbuyyApiClient {
