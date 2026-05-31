@@ -5,24 +5,15 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
+import type { CustomerAddress } from '@letbuyy/shared-types';
 import {
     MapPin, Plus, Trash2, Edit3, Star, Loader2, X, Home, Briefcase, Check,
 } from 'lucide-react';
 
-interface Address {
-    id: string;
-    label: string;
-    full_name: string;
-    address_line1: string;
-    address_line2?: string;
-    city: string;
-    state: string;
-    postal_code: string;
-    country: string;
-    landmark?: string;
-    is_default: boolean;
-    customer_phone?: string;
-}
+type AddressRow = Pick<CustomerAddress, 'id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code' | 'country' | 'is_default'> &
+    Partial<Pick<CustomerAddress, 'label' | 'address_line2' | 'landmark'>> & {
+        customer_phone?: string | null;
+    };
 
 const EMPTY_FORM = {
     label: 'home',
@@ -45,7 +36,7 @@ const LABEL_ICONS: Record<string, React.ReactNode> = {
 };
 
 export default function AddressesPage() {
-    const [addresses, setAddresses] = useState<Address[]>([]);
+    const [addresses, setAddresses] = useState<AddressRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [showForm, setShowForm] = useState(false);
     const [editingId, setEditingId] = useState<string | null>(null);
@@ -73,9 +64,9 @@ export default function AddressesPage() {
         setShowForm(true);
     };
 
-    const openEdit = (addr: Address) => {
+    const openEdit = (addr: AddressRow) => {
         setForm({
-            label: addr.label,
+            label: addr.label || 'home',
             full_name: addr.full_name,
             address_line1: addr.address_line1,
             address_line2: addr.address_line2 || '',
@@ -175,15 +166,18 @@ export default function AddressesPage() {
                 </div>
             ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
-                    {addresses.map(addr => (
-                        <div
-                            key={addr.id}
-                            className="rounded-2xl border p-4 relative transition-shadow hover:shadow-md"
-                            style={{
-                                borderColor: addr.is_default ? 'var(--primary)' : 'var(--border, #E5E7EB)',
-                                borderWidth: addr.is_default ? 2 : 1,
-                            }}
-                        >
+                    {addresses.map(addr => {
+                        const label = addr.label || 'other';
+
+                        return (
+                            <div
+                                key={addr.id}
+                                className="rounded-2xl border p-4 relative transition-shadow hover:shadow-md"
+                                style={{
+                                    borderColor: addr.is_default ? 'var(--primary)' : 'var(--border, #E5E7EB)',
+                                    borderWidth: addr.is_default ? 2 : 1,
+                                }}
+                            >
                             {/* Label badge */}
                             <div className="flex items-center gap-2 mb-3">
                                 <span
@@ -193,8 +187,8 @@ export default function AddressesPage() {
                                         color: 'var(--text-secondary, #6B7280)',
                                     }}
                                 >
-                                    {LABEL_ICONS[addr.label] || LABEL_ICONS.other}
-                                    {addr.label}
+                                    {LABEL_ICONS[label] || LABEL_ICONS.other}
+                                    {label}
                                 </span>
                                 {addr.is_default && (
                                     <span
@@ -249,8 +243,9 @@ export default function AddressesPage() {
                                     Delete
                                 </button>
                             </div>
-                        </div>
-                    ))}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
 

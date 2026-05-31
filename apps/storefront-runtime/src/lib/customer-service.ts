@@ -4,6 +4,7 @@
 // ============================================================
 
 import 'server-only';
+import type { CustomerAddress } from '@letbuyy/shared-types';
 import { createStorefrontApiClient } from './worker-client';
 
 // ============================================================
@@ -20,7 +21,7 @@ export interface StoreCustomer {
     hasPassword: boolean;
     totalOrders: number;
     totalSpent: number;
-    addresses: Address[];
+    addresses: StoreCustomerAddress[];
     tags: string[];
     notes: string | null;
     acceptsMarketing: boolean;
@@ -31,15 +32,12 @@ export interface StoreCustomer {
     updatedAt: string;
 }
 
-export interface Address {
-    id?: string;
-    label?: string;
+export type StoreCustomerAddress = Pick<CustomerAddress, 'id' | 'city' | 'state'> & {
+    label?: string | null;
     address: string;
-    city: string;
-    state: string;
     pincode: string;
     isDefault?: boolean;
-}
+};
 
 // ============================================================
 // FIND OR CREATE CUSTOMER (Guest Checkout Auto-Creation)
@@ -259,7 +257,7 @@ function mapRow(row: Record<string, unknown>): StoreCustomer {
         hasPassword: !!(row.password_hash),
         totalOrders: (row.total_orders as number) || 0,
         totalSpent: Number(row.total_spent) || 0,
-        addresses: (row.addresses as Address[]) || [],
+        addresses: (row.addresses as StoreCustomerAddress[]) || [],
         tags: (row.tags as string[]) || [],
         notes: (row.notes as string) || null,
         acceptsMarketing: (row.accepts_marketing as boolean) || false,

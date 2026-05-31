@@ -5,25 +5,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import type { LineItem, Order as SharedOrder } from '@letbuyy/shared-types';
 import { Package, ChevronRight, Loader2, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 
-interface Order {
-    id: string;
-    order_number: string;
-    status: string;
-    total: number;
-    created_at: string;
-    items: OrderItem[];
-}
+type OrderHistoryItem = Pick<SharedOrder, 'id' | 'order_number' | 'status' | 'total' | 'created_at'> & {
+    items?: OrderHistoryLineItem[];
+};
 
-interface OrderItem {
+type OrderHistoryLineItem = Pick<LineItem, 'quantity'> & {
     name: string;
-    quantity: number;
     price: number;
     image?: string;
-}
+};
 
 const statusColors: Record<string, string> = {
     pending: '#f59e0b',
@@ -38,7 +33,7 @@ export default function OrdersPage() {
     const params = useParams();
     const subdomain = params.subdomain as string;
     const basePath = `/store/${subdomain}`;
-    const [orders, setOrders] = useState<Order[]>([]);
+    const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
