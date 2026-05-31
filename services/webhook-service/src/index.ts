@@ -1,9 +1,10 @@
 import { Hono } from "hono";
 import {
+    createRazorpayPaymentProvider,
     getRazorpayOrderNotes as fetchRazorpayOrderNotes,
-    hmacSha256Hex,
-    timingSafeEqual,
 } from "@letbuyy/infrastructure/razorpay-adapter";
+import { createPayPalPaymentProvider } from "@letbuyy/infrastructure/paypal-adapter";
+import { createStripePaymentProvider } from "@letbuyy/infrastructure/stripe-adapter";
 import {
     insertSupabaseRows,
     patchSupabaseRows,
@@ -12,7 +13,7 @@ import {
 } from "@letbuyy/infrastructure/supabase-adapter";
 
 // ============================================================
-// WEBHOOK HANDLER — Razorpay & Stripe Signature Verification
+// WEBHOOK HANDLER — Payment Provider Signature Verification
 // Uses Web Crypto API (native on CF Workers, zero dependencies)
 // ============================================================
 
@@ -22,7 +23,12 @@ interface Env {
     RAZORPAY_WEBHOOK_SECRET: string;
     RAZORPAY_KEY_ID?: string;
     RAZORPAY_KEY_SECRET?: string;
+    PAYPAL_CLIENT_ID?: string;
+    PAYPAL_CLIENT_SECRET?: string;
+    PAYPAL_WEBHOOK_ID?: string;
+    PAYPAL_MODE?: "sandbox" | "live";
     STRIPE_WEBHOOK_SECRET: string;
+    STRIPE_SECRET_KEY?: string;
     ENVIRONMENT: string;
     APP_ENV?: string;
     NODE_ENV?: string;
@@ -37,7 +43,7 @@ const app = new Hono<{ Bindings: Env }>();
 async function writeWebhookEvent(
     env: Env,
     event: {
-        provider: "razorpay" | "stripe";
+        provider: PaymentProvider;
         provider_event_id: string;
         event_type: string;
         signature_valid: boolean;
@@ -59,7 +65,7 @@ async function writeWebhookEvent(
 
 async function markWebhookEvent(
     env: Env,
-    provider: "razorpay" | "stripe",
+    provider: PaymentProvider,
     providerEventId: string,
     status: "processed" | "failed" | "ignored",
     errorMessage?: string
@@ -88,7 +94,7 @@ function razorpayProviderEventId(
     return String(paymentId || refundId || orderId || `${event.event}:${event.created_at || "unknown"}:${signature.slice(0, 24)}`);
 }
 
-type PaymentProvider = "razorpay" | "stripe";
+type PaymentProvider = "razorpay" | "stripe" | "paypal";
 type JsonObject = Record<string, unknown>;
 
 interface WebhookOrderRow {
@@ -190,6 +196,79 @@ async function insertRows<T>(
     return insertSupabaseRows<T>(env, table, rows);
 }
 
+function requestHeaderMap(headers: Headers): Record<string, string> {
+    const mapped: Record<string, string> = {};
+    headers.forEach((value, key) => {
+        mapped[key] = value;
+    });
+    return mapped;
+}
+
+function razorpayWebhookProvider(env: Env) {
+    return createRazorpayPaymentProvider({
+        keyId: env.RAZORPAY_KEY_ID || "webhook-service",
+        keySecret: env.RAZORPAY_KEY_SECRET || env.RAZORPAY_WEBHOOK_SECRET,
+    });
+}
+
+function stripeWebhookProvider(env: Env) {
+    return createStripePaymentProvider({
+        secretKey: env.STRIPE_SECRET_KEY,
+    });
+}
+
+function paypalWebhookProvider(env: Env) {
+    if (!env.PAYPAL_CLIENT_ID || !env.PAYPAL_CLIENT_SECRET || !env.PAYPAL_WEBHOOK_ID) {
+        throw new Error("PayPal webhook credentials are not configured");
+    }
+
+    return createPayPalPaymentProvider({
+        clientId: env.PAYPAL_CLIENT_ID,
+        clientSecret: env.PAYPAL_CLIENT_SECRET,
+        webhookId: env.PAYPAL_WEBHOOK_ID,
+        mode: env.PAYPAL_MODE === "live" ? "live" : "sandbox",
+    });
+}
+
+async function emitPaymentDomainEvent(
+    env: Env,
+    params: {
+        provider: PaymentProvider;
+        providerEventId: string;
+        eventType: string;
+        aggregateType: "order" | "subscription";
+        aggregateId: string;
+        storeId?: string | null;
+        payload?: JsonObject;
+    }
+): Promise<void> {
+    try {
+        await upsertSupabaseRows(env, "outbox_events", {
+            store_id: params.storeId || null,
+            aggregate_type: params.aggregateType,
+            aggregate_id: params.aggregateId,
+            event_type: params.eventType,
+            payload: {
+                provider: params.provider,
+                provider_event_id: params.providerEventId,
+                ...(params.payload || {}),
+            },
+            idempotency_key: `payment-webhook:${params.provider}:${params.providerEventId}:${params.eventType}`,
+        }, { onConflict: "idempotency_key" });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message.includes("outbox_events") && (message.includes("schema cache") || message.includes("does not exist"))) {
+            console.warn("[Webhooks] Optional outbox_events table unavailable; domain event skipped", {
+                eventType: params.eventType,
+                provider: params.provider,
+            });
+            return;
+        }
+
+        throw error;
+    }
+}
+
 async function findOrderByPaymentCandidates(
     env: Env,
     candidates: Array<string | undefined | null>
@@ -266,6 +345,7 @@ async function markOrderPaid(
         provider: PaymentProvider;
         paymentId: string;
         providerEventId: string;
+        eventType?: string;
     }
 ): Promise<void> {
     if (!order.inventory_reserved_at) {
@@ -281,6 +361,20 @@ async function markOrderPaid(
         inventory_reserved_at: order.inventory_reserved_at || new Date().toISOString(),
         last_payment_event_id: params.providerEventId,
     }, "return=minimal");
+
+    await emitPaymentDomainEvent(env, {
+        provider: params.provider,
+        providerEventId: params.providerEventId,
+        eventType: params.eventType || "payment.captured",
+        aggregateType: "order",
+        aggregateId: order.id,
+        storeId: order.store_id,
+        payload: {
+            order_id: order.id,
+            payment_id: params.paymentId,
+            payment_status: "paid",
+        },
+    });
 }
 
 async function markOrderFailed(
@@ -290,6 +384,8 @@ async function markOrderFailed(
         paymentId?: string;
         reason?: string;
         providerEventId: string;
+        provider?: PaymentProvider;
+        eventType?: string;
     }
 ): Promise<void> {
     if (order.payment_status === "paid") return;
@@ -301,12 +397,29 @@ async function markOrderFailed(
         payment_failure_reason: params.reason || null,
         last_payment_event_id: params.providerEventId,
     }, "return=minimal");
+
+    await emitPaymentDomainEvent(env, {
+        provider: params.provider || "razorpay",
+        providerEventId: params.providerEventId,
+        eventType: params.eventType || "payment.failed",
+        aggregateType: "order",
+        aggregateId: order.id,
+        storeId: order.store_id,
+        payload: {
+            order_id: order.id,
+            payment_id: params.paymentId || order.payment_id || null,
+            payment_status: "failed",
+            reason: params.reason || null,
+        },
+    });
 }
 
 async function markOrderRefunded(
     env: Env,
     order: WebhookOrderRow,
-    providerEventId: string
+    providerEventId: string,
+    provider: PaymentProvider = "razorpay",
+    eventType = "refund.created"
 ): Promise<void> {
     if (order.inventory_reserved_at && !order.inventory_released_at) {
         await adjustInventory(env, order, "release");
@@ -318,6 +431,19 @@ async function markOrderRefunded(
         inventory_released_at: order.inventory_released_at || new Date().toISOString(),
         last_payment_event_id: providerEventId,
     }, "return=minimal");
+
+    await emitPaymentDomainEvent(env, {
+        provider,
+        providerEventId,
+        eventType,
+        aggregateType: "order",
+        aggregateId: order.id,
+        storeId: order.store_id,
+        payload: {
+            order_id: order.id,
+            payment_status: "refunded",
+        },
+    });
 }
 
 async function getRazorpayOrderNotes(env: Env, orderId: string): Promise<JsonObject> {
@@ -370,6 +496,8 @@ async function activateStoreSubscription(
         provider: "razorpay" | "stripe";
         providerOrderId?: string;
         providerPaymentId?: string;
+        providerEventId?: string;
+        eventType?: string;
         externalSubscriptionId?: string;
         userId?: string;
         amountPaid?: number;
@@ -465,6 +593,22 @@ async function activateStoreSubscription(
         period_start: now,
         period_end: periodEnd,
     });
+
+    await emitPaymentDomainEvent(env, {
+        provider: params.provider,
+        providerEventId: params.providerEventId || params.providerPaymentId || params.externalSubscriptionId || params.providerOrderId || subscription?.id || params.storeId,
+        eventType: params.eventType || "payment.subscription.activated",
+        aggregateType: "subscription",
+        aggregateId: subscription?.id || params.storeId,
+        storeId: params.storeId,
+        payload: {
+            store_id: params.storeId,
+            subscription_id: subscription?.id || null,
+            plan_slug: plan.slug,
+            billing_period: billingPeriod,
+            payment_id: params.providerPaymentId || null,
+        },
+    });
 }
 
 async function syncStripeSubscription(
@@ -507,21 +651,20 @@ app.get("/health", (c) => {
 app.post("/razorpay", async (c) => {
     const body = await c.req.text();
     const signature = c.req.header("x-razorpay-signature");
+    const verification = await razorpayWebhookProvider(c.env).webhookVerify({
+        provider: "razorpay",
+        rawBody: body,
+        headers: requestHeaderMap(c.req.raw.headers),
+        secret: c.env.RAZORPAY_WEBHOOK_SECRET,
+        receivedAt: new Date().toISOString(),
+    });
 
-    if (!signature) {
-        console.error("[Razorpay] Missing x-razorpay-signature header");
-        return c.json({ error: "Missing signature" }, 400);
+    if (!verification.verified) {
+        console.error("[Razorpay] Invalid signature", { code: verification.failureCode });
+        return c.json({ error: verification.failureCode === "RAZORPAY_WEBHOOK_SIGNATURE_MISSING" ? "Missing signature" : "Invalid signature" }, 400);
     }
 
-    // Step 1: Verify signature (HMAC-SHA256 of raw body with webhook secret)
-    const expectedSignature = await hmacSha256Hex(c.env.RAZORPAY_WEBHOOK_SECRET, body);
-
-    if (!timingSafeEqual(signature, expectedSignature)) {
-        console.error("[Razorpay] Invalid signature");
-        return c.json({ error: "Invalid signature" }, 400);
-    }
-
-    // Step 2: Parse and validate the event
+    // Step 1: Parse and validate the verified event
     let event: {
         event: string;
         payload: Record<string, { entity: Record<string, unknown> }>;
@@ -535,7 +678,7 @@ app.post("/razorpay", async (c) => {
         return c.json({ error: "Invalid payload" }, 400);
     }
 
-    // Step 3: Timestamp observation. Razorpay can retry old but valid signed events;
+    // Step 2: Timestamp observation. Razorpay can retry old but valid signed events;
     // idempotency is enforced by payment_webhook_events, so do not reject by age.
     if (event.created_at) {
         const eventAge = Date.now() / 1000 - event.created_at;
@@ -544,9 +687,9 @@ app.post("/razorpay", async (c) => {
         }
     }
 
-    // Step 4: Route event by type
+    // Step 3: Route event by type
     const eventType = event.event;
-    const providerEventId = razorpayProviderEventId(event, signature);
+    const providerEventId = verification.event?.id || razorpayProviderEventId(event, signature || "verified");
 
     const recorded = await writeWebhookEvent(c.env, {
         provider: "razorpay",
@@ -585,6 +728,7 @@ app.post("/razorpay", async (c) => {
                         provider: "razorpay",
                         paymentId: paymentId || providerEventId,
                         providerEventId,
+                        eventType,
                     });
                 } else if (notes.store_id && notes.plan_slug) {
                     await activateStoreSubscription(c.env, {
@@ -594,6 +738,8 @@ app.post("/razorpay", async (c) => {
                         provider: "razorpay",
                         providerOrderId: textValue(paymentRecord.order_id),
                         providerPaymentId: textValue(paymentRecord.id),
+                        providerEventId,
+                        eventType,
                         userId: textValue(notes.user_id),
                         amountPaid: numberValue(paymentRecord.amount),
                     });
@@ -624,6 +770,8 @@ app.post("/razorpay", async (c) => {
                         paymentId: textValue(paymentRecord.id),
                         reason: textValue(paymentRecord.error_reason) || textValue(paymentRecord.error_description),
                         providerEventId,
+                        provider: "razorpay",
+                        eventType,
                     });
                 }
                 break;
@@ -646,7 +794,7 @@ app.post("/razorpay", async (c) => {
                     const refundAmount = numberValue(refundRecord.amount);
                     const orderTotalMinor = Math.round(Number(order.total || 0) * 100);
                     if (!refundAmount || refundAmount >= orderTotalMinor) {
-                        await markOrderRefunded(c.env, order, providerEventId);
+                        await markOrderRefunded(c.env, order, providerEventId, "razorpay", eventType);
                     } else {
                         await patchRows(c.env, "orders", { id: `eq.${order.id}` }, {
                             last_payment_event_id: providerEventId,
@@ -683,54 +831,25 @@ app.post("/razorpay", async (c) => {
 
 app.post("/stripe", async (c) => {
     const body = await c.req.text();
-    const signatureHeader = c.req.header("stripe-signature");
+    const verification = await stripeWebhookProvider(c.env).webhookVerify({
+        provider: "stripe",
+        rawBody: body,
+        headers: requestHeaderMap(c.req.raw.headers),
+        secret: c.env.STRIPE_WEBHOOK_SECRET,
+        receivedAt: new Date().toISOString(),
+    });
 
-    if (!signatureHeader) {
-        console.error("[Stripe] Missing stripe-signature header");
-        return c.json({ error: "Missing signature" }, 401);
+    if (!verification.verified) {
+        console.error("[Stripe] Invalid signature", { code: verification.failureCode });
+        const error = verification.failureCode === "STRIPE_WEBHOOK_SIGNATURE_MISSING"
+            ? "Missing signature"
+            : verification.failureCode === "STRIPE_WEBHOOK_TIMESTAMP_OUTSIDE_TOLERANCE"
+                ? "Timestamp too old"
+                : "Invalid signature";
+        return c.json({ error }, 401);
     }
 
-    // Step 1: Parse Stripe signature header
-    // Format: "t=1614904145,v1=xxxxxxxx,v0=yyyyyy"
-    const elements = signatureHeader.split(",");
-    const sigMap: Record<string, string> = {};
-    for (const element of elements) {
-        const [key, value] = element.split("=", 2);
-        if (key && value) {
-            sigMap[key] = value;
-        }
-    }
-
-    const timestamp = sigMap["t"];
-    const v1Signature = sigMap["v1"];
-
-    if (!timestamp || !v1Signature) {
-        console.error("[Stripe] Malformed signature header");
-        return c.json({ error: "Malformed signature" }, 401);
-    }
-
-    // Step 2: Timestamp validation — reject events older than 5 minutes (300 seconds)
-    const timestampSeconds = parseInt(timestamp, 10);
-    const currentSeconds = Math.floor(Date.now() / 1000);
-
-    if (isNaN(timestampSeconds) || Math.abs(currentSeconds - timestampSeconds) > 300) {
-        console.error("[Stripe] Timestamp too old or invalid", {
-            eventTimestamp: timestampSeconds,
-            currentTime: currentSeconds,
-        });
-        return c.json({ error: "Timestamp too old" }, 401);
-    }
-
-    // Step 3: Verify signature — HMAC-SHA256("${timestamp}.${body}", secret)
-    const signedPayload = `${timestamp}.${body}`;
-    const expectedSignature = await hmacSha256Hex(c.env.STRIPE_WEBHOOK_SECRET, signedPayload);
-
-    if (!timingSafeEqual(v1Signature, expectedSignature)) {
-        console.error("[Stripe] Invalid v1 signature");
-        return c.json({ error: "Invalid signature" }, 401);
-    }
-
-    // Step 4: Parse event
+    // Step 1: Parse the verified event
     let event: {
         id: string;
         type: string;
@@ -745,11 +864,12 @@ app.post("/stripe", async (c) => {
         return c.json({ error: "Invalid payload" }, 400);
     }
 
-    // Step 5: Route event by type
+    // Step 2: Route event by type
     const eventType = event.type;
+    const providerEventId = verification.event?.id || event.id;
     const recorded = await writeWebhookEvent(c.env, {
         provider: "stripe",
-        provider_event_id: event.id,
+        provider_event_id: providerEventId,
         event_type: eventType,
         signature_valid: true,
         raw_payload: event,
@@ -759,7 +879,7 @@ app.post("/stripe", async (c) => {
         return c.json({ received: true, duplicate: true, event: eventType });
     }
 
-    console.info(`[Stripe] Verified event: ${eventType} (${event.id})`);
+    console.info(`[Stripe] Verified event: ${eventType} (${providerEventId})`);
 
     try {
         switch (eventType) {
@@ -781,8 +901,9 @@ app.post("/stripe", async (c) => {
                 if (order) {
                     await markOrderPaid(c.env, order, {
                         provider: "stripe",
-                        paymentId: textValue(session?.payment_intent) || textValue(session?.id) || event.id,
-                        providerEventId: event.id,
+                        paymentId: textValue(session?.payment_intent) || textValue(session?.id) || providerEventId,
+                        providerEventId,
+                        eventType,
                     });
                 } else if (metadata.store_id && metadata.plan_slug) {
                     await activateStoreSubscription(c.env, {
@@ -792,11 +913,13 @@ app.post("/stripe", async (c) => {
                         provider: "stripe",
                         externalSubscriptionId: textValue(session?.subscription) || textValue(session?.id),
                         providerPaymentId: textValue(session?.payment_intent),
+                        providerEventId,
+                        eventType,
                         userId: textValue(metadata.user_id),
                         amountPaid: numberValue(session?.amount_total),
                     });
                 } else {
-                    await markWebhookEvent(c.env, "stripe", event.id, "ignored", "No matching order or subscription context");
+                    await markWebhookEvent(c.env, "stripe", providerEventId, "ignored", "No matching order or subscription context");
                     return c.json({ received: true, event: eventType, ignored: true });
                 }
                 break;
@@ -848,7 +971,7 @@ app.post("/stripe", async (c) => {
                             tax_amount: numberValue(invoice?.tax) || 0,
                             total_amount: numberValue(invoice?.amount_paid) || 0,
                             payment_gateway: "stripe",
-                            payment_id: textValue(invoice?.payment_intent) || textValue(invoice?.id) || event.id,
+                            payment_id: textValue(invoice?.payment_intent) || textValue(invoice?.id) || providerEventId,
                             payment_status: "paid",
                             period_start: now,
                             period_end: now,
@@ -889,8 +1012,9 @@ app.post("/stripe", async (c) => {
                 if (order) {
                     await markOrderPaid(c.env, order, {
                         provider: "stripe",
-                        paymentId: textValue(paymentIntent?.id) || event.id,
-                        providerEventId: event.id,
+                        paymentId: textValue(paymentIntent?.id) || providerEventId,
+                        providerEventId,
+                        eventType,
                     });
                 }
                 break;
@@ -898,13 +1022,151 @@ app.post("/stripe", async (c) => {
 
             default:
                 console.info(`[Stripe] Unhandled event type: ${eventType}`);
-                await markWebhookEvent(c.env, "stripe", event.id, "ignored");
+                await markWebhookEvent(c.env, "stripe", providerEventId, "ignored");
                 return c.json({ received: true, event: eventType, ignored: true });
         }
 
-        await markWebhookEvent(c.env, "stripe", event.id, "processed");
+        await markWebhookEvent(c.env, "stripe", providerEventId, "processed");
     } catch (err) {
-        await markWebhookEvent(c.env, "stripe", event.id, "failed", err instanceof Error ? err.message : "Unknown error");
+        await markWebhookEvent(c.env, "stripe", providerEventId, "failed", err instanceof Error ? err.message : "Unknown error");
+        throw err;
+    }
+
+    return c.json({ received: true, event: eventType });
+});
+
+// ─── PayPal Webhooks ────────────────────────────────────────────────
+// PayPal verification calls the provider verification API with the raw body,
+// provider headers, and configured webhook id before any side effects run.
+
+app.post("/paypal", async (c) => {
+    const body = await c.req.text();
+    const receivedAt = new Date().toISOString();
+    const verification = await paypalWebhookProvider(c.env).webhookVerify({
+        provider: "paypal",
+        rawBody: body,
+        headers: requestHeaderMap(c.req.raw.headers),
+        secret: c.env.PAYPAL_WEBHOOK_ID || "paypal-webhook",
+        receivedAt,
+    });
+
+    if (!verification.verified) {
+        console.error("[PayPal] Invalid signature", { code: verification.failureCode });
+        return c.json({ error: "Invalid signature" }, 400);
+    }
+
+    let event: {
+        id?: string;
+        event_type?: string;
+        create_time?: string;
+        resource?: Record<string, unknown>;
+    };
+
+    try {
+        event = JSON.parse(body);
+    } catch {
+        console.error("[PayPal] Invalid JSON body");
+        return c.json({ error: "Invalid payload" }, 400);
+    }
+
+    const eventType = event.event_type || verification.event?.type || "unknown";
+    const providerEventId = verification.event?.id || event.id || `paypal:${receivedAt}`;
+    const resource = asObject(event.resource);
+    const relatedIds = asObject(asObject(resource.supplementary_data).related_ids);
+
+    const recorded = await writeWebhookEvent(c.env, {
+        provider: "paypal",
+        provider_event_id: providerEventId,
+        event_type: eventType,
+        signature_valid: true,
+        raw_payload: event,
+    });
+
+    if (recorded.duplicate) {
+        return c.json({ received: true, duplicate: true, event: eventType });
+    }
+
+    console.info(`[PayPal] Verified event: ${eventType} (${providerEventId})`);
+
+    try {
+        switch (eventType) {
+            case "CHECKOUT.ORDER.APPROVED": {
+                console.info("[PayPal] Checkout order approved; capture confirmation remains authoritative for paid state");
+                break;
+            }
+
+            case "PAYMENT.CAPTURE.COMPLETED": {
+                const order = await findOrderByPaymentCandidates(c.env, [
+                    textValue(resource.custom_id),
+                    textValue(resource.invoice_id),
+                    textValue(relatedIds.order_id),
+                    textValue(resource.id),
+                    verification.event?.references.providerOrderId,
+                    verification.event?.references.providerPaymentId,
+                ]);
+
+                if (order) {
+                    await markOrderPaid(c.env, order, {
+                        provider: "paypal",
+                        paymentId: textValue(resource.id) || verification.event?.references.providerPaymentId || providerEventId,
+                        providerEventId,
+                        eventType,
+                    });
+                } else {
+                    await markWebhookEvent(c.env, "paypal", providerEventId, "ignored", "No matching order context");
+                    return c.json({ received: true, event: eventType, ignored: true });
+                }
+                break;
+            }
+
+            case "PAYMENT.CAPTURE.DENIED":
+            case "PAYMENT.CAPTURE.DECLINED": {
+                const order = await findOrderByPaymentCandidates(c.env, [
+                    textValue(resource.custom_id),
+                    textValue(resource.invoice_id),
+                    textValue(relatedIds.order_id),
+                    textValue(resource.id),
+                    verification.event?.references.providerOrderId,
+                    verification.event?.references.providerPaymentId,
+                ]);
+
+                if (order) {
+                    await markOrderFailed(c.env, order, {
+                        provider: "paypal",
+                        paymentId: textValue(resource.id),
+                        reason: textValue(resource.status_details) || textValue(resource.status),
+                        providerEventId,
+                        eventType,
+                    });
+                }
+                break;
+            }
+
+            case "PAYMENT.CAPTURE.REFUNDED": {
+                const order = await findOrderByPaymentCandidates(c.env, [
+                    textValue(resource.custom_id),
+                    textValue(resource.invoice_id),
+                    textValue(relatedIds.order_id),
+                    textValue(resource.id),
+                    verification.event?.references.providerOrderId,
+                    verification.event?.references.providerPaymentId,
+                ]);
+
+                if (order) {
+                    await markOrderRefunded(c.env, order, providerEventId, "paypal", eventType);
+                }
+                break;
+            }
+
+            default:
+                console.info(`[PayPal] Unhandled event type: ${eventType}`);
+                await markWebhookEvent(c.env, "paypal", providerEventId, "ignored");
+                return c.json({ received: true, event: eventType, ignored: true });
+        }
+
+        await markWebhookEvent(c.env, "paypal", providerEventId, "processed");
+    } catch (err) {
+        await markWebhookEvent(c.env, "paypal", providerEventId, "failed", err instanceof Error ? err.message : "Unknown error");
         throw err;
     }
 

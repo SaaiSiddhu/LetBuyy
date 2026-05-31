@@ -7,8 +7,10 @@ import {
   type PaymentProvider,
   type PaymentRefundResult,
   type PaymentVerificationResult,
+  type PaymentWebhookHeaders,
   type PaymentWebhookVerificationResult,
 } from '@letbuyy/payments';
+import { hmacSha256Hex, timingSafeEqual } from '../razorpay-adapter/index';
 
 let stripeClient: Stripe | null = null;
 
@@ -72,14 +74,6 @@ export async function createCheckoutSession(params: {
   });
 }
 
-export function constructWebhookEvent(rawBody: string | Buffer, signature: string): Stripe.Event {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
-  if (!webhookSecret) {
-    throw new Error('STRIPE_WEBHOOK_SECRET not configured');
-  }
-  return stripe.webhooks.constructEvent(rawBody, signature, webhookSecret);
-}
-
 export async function getCheckoutSession(sessionId: string): Promise<Stripe.Checkout.Session> {
   return stripe.checkout.sessions.retrieve(sessionId);
 }
@@ -136,14 +130,54 @@ function metadataString(metadata: Record<string, unknown> | undefined, key: stri
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
+function stripeHeader(headers: PaymentWebhookHeaders, name: string): string | undefined {
+  const value = headers[name] ?? headers[name.toLowerCase()] ?? headers[name.toUpperCase()];
+  if (Array.isArray(value)) return value[0];
+  return typeof value === 'string' ? value : undefined;
+}
+
+function parseStripeSignatureHeader(signatureHeader: string): { timestamp?: string; v1?: string } {
+  const values: Record<string, string> = {};
+  for (const element of signatureHeader.split(',')) {
+    const [key, value] = element.split('=', 2);
+    if (key && value) values[key] = value;
+  }
+  return { timestamp: values.t, v1: values.v1 };
+}
+
+function jsonPayload(rawBody: string): Record<string, unknown> {
+  try {
+    const parsed = JSON.parse(rawBody) as unknown;
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? parsed as Record<string, unknown>
+      : {};
+  } catch {
+    return {};
+  }
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+}
+
+function textValue(value: unknown): string | undefined {
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
 export function createStripePaymentProvider(params: {
-  secretKey: string;
+  secretKey?: string;
   fetch?: typeof fetch;
-}): PaymentProvider {
+} = {}): PaymentProvider {
   return {
     name: 'stripe',
 
     async createIntent(input) {
+      if (!params.secretKey) {
+        throw new Error('Stripe checkout requires STRIPE_SECRET_KEY');
+      }
+
       const amount = normalizePaymentMoney(input.amount);
       const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
       const successUrl = metadataString(input.metadata, 'success_url');
@@ -240,12 +274,66 @@ export function createStripePaymentProvider(params: {
       };
     },
 
-    async webhookVerify(): Promise<PaymentWebhookVerificationResult> {
+    async webhookVerify(input): Promise<PaymentWebhookVerificationResult> {
+      const signatureHeader = stripeHeader(input.headers, 'stripe-signature');
+      if (!signatureHeader) {
+        return {
+          provider: 'stripe',
+          verified: false,
+          failureCode: 'STRIPE_WEBHOOK_SIGNATURE_MISSING',
+          failureMessage: 'Stripe signature header is missing',
+        };
+      }
+
+      const { timestamp, v1 } = parseStripeSignatureHeader(signatureHeader);
+      const timestampSeconds = timestamp ? Number.parseInt(timestamp, 10) : Number.NaN;
+      const receivedSeconds = Math.floor(Date.parse(input.receivedAt) / 1000);
+      if (!timestamp || !v1 || Number.isNaN(timestampSeconds)) {
+        return {
+          provider: 'stripe',
+          verified: false,
+          failureCode: 'STRIPE_WEBHOOK_SIGNATURE_MALFORMED',
+          failureMessage: 'Stripe signature header is malformed',
+        };
+      }
+
+      if (Math.abs(receivedSeconds - timestampSeconds) > 300) {
+        return {
+          provider: 'stripe',
+          verified: false,
+          failureCode: 'STRIPE_WEBHOOK_TIMESTAMP_OUTSIDE_TOLERANCE',
+          failureMessage: 'Stripe webhook timestamp is outside tolerance',
+        };
+      }
+
+      const expected = await hmacSha256Hex(input.secret, `${timestamp}.${input.rawBody}`);
+      const verified = timingSafeEqual(v1, expected);
+      const payload = jsonPayload(input.rawBody);
+      const eventObject = asRecord(asRecord(payload.data).object);
+      const eventId = textValue(payload.id) || `stripe:${input.receivedAt}`;
+      const eventType = textValue(payload.type) || 'unknown';
+
       return {
         provider: 'stripe',
-        verified: false,
-        failureCode: 'STRIPE_WEBHOOK_MOVED_TO_WEBHOOK_SERVICE',
-        failureMessage: 'Stripe webhook verification is owned by services/webhook-service',
+        verified,
+        event: verified
+          ? {
+            id: eventId,
+            provider: 'stripe',
+            type: eventType,
+            occurredAt: typeof payload.created === 'number'
+              ? new Date(payload.created * 1000).toISOString()
+              : input.receivedAt,
+            references: {
+              providerEventId: eventId,
+              providerOrderId: textValue(eventObject.id),
+              providerPaymentId: textValue(eventObject.payment_intent) || textValue(eventObject.id),
+            },
+            payload,
+          }
+          : undefined,
+        failureCode: verified ? undefined : 'STRIPE_WEBHOOK_SIGNATURE_INVALID',
+        failureMessage: verified ? undefined : 'Stripe webhook signature mismatch',
       };
     },
   };

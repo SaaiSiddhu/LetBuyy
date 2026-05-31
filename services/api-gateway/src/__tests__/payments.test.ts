@@ -70,7 +70,9 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
     const webhookSource = repositorySource('services/webhook-service/src/index.ts');
 
     assert.match(webhookSource, /const body = await c\.req\.text\(\)/);
-    assert.match(webhookSource, /hmacSha256Hex\(c\.env\.RAZORPAY_WEBHOOK_SECRET,\s*body\)/);
+    assert.match(webhookSource, /createRazorpayPaymentProvider/);
+    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"razorpay"/);
+    assert.match(webhookSource, /secret:\s*c\.env\.RAZORPAY_WEBHOOK_SECRET/);
     assert.match(webhookSource, /return c\.json\(\{ error:\s*"Invalid signature" \},\s*400\)/);
     assert.match(webhookSource, /writeWebhookEvent\(c\.env,\s*\{/);
     assert.match(webhookSource, /onConflict:\s*"provider,provider_event_id"/);
@@ -78,6 +80,25 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
     assert.match(webhookSource, /case "payment\.captured"/);
     assert.match(webhookSource, /await markOrderPaid\(c\.env,\s*order,/);
     assert.match(webhookSource, /await markWebhookEvent\(c\.env,\s*"razorpay",\s*providerEventId,\s*"processed"\)/);
+});
+
+test('provider webhooks are centralized in webhook-service', () => {
+    const webhookSource = repositorySource('services/webhook-service/src/index.ts');
+    const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
+    const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
+    const runtimeComposition = repositorySource('packages/runtime-composition/checkout-runtime-adapter/index.ts');
+
+    assert.match(webhookSource, /app\.post\("\/razorpay"/);
+    assert.match(webhookSource, /app\.post\("\/stripe"/);
+    assert.match(webhookSource, /app\.post\("\/paypal"/);
+    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"stripe"/);
+    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"paypal"/);
+    assert.match(webhookSource, /emitPaymentDomainEvent/);
+    assert.match(webhookSource, /outbox_events/);
+
+    assert.doesNotMatch(stripeAdapter, /constructWebhookEvent/);
+    assert.doesNotMatch(paypalAdapter, /export async function verifyWebhookSignature/);
+    assert.doesNotMatch(runtimeComposition, /constructWebhookEvent|verifyWebhookSignature/);
 });
 
 test('payment provider adapters implement the unified payments contract', () => {

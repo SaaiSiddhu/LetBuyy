@@ -651,7 +651,7 @@ for (const securityFragment of ["csrfProtection", "CSRF_TOKEN_INVALID", "Strict-
 }
 
 const webhookService = readFile("services/webhook-service/src/index.ts");
-for (const webhookFragment of ["RAZORPAY_WEBHOOK_SECRET", "STRIPE_WEBHOOK_SECRET", "timingSafeEqual", "signature_valid: true"]) {
+for (const webhookFragment of ["RAZORPAY_WEBHOOK_SECRET", "STRIPE_WEBHOOK_SECRET", "PAYPAL_WEBHOOK_ID", "webhookVerify", "signature_valid: true"]) {
   reporter.assert(
     webhookService.includes(webhookFragment),
     `Webhook service must enforce provider signature evidence: ${webhookFragment}`,

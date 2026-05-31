@@ -254,15 +254,18 @@ export async function verifyPayPalWebhookSignatureWithCredentials(
   return data.verification_status === 'SUCCESS';
 }
 
-export async function verifyWebhookSignature(params: {
-  body: string;
-  headers: Record<string, string>;
-}): Promise<boolean> {
-  return verifyPayPalWebhookSignatureWithCredentials(getPayPalCredentials(), params);
-}
-
 function metadataString(metadata: Record<string, unknown> | undefined, key: string): string | undefined {
   const value = metadata?.[key];
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+}
+
+function textValue(value: unknown): string | undefined {
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
@@ -400,6 +403,8 @@ export function createPayPalPaymentProvider(
         options,
       );
       const payload = jsonPayload(input.rawBody);
+      const resource = asRecord(payload.resource);
+      const relatedIds = asRecord(asRecord(resource.supplementary_data).related_ids);
       const id = typeof payload.id === 'string' ? payload.id : `paypal:${input.receivedAt}`;
       const type = typeof payload.event_type === 'string' ? payload.event_type : 'unknown';
 
@@ -414,6 +419,8 @@ export function createPayPalPaymentProvider(
             occurredAt: typeof payload.create_time === 'string' ? payload.create_time : input.receivedAt,
             references: {
               providerEventId: id,
+              providerOrderId: textValue(relatedIds.order_id) || textValue(resource.custom_id) || textValue(resource.id),
+              providerPaymentId: textValue(resource.id),
             },
             payload,
           }
