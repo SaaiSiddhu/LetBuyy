@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readWorkerJson, WorkerRequestError, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient, WorkerRequestError } from '@/lib/worker-client';
 
 function getWorkerErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -35,21 +35,17 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const response = await workerFetch(`/storefront/${encodeURIComponent(subdomain)}/orders`, {
-            method: 'POST',
-            body: JSON.stringify({
-                customer,
-                items,
-                paymentMethod: paymentMethod || 'razorpay',
-                deliveryOption: body.deliveryOption || body.delivery_option || 'standard',
-                notes: body.notes,
-                couponCode: body.couponCode || body.coupon_code,
-                giftCardCode: body.giftCardCode || body.gift_card_code,
-                idempotencyKey,
-            }),
+        const payload = await createStorefrontApiClient().storefront.createOrder(subdomain, {
+            customer,
+            items,
+            paymentMethod: paymentMethod || 'razorpay',
+            deliveryOption: body.deliveryOption || body.delivery_option || 'standard',
+            notes: body.notes,
+            couponCode: body.couponCode || body.coupon_code,
+            giftCardCode: body.giftCardCode || body.gift_card_code,
+            idempotencyKey,
         });
-        const payload = await readWorkerJson(response);
-        const order = payload?.data?.order;
+        const order = payload.order;
 
         if (!order) {
             return NextResponse.json(
@@ -61,7 +57,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({
             success: true,
             order,
-        }, { status: response.status });
+        }, { status: 201 });
 
     } catch (error) {
         if (error instanceof WorkerRequestError) {

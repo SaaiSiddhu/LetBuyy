@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUrbanKicksDemoReviews, URBAN_KICKS_DEMO_STORE_ID } from '@/lib/demo/urban-kicks-demo';
 import { getSession } from '@/lib/session';
-import { readWorkerJson, WorkerRequestError, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient, WorkerRequestError } from '@/lib/worker-client';
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -52,9 +52,11 @@ export async function GET(request: NextRequest) {
             return NextResponse.json(getUrbanKicksDemoReviews(productId));
         }
 
-        const response = await workerFetch(`/storefront/reviews?product_id=${encodeURIComponent(productId)}&store_id=${encodeURIComponent(storeId)}`);
-        const payload = await readWorkerJson(response);
-        return NextResponse.json(payload.data || { reviews: [], summary: { totalReviews: 0, averageRating: 0, distribution: [] } });
+        const payload = await createStorefrontApiClient().storefront.productReviews({
+            product_id: productId,
+            store_id: storeId,
+        });
+        return NextResponse.json(payload || { reviews: [], summary: { totalReviews: 0, averageRating: 0, distribution: [] } });
     } catch (error) {
         return reviewApiErrorResponse(error, 'Failed to fetch reviews');
     }
@@ -82,22 +84,18 @@ export async function POST(request: NextRequest) {
         const customerName = session?.name || body.customerName || 'Anonymous';
         const customerEmail = session?.email || body.customerEmail || null;
 
-        const response = await workerFetch('/storefront/reviews', {
-            method: 'POST',
-            body: JSON.stringify({
-                store_id: storeId,
-                product_id: productId,
-                customer_name: customerName,
-                customer_email: customerEmail,
-                rating,
-                title: title || null,
-                body: reviewBody || null,
-                is_verified: !!session,
-            }),
+        const payload = await createStorefrontApiClient().storefront.submitProductReview({
+            store_id: storeId,
+            product_id: productId,
+            customer_name: customerName,
+            customer_email: customerEmail,
+            rating,
+            title: title || null,
+            body: reviewBody || null,
+            is_verified: !!session,
         });
-        const payload = await readWorkerJson(response);
 
-        return NextResponse.json(payload.data, { status: 201 });
+        return NextResponse.json(payload, { status: 201 });
     } catch (error) {
         return reviewApiErrorResponse(error, 'Failed to submit review');
     }

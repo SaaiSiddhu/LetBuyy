@@ -387,6 +387,38 @@ export type StorefrontCustomerOrdersResult = {
   orders: JsonRecord[];
 };
 
+export interface StorefrontProductReviewsQuery extends QueryParams {
+  product_id: string;
+  store_id: string;
+}
+
+export type StorefrontProductReviewInput = {
+  product_id: string;
+  store_id: string;
+  rating: number;
+  title?: string | null;
+  body?: string | null;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  is_verified?: boolean;
+};
+
+export type StorefrontProductReviewSummary = {
+  totalReviews: number;
+  averageRating: number;
+  distribution: Array<{ star: number; count: number }>;
+};
+
+export type StorefrontProductReviewsResult = {
+  reviews: ProductReview[];
+  summary: StorefrontProductReviewSummary;
+};
+
+export type StorefrontProductReviewResult = {
+  review: ProductReview;
+  message: string;
+};
+
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
@@ -458,6 +490,39 @@ export type RollbackThemeReleaseInput = {
   rollback_message?: string;
 };
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
+export type StorefrontCreateOrderInput = {
+  customer: {
+    name: string;
+    email: string;
+    phone?: string;
+    address: {
+      address: string;
+      city: string;
+      state: string;
+      pincode: string;
+    };
+  };
+  items: Array<{
+    productId: string;
+    variantId?: string | null;
+    quantity: number;
+  }>;
+  paymentMethod?: 'razorpay' | 'stripe' | 'paypal' | 'cod';
+  deliveryOption?: 'standard' | 'express';
+  notes?: string;
+  couponCode?: string;
+  giftCardCode?: string;
+  idempotencyKey: string;
+};
+export type StorefrontOrderSummary = {
+  id: string;
+  orderNumber: string;
+  status: string;
+  total: number;
+};
+export type StorefrontCreateOrderResult = {
+  order: StorefrontOrderSummary;
+};
 export type UpdateOrderInput = Partial<Pick<Order, 'status' | 'payment_status' | 'fulfillment_status' | 'tracking_number' | 'tracking_url' | 'notes'>> & {
   idempotency_key?: string;
   carrier?: string;
@@ -948,8 +1013,8 @@ export class LetbuyyApiClient {
         ...options,
         query: { ids: productIds },
       }),
-    createOrder: (subdomain: string, input: CreateOrderInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<Order>(`/storefront/${encodePathSegment(subdomain)}/orders`, { ...options, method: 'POST', body: input }),
+    createOrder: (subdomain: string, input: StorefrontCreateOrderInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCreateOrderResult>(`/storefront/${encodePathSegment(subdomain)}/orders`, { ...options, method: 'POST', body: input }),
     pages: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontContentPayload[]>(`/storefront/${encodePathSegment(subdomain)}/pages`, options),
     page: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
@@ -994,6 +1059,10 @@ export class LetbuyyApiClient {
       this.requestData<{ synced: number }>('/storefront/customer/wishlist/sync', { ...options, method: 'POST', body: input }),
     customerOrders: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerOrdersResult>('/storefront/customer/orders', { ...options, query }),
+    productReviews: (query: StorefrontProductReviewsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontProductReviewsResult>('/storefront/reviews', { ...options, query }),
+    submitProductReview: (input: StorefrontProductReviewInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontProductReviewResult>('/storefront/reviews', { ...options, method: 'POST', body: input }),
   };
 
   withOptions(options: Partial<LetbuyyApiClientOptions>): LetbuyyApiClient {
