@@ -132,6 +132,7 @@ export const InventoryAdjustmentReasonSchema = z.enum([
 ]);
 export const CollectionStatusSchema = z.enum(['draft', 'active', 'archived']);
 export const GiftCardStatusSchema = z.enum(['active', 'redeemed', 'expired', 'disabled']);
+export const ReviewModerationStatusSchema = z.enum(['pending', 'approved', 'rejected']);
 export const CustomerStatusSchema = z.enum(['active', 'disabled', 'invited']);
 export const CartStatusSchema = z.enum(['active', 'converted', 'abandoned', 'expired']);
 export const OrderStatusSchema = z.enum([
@@ -331,6 +332,23 @@ export const GiftCardSchema = AuditedEntitySchema.extend({
   redeemed_at: z.string().datetime().optional().nullable(),
   metadata: MetadataSchema.default({}),
 });
+
+export const ProductReviewSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  product_id: UuidSchema.optional().nullable(),
+  product_name: z.string().max(256).optional().nullable(),
+  customer_id: UuidSchema.optional().nullable(),
+  customer_name: z.string().max(200).optional().nullable(),
+  customer_email: z.string().max(320).optional().nullable(),
+  rating: z.number().int().min(1).max(5).default(5),
+  title: z.string().max(200).optional().nullable(),
+  body: z.string().max(10000).optional().nullable(),
+  images: z.array(UrlSchema).max(20).default([]),
+  is_verified: z.boolean().default(false),
+  is_approved: z.boolean().default(false),
+  helpful_count: z.number().int().min(0).default(0),
+  status: ReviewModerationStatusSchema.default('pending'),
+}).passthrough();
 
 export const InventoryLevelSchema = z.object({
   id: z.string().min(1),
@@ -844,6 +862,7 @@ export type InventoryPolicy = z.infer<typeof InventoryPolicySchema>;
 export type InventoryAdjustmentReason = z.infer<typeof InventoryAdjustmentReasonSchema>;
 export type CollectionStatus = z.infer<typeof CollectionStatusSchema>;
 export type GiftCardStatus = z.infer<typeof GiftCardStatusSchema>;
+export type ReviewModerationStatus = z.infer<typeof ReviewModerationStatusSchema>;
 export type CustomerStatus = z.infer<typeof CustomerStatusSchema>;
 export type CartStatus = z.infer<typeof CartStatusSchema>;
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
@@ -869,6 +888,7 @@ export type ProductCategory = z.infer<typeof ProductCategorySchema>;
 export type CollectionRule = z.infer<typeof CollectionRuleSchema>;
 export type Collection = z.infer<typeof CollectionSchema>;
 export type GiftCard = z.infer<typeof GiftCardSchema>;
+export type ProductReview = z.infer<typeof ProductReviewSchema>;
 export type InventoryLevel = z.infer<typeof InventoryLevelSchema>;
 export type CustomerAddress = z.infer<typeof CustomerAddressSchema>;
 export type Customer = z.infer<typeof CustomerSchema>;

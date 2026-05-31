@@ -25,9 +25,11 @@ import type {
   Policy,
   Product,
   ProductCategory,
+  ProductReview,
   ProductStatus,
   PageStatus,
   PolicyType,
+  ReviewModerationStatus,
   ReplaceNavigationResult,
   Store,
   StoreStatus,
@@ -136,6 +138,11 @@ export interface BlogCommentListQuery extends StoreScopedQuery {
 export interface FormSubmissionListQuery extends StoreScopedQuery {
   type?: 'all' | 'contact' | 'lead';
   status?: FormSubmissionStatus | 'all';
+}
+
+export interface ProductReviewListQuery extends StoreScopedQuery {
+  status?: ReviewModerationStatus | 'all';
+  product_id?: string;
 }
 
 export interface ProductListQuery extends StoreScopedQuery {
@@ -275,6 +282,7 @@ export type UpdateBlogPostInput = NewRecord<BlogPost> & {
 };
 export type UpdateBlogCommentInput = Pick<BlogComment, 'status'>;
 export type UpdateFormSubmissionInput = Pick<FormSubmission, 'status'>;
+export type UpdateProductReviewInput = Pick<ProductReview, 'status'>;
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
@@ -499,6 +507,15 @@ export class LetbuyyApiClient {
       this.requestData<FormSubmission>(`/form-submissions/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean }>(`/form-submissions/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+  };
+
+  readonly reviews = {
+    list: (query: ProductReviewListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<ProductReview>('/reviews', { ...options, query }),
+    update: (id: string, input: UpdateProductReviewInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ProductReview>(`/reviews/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    remove: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/reviews/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
   };
 
   readonly themes = {
@@ -807,6 +824,7 @@ export type {
   PolicyType,
   Product,
   ProductCategory,
+  ProductReview,
   ReplaceNavigationResult,
   Store,
   Theme,

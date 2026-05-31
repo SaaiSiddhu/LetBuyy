@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import type { UpdateProductReviewInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -13,13 +14,9 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/reviews/${encodeURIComponent(reviewId)}`, {
-            method: 'PATCH',
-            body: JSON.stringify(body),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().reviews.update(reviewId, body as UpdateProductReviewInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to update review')
     }
@@ -35,12 +32,9 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/reviews/${encodeURIComponent(reviewId)}`, {
-            method: 'DELETE',
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().reviews.remove(reviewId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to delete review')
     }
