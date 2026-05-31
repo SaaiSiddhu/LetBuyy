@@ -43,6 +43,7 @@ core/services Dart package -> ui_kit
 - Domain package direction currently allows:
   - `checkout-core -> commerce-core/shared-types`
   - `payments -> shared-types`
+  - `infrastructure -> payments` only for provider adapters implementing provider-neutral payment contracts; provider SDKs stay in `packages/infrastructure`
   - `tenant-core -> shared-types/theme-engine`
   - `notification-core -> event-core/shared-types`
   - `billing-core -> event-core/shared-types`

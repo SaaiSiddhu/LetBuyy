@@ -9,6 +9,10 @@
     ".": "./src/index.ts",
     "./stripe-adapter": "./stripe-adapter/index.ts",
     "./razorpay-adapter": "./razorpay-adapter/index.ts",
+    "./cashfree-adapter": "./cashfree-adapter/index.ts",
+    "./phonepe-adapter": "./phonepe-adapter/index.ts",
+    "./upi-adapter": "./upi-adapter/index.ts",
+    "./cod-adapter": "./cod-adapter/index.ts",
     "./paypal-adapter": "./paypal-adapter/index.ts",
     "./supabase-adapter": "./supabase-adapter/index.ts",
     "./cloudflare-adapter": "./cloudflare-adapter/index.ts",
@@ -25,6 +29,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@letbuyy/payments": "workspace:*",
     "@supabase/ssr": "^0.8.0",
     "@supabase/supabase-js": "^2.95.2",
     "@upstash/ratelimit": "^2.0.8",

@@ -76,3 +76,29 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
     assert.match(webhookSource, /await markOrderPaid\(c\.env,\s*order,/);
     assert.match(webhookSource, /await markWebhookEvent\(c\.env,\s*"razorpay",\s*providerEventId,\s*"processed"\)/);
 });
+
+test('payment provider adapters implement the unified payments contract', () => {
+    const razorpayAdapter = repositorySource('packages/infrastructure/razorpay-adapter/index.ts');
+    const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
+    const phonePeAdapter = repositorySource('packages/infrastructure/phonepe-adapter/index.ts');
+    const upiAdapter = repositorySource('packages/infrastructure/upi-adapter/index.ts');
+    const codAdapter = repositorySource('packages/infrastructure/cod-adapter/index.ts');
+
+    assert.match(razorpayAdapter, /createRazorpayPaymentProvider/);
+    assert.match(razorpayAdapter, /PaymentProvider/);
+    assert.match(razorpayAdapter, /normalizeIdempotencyKey/);
+    assert.match(razorpayAdapter, /webhookVerify/);
+    assert.match(razorpayAdapter, /hmacSha256Hex\(credentials\.keySecret,\s*`\$\{input\.providerOrderId\}\|\$\{input\.providerPaymentId\}`/);
+
+    for (const adapter of [cashfreeAdapter, phonePeAdapter, upiAdapter, codAdapter]) {
+        assert.match(adapter, /PaymentProvider/);
+        assert.match(adapter, /createIntent/);
+        assert.match(adapter, /verify/);
+        assert.match(adapter, /capture/);
+        assert.match(adapter, /refund/);
+        assert.match(adapter, /webhookVerify/);
+    }
+
+    assert.match(upiAdapter, /upi_autopay_supported/);
+    assert.match(codAdapter, /COD requires OTP\/call verification/);
+});

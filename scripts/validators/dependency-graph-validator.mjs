@@ -135,7 +135,7 @@ function validateDirection(fromRoot, toRoot, reason) {
     "packages/orchestration": ["packages/distributed-runtime", "packages/event-core", "packages/shared-types"],
     "packages/distributed-runtime": ["packages/event-core", "packages/shared-types"],
     "packages/projection-runtime": ["packages/distributed-runtime", "packages/event-core", "packages/shared-types"],
-    "packages/infrastructure": [],
+    "packages/infrastructure": ["packages/payments"],
     "packages/app-engine": ["packages/shared-types"],
     "packages/auth-core": ["packages/shared-types"],
     "packages/billing-core": ["packages/event-core", "packages/shared-types"],

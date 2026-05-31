@@ -7,7 +7,7 @@ Canonical source boundary: `packages/infrastructure`.
 
 ## Inventory
 
-- Files scanned: 15.
+- Files scanned: 19.
 - Env references: PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MODE, PAYPAL_WEBHOOK_ID, RESEND_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL.
 - Client components: 0.
 - SQL objects: 0 tables created in matching files.
@@ -17,7 +17,7 @@ Canonical source boundary: `packages/infrastructure`.
 - Package: @letbuyy/infrastructure
 - File: packages/infrastructure/package.json
 - Scripts: build, typecheck
-- Runtime dependencies: @supabase/ssr, @supabase/supabase-js, @upstash/ratelimit, @upstash/redis, resend, stripe
+- Runtime dependencies: @letbuyy/payments, @supabase/ssr, @supabase/supabase-js, @upstash/ratelimit, @upstash/redis, resend, stripe
 - Dev dependencies: @types/node, typescript
 - Peer dependencies: none declared
 
@@ -28,6 +28,7 @@ Canonical source boundary: `packages/infrastructure`.
 - Shared API/domain types belong in the owning domain package or Dart model package, not app pages. `packages/typescript/api-types` is a compatibility aggregate.
 - Shared UI must support light/dark themes, keyboard focus, disabled state, loading state, and error state.
 - Shared payment/auth utilities must not log secrets or expose provider details to the client.
+- Payment provider adapters may implement `@letbuyy/payments` contracts, but provider SDK/API execution stays in this package.
 
 ## Dependency Rules
 
@@ -55,12 +56,16 @@ Canonical source boundary: `packages/infrastructure`.
 
 - `packages/infrastructure/analytics-adapter/index.ts`
 - `packages/infrastructure/cache-adapter/index.ts`
+- `packages/infrastructure/cashfree-adapter/index.ts`
 - `packages/infrastructure/cloudflare-adapter/index.ts`
+- `packages/infrastructure/cod-adapter/index.ts`
 - `packages/infrastructure/package.json`
 - `packages/infrastructure/paypal-adapter/index.ts`
+- `packages/infrastructure/phonepe-adapter/index.ts`
 - `packages/infrastructure/provider-resilience-adapter/index.ts`
 - `packages/infrastructure/queue-adapter/index.ts`
 - `packages/infrastructure/razorpay-adapter/index.ts`
+- `packages/infrastructure/upi-adapter/index.ts`
 - `packages/infrastructure/resend-adapter/index.ts`
 - `packages/infrastructure/search-provider-adapter/index.ts`
 - `packages/infrastructure/src/index.ts`
@@ -72,10 +77,14 @@ Canonical source boundary: `packages/infrastructure`.
 ## Risk Flags
 
 - `packages/infrastructure/cache-adapter/index.ts`: rate limiting reference.
+- `packages/infrastructure/cashfree-adapter/index.ts`: payment provider reference.
+- `packages/infrastructure/cod-adapter/index.ts`: payment provider reference.
 - `packages/infrastructure/package.json`: payment provider reference, rate limiting reference.
 - `packages/infrastructure/paypal-adapter/index.ts`: payment provider reference, webhook reference.
+- `packages/infrastructure/phonepe-adapter/index.ts`: payment provider reference.
 - `packages/infrastructure/provider-resilience-adapter/index.ts`: payment provider reference, rate limiting reference.
 - `packages/infrastructure/razorpay-adapter/index.ts`: payment provider reference.
 - `packages/infrastructure/src/index.ts`: payment provider reference.
 - `packages/infrastructure/stripe-adapter/index.ts`: payment provider reference, webhook reference.
 - `packages/infrastructure/supabase-adapter/index.ts`: TypeScript any, service role reference.
+- `packages/infrastructure/upi-adapter/index.ts`: payment provider reference.

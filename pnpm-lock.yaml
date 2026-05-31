@@ -689,6 +689,9 @@ importers:
 
   packages/infrastructure:
     dependencies:
+      '@letbuyy/payments':
+        specifier: workspace:*
+        version: link:../payments
       '@supabase/ssr':
         specifier: ^0.8.0
         version: 0.8.0(@supabase/supabase-js@2.95.3)
