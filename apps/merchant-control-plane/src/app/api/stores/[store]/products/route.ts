@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import type { ProductListQuery } from '@letbuyy/api-client'
 
 function normalizeStatus(status: string | null) {
     if (status === 'active') return 'active'
@@ -19,29 +20,31 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const { searchParams } = new URL(request.url)
-        const query = new URLSearchParams({
+        const query: ProductListQuery = {
             store_id: resolved.storeId,
             status: normalizeStatus(searchParams.get('status')),
-            page: searchParams.get('page') || '1',
-            limit: searchParams.get('limit') || '100',
+            page: Number(searchParams.get('page') || '1'),
+            limit: Number(searchParams.get('limit') || '100'),
             sort: searchParams.get('sort') || 'created_at',
-            order: searchParams.get('order') || 'desc',
+            order: searchParams.get('order') === 'asc' ? 'asc' : 'desc',
+        }
+
+        if (searchParams.get('search')) query.search = searchParams.get('search')!
+        if (searchParams.get('category')) query.category = searchParams.get('category')!
+
+        const products = await createWorkerApiClient().products.list(query)
+
+        return NextResponse.json({
+            data: products.data,
+            meta: {
+                total: products.total,
+                page: products.page,
+                per_page: products.limit,
+                has_next: products.has_more,
+            },
         })
-
-        if (searchParams.get('search')) query.set('search', searchParams.get('search')!)
-        if (searchParams.get('category')) query.set('category', searchParams.get('category')!)
-
-        const workerResponse = await workerFetch(`/products?${query.toString()}`, {
-            requireSession: true,
-        })
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load products' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load products')
     }
 }
 
@@ -56,21 +59,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/products', {
-            method: 'POST',
-            requireSession: true,
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
+        const product = await createWorkerApiClient().products.create({
+            ...body,
+            store_id: resolved.storeId,
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: product }, { status: 201 })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save product' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to save product')
     }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type RouteParams = {
@@ -9,10 +9,6 @@ type RouteParams = {
     }>
 }
 
-function jsonError(_error: unknown, fallback: string, status = 500) {
-    return NextResponse.json({ error: fallback }, { status })
-}
-
 export async function GET(_request: NextRequest, { params }: RouteParams) {
     try {
         const { store, productId } = await params
@@ -20,18 +16,15 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/products/${encodeURIComponent(productId)}`, {
-            requireSession: true,
-        })
-        const payload = await readWorkerJson(workerResponse) as { data?: { store_id?: string } }
+        const product = await createWorkerApiClient().products.get(productId)
 
-        if (!payload.data || payload.data.store_id !== resolved.storeId) {
+        if (!product || product.store_id !== resolved.storeId) {
             return NextResponse.json({ error: 'Product not found' }, { status: 404 })
         }
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: product })
     } catch (err) {
-        return jsonError(err, 'Unable to load product')
+        return workerErrorResponse(err, 'Unable to load product')
     }
 }
 
@@ -43,16 +36,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/products/${encodeURIComponent(productId)}`, {
-            method: 'PATCH',
-            requireSession: true,
-            body: JSON.stringify(body),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const product = await createWorkerApiClient().products.update(productId, body)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: product })
     } catch (err) {
-        return jsonError(err, 'Unable to update product')
+        return workerErrorResponse(err, 'Unable to update product')
     }
 }
 
@@ -63,14 +51,10 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/products/${encodeURIComponent(productId)}`, {
-            method: 'DELETE',
-            requireSession: true,
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().products.remove(productId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: payload })
     } catch (err) {
-        return jsonError(err, 'Unable to delete product')
+        return workerErrorResponse(err, 'Unable to delete product')
     }
 }

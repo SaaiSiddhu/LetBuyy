@@ -1,5 +1,10 @@
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import {
+    LetbuyyApiError,
+    createLetbuyyApiClient,
+    type LetbuyyApiClient,
+} from '@letbuyy/api-client'
 
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1'
 const textEncoder = new TextEncoder()
@@ -114,6 +119,18 @@ export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
     })
 }
 
+export function createWorkerApiClient(): LetbuyyApiClient {
+    const baseUrl = getApiBaseUrl()
+
+    return createLetbuyyApiClient({
+        baseUrl,
+        fetch: async (input, init) => workerFetch(apiClientInputToWorkerPath(input, baseUrl), {
+            ...init,
+            requireSession: true,
+        }),
+    })
+}
+
 export async function readWorkerJson(response: Response) {
     const payload = await response.json().catch(() => null)
 
@@ -129,6 +146,13 @@ export async function readWorkerJson(response: Response) {
 }
 
 export function workerErrorResponse(error: unknown, fallbackMessage = 'Internal server error') {
+    if (error instanceof LetbuyyApiError) {
+        const payload = error.body && typeof error.body === 'object'
+            ? error.body
+            : { error: { code: error.code, message: error.message } }
+        return NextResponse.json(payload, { status: error.status })
+    }
+
     if (error instanceof WorkerRequestError) {
         const payload = error.payload && typeof error.payload === 'object'
             ? error.payload
@@ -145,4 +169,16 @@ export function workerErrorResponse(error: unknown, fallbackMessage = 'Internal 
         },
         { status: 500 }
     )
+}
+
+function apiClientInputToWorkerPath(input: RequestInfo | URL, baseUrl: string): string {
+    const rawUrl = input instanceof Request ? input.url : input.toString()
+    const url = new URL(rawUrl)
+    const base = new URL(baseUrl)
+    const basePath = base.pathname.replace(/\/$/, '')
+    const pathname = basePath && url.pathname.startsWith(basePath)
+        ? url.pathname.slice(basePath.length) || '/'
+        : url.pathname
+
+    return `${pathname}${url.search}`
 }

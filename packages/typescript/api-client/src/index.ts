@@ -91,7 +91,7 @@ export interface StoreScopedQuery extends ListQuery {
 
 export interface ProductListQuery extends StoreScopedQuery {
   category?: string;
-  status?: ProductStatus | 'inactive';
+  status?: ProductStatus | 'inactive' | 'all';
 }
 
 export interface OrderListQuery extends StoreScopedQuery {
