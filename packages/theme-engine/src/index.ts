@@ -10,6 +10,7 @@ import {
 
 export * from './theme-registry';
 export * from './execution-runtime';
+export * from './theme-bundle';
 
 export type BuiltInSectionType =
   | 'header'
