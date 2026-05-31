@@ -366,6 +366,9 @@ importers:
 
   apps/storefront-runtime:
     dependencies:
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
@@ -384,6 +387,9 @@ importers:
       '@letbuyy/runtime-composition':
         specifier: workspace:*
         version: link:../../packages/runtime-composition
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@letbuyy/tenant-core':
         specifier: workspace:*
         version: link:../../packages/tenant-core

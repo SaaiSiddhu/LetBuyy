@@ -32,12 +32,14 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
+      "@letbuyy/api-client",
       "@letbuyy/api-types",
       "@letbuyy/auth-core",
       "@letbuyy/checkout-core",
       "@letbuyy/cms-core",
       "@letbuyy/commerce-core",
       "@letbuyy/runtime-composition",
+      "@letbuyy/shared-types",
       "@letbuyy/tenant-core",
       "@letbuyy/theme-engine",
       "@letbuyy/utils"

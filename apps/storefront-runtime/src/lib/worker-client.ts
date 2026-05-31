@@ -1,4 +1,8 @@
 import 'server-only';
+import {
+    createLetbuyyApiClient,
+    type LetbuyyApiClient,
+} from '@letbuyy/api-client';
 
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
@@ -67,6 +71,19 @@ export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
     return fetch(`${getApiBaseUrl()}${cleanPath}`, requestInit);
 }
 
+export function createStorefrontApiClient(defaultInit: WorkerFetchInit = {}): LetbuyyApiClient {
+    const baseUrl = getApiBaseUrl();
+
+    return createLetbuyyApiClient({
+        baseUrl,
+        fetch: async (input, init) => workerFetch(apiClientInputToWorkerPath(input, baseUrl), {
+            ...defaultInit,
+            ...init,
+            headers: mergeHeaders(defaultInit.headers, init?.headers),
+        }),
+    });
+}
+
 export class WorkerRequestError extends Error {
     constructor(
         message: string,
@@ -104,4 +121,26 @@ export async function readWorkerJson(response: Response) {
     }
 
     return payload;
+}
+
+function mergeHeaders(base: HeadersInit | undefined, override: HeadersInit | undefined): Headers {
+    const headers = new Headers(base);
+
+    if (override) {
+        new Headers(override).forEach((value, key) => headers.set(key, value));
+    }
+
+    return headers;
+}
+
+function apiClientInputToWorkerPath(input: RequestInfo | URL, baseUrl: string): string {
+    const rawUrl = input instanceof Request ? input.url : input.toString();
+    const url = new URL(rawUrl);
+    const base = new URL(baseUrl);
+    const basePath = base.pathname.replace(/\/$/, '');
+    const pathname = basePath && url.pathname.startsWith(basePath)
+        ? url.pathname.slice(basePath.length) || '/'
+        : url.pathname;
+
+    return `${pathname}${url.search}`;
 }
