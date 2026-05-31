@@ -49,3 +49,4 @@ SKIP: Phase 10 production smoke tests — Reason: Production deployment did not 
 - Phase 8 verification: Staging smoke tests skipped because no staging deployment exists in this run.
 - Phase 9 verification: Production deployment skipped because required provider credentials and resource IDs are unavailable.
 - Phase 10 verification: Production smoke tests skipped because no production deployment exists in this run.
+- Phase 11 Task 11.1: Final environment setup report created in `docs/env-setup/deployment-complete.md`.
