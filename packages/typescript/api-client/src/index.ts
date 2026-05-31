@@ -779,6 +779,8 @@ export class LetbuyyApiClient {
       this.requestData<{ status: StoreStatus }>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
     listProducts: (subdomain: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/products`, { ...options, query }),
+    listProductsByStoreId: (storeId: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<Product>(`/storefront/store/${encodePathSegment(storeId)}/products`, { ...options, query }),
     getProduct: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Product>(`/storefront/${encodePathSegment(subdomain)}/products/${encodePathSegment(slug)}`, options),
     productsByIds: (subdomain: string, productIds: string[], options?: LetbuyyRequestOptions) =>

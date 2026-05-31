@@ -1,5 +1,6 @@
 import { ProductModel } from '@/types/store';
-import { readWorkerJson, storefrontReadInit, workerFetch } from './worker-client';
+import type { Product as SharedProduct } from '@letbuyy/shared-types';
+import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
 import {
     getUrbanKicksDemoProduct,
     getUrbanKicksDemoProducts,
@@ -20,15 +21,13 @@ export const ProductService = {
         }
 
         try {
-            const response = await workerFetch(
-                `/storefront/${encodeURIComponent(subdomain)}/products/by-ids?ids=${encodeURIComponent(productIds.join(','))}`,
+            const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [
                     `storefront:${subdomain}:products`,
                     `storefront:${subdomain}:products:selected`,
                 ]),
-            );
-            const payload = await readWorkerJson(response);
-            return readProductArray(payload);
+            ).storefront.productsByIds(subdomain, productIds);
+            return products.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker by-ids fetch failed:', error);
             return [];
@@ -41,12 +40,10 @@ export const ProductService = {
         }
 
         try {
-            const response = await workerFetch(
-                `/storefront/${encodeURIComponent(subdomain)}/products?limit=100`,
+            const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:${subdomain}:products`]),
-            );
-            const payload = await readWorkerJson(response);
-            return readProductArray(payload);
+            ).storefront.listProducts(subdomain, { limit: 100 });
+            return products.data.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker store fetch failed:', error);
             return [];
@@ -60,12 +57,10 @@ export const ProductService = {
         }
 
         try {
-            const response = await workerFetch(
-                `/storefront/store/${encodeURIComponent(storeId)}/products?limit=100`,
+            const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:store:${storeId}:products`]),
-            );
-            const payload = await readWorkerJson(response);
-            return readProductArray(payload);
+            ).storefront.listProductsByStoreId(storeId, { limit: 100 });
+            return products.data.map(mapWorkerProduct);
         } catch (error) {
             console.error('[ProductService] Worker store-id fetch failed:', error);
             return [];
@@ -80,16 +75,13 @@ export const ProductService = {
         }
 
         try {
-            const response = await workerFetch(
-                `/storefront/${encodeURIComponent(subdomain)}/products/${encodeURIComponent(productId)}`,
+            const product = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_DETAIL_REVALIDATE_SECONDS, [
                     `storefront:${subdomain}:products`,
                     `storefront:${subdomain}:product:${productId}`,
                 ]),
-            );
-            if (response.status === 404) return null;
-            const payload = await readWorkerJson(response);
-            return payload?.data ? mapSupabaseToProduct(payload.data as Record<string, unknown>) : null;
+            ).storefront.getProduct(subdomain, productId);
+            return mapWorkerProduct(product);
         } catch (error) {
             console.error('[ProductService] Worker product fetch failed:', error);
             return null;
@@ -105,10 +97,8 @@ export const ProductService = {
 
 // ============= HELPER FUNCTIONS =============
 
-function readProductArray(payload: unknown): ProductModel[] {
-    const data = (payload as { data?: unknown }).data;
-    if (!Array.isArray(data)) return [];
-    return data.map((d) => mapSupabaseToProduct(d as Record<string, unknown>));
+function mapWorkerProduct(product: SharedProduct): ProductModel {
+    return mapSupabaseToProduct(product as unknown as Record<string, unknown>);
 }
 
 function normalizeImages(value: unknown): string[] {
