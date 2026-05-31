@@ -16,14 +16,18 @@ import {
     CreateShippingRateSchema,
     CreateShippingZoneSchema,
     CreateTaxRateSchema,
-} from '../schemas/shipping.schema';
-import type { z } from 'zod';
+    planShippingRateCreate,
+    planShippingRateUpdate,
+    planShippingZoneCreate,
+    planShippingZoneUpdate,
+    planTaxRateCreate,
+    planTaxRateUpdate,
+    type CreateShippingRateInput,
+    type CreateShippingZoneInput,
+    type CreateTaxRateInput,
+} from '@letbuyy/checkout-core';
 
 const router = new Hono<{ Bindings: Env }>();
-
-type CreateShippingZoneInput = z.infer<typeof CreateShippingZoneSchema>;
-type CreateShippingRateInput = z.infer<typeof CreateShippingRateSchema>;
-type CreateTaxRateInput = z.infer<typeof CreateTaxRateSchema>;
 
 interface StoreScopedRow {
     id: string;
@@ -114,14 +118,11 @@ router.post('/shipping/zones', validate('json', CreateShippingZoneSchema), async
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const plan = planShippingZoneCreate(body);
+
     const { data, error } = await db
         .from('shipping_zones')
-        .insert({
-            store_id: body.store_id,
-            name: body.name,
-            countries: body.countries,
-            states: body.states || [],
-        })
+        .insert(plan.zoneInsert)
         .select()
         .single();
 
@@ -153,14 +154,11 @@ router.patch('/shipping/zones/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const updates: Record<string, unknown> = {};
-    if (body.name !== undefined) updates.name = body.name;
-    if (body.countries !== undefined) updates.countries = body.countries;
-    if (body.states !== undefined) updates.states = body.states;
+    const plan = planShippingZoneUpdate(body);
 
     const { data, error } = await db
         .from('shipping_zones')
-        .update(updates)
+        .update(plan.updates)
         .eq('id', id)
         .select()
         .single();
@@ -249,19 +247,11 @@ router.post('/shipping', validate('json', CreateShippingRateSchema), async (c) =
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const plan = planShippingRateCreate(body);
+
     const { data, error } = await db
         .from('shipping_rates')
-        .insert({
-            zone_id: body.zone_id,
-            name: body.name,
-            price: body.price || 0,
-            min_order_amount: body.min_order_amount || null,
-            max_order_amount: body.max_order_amount || null,
-            estimated_days_min: body.estimated_days_min || null,
-            estimated_days_max: body.estimated_days_max || null,
-            type: body.type,
-            is_active: body.is_active ?? true,
-        })
+        .insert(plan.rateInsert)
         .select()
         .single();
 
@@ -299,17 +289,11 @@ router.patch('/shipping/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const allowed = ['name', 'description', 'price', 'min_order_amount', 'max_order_amount',
-        'min_weight_grams', 'max_weight_grams', 'estimated_days_min', 'estimated_days_max',
-        'type', 'is_active'];
-    const updates: Record<string, unknown> = {};
-    for (const key of allowed) {
-        if (body[key] !== undefined) updates[key] = body[key];
-    }
+    const plan = planShippingRateUpdate(body);
 
     const { data, error } = await db
         .from('shipping_rates')
-        .update(updates)
+        .update(plan.updates)
         .eq('id', id)
         .select()
         .single();
@@ -399,19 +383,11 @@ router.post('/taxes', validate('json', CreateTaxRateSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const plan = planTaxRateCreate(body);
+
     const { data, error } = await db
         .from('tax_rates')
-        .insert({
-            store_id: body.store_id,
-            name: body.name,
-            rate: body.rate,
-            country: body.country || 'IN',
-            state: body.state || null,
-            is_compound: body.is_compound ?? false,
-            is_shipping: body.is_shipping ?? false,
-            priority: body.priority || 0,
-            is_active: body.is_active ?? true,
-        })
+        .insert(plan.taxRateInsert)
         .select()
         .single();
 
@@ -443,15 +419,11 @@ router.patch('/taxes/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const allowed = ['name', 'rate', 'country', 'state', 'is_compound', 'is_shipping', 'priority', 'is_active'];
-    const updates: Record<string, unknown> = {};
-    for (const key of allowed) {
-        if (body[key] !== undefined) updates[key] = body[key];
-    }
+    const plan = planTaxRateUpdate(body);
 
     const { data, error } = await db
         .from('tax_rates')
-        .update(updates)
+        .update(plan.updates)
         .eq('id', id)
         .select()
         .single();

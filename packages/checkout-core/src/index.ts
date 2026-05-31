@@ -656,3 +656,110 @@ export type CreateTaxRateInput = z.infer<typeof CreateTaxRateSchema>;
 export type CreateCouponInput = z.infer<typeof CreateCouponSchema>;
 export type ValidateCouponInput = z.infer<typeof ValidateCouponSchema>;
 export type ListCouponsInput = z.infer<typeof ListCouponsQuery>;
+
+export interface ShippingZoneCreatePlan {
+  zoneInsert: Record<string, unknown>;
+}
+
+export interface ShippingZoneUpdatePlan {
+  updates: Record<string, unknown>;
+}
+
+export interface ShippingRateCreatePlan {
+  rateInsert: Record<string, unknown>;
+}
+
+export interface ShippingRateUpdatePlan {
+  updates: Record<string, unknown>;
+}
+
+export interface TaxRateCreatePlan {
+  taxRateInsert: Record<string, unknown>;
+}
+
+export interface TaxRateUpdatePlan {
+  updates: Record<string, unknown>;
+}
+
+const SHIPPING_ZONE_UPDATE_FIELDS = ['name', 'countries', 'states'] as const;
+const SHIPPING_RATE_UPDATE_FIELDS = [
+  'name',
+  'description',
+  'price',
+  'min_order_amount',
+  'max_order_amount',
+  'min_weight_grams',
+  'max_weight_grams',
+  'estimated_days_min',
+  'estimated_days_max',
+  'type',
+  'is_active',
+] as const;
+const TAX_RATE_UPDATE_FIELDS = ['name', 'rate', 'country', 'state', 'is_compound', 'is_shipping', 'priority', 'is_active'] as const;
+
+export function planShippingZoneCreate(input: CreateShippingZoneInput): ShippingZoneCreatePlan {
+  return {
+    zoneInsert: {
+      store_id: input.store_id,
+      name: input.name,
+      countries: input.countries,
+      states: input.states || [],
+    },
+  };
+}
+
+export function planShippingZoneUpdate(patch: Record<string, unknown>): ShippingZoneUpdatePlan {
+  const updates: Record<string, unknown> = {};
+  for (const key of SHIPPING_ZONE_UPDATE_FIELDS) {
+    if (patch[key] !== undefined) updates[key] = patch[key];
+  }
+  return { updates };
+}
+
+export function planShippingRateCreate(input: CreateShippingRateInput): ShippingRateCreatePlan {
+  return {
+    rateInsert: {
+      zone_id: input.zone_id,
+      name: input.name,
+      price: input.price || 0,
+      min_order_amount: input.min_order_amount || null,
+      max_order_amount: input.max_order_amount || null,
+      estimated_days_min: input.estimated_days_min || null,
+      estimated_days_max: input.estimated_days_max || null,
+      type: input.type,
+      is_active: input.is_active ?? true,
+    },
+  };
+}
+
+export function planShippingRateUpdate(patch: Record<string, unknown>): ShippingRateUpdatePlan {
+  const updates: Record<string, unknown> = {};
+  for (const key of SHIPPING_RATE_UPDATE_FIELDS) {
+    if (patch[key] !== undefined) updates[key] = patch[key];
+  }
+  return { updates };
+}
+
+export function planTaxRateCreate(input: CreateTaxRateInput): TaxRateCreatePlan {
+  return {
+    taxRateInsert: {
+      store_id: input.store_id,
+      name: input.name,
+      rate: input.rate,
+      country: input.country || 'IN',
+      state: input.state || null,
+      is_compound: input.is_compound ?? false,
+      is_shipping: input.is_shipping ?? false,
+      priority: input.priority || 0,
+      is_active: input.is_active ?? true,
+    },
+  };
+}
+
+export function planTaxRateUpdate(patch: Record<string, unknown>): TaxRateUpdatePlan {
+  const updates: Record<string, unknown> = {};
+  for (const key of TAX_RATE_UPDATE_FIELDS) {
+    if (patch[key] !== undefined) updates[key] = patch[key];
+  }
+  return { updates };
+}
