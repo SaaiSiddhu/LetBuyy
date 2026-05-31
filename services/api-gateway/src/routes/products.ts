@@ -19,6 +19,8 @@ import {
     type StoreScopedQueryInput,
     type CreateCollectionInput,
     type CreateGiftCardInput,
+    generateGiftCardCodeFromBytes,
+    planGiftCardInsert,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -270,25 +272,11 @@ router.post('/gift-cards', validate('json', CreateGiftCardSchema), async (c) => 
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const code = generateGiftCardCode();
+    const code = generateGiftCardCodeFromBytes(crypto.getRandomValues(new Uint8Array(16)));
     const buildGiftCardInsert = (includeAuditFields: boolean) => {
-        const insert: Record<string, unknown> = {
-            store_id: body.store_id,
-            code,
-            initial_value: body.initial_value,
-            balance: body.initial_value,
-            status: 'active',
-            expires_at: body.expires_at || null,
-        };
-
-        if (includeAuditFields) {
-            insert.created_by = customUser.id;
-            insert.updated_by = customUser.id;
-        }
-
         return db
             .from('gift_cards')
-            .insert(insert)
+            .insert(planGiftCardInsert(body, code, customUser.id, includeAuditFields))
             .select()
             .single();
     };
@@ -437,14 +425,6 @@ async function listOwnedStoreIds(
     if (error) throw new Error(`Store ownership lookup failed: ${error.message}`);
 
     return (data || []).map((store) => store.id as string);
-}
-
-function generateGiftCardCode() {
-    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    const bytes = crypto.getRandomValues(new Uint8Array(16));
-    let raw = '';
-    for (const byte of bytes) raw += alphabet[byte % alphabet.length];
-    return raw.replace(/(.{4})(?=.)/g, '$1-');
 }
 
 export default router;

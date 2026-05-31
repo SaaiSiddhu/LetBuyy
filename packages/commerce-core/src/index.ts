@@ -663,6 +663,36 @@ export function generateProductSlug(name: string): string {
     .slice(0, 100);
 }
 
+export function generateGiftCardCodeFromBytes(bytes: Uint8Array): string {
+  const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let raw = '';
+  for (const byte of bytes) raw += alphabet[byte % alphabet.length];
+  return raw.replace(/(.{4})(?=.)/g, '$1-');
+}
+
+export function planGiftCardInsert(
+  input: CreateGiftCardInput,
+  code: string,
+  userId: string,
+  includeAuditFields: boolean,
+): Record<string, unknown> {
+  const insert: Record<string, unknown> = {
+    store_id: input.store_id,
+    code,
+    initial_value: input.initial_value,
+    balance: input.initial_value,
+    status: 'active',
+    expires_at: input.expires_at || null,
+  };
+
+  if (includeAuditFields) {
+    insert.created_by = userId;
+    insert.updated_by = userId;
+  }
+
+  return insert;
+}
+
 export function generateCategorySlug(name: string): string {
   return name
     .toLowerCase()
