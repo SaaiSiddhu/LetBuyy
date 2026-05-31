@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/worker-client';
 
 /**
  * GET /api/themes — Storefront-facing theme catalog proxy.
@@ -10,25 +10,27 @@ export async function GET(request: Request) {
     try {
         const { searchParams } = new URL(request.url);
         const slug = searchParams.get('slug');
-        const workerPath = slug
-            ? `/themes/${encodeURIComponent(slug)}`
-            : `/themes?${toWorkerSearchParams(searchParams).toString()}`;
-        const response = await workerFetch(workerPath);
-        const payload = await readWorkerJson(response);
+        const client = createStorefrontApiClient();
 
         if (slug) {
+            const theme = await client.themes.get(slug);
             return NextResponse.json({
                 success: true,
-                theme: payload.data ?? null,
+                theme,
             });
         }
 
-        const data = Array.isArray(payload.data) ? payload.data : [];
+        const catalog = await client.themes.listCatalog(toThemeQuery(searchParams));
         return NextResponse.json({
             success: true,
-            themes: data,
-            total: payload.meta?.total ?? data.length,
-            meta: payload.meta ?? null,
+            themes: catalog.data,
+            total: catalog.total,
+            meta: {
+                total: catalog.total,
+                page: catalog.page,
+                per_page: catalog.limit,
+                has_next: catalog.has_more,
+            },
         });
     } catch (error) {
         console.error('Themes API error:', error);
@@ -37,6 +39,10 @@ export async function GET(request: Request) {
             { status: 500 }
         );
     }
+}
+
+function toThemeQuery(input: URLSearchParams): Record<string, string> {
+    return Object.fromEntries(toWorkerSearchParams(input).entries());
 }
 
 function toWorkerSearchParams(input: URLSearchParams) {

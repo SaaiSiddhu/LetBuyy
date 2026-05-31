@@ -263,6 +263,44 @@ export type StorefrontContentPayload = JsonRecord & {
 
 export type StorefrontBlogPostPayload = BlogPost & JsonRecord;
 
+export type StorefrontLookupResult = JsonRecord & {
+  status: 'invalid' | 'found' | 'not_found' | string;
+  message?: string | null;
+  store?: JsonRecord & {
+    name?: string | null;
+    subdomain?: string | null;
+    status?: StoreStatus | string | null;
+    siteType?: string | null;
+  };
+};
+
+export type StorefrontDirectoryPayload = {
+  stores: JsonRecord[];
+  stats: {
+    totalStores: number;
+    totalThemes: number;
+    totalProducts: number;
+    totalOrders: number;
+  };
+};
+
+export interface StorefrontCouponValidationQuery extends QueryParams {
+  code: string;
+  subtotal?: string | number;
+}
+
+export type StorefrontCouponValidationResult = JsonRecord & {
+  valid: boolean;
+  error?: string | null;
+  coupon?: JsonRecord & {
+    code?: string;
+    type?: string;
+    value?: number;
+    discount?: number;
+    freeShipping?: boolean;
+  };
+};
+
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
@@ -799,8 +837,10 @@ export class LetbuyyApiClient {
   };
 
   readonly storefront = {
-    lookup: (query: { host?: string; subdomain?: string }, options?: LetbuyyRequestOptions) =>
-      this.requestData<StorefrontStorePayload>('/storefront/lookup', { ...options, query }),
+    lookup: (query: { q?: string; host?: string; subdomain?: string }, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontLookupResult>('/storefront/lookup', { ...options, query }),
+    directory: (options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontDirectoryPayload>('/storefront/directory', options),
     getStoreById: (storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/store/${encodePathSegment(storeId)}`, options),
     getStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
@@ -836,6 +876,10 @@ export class LetbuyyApiClient {
       this.requestPaginated<StorefrontBlogPostPayload>(`/storefront/${encodePathSegment(subdomain)}/blog`, { ...options, query }),
     blogPost: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontContentPayload>(`/storefront/${encodePathSegment(subdomain)}/blog/${encodePathSegment(slug)}`, options),
+    validateCoupon: (subdomain: string, query: StorefrontCouponValidationQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCouponValidationResult>(`/storefront/${encodePathSegment(subdomain)}/coupons/validate`, { ...options, query }),
+    validateCouponByStoreId: (storeId: string, query: StorefrontCouponValidationQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCouponValidationResult>(`/storefront/store/${encodePathSegment(storeId)}/coupons/validate`, { ...options, query }),
   };
 
   withOptions(options: Partial<LetbuyyApiClientOptions>): LetbuyyApiClient {

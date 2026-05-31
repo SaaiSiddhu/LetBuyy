@@ -5,7 +5,7 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/worker-client';
 
 export async function GET(request: NextRequest) {
     try {
@@ -19,13 +19,10 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ valid: false, error: 'Code and store context required' }, { status: 400 });
         }
 
-        const target = subdomain
-            ? `/storefront/${encodeURIComponent(subdomain)}/coupons/validate`
-            : `/storefront/store/${encodeURIComponent(storeId || '')}/coupons/validate`;
-        const workerUrl = `${target}?code=${encodeURIComponent(code)}&subtotal=${encodeURIComponent(subtotal)}`;
-        const response = await workerFetch(workerUrl);
-        const payload = await readWorkerJson(response);
-        const data = payload?.data || {};
+        const client = createStorefrontApiClient();
+        const data = subdomain
+            ? await client.storefront.validateCoupon(subdomain, { code, subtotal })
+            : await client.storefront.validateCouponByStoreId(storeId || '', { code, subtotal });
 
         return NextResponse.json(data);
     } catch {

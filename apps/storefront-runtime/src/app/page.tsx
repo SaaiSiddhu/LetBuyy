@@ -1,6 +1,6 @@
 import StorefrontLanding from './storefront-landing';
 import type { Metadata } from 'next';
-import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/worker-client';
 
 type StoreShowcase = {
   storeName: string;
@@ -66,9 +66,8 @@ export default async function Home() {
   };
 
   try {
-    const response = await workerFetch('/storefront/directory');
-    const payload = await readWorkerJson(response);
-    const storesRaw = Array.isArray(payload?.data?.stores) ? payload.data.stores : [];
+    const directory = await createStorefrontApiClient().storefront.directory();
+    const storesRaw = directory.stores;
 
     stores = storesRaw.map((s: Record<string, unknown>) => {
       const owner = Array.isArray(s.users_custom)
@@ -89,7 +88,7 @@ export default async function Home() {
       };
     });
 
-    stats = payload?.data?.stats || stats;
+    stats = directory.stats || stats;
   } catch (error) {
     console.error('[Landing] Data fetch failed:', error);
     // Page still renders with empty state

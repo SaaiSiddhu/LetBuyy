@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/worker-client';
 
 export async function GET(req: NextRequest) {
     const query = req.nextUrl.searchParams.get('q')?.trim().toLowerCase();
@@ -19,9 +19,8 @@ export async function GET(req: NextRequest) {
     }
 
     try {
-        const response = await workerFetch(`/storefront/lookup?q=${encodeURIComponent(query)}`);
-        const payload = await readWorkerJson(response);
-        return NextResponse.json(payload?.data || { status: 'not_found' });
+        const data = await createStorefrontApiClient().storefront.lookup({ q: query });
+        return NextResponse.json(data || { status: 'not_found' });
     } catch (err) {
         console.error('[store-lookup] Worker proxy error:', err);
         return NextResponse.json({ status: 'not_found' });
