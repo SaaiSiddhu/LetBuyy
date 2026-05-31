@@ -3,9 +3,11 @@ import {
     BILLING_APPLICATION_WORKFLOWS,
     BILLING_EXECUTION_PIPELINES,
     defineRuntimeBridge,
+} from '@letbuyy/application-services';
+import {
     normalizeBillingObject,
     normalizeBillingStringArray,
-} from '@letbuyy/application-services';
+} from '@letbuyy/billing-core';
 
 type JsonObject = Record<string, unknown>;
 

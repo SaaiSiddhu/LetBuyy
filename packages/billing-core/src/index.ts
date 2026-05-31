@@ -93,6 +93,14 @@ export type BillingEvent = RuntimeEventEnvelope<{
   plan_id?: string;
 }>;
 
+export function normalizeBillingStringArray(value: unknown): string[] {
+  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
+}
+
+export function normalizeBillingObject(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
 export type BillingPlanInput = z.infer<typeof BillingPlanSchema>;
 export type CreateSubscriptionInput = z.infer<typeof CreateSubscriptionSchema>;
 export type StoreSubscriptionQueryInput = z.infer<typeof StoreSubscriptionQuerySchema>;

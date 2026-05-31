@@ -3,6 +3,7 @@ import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 import type { CorrelatedCommand } from '@letbuyy/orchestration';
 import { defineApplicationWorkflows } from '../src/workflow-descriptor';
 import { defineExecutionPipelines } from '../src/execution-pipeline';
+export { normalizeBillingObject, normalizeBillingStringArray } from '@letbuyy/billing-core';
 
 export interface BillingApplicationPorts {
   createSubscription(command: CorrelatedCommand<{ tenant: RuntimeTenantContext; input: CreateSubscriptionInput }>): Promise<SubscriptionContract>;
@@ -63,11 +64,3 @@ export const BILLING_EXECUTION_PIPELINES = defineExecutionPipelines({
     ],
   },
 });
-
-export function normalizeBillingStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
-}
-
-export function normalizeBillingObject(value: unknown): Record<string, unknown> {
-  return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-}
