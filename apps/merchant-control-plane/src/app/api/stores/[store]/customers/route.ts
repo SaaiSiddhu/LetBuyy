@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import type { CustomerListQuery } from '@letbuyy/api-client'
 
 export async function GET(
     request: NextRequest,
@@ -13,18 +14,25 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const searchParams = request.nextUrl.searchParams
-        const query = new URLSearchParams({
+        const query: CustomerListQuery = {
             store_id: resolved.storeId,
-            page: searchParams.get('page') || '1',
-            limit: searchParams.get('limit') || '100',
+            page: Number(searchParams.get('page') || '1'),
+            limit: Number(searchParams.get('limit') || '100'),
+        }
+        if (searchParams.get('search')) query.search = searchParams.get('search')!
+        if (searchParams.get('has_orders')) query.has_orders = searchParams.get('has_orders') === 'true'
+
+        const customers = await createWorkerApiClient().customers.list(query)
+
+        return NextResponse.json({
+            data: customers.data,
+            meta: {
+                total: customers.total,
+                page: customers.page,
+                per_page: customers.limit,
+                has_next: customers.has_more,
+            },
         })
-        if (searchParams.get('search')) query.set('search', searchParams.get('search')!)
-        if (searchParams.get('has_orders')) query.set('has_orders', searchParams.get('has_orders')!)
-
-        const workerResponse = await workerFetch(`/customers?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
     } catch (err) {
         return workerErrorResponse(err, 'Unable to load customers')
     }

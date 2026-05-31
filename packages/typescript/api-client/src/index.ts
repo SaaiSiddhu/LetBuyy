@@ -119,6 +119,7 @@ export interface CustomerListQuery extends StoreScopedQuery {
   status?: string;
   email?: string;
   phone?: string;
+  has_orders?: boolean;
 }
 
 export interface ThemeListQuery extends ListQuery {
