@@ -214,14 +214,6 @@ const appTargets = [
 ];
 
 const packageTargets = [
-  { output: "packages/ui/AGENTS.md", name: "UI Alias", actual: "packages/typescript/ui", purpose: "Shared web UI component alias.", alias: true },
-  { output: "packages/db/AGENTS.md", name: "Database Alias", actual: "database/supabase", purpose: "Database schema, migrations, RLS, seed and Supabase config ownership alias.", alias: true },
-  { output: "packages/api/AGENTS.md", name: "API Alias", actual: "services/api-gateway", purpose: "Cloudflare Hono API worker ownership alias.", alias: true },
-  { output: "packages/shared/AGENTS.md", name: "Shared Alias", actual: "packages", purpose: "Shared TypeScript and Dart contracts, utilities, services, and models.", alias: true },
-  { output: "packages/config/AGENTS.md", name: "Config Alias", actual: ".", purpose: "Root workspace, Vercel, Turborepo, pnpm, Cloudflare, Supabase and Terraform config governance.", alias: true },
-  { output: "packages/auth/AGENTS.md", name: "Auth Alias", actual: "packages/typescript/utils/src/auth.ts", purpose: "Shared auth helper and platform identity governance alias.", alias: true },
-  { output: "packages/analytics/AGENTS.md", name: "Analytics Alias", actual: "services/api-gateway/src/routes/analytics.ts", purpose: "Shared analytics contract and event governance alias.", alias: true },
-  { output: "packages/payments/AGENTS.md", name: "Payments Alias", actual: "services/api-gateway/src/routes/payments.ts", purpose: "Payment route, checkout provider and webhook governance alias.", alias: true },
   { output: "packages/shared-types/AGENTS.md", name: "Shared Types", actual: "packages/shared-types", purpose: "Canonical cross-runtime primitives, pagination, address, SEO, money, and API response contracts." },
   { output: "packages/tenant-core/AGENTS.md", name: "Tenant Core", actual: "packages/tenant-core", purpose: "Tenant resolution, site/store ownership, subdomain, store model, navigation, and tenant isolation contracts." },
   { output: "packages/commerce-core/AGENTS.md", name: "Commerce Core", actual: "packages/commerce-core", purpose: "Product, catalog, inventory, customer, collection, and merchant commerce contracts." },

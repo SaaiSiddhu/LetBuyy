@@ -12,14 +12,11 @@
 | `packages/cms-core` | Pages, navigation, policies, portfolio/resume content, dynamic content contracts | Payment or provider logic |
 | `packages/theme-engine` | Theme schemas, section/block contracts, renderer keys, templates, releases, hydration contracts | Arbitrary tenant JavaScript execution |
 | `packages/app-engine` | App marketplace contracts, AI assistant payloads, installs, app webhooks | Unscoped merchant data mutation |
-| `packages/analytics-core` | Event schemas, metrics, dashboard contracts | Checkout or payment authority |
 | `packages/event-core` | Outbox, queues, event envelopes, idempotency contracts | UI rendering |
 | `packages/search-core` | Search document contracts and indexing policy | Source-of-truth product mutation |
 | `packages/notification-core` | Notification templates, channels, preferences | Provider secrets in client code |
 | `packages/billing-core` | Plans, entitlements, usage, subscription contracts | Checkout product catalog authority |
 | `packages/shared-types` | Cross-runtime TypeScript contracts | Runtime side effects |
-| `packages/shared-utils` | Small runtime-safe utilities | Business decisions or app routing |
-| `packages/ui-system` | Shared React UI primitives and tokens | Supabase service role, routing, business logic |
 
 ## Extraction Rule
 

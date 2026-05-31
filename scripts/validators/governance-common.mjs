@@ -112,18 +112,11 @@ export const domainPackageRoots = [
   "packages/cms-core",
   "packages/theme-engine",
   "packages/app-engine",
-  "packages/analytics-core",
   "packages/event-core",
   "packages/search-core",
   "packages/notification-core",
   "packages/billing-core",
-  "packages/ui-system",
   "packages/shared-types",
-  "packages/shared-utils",
-  "packages/mobile-core",
-  "packages/mobile-models",
-  "packages/mobile-services",
-  "packages/mobile-ui-kit",
 ];
 
 export const executionPackageRoots = [
