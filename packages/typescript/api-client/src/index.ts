@@ -130,6 +130,16 @@ export interface ThemeListQuery extends ListQuery {
   store_id?: string;
 }
 
+export type ThemeCatalogItem = Theme & {
+  installed?: boolean;
+  active?: boolean;
+};
+
+export interface ThemeCatalogResponse extends PaginatedResponse<ThemeCatalogItem> {
+  current_theme: string | null;
+  store_status: string | null;
+}
+
 export interface StorefrontProductQuery extends ListQuery {
   category?: string;
   collection?: string;
@@ -161,6 +171,15 @@ export type ProductImportInput = {
 export type ProductImportResult = {
   imported: number;
   products: Array<{ id: string; name: string }>;
+};
+export type ThemeInstallInput = {
+  store_id: string;
+  config_overrides?: JsonRecord;
+};
+export type ThemeInstallResult = {
+  installation: JsonRecord;
+  theme: Pick<Theme, 'id' | 'slug' | 'name'>;
+  release: JsonRecord;
 };
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
 export type UpdateOrderInput = Partial<Pick<Order, 'status' | 'payment_status' | 'fulfillment_status' | 'tracking_number' | 'tracking_url' | 'notes'>> & {
@@ -354,6 +373,24 @@ export class LetbuyyApiClient {
   readonly themes = {
     list: (query?: ThemeListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Theme>('/themes', { ...options, query }),
+    listCatalog: async (query?: ThemeListQuery, options?: LetbuyyRequestOptions): Promise<ThemeCatalogResponse> => {
+      const body = await this.request<GatewayResponse<ThemeCatalogItem[]> & { current_theme?: unknown; store_status?: unknown }>(
+        '/themes',
+        { ...options, query },
+      );
+      const data = unwrapData<ThemeCatalogItem[]>(body, 200, null);
+      const meta = isRecord(body) && isRecord(body.meta) ? body.meta : {};
+
+      return {
+        data,
+        total: numberValue(meta.total, data.length),
+        page: numberValue(meta.page, 1),
+        limit: numberValue(meta.per_page, data.length),
+        has_more: Boolean(meta.has_next),
+        current_theme: typeof body.current_theme === 'string' ? body.current_theme : null,
+        store_status: typeof body.store_status === 'string' ? body.store_status : null,
+      };
+    },
     get: (slug: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Theme>(`/themes/${encodePathSegment(slug)}`, options),
     schema: (slug: string, options?: LetbuyyRequestOptions) =>
@@ -362,8 +399,8 @@ export class LetbuyyApiClient {
       this.requestData<string[]>('/themes/categories', options),
     industries: (options?: LetbuyyRequestOptions) =>
       this.requestData<string[]>('/themes/industries', options),
-    install: (slug: string, input: { store_id: string }, options?: LetbuyyRequestOptions) =>
-      this.requestData<Theme>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
+    install: (slug: string, input: ThemeInstallInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemeInstallResult>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
   };
 
   readonly payments = {

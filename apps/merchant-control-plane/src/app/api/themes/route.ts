@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 const SUPPORTED_ADMIN_THEME_SLUGS = new Set(['urban-kicks'])
@@ -17,7 +17,6 @@ export async function GET(request: NextRequest) {
 
         let currentTheme = null
         let storeId = null
-        let workerPath = '/themes'
 
         // If store_name provided, fetch the store's current theme info
         if (storeName) {
@@ -25,20 +24,16 @@ export async function GET(request: NextRequest) {
             if (resolved.error) return resolved.error
 
             storeId = resolved.storeId
-            workerPath = `/themes?store_id=${encodeURIComponent(resolved.storeId)}`
         }
 
-        const workerResponse = await workerFetch(workerPath)
-        const payload = await readWorkerJson(workerResponse)
-        const allThemes = Array.isArray(payload.data)
-            ? payload.data as Record<string, unknown>[]
-            : []
+        const payload = await createWorkerApiClient().themes.listCatalog(
+            storeId ? { store_id: storeId } : undefined
+        )
+        const allThemes = payload.data
         const themes = allThemes.filter((theme) => (
             typeof theme.slug === 'string' && SUPPORTED_ADMIN_THEME_SLUGS.has(theme.slug)
         ))
-        const currentThemeSlug = typeof payload.current_theme === 'string'
-            ? payload.current_theme
-            : null
+        const currentThemeSlug = payload.current_theme
 
         currentTheme = themes.find((theme) => (
             (currentThemeSlug && theme.slug === currentThemeSlug) ||
@@ -48,7 +43,7 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({
             themes,
             currentTheme,
-            storeStatus: payload.store_status || null,
+            storeStatus: payload.store_status,
             storeId,
         })
     } catch (err) {

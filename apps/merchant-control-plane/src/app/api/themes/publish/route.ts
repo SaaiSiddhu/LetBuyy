@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 
 /**
  * POST /api/themes/publish
@@ -26,20 +26,10 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const encodedStoreId = encodeURIComponent(storeId)
-        const response = action === 'publish'
-            ? await workerFetch(`/stores/${encodedStoreId}/publish`, {
-                method: 'POST',
-                requireSession: true,
-            })
-            : await workerFetch(`/stores/${encodedStoreId}`, {
-                method: 'PATCH',
-                requireSession: true,
-                body: JSON.stringify({ status: 'draft' }),
-            })
-
-        const payload = await readWorkerJson(response)
-        const data = payload.data
+        const api = createWorkerApiClient()
+        const data = action === 'publish'
+            ? await api.stores.publish(storeId)
+            : await api.stores.update(storeId, { status: 'draft' })
 
         return NextResponse.json({
             success: true,

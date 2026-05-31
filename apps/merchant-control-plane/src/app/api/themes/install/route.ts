@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 
 /**
  * POST /api/themes/install
@@ -22,15 +22,11 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const response = await workerFetch(`/themes/${themeSlug}/install`, {
-            method: 'POST',
-            body: JSON.stringify({
-                store_id: storeId,
-                config_overrides: {},
-            }),
+        const payload = await createWorkerApiClient().themes.install(themeSlug, {
+            store_id: storeId,
+            config_overrides: {},
         })
-        const payload = await readWorkerJson(response)
-        const theme = payload.data?.theme
+        const theme = payload.theme
 
         return NextResponse.json({
             success: true,
