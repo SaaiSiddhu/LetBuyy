@@ -3,6 +3,7 @@ import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 import type { CorrelatedCommand } from '@letbuyy/orchestration';
 import { defineApplicationWorkflows } from '../src/workflow-descriptor';
 import { defineExecutionPipelines } from '../src/execution-pipeline';
+export { canonicalizeExecutionPayload } from '@letbuyy/orchestration';
 
 export interface AuthApplicationPorts {
   resolveActorSession(command: CorrelatedCommand<{ token: string }>): Promise<SessionContract | null>;
@@ -86,14 +87,3 @@ export const AUTH_EXECUTION_PIPELINES = defineExecutionPipelines({
     ],
   },
 });
-
-export function canonicalizeExecutionPayload(value: unknown): string {
-  if (value === null || typeof value !== 'object') return JSON.stringify(value);
-  if (Array.isArray(value)) return `[${value.map((item) => canonicalizeExecutionPayload(item)).join(',')}]`;
-
-  const record = value as Record<string, unknown>;
-  return `{${Object.keys(record)
-    .sort()
-    .map((key) => `${JSON.stringify(key)}:${canonicalizeExecutionPayload(record[key])}`)
-    .join(',')}}`;
-}

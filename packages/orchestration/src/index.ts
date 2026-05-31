@@ -91,6 +91,17 @@ export const DEFAULT_RETRY_POLICY: RetryPolicy = {
   retryableErrors: ['TIMEOUT', 'RATE_LIMITED', 'PROVIDER_UNAVAILABLE'],
 };
 
+export function canonicalizeExecutionPayload(value: unknown): string {
+  if (value === null || typeof value !== 'object') return JSON.stringify(value);
+  if (Array.isArray(value)) return `[${value.map((item) => canonicalizeExecutionPayload(item)).join(',')}]`;
+
+  const record = value as Record<string, unknown>;
+  return `{${Object.keys(record)
+    .sort()
+    .map((key) => `${JSON.stringify(key)}:${canonicalizeExecutionPayload(record[key])}`)
+    .join(',')}}`;
+}
+
 export * from './event-runtime';
 export * from './outbox-runtime';
 export * from './observability-runtime';

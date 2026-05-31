@@ -3,8 +3,8 @@ import {
     NOTIFICATION_APPLICATION_WORKFLOWS,
     NOTIFICATION_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-    isValidWebhookTarget,
 } from '@letbuyy/application-services';
+import { isValidWebhookTarget } from '@letbuyy/notification-core';
 import {
     buildDomainEventEnvelope,
     eventMatchesSubscription,

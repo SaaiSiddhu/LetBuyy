@@ -938,6 +938,9 @@ importers:
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
+      '@letbuyy/notification-core':
+        specifier: workspace:*
+        version: link:../../packages/notification-core
       '@letbuyy/orchestration':
         specifier: workspace:*
         version: link:../../packages/orchestration

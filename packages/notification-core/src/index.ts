@@ -49,6 +49,15 @@ export interface NotificationRecipient {
   push_token?: string;
 }
 
+export function isValidWebhookTarget(targetUrl: string): boolean {
+  try {
+    const url = new URL(targetUrl);
+    return url.protocol === 'https:' && url.hostname.length > 0;
+  } catch {
+    return false;
+  }
+}
+
 export type NotificationRecipientInput = z.infer<typeof NotificationRecipientSchema>;
 export type NotificationMessageInput = z.infer<typeof NotificationMessageSchema>;
 export type NotificationDispatchInput = z.infer<typeof NotificationDispatchSchema>;

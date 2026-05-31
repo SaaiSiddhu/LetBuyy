@@ -9,14 +9,17 @@ export interface EventExecutionMetadata {
   replay: boolean;
 }
 
-export type RuntimeQueueName =
-  | 'payment-events'
-  | 'inventory-jobs'
-  | 'webhook-deliveries'
-  | 'analytics-events'
-  | 'search-indexing'
-  | 'fulfillment-jobs'
-  | 'bulk-admin-jobs';
+export const RUNTIME_QUEUE_NAMES = [
+  'payment-events',
+  'inventory-jobs',
+  'webhook-deliveries',
+  'analytics-events',
+  'search-indexing',
+  'fulfillment-jobs',
+  'bulk-admin-jobs',
+] as const;
+
+export type RuntimeQueueName = (typeof RUNTIME_QUEUE_NAMES)[number];
 
 export interface EventSubscription<TPayload extends Record<string, unknown> = Record<string, unknown>> {
   name: string;

@@ -2,9 +2,9 @@ import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import {
     AUTH_APPLICATION_WORKFLOWS,
     AUTH_EXECUTION_PIPELINES,
-    canonicalizeExecutionPayload,
     defineRuntimeBridge,
 } from '@letbuyy/application-services';
+import { canonicalizeExecutionPayload } from '@letbuyy/orchestration';
 import { ConflictError, ValidationError } from '../lib/errors';
 
 type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue };
