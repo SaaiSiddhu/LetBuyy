@@ -114,6 +114,10 @@ export interface PolicyListQuery extends StoreScopedQuery {
   status?: PageStatus | 'all';
 }
 
+export interface CouponListQuery extends StoreScopedQuery {
+  status?: 'active' | 'expired' | 'all';
+}
+
 export interface ProductListQuery extends StoreScopedQuery {
   category?: string;
   status?: ProductStatus | 'inactive' | 'all';
@@ -422,7 +426,7 @@ export class LetbuyyApiClient {
   };
 
   readonly coupons = {
-    list: (query?: StoreScopedQuery, options?: LetbuyyRequestOptions) =>
+    list: (query?: CouponListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Coupon>('/coupons', { ...options, query }),
     get: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Coupon>(`/coupons/${encodePathSegment(id)}`, options),
@@ -431,7 +435,7 @@ export class LetbuyyApiClient {
     update: (id: string, input: UpdateCouponInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Coupon>(`/coupons/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ id: string }>(`/coupons/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      this.requestData<{ deleted: boolean }>(`/coupons/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     validate: (input: { store_id: string; code: string; cart_total?: number }, options?: LetbuyyRequestOptions) =>
       this.requestData<Coupon>('/coupons/validate', { ...options, method: 'POST', body: input }),
   };

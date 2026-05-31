@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import type { CreateCouponInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type AdminCouponBody = {
@@ -40,6 +41,10 @@ function fromWorkerCoupon(coupon: Record<string, unknown>) {
     }
 }
 
+function normalizeCouponStatus(value: string | null) {
+    return value === 'active' || value === 'expired' ? value : 'all'
+}
+
 export async function GET(
     request: NextRequest,
     { params }: { params: Promise<{ store: string }> }
@@ -51,20 +56,28 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const { searchParams } = new URL(request.url)
-        const query = new URLSearchParams({
+        const page = Number(searchParams.get('page') || '1')
+        const limit = Number(searchParams.get('limit') || '100')
+        const payload = await createWorkerApiClient().coupons.list({
             store_id: resolved.storeId,
-            status: searchParams.get('status') || 'all',
-            page: searchParams.get('page') || '1',
-            limit: searchParams.get('limit') || '100',
+            status: normalizeCouponStatus(searchParams.get('status')),
+            page,
+            limit,
         })
+        const data = payload.data.map((coupon) => fromWorkerCoupon(coupon as unknown as Record<string, unknown>))
 
-        const workerResponse = await workerFetch(`/coupons?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
-        const data = Array.isArray(payload.data)
-            ? payload.data.map((coupon: Record<string, unknown>) => fromWorkerCoupon(coupon))
-            : []
-
-        return NextResponse.json({ ...payload, data })
+        return NextResponse.json({
+            success: true,
+            data,
+            meta: {
+                page: payload.page,
+                per_page: payload.limit,
+                total: payload.total,
+                total_pages: Math.ceil(payload.total / Math.max(payload.limit, 1)),
+                has_next: payload.has_more,
+                has_prev: payload.page > 1,
+            },
+        })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to load coupons')
     }
@@ -81,15 +94,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json() as AdminCouponBody
-        const workerResponse = await workerFetch('/coupons', {
-            method: 'POST',
-            body: JSON.stringify(toWorkerCoupon(body, resolved.storeId)),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().coupons.create(
+            toWorkerCoupon(body, resolved.storeId) as CreateCouponInput
+        )
 
         return NextResponse.json({
-            ...payload,
-            data: payload.data ? fromWorkerCoupon(payload.data) : payload.data,
+            success: true,
+            data: fromWorkerCoupon(payload as unknown as Record<string, unknown>),
         })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to save coupon')

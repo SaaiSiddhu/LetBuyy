@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import type { UpdateCouponInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type AdminCouponBody = {
@@ -37,13 +38,12 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json() as AdminCouponBody
-        const workerResponse = await workerFetch(`/coupons/${encodeURIComponent(couponId)}`, {
-            method: 'PATCH',
-            body: JSON.stringify(toWorkerCoupon(body)),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().coupons.update(
+            couponId,
+            toWorkerCoupon(body) as UpdateCouponInput
+        )
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to update coupon')
     }
@@ -59,12 +59,9 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/coupons/${encodeURIComponent(couponId)}`, {
-            method: 'DELETE',
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().coupons.remove(couponId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to delete coupon')
     }
