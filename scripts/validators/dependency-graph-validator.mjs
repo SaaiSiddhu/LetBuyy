@@ -86,6 +86,7 @@ function validateDirection(fromRoot, toRoot, reason) {
   }
 
   const allowedPackageEdges = {
+    "packages/typescript/api-client": ["packages/shared-types"],
     "packages/typescript/api-types": [
       "packages/app-engine",
       "packages/auth-core",

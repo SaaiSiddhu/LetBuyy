@@ -129,6 +129,7 @@ export const executionPackageRoots = [
 ];
 
 export const workspacePackageRoots = [
+  "packages/typescript/api-client",
   "packages/typescript/api-types",
   "packages/typescript/ui",
   "packages/typescript/utils",

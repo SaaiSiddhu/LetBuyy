@@ -47,6 +47,7 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 - Infrastructure: `packages/infrastructure` (15 scanned files). Provider SDKs, external APIs, storage, queue, cache, analytics, search, payment, provider resilience, retries, and adapter normalization contracts.
 - TypeScript UI: `packages/typescript/ui` (6 scanned files). Shared Button, Input, DataTable package and design-system extraction point.
 - TypeScript Utils: `packages/typescript/utils` (6 scanned files). Shared Supabase, API and auth utility package.
+- API Client: `packages/typescript/api-client` (4 scanned files). Shared typed Commerce API client for calling the sole API gateway from apps and runtimes.
 - API Types: `packages/typescript/api-types` (4 scanned files). Shared TypeScript domain and API contract package.
 - Dart Core: `packages/dart/core` (30 scanned files). Dart constants, config, responsive helpers and platform utility package.
 - Dart Models: `packages/dart/models` (60 scanned files). Dart commerce, seller, order, cart, analytics, return and notification models.

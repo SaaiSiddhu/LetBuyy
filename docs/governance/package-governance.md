@@ -54,6 +54,7 @@ Package `AGENTS.md` files are validated for purpose, ownership rules, forbidden 
 ## Layering
 
 - TypeScript API/domain contracts belong in their owning domain package; `packages/typescript/api-types` is an aggregate compatibility export.
+- TypeScript API transport belongs in `packages/typescript/api-client`; it must consume `@letbuyy/shared-types` and call `services/api-gateway` instead of importing service or database code.
 - TypeScript reusable UI belongs in `packages/typescript/ui`.
 - TypeScript utilities belong in `packages/typescript/utils`.
 - Dart foundation helpers belong in `packages/dart/core` and must not depend on other internal Dart packages.
