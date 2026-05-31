@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch, workerErrorResponse } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+
+function normalizePolicyStatus(value: string | null) {
+    return value === 'draft' || value === 'published' || value === 'archived' ? value : 'all'
+}
 
 export async function GET(
     request: NextRequest,
@@ -12,13 +16,11 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const searchParams = request.nextUrl.searchParams
-        const query = new URLSearchParams({
+        const payload = await createWorkerApiClient().pages.policies.list({
             store_id: resolved.storeId,
-            status: searchParams.get('status') || 'all',
+            status: normalizePolicyStatus(searchParams.get('status')),
         })
-        const workerResponse = await workerFetch(`/pages/policies?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (error) {
         return workerErrorResponse(error, 'Unable to load policies')
     }
@@ -34,15 +36,11 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/pages/policies', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
+        const payload = await createWorkerApiClient().pages.policies.create({
+            ...body,
+            store_id: resolved.storeId,
         })
-        const payload = await readWorkerJson(workerResponse)
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (error) {
         return workerErrorResponse(error, 'Unable to save policy')
     }

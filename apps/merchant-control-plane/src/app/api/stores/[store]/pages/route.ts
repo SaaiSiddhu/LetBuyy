@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch, workerErrorResponse } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+
+function normalizePageStatus(value: string | null) {
+    return value === 'draft' || value === 'published' || value === 'archived' ? value : 'all'
+}
 
 export async function GET(
     request: NextRequest,
@@ -13,16 +17,27 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const searchParams = request.nextUrl.searchParams
-        const query = new URLSearchParams({
+        const page = Number(searchParams.get('page') || '1')
+        const limit = Number(searchParams.get('limit') || '100')
+        const payload = await createWorkerApiClient().pages.list({
             store_id: resolved.storeId,
-            page: searchParams.get('page') || '1',
-            limit: searchParams.get('limit') || '100',
-            status: searchParams.get('status') || 'all',
+            page,
+            limit,
+            status: normalizePageStatus(searchParams.get('status')),
         })
-        const workerResponse = await workerFetch(`/pages?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({
+            success: true,
+            data: payload.data,
+            meta: {
+                page: payload.page,
+                per_page: payload.limit,
+                total: payload.total,
+                total_pages: Math.ceil(payload.total / Math.max(payload.limit, 1)),
+                has_next: payload.has_more,
+                has_prev: payload.page > 1,
+            },
+        })
     } catch (error) {
         return workerErrorResponse(error, 'Unable to load pages')
     }
@@ -39,16 +54,12 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/pages', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
+        const payload = await createWorkerApiClient().pages.create({
+            ...body,
+            store_id: resolved.storeId,
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (error) {
         return workerErrorResponse(error, 'Unable to create page')
     }

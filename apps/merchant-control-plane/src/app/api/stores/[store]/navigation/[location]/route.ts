@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch, workerErrorResponse } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PUT(
@@ -12,16 +12,12 @@ export async function PUT(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/pages/navigation/${encodeURIComponent(location)}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-                location,
-            }),
+        const payload = await createWorkerApiClient().pages.navigation.replace(location, {
+            ...body,
+            store_id: resolved.storeId,
+            location,
         })
-        const payload = await readWorkerJson(workerResponse)
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (error) {
         return workerErrorResponse(error, 'Unable to save navigation')
     }

@@ -7,6 +7,7 @@
 export * from '@letbuyy/shared-types';
 export {
   PageStatusSchema,
+  NavigationItemSchema,
   PolicyTypeSchema,
   ProductOptionSchema,
   SiteTypeSchema,
@@ -14,6 +15,7 @@ export {
 export type {
   FulfillmentStatus,
   InventoryLevel,
+  NavigationItem,
   Order,
   OrderItem,
   OrderStatus,

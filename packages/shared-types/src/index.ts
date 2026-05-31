@@ -511,6 +511,56 @@ export const PageSchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 });
 
+export const PolicySchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  policy_type: PolicyTypeSchema,
+  slug: SlugSchema,
+  title: z.string().min(1).max(300),
+  body: z.string().max(200000).default(''),
+  content: MetadataSchema.default({}),
+  status: PageStatusSchema.default('draft'),
+  seo_title: z.string().max(70).optional().nullable(),
+  seo_description: z.string().max(160).optional().nullable(),
+  published_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const NavigationMenuSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  handle: z.string().min(1).max(120),
+  name: z.string().min(1).max(160),
+  location: z.string().min(1).max(40),
+}).passthrough();
+
+export const NavigationItemSchema = z.object({
+  id: UuidSchema,
+  menu_id: UuidSchema,
+  store_id: UuidSchema,
+  parent_item_id: UuidSchema.optional().nullable(),
+  label: z.string().min(1).max(160),
+  url: z.string().min(1).max(500).default('#'),
+  target_type: z.string().min(1).max(40).default('url'),
+  target_resource_id: z.string().max(120).optional().nullable(),
+  sort_order: z.number().int().min(0).default(0),
+  is_visible: z.boolean().default(true),
+  open_in_new_tab: z.boolean().default(false),
+  metadata: MetadataSchema.default({}),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const NavigationResponseSchema = z.object({
+  menu: NavigationMenuSchema.nullable(),
+  items: z.array(NavigationItemSchema).default([]),
+});
+
+export const ReplaceNavigationResultSchema = z.object({
+  replaced: z.boolean(),
+  menu_id: UuidSchema,
+  count: z.number().int().min(0),
+});
+
 export const ThemeSettingFieldSchema = z.object({
   id: z.string().min(1).max(120),
   type: z.enum(['text', 'textarea', 'number', 'range', 'checkbox', 'select', 'color', 'image', 'url', 'font']),
@@ -761,6 +811,11 @@ export type Order = z.infer<typeof OrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
 export type Page = z.infer<typeof PageSchema>;
+export type Policy = z.infer<typeof PolicySchema>;
+export type NavigationMenu = z.infer<typeof NavigationMenuSchema>;
+export type NavigationItem = z.infer<typeof NavigationItemSchema>;
+export type NavigationResponse = z.infer<typeof NavigationResponseSchema>;
+export type ReplaceNavigationResult = z.infer<typeof ReplaceNavigationResultSchema>;
 export type ThemeSettingField = z.infer<typeof ThemeSettingFieldSchema>;
 export type ThemeSettings = z.infer<typeof ThemeSettingsSchema>;
 export type ThemeBlock = z.infer<typeof ThemeBlockSchema>;

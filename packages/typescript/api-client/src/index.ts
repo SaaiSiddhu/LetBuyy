@@ -10,13 +10,19 @@ import type {
   InventoryLevel,
   JsonRecord,
   LineItem,
+  NavigationItem,
+  NavigationResponse,
   Order,
   Page,
   PaginatedResponse,
   Payment,
+  Policy,
   Product,
   ProductCategory,
   ProductStatus,
+  PageStatus,
+  PolicyType,
+  ReplaceNavigationResult,
   Store,
   StoreStatus,
   Theme,
@@ -98,6 +104,14 @@ export interface ListQuery extends QueryParams {
 
 export interface StoreScopedQuery extends ListQuery {
   store_id?: string;
+}
+
+export interface PageListQuery extends StoreScopedQuery {
+  status?: PageStatus | 'all';
+}
+
+export interface PolicyListQuery extends StoreScopedQuery {
+  status?: PageStatus | 'all';
 }
 
 export interface ProductListQuery extends StoreScopedQuery {
@@ -219,6 +233,15 @@ export type CreateCustomerAddressInput = Pick<CustomerAddress, 'store_id' | 'ful
 export type UpdateCustomerAddressInput = NewRecord<CustomerAddress>;
 export type CreatePageInput = Pick<Page, 'store_id' | 'title' | 'slug'> & NewRecord<Page>;
 export type UpdatePageInput = NewRecord<Page>;
+export type CreatePolicyInput = Pick<Policy, 'store_id' | 'policy_type' | 'title'> & NewRecord<Policy>;
+export type UpdatePolicyInput = Partial<Pick<Policy, 'policy_type' | 'slug' | 'title' | 'body' | 'status' | 'seo_title' | 'seo_description'>>;
+export type NavigationItemInput = Pick<NavigationItem, 'label'> & Partial<Pick<NavigationItem, 'id' | 'url' | 'target_type' | 'target_resource_id' | 'parent_item_id' | 'sort_order' | 'is_visible' | 'open_in_new_tab'>>;
+export type ReplaceNavigationInput = {
+  store_id: string;
+  location: string;
+  name?: string;
+  items?: NavigationItemInput[];
+};
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
@@ -372,14 +395,30 @@ export class LetbuyyApiClient {
   };
 
   readonly pages = {
-    list: (query?: StoreScopedQuery, options?: LetbuyyRequestOptions) =>
+    list: (query?: PageListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Page>('/pages', { ...options, query }),
     create: (input: CreatePageInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Page>('/pages', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdatePageInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Page>(`/pages/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ id: string }>(`/pages/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+      this.requestData<{ deleted: boolean }>(`/pages/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    policies: {
+      list: (query?: PolicyListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestData<Policy[]>('/pages/policies', { ...options, query }),
+      create: (input: CreatePolicyInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<Policy>('/pages/policies', { ...options, method: 'POST', body: input }),
+      update: (id: string, input: UpdatePolicyInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<Policy>(`/pages/policies/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      remove: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/pages/policies/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    },
+    navigation: {
+      get: (query: { store_id: string; location?: string }, options?: LetbuyyRequestOptions) =>
+        this.requestData<NavigationResponse>('/pages/navigation', { ...options, query }),
+      replace: (location: string, input: ReplaceNavigationInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ReplaceNavigationResult>(`/pages/navigation/${encodePathSegment(location)}`, { ...options, method: 'PUT', body: input }),
+    },
   };
 
   readonly coupons = {
@@ -690,12 +729,17 @@ export type {
   GiftCard,
   InventoryLevel,
   LineItem,
+  NavigationItem,
+  NavigationResponse,
   Order,
   Page,
   PaginatedResponse,
   Payment,
+  Policy,
+  PolicyType,
   Product,
   ProductCategory,
+  ReplaceNavigationResult,
   Store,
   Theme,
   ThemeDraftSaveResult,
