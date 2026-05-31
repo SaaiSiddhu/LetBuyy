@@ -204,6 +204,8 @@ export const ResumeContentSectionSchema = z.enum([
 ]);
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
+export const ShippingRateTypeSchema = z.enum(['flat', 'weight_based', 'price_based', 'free']);
+export const TaxAppliesToSchema = z.enum(['all', 'shipping', 'products']);
 
 export const MoneyAmountSchema = z.object({
   amount: MoneySchema,
@@ -231,6 +233,7 @@ export const StoreSchema = AuditedEntitySchema.extend({
   theme_config: MetadataSchema.default({}),
   settings: MetadataSchema.default({}),
   navigation: MetadataSchema.default({}),
+  tax_inclusive: z.boolean().default(false),
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
@@ -531,6 +534,54 @@ export const CouponSchema = AuditedEntitySchema.extend({
   expires_at: z.string().datetime().optional().nullable(),
   is_active: z.boolean().default(true),
 });
+
+export const ShippingZoneSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100),
+  countries: z.array(z.string().min(2).max(100)).default([]),
+  states: z.array(z.string().max(100)).default([]),
+  zip_codes: z.array(z.string().max(20)).default([]),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const ShippingRateSchema = z.object({
+  id: UuidSchema,
+  zone_id: UuidSchema,
+  name: z.string().min(1).max(100),
+  type: ShippingRateTypeSchema.default('flat'),
+  price: MoneySchema.default(0),
+  min_weight_grams: z.number().int().min(0).optional().nullable(),
+  max_weight_grams: z.number().int().min(0).optional().nullable(),
+  min_order_amount: MoneySchema.optional().nullable(),
+  max_order_amount: MoneySchema.optional().nullable(),
+  estimated_days_min: z.number().int().min(0).optional().nullable(),
+  estimated_days_max: z.number().int().min(0).optional().nullable(),
+  is_active: z.boolean().default(true),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const TaxRateSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100),
+  rate: z.number().min(0).max(100),
+  country: z.string().length(2).default('IN'),
+  state: z.string().max(100).optional().nullable(),
+  hsn_code: z.string().max(20).optional().nullable(),
+  applies_to: TaxAppliesToSchema.default('all'),
+  is_compound: z.boolean().default(false),
+  is_shipping: z.boolean().default(false),
+  priority: z.number().int().min(0).default(0),
+  is_active: z.boolean().default(true),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
 
 export const PageSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
@@ -896,6 +947,8 @@ export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
 export type ResumeContentSection = z.infer<typeof ResumeContentSectionSchema>;
 export type ThemeCategory = z.infer<typeof ThemeCategorySchema>;
 export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
+export type ShippingRateType = z.infer<typeof ShippingRateTypeSchema>;
+export type TaxAppliesTo = z.infer<typeof TaxAppliesToSchema>;
 export type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
 export type Store = z.infer<typeof StoreSchema>;
 export type ProductOption = z.infer<typeof ProductOptionSchema>;
@@ -917,6 +970,9 @@ export type OrderItem = LineItem;
 export type Order = z.infer<typeof OrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
+export type ShippingZone = z.infer<typeof ShippingZoneSchema>;
+export type ShippingRate = z.infer<typeof ShippingRateSchema>;
+export type TaxRate = z.infer<typeof TaxRateSchema>;
 export type Page = z.infer<typeof PageSchema>;
 export type Policy = z.infer<typeof PolicySchema>;
 export type NavigationMenu = z.infer<typeof NavigationMenuSchema>;

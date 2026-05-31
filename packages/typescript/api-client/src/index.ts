@@ -33,8 +33,11 @@ import type {
   ResumeContentSection,
   ReviewModerationStatus,
   ReplaceNavigationResult,
+  ShippingRate,
+  ShippingZone,
   Store,
   StoreStatus,
+  TaxRate,
   Theme,
   ThemeDraftSaveResult,
   ThemeEditableSchemaResponse,
@@ -289,6 +292,13 @@ export type UpdateFormSubmissionInput = Pick<FormSubmission, 'status'>;
 export type UpdateProductReviewInput = Pick<ProductReview, 'status'>;
 export type CreateResumeContentItemInput = Pick<ResumeContentItem, 'store_id'> & Partial<ResumeContentItem>;
 export type UpdateResumeContentItemInput = Partial<ResumeContentItem>;
+export type ShippingTaxListQuery = Pick<StoreScopedQuery, 'store_id'>;
+export type CreateShippingZoneInput = Pick<ShippingZone, 'store_id' | 'name' | 'countries'> & Partial<ShippingZone>;
+export type UpdateShippingZoneInput = Partial<ShippingZone>;
+export type CreateShippingRateInput = Pick<ShippingRate, 'zone_id' | 'name' | 'type'> & Partial<ShippingRate>;
+export type UpdateShippingRateInput = Partial<ShippingRate>;
+export type CreateTaxRateInput = Pick<TaxRate, 'store_id' | 'name' | 'rate'> & Partial<TaxRate>;
+export type UpdateTaxRateInput = Partial<TaxRate>;
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
@@ -535,6 +545,40 @@ export class LetbuyyApiClient {
       remove: (section: ResumeContentSection, id: string, options?: LetbuyyRequestOptions) =>
         this.requestData<{ deleted: boolean }>(`/resume/section/${encodePathSegment(section)}/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
     },
+  };
+
+  readonly shipping = {
+    zones: {
+      list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingZone[]>('/shipping-tax/shipping/zones', { ...options, query }),
+      create: (input: CreateShippingZoneInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingZone>('/shipping-tax/shipping/zones', { ...options, method: 'POST', body: input }),
+      update: (id: string, input: UpdateShippingZoneInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingZone>(`/shipping-tax/shipping/zones/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      remove: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/shipping-tax/shipping/zones/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    },
+    rates: {
+      list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingRate[]>('/shipping-tax/shipping', { ...options, query }),
+      create: (input: CreateShippingRateInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingRate>('/shipping-tax/shipping', { ...options, method: 'POST', body: input }),
+      update: (id: string, input: UpdateShippingRateInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ShippingRate>(`/shipping-tax/shipping/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      remove: (id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/shipping-tax/shipping/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    },
+  };
+
+  readonly taxes = {
+    list: (query: ShippingTaxListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<TaxRate[]>('/shipping-tax/taxes', { ...options, query }),
+    create: (input: CreateTaxRateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<TaxRate>('/shipping-tax/taxes', { ...options, method: 'POST', body: input }),
+    update: (id: string, input: UpdateTaxRateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<TaxRate>(`/shipping-tax/taxes/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    remove: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/shipping-tax/taxes/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
   };
 
   readonly themes = {
@@ -847,7 +891,10 @@ export type {
   ResumeContentItem,
   ResumeContentSection,
   ReplaceNavigationResult,
+  ShippingRate,
+  ShippingZone,
   Store,
+  TaxRate,
   Theme,
   ThemeDraftSaveResult,
   ThemeEditableSchemaResponse,

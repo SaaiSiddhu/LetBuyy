@@ -13,7 +13,9 @@ export {
   ProductOptionSchema,
   ResumeContentSectionSchema,
   ReviewModerationStatusSchema,
+  ShippingRateTypeSchema,
   SiteTypeSchema,
+  TaxAppliesToSchema,
 } from '@letbuyy/shared-types';
 export type {
   FormSubmissionStatus,
@@ -33,9 +35,14 @@ export type {
   ResumeContentItem,
   ResumeContentSection,
   ReviewModerationStatus,
+  ShippingRate,
+  ShippingRateType,
+  ShippingZone,
   SiteType,
   Store,
   StoreStatus,
+  TaxAppliesTo,
+  TaxRate,
 } from '@letbuyy/shared-types';
 export * from '@letbuyy/tenant-core';
 export * from '@letbuyy/commerce-core';

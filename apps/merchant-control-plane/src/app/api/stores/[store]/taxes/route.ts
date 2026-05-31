@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { CreateTaxRateInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,25 +13,21 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const [storeResponse, taxesResponse] = await Promise.all([
-            workerFetch(`/stores/${resolved.storeId}`),
-            workerFetch(`/shipping-tax/taxes?store_id=${resolved.storeId}`),
+        const apiClient = createWorkerApiClient()
+        const [storePayload, rates] = await Promise.all([
+            apiClient.stores.get(resolved.storeId),
+            apiClient.taxes.list({ store_id: resolved.storeId }),
         ])
-        const storePayload = await readWorkerJson(storeResponse)
-        const taxesPayload = await readWorkerJson(taxesResponse)
 
         return NextResponse.json({
             success: true,
             data: {
-                tax_inclusive: Boolean(storePayload.data?.tax_inclusive),
-                rates: Array.isArray(taxesPayload.data) ? taxesPayload.data : [],
+                tax_inclusive: Boolean(storePayload.tax_inclusive),
+                rates,
             },
         })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load tax settings' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load tax settings')
     }
 }
 
@@ -45,20 +42,13 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/stores/${resolved.storeId}`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                tax_inclusive: Boolean(body.tax_inclusive),
-            }),
+        const payload = await createWorkerApiClient().stores.update(resolved.storeId, {
+            tax_inclusive: Boolean(body.tax_inclusive),
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to update tax settings' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to update tax settings')
     }
 }
 
@@ -73,20 +63,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/shipping-tax/taxes', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().taxes.create({
+            ...body,
+            store_id: resolved.storeId,
+        } as CreateTaxRateInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save tax rate' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to save tax rate')
     }
 }

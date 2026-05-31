@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { CreateShippingZoneInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,25 +13,21 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const [zonesResponse, ratesResponse] = await Promise.all([
-            workerFetch(`/shipping-tax/shipping/zones?store_id=${resolved.storeId}`),
-            workerFetch(`/shipping-tax/shipping?store_id=${resolved.storeId}`),
+        const apiClient = createWorkerApiClient()
+        const [zones, rates] = await Promise.all([
+            apiClient.shipping.zones.list({ store_id: resolved.storeId }),
+            apiClient.shipping.rates.list({ store_id: resolved.storeId }),
         ])
-        const zonesPayload = await readWorkerJson(zonesResponse)
-        const ratesPayload = await readWorkerJson(ratesResponse)
 
         return NextResponse.json({
             success: true,
             data: {
-                zones: Array.isArray(zonesPayload.data) ? zonesPayload.data : [],
-                rates: Array.isArray(ratesPayload.data) ? ratesPayload.data : [],
+                zones,
+                rates,
             },
         })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load shipping zones' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load shipping zones')
     }
 }
 
@@ -45,20 +42,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/shipping-tax/shipping/zones', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().shipping.zones.create({
+            ...body,
+            store_id: resolved.storeId,
+        } as CreateShippingZoneInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save shipping zone' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to save shipping zone')
     }
 }
