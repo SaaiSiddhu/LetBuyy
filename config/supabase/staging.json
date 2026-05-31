@@ -1,0 +1,11 @@
+{
+  "project_name": "letbuyy-staging",
+  "region": "ap-south-1",
+  "plan": "free",
+  "db_name": "letbuyy_staging",
+  "project_ref": "STAGING_PROJECT_REF_PLACEHOLDER",
+  "api_url": "https://STAGING_PROJECT_REF_PLACEHOLDER.supabase.co",
+  "anon_key": "STAGING_ANON_KEY_PLACEHOLDER",
+  "service_role_key": "STAGING_SERVICE_ROLE_KEY_PLACEHOLDER",
+  "db_connection_string": "postgresql://postgres:STAGING_DB_PASSWORD@db.STAGING_PROJECT_REF_PLACEHOLDER.supabase.co:5432/postgres"
+}

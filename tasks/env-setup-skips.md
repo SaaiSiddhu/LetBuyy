@@ -14,3 +14,7 @@ SKIP: Phase 1.2 reserved service Wrangler configs — Reason: `services/checkout
 - Phase 1 Task 1.2: Active worker `wrangler.toml` files prepared for staging and production with isolated names, routes, queues, R2, KV placeholders, and Hyperdrive placeholders.
 - Phase 1 Task 1.3: Wrangler placeholder replacement utility created at `scripts/cloudflare/update-wrangler-ids.mjs`.
 - Phase 1 verification: `pnpm run validate:governance` passed.
+- Phase 2 Task 2.1: Supabase staging and production placeholder project configs created in `config/supabase/`.
+- Phase 2 Task 2.2: Supabase CLI config created in `supabase/config.toml`.
+- Phase 2 Task 2.3: Supabase migration runner created at `scripts/supabase/run-migrations.mjs`.
+- Phase 2 verification: `pnpm run validate:governance` passed.
