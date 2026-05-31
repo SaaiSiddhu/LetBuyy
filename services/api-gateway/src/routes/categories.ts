@@ -8,20 +8,17 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import {
+    buildCategoryTree,
     CreateCategorySchema,
+    planCategoryCreate,
     UpdateCategorySchema,
+    type CategoryParentRecord,
+    type CategoryTreeRecord,
     type CreateCategoryInput,
     type UpdateCategoryInput,
 } from '@letbuyy/commerce-core';
 
 const router = new Hono<{ Bindings: Env }>();
-
-interface CategoryTreeRow {
-    id: string;
-    parent_id?: string | null;
-    children?: CategoryTreeRow[];
-    [key: string]: unknown;
-}
 
 interface CategoryOwnerRow {
     id: string;
@@ -107,7 +104,7 @@ router.get('/', async (c) => {
     }
 
     // Build tree structure
-    const categories = data || [];
+    const categories = (data || []) as CategoryTreeRecord[];
     const tree = buildCategoryTree(categories);
     return c.json(success(tree));
 });
@@ -126,18 +123,7 @@ router.post('/', validate('json', CreateCategorySchema), async (c) => {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    // Auto-generate slug if not provided
-    if (!body.slug) {
-        body.slug = body.name
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .slice(0, 100);
-    }
-
-    // Determine level and path
-    let level = 0;
-    let path = body.slug;
+    let parentCategory: CategoryParentRecord | null = null;
     if (body.parent_id) {
         const { data: parent } = await db
             .from('product_categories')
@@ -145,20 +131,13 @@ router.post('/', validate('json', CreateCategorySchema), async (c) => {
             .eq('id', body.parent_id)
             .single();
 
-        const parentCategory = parent as CategoryOwnerRow | null;
-        if (parentCategory && parentCategory.store_id === body.store_id) {
-            level = Number(parentCategory.level || 0) + 1;
-            path = `${parentCategory.path || body.slug}/${body.slug}`;
-        }
+        parentCategory = parent as CategoryOwnerRow | null;
     }
+    const plan = planCategoryCreate(body, parentCategory);
 
     const { data, error } = await db
         .from('product_categories')
-        .insert({
-            ...body,
-            level,
-            path,
-        })
+        .insert(plan.categoryInsert)
         .select()
         .single();
 
@@ -279,28 +258,6 @@ router.delete('/:id', async (c) => {
 });
 
 // ── Helpers ─────────────────────────────────────────────────
-
-function buildCategoryTree(categories: CategoryTreeRow[]): CategoryTreeRow[] {
-    const map = new Map<string, CategoryTreeRow>();
-    const roots: CategoryTreeRow[] = [];
-
-    for (const cat of categories) {
-        map.set(cat.id, { ...cat, children: [] });
-    }
-
-    for (const cat of categories) {
-        const node = map.get(cat.id)!;
-        if (cat.parent_id && map.has(cat.parent_id)) {
-            const parent = map.get(cat.parent_id)!;
-            parent.children = parent.children || [];
-            parent.children.push(node);
-        } else {
-            roots.push(node);
-        }
-    }
-
-    return roots;
-}
 
 async function listOwnedStoreIds(
     db: ReturnType<typeof getSupabaseAdmin>,

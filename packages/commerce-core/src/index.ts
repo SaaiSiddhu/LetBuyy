@@ -524,6 +524,33 @@ export interface ProductCreatePlan {
   initialStock: number;
 }
 
+export interface CategoryTreeRecord {
+  id: string;
+  parent_id?: string | null;
+  children?: CategoryTreeRecord[];
+  [key: string]: unknown;
+}
+
+export interface CategoryParentRecord {
+  store_id?: string | null;
+  level?: number | null;
+  path?: string | null;
+}
+
+export interface CategoryCreatePlan {
+  slug: string;
+  level: number;
+  path: string;
+  categoryInsert: Record<string, unknown>;
+}
+
+export interface ProductReviewRecord {
+  products?: { name?: string | null } | null;
+  stores?: unknown;
+  status?: ReviewModerationStatus | null;
+  is_approved?: boolean | null;
+}
+
 export function generateProductSlug(name: string): string {
   return name
     .toLowerCase()
@@ -531,6 +558,71 @@ export function generateProductSlug(name: string): string {
     .replace(/\s+/g, '-')
     .replace(/-+/g, '-')
     .slice(0, 100);
+}
+
+export function generateCategorySlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .slice(0, 100);
+}
+
+export function buildCategoryTree<TCategory extends CategoryTreeRecord>(categories: TCategory[]): TCategory[] {
+  const map = new Map<string, TCategory>();
+  const roots: TCategory[] = [];
+
+  for (const category of categories) {
+    map.set(category.id, { ...category, children: [] });
+  }
+
+  for (const category of categories) {
+    const node = map.get(category.id)!;
+    if (category.parent_id && map.has(category.parent_id)) {
+      const parent = map.get(category.parent_id)!;
+      parent.children = parent.children || [];
+      parent.children.push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+
+  return roots;
+}
+
+export function planCategoryCreate(input: CreateCategoryInput, parent?: CategoryParentRecord | null): CategoryCreatePlan {
+  const slug = input.slug || generateCategorySlug(input.name);
+  let level = 0;
+  let path = slug;
+
+  if (input.parent_id && parent?.store_id === input.store_id) {
+    level = Number(parent.level || 0) + 1;
+    path = `${parent.path || slug}/${slug}`;
+  }
+
+  return {
+    slug,
+    level,
+    path,
+    categoryInsert: {
+      ...input,
+      slug,
+      level,
+      path,
+    },
+  };
+}
+
+export function normalizeProductReviewRecord<TReview extends ProductReviewRecord>(row: TReview) {
+  const { products, stores: _stores, ...review } = row;
+  const status = review.status || (review.is_approved ? 'approved' : 'pending');
+
+  return {
+    ...review,
+    status,
+    is_approved: status === 'approved',
+    product_name: products?.name || 'Unknown product',
+  };
 }
 
 export function planProductCreate(input: CreateProductCommand): ProductCreatePlan {

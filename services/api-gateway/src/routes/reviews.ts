@@ -8,6 +8,7 @@ import {
     UpdateProductReviewSchema,
     type ReviewModerationStatus,
 } from '../schemas/review.schema';
+import { normalizeProductReviewRecord } from '@letbuyy/commerce-core';
 import type { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -178,7 +179,7 @@ router.get('/', validate('query', ListProductReviewsQuery), async (c) => {
     }
 
     const reviews = Array.isArray(data) ? (data as unknown as ProductReviewRow[]) : [];
-    return c.json(paginated(reviews.map(normalizeReview), count || 0, query.page, query.limit));
+    return c.json(paginated(reviews.map(normalizeProductReviewRecord), count || 0, query.page, query.limit));
 });
 
 router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
@@ -222,7 +223,7 @@ router.patch('/:id', validate('json', UpdateProductReviewSchema), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: 'Unable to update review' } }, 500);
     }
 
-    return c.json(success(normalizeReview({ ...(data as ProductReviewRow), status: body.status })));
+    return c.json(success(normalizeProductReviewRecord({ ...(data as ProductReviewRow), status: body.status })));
 });
 
 router.delete('/:id', async (c) => {
@@ -260,17 +261,5 @@ router.delete('/:id', async (c) => {
 
     return c.json(success({ deleted: true }));
 });
-
-function normalizeReview(row: ProductReviewRow) {
-    const { products, stores: _stores, ...review } = row;
-    const status = review.status || (review.is_approved ? 'approved' : 'pending');
-
-    return {
-        ...review,
-        status,
-        is_approved: status === 'approved',
-        product_name: products?.name || 'Unknown product',
-    };
-}
 
 export default router;
