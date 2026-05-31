@@ -7,13 +7,17 @@ import {
     COMMERCE_APPLICATION_WORKFLOWS,
     COMMERCE_EXECUTION_PIPELINES,
     defineRuntimeBridge,
-    generateProductSlug,
-    planProductUpdate,
 } from '@letbuyy/application-services';
 import { NotFoundError, ForbiddenError, ValidationError } from '../lib/errors';
 import { verifySiteOwnership } from '../lib/auth-user';
 import { SaasExecutionAdapter } from './saas-execution.adapter';
-import type { CreateProductCommand, ProductOptionInput, ProductVariantInput } from '@letbuyy/commerce-core';
+import {
+    planProductCreate,
+    planProductUpdate,
+    type CreateProductCommand,
+    type ProductOptionInput,
+    type ProductVariantInput,
+} from '@letbuyy/commerce-core';
 
 interface OwnedProductRow {
     id: string;
@@ -47,51 +51,18 @@ export class ProductExecutionAdapter {
         await this.assertStoreOwnership(input.store_id, userId, sessionStoreId, 'You do not own this store');
         await this.assertProductQuota(input.store_id);
 
-        // Generate slug from name
-        const slug = generateProductSlug(input.url_handle || input.name);
+        const createPlan = planProductCreate(input);
 
         const { data, error } = await this.db
             .from('products')
-            .insert({
-                store_id: input.store_id,
-                name: input.name,
-                slug,
-                description: input.description || '',
-                price: input.price,
-                compare_price: input.compare_price ?? null,
-                cost_per_item: input.cost_per_item ?? input.cost_price ?? null,
-                images: input.images || [],
-                category: input.category || null,
-                product_type: input.product_type || null,
-                vendor: input.vendor || null,
-                stock: input.stock ?? 10,
-                track_inventory: input.track_inventory ?? true,
-                status: input.is_active === false ? 'draft' : 'active',
-                sku: input.sku || null,
-                barcode: input.barcode || null,
-                sell_when_oos: input.sell_when_oos ?? false,
-                is_physical: input.is_physical ?? true,
-                weight: input.weight ?? null,
-                weight_unit: input.weight_unit || 'kg',
-                country_of_origin: input.country_of_origin || null,
-                hs_code: input.hs_code || null,
-                url_handle: input.url_handle || slug,
-                seo_title: input.seo_title || null,
-                seo_description: input.seo_description || null,
-                charge_tax: input.charge_tax ?? true,
-                is_active: input.is_active ?? true,
-                is_featured: input.is_featured ?? false,
-                tags: input.tags || [],
-                variants: input.variants || [],
-                display_order: input.display_order ?? 0,
-            })
+            .insert(createPlan.productInsert)
             .select()
             .single();
 
         if (error) throw new Error(`Product creation failed: ${error.message}`);
-        await this.replaceProductOptions(data.id, input.product_options || []);
-        await this.replaceProductVariants(data.id, input.price, input.variants || [], userId);
-        await this.setInventoryAvailable(data.id, null, input.stock ?? 10, userId, 'product.create');
+        await this.replaceProductOptions(data.id, createPlan.productOptions);
+        await this.replaceProductVariants(data.id, input.price, createPlan.productVariants, userId);
+        await this.setInventoryAvailable(data.id, null, createPlan.initialStock, userId, 'product.create');
         await this.recordProductUsage(input.store_id, 1, `product.create:${data.id}`, userId, data.id);
         return data;
     }

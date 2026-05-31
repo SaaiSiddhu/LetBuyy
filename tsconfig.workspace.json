@@ -19,6 +19,7 @@
     { "path": "./packages/application-services" },
     { "path": "./packages/infrastructure" },
     { "path": "./packages/runtime-composition" },
+    { "path": "./packages/typescript/api-client" },
     { "path": "./packages/typescript/api-types" },
     { "path": "./packages/typescript/ui" },
     { "path": "./packages/typescript/utils" }

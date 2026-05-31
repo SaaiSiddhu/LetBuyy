@@ -475,3 +475,128 @@ export type ShipTransferInput = z.infer<typeof ShipTransferSchema>;
 export type ReviewModerationStatus = z.infer<typeof ReviewModerationStatusSchema>;
 export type StorefrontProductReviewsQueryInput = z.infer<typeof StorefrontProductReviewsQuery>;
 export type CreateStorefrontProductReviewInput = z.infer<typeof CreateStorefrontProductReviewSchema>;
+
+export const PRODUCT_UPDATE_FIELDS = [
+  'name',
+  'description',
+  'price',
+  'compare_price',
+  'cost_per_item',
+  'images',
+  'category',
+  'product_type',
+  'vendor',
+  'stock',
+  'track_inventory',
+  'sku',
+  'barcode',
+  'sell_when_oos',
+  'is_physical',
+  'weight',
+  'weight_unit',
+  'country_of_origin',
+  'hs_code',
+  'url_handle',
+  'seo_title',
+  'seo_description',
+  'charge_tax',
+  'is_active',
+  'is_featured',
+  'tags',
+  'variants',
+  'display_order',
+] as const;
+
+export type ProductUpdateField = (typeof PRODUCT_UPDATE_FIELDS)[number];
+
+export interface ProductUpdatePlan {
+  safeUpdates: Record<string, unknown>;
+  hasOptionUpdates: boolean;
+  hasVariantUpdates: boolean;
+  hasInventoryUpdate: boolean;
+}
+
+export interface ProductCreatePlan {
+  slug: string;
+  productInsert: Record<string, unknown>;
+  productOptions: ProductOptionInput[];
+  productVariants: ProductVariantInput[];
+  initialStock: number;
+}
+
+export function generateProductSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .slice(0, 100);
+}
+
+export function planProductCreate(input: CreateProductCommand): ProductCreatePlan {
+  const slug = generateProductSlug(input.url_handle || input.name);
+  const initialStock = input.stock ?? 10;
+
+  return {
+    slug,
+    initialStock,
+    productOptions: input.product_options || [],
+    productVariants: input.variants || [],
+    productInsert: {
+      store_id: input.store_id,
+      name: input.name,
+      slug,
+      description: input.description || '',
+      price: input.price,
+      compare_price: input.compare_price ?? null,
+      cost_per_item: input.cost_per_item ?? input.cost_price ?? null,
+      images: input.images || [],
+      category: input.category || null,
+      product_type: input.product_type || null,
+      vendor: input.vendor || null,
+      stock: initialStock,
+      track_inventory: input.track_inventory ?? true,
+      status: input.is_active === false ? 'draft' : 'active',
+      sku: input.sku || null,
+      barcode: input.barcode || null,
+      sell_when_oos: input.sell_when_oos ?? false,
+      is_physical: input.is_physical ?? true,
+      weight: input.weight ?? null,
+      weight_unit: input.weight_unit || 'kg',
+      country_of_origin: input.country_of_origin || null,
+      hs_code: input.hs_code || null,
+      url_handle: input.url_handle || slug,
+      seo_title: input.seo_title || null,
+      seo_description: input.seo_description || null,
+      charge_tax: input.charge_tax ?? true,
+      is_active: input.is_active ?? true,
+      is_featured: input.is_featured ?? false,
+      tags: input.tags || [],
+      variants: input.variants || [],
+      display_order: input.display_order ?? 0,
+    },
+  };
+}
+
+export function planProductUpdate(updates: Record<string, unknown>): ProductUpdatePlan {
+  const safeUpdates: Record<string, unknown> = {};
+
+  for (const key of PRODUCT_UPDATE_FIELDS) {
+    if (updates[key] !== undefined) safeUpdates[key] = updates[key];
+  }
+
+  if (typeof safeUpdates.name === 'string' && updates.url_handle === undefined) {
+    safeUpdates.url_handle = generateProductSlug(safeUpdates.name);
+  }
+
+  if (typeof safeUpdates.is_active === 'boolean' && updates.status === undefined) {
+    safeUpdates.status = safeUpdates.is_active ? 'active' : 'draft';
+  }
+
+  return {
+    safeUpdates,
+    hasOptionUpdates: updates.product_options !== undefined,
+    hasVariantUpdates: Array.isArray(updates.variants),
+    hasInventoryUpdate: typeof updates.stock === 'number',
+  };
+}
