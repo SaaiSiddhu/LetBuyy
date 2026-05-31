@@ -6,6 +6,8 @@
 
 export * from '@letbuyy/shared-types';
 export {
+  AIGenerationStatusSchema,
+  AnalyticsPeriodSchema,
   EmployeeStatusSchema,
   MediaTypeSchema,
   FormSubmissionStatusSchema,
@@ -22,6 +24,13 @@ export {
   TaxAppliesToSchema,
 } from '@letbuyy/shared-types';
 export type {
+  AICreditBalance,
+  AIGenerationStatus,
+  AIUsageRecord,
+  AnalyticsDashboard,
+  AnalyticsMetric,
+  AnalyticsOrdersBreakdown,
+  AnalyticsPeriod,
   Employee,
   EmployeeStatus,
   FileUploadResult,

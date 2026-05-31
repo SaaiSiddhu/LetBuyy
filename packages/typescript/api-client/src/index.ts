@@ -1,4 +1,8 @@
 import type {
+  AICreditBalance,
+  AIUsageRecord,
+  AnalyticsDashboard,
+  AnalyticsOrdersBreakdown,
   ApiResponse,
   BlogComment,
   BlogCommentStatus,
@@ -122,6 +126,14 @@ export interface ListQuery extends QueryParams {
 
 export interface StoreScopedQuery extends ListQuery {
   store_id?: string;
+}
+
+export interface AnalyticsQuery extends StoreScopedQuery {
+  period?: '7d' | '30d' | '90d' | '12m' | string;
+}
+
+export interface AIUsageListQuery extends StoreScopedQuery {
+  feature?: string;
 }
 
 export interface PageListQuery extends StoreScopedQuery {
@@ -422,6 +434,20 @@ export class LetbuyyApiClient {
       this.requestData<FileUploadResult>('/upload', { ...options, method: 'POST', body: formData }),
     remove: (key: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean; storage?: string }>(`/upload/${encodePathSegment(key)}`, { ...options, method: 'DELETE' }),
+  };
+
+  readonly analytics = {
+    dashboard: (query: AnalyticsQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<AnalyticsDashboard>('/analytics/dashboard', { ...options, query }),
+    orders: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+      this.requestData<AnalyticsOrdersBreakdown>('/analytics/orders', { ...options, query }),
+  };
+
+  readonly ai = {
+    credits: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+      this.requestData<AICreditBalance>('/ai/credits', { ...options, query }),
+    usage: (query: AIUsageListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<AIUsageRecord>('/ai/usage', { ...options, query }),
   };
 
   readonly products = {
@@ -936,6 +962,10 @@ function encodePathSegment(value: string): string {
 }
 
 export type {
+  AICreditBalance,
+  AIUsageRecord,
+  AnalyticsDashboard,
+  AnalyticsOrdersBreakdown,
   BlogComment,
   BlogPost,
   Cart,

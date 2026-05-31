@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,15 +13,14 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const period = request.nextUrl.searchParams.get('period') || '30d'
-        const [dashboardResponse, ordersResponse] = await Promise.all([
-            workerFetch(`/analytics/dashboard?store_id=${encodeURIComponent(resolved.storeId)}&period=${encodeURIComponent(period)}`),
-            workerFetch(`/analytics/orders?store_id=${encodeURIComponent(resolved.storeId)}`),
+        const apiClient = createWorkerApiClient()
+        const [dashboardPayload, ordersPayload] = await Promise.all([
+            apiClient.analytics.dashboard({ store_id: resolved.storeId, period }),
+            apiClient.analytics.orders({ store_id: resolved.storeId }),
         ])
 
-        const dashboardPayload = await readWorkerJson(dashboardResponse)
-        const ordersPayload = await readWorkerJson(ordersResponse)
-        const summary = dashboardPayload?.data?.summary || {}
-        const orderBreakdown = ordersPayload?.data?.breakdown || {}
+        const summary = dashboardPayload.summary
+        const orderBreakdown = ordersPayload.breakdown
 
         return NextResponse.json({
             data: {
@@ -34,9 +33,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load analytics' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load analytics')
     }
 }

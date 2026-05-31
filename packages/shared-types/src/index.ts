@@ -195,6 +195,8 @@ export const FormSubmissionStatusSchema = z.enum([
   'spam',
 ]);
 export const MediaTypeSchema = z.enum(['image', 'video', 'audio', 'document', 'other']);
+export const AnalyticsPeriodSchema = z.enum(['7d', '30d', '90d', '12m']);
+export const AIGenerationStatusSchema = z.enum(['pending', 'completed', 'failed']);
 export const ResumeContentSectionSchema = z.enum([
   'skills',
   'education',
@@ -585,6 +587,60 @@ export const FileUploadResultSchema = z.object({
   size: z.number().int().min(0),
   content_type: z.string().max(255).optional().nullable(),
   storage: z.string().max(120).optional().nullable(),
+}).passthrough();
+
+export const AnalyticsMetricSchema = z.object({
+  value: z.number().default(0),
+  change_pct: z.number().default(0),
+  prev: z.number().default(0),
+}).passthrough();
+
+export const AnalyticsDashboardSchema = z.object({
+  period: z.string().default('30d'),
+  summary: z.object({
+    revenue: AnalyticsMetricSchema,
+    orders: AnalyticsMetricSchema,
+    products: z.number().int().min(0).default(0),
+    customers: z.number().int().min(0).default(0),
+    avg_order_value: z.number().min(0).default(0),
+  }).passthrough(),
+}).passthrough();
+
+export const AnalyticsOrdersBreakdownSchema = z.object({
+  breakdown: z.record(z.string(), z.number().int().min(0)).default({}),
+  total: z.number().int().min(0).default(0),
+}).passthrough();
+
+export const AICreditBalanceSchema = z.object({
+  store_id: UuidSchema,
+  balance: z.number().int().min(0).default(0),
+  plan_credits: z.number().int().min(0).default(0),
+  bonus_credits: z.number().int().min(0).default(0),
+  total_used: z.number().int().min(0).default(0),
+  total_purchased: z.number().int().min(0).default(0),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AIUsageRecordSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  user_id: UuidSchema.optional().nullable(),
+  feature: z.string().min(1).max(120),
+  prompt: z.string().max(20000).optional().nullable(),
+  output: z.string().max(200000).optional().nullable(),
+  tokens_input: z.number().int().min(0).default(0),
+  tokens_output: z.number().int().min(0).default(0),
+  credits_used: z.number().int().min(0).default(0),
+  model: z.string().max(120).optional().nullable(),
+  provider: z.string().max(120).optional().nullable(),
+  latency_ms: z.number().int().min(0).optional().nullable(),
+  status: AIGenerationStatusSchema.or(z.string().min(1).max(80)).default('completed'),
+  error_message: z.string().max(1000).optional().nullable(),
+  user_rating: z.number().int().min(1).max(5).optional().nullable(),
+  user_feedback: z.string().max(2000).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
 }).passthrough();
 
 export const CouponSchema = AuditedEntitySchema.extend({
@@ -1016,6 +1072,8 @@ export type BlogPostStatus = z.infer<typeof BlogPostStatusSchema>;
 export type BlogCommentStatus = z.infer<typeof BlogCommentStatusSchema>;
 export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
 export type MediaType = z.infer<typeof MediaTypeSchema>;
+export type AnalyticsPeriod = z.infer<typeof AnalyticsPeriodSchema>;
+export type AIGenerationStatus = z.infer<typeof AIGenerationStatusSchema>;
 export type ResumeContentSection = z.infer<typeof ResumeContentSectionSchema>;
 export type ThemeCategory = z.infer<typeof ThemeCategorySchema>;
 export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
@@ -1047,6 +1105,11 @@ export type EmployeeStatus = z.infer<typeof EmployeeStatusSchema>;
 export type Employee = z.infer<typeof EmployeeSchema>;
 export type MediaAsset = z.infer<typeof MediaAssetSchema>;
 export type FileUploadResult = z.infer<typeof FileUploadResultSchema>;
+export type AnalyticsMetric = z.infer<typeof AnalyticsMetricSchema>;
+export type AnalyticsDashboard = z.infer<typeof AnalyticsDashboardSchema>;
+export type AnalyticsOrdersBreakdown = z.infer<typeof AnalyticsOrdersBreakdownSchema>;
+export type AICreditBalance = z.infer<typeof AICreditBalanceSchema>;
+export type AIUsageRecord = z.infer<typeof AIUsageRecordSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
 export type ShippingZone = z.infer<typeof ShippingZoneSchema>;
 export type ShippingRate = z.infer<typeof ShippingRateSchema>;
