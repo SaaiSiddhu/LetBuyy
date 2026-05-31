@@ -194,6 +194,14 @@ export const FormSubmissionStatusSchema = z.enum([
   'archived',
   'spam',
 ]);
+export const ResumeContentSectionSchema = z.enum([
+  'skills',
+  'education',
+  'work_experience',
+  'certifications',
+  'testimonials',
+  'projects',
+]);
 export const ThemeCategorySchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'landing', 'saas']);
 export const ThemePricingTypeSchema = z.enum(['free', 'one_time', 'subscription']);
 
@@ -645,6 +653,15 @@ export const FormSubmissionSchema = AuditedEntitySchema.extend({
   source: z.string().max(2000).optional().nullable(),
 }).passthrough();
 
+export const ResumeContentItemSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  display_order: z.number().int().min(0).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
 export const ThemeSettingFieldSchema = z.object({
   id: z.string().min(1).max(120),
   type: z.enum(['text', 'textarea', 'number', 'range', 'checkbox', 'select', 'color', 'image', 'url', 'font']),
@@ -876,6 +893,7 @@ export type PolicyType = z.infer<typeof PolicyTypeSchema>;
 export type BlogPostStatus = z.infer<typeof BlogPostStatusSchema>;
 export type BlogCommentStatus = z.infer<typeof BlogCommentStatusSchema>;
 export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
+export type ResumeContentSection = z.infer<typeof ResumeContentSectionSchema>;
 export type ThemeCategory = z.infer<typeof ThemeCategorySchema>;
 export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
 export type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
@@ -908,6 +926,7 @@ export type ReplaceNavigationResult = z.infer<typeof ReplaceNavigationResultSche
 export type BlogPost = z.infer<typeof BlogPostSchema>;
 export type BlogComment = z.infer<typeof BlogCommentSchema>;
 export type FormSubmission = z.infer<typeof FormSubmissionSchema>;
+export type ResumeContentItem = z.infer<typeof ResumeContentItemSchema>;
 export type ThemeSettingField = z.infer<typeof ThemeSettingFieldSchema>;
 export type ThemeSettings = z.infer<typeof ThemeSettingsSchema>;
 export type ThemeBlock = z.infer<typeof ThemeBlockSchema>;

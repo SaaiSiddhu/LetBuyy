@@ -29,6 +29,8 @@ import type {
   ProductStatus,
   PageStatus,
   PolicyType,
+  ResumeContentItem,
+  ResumeContentSection,
   ReviewModerationStatus,
   ReplaceNavigationResult,
   Store,
@@ -144,6 +146,8 @@ export interface ProductReviewListQuery extends StoreScopedQuery {
   status?: ReviewModerationStatus | 'all';
   product_id?: string;
 }
+
+export type ResumeContentListQuery = Pick<StoreScopedQuery, 'store_id'>;
 
 export interface ProductListQuery extends StoreScopedQuery {
   category?: string;
@@ -283,6 +287,8 @@ export type UpdateBlogPostInput = NewRecord<BlogPost> & {
 export type UpdateBlogCommentInput = Pick<BlogComment, 'status'>;
 export type UpdateFormSubmissionInput = Pick<FormSubmission, 'status'>;
 export type UpdateProductReviewInput = Pick<ProductReview, 'status'>;
+export type CreateResumeContentItemInput = Pick<ResumeContentItem, 'store_id'> & Partial<ResumeContentItem>;
+export type UpdateResumeContentItemInput = Partial<ResumeContentItem>;
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
@@ -516,6 +522,19 @@ export class LetbuyyApiClient {
       this.requestData<ProductReview>(`/reviews/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean }>(`/reviews/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+  };
+
+  readonly resume = {
+    content: {
+      list: (section: ResumeContentSection, query: ResumeContentListQuery, options?: LetbuyyRequestOptions) =>
+        this.requestData<ResumeContentItem[]>(`/resume/section/${encodePathSegment(section)}`, { ...options, query }),
+      create: (section: ResumeContentSection, input: CreateResumeContentItemInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ResumeContentItem>(`/resume/section/${encodePathSegment(section)}`, { ...options, method: 'POST', body: input }),
+      update: (section: ResumeContentSection, id: string, input: UpdateResumeContentItemInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<ResumeContentItem>(`/resume/section/${encodePathSegment(section)}/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+      remove: (section: ResumeContentSection, id: string, options?: LetbuyyRequestOptions) =>
+        this.requestData<{ deleted: boolean }>(`/resume/section/${encodePathSegment(section)}/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+    },
   };
 
   readonly themes = {
@@ -825,6 +844,8 @@ export type {
   Product,
   ProductCategory,
   ProductReview,
+  ResumeContentItem,
+  ResumeContentSection,
   ReplaceNavigationResult,
   Store,
   Theme,

@@ -11,6 +11,7 @@ export {
   NavigationItemSchema,
   PolicyTypeSchema,
   ProductOptionSchema,
+  ResumeContentSectionSchema,
   ReviewModerationStatusSchema,
   SiteTypeSchema,
 } from '@letbuyy/shared-types';
@@ -29,6 +30,8 @@ export type {
   ProductOption,
   ProductStatus,
   ProductVariant,
+  ResumeContentItem,
+  ResumeContentSection,
   ReviewModerationStatus,
   SiteType,
   Store,

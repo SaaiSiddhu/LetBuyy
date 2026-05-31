@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { CreateResumeContentItemInput, ResumeContentSection } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,16 +13,13 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const query = new URLSearchParams({ store_id: resolved.storeId })
-        const workerResponse = await workerFetch(`/resume/section/${encodeURIComponent(section)}?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().resume.content.list(section as ResumeContentSection, {
+            store_id: resolved.storeId,
+        })
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load content section' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load content section')
     }
 }
 
@@ -36,20 +34,16 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/resume/section/${encodeURIComponent(section)}`, {
-            method: 'POST',
-            body: JSON.stringify({
+        const payload = await createWorkerApiClient().resume.content.create(
+            section as ResumeContentSection,
+            {
                 ...body,
                 store_id: resolved.storeId,
-            }),
-        })
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
-    } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save content item' },
-            { status: 500 }
+            } as CreateResumeContentItemInput
         )
+
+        return NextResponse.json({ success: true, data: payload })
+    } catch (err) {
+        return workerErrorResponse(err, 'Unable to save content item')
     }
 }
