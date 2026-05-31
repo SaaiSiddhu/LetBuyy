@@ -387,6 +387,51 @@ export type StorefrontCustomerOrdersResult = {
   orders: JsonRecord[];
 };
 
+export interface StorefrontCustomerSessionQuery extends QueryParams {
+  customer_id: string;
+  store_id: string;
+  customer_email: string;
+}
+
+export type StorefrontCustomerProfileInput = {
+  customer_id: string;
+  store_id: string;
+  full_name?: string | null;
+  phone?: string | null;
+  accepts_marketing?: boolean;
+};
+
+export type StorefrontCustomerProfileResult = {
+  customer: StorefrontCustomerRecord | null;
+};
+
+export type StorefrontCustomerAddressRecord = CustomerAddress & {
+  customer_email?: string | null;
+  customer_phone?: string | null;
+};
+
+export type StorefrontCustomerAddressListResult = {
+  addresses: StorefrontCustomerAddressRecord[];
+};
+
+export type StorefrontCustomerAddressInput = StorefrontCustomerSessionQuery & {
+  customer_phone?: string | null;
+  label?: string | null;
+  full_name?: string;
+  address_line1?: string;
+  address_line2?: string | null;
+  city?: string;
+  state?: string;
+  postal_code?: string;
+  country?: string | null;
+  landmark?: string | null;
+  is_default?: boolean;
+};
+
+export type StorefrontCustomerAddressResult = {
+  address: StorefrontCustomerAddressRecord;
+};
+
 export interface StorefrontProductReviewsQuery extends QueryParams {
   product_id: string;
   store_id: string;
@@ -1059,6 +1104,16 @@ export class LetbuyyApiClient {
       this.requestData<{ synced: number }>('/storefront/customer/wishlist/sync', { ...options, method: 'POST', body: input }),
     customerOrders: (query: StorefrontCustomerLookupQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerOrdersResult>('/storefront/customer/orders', { ...options, query }),
+    updateCustomerProfile: (input: StorefrontCustomerProfileInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerProfileResult>('/storefront/customer/profile', { ...options, method: 'PATCH', body: input }),
+    customerAddresses: (query: StorefrontCustomerSessionQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerAddressListResult>('/storefront/customer/addresses', { ...options, query }),
+    createCustomerAddress: (input: StorefrontCustomerAddressInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerAddressResult>('/storefront/customer/addresses', { ...options, method: 'POST', body: input }),
+    updateCustomerAddress: (id: string, input: StorefrontCustomerAddressInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerAddressResult>(`/storefront/customer/addresses/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    removeCustomerAddress: (id: string, input: StorefrontCustomerSessionQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/storefront/customer/addresses/${encodePathSegment(id)}`, { ...options, method: 'DELETE', body: input }),
     productReviews: (query: StorefrontProductReviewsQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontProductReviewsResult>('/storefront/reviews', { ...options, query }),
     submitProductReview: (input: StorefrontProductReviewInput, options?: LetbuyyRequestOptions) =>

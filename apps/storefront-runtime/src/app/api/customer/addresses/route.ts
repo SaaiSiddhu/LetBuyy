@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/worker-client';
 
 // ── GET — List all addresses for current customer ──────────
 export async function GET() {
@@ -18,15 +18,14 @@ export async function GET() {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        const query = new URLSearchParams({
+        const query = {
             customer_id: session.sub!,
             store_id: session.storeId,
             customer_email: session.email,
-        });
-        const response = await workerFetch(`/storefront/customer/addresses?${query.toString()}`);
-        const payload = await readWorkerJson(response);
+        };
+        const payload = await createStorefrontApiClient().storefront.customerAddresses(query);
 
-        return NextResponse.json(payload.data || { addresses: [] });
+        return NextResponse.json(payload || { addresses: [] });
     } catch (error) {
         console.error('[API] GET /customer/addresses error:', error);
         return NextResponse.json({ error: 'Failed to fetch addresses' }, { status: 500 });
@@ -54,28 +53,24 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const response = await workerFetch('/storefront/customer/addresses', {
-            method: 'POST',
-            body: JSON.stringify({
-                customer_id: session.sub,
-                store_id: session.storeId,
-                customer_email: session.email,
-                customer_phone: body.phone || null,
-                label: label || 'home',
-                full_name,
-                address_line1,
-                address_line2: address_line2 || null,
-                city,
-                state,
-                postal_code,
-                country: country || 'IN',
-                landmark: landmark || null,
-                is_default: is_default || false,
-            }),
+        const payload = await createStorefrontApiClient().storefront.createCustomerAddress({
+            customer_id: session.sub,
+            store_id: session.storeId,
+            customer_email: session.email,
+            customer_phone: body.phone || null,
+            label: label || 'home',
+            full_name,
+            address_line1,
+            address_line2: address_line2 || null,
+            city,
+            state,
+            postal_code,
+            country: country || 'IN',
+            landmark: landmark || null,
+            is_default: is_default || false,
         });
-        const payload = await readWorkerJson(response);
 
-        return NextResponse.json(payload.data, { status: 201 });
+        return NextResponse.json(payload, { status: 201 });
     } catch (error) {
         console.error('[API] POST /customer/addresses error:', error);
         return NextResponse.json({ error: 'Failed to add address' }, { status: 500 });
@@ -97,18 +92,14 @@ export async function PUT(request: NextRequest) {
             return NextResponse.json({ error: 'Address ID is required' }, { status: 400 });
         }
 
-        const response = await workerFetch(`/storefront/customer/addresses/${encodeURIComponent(id)}`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                ...updateData,
-                customer_id: session.sub,
-                store_id: session.storeId,
-                customer_email: session.email,
-            }),
+        const payload = await createStorefrontApiClient().storefront.updateCustomerAddress(id, {
+            ...updateData,
+            customer_id: session.sub,
+            store_id: session.storeId,
+            customer_email: session.email,
         });
-        const payload = await readWorkerJson(response);
 
-        return NextResponse.json(payload.data);
+        return NextResponse.json(payload);
     } catch (error) {
         console.error('[API] PUT /customer/addresses error:', error);
         return NextResponse.json({ error: 'Failed to update address' }, { status: 500 });
@@ -129,15 +120,11 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'Address ID is required' }, { status: 400 });
         }
 
-        const response = await workerFetch(`/storefront/customer/addresses/${encodeURIComponent(id)}`, {
-            method: 'DELETE',
-            body: JSON.stringify({
-                customer_id: session.sub,
-                store_id: session.storeId,
-                customer_email: session.email,
-            }),
+        await createStorefrontApiClient().storefront.removeCustomerAddress(id, {
+            customer_id: session.sub,
+            store_id: session.storeId,
+            customer_email: session.email,
         });
-        await readWorkerJson(response);
 
         return NextResponse.json({ success: true });
     } catch (error) {

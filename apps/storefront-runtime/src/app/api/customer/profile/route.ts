@@ -1,7 +1,7 @@
 // PATCH /api/customer/profile — Update customer profile
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/session';
-import { readWorkerJson, workerFetch } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/worker-client';
 
 export async function PATCH(request: NextRequest) {
     try {
@@ -17,17 +17,13 @@ export async function PATCH(request: NextRequest) {
             return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
         }
 
-        const response = await workerFetch('/storefront/customer/profile', {
-            method: 'PATCH',
-            body: JSON.stringify({
-                customer_id: session.sub,
-                store_id: session.storeId,
-                full_name: updates.full_name,
-                phone: updates.phone,
-                accepts_marketing: updates.accepts_marketing,
-            }),
+        await createStorefrontApiClient().storefront.updateCustomerProfile({
+            customer_id: session.sub,
+            store_id: session.storeId,
+            full_name: updates.full_name as string | null | undefined,
+            phone: updates.phone as string | null | undefined,
+            accepts_marketing: updates.accepts_marketing as boolean | undefined,
         });
-        await readWorkerJson(response);
 
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
