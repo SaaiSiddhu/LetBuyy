@@ -118,7 +118,20 @@ export const SiteTypeSchema = z.enum(['store', 'portfolio', 'resume', 'blog', 'l
 export const StoreStatusSchema = z.enum(['draft', 'published', 'frozen', 'suspended']);
 export const ProductStatusSchema = z.enum(['draft', 'active', 'archived']);
 export const InventoryPolicySchema = z.enum(['deny', 'continue']);
+export const InventoryAdjustmentReasonSchema = z.enum([
+  'received',
+  'sold',
+  'returned',
+  'damaged',
+  'correction',
+  'transfer',
+  'sale',
+  'return',
+  'adjustment',
+  'recount',
+]);
 export const CollectionStatusSchema = z.enum(['draft', 'active', 'archived']);
+export const GiftCardStatusSchema = z.enum(['active', 'redeemed', 'expired', 'disabled']);
 export const CustomerStatusSchema = z.enum(['active', 'disabled', 'invited']);
 export const CartStatusSchema = z.enum(['active', 'converted', 'abandoned', 'expired']);
 export const OrderStatusSchema = z.enum([
@@ -260,6 +273,21 @@ export const ProductSchema = AuditedEntitySchema.extend({
   metadata: MetadataSchema.default({}),
 });
 
+export const ProductCategorySchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  name: z.string().min(1).max(100),
+  slug: SlugSchema,
+  description: z.string().max(500).optional().nullable(),
+  image_url: UrlSchema.optional().nullable(),
+  parent_id: UuidSchema.optional().nullable(),
+  display_order: z.number().int().min(0).default(0),
+  is_visible: z.boolean().default(true),
+  level: z.number().int().min(0).default(0),
+  path: z.string().max(500).optional().nullable(),
+  products_count: z.number().int().min(0).optional(),
+  children: z.array(z.unknown()).optional(),
+});
+
 export const CollectionRuleSchema = z.object({
   field: z.string().min(1).max(80),
   relation: z.enum(['equals', 'not_equals', 'contains', 'greater_than', 'less_than']),
@@ -279,6 +307,37 @@ export const CollectionSchema = AuditedEntitySchema.extend({
   rules: z.array(CollectionRuleSchema).max(50).default([]),
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
+});
+
+export const GiftCardSchema = AuditedEntitySchema.extend({
+  store_id: UuidSchema,
+  code: z.string().min(4).max(80),
+  initial_value: MoneySchema,
+  balance: MoneySchema,
+  currency: CurrencySchema,
+  status: GiftCardStatusSchema.default('active'),
+  expires_at: z.string().datetime().optional().nullable(),
+  redeemed_at: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+});
+
+export const InventoryLevelSchema = z.object({
+  id: z.string().min(1),
+  product_id: UuidSchema,
+  variant_id: UuidSchema.optional().nullable(),
+  location_id: UuidSchema.optional().nullable(),
+  product_name: z.string().min(1).max(256),
+  variant_title: z.string().max(200).optional().nullable(),
+  sku: z.string().max(100).optional().nullable(),
+  images: z.array(UrlSchema).default([]),
+  location_name: z.string().max(200),
+  available: z.number().int(),
+  reserved: z.number().int(),
+  incoming: z.number().int(),
+  on_hand: z.number().int(),
+  sellable: z.number().int(),
+  track_inventory: z.boolean(),
+  updated_at: z.string().datetime().optional().nullable(),
 });
 
 export const CustomerAddressSchema = AuditedEntitySchema.extend({
@@ -545,7 +604,9 @@ export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
 export type InventoryPolicy = z.infer<typeof InventoryPolicySchema>;
+export type InventoryAdjustmentReason = z.infer<typeof InventoryAdjustmentReasonSchema>;
 export type CollectionStatus = z.infer<typeof CollectionStatusSchema>;
+export type GiftCardStatus = z.infer<typeof GiftCardStatusSchema>;
 export type CustomerStatus = z.infer<typeof CustomerStatusSchema>;
 export type CartStatus = z.infer<typeof CartStatusSchema>;
 export type OrderStatus = z.infer<typeof OrderStatusSchema>;
@@ -564,8 +625,11 @@ export type ProductOption = z.infer<typeof ProductOptionSchema>;
 export type Variant = z.infer<typeof VariantSchema>;
 export type ProductVariant = Variant;
 export type Product = z.infer<typeof ProductSchema>;
+export type ProductCategory = z.infer<typeof ProductCategorySchema>;
 export type CollectionRule = z.infer<typeof CollectionRuleSchema>;
 export type Collection = z.infer<typeof CollectionSchema>;
+export type GiftCard = z.infer<typeof GiftCardSchema>;
+export type InventoryLevel = z.infer<typeof InventoryLevelSchema>;
 export type CustomerAddress = z.infer<typeof CustomerAddressSchema>;
 export type Customer = z.infer<typeof CustomerSchema>;
 export type CartLine = z.infer<typeof CartLineSchema>;

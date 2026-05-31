@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,15 +12,14 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/categories?store_id=${resolved.storeId}&flat=true`)
-        const payload = await readWorkerJson(workerResponse)
+        const categories = await createWorkerApiClient().categories.list({
+            store_id: resolved.storeId,
+            flat: true,
+        })
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: categories })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load categories' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load categories')
     }
 }
 
@@ -35,20 +34,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/categories', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
+        const category = await createWorkerApiClient().categories.create({
+            ...body,
+            store_id: resolved.storeId,
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: category }, { status: 201 })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to save category' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to save category')
     }
 }

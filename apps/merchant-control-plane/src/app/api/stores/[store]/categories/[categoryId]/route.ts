@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -13,18 +13,11 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/categories/${encodeURIComponent(categoryId)}`, {
-            method: 'PATCH',
-            body: JSON.stringify(body),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const category = await createWorkerApiClient().categories.update(categoryId, body)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: category })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to update category' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to update category')
     }
 }
 
@@ -38,16 +31,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/categories/${encodeURIComponent(categoryId)}`, {
-            method: 'DELETE',
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().categories.remove(categoryId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to delete category' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to delete category')
     }
 }

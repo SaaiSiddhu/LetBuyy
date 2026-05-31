@@ -5,12 +5,17 @@ import type {
   Coupon,
   Customer,
   CustomerAddress,
+  GiftCard,
+  InventoryAdjustmentReason,
+  InventoryLevel,
+  JsonRecord,
   LineItem,
   Order,
   Page,
   PaginatedResponse,
   Payment,
   Product,
+  ProductCategory,
   ProductStatus,
   Store,
   StoreStatus,
@@ -94,6 +99,15 @@ export interface ProductListQuery extends StoreScopedQuery {
   status?: ProductStatus | 'inactive' | 'all';
 }
 
+export interface CategoryListQuery extends StoreScopedQuery {
+  flat?: boolean;
+}
+
+export interface InventoryLevelQuery extends StoreScopedQuery {
+  product_id?: string;
+  low_stock?: boolean;
+}
+
 export interface OrderListQuery extends StoreScopedQuery {
   status?: string;
   payment_status?: string;
@@ -128,6 +142,25 @@ export type UpdateStoreInput = Partial<NewRecord<Store>> & { status?: StoreStatu
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
 export type UpdateProductInput = NewRecord<Product>;
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
+export type CreateProductCategoryInput = Pick<ProductCategory, 'store_id' | 'name'> & NewRecord<ProductCategory>;
+export type UpdateProductCategoryInput = NewRecord<ProductCategory>;
+export type CreateGiftCardInput = Pick<GiftCard, 'store_id' | 'initial_value'> & NewRecord<GiftCard>;
+export type InventoryAdjustInput = {
+  product_id: string;
+  variant_id?: string | null;
+  location_id?: string | null;
+  adjustment: number;
+  reason: InventoryAdjustmentReason;
+  notes?: string | null;
+};
+export type ProductImportInput = {
+  store_id: string;
+  csv: string;
+};
+export type ProductImportResult = {
+  imported: number;
+  products: Array<{ id: string; name: string }>;
+};
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
 export type UpdateOrderInput = Partial<Pick<Order, 'status' | 'payment_status' | 'fulfillment_status' | 'tracking_number' | 'tracking_url' | 'notes'>>;
 export type CreateCustomerAddressInput = Pick<CustomerAddress, 'store_id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code'> & NewRecord<CustomerAddress>;
@@ -224,6 +257,34 @@ export class LetbuyyApiClient {
       create: (input: CreateCollectionInput, options?: LetbuyyRequestOptions) =>
         this.requestData<Collection>('/products/collections', { ...options, method: 'POST', body: input }),
     },
+    giftCards: {
+      list: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+        this.requestData<GiftCard[]>('/products/gift-cards', { ...options, query }),
+      create: (input: CreateGiftCardInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<GiftCard>('/products/gift-cards', { ...options, method: 'POST', body: input }),
+    },
+    importCsv: (input: ProductImportInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ProductImportResult>('/export/import-products', { ...options, method: 'POST', body: input }),
+  };
+
+  readonly categories = {
+    list: (query?: CategoryListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<ProductCategory[]>('/categories', { ...options, query }),
+    get: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<ProductCategory>(`/categories/${encodePathSegment(id)}`, options),
+    create: (input: CreateProductCategoryInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ProductCategory>('/categories', { ...options, method: 'POST', body: input }),
+    update: (id: string, input: UpdateProductCategoryInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ProductCategory>(`/categories/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    remove: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/categories/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+  };
+
+  readonly inventory = {
+    levels: (query?: InventoryLevelQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<InventoryLevel>('/inventory/levels', { ...options, query }),
+    adjust: (input: InventoryAdjustInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>('/inventory/adjust', { ...options, method: 'POST', body: input }),
   };
 
   readonly orders = {
@@ -542,12 +603,15 @@ export type {
   Coupon,
   Customer,
   CustomerAddress,
+  GiftCard,
+  InventoryLevel,
   LineItem,
   Order,
   Page,
   PaginatedResponse,
   Payment,
   Product,
+  ProductCategory,
   Store,
   Theme,
 };

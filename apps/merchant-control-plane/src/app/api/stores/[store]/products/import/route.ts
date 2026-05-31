@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function POST(
@@ -13,20 +13,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/export/import-products', {
-            method: 'POST',
-            body: JSON.stringify({
-                store_id: resolved.storeId,
-                csv: body.csv,
-            }),
+        const payload = await createWorkerApiClient().products.importCsv({
+            store_id: resolved.storeId,
+            csv: body.csv,
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: payload }, { status: 201 })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to import products' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to import products')
     }
 }

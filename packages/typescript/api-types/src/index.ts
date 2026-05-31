@@ -13,6 +13,7 @@ export {
 } from '@letbuyy/shared-types';
 export type {
   FulfillmentStatus,
+  InventoryLevel,
   Order,
   OrderItem,
   OrderStatus,

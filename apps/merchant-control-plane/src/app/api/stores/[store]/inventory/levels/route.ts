@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+import type { InventoryLevelQuery } from '@letbuyy/api-client'
 
 export async function GET(
     request: NextRequest,
@@ -13,19 +14,26 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const { searchParams } = new URL(request.url)
-        const query = new URLSearchParams({
+        const query: InventoryLevelQuery = {
             store_id: resolved.storeId,
-            page: searchParams.get('page') || '1',
-            limit: searchParams.get('limit') || '100',
+            page: Number(searchParams.get('page') || '1'),
+            limit: Number(searchParams.get('limit') || '100'),
+        }
+
+        if (searchParams.get('product_id')) query.product_id = searchParams.get('product_id')!
+        if (searchParams.get('low_stock')) query.low_stock = searchParams.get('low_stock') === 'true'
+
+        const inventory = await createWorkerApiClient().inventory.levels(query)
+
+        return NextResponse.json({
+            data: inventory.data,
+            meta: {
+                total: inventory.total,
+                page: inventory.page,
+                per_page: inventory.limit,
+                has_next: inventory.has_more,
+            },
         })
-
-        if (searchParams.get('product_id')) query.set('product_id', searchParams.get('product_id')!)
-        if (searchParams.get('low_stock')) query.set('low_stock', searchParams.get('low_stock')!)
-
-        const workerResponse = await workerFetch(`/inventory/levels?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
     } catch (err) {
         return workerErrorResponse(err, 'Unable to load inventory')
     }

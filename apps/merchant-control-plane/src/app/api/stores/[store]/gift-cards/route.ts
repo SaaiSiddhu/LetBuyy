@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,15 +12,13 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/products/gift-cards?store_id=${encodeURIComponent(resolved.storeId)}`)
-        const payload = await readWorkerJson(workerResponse)
+        const giftCards = await createWorkerApiClient().products.giftCards.list({
+            store_id: resolved.storeId,
+        })
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: giftCards })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load gift cards' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load gift cards')
     }
 }
 
@@ -35,20 +33,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/products/gift-cards', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
+        const giftCard = await createWorkerApiClient().products.giftCards.create({
+            ...body,
+            store_id: resolved.storeId,
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: giftCard }, { status: 201 })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to issue gift card' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to issue gift card')
     }
 }
