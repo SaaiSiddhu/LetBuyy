@@ -1,4 +1,15 @@
 export {
+  CollectionSchema as CollectionContractSchema,
+  ProductSchema as ProductContractSchema,
+  ProductOptionSchema as ProductOptionContractSchema,
+  VariantSchema as VariantContractSchema,
+  type Collection,
+  type Product,
+  type ProductOption,
+  type Variant,
+} from '@letbuyy/shared-types';
+
+export {
   ProductVariantSchema,
   ProductOptionSchema,
   CreateProductSchema,

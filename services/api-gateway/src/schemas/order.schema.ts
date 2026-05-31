@@ -1,4 +1,17 @@
 export {
+  CartLineSchema as CartLineContractSchema,
+  CartSchema as CartContractSchema,
+  LineItemSchema as LineItemContractSchema,
+  OrderSchema as OrderContractSchema,
+  PaymentSchema as PaymentContractSchema,
+  type Cart,
+  type CartLine,
+  type LineItem,
+  type Order,
+  type Payment,
+} from '@letbuyy/shared-types';
+
+export {
   OrderItemInput,
   CreateOrderSchema,
   StorefrontCreateOrderSchema,

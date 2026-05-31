@@ -1,4 +1,17 @@
 export {
+  ThemeBlockSchema as ThemeBlockContractSchema,
+  ThemeBundleSchema as ThemeBundleContractSchema,
+  ThemeSchema as ThemeContractSchema,
+  ThemeSectionSchema as ThemeSectionContractSchema,
+  ThemeTemplateSchema as ThemeTemplateContractSchema,
+  type Theme,
+  type ThemeBlock,
+  type ThemeBundle,
+  type ThemeSection,
+  type ThemeTemplate,
+} from '@letbuyy/shared-types';
+
+export {
   ThemeSlugParamSchema,
   ThemeStoreQuerySchema,
   InstallThemeSchema,
