@@ -3,40 +3,17 @@ import type { Env } from '../index';
 import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
+import {
+    appStoreStringArray as stringArray,
+    appStoreStringOrNull as stringOrNull,
+    isAppStoreUuid as isUuid,
+    parseAppStoreJsonRecord as parseJsonRecord,
+    planAppDeveloperRegistration,
+    planMarketplaceAppSubmission,
+    type AppEngineJsonRecord,
+} from '@letbuyy/app-engine';
 
 const router = new Hono<{ Bindings: Env }>();
-
-type JsonRecord = Record<string, unknown>;
-
-function slugify(value: string): string {
-    return value
-        .toLowerCase()
-        .trim()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-|-$/g, '');
-}
-
-function isNonEmptyString(value: unknown): value is string {
-    return typeof value === 'string' && value.trim().length > 0;
-}
-
-function stringOrNull(value: unknown): string | null {
-    return isNonEmptyString(value) ? value.trim() : null;
-}
-
-function stringArray(value: unknown): string[] {
-    if (!Array.isArray(value)) return [];
-    return value.filter((item): item is string => typeof item === 'string' && item.trim().length > 0);
-}
-
-function parseJsonRecord(value: unknown): JsonRecord {
-    if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
-    return value as JsonRecord;
-}
-
-function isUuid(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
-}
 
 // GET /app-store/categories — List active app categories
 router.get('/categories', async (c) => {
@@ -404,7 +381,7 @@ router.get('/developers/me', authMiddleware, async (c) => {
 // POST /app-store/developers/register — Register current user as an app developer
 router.post('/developers/register', authMiddleware, async (c) => {
     const auth = c.get('auth');
-    const body = await c.req.json();
+    const body = await c.req.json() as AppEngineJsonRecord;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -412,31 +389,14 @@ router.post('/developers/register', authMiddleware, async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const companyName = stringOrNull(body.company_name);
-    const supportEmail = stringOrNull(body.support_email || body.contact_email);
-
-    if (!companyName || !supportEmail) {
-        return c.json({ error: { code: 'VALIDATION', message: 'company_name and support_email are required' } }, 400);
-    }
-
-    const slug = slugify(companyName);
-    if (!slug) {
-        return c.json({ error: { code: 'VALIDATION', message: 'company_name must contain letters or numbers' } }, 400);
+    const registration = planAppDeveloperRegistration(body, customUser.id);
+    if (!registration.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: registration.message } }, 400);
     }
 
     const { data: developer, error } = await db
         .from('app_developers')
-        .insert({
-            user_id: customUser.id,
-            company_name: companyName,
-            slug,
-            website_url: stringOrNull(body.website_url || body.website),
-            support_email: supportEmail,
-            description: stringOrNull(body.description || body.bio),
-            country: stringOrNull(body.country) || 'IN',
-            status: 'pending',
-            verified: false,
-        })
+        .insert(registration.value)
         .select()
         .single();
 
@@ -490,7 +450,7 @@ router.get('/developers/apps', authMiddleware, async (c) => {
 // POST /app-store/developers/apps — Submit a new marketplace app for review
 router.post('/developers/apps', authMiddleware, async (c) => {
     const auth = c.get('auth');
-    const body = await c.req.json();
+    const body = await c.req.json() as AppEngineJsonRecord;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -508,57 +468,24 @@ router.post('/developers/apps', authMiddleware, async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
     }
 
-    const name = stringOrNull(body.name);
-    const tagline = stringOrNull(body.tagline);
-    const description = stringOrNull(body.description);
-    const categoryId = stringOrNull(body.category_id);
-    const appUrl = stringOrNull(body.app_url);
-    const privacyUrl = stringOrNull(body.privacy_url || body.privacy_policy_url);
-
-    if (!name || !tagline || !description || !categoryId || !appUrl || !privacyUrl) {
-        return c.json(
-            { error: { code: 'VALIDATION', message: 'name, tagline, description, category_id, app_url, and privacy_url are required' } },
-            400
-        );
-    }
-
-    const requestedSlug = stringOrNull(body.slug);
-    const slug = slugify(requestedSlug || name);
-    if (!slug) {
-        return c.json({ error: { code: 'VALIDATION', message: 'slug must contain letters or numbers' } }, 400);
+    const submission = planMarketplaceAppSubmission(body, developer.id);
+    if (!submission.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: submission.message } }, 400);
     }
 
     const { data: existingSlug } = await db
         .from('marketplace_apps')
         .select('id')
-        .eq('slug', slug)
+        .eq('slug', submission.value.slug)
         .maybeSingle();
 
     if (existingSlug) {
         return c.json({ error: { code: 'CONFLICT', message: 'This app slug is already taken' } }, 409);
     }
 
-    const priceMonthly = Number(body.price_monthly || 0);
-    const priceInr = Number.isFinite(priceMonthly) ? Math.max(Math.round(priceMonthly * 100) / 100, 0) : 0;
-
     const { data: app, error } = await db
         .from('marketplace_apps')
-        .insert({
-            developer_id: developer.id,
-            name,
-            slug,
-            tagline,
-            description,
-            category_id: categoryId,
-            app_url: appUrl,
-            privacy_policy_url: privacyUrl,
-            pricing_model: stringOrNull(body.pricing_model) || 'free',
-            price_inr: priceInr,
-            status: body.save_as_draft ? 'draft' : 'in_review',
-            install_count: 0,
-            rating_avg: 0,
-            review_count: 0,
-        })
+        .insert(submission.value)
         .select('id, name, status')
         .single();
 
