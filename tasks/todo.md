@@ -217,6 +217,16 @@ SKIP: Phase 3.7 merchant install/editor/publish live verification — Reason: lo
 
 SKIP: Phase 4.1 live Supabase magic-link email delivery verification — Reason: real Supabase project URL, anon key, and email delivery configuration are not available in this environment; the platform console local development magic-link fallback and MFA flow were verified instead. Resume point: Phase 4 Task 4.1 after production Supabase Auth credentials are configured.
 
+SKIP: Phase 4.4 production Supabase database verification — Reason: production Supabase credentials and project access are not available, so production migration execution, RLS verification, and Urban Kicks seed application cannot be verified from this environment. Resume point: Phase 4 Task 4.4 after production Supabase access is available.
+
+SKIP: Phase 4.4 production auth verification — Reason: production Supabase Auth configuration, console allowlist values, deployed domains, and production session/MFA environment values are not available in this environment. Resume point: Phase 4 Task 4.4 after production auth and console environment variables are configured.
+
+SKIP: Phase 4.4 live payment provider verification — Reason: Razorpay, Stripe, and PayPal live credentials plus provider dashboard access are not available, so live key configuration and webhook endpoint registration cannot be verified safely. Resume point: Phase 4 Task 4.4 after live payment provider credentials and dashboard access are available.
+
+SKIP: Phase 4.4 production infrastructure verification — Reason: Vercel, Cloudflare, DNS, and production secret-store access are not available, so deployed environment variables, Worker secrets, and custom domain configuration cannot be verified. Resume point: Phase 4 Task 4.4 after production infrastructure access is available.
+
+SKIP: Phase 4.4 monitoring provider verification — Reason: Sentry or equivalent error tracking and uptime monitoring provider access is not available, so production monitoring activation cannot be verified. Resume point: Phase 4 Task 4.4 after monitoring provider access is available.
+
 ---
 
 ## GOVERNANCE FAILURES — PHASE 0
