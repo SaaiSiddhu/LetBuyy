@@ -4,6 +4,11 @@ import { resolveCustomUser, verifySiteOwnership, type WorkerAuthUser } from '../
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { ListCustomersQuery, CreateCustomerAddressSchema } from '../schemas/customer.schema';
+import {
+    buildCustomerSummaries,
+    type CustomerOrderRecord,
+    type StoreCustomerRecord,
+} from '@letbuyy/commerce-core';
 import type { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -13,44 +18,6 @@ type CreateCustomerAddressInput = z.infer<typeof CreateCustomerAddressSchema>;
 
 interface AddressOwnerRow {
     store_id?: string | null;
-}
-
-interface CustomerSummary {
-    id: string;
-    customer_name: string;
-    customer_email: string;
-    customer_phone: string | null;
-    full_name: string;
-    email: string;
-    phone: string | null;
-    total_orders: number;
-    total_spent: number;
-    status: string;
-    created_at: string | null;
-    first_order_at: string | null;
-    last_order_at: string | null;
-    last_order_id: string | null;
-}
-
-interface StoreCustomerRow {
-    id: string;
-    email: string;
-    full_name?: string | null;
-    phone?: string | null;
-    status?: string | null;
-    total_orders?: number | string | null;
-    total_spent?: number | string | null;
-    created_at?: string | null;
-    last_order_at?: string | null;
-}
-
-interface CustomerOrderRow {
-    id: string;
-    customer_email?: string | null;
-    customer_name?: string | null;
-    customer_phone?: string | null;
-    total?: number | string | null;
-    created_at?: string | null;
 }
 
 type DatabaseErrorLike = {
@@ -81,63 +48,6 @@ function isMissingTableError(error: DatabaseErrorLike, tableName: string): boole
     );
 }
 
-function asNumber(value: unknown, fallback = 0): number {
-    if (value === null || value === undefined || value === '') return fallback;
-    const parsed = Number(value);
-    return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function normalizeEmail(value: unknown): string {
-    return typeof value === 'string' ? value.trim().toLowerCase() : '';
-}
-
-function matchesCustomerSearch(customer: CustomerSummary, search: string | undefined) {
-    if (!search) return true;
-    const needle = search.trim().toLowerCase();
-    if (!needle) return true;
-
-    return (
-        customer.customer_email.toLowerCase().includes(needle) ||
-        customer.customer_name.toLowerCase().includes(needle) ||
-        (customer.customer_phone || '').toLowerCase().includes(needle)
-    );
-}
-
-function upsertCustomerSummary(
-    customers: Map<string, CustomerSummary>,
-    email: string,
-    seed: Partial<CustomerSummary>
-) {
-    const existing = customers.get(email);
-    const summary: CustomerSummary = existing || {
-        id: email,
-        customer_name: '',
-        customer_email: email,
-        customer_phone: null,
-        full_name: '',
-        email,
-        phone: null,
-        total_orders: 0,
-        total_spent: 0,
-        status: 'active',
-        created_at: null,
-        first_order_at: null,
-        last_order_at: null,
-        last_order_id: null,
-    };
-
-    customers.set(email, {
-        ...summary,
-        ...seed,
-        customer_email: email,
-        email,
-        full_name: seed.customer_name ?? seed.full_name ?? summary.customer_name,
-        phone: seed.customer_phone ?? seed.phone ?? summary.customer_phone,
-    });
-
-    return customers.get(email)!;
-}
-
 async function loadStoreCustomerRows(
     db: ReturnType<typeof getSupabaseAdmin>,
     storeId: string,
@@ -160,10 +70,10 @@ async function loadStoreCustomerRows(
     }
 
     if (isMissingTableError(error, 'store_customers')) {
-        return { data: [] as StoreCustomerRow[], error: null };
+        return { data: [] as StoreCustomerRecord[], error: null };
     }
 
-    return { data: (data || []) as StoreCustomerRow[], error };
+    return { data: (data || []) as StoreCustomerRecord[], error };
 }
 
 async function loadCustomerOrderRows(
@@ -187,7 +97,7 @@ async function loadCustomerOrderRows(
         ({ data, error } = await buildQuery(false));
     }
 
-    return { data: (data || []) as CustomerOrderRow[], error };
+    return { data: (data || []) as CustomerOrderRecord[], error };
 }
 
 async function verifyStoreOwnership(
@@ -229,80 +139,10 @@ router.get('/', validate('query', ListCustomersQuery), async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: ordersResult.error.message } }, 500);
     }
 
-    const customers = new Map<string, CustomerSummary>();
-
-    for (const row of storeCustomersResult.data) {
-        const email = normalizeEmail(row.email);
-        if (!email) continue;
-
-        upsertCustomerSummary(customers, email, {
-            id: row.id || email,
-            customer_name: row.full_name || '',
-            customer_phone: row.phone || null,
-            total_orders: asNumber(row.total_orders),
-            total_spent: asNumber(row.total_spent),
-            status: row.status || 'active',
-            created_at: row.created_at || null,
-            last_order_at: row.last_order_at || null,
-        });
-    }
-
-    const orderStats = new Map<string, { totalOrders: number; totalSpent: number; firstOrderAt: string | null; lastOrderAt: string | null; lastOrderId: string | null }>();
-
-    for (const order of ordersResult.data) {
-        const email = normalizeEmail(order.customer_email);
-        if (!email) continue;
-
-        const stats = orderStats.get(email) || {
-            totalOrders: 0,
-            totalSpent: 0,
-            firstOrderAt: null,
-            lastOrderAt: null,
-            lastOrderId: null,
-        };
-        const createdAt = order.created_at || null;
-        stats.totalOrders += 1;
-        stats.totalSpent += asNumber(order.total);
-        if (createdAt && (!stats.lastOrderAt || createdAt > stats.lastOrderAt)) {
-            stats.lastOrderAt = createdAt;
-            stats.lastOrderId = order.id;
-        }
-        if (createdAt && (!stats.firstOrderAt || createdAt < stats.firstOrderAt)) {
-            stats.firstOrderAt = createdAt;
-        }
-        orderStats.set(email, stats);
-
-        const existing = customers.get(email);
-        upsertCustomerSummary(customers, email, {
-            id: existing?.id || email,
-            customer_name: existing?.customer_name || order.customer_name || '',
-            customer_phone: existing?.customer_phone || order.customer_phone || null,
-            created_at: existing?.created_at || createdAt,
-            status: existing?.status || 'active',
-        });
-    }
-
-    for (const [email, stats] of orderStats) {
-        const customer = customers.get(email);
-        if (!customer) continue;
-        customers.set(email, {
-            ...customer,
-            total_orders: stats.totalOrders,
-            total_spent: stats.totalSpent,
-            first_order_at: stats.firstOrderAt,
-            last_order_at: stats.lastOrderAt,
-            last_order_id: stats.lastOrderId,
-        });
-    }
-
-    const summaries = [...customers.values()]
-        .filter((customer) => matchesCustomerSearch(customer, q.search))
-        .filter((customer) => q.has_orders === undefined || (q.has_orders ? customer.total_orders > 0 : customer.total_orders === 0))
-        .sort((a, b) => {
-            const aDate = a.last_order_at || a.created_at || '';
-            const bDate = b.last_order_at || b.created_at || '';
-            return bDate.localeCompare(aDate);
-        });
+    const summaries = buildCustomerSummaries(storeCustomersResult.data, ordersResult.data, {
+        search: q.search,
+        has_orders: q.has_orders,
+    });
 
     return c.json(paginated(summaries.slice(offset, offset + q.limit), summaries.length, q.page, q.limit));
 });

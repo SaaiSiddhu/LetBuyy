@@ -551,6 +551,49 @@ export interface ProductReviewRecord {
   is_approved?: boolean | null;
 }
 
+export interface CommerceCustomerSummary {
+  id: string;
+  customer_name: string;
+  customer_email: string;
+  customer_phone: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  total_orders: number;
+  total_spent: number;
+  status: string;
+  created_at: string | null;
+  first_order_at: string | null;
+  last_order_at: string | null;
+  last_order_id: string | null;
+}
+
+export interface StoreCustomerRecord {
+  id: string;
+  email: string;
+  full_name?: string | null;
+  phone?: string | null;
+  status?: string | null;
+  total_orders?: number | string | null;
+  total_spent?: number | string | null;
+  created_at?: string | null;
+  last_order_at?: string | null;
+}
+
+export interface CustomerOrderRecord {
+  id: string;
+  customer_email?: string | null;
+  customer_name?: string | null;
+  customer_phone?: string | null;
+  total?: number | string | null;
+  created_at?: string | null;
+}
+
+export interface CustomerSummaryFilters {
+  search?: string;
+  has_orders?: boolean;
+}
+
 export function generateProductSlug(name: string): string {
   return name
     .toLowerCase()
@@ -595,7 +638,7 @@ export function planCategoryCreate(input: CreateCategoryInput, parent?: Category
   let level = 0;
   let path = slug;
 
-  if (input.parent_id && parent?.store_id === input.store_id) {
+  if (input.parent_id && parent && parent.store_id === input.store_id) {
     level = Number(parent.level || 0) + 1;
     path = `${parent.path || slug}/${slug}`;
   }
@@ -623,6 +666,144 @@ export function normalizeProductReviewRecord<TReview extends ProductReviewRecord
     is_approved: status === 'approved',
     product_name: products?.name || 'Unknown product',
   };
+}
+
+export function normalizeCustomerEmail(value: unknown): string {
+  return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+export function commerceNumber(value: unknown, fallback = 0): number {
+  if (value === null || value === undefined || value === '') return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+export function matchesCustomerSearch(customer: CommerceCustomerSummary, search: string | undefined): boolean {
+  if (!search) return true;
+  const needle = search.trim().toLowerCase();
+  if (!needle) return true;
+
+  return (
+    customer.customer_email.toLowerCase().includes(needle) ||
+    customer.customer_name.toLowerCase().includes(needle) ||
+    (customer.customer_phone || '').toLowerCase().includes(needle)
+  );
+}
+
+export function upsertCustomerSummary(
+  customers: Map<string, CommerceCustomerSummary>,
+  email: string,
+  seed: Partial<CommerceCustomerSummary>,
+): CommerceCustomerSummary {
+  const existing = customers.get(email);
+  const summary: CommerceCustomerSummary = existing || {
+    id: email,
+    customer_name: '',
+    customer_email: email,
+    customer_phone: null,
+    full_name: '',
+    email,
+    phone: null,
+    total_orders: 0,
+    total_spent: 0,
+    status: 'active',
+    created_at: null,
+    first_order_at: null,
+    last_order_at: null,
+    last_order_id: null,
+  };
+
+  customers.set(email, {
+    ...summary,
+    ...seed,
+    customer_email: email,
+    email,
+    full_name: seed.customer_name ?? seed.full_name ?? summary.customer_name,
+    phone: seed.customer_phone ?? seed.phone ?? summary.customer_phone,
+  });
+
+  return customers.get(email)!;
+}
+
+export function buildCustomerSummaries(
+  storeCustomers: StoreCustomerRecord[],
+  orders: CustomerOrderRecord[],
+  filters: CustomerSummaryFilters = {},
+): CommerceCustomerSummary[] {
+  const customers = new Map<string, CommerceCustomerSummary>();
+
+  for (const row of storeCustomers) {
+    const email = normalizeCustomerEmail(row.email);
+    if (!email) continue;
+
+    upsertCustomerSummary(customers, email, {
+      id: row.id || email,
+      customer_name: row.full_name || '',
+      customer_phone: row.phone || null,
+      total_orders: commerceNumber(row.total_orders),
+      total_spent: commerceNumber(row.total_spent),
+      status: row.status || 'active',
+      created_at: row.created_at || null,
+      last_order_at: row.last_order_at || null,
+    });
+  }
+
+  const orderStats = new Map<string, { totalOrders: number; totalSpent: number; firstOrderAt: string | null; lastOrderAt: string | null; lastOrderId: string | null }>();
+
+  for (const order of orders) {
+    const email = normalizeCustomerEmail(order.customer_email);
+    if (!email) continue;
+
+    const stats = orderStats.get(email) || {
+      totalOrders: 0,
+      totalSpent: 0,
+      firstOrderAt: null,
+      lastOrderAt: null,
+      lastOrderId: null,
+    };
+    const createdAt = order.created_at || null;
+    stats.totalOrders += 1;
+    stats.totalSpent += commerceNumber(order.total);
+    if (createdAt && (!stats.lastOrderAt || createdAt > stats.lastOrderAt)) {
+      stats.lastOrderAt = createdAt;
+      stats.lastOrderId = order.id;
+    }
+    if (createdAt && (!stats.firstOrderAt || createdAt < stats.firstOrderAt)) {
+      stats.firstOrderAt = createdAt;
+    }
+    orderStats.set(email, stats);
+
+    const existing = customers.get(email);
+    upsertCustomerSummary(customers, email, {
+      id: existing?.id || email,
+      customer_name: existing?.customer_name || order.customer_name || '',
+      customer_phone: existing?.customer_phone || order.customer_phone || null,
+      created_at: existing?.created_at || createdAt,
+      status: existing?.status || 'active',
+    });
+  }
+
+  for (const [email, stats] of orderStats) {
+    const customer = customers.get(email);
+    if (!customer) continue;
+    customers.set(email, {
+      ...customer,
+      total_orders: stats.totalOrders,
+      total_spent: stats.totalSpent,
+      first_order_at: stats.firstOrderAt,
+      last_order_at: stats.lastOrderAt,
+      last_order_id: stats.lastOrderId,
+    });
+  }
+
+  return [...customers.values()]
+    .filter((customer) => matchesCustomerSearch(customer, filters.search))
+    .filter((customer) => filters.has_orders === undefined || (filters.has_orders ? customer.total_orders > 0 : customer.total_orders === 0))
+    .sort((a, b) => {
+      const aDate = a.last_order_at || a.created_at || '';
+      const bDate = b.last_order_at || b.created_at || '';
+      return bDate.localeCompare(aDate);
+    });
 }
 
 export function planProductCreate(input: CreateProductCommand): ProductCreatePlan {
