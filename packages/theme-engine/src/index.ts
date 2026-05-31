@@ -11,6 +11,7 @@ import {
 export * from './theme-registry';
 export * from './execution-runtime';
 export * from './theme-bundle';
+export * from './theme-renderer';
 
 export type BuiltInSectionType =
   | 'header'

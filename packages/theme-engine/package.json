@@ -8,6 +8,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./theme-bundle": "./src/theme-bundle.ts",
+    "./theme-renderer": "./src/theme-renderer.ts",
     "./theme-registry": "./src/theme-registry.ts"
   },
   "scripts": {
