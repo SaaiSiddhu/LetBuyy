@@ -747,6 +747,16 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
+  packages/payments:
+    dependencies:
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../shared-types
+    devDependencies:
+      typescript:
+        specifier: ^5.9.3
+        version: 5.9.3
+
   packages/projection-runtime:
     dependencies:
       '@letbuyy/distributed-runtime':
@@ -888,6 +898,9 @@ importers:
       '@letbuyy/notification-core':
         specifier: workspace:*
         version: link:../../notification-core
+      '@letbuyy/payments':
+        specifier: workspace:*
+        version: link:../../payments
       '@letbuyy/search-core':
         specifier: workspace:*
         version: link:../../search-core

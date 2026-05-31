@@ -10,6 +10,7 @@
     { "path": "./packages/search-core" },
     { "path": "./packages/app-engine" },
     { "path": "./packages/checkout-core" },
+    { "path": "./packages/payments" },
     { "path": "./packages/billing-core" },
     { "path": "./packages/notification-core" },
     { "path": "./packages/tenant-core" },

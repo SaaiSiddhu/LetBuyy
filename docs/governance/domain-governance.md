@@ -7,6 +7,7 @@
 | `packages/shared-types` | Common primitives, pagination, money, address, SEO, API responses | Runtime side effects |
 | `packages/commerce-core` | Products, variants, catalog, inventory, customers, merchant commerce contracts | Auth implementation, provider SDK details |
 | `packages/checkout-core` | Cart, order, totals, discounts, tax/shipping interfaces, checkout state | Client-submitted totals as authority |
+| `packages/payments` | Provider-neutral payment contracts, INR minor-unit handling, idempotency requirements, webhook verification results | Provider SDK clients, secrets, worker bindings, database mutation code |
 | `packages/auth-core` | Session contracts, auth claims, actor identity, RBAC, OTP/password validation | Storefront customer privileges mixed with merchant auth |
 | `packages/tenant-core` | Tenant context, `sites` mapping, store model, navigation, subdomain ownership contracts | Product/order mutation rules |
 | `packages/cms-core` | Pages, navigation, policies, portfolio/resume content, dynamic content contracts | Payment or provider logic |

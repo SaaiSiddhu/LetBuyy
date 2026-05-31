@@ -7,6 +7,7 @@ Contracts are machine-readable or type-readable boundaries between runtimes and 
 - Common primitives: `packages/shared-types`
 - Commerce contracts: `packages/commerce-core`
 - Checkout contracts: `packages/checkout-core`
+- Payment provider contracts: `packages/payments`
 - Auth contracts: `packages/auth-core`
 - Tenant contracts: `packages/tenant-core`
 - CMS contracts: `packages/cms-core`
@@ -22,7 +23,7 @@ Contracts are machine-readable or type-readable boundaries between runtimes and 
 - Package public exports are the only reusable source authority.
 - Runtime-local facades may re-export package contracts to preserve import compatibility.
 - API route files may validate requests with package-owned schemas, but they must not define reusable domain schemas inline.
-- Service command contracts for product, order, tenant, billing, onboarding, media, review, CMS, and AI flows must be imported from domain packages.
+- Service command contracts for product, order, payment, tenant, billing, onboarding, media, review, CMS, and AI flows must be imported from domain packages.
 - Flutter merchant app models that are shared across screens must be exported from `packages/dart/models`; app-local `lib/models` files may only re-export package-owned contracts.
 - Contracts must be runtime-safe: no provider SDKs, secrets, database clients, app routes, or generated artifact dependencies.
 - Contract changes that affect API payloads require governance docs and repository intelligence refresh.

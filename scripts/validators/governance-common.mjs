@@ -107,6 +107,7 @@ export const canonicalRuntimeRoots = [
 export const domainPackageRoots = [
   "packages/commerce-core",
   "packages/checkout-core",
+  "packages/payments",
   "packages/auth-core",
   "packages/tenant-core",
   "packages/cms-core",

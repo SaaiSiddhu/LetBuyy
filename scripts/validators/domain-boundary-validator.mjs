@@ -28,6 +28,10 @@ const domainPackages = {
     packageName: "@letbuyy/checkout-core",
     requiredExports: ["CreateOrderSchema", "StorefrontCreateOrderSchema", "VALID_TRANSITIONS", "Order", "CartItem"],
   },
+  "packages/payments": {
+    packageName: "@letbuyy/payments",
+    requiredExports: ["PaymentProvider", "PaymentCreateIntentInput", "PaymentIntentResult", "PaymentWebhookVerificationResult", "toInrMinorUnits", "normalizeIdempotencyKey"],
+  },
   "packages/auth-core": {
     packageName: "@letbuyy/auth-core",
     requiredExports: ["SignUpSchema", "SignInSchema", "ActorIdentity", "SessionContract", "UserProfile"],

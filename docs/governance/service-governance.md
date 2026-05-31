@@ -23,7 +23,8 @@ The API gateway keeps its existing `src/schemas/*.schema.ts` import paths, but t
 
 - commerce and customer contracts from `@letbuyy/commerce-core`
 - category, collection, inventory, supplier, purchase order, transfer, and review contracts from `@letbuyy/commerce-core`
-- checkout, shipping, tax, coupon, order, refund, and payment contracts from `@letbuyy/checkout-core`
+- checkout, shipping, tax, coupon, order, and refund contracts from `@letbuyy/checkout-core`
+- provider-neutral payment execution contracts from `@letbuyy/payments`
 - auth contracts from `@letbuyy/auth-core`
 - tenant/store/onboarding and subdomain validation contracts from `@letbuyy/tenant-core`
 - page/navigation/blog/media/form-submission/content contracts from `@letbuyy/cms-core`

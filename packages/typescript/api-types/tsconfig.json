@@ -30,6 +30,9 @@
       "@letbuyy/notification-core": [
         "../../notification-core/src/index.ts"
       ],
+      "@letbuyy/payments": [
+        "../../payments/src/index.ts"
+      ],
       "@letbuyy/search-core": [
         "../../search-core/src/index.ts"
       ],
@@ -83,6 +86,9 @@
     },
     {
       "path": "../../notification-core"
+    },
+    {
+      "path": "../../payments"
     },
     {
       "path": "../../search-core"

@@ -5,6 +5,7 @@ packages:
   - "packages/tenant-core"
   - "packages/commerce-core"
   - "packages/checkout-core"
+  - "packages/payments"
   - "packages/auth-core"
   - "packages/app-engine"
   - "packages/theme-engine"

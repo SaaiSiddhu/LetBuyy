@@ -218,6 +218,7 @@ const packageTargets = [
   { output: "packages/tenant-core/AGENTS.md", name: "Tenant Core", actual: "packages/tenant-core", purpose: "Tenant resolution, site/store ownership, subdomain, store model, navigation, and tenant isolation contracts." },
   { output: "packages/commerce-core/AGENTS.md", name: "Commerce Core", actual: "packages/commerce-core", purpose: "Product, catalog, inventory, customer, collection, and merchant commerce contracts." },
   { output: "packages/checkout-core/AGENTS.md", name: "Checkout Core", actual: "packages/checkout-core", purpose: "Cart, order, checkout, fulfillment, refund, shipping, tax, coupon, and payment orchestration contracts." },
+  { output: "packages/payments/AGENTS.md", name: "Payments", actual: "packages/payments", purpose: "Provider-neutral payment orchestration contracts, India-first money handling, idempotency, and provider adapter interfaces." },
   { output: "packages/auth-core/AGENTS.md", name: "Auth Core", actual: "packages/auth-core", purpose: "Identity, session, actor, RBAC, OTP, password, and auth validation contracts." },
   { output: "packages/theme-engine/AGENTS.md", name: "Theme Engine", actual: "packages/theme-engine", purpose: "Theme registry, sections, blocks, templates, releases, hydration, and storefront composition contracts." },
   { output: "packages/cms-core/AGENTS.md", name: "CMS Core", actual: "packages/cms-core", purpose: "Pages, policies, navigation, content, portfolio, resume, and dynamic section contracts." },
@@ -377,6 +378,7 @@ function classifyArea(file) {
   if (file.startsWith("packages/tenant-core")) return "tenant core package";
   if (file.startsWith("packages/commerce-core")) return "commerce core package";
   if (file.startsWith("packages/checkout-core")) return "checkout core package";
+  if (file.startsWith("packages/payments")) return "payments package";
   if (file.startsWith("packages/auth-core")) return "auth core package";
   if (file.startsWith("packages/theme-engine")) return "theme engine package";
   if (file.startsWith("packages/cms-core")) return "cms core package";
@@ -434,6 +436,7 @@ function appRootForFile(file) {
     "packages/tenant-core",
     "packages/commerce-core",
     "packages/checkout-core",
+    "packages/payments",
     "packages/auth-core",
     "packages/theme-engine",
     "packages/cms-core",

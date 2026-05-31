@@ -42,6 +42,7 @@ core/services Dart package -> ui_kit
 - `@letbuyy/api-types` is an aggregate compatibility package. New domain source must go to the owning package first.
 - Domain package direction currently allows:
   - `checkout-core -> commerce-core/shared-types`
+  - `payments -> shared-types`
   - `tenant-core -> shared-types/theme-engine`
   - `notification-core -> event-core/shared-types`
   - `billing-core -> event-core/shared-types`

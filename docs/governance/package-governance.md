@@ -8,6 +8,7 @@ The following packages are active canonical contract boundaries and must keep pu
 - `@letbuyy/tenant-core`
 - `@letbuyy/commerce-core`
 - `@letbuyy/checkout-core`
+- `@letbuyy/payments`
 - `@letbuyy/auth-core`
 - `@letbuyy/theme-engine`
 - `@letbuyy/cms-core`
@@ -54,6 +55,7 @@ Package `AGENTS.md` files are validated for purpose, ownership rules, forbidden 
 ## Layering
 
 - TypeScript API/domain contracts belong in their owning domain package; `packages/typescript/api-types` is an aggregate compatibility export.
+- Provider-neutral payment contracts, INR minor-unit helpers, and idempotency rules belong in `packages/payments`; provider SDK execution stays in `packages/infrastructure` and service execution adapters.
 - TypeScript API transport belongs in `packages/typescript/api-client`; it must consume `@letbuyy/shared-types` and call `services/api-gateway` instead of importing service or database code.
 - TypeScript reusable UI belongs in `packages/typescript/ui`.
 - TypeScript utilities belong in `packages/typescript/utils`.
