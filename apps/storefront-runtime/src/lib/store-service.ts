@@ -142,31 +142,83 @@ function asRecord(value: unknown): Record<string, unknown> {
         : {};
 }
 
+function stringArray(value: unknown): string[] {
+    return Array.isArray(value)
+        ? value.filter((item): item is string => typeof item === 'string' && item.length > 0)
+        : [];
+}
+
 function normalizeBlockRecord(value: Record<string, unknown>, index: number): BlockModel {
     return {
         id: (value.id as string) || `block-${index}`,
         type: (value.type as string) || 'block',
         order: (value.order as number) || index,
-        rendererKey: typeof value.rendererKey === 'string' ? value.rendererKey : undefined,
-        schemaVersion: typeof value.schemaVersion === 'string' ? value.schemaVersion : undefined,
+        rendererKey: typeof value.rendererKey === 'string'
+            ? value.rendererKey
+            : typeof value.renderer_key === 'string' ? value.renderer_key : undefined,
+        schemaVersion: typeof value.schemaVersion === 'string'
+            ? value.schemaVersion
+            : typeof value.schema_version === 'string' ? value.schema_version : undefined,
         settings: asRecord(value.settings),
-        isVisible: value.visible !== undefined ? value.visible !== false : value.isVisible !== false,
+        isVisible: value.disabled === true
+            ? false
+            : value.visible !== undefined ? value.visible !== false : value.isVisible !== false,
     };
 }
 
-function normalizeSectionRecord(value: Record<string, unknown>, index: number): SectionModel {
-    const rawBlocks = Array.isArray(value.blocks) ? value.blocks : [];
+function normalizeBlockCollection(value: unknown, orderValue: unknown): BlockModel[] {
+    if (Array.isArray(value)) {
+        return value.map((block, blockIndex) => normalizeBlockRecord(asRecord(block), blockIndex));
+    }
+
+    const blockMap = asRecord(value);
+    const orderedIds = stringArray(orderValue);
+    const ids = [
+        ...orderedIds,
+        ...Object.keys(blockMap).filter((blockId) => !orderedIds.includes(blockId)),
+    ];
+
+    return ids
+        .map((blockId, blockIndex) => {
+            const blockRecord = asRecord(blockMap[blockId]);
+            if (Object.keys(blockRecord).length === 0) return null;
+            return normalizeBlockRecord({ id: blockId, order: blockIndex, ...blockRecord }, blockIndex);
+        })
+        .filter((block): block is BlockModel => block !== null);
+}
+
+function normalizeSectionRecord(
+    value: Record<string, unknown>,
+    index: number,
+    definition: Record<string, unknown> = {},
+): SectionModel {
+    const rawType = (value.type as string) || (definition.type as string) || `section-${index}`;
+    const rendererKey = typeof value.rendererKey === 'string'
+        ? value.rendererKey
+        : typeof value.renderer_key === 'string'
+            ? value.renderer_key
+            : typeof definition.renderer_key === 'string'
+                ? definition.renderer_key
+                : undefined;
+    const schemaVersion = typeof value.schemaVersion === 'string'
+        ? value.schemaVersion
+        : typeof value.schema_version === 'string'
+            ? value.schema_version
+            : typeof definition.schema_version === 'string'
+                ? definition.schema_version
+                : undefined;
 
     return {
         id: (value.id as string) || `section-${index}`,
-        type: normalizeSectionType(value.type as string) as SectionType,
+        type: normalizeSectionType(rawType) as SectionType,
         order: (value.order as number) || index,
-        rendererKey: typeof value.rendererKey === 'string' ? value.rendererKey : undefined,
-        schemaVersion: typeof value.schemaVersion === 'string' ? value.schemaVersion : undefined,
+        rendererKey,
+        schemaVersion,
         settings: asRecord(value.settings),
-        blocks: rawBlocks
-            .map((block, blockIndex) => normalizeBlockRecord(asRecord(block), blockIndex)),
-        isVisible: value.visible !== undefined ? value.visible !== false : value.isVisible !== false,
+        blocks: normalizeBlockCollection(value.blocks, value.block_order),
+        isVisible: value.disabled === true
+            ? false
+            : value.visible !== undefined ? value.visible !== false : value.isVisible !== false,
     };
 }
 
@@ -174,6 +226,45 @@ function normalizeSectionArray(value: unknown): SectionModel[] {
     return Array.isArray(value)
         ? value.map((section, index) => normalizeSectionRecord(asRecord(section), index))
         : [];
+}
+
+function normalizeTemplateSectionMap(
+    value: unknown,
+    orderValue: unknown,
+    sectionDefinitions: Record<string, unknown>,
+): SectionModel[] {
+    const sectionMap = asRecord(value);
+    const orderedIds = stringArray(orderValue);
+    const ids = [
+        ...orderedIds,
+        ...Object.keys(sectionMap).filter((sectionId) => !orderedIds.includes(sectionId)),
+    ];
+
+    return ids
+        .map((sectionId, index) => {
+            const sectionRecord = asRecord(sectionMap[sectionId]);
+            if (Object.keys(sectionRecord).length === 0) return null;
+            const sectionType = typeof sectionRecord.type === 'string' ? sectionRecord.type : sectionId;
+            return normalizeSectionRecord(
+                {
+                    id: sectionId,
+                    order: index,
+                    ...sectionRecord,
+                },
+                index,
+                asRecord(sectionDefinitions[sectionType]),
+            );
+        })
+        .filter((section): section is SectionModel => section !== null);
+}
+
+function normalizeTemplateSections(
+    templateRecord: Record<string, unknown>,
+    sectionDefinitions: Record<string, unknown>,
+): SectionModel[] {
+    return Array.isArray(templateRecord.sections)
+        ? normalizeSectionArray(templateRecord.sections)
+        : normalizeTemplateSectionMap(templateRecord.sections, templateRecord.order, sectionDefinitions);
 }
 
 function normalizeSectionGroups(value: unknown): Record<string, StorefrontSectionGroupConfig> | undefined {
@@ -198,13 +289,16 @@ function normalizeSectionGroups(value: unknown): Record<string, StorefrontSectio
     return Object.keys(normalized).length > 0 ? normalized : undefined;
 }
 
-function normalizeTemplates(value: unknown): Record<string, StorefrontTemplateConfig> | undefined {
+function normalizeTemplates(
+    value: unknown,
+    sectionDefinitions: Record<string, unknown> = {},
+): Record<string, StorefrontTemplateConfig> | undefined {
     const templates = asRecord(value);
     const normalized: Record<string, StorefrontTemplateConfig> = {};
 
     for (const [key, templateValue] of Object.entries(templates)) {
         const templateRecord = asRecord(templateValue);
-        const sections = normalizeSectionArray(templateRecord.sections);
+        const sections = normalizeTemplateSections(templateRecord, sectionDefinitions);
 
         normalized[key] = {
             id: (templateRecord.id as string) || key,
@@ -215,6 +309,15 @@ function normalizeTemplates(value: unknown): Record<string, StorefrontTemplateCo
     }
 
     return Object.keys(normalized).length > 0 ? normalized : undefined;
+}
+
+function isThemeBundleSectionDefinitionMap(value: unknown): boolean {
+    const sectionMap = asRecord(value);
+    return Object.values(sectionMap).some((sectionValue) => {
+        const section = asRecord(sectionValue);
+        return typeof section.type === 'string'
+            && (typeof section.renderer_key === 'string' || Object.keys(asRecord(section.settings_schema)).length > 0);
+    });
 }
 
 async function fetchWorkerStore(subdomain: string, anyStatus: boolean): Promise<WorkerStorePayload | null> {
@@ -356,14 +459,19 @@ function mapSupabaseToStore(
             },
             themeId,
         };
+    const bundleSettingsData = asRecord(asRecord(templateConfig.config).settings_data);
+    const themeSettingsRecord = {
+        ...asRecord(bundleSettingsData.current),
+        ...asRecord(templateConfig.themeSettings),
+    };
     const themeSettings: ThemeSettings = {
         ...DEFAULT_THEME_SETTINGS,
-        ...asRecord(templateConfig.themeSettings),
-        primaryColor: asRecord(templateConfig.themeSettings).primaryColor as string || DEFAULT_THEME_SETTINGS.primaryColor,
-        secondaryColor: asRecord(templateConfig.themeSettings).secondaryColor as string || DEFAULT_THEME_SETTINGS.secondaryColor,
-        accentColor: asRecord(templateConfig.themeSettings).accentColor as string || DEFAULT_THEME_SETTINGS.accentColor,
-        fontFamily: asRecord(templateConfig.themeSettings).fontFamily as string || DEFAULT_THEME_SETTINGS.fontFamily,
-        borderRadius: asRecord(templateConfig.themeSettings).borderRadius as number ?? DEFAULT_THEME_SETTINGS.borderRadius,
+        ...themeSettingsRecord,
+        primaryColor: themeSettingsRecord.primaryColor as string || DEFAULT_THEME_SETTINGS.primaryColor,
+        secondaryColor: themeSettingsRecord.secondaryColor as string || DEFAULT_THEME_SETTINGS.secondaryColor,
+        accentColor: themeSettingsRecord.accentColor as string || DEFAULT_THEME_SETTINGS.accentColor,
+        fontFamily: themeSettingsRecord.fontFamily as string || DEFAULT_THEME_SETTINGS.fontFamily,
+        borderRadius: themeSettingsRecord.borderRadius as number ?? DEFAULT_THEME_SETTINGS.borderRadius,
     };
 
     // Handle both formats:
@@ -373,12 +481,13 @@ function mapSupabaseToStore(
     let sectionArray: SectionModel[] = [];
     let editorTemplateSections: SectionModel[] = [];
     const sectionGroups = normalizeSectionGroups(templateConfig.sectionGroups) || {};
-    let templates = normalizeTemplates(templateConfig.templates);
+    const sectionDefinitions = asRecord(templateConfig.sections);
+    let templates = normalizeTemplates(templateConfig.templates, sectionDefinitions);
 
     if (Array.isArray(rawSections)) {
         // Legacy flat array format
         sectionArray = normalizeSectionArray(rawSections);
-    } else if (rawSections && typeof rawSections === 'object') {
+    } else if (rawSections && typeof rawSections === 'object' && !isThemeBundleSectionDefinitionMap(rawSections)) {
         // Editor object format — extract template array + header/footer as sections
         const editorSections = rawSections as Record<string, unknown>;
         editorTemplateSections = normalizeSectionArray(editorSections.template);
@@ -475,14 +584,29 @@ function mapSupabaseToStore(
 function normalizeSectionType(type: string): string {
     const typeMap: Record<string, string> = {
         'hero': 'heroBanner',
+        'hero-banner': 'heroBanner',
         'product_grid': 'productGrid',
+        'product-grid': 'productGrid',
+        'product-detail': 'productDetail',
         'featured_collection': 'featuredProducts',
+        'featured-products': 'featuredProducts',
         'portfolio_grid': 'portfolioGrid',
+        'portfolio-grid': 'portfolioGrid',
         'skills_section': 'skillsSection',
+        'skills-section': 'skillsSection',
         'experience_timeline': 'experienceTimeline',
+        'experience-timeline': 'experienceTimeline',
         'contact_form': 'contactForm',
+        'contact-form': 'contactForm',
         'cta_section': 'ctaSection',
+        'cta-section': 'ctaSection',
         'services_grid': 'servicesGrid',
+        'services-grid': 'servicesGrid',
+        'content-page': 'contentPage',
+        'rich-content': 'contentPage',
+        'category-grid': 'categoryGrid',
+        'brand-marquee': 'brandMarquee',
+        'trust-badges': 'trustBadges',
     };
     return typeMap[type] || type;
 }

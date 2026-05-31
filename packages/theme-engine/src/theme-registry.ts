@@ -408,6 +408,11 @@ function sectionArrayHasRenderableSections(value: unknown): boolean {
     return Array.isArray(value) && value.some(sectionIsRenderable)
 }
 
+function sectionMapHasRenderableSections(value: unknown): boolean {
+    const sections = asRecord(value)
+    return Object.values(sections).some(sectionIsRenderable)
+}
+
 /**
  * Detect whether a stored theme config contains real storefront sections.
  * Metadata-only records such as `{ themeId, templateId, survey }` must fall
@@ -427,7 +432,8 @@ export function hasRenderableThemeTemplate(value: unknown): boolean {
 
     const templates = asRecord(templateConfig.templates)
     for (const template of Object.values(templates)) {
-        if (sectionArrayHasRenderableSections(asRecord(template).sections)) {
+        const templateSections = asRecord(template).sections
+        if (sectionArrayHasRenderableSections(templateSections) || sectionMapHasRenderableSections(templateSections)) {
             return true
         }
     }
