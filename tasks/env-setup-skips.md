@@ -22,3 +22,9 @@ SKIP: Phase 1.2 reserved service Wrangler configs — Reason: `services/checkout
 - Phase 3 Task 3.2: Vercel app configs created for identity-platform, merchant-control-plane, storefront-runtime, marketing-site, and platform-console.
 - Phase 3 Task 3.3: Staging and production env examples created in `config/env/`.
 - Phase 3 verification: `pnpm run validate:governance` passed.
+- Phase 4 Task 4.1: GitHub repository setup script created at `scripts/github/setup-repo.mjs`.
+- Phase 4 Task 4.2: GitHub Actions secret setup script created at `scripts/github/set-secrets.mjs`.
+- Phase 4 Task 4.3: CI workflow updated for `main` and `develop`.
+- Phase 4 Task 4.4: Staging deploy workflow updated for `develop`.
+- Phase 4 Task 4.5: Production deploy workflow created for `main`.
+- Phase 4 verification: `pnpm run validate:governance` passed.

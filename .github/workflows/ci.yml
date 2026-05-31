@@ -1,30 +1,34 @@
 name: CI
 
 on:
+  push:
+    branches: [main, develop]
   pull_request:
-    branches:
-      - main
+    branches: [main, develop]
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
   validate:
+    name: Validate
     runs-on: ubuntu-latest
+    timeout-minutes: 30
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
-          version: 10.6.2
+          version: 10
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -36,7 +40,7 @@ jobs:
       - name: Governance validation
         run: pnpm run validate:governance
 
-      - name: Typecheck
+      - name: TypeScript check
         run: pnpm turbo typecheck
 
       - name: Lint
@@ -45,8 +49,8 @@ jobs:
       - name: Test
         run: pnpm turbo test
 
-      - name: Build API gateway worker
-        run: pnpm turbo build --filter=./services/api-gateway
-
-      - name: Build webhook worker
-        run: pnpm turbo build --filter=./services/webhook-service
+      - name: Build active workers
+        run: |
+          pnpm turbo build --filter=@letbuyy/api-gateway
+          pnpm turbo build --filter=@letbuyy/webhook-service
+          pnpm turbo build --filter=@letbuyy/queue-workers
