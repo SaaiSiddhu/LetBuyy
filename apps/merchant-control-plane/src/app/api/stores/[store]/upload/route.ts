@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { CreateMediaInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function POST(
@@ -17,38 +18,27 @@ export async function POST(
         if (!file || typeof file === 'string') {
             return NextResponse.json({ error: 'File is required' }, { status: 400 })
         }
+        const uploadFile = file as File
 
         formData.set('folder', `${resolved.storeId}/products`)
 
-        const uploadResponse = await workerFetch('/upload', {
-            method: 'POST',
-            requireSession: true,
-            body: formData,
-        })
-        const uploadPayload = await readWorkerJson(uploadResponse)
-        const uploaded = uploadPayload?.data
+        const apiClient = createWorkerApiClient()
+        const uploaded = await apiClient.upload.file(formData)
 
         if (uploaded?.url) {
-            await workerFetch('/media', {
-                method: 'POST',
-                requireSession: true,
-                body: JSON.stringify({
-                    store_id: resolved.storeId,
-                    filename: uploaded.key || (file as File).name,
-                    original_name: (file as File).name,
-                    url: uploaded.url,
-                    mime_type: (file as File).type || uploaded.content_type || 'application/octet-stream',
-                    size_bytes: (file as File).size || uploaded.size || 0,
-                    folder: 'products',
-                }),
-            }).then(readWorkerJson).catch(() => null)
+            await apiClient.media.create({
+                store_id: resolved.storeId,
+                filename: uploaded.key || uploadFile.name,
+                original_name: uploadFile.name,
+                url: uploaded.url,
+                mime_type: uploadFile.type || uploaded.content_type || 'application/octet-stream',
+                size_bytes: uploadFile.size || uploaded.size || 0,
+                folder: 'products',
+            } as CreateMediaInput).catch(() => null)
         }
 
-        return NextResponse.json(uploadPayload)
+        return NextResponse.json({ data: uploaded }, { status: 201 })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to upload file' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to upload file')
     }
 }

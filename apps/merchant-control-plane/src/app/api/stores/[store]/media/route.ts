@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { MediaListQuery } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -17,23 +18,29 @@ export async function GET(
         const limit = searchParams.get('limit') || '100'
         const folder = searchParams.get('folder')
         const type = searchParams.get('type')
-        const query = new URLSearchParams({
+        const query: MediaListQuery = {
             store_id: resolved.storeId,
-            page,
-            limit,
+            page: Number(page),
+            limit: Number(limit),
+        }
+
+        if (folder) query.folder = folder
+        if (type === 'image' || type === 'video' || type === 'audio' || type === 'document' || type === 'other' || type === 'all') {
+            query.type = type
+        }
+
+        const payload = await createWorkerApiClient().media.list(query)
+
+        return NextResponse.json({
+            data: payload.data,
+            meta: {
+                total: payload.total,
+                page: payload.page,
+                per_page: payload.limit,
+                has_next: payload.has_more,
+            },
         })
-
-        if (folder) query.set('folder', folder)
-        if (type) query.set('type', type)
-
-        const workerResponse = await workerFetch(`/media?${query.toString()}`)
-        const payload = await readWorkerJson(workerResponse)
-
-        return NextResponse.json(payload)
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load media' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load media')
     }
 }

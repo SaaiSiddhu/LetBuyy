@@ -7,6 +7,7 @@
 export * from '@letbuyy/shared-types';
 export {
   EmployeeStatusSchema,
+  MediaTypeSchema,
   FormSubmissionStatusSchema,
   PageStatusSchema,
   NavigationItemSchema,
@@ -23,9 +24,12 @@ export {
 export type {
   Employee,
   EmployeeStatus,
+  FileUploadResult,
   FormSubmissionStatus,
   FulfillmentStatus,
   InventoryLevel,
+  MediaAsset,
+  MediaType,
   NavigationItem,
   Order,
   OrderItem,

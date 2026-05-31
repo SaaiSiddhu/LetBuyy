@@ -194,6 +194,7 @@ export const FormSubmissionStatusSchema = z.enum([
   'archived',
   'spam',
 ]);
+export const MediaTypeSchema = z.enum(['image', 'video', 'audio', 'document', 'other']);
 export const ResumeContentSectionSchema = z.enum([
   'skills',
   'education',
@@ -554,6 +555,36 @@ export const EmployeeSchema = z.object({
   created_at: z.string().datetime().optional().nullable(),
   updated_at: z.string().datetime().optional().nullable(),
   deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MediaAssetSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  uploaded_by: UuidSchema.optional().nullable(),
+  filename: z.string().min(1).max(500),
+  original_name: z.string().max(500).optional().nullable(),
+  url: z.string().min(1).max(200000),
+  thumbnail_url: z.string().max(200000).optional().nullable(),
+  mime_type: z.string().min(1).max(255),
+  size_bytes: z.number().int().min(0).default(0),
+  width: z.number().int().min(0).optional().nullable(),
+  height: z.number().int().min(0).optional().nullable(),
+  alt_text: z.string().max(500).optional().nullable(),
+  caption: z.string().max(1000).optional().nullable(),
+  folder: z.string().max(200).default('/'),
+  media_type: MediaTypeSchema.default('other'),
+  tags: z.array(z.string().max(50)).default([]),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const FileUploadResultSchema = z.object({
+  url: z.string().min(1).max(200000),
+  key: z.string().min(1).max(1000),
+  size: z.number().int().min(0),
+  content_type: z.string().max(255).optional().nullable(),
+  storage: z.string().max(120).optional().nullable(),
 }).passthrough();
 
 export const CouponSchema = AuditedEntitySchema.extend({
@@ -984,6 +1015,7 @@ export type PolicyType = z.infer<typeof PolicyTypeSchema>;
 export type BlogPostStatus = z.infer<typeof BlogPostStatusSchema>;
 export type BlogCommentStatus = z.infer<typeof BlogCommentStatusSchema>;
 export type FormSubmissionStatus = z.infer<typeof FormSubmissionStatusSchema>;
+export type MediaType = z.infer<typeof MediaTypeSchema>;
 export type ResumeContentSection = z.infer<typeof ResumeContentSectionSchema>;
 export type ThemeCategory = z.infer<typeof ThemeCategorySchema>;
 export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
@@ -1013,6 +1045,8 @@ export type StorePaymentSettings = z.infer<typeof StorePaymentSettingsSchema>;
 export type StorePaymentConfig = z.infer<typeof StorePaymentConfigSchema>;
 export type EmployeeStatus = z.infer<typeof EmployeeStatusSchema>;
 export type Employee = z.infer<typeof EmployeeSchema>;
+export type MediaAsset = z.infer<typeof MediaAssetSchema>;
+export type FileUploadResult = z.infer<typeof FileUploadResultSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
 export type ShippingZone = z.infer<typeof ShippingZoneSchema>;
 export type ShippingRate = z.infer<typeof ShippingRateSchema>;

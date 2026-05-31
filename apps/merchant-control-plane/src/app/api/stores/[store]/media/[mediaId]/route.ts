@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function DELETE(
@@ -12,16 +12,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/media/${encodeURIComponent(mediaId)}`, {
-            method: 'DELETE',
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().media.remove(mediaId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to delete media' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to delete media')
     }
 }

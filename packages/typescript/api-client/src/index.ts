@@ -10,6 +10,7 @@ import type {
   Customer,
   CustomerAddress,
   Employee,
+  FileUploadResult,
   FormSubmission,
   FormSubmissionStatus,
   GiftCard,
@@ -17,6 +18,8 @@ import type {
   InventoryLevel,
   JsonRecord,
   LineItem,
+  MediaAsset,
+  MediaType,
   NavigationItem,
   NavigationResponse,
   Order,
@@ -218,6 +221,12 @@ export type SaveStorePaymentConfigInput = {
 export type EmployeeListQuery = Pick<StoreScopedQuery, 'store_id'>;
 export type CreateEmployeeInput = Pick<Employee, 'store_id' | 'email'> & Partial<Employee>;
 export type UpdateEmployeeInput = Partial<Pick<Employee, 'role' | 'permissions' | 'status' | 'is_active'>>;
+export interface MediaListQuery extends StoreScopedQuery {
+  folder?: string;
+  type?: MediaType | 'all';
+}
+export type CreateMediaInput = Pick<MediaAsset, 'store_id' | 'filename' | 'url' | 'mime_type'> & Partial<MediaAsset>;
+export type UpdateMediaInput = Partial<Pick<MediaAsset, 'alt_text' | 'caption' | 'folder' | 'tags' | 'filename'>>;
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
 export type UpdateProductInput = NewRecord<Product>;
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
@@ -395,6 +404,24 @@ export class LetbuyyApiClient {
       this.requestData<Employee>(`/employees/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
     remove: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<{ deleted: boolean }>(`/employees/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+  };
+
+  readonly media = {
+    list: (query: MediaListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<MediaAsset>('/media', { ...options, query }),
+    create: (input: CreateMediaInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<MediaAsset>('/media', { ...options, method: 'POST', body: input }),
+    update: (id: string, input: UpdateMediaInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<MediaAsset>(`/media/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    remove: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/media/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
+  };
+
+  readonly upload = {
+    file: (formData: FormData, options?: LetbuyyRequestOptions) =>
+      this.requestData<FileUploadResult>('/upload', { ...options, method: 'POST', body: formData }),
+    remove: (key: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean; storage?: string }>(`/upload/${encodePathSegment(key)}`, { ...options, method: 'DELETE' }),
   };
 
   readonly products = {
@@ -733,8 +760,12 @@ export class LetbuyyApiClient {
     };
 
     if (options.body !== undefined) {
-      init.body = JSON.stringify(options.body);
-      if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+      if (isRawRequestBody(options.body)) {
+        init.body = options.body;
+      } else {
+        init.body = JSON.stringify(options.body);
+        if (!headers.has('Content-Type')) headers.set('Content-Type', 'application/json');
+      }
     }
 
     const response = await this.fetchImpl(url, init);
@@ -793,6 +824,18 @@ function unwrapData<T>(body: GatewayResponse<T>, status: number, requestId: stri
   }
 
   return body as T;
+}
+
+function isRawRequestBody(value: unknown): value is BodyInit {
+  return (
+    typeof value === 'string' ||
+    value instanceof ArrayBuffer ||
+    ArrayBuffer.isView(value) ||
+    (typeof Blob !== 'undefined' && value instanceof Blob) ||
+    (typeof FormData !== 'undefined' && value instanceof FormData) ||
+    (typeof URLSearchParams !== 'undefined' && value instanceof URLSearchParams) ||
+    (typeof ReadableStream !== 'undefined' && value instanceof ReadableStream)
+  );
 }
 
 async function parseResponseBody(response: Response): Promise<unknown> {
@@ -901,10 +944,13 @@ export type {
   Customer,
   CustomerAddress,
   Employee,
+  FileUploadResult,
   FormSubmission,
   GiftCard,
   InventoryLevel,
   LineItem,
+  MediaAsset,
+  MediaType,
   NavigationItem,
   NavigationResponse,
   Order,
