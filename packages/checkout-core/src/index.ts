@@ -290,6 +290,41 @@ export const VALID_TRANSITIONS: Record<string, string[]> = {
   refunded: [],
 };
 
+export interface OrderStatusTransitionPlan {
+  allowed: boolean;
+  allowedTransitions: string[];
+  updates: Record<string, unknown>;
+  delegatesToFulfillment: boolean;
+  requiresInventoryRelease: boolean;
+}
+
+export function planOrderStatusTransition(
+  currentStatus: string,
+  newStatus: string,
+  metadata: Record<string, unknown> = {},
+): OrderStatusTransitionPlan {
+  const allowedTransitions = VALID_TRANSITIONS[currentStatus] || [];
+  const allowed = allowedTransitions.includes(newStatus);
+  const updates: Record<string, unknown> = allowed ? { status: newStatus } : {};
+
+  if (allowed && newStatus === 'delivered') {
+    updates.payment_status = 'paid';
+  }
+
+  if (allowed && newStatus === 'cancelled') {
+    updates.payment_status = 'refunded';
+    updates.notes = metadata.cancellation_reason || 'Order cancelled';
+  }
+
+  return {
+    allowed,
+    allowedTransitions,
+    updates,
+    delegatesToFulfillment: newStatus === 'shipped',
+    requiresInventoryRelease: allowed && newStatus === 'cancelled',
+  };
+}
+
 export interface Order {
   id: string;
   store_id: string;

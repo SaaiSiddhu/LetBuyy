@@ -1,8 +1,9 @@
-import { VALID_TRANSITIONS, type CreateCheckoutOrderCommand, type Order, type OrderPayment, type RefundOrderCommand } from '@letbuyy/checkout-core';
+import type { CreateCheckoutOrderCommand, Order, OrderPayment, RefundOrderCommand } from '@letbuyy/checkout-core';
 import type { RuntimeTenantContext } from '@letbuyy/tenant-core';
 import type { CorrelatedCommand } from '@letbuyy/orchestration';
 import { defineApplicationWorkflows } from '../src/workflow-descriptor';
 import { defineExecutionPipelines } from '../src/execution-pipeline';
+export { planOrderStatusTransition, type OrderStatusTransitionPlan } from '@letbuyy/checkout-core';
 
 export interface CheckoutApplicationPorts {
   createOrder(command: CorrelatedCommand<{ tenant: RuntimeTenantContext; input: CreateCheckoutOrderCommand }>): Promise<Order>;
@@ -131,38 +132,3 @@ export const CHECKOUT_EXECUTION_PIPELINES = defineExecutionPipelines({
     ],
   },
 });
-
-export interface OrderStatusTransitionPlan {
-  allowed: boolean;
-  allowedTransitions: string[];
-  updates: Record<string, unknown>;
-  delegatesToFulfillment: boolean;
-  requiresInventoryRelease: boolean;
-}
-
-export function planOrderStatusTransition(
-  currentStatus: string,
-  newStatus: string,
-  metadata: Record<string, unknown> = {},
-): OrderStatusTransitionPlan {
-  const allowedTransitions = VALID_TRANSITIONS[currentStatus] || [];
-  const allowed = allowedTransitions.includes(newStatus);
-  const updates: Record<string, unknown> = allowed ? { status: newStatus } : {};
-
-  if (allowed && newStatus === 'delivered') {
-    updates.payment_status = 'paid';
-  }
-
-  if (allowed && newStatus === 'cancelled') {
-    updates.payment_status = 'refunded';
-    updates.notes = metadata.cancellation_reason || 'Order cancelled';
-  }
-
-  return {
-    allowed,
-    allowedTransitions,
-    updates,
-    delegatesToFulfillment: newStatus === 'shipped',
-    requiresInventoryRelease: allowed && newStatus === 'cancelled',
-  };
-}
