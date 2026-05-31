@@ -600,6 +600,127 @@ export const ThemeSchema = AuditedEntitySchema.extend({
   published_at: z.string().datetime().optional().nullable(),
 });
 
+export const ThemeEditableSchemaResponseSchema = z.object({
+  theme: z.object({
+    id: UuidSchema,
+    slug: SlugSchema,
+    name: z.string().min(1).max(160),
+    renderer_key: z.string().min(1).max(120),
+    theme_package_id: UuidSchema.optional().nullable(),
+    theme_package_version_id: UuidSchema.optional().nullable(),
+    schema_manifest_version: z.string().optional().nullable(),
+    schema_source: z.string().optional().nullable(),
+  }).passthrough(),
+  schemas: z.object({
+    sections: z.record(z.string(), MetadataSchema).default({}),
+    blocks: z.record(z.string(), MetadataSchema).default({}),
+    settings: MetadataSchema.default({}),
+    templates: MetadataSchema.default({}),
+    layouts: MetadataSchema.default({}),
+  }).passthrough(),
+  renderer_manifest: MetadataSchema.optional().nullable(),
+  approved_renderer_keys: z.array(z.string()).default([]),
+});
+
+export const ThemeEditorPayloadSchema = z.object({
+  store: z.object({
+    id: UuidSchema,
+    name: z.string().optional(),
+    subdomain: z.string().optional(),
+    status: z.string().optional(),
+  }).passthrough(),
+  theme: ThemeEditableSchemaResponseSchema.shape.theme.extend({
+    theme_instance_id: UuidSchema.optional().nullable(),
+  }).passthrough(),
+  template_config: MetadataSchema,
+  draft: z.object({
+    exists: z.boolean(),
+    updated_at: z.string().datetime().optional().nullable(),
+    version: z.number().int().positive(),
+  }).passthrough(),
+  release: z.object({
+    id: UuidSchema,
+    version: z.number().int().positive(),
+    published_at: z.string().datetime(),
+  }).passthrough().nullable(),
+  schemas: ThemeEditableSchemaResponseSchema.shape.schemas,
+  renderer_manifest: MetadataSchema.optional().nullable(),
+  approved_renderer_keys: z.array(z.string()).default([]),
+  version: z.number().int().positive(),
+});
+
+export const ThemeDraftSaveResultSchema = z.object({
+  saved_at: z.string().datetime(),
+  version: z.number().int().positive(),
+  draft: z.object({
+    id: UuidSchema,
+    version: z.number().int().positive(),
+    auto_saved_at: z.string().datetime(),
+  }).passthrough(),
+});
+
+export const ThemePublishedReleaseSchema = z.object({
+  release_id: UuidSchema,
+  release_version: z.number().int().positive(),
+  published_at: z.string().datetime(),
+}).passthrough();
+
+export const ThemePublishResultSchema = z.object({
+  store: z.object({
+    id: UuidSchema,
+    status: z.string(),
+    theme_id: z.string(),
+    current_theme_release_id: UuidSchema.optional().nullable(),
+    storefront_release_version: z.number().int().positive().optional().nullable(),
+    updated_at: z.string().datetime().optional().nullable(),
+  }).passthrough().nullable(),
+  theme: z.object({
+    id: UuidSchema,
+    slug: SlugSchema,
+    name: z.string().min(1).max(160),
+  }).passthrough(),
+  release: ThemePublishedReleaseSchema,
+  published_at: z.string().datetime(),
+});
+
+export const ThemePreviewSessionResultSchema = z.object({
+  preview_session_id: UuidSchema,
+  preview_token: z.string().min(1),
+  expires_at: z.string().datetime(),
+  draft_version: z.number().int().positive(),
+});
+
+export const ThemeReleaseSchema = z.object({
+  id: UuidSchema,
+  theme_id: z.string(),
+  theme_instance_id: UuidSchema.optional().nullable(),
+  theme_package_version_id: UuidSchema.optional().nullable(),
+  release_version: z.number().int().positive(),
+  release_status: z.string(),
+  is_current: z.boolean(),
+  publish_message: z.string().optional().nullable(),
+  published_by: UuidSchema.optional().nullable(),
+  published_at: z.string().datetime().optional().nullable(),
+  rollback_of_release_id: UuidSchema.optional().nullable(),
+  schema_manifest_version: z.string().optional().nullable(),
+  engine_version: z.string().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const ThemeRollbackResultSchema = z.object({
+  rollback: ThemePublishedReleaseSchema,
+  restored_release: z.object({
+    id: UuidSchema,
+    version: z.number().int().positive(),
+    published_at: z.string().datetime().optional().nullable(),
+  }).passthrough(),
+  theme: z.object({
+    id: UuidSchema,
+    slug: SlugSchema,
+    name: z.string().min(1).max(160),
+  }).passthrough(),
+});
+
 export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
@@ -647,6 +768,14 @@ export type ThemeSection = z.infer<typeof ThemeSectionSchema>;
 export type ThemeTemplate = z.infer<typeof ThemeTemplateSchema>;
 export type ThemeBundle = z.infer<typeof ThemeBundleSchema>;
 export type Theme = z.infer<typeof ThemeSchema>;
+export type ThemeEditableSchemaResponse = z.infer<typeof ThemeEditableSchemaResponseSchema>;
+export type ThemeEditorPayload = z.infer<typeof ThemeEditorPayloadSchema>;
+export type ThemeDraftSaveResult = z.infer<typeof ThemeDraftSaveResultSchema>;
+export type ThemePublishedRelease = z.infer<typeof ThemePublishedReleaseSchema>;
+export type ThemePublishResult = z.infer<typeof ThemePublishResultSchema>;
+export type ThemePreviewSessionResult = z.infer<typeof ThemePreviewSessionResultSchema>;
+export type ThemeRelease = z.infer<typeof ThemeReleaseSchema>;
+export type ThemeRollbackResult = z.infer<typeof ThemeRollbackResultSchema>;
 
 export const RuntimeEnvironmentSchema = z.enum(['local', 'development', 'staging', 'production']);
 

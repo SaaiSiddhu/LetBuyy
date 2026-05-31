@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
@@ -38,9 +38,9 @@ export async function PUT(
         if (resolved.error) return resolved.error
 
         const { themeId } = await params
-        const editorResponse = await workerFetch(`/themes/${themeId}/editor?store_id=${resolved.storeId}`)
-        const editorPayload = await readWorkerJson(editorResponse)
-        const config = (editorPayload.data?.template_config || {}) as Record<string, unknown>
+        const api = createWorkerApiClient()
+        const editorPayload = await api.themes.editor(themeId, resolved.storeId)
+        const config = (editorPayload.template_config || {}) as Record<string, unknown>
         const sections = (config.sections || {}) as Record<string, unknown>
         const templateSections = (sections.template || []) as Array<{ id: string;[key: string]: unknown }>
 
@@ -67,15 +67,11 @@ export async function PUT(
             },
         }
 
-        const saveResponse = await workerFetch(`/themes/${themeId}/editor/draft`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                store_id: resolved.storeId,
-                template_config: updatedConfig,
-                client: 'admin-web',
-            }),
+        await api.themes.saveDraft(themeId, {
+            store_id: resolved.storeId,
+            template_config: updatedConfig,
+            client: 'admin-web',
         })
-        await readWorkerJson(saveResponse)
 
         return NextResponse.json({
             success: true,

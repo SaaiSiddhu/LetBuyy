@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 
 /**
  * GET /api/themes/[themeId]/sections
@@ -12,8 +12,8 @@ export async function GET(
 ) {
     try {
         const { themeId } = await params
-        const payload = await readWorkerJson(await workerFetch(`/themes/${themeId}/schema`))
-        const schemas = payload.data?.schemas?.sections || {}
+        const payload = await createWorkerApiClient().themes.schema(themeId)
+        const schemas = payload.schemas?.sections || {}
 
         return NextResponse.json({
             themeId,

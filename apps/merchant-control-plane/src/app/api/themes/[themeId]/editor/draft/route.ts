@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
@@ -37,19 +37,16 @@ export async function POST(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        const payload = await readWorkerJson(await workerFetch(`/themes/${themeId}/editor/draft`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                store_id: resolved.storeId,
-                template_config: draftConfig,
-                client: 'admin-web',
-            }),
-        }))
+        const payload = await createWorkerApiClient().themes.saveDraft(themeId, {
+            store_id: resolved.storeId,
+            template_config: draftConfig,
+            client: 'admin-web',
+        })
 
         return NextResponse.json({
             success: true,
-            savedAt: payload.data?.saved_at || new Date().toISOString(),
-            version: payload.data?.version,
+            savedAt: payload.saved_at || new Date().toISOString(),
+            version: payload.version,
         })
     } catch (err) {
         return workerErrorResponse(err)
@@ -80,10 +77,7 @@ export async function DELETE(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        await readWorkerJson(await workerFetch(
-            `/themes/${themeId}/editor/draft?store_id=${encodeURIComponent(resolved.storeId)}`,
-            { method: 'DELETE' }
-        ))
+        await createWorkerApiClient().themes.deleteDraft(themeId, resolved.storeId)
 
         return NextResponse.json({ success: true })
     } catch (err) {

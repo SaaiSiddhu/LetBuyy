@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
@@ -26,11 +26,7 @@ export async function GET(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(
-            `/themes/${themeId}/editor?store_id=${encodeURIComponent(resolved.storeId)}`
-        )
-        const payload = await readWorkerJson(workerResponse)
-        const editor = payload.data
+        const editor = await createWorkerApiClient().themes.editor(themeId, resolved.storeId)
 
         return NextResponse.json({
             store: editor.store,
@@ -83,29 +79,24 @@ export async function PUT(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        await readWorkerJson(await workerFetch(`/themes/${themeId}/editor/draft`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                store_id: resolved.storeId,
-                template_config: templateConfig,
-                client: 'admin-web',
-            }),
-        }))
+        const api = createWorkerApiClient()
+        await api.themes.saveDraft(themeId, {
+            store_id: resolved.storeId,
+            template_config: templateConfig,
+            client: 'admin-web',
+        })
 
-        const publishPayload = await readWorkerJson(await workerFetch(`/themes/${themeId}/publish`, {
-            method: 'POST',
-            body: JSON.stringify({
-                store_id: resolved.storeId,
-                make_store_live: true,
-            }),
-        }))
+        const publishPayload = await api.themes.publish(themeId, {
+            store_id: resolved.storeId,
+            make_store_live: true,
+        })
 
         const savedAt = new Date().toISOString()
 
         return NextResponse.json({
             success: true,
             savedAt,
-            release: publishPayload.data?.release || null,
+            release: publishPayload.release || null,
         })
     } catch (err) {
         return workerErrorResponse(err)

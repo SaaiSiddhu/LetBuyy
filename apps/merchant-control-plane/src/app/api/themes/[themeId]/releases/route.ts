@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -21,11 +21,9 @@ export async function GET(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        const payload = await readWorkerJson(await workerFetch(
-            `/themes/${themeId}/releases?store_id=${encodeURIComponent(resolved.storeId)}`
-        ))
+        const payload = await createWorkerApiClient().themes.releases(themeId, resolved.storeId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to load theme releases')
     }

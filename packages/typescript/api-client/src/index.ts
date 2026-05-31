@@ -20,7 +20,13 @@ import type {
   Store,
   StoreStatus,
   Theme,
-  ThemeBundle,
+  ThemeDraftSaveResult,
+  ThemeEditableSchemaResponse,
+  ThemeEditorPayload,
+  ThemePreviewSessionResult,
+  ThemePublishResult,
+  ThemeRelease,
+  ThemeRollbackResult,
 } from '@letbuyy/shared-types';
 
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -180,6 +186,27 @@ export type ThemeInstallResult = {
   installation: JsonRecord;
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;
   release: JsonRecord;
+};
+export type SaveThemeDraftInput = {
+  store_id: string;
+  template_config: JsonRecord;
+  base_version?: number;
+  client?: 'admin-web' | 'flutter-builder' | 'api';
+};
+export type PublishThemeInput = {
+  store_id: string;
+  base_version?: number;
+  make_store_live?: boolean;
+  publish_message?: string;
+};
+export type ThemePreviewSessionInput = {
+  store_id: string;
+  ttl_seconds?: number;
+};
+export type RollbackThemeReleaseInput = {
+  store_id: string;
+  make_store_live?: boolean;
+  rollback_message?: string;
 };
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
 export type UpdateOrderInput = Partial<Pick<Order, 'status' | 'payment_status' | 'fulfillment_status' | 'tracking_number' | 'tracking_url' | 'notes'>> & {
@@ -394,13 +421,27 @@ export class LetbuyyApiClient {
     get: (slug: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Theme>(`/themes/${encodePathSegment(slug)}`, options),
     schema: (slug: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<ThemeBundle>(`/themes/${encodePathSegment(slug)}/schema`, options),
+      this.requestData<ThemeEditableSchemaResponse>(`/themes/${encodePathSegment(slug)}/schema`, options),
     categories: (options?: LetbuyyRequestOptions) =>
       this.requestData<string[]>('/themes/categories', options),
     industries: (options?: LetbuyyRequestOptions) =>
       this.requestData<string[]>('/themes/industries', options),
     install: (slug: string, input: ThemeInstallInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeInstallResult>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
+    editor: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { store_id: storeId } }),
+    saveDraft: (slug: string, input: SaveThemeDraftInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemeDraftSaveResult>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'PUT', body: input }),
+    deleteDraft: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'DELETE', query: { store_id: storeId } }),
+    publish: (slug: string, input: PublishThemeInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePublishResult>(`/themes/${encodePathSegment(slug)}/publish`, { ...options, method: 'POST', body: input }),
+    previewSession: (slug: string, input: ThemePreviewSessionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePreviewSessionResult>(`/themes/${encodePathSegment(slug)}/preview-session`, { ...options, method: 'POST', body: input }),
+    releases: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemeRelease[]>(`/themes/${encodePathSegment(slug)}/releases`, { ...options, query: { store_id: storeId } }),
+    rollbackRelease: (slug: string, releaseId: string, input: RollbackThemeReleaseInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemeRollbackResult>(`/themes/${encodePathSegment(slug)}/releases/${encodePathSegment(releaseId)}/rollback`, { ...options, method: 'POST', body: input }),
   };
 
   readonly payments = {
@@ -657,4 +698,11 @@ export type {
   ProductCategory,
   Store,
   Theme,
+  ThemeDraftSaveResult,
+  ThemeEditableSchemaResponse,
+  ThemeEditorPayload,
+  ThemePreviewSessionResult,
+  ThemePublishResult,
+  ThemeRelease,
+  ThemeRollbackResult,
 };
