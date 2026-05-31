@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { readWorkerJson, storefrontReadInit, workerFetch } from './worker-client';
+import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
 
 export type StorefrontContentResource = {
     id: string;
@@ -73,51 +73,59 @@ function mapBlogPostSummary(data: Record<string, unknown>): StorefrontBlogPostSu
     };
 }
 
-async function fetchContent(path: string): Promise<StorefrontContentResource | null> {
-    const response = await workerFetch(path, storefrontReadInit(CONTENT_REVALIDATE_SECONDS, ['storefront:content']));
-    if (response.status === 404) return null;
+function isNotFoundError(error: unknown): boolean {
+    return Boolean(error && typeof error === 'object' && 'status' in error && error.status === 404);
+}
 
-    const payload = await readWorkerJson(response);
-    const data = payload?.data as WorkerContentPayload | undefined;
-    return data ? mapContentResource(data) : null;
+function storefrontContentClient(subdomain: string, tag: string) {
+    return createStorefrontApiClient(
+        storefrontReadInit(CONTENT_REVALIDATE_SECONDS, [
+            'storefront:content',
+            `storefront:${subdomain}:${tag}`,
+        ]),
+    ).storefront;
+}
+
+async function fetchContent(fetcher: () => Promise<WorkerContentPayload>): Promise<StorefrontContentResource | null> {
+    try {
+        const data = await fetcher();
+        return data ? mapContentResource(data) : null;
+    } catch (error) {
+        if (isNotFoundError(error)) return null;
+        throw error;
+    }
 }
 
 export const ContentService = {
     async listPages(subdomain: string) {
-        const response = await workerFetch(
-            `/storefront/${encodeURIComponent(subdomain)}/pages`,
-            storefrontReadInit(CONTENT_REVALIDATE_SECONDS, [`storefront:${subdomain}:pages`]),
-        );
-        if (response.status === 404) return [];
-        const payload = await readWorkerJson(response);
-        const data = payload?.data;
-        return Array.isArray(data)
-            ? data.map((item) => mapContentResource(item as WorkerContentPayload))
-            : [];
+        try {
+            const data = await storefrontContentClient(subdomain, 'pages').pages(subdomain);
+            return data.map((item) => mapContentResource(item as WorkerContentPayload));
+        } catch (error) {
+            if (isNotFoundError(error)) return [];
+            throw error;
+        }
     },
 
     async listBlogPosts(subdomain: string) {
-        const response = await workerFetch(
-            `/storefront/${encodeURIComponent(subdomain)}/blog?limit=100`,
-            storefrontReadInit(CONTENT_REVALIDATE_SECONDS, [`storefront:${subdomain}:blog`]),
-        );
-        if (response.status === 404) return [];
-        const payload = await readWorkerJson(response);
-        const data = payload?.data;
-        return Array.isArray(data)
-            ? data.map((item) => mapBlogPostSummary(item as Record<string, unknown>))
-            : [];
+        try {
+            const response = await storefrontContentClient(subdomain, 'blog').blogPosts(subdomain, { limit: 100 });
+            return response.data.map((item) => mapBlogPostSummary(item as Record<string, unknown>));
+        } catch (error) {
+            if (isNotFoundError(error)) return [];
+            throw error;
+        }
     },
 
     async getPageBySlug(subdomain: string, slug: string) {
-        return fetchContent(`/storefront/${encodeURIComponent(subdomain)}/pages/${encodeURIComponent(slug)}`);
+        return fetchContent(() => storefrontContentClient(subdomain, 'pages').page(subdomain, slug) as Promise<WorkerContentPayload>);
     },
 
     async getBlogPostBySlug(subdomain: string, slug: string) {
-        return fetchContent(`/storefront/${encodeURIComponent(subdomain)}/blog/${encodeURIComponent(slug)}`);
+        return fetchContent(() => storefrontContentClient(subdomain, 'blog').blogPost(subdomain, slug) as Promise<WorkerContentPayload>);
     },
 
     async getPolicy(subdomain: string, policyType: string) {
-        return fetchContent(`/storefront/${encodeURIComponent(subdomain)}/policies/${encodeURIComponent(policyType)}`);
+        return fetchContent(() => storefrontContentClient(subdomain, 'policies').policy(subdomain, policyType) as Promise<WorkerContentPayload>);
     },
 };

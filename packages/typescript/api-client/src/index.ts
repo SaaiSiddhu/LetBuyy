@@ -248,6 +248,21 @@ export type StorefrontStoreStatusPayload = Partial<StorefrontStorePayload> & {
   status: StoreStatus | string;
 };
 
+export type StorefrontContentPayload = JsonRecord & {
+  id: string;
+  title?: string | null;
+  slug?: string | null;
+  page_type?: string | null;
+  policy_type?: string | null;
+  content?: JsonRecord | string | null;
+  seo?: JsonRecord | null;
+  assigned_template_key?: string | null;
+  published_at?: string | null;
+  updated_at?: string | null;
+};
+
+export type StorefrontBlogPostPayload = BlogPost & JsonRecord;
+
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
@@ -810,9 +825,17 @@ export class LetbuyyApiClient {
     createOrder: (subdomain: string, input: CreateOrderInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Order>(`/storefront/${encodePathSegment(subdomain)}/orders`, { ...options, method: 'POST', body: input }),
     pages: (subdomain: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<Page[]>(`/storefront/${encodePathSegment(subdomain)}/pages`, options),
+      this.requestData<StorefrontContentPayload[]>(`/storefront/${encodePathSegment(subdomain)}/pages`, options),
     page: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<Page>(`/storefront/${encodePathSegment(subdomain)}/pages/${encodePathSegment(slug)}`, options),
+      this.requestData<StorefrontContentPayload>(`/storefront/${encodePathSegment(subdomain)}/pages/${encodePathSegment(slug)}`, options),
+    policies: (subdomain: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontContentPayload[]>(`/storefront/${encodePathSegment(subdomain)}/policies`, options),
+    policy: (subdomain: string, policyType: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontContentPayload>(`/storefront/${encodePathSegment(subdomain)}/policies/${encodePathSegment(policyType)}`, options),
+    blogPosts: (subdomain: string, query?: ListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<StorefrontBlogPostPayload>(`/storefront/${encodePathSegment(subdomain)}/blog`, { ...options, query }),
+    blogPost: (subdomain: string, slug: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontContentPayload>(`/storefront/${encodePathSegment(subdomain)}/blog/${encodePathSegment(slug)}`, options),
   };
 
   withOptions(options: Partial<LetbuyyApiClientOptions>): LetbuyyApiClient {
