@@ -4,6 +4,7 @@ import type {
   AnalyticsDashboard,
   AnalyticsOrdersBreakdown,
   ApiResponse,
+  AuthSessionResponse,
   BlogComment,
   BlogCommentStatus,
   BlogPost,
@@ -47,6 +48,7 @@ import type {
   Store,
   StorePaymentConfig,
   StoreStatus,
+  StoreSummary,
   StoreSubscriptionState,
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,
@@ -335,7 +337,7 @@ export type UpdateFormSubmissionInput = Pick<FormSubmission, 'status'>;
 export type UpdateProductReviewInput = Pick<ProductReview, 'status'>;
 export type CreateResumeContentItemInput = Pick<ResumeContentItem, 'store_id'> & Partial<ResumeContentItem>;
 export type UpdateResumeContentItemInput = Partial<ResumeContentItem>;
-export type ShippingTaxListQuery = Pick<StoreScopedQuery, 'store_id'>;
+export type ShippingTaxListQuery = StoreScopedQuery;
 export type CreateShippingZoneInput = Pick<ShippingZone, 'store_id' | 'name' | 'countries'> & Partial<ShippingZone>;
 export type UpdateShippingZoneInput = Partial<ShippingZone>;
 export type CreateShippingRateInput = Pick<ShippingRate, 'zone_id' | 'name' | 'type'> & Partial<ShippingRate>;
@@ -415,13 +417,13 @@ export class LetbuyyApiClient {
 
   readonly stores = {
     list: (query?: ListQuery, options?: LetbuyyRequestOptions) =>
-      this.requestPaginated<Store>('/stores', { ...options, query }),
+      this.requestPaginated<StoreSummary>('/stores', { ...options, query }),
     get: (id: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Store>(`/stores/${encodePathSegment(id)}`, options),
     getBySubdomain: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<Store>(`/stores/public/${encodePathSegment(subdomain)}`, options),
     getByHandle: (handle: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<Store>(`/stores/handle/${encodePathSegment(handle)}`, options),
+      this.requestData<StoreSummary>(`/stores/handle/${encodePathSegment(handle)}`, options),
     create: (input: CreateStoreInput, options?: LetbuyyRequestOptions) =>
       this.requestData<Store>('/stores', { ...options, method: 'POST', body: input }),
     update: (id: string, input: UpdateStoreInput, options?: LetbuyyRequestOptions) =>
@@ -436,6 +438,11 @@ export class LetbuyyApiClient {
       save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
     },
+  };
+
+  readonly auth = {
+    session: (options?: LetbuyyRequestOptions) =>
+      this.request<AuthSessionResponse>('/auth/custom/session', options),
   };
 
   readonly employees = {
@@ -1011,6 +1018,7 @@ export type {
   AIUsageRecord,
   AnalyticsDashboard,
   AnalyticsOrdersBreakdown,
+  AuthSessionResponse,
   BlogComment,
   BlogPost,
   BillingHistoryItem,
@@ -1045,6 +1053,7 @@ export type {
   ShippingZone,
   Store,
   StorePaymentConfig,
+  StoreSummary,
   StoreSubscriptionState,
   SubscriptionBillingPeriod,
   SubscriptionCancelResult,

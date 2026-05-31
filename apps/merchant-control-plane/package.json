@@ -13,6 +13,7 @@
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
     "@letbuyy/api-types": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "lucide-react": "^0.562.0",

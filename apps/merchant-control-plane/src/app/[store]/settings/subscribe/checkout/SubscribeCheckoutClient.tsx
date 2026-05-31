@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
 
 /* ——————————————————————————————————————
    Subscribe Checkout Client (Inline Styles)
@@ -17,22 +18,8 @@ declare global {
     }
 }
 
-interface Plan {
-    id: string
-    slug: string
-    name: string
-    tagline: string
-    price_monthly_inr: number
-    price_yearly_inr: number
-    promo_price_inr: number
-    promo_months: number
-    promo_label: string | null
-    gmv_percentage: number
-    features: Array<{ label: string; icon: string }>
-}
-
 interface SubscribeCheckoutClientProps {
-    plan: Plan
+    plan: SubscriptionPlanView
     billingPeriod: 'monthly' | 'yearly'
     storeId: string
     storeName: string

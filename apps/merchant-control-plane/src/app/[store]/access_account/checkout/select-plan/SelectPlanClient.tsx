@@ -2,40 +2,15 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
 
 /* ——————————————————————————————————————
    Select Plan Client – Shopify-level
    Premium inline-styled plan picker
    —————————————————————————————————————— */
 
-interface Plan {
-    id: string
-    slug: string
-    name: string
-    tagline: string
-    is_popular: boolean
-    price_monthly_inr: number
-    price_yearly_inr: number
-    gmv_percentage: number
-    promo_price_inr: number
-    promo_months: number
-    promo_label: string | null
-    features: Array<{ label: string; icon: string }>
-    compare_features: Array<{
-        category: string
-        items: Array<{
-            label: string
-            description?: string
-            starter: string | boolean
-            business: string | boolean
-            enterprise: string | boolean
-        }>
-    }>
-    requires_contact: boolean
-}
-
 interface SelectPlanClientProps {
-    plans: Plan[]
+    plans: SubscriptionPlanView[]
     currentPlan: string | null
     storeName: string
     storeSlug: string
@@ -550,7 +525,7 @@ export default function SelectPlanClient({
                                                 )}
                                             </div>
                                             {planSlugs.map(slug => {
-                                                const val = (item as Record<string, unknown>)[slug]
+                                                const val = (item as unknown as Record<string, unknown>)[slug]
                                                 return (
                                                     <div key={slug} style={{
                                                         padding: '14px 20px',

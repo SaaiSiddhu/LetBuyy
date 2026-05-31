@@ -218,6 +218,18 @@ export const MoneyAmountSchema = z.object({
   currency: CurrencySchema,
 });
 
+export const AuthSessionUserSchema = z.object({
+  id: UuidSchema,
+  email: EmailSchema,
+  fullName: z.string().max(200).optional().nullable(),
+  avatarUrl: UrlSchema.optional().nullable(),
+}).passthrough();
+
+export const AuthSessionResponseSchema = z.object({
+  authenticated: z.boolean(),
+  user: AuthSessionUserSchema.optional().nullable(),
+}).passthrough();
+
 export const StoreSchema = AuditedEntitySchema.extend({
   user_id: UuidSchema,
   name: z.string().min(1).max(100),
@@ -243,6 +255,21 @@ export const StoreSchema = AuditedEntitySchema.extend({
   seo_description: z.string().max(160).optional().nullable(),
   published_at: z.string().datetime().optional().nullable(),
 });
+
+export const StoreSummarySchema = StoreSchema.pick({
+  id: true,
+  name: true,
+  subdomain: true,
+  site_type: true,
+  status: true,
+  theme_id: true,
+  custom_domain: true,
+}).extend({
+  store_name: z.string().max(100).optional().nullable(),
+  trial_ends_at: z.string().datetime().optional().nullable(),
+  trial_status: z.string().max(80).optional().nullable(),
+  theme_settings: MetadataSchema.optional().nullable(),
+}).passthrough();
 
 export const ProductOptionSchema = z.object({
   id: UuidSchema.optional(),
@@ -1154,7 +1181,10 @@ export type ThemePricingType = z.infer<typeof ThemePricingTypeSchema>;
 export type ShippingRateType = z.infer<typeof ShippingRateTypeSchema>;
 export type TaxAppliesTo = z.infer<typeof TaxAppliesToSchema>;
 export type MoneyAmount = z.infer<typeof MoneyAmountSchema>;
+export type AuthSessionUser = z.infer<typeof AuthSessionUserSchema>;
+export type AuthSessionResponse = z.infer<typeof AuthSessionResponseSchema>;
 export type Store = z.infer<typeof StoreSchema>;
+export type StoreSummary = z.infer<typeof StoreSummarySchema>;
 export type ProductOption = z.infer<typeof ProductOptionSchema>;
 export type Variant = z.infer<typeof VariantSchema>;
 export type ProductVariant = Variant;

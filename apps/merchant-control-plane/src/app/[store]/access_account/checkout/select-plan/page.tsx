@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { toSubscriptionPlanView } from '@/lib/billing/plan-ui'
 import SelectPlanClient from './SelectPlanClient'
 
 /* ——————————————————————————————————————
@@ -26,16 +27,16 @@ export default async function SelectPlanPage({ params }: PageProps) {
     // Determine site type (stores table may have site_type)
     const siteType = storeData.site_type || 'store'
 
-    const [plansPayload, subscriptionPayload] = await Promise.all([
-        workerFetch(`/payments/plans?site_type=${encodeURIComponent(siteType)}`).then(readWorkerJson),
-        workerFetch(`/payments/subscription?store_id=${encodeURIComponent(storeData.id)}`).then(readWorkerJson),
+    const apiClient = createWorkerApiClient()
+    const [plans, subscriptionPayload] = await Promise.all([
+        apiClient.payments.plans({ site_type: siteType }),
+        apiClient.payments.subscription.get({ store_id: storeData.id }),
     ])
-    const plans = plansPayload?.data || []
-    const currentSub = subscriptionPayload?.data?.subscription || null
+    const currentSub = subscriptionPayload.subscription || null
 
     return (
         <SelectPlanClient
-            plans={plans || []}
+            plans={plans.map(toSubscriptionPlanView)}
             currentPlan={currentSub?.plan || null}
             storeName={storeData.name || storeData.store_name || store}
             storeSlug={store}

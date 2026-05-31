@@ -1,5 +1,5 @@
-import { workerFetch, readWorkerJson } from '@/lib/api/worker-client'
 import { cache } from 'react'
+import { createWorkerApiClient } from '@/lib/api/worker-client'
 
 export interface SessionUser {
     id: string
@@ -8,41 +8,16 @@ export interface SessionUser {
     avatarUrl: string | null
 }
 
-interface StoreSummary {
-    id: string
-    name: string
-    store_name: string
-    subdomain: string
-    site_type: string
-    status: string
-    trial_ends_at?: string | null
-    trial_status?: string | null
-    theme_id?: string | null
-    theme_settings?: Record<string, unknown> | null
-    custom_domain?: string | null
-}
-
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     try {
-        const response = await workerFetch('/auth/custom/session', {
-            method: 'GET',
-            requireSession: true,
-        })
-        const payload = await readWorkerJson(response) as {
-            authenticated?: boolean
-            user?: {
-                id: string
-                email: string
-                fullName: string | null
-            }
-        }
+        const payload = await createWorkerApiClient().auth.session()
 
         if (!payload.authenticated || !payload.user) return null
 
         return {
             id: payload.user.id,
             email: payload.user.email,
-            fullName: payload.user.fullName,
+            fullName: payload.user.fullName ?? null,
             avatarUrl: null,
         }
     } catch {
@@ -67,19 +42,14 @@ export const getStoreForUser = cache(async (
     custom_domain: string | null
 } | null> => {
     try {
-        const response = await workerFetch(`/stores/handle/${encodeURIComponent(storeName)}`, {
-            method: 'GET',
-            requireSession: true,
-        })
-        const payload = await readWorkerJson(response) as { data?: StoreSummary }
-        const data = payload.data
+        const data = await createWorkerApiClient().stores.getByHandle(storeName)
 
         if (!data) return null
 
         return {
             id: data.id,
             name: data.name,
-            store_name: data.store_name,
+            store_name: data.store_name || data.name,
             subdomain: data.subdomain,
             site_type: data.site_type,
             status: data.status,
@@ -105,16 +75,12 @@ export const getUserStores = cache(async (
     status: string
 }>> => {
     try {
-        const response = await workerFetch('/stores?limit=50', {
-            method: 'GET',
-            requireSession: true,
-        })
-        const payload = await readWorkerJson(response) as { data?: StoreSummary[] }
+        const payload = await createWorkerApiClient().stores.list({ limit: 50 })
 
-        return (payload.data || []).map((store) => ({
+        return payload.data.map((store) => ({
             id: store.id,
             name: store.name,
-            store_name: store.store_name,
+            store_name: store.store_name || store.name,
             subdomain: store.subdomain,
             site_type: store.site_type,
             status: store.status,

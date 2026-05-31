@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient } from '@/lib/api/worker-client'
 import DashboardClient from './DashboardClient'
 
 /* ——————————————————————————————————————
@@ -71,14 +71,15 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     const domainConfigured = !!storeData.custom_domain
 
     let setupStatus: SetupStatus
+    const apiClient = createWorkerApiClient()
 
     if (storeData.site_type === 'store') {
-        const [productsPayload, shippingPayload] = await Promise.all([
-            workerFetch(`/products?store_id=${encodeURIComponent(storeData.id)}&limit=1`).then(readWorkerJson).catch(() => null),
-            workerFetch(`/shipping-tax/shipping/zones?store_id=${encodeURIComponent(storeData.id)}&limit=1`).then(readWorkerJson).catch(() => null),
+        const [productsPayload, shippingZones] = await Promise.all([
+            apiClient.products.list({ store_id: storeData.id, limit: 1 }).catch(() => null),
+            apiClient.shipping.zones.list({ store_id: storeData.id, limit: 1 }).catch(() => []),
         ])
-        const productsCount = productsPayload?.meta?.total || 0
-        const shippingCount = shippingPayload?.meta?.total || 0
+        const productsCount = productsPayload?.total || 0
+        const shippingCount = shippingZones.length
 
         setupStatus = {
             primaryComplete: productsCount > 0,
@@ -89,10 +90,8 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
             hasShipping: shippingCount > 0,
         }
     } else {
-        const pagesPayload = await workerFetch(`/pages?store_id=${encodeURIComponent(storeData.id)}&limit=1`)
-            .then(readWorkerJson)
-            .catch(() => null)
-        const pagesCount = pagesPayload?.meta?.total || 0
+        const pagesPayload = await apiClient.pages.list({ store_id: storeData.id, limit: 1 }).catch(() => null)
+        const pagesCount = pagesPayload?.total || 0
 
         setupStatus = {
             primaryComplete: pagesCount > 0,
