@@ -5,6 +5,7 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
+import { getUrbanKicksDemoReviews, URBAN_KICKS_DEMO_STORE_ID } from '@/lib/demo/urban-kicks-demo';
 import { getSession } from '@/lib/session';
 import { readWorkerJson, WorkerRequestError, workerFetch } from '@/lib/worker-client';
 
@@ -45,6 +46,10 @@ export async function GET(request: NextRequest) {
 
         if (!productId || !storeId) {
             return NextResponse.json({ error: 'productId and storeId required' }, { status: 400 });
+        }
+
+        if (storeId === URBAN_KICKS_DEMO_STORE_ID) {
+            return NextResponse.json(getUrbanKicksDemoReviews(productId));
         }
 
         const response = await workerFetch(`/storefront/reviews?product_id=${encodeURIComponent(productId)}&store_id=${encodeURIComponent(storeId)}`);

@@ -213,6 +213,8 @@ SKIP: Start local infrastructure — Reason: `docker-compose` is not installed a
 
 SKIP: Razorpay provider order creation smoke test — Reason: Razorpay test credentials (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`) are not available in this environment, so live provider order creation and webhook smoke testing cannot be executed safely. Resume point: Phase 2 Task 2.5 after configuring Razorpay test credentials.
 
+SKIP: Phase 3.7 merchant install/editor/publish live verification — Reason: local merchant auth/API database stack is unavailable because Docker Compose was skipped, and no authenticated merchant session or live worker credentials are available in this environment. Resume point: Phase 3 Task 3.7 after local infrastructure and merchant auth credentials are available.
+
 ---
 
 ## GOVERNANCE FAILURES — PHASE 0

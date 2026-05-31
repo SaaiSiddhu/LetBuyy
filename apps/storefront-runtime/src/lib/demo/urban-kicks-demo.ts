@@ -10,7 +10,8 @@ import {
 } from '@/types/store';
 
 export const URBAN_KICKS_DEMO_SUBDOMAIN = 'urban-kicks-demo';
-const DEMO_STORE_ID = 'demo-urban-kicks-store';
+export const URBAN_KICKS_DEMO_STORE_ID = 'demo-urban-kicks-store';
+const DEMO_STORE_ID = URBAN_KICKS_DEMO_STORE_ID;
 const DEMO_RELEASE_ID = 'demo-urban-kicks-release';
 const DEMO_TIMESTAMP = '2026-05-24T00:00:00.000Z';
 
@@ -200,6 +201,68 @@ export function getUrbanKicksDemoProducts(productIds?: string[]) {
 
 export function getUrbanKicksDemoProduct(productId: string) {
     return getUrbanKicksDemoProducts([productId])[0] || null;
+}
+
+const demoReviews = [
+    {
+        id: 'demo-review-air-runner-1',
+        product_id: 'demo-air-runner-90',
+        customer_name: 'Aarav M.',
+        rating: 5,
+        title: 'Light and sharp',
+        body: 'The pair feels light for daily use and the sole has enough structure for long city walks.',
+        images: [],
+        is_verified: true,
+        helpful_count: 18,
+        created_at: '2026-05-28T09:30:00.000Z',
+    },
+    {
+        id: 'demo-review-air-runner-2',
+        product_id: 'demo-air-runner-90',
+        customer_name: 'Nisha R.',
+        rating: 5,
+        title: 'Works with everything',
+        body: 'Clean profile, comfortable fit, and the colorway goes well with denim and cargos.',
+        images: [],
+        is_verified: true,
+        helpful_count: 11,
+        created_at: '2026-05-26T16:45:00.000Z',
+    },
+    {
+        id: 'demo-review-air-runner-3',
+        product_id: 'demo-air-runner-90',
+        customer_name: 'Kabir S.',
+        rating: 4,
+        title: 'Good everyday sneaker',
+        body: 'Looks premium in hand. I would size up if you prefer a relaxed fit.',
+        images: [],
+        is_verified: false,
+        helpful_count: 7,
+        created_at: '2026-05-24T11:20:00.000Z',
+    },
+];
+
+export function getUrbanKicksDemoReviews(productId: string) {
+    const reviews = demoReviews
+        .filter((review) => review.product_id === productId)
+        .map((review) => ({ ...review }));
+    const totalReviews = reviews.length;
+    const averageRating = totalReviews
+        ? Number((reviews.reduce((sum, review) => sum + review.rating, 0) / totalReviews).toFixed(1))
+        : 0;
+    const distribution = [5, 4, 3, 2, 1].map((star) => ({
+        star,
+        count: reviews.filter((review) => review.rating === star).length,
+    }));
+
+    return {
+        reviews,
+        summary: {
+            totalReviews,
+            averageRating,
+            distribution,
+        },
+    };
 }
 
 export function getUrbanKicksDemoStore(): StoreModel {

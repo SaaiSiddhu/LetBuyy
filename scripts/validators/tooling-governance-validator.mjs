@@ -18,6 +18,7 @@ const requiredScriptDirectories = [
 
 const allowedRootScriptFiles = new Set([
   "generate-repository-intelligence.mjs",
+  "setup-local-env.mjs",
   "validate-architecture.mjs",
   "validate-governance.mjs",
 ]);
