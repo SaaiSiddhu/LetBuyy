@@ -10,6 +10,10 @@ import {
     UpdateBlogCommentSchema,
     UpdateBlogPostSchema,
 } from '../schemas/blog.schema';
+import {
+    normalizeBlogCommentRecord,
+    type CmsBlogCommentRecord,
+} from '@letbuyy/cms-core';
 import type { z } from 'zod';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -23,13 +27,6 @@ type UpdateBlogCommentInput = z.infer<typeof UpdateBlogCommentSchema>;
 interface BlogOwnerRow {
     store_id?: string | null;
     stores?: unknown;
-}
-
-interface BlogCommentRow extends BlogOwnerRow {
-    id?: string;
-    body?: string | null;
-    content?: string | null;
-    blog_posts?: { title?: string | null } | null;
 }
 
 type DatabaseErrorLike = {
@@ -496,7 +493,7 @@ router.get('/comments', validate('query', ListBlogCommentsQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated((data || []).map(normalizeComment), count || 0, q.page, q.limit));
+    return c.json(paginated(((data || []) as CmsBlogCommentRecord[]).map(normalizeBlogCommentRecord), count || 0, q.page, q.limit));
 });
 
 router.patch('/comments/:id', validate('json', UpdateBlogCommentSchema), async (c) => {
@@ -538,7 +535,7 @@ router.patch('/comments/:id', validate('json', UpdateBlogCommentSchema), async (
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error?.message || 'Unable to update comment' } }, 500);
     }
 
-    return c.json(success(normalizeComment(data)));
+    return c.json(success(normalizeBlogCommentRecord(data as CmsBlogCommentRecord)));
 });
 
 router.delete('/comments/:id', async (c) => {
@@ -579,16 +576,6 @@ router.delete('/comments/:id', async (c) => {
 
     return c.json(success({ deleted: true }));
 });
-
-function normalizeComment(row: BlogCommentRow) {
-    const { blog_posts, stores: _stores, ...comment } = row;
-
-    return {
-        ...comment,
-        content: comment.content || comment.body || '',
-        post_title: blog_posts?.title || null,
-    };
-}
 
 async function listOwnedStoreIds(
     db: ReturnType<typeof getSupabaseAdmin>,

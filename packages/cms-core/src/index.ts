@@ -187,6 +187,15 @@ export interface CmsFormSubmissionRecord {
   updated_at?: string | null;
 }
 
+export interface CmsBlogCommentRecord {
+  id?: string;
+  store_id?: string | null;
+  stores?: unknown;
+  body?: string | null;
+  content?: string | null;
+  blog_posts?: { title?: string | null } | null;
+}
+
 export function getCmsString(data: Record<string, unknown>, key: string): string | null {
   const value = data[key];
   return typeof value === 'string' ? value : null;
@@ -303,6 +312,16 @@ export function normalizeFormSubmissionRecord(row: CmsFormSubmissionRecord) {
     subject: submission.subject || getCmsNonEmptyString(payload, 'subject') || submission.form_name || null,
     message: submission.message || getCmsNonEmptyString(payload, 'message') || getCmsNonEmptyString(payload, 'body') || '',
     source: submission.source || getCmsNonEmptyString(payload, 'source') || submission.source_url || submission.form_type || 'form',
+  };
+}
+
+export function normalizeBlogCommentRecord(row: CmsBlogCommentRecord) {
+  const { blog_posts, stores: _stores, ...comment } = row;
+
+  return {
+    ...comment,
+    content: comment.content || comment.body || '',
+    post_title: blog_posts?.title || null,
   };
 }
 
