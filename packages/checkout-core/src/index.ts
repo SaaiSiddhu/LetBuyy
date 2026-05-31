@@ -535,6 +535,152 @@ export function planOrderStatusTransition(
   };
 }
 
+export interface OrderItemSourceRow extends Record<string, unknown> {
+  product_id?: string | null;
+  variant_id?: string | null;
+  title?: string | null;
+  name?: string | null;
+  product_name?: string | null;
+  variant_title?: string | null;
+  sku?: string | null;
+  quantity?: number | string | null;
+  unit_price?: number | string | null;
+  price?: number | string | null;
+  total?: number | string | null;
+  image?: string | null;
+  image_url?: string | null;
+  product_snapshot?: Record<string, unknown> | string | null;
+}
+
+export interface OrderSourceRow extends Record<string, unknown> {
+  id: string;
+  store_id: string;
+  order_number?: string | null;
+  customer_name?: string | null;
+  customer_email?: string | null;
+  customer_phone?: string | null;
+  status?: string | null;
+  payment_status?: string | null;
+  payment_method?: string | null;
+  subtotal?: number | string | null;
+  shipping_cost?: number | string | null;
+  tax?: number | string | null;
+  discount?: number | string | null;
+  total?: number | string | null;
+  coupon_code?: string | null;
+  coupon_discount?: number | string | null;
+  tracking_number?: string | null;
+  shipping_method?: string | null;
+  shipping_address?: Record<string, unknown> | string | null;
+  items?: unknown;
+  order_items?: unknown;
+  created_at?: string | null;
+  updated_at?: string | null;
+}
+
+function toCheckoutRecord(value: unknown): Record<string, unknown> {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>;
+  }
+
+  if (typeof value === 'string' && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        return parsed as Record<string, unknown>;
+      }
+    } catch {
+      return {};
+    }
+  }
+
+  return {};
+}
+
+function toCheckoutArray(value: unknown): unknown[] {
+  if (Array.isArray(value)) return value;
+
+  if (typeof value === 'string' && value.trim()) {
+    try {
+      const parsed = JSON.parse(value);
+      return Array.isArray(parsed) ? parsed : [];
+    } catch {
+      return [];
+    }
+  }
+
+  return [];
+}
+
+function toCheckoutText(value: unknown, fallback = ''): string {
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number') return String(value);
+  return fallback;
+}
+
+function toCheckoutNumber(value: unknown, fallback = 0): number {
+  if (value === null || value === undefined || value === '') return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function firstImageFromOrderSnapshot(snapshot: Record<string, unknown>) {
+  const images = snapshot.images;
+  if (Array.isArray(images) && typeof images[0] === 'string') return images[0];
+  return toCheckoutText(snapshot.image || snapshot.image_url);
+}
+
+export function normalizeOrderItemRecord(value: unknown) {
+  const item = toCheckoutRecord(value) as OrderItemSourceRow;
+  const snapshot = toCheckoutRecord(item.product_snapshot);
+  const quantity = toCheckoutNumber(item.quantity, 0);
+  const unitPrice = toCheckoutNumber(item.unit_price ?? item.price, 0);
+  const total = toCheckoutNumber(item.total, unitPrice * quantity);
+
+  return {
+    product_id: toCheckoutText(item.product_id),
+    variant_id: toCheckoutText(item.variant_id) || null,
+    title: toCheckoutText(item.title || item.name || item.product_name || snapshot.name, 'Item'),
+    variant_title: toCheckoutText(item.variant_title) || null,
+    sku: toCheckoutText(item.sku || snapshot.sku) || null,
+    quantity,
+    unit_price: unitPrice,
+    total,
+    image: toCheckoutText(item.image || item.image_url) || firstImageFromOrderSnapshot(snapshot) || null,
+  };
+}
+
+export function normalizeOrderRecord<TOrder extends OrderSourceRow>(row: TOrder) {
+  const relationalItems = toCheckoutArray(row.order_items);
+  const legacyItems = toCheckoutArray(row.items);
+  const items = (relationalItems.length > 0 ? relationalItems : legacyItems).map(normalizeOrderItemRecord);
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0);
+
+  return {
+    ...row,
+    order_number: row.order_number || '',
+    customer_name: row.customer_name || '',
+    customer_email: row.customer_email || '',
+    customer_phone: row.customer_phone || '',
+    status: row.status || 'pending',
+    payment_status: row.payment_status || 'pending',
+    payment_method: row.payment_method || 'cod',
+    subtotal: toCheckoutNumber(row.subtotal),
+    shipping_cost: toCheckoutNumber(row.shipping_cost),
+    tax: toCheckoutNumber(row.tax),
+    discount: toCheckoutNumber(row.discount ?? row.coupon_discount),
+    total: toCheckoutNumber(row.total),
+    coupon_code: row.coupon_code || null,
+    coupon_discount: toCheckoutNumber(row.coupon_discount ?? row.discount),
+    tracking_number: row.tracking_number || null,
+    shipping_method: row.shipping_method || null,
+    shipping_address: toCheckoutRecord(row.shipping_address),
+    items,
+    order_items: items,
+    item_count: itemCount,
+  };
+}
+
 export interface Order {
   id: string;
   store_id: string;
