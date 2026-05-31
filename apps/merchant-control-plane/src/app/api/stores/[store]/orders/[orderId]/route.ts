@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,10 +12,9 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/orders/${encodeURIComponent(orderId)}`)
-        const payload = await readWorkerJson(workerResponse)
+        const order = await createWorkerApiClient().orders.get(orderId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: order })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to load order')
     }
@@ -32,20 +31,16 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/orders/${encodeURIComponent(orderId)}`, {
-            method: 'PATCH',
-            body: JSON.stringify({
-                idempotency_key: body.idempotency_key,
-                status: body.status,
-                tracking_number: body.tracking_number,
-                carrier: body.carrier,
-                cancellation_reason: body.cancellation_reason,
-                notes: body.notes,
-            }),
+        const order = await createWorkerApiClient().orders.update(orderId, {
+            idempotency_key: body.idempotency_key,
+            status: body.status,
+            tracking_number: body.tracking_number,
+            carrier: body.carrier,
+            cancellation_reason: body.cancellation_reason,
+            notes: body.notes,
         })
-        const payload = await readWorkerJson(workerResponse)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: order })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to update order')
     }

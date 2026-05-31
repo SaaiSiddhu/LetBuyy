@@ -162,7 +162,12 @@ export type ProductImportResult = {
   products: Array<{ id: string; name: string }>;
 };
 export type CreateOrderInput = Pick<Order, 'store_id' | 'line_items' | 'currency'> & NewRecord<Order>;
-export type UpdateOrderInput = Partial<Pick<Order, 'status' | 'payment_status' | 'fulfillment_status' | 'tracking_number' | 'tracking_url' | 'notes'>>;
+export type UpdateOrderInput = Partial<Pick<Order, 'status' | 'payment_status' | 'fulfillment_status' | 'tracking_number' | 'tracking_url' | 'notes'>> & {
+  idempotency_key?: string;
+  carrier?: string;
+  cancellation_reason?: string;
+  version?: number;
+};
 export type CreateCustomerAddressInput = Pick<CustomerAddress, 'store_id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code'> & NewRecord<CustomerAddress>;
 export type UpdateCustomerAddressInput = NewRecord<CustomerAddress>;
 export type CreatePageInput = Pick<Page, 'store_id' | 'title' | 'slug'> & NewRecord<Page>;
