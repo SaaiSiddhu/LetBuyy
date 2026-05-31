@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
+
+interface AdminNotification {
+    id: string
+    icon: string
+    title: string
+    time: string
+    unread: boolean
+}
 
 function timeAgo(date: string): string {
     const diff = Date.now() - new Date(date).getTime()
@@ -23,16 +31,15 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const [ordersResponse, formsResponse] = await Promise.all([
-            workerFetch(`/orders?store_id=${encodeURIComponent(resolved.storeId)}&limit=3`),
-            workerFetch(`/form-submissions?store_id=${encodeURIComponent(resolved.storeId)}&limit=2`),
+        const apiClient = createWorkerApiClient()
+        const [ordersPayload, formsPayload] = await Promise.all([
+            apiClient.orders.list({ store_id: resolved.storeId, limit: 3 }).catch(() => null),
+            apiClient.formSubmissions.list({ store_id: resolved.storeId, limit: 2 }).catch(() => null),
         ])
 
-        const ordersPayload = await readWorkerJson(ordersResponse).catch(() => null)
-        const formsPayload = await readWorkerJson(formsResponse).catch(() => null)
-        const notifications = []
+        const notifications: AdminNotification[] = []
 
-        for (const order of ordersPayload?.data || []) {
+        for (const order of ordersPayload?.data ?? []) {
             notifications.push({
                 id: `order-${order.id}`,
                 icon: 'shopping_cart',
@@ -42,8 +49,10 @@ export async function GET(
             })
         }
 
-        for (const form of formsPayload?.data || []) {
-            const name = form.data?.name || 'Someone'
+        for (const form of formsPayload?.data ?? []) {
+            const name = typeof form.data.name === 'string' && form.data.name.trim()
+                ? form.data.name
+                : 'Someone'
             notifications.push({
                 id: `form-${form.id}`,
                 icon: form.form_type === 'contact' ? 'mail' : 'campaign',
@@ -56,9 +65,6 @@ export async function GET(
         notifications.sort((a, b) => Number(b.unread) - Number(a.unread))
         return NextResponse.json({ data: notifications.slice(0, 5) })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load notifications' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load notifications')
     }
 }

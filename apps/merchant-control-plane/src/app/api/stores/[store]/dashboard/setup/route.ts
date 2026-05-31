@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,27 +12,21 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const [productsResponse, shippingResponse, pagesResponse] = await Promise.all([
-            workerFetch(`/products?store_id=${encodeURIComponent(resolved.storeId)}&limit=1`),
-            workerFetch(`/shipping-tax/shipping/zones?store_id=${encodeURIComponent(resolved.storeId)}&limit=1`),
-            workerFetch(`/pages?store_id=${encodeURIComponent(resolved.storeId)}&limit=1`),
+        const apiClient = createWorkerApiClient()
+        const [productsPayload, shippingPayload, pagesPayload] = await Promise.all([
+            apiClient.products.list({ store_id: resolved.storeId, limit: 1 }).catch(() => null),
+            apiClient.shipping.zones.list({ store_id: resolved.storeId }).catch(() => null),
+            apiClient.pages.list({ store_id: resolved.storeId, limit: 1 }).catch(() => null),
         ])
-
-        const productsPayload = await readWorkerJson(productsResponse).catch(() => null)
-        const shippingPayload = await readWorkerJson(shippingResponse).catch(() => null)
-        const pagesPayload = await readWorkerJson(pagesResponse).catch(() => null)
 
         return NextResponse.json({
             data: {
-                productsCount: productsPayload?.meta?.total || 0,
-                shippingZonesCount: shippingPayload?.meta?.total || 0,
-                pagesCount: pagesPayload?.meta?.total || 0,
+                productsCount: productsPayload?.total || 0,
+                shippingZonesCount: shippingPayload?.length || 0,
+                pagesCount: pagesPayload?.total || 0,
             },
         })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load dashboard setup data' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load dashboard setup data')
     }
 }
