@@ -235,6 +235,19 @@ export interface StorefrontProductQuery extends ListQuery {
   tag?: string;
 }
 
+export type StorefrontStorePayload = Store & JsonRecord & {
+  current_theme_release?: ThemeRelease | null;
+};
+
+export type StorefrontStoreStatusPayload = Partial<StorefrontStorePayload> & {
+  id: string;
+  name?: string | null;
+  store_name?: string | null;
+  subdomain?: string | null;
+  site_type?: string | null;
+  status: StoreStatus | string;
+};
+
 type NewRecord<T> = Partial<Omit<T, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'created_by' | 'updated_by' | 'deleted_by'>>;
 
 export type CreateStoreInput = Pick<Store, 'name' | 'site_type'> & Partial<Pick<Store, 'subdomain' | 'tagline' | 'description' | 'currency' | 'locale' | 'timezone'>>;
@@ -772,11 +785,17 @@ export class LetbuyyApiClient {
 
   readonly storefront = {
     lookup: (query: { host?: string; subdomain?: string }, options?: LetbuyyRequestOptions) =>
-      this.requestData<Store>('/storefront/lookup', { ...options, query }),
+      this.requestData<StorefrontStorePayload>('/storefront/lookup', { ...options, query }),
+    getStoreById: (storeId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontStorePayload>(`/storefront/store/${encodePathSegment(storeId)}`, options),
     getStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<Store>(`/storefront/${encodePathSegment(subdomain)}`, options),
+      this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}`, options),
     status: (subdomain: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ status: StoreStatus }>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
+      this.requestData<StorefrontStoreStatusPayload>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
+    themePreview: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}/theme-preview`, { ...options, query: { token } }),
+    navigation: (subdomain: string, location: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<NavigationResponse>(`/storefront/${encodePathSegment(subdomain)}/navigation`, { ...options, query: { location } }),
     listProducts: (subdomain: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<Product>(`/storefront/${encodePathSegment(subdomain)}/products`, { ...options, query }),
     listProductsByStoreId: (storeId: string, query?: StorefrontProductQuery, options?: LetbuyyRequestOptions) =>

@@ -12,7 +12,7 @@ import {
     NavPage,
     StoreNavigation,
 } from '@/types/store';
-import { readWorkerJson, storefrontReadInit, workerFetch } from './worker-client';
+import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
 import { getDefaultStorefrontThemeTemplate, hasRenderableThemeTemplate } from '@letbuyy/api-types';
 import { getUrbanKicksDemoStore, isUrbanKicksDemoSubdomain } from './demo/urban-kicks-demo';
 
@@ -123,12 +123,9 @@ export const StoreService = {
         }
 
         try {
-            const response = await workerFetch(
-                `/storefront/store/${encodeURIComponent(storeId)}`,
+            const data = await createStorefrontApiClient(
                 storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [`storefront:store:${storeId}`]),
-            );
-            const payload = await readWorkerJson(response);
-            const data = payload?.data as WorkerStorePayload | undefined;
+            ).storefront.getStoreById(storeId) as WorkerStorePayload | undefined;
             return data ? mapSupabaseToStore(data, data.current_theme_release || null) : null;
         } catch (error) {
             console.error('[StoreService] Error fetching store by ID through worker:', error);
@@ -221,31 +218,23 @@ function normalizeTemplates(value: unknown): Record<string, StorefrontTemplateCo
 }
 
 async function fetchWorkerStore(subdomain: string, anyStatus: boolean): Promise<WorkerStorePayload | null> {
-    const path = anyStatus
-        ? `/storefront/${encodeURIComponent(subdomain)}/status`
-        : `/storefront/${encodeURIComponent(subdomain)}`;
-
-    const response = await workerFetch(
-        path,
+    const client = createStorefrontApiClient(
         storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [
             `storefront:${subdomain}`,
             anyStatus ? `storefront:${subdomain}:status` : `storefront:${subdomain}:published`,
         ]),
     );
-    if (response.status === 404) return null;
 
-    const payload = await readWorkerJson(response);
-    return (payload?.data as WorkerStorePayload | undefined) || null;
+    const data = anyStatus
+        ? await client.storefront.status(subdomain)
+        : await client.storefront.getStore(subdomain);
+
+    return (data as WorkerStorePayload | undefined) || null;
 }
 
 async function fetchWorkerPreviewStore(subdomain: string, previewToken: string): Promise<WorkerStorePayload | null> {
-    const response = await workerFetch(
-        `/storefront/${encodeURIComponent(subdomain)}/theme-preview?token=${encodeURIComponent(previewToken)}`
-    );
-    if (response.status === 404) return null;
-
-    const payload = await readWorkerJson(response);
-    return (payload?.data as WorkerStorePayload | undefined) || null;
+    const data = await createStorefrontApiClient().storefront.themePreview(subdomain, previewToken);
+    return (data as WorkerStorePayload | undefined) || null;
 }
 
 function mapWorkerNavigationItem(item: WorkerNavigationItem, index: number): NavPage {
@@ -271,17 +260,12 @@ function mapWorkerNavigationItem(item: WorkerNavigationItem, index: number): Nav
 
 async function fetchWorkerNavigation(subdomain: string, location: string): Promise<NavPage[]> {
     try {
-        const response = await workerFetch(
-            `/storefront/${encodeURIComponent(subdomain)}/navigation?location=${encodeURIComponent(location)}`,
+        const data = await createStorefrontApiClient(
             storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [
                 `storefront:${subdomain}`,
                 `storefront:${subdomain}:navigation:${location}`,
             ]),
-        );
-        if (response.status === 404) return [];
-
-        const payload = await readWorkerJson(response);
-        const data = payload?.data as WorkerNavigationPayload | undefined;
+        ).storefront.navigation(subdomain, location) as WorkerNavigationPayload | undefined;
         return Array.isArray(data?.items)
             ? data.items.map((item, index) => mapWorkerNavigationItem(item, index))
             : [];
