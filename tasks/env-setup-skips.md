@@ -18,3 +18,7 @@ SKIP: Phase 1.2 reserved service Wrangler configs — Reason: `services/checkout
 - Phase 2 Task 2.2: Supabase CLI config created in `supabase/config.toml`.
 - Phase 2 Task 2.3: Supabase migration runner created at `scripts/supabase/run-migrations.mjs`.
 - Phase 2 verification: `pnpm run validate:governance` passed.
+- Phase 3 Task 3.1: Vercel project mapping created in `config/vercel/projects.json`.
+- Phase 3 Task 3.2: Vercel app configs created for identity-platform, merchant-control-plane, storefront-runtime, marketing-site, and platform-console.
+- Phase 3 Task 3.3: Staging and production env examples created in `config/env/`.
+- Phase 3 verification: `pnpm run validate:governance` passed.

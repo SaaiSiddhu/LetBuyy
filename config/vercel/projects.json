@@ -1,0 +1,79 @@
+{
+  "apps": [
+    {
+      "name": "letbuyy-identity-platform",
+      "directory": "apps/identity-platform",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_IDENTITY_PROJECT_ID",
+        "url": "https://accounts-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_IDENTITY_PROJECT_ID",
+        "url": "https://accounts.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-merchant-control-plane",
+      "directory": "apps/merchant-control-plane",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_MERCHANT_PROJECT_ID",
+        "url": "https://admin-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_MERCHANT_PROJECT_ID",
+        "url": "https://admin.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-storefront-runtime",
+      "directory": "apps/storefront-runtime",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_STOREFRONT_PROJECT_ID",
+        "url": "https://store-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_STOREFRONT_PROJECT_ID",
+        "url": "https://store.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-marketing-site",
+      "directory": "apps/marketing-site",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_MARKETING_PROJECT_ID",
+        "url": "https://www-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_MARKETING_PROJECT_ID",
+        "url": "https://www.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-platform-console",
+      "directory": "apps/platform-console",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_CONSOLE_PROJECT_ID",
+        "url": "https://console-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_CONSOLE_PROJECT_ID",
+        "url": "https://console.letbuyy.store",
+        "branch": "main"
+      }
+    }
+  ]
+}
