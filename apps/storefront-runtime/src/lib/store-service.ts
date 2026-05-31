@@ -12,7 +12,7 @@ import {
     NavPage,
     StoreNavigation,
 } from '@/types/store';
-import { readWorkerJson, workerFetch } from './worker-client';
+import { readWorkerJson, storefrontReadInit, workerFetch } from './worker-client';
 import { getDefaultStorefrontThemeTemplate, hasRenderableThemeTemplate } from '@letbuyy/api-types';
 import { getUrbanKicksDemoStore, isUrbanKicksDemoSubdomain } from './demo/urban-kicks-demo';
 
@@ -52,6 +52,8 @@ type WorkerNavigationItem = {
 type WorkerNavigationPayload = {
     items?: WorkerNavigationItem[];
 };
+
+const STOREFRONT_REVALIDATE_SECONDS = 60;
 
 export const StoreService = {
     async getStoreBySubdomain(subdomain: string): Promise<StoreModel | null> {
@@ -121,7 +123,10 @@ export const StoreService = {
         }
 
         try {
-            const response = await workerFetch(`/storefront/store/${encodeURIComponent(storeId)}`);
+            const response = await workerFetch(
+                `/storefront/store/${encodeURIComponent(storeId)}`,
+                storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [`storefront:store:${storeId}`]),
+            );
             const payload = await readWorkerJson(response);
             const data = payload?.data as WorkerStorePayload | undefined;
             return data ? mapSupabaseToStore(data, data.current_theme_release || null) : null;
@@ -220,7 +225,13 @@ async function fetchWorkerStore(subdomain: string, anyStatus: boolean): Promise<
         ? `/storefront/${encodeURIComponent(subdomain)}/status`
         : `/storefront/${encodeURIComponent(subdomain)}`;
 
-    const response = await workerFetch(path);
+    const response = await workerFetch(
+        path,
+        storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [
+            `storefront:${subdomain}`,
+            anyStatus ? `storefront:${subdomain}:status` : `storefront:${subdomain}:published`,
+        ]),
+    );
     if (response.status === 404) return null;
 
     const payload = await readWorkerJson(response);
@@ -261,7 +272,11 @@ function mapWorkerNavigationItem(item: WorkerNavigationItem, index: number): Nav
 async function fetchWorkerNavigation(subdomain: string, location: string): Promise<NavPage[]> {
     try {
         const response = await workerFetch(
-            `/storefront/${encodeURIComponent(subdomain)}/navigation?location=${encodeURIComponent(location)}`
+            `/storefront/${encodeURIComponent(subdomain)}/navigation?location=${encodeURIComponent(location)}`,
+            storefrontReadInit(STOREFRONT_REVALIDATE_SECONDS, [
+                `storefront:${subdomain}`,
+                `storefront:${subdomain}:navigation:${location}`,
+            ]),
         );
         if (response.status === 404) return [];
 

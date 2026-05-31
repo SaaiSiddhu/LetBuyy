@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { readWorkerJson, workerFetch } from './worker-client';
+import { readWorkerJson, storefrontReadInit, workerFetch } from './worker-client';
 
 export type StorefrontContentResource = {
     id: string;
@@ -38,6 +38,8 @@ type WorkerContentPayload = Record<string, unknown> & {
     updated_at?: string | null;
 };
 
+const CONTENT_REVALIDATE_SECONDS = 60;
+
 function asRecord(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)
         ? value as Record<string, unknown>
@@ -72,7 +74,7 @@ function mapBlogPostSummary(data: Record<string, unknown>): StorefrontBlogPostSu
 }
 
 async function fetchContent(path: string): Promise<StorefrontContentResource | null> {
-    const response = await workerFetch(path);
+    const response = await workerFetch(path, storefrontReadInit(CONTENT_REVALIDATE_SECONDS, ['storefront:content']));
     if (response.status === 404) return null;
 
     const payload = await readWorkerJson(response);
@@ -82,7 +84,10 @@ async function fetchContent(path: string): Promise<StorefrontContentResource | n
 
 export const ContentService = {
     async listPages(subdomain: string) {
-        const response = await workerFetch(`/storefront/${encodeURIComponent(subdomain)}/pages`);
+        const response = await workerFetch(
+            `/storefront/${encodeURIComponent(subdomain)}/pages`,
+            storefrontReadInit(CONTENT_REVALIDATE_SECONDS, [`storefront:${subdomain}:pages`]),
+        );
         if (response.status === 404) return [];
         const payload = await readWorkerJson(response);
         const data = payload?.data;
@@ -92,7 +97,10 @@ export const ContentService = {
     },
 
     async listBlogPosts(subdomain: string) {
-        const response = await workerFetch(`/storefront/${encodeURIComponent(subdomain)}/blog?limit=100`);
+        const response = await workerFetch(
+            `/storefront/${encodeURIComponent(subdomain)}/blog?limit=100`,
+            storefrontReadInit(CONTENT_REVALIDATE_SECONDS, [`storefront:${subdomain}:blog`]),
+        );
         if (response.status === 404) return [];
         const payload = await readWorkerJson(response);
         const data = payload?.data;

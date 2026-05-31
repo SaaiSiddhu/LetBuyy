@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { SectionModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
 import { ArrowRight } from 'lucide-react';
 import BannerCarousel from './banner-carousel';
+import Image from 'next/image';
 
 interface Props {
     section: SectionModel;
@@ -128,9 +129,14 @@ export default function HeroSection({ section, theme }: Props) {
         >
             {/* Background Image (if provided) */}
             {backgroundImage && (
-                <div
-                    className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${backgroundImage})` }}
+                <Image
+                    src={backgroundImage}
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="object-cover"
+                    priority
+                    unoptimized
                 />
             )}
 

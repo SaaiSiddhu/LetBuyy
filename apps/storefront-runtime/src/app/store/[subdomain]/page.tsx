@@ -8,8 +8,7 @@ import { composeStorefrontRuntimeProjection } from '@letbuyy/runtime-composition
 import { buildStoreMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string }> }): Promise<Metadata> {
     const { subdomain } = await params;

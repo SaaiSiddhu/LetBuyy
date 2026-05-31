@@ -2,6 +2,22 @@ import 'server-only';
 
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
+type WorkerFetchInit = RequestInit & {
+    next?: {
+        revalidate?: number | false;
+        tags?: string[];
+    };
+};
+
+export function storefrontReadInit(revalidate: number, tags: string[] = []): WorkerFetchInit {
+    return {
+        next: {
+            revalidate,
+            tags,
+        },
+    };
+}
+
 function getApiBaseUrl() {
     const configuredUrl = (
         process.env.LETBUYY_API_BASE_URL ||
@@ -31,7 +47,7 @@ function getApiBaseUrl() {
     return configuredUrl;
 }
 
-export async function workerFetch(path: string, init: RequestInit = {}) {
+export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
     const headers = new Headers(init.headers);
 
@@ -39,11 +55,16 @@ export async function workerFetch(path: string, init: RequestInit = {}) {
     headers.set('X-Client', 'storefront-web');
     headers.set('X-Request-ID', headers.get('X-Request-ID') || crypto.randomUUID());
 
-    return fetch(`${getApiBaseUrl()}${cleanPath}`, {
+    const requestInit: WorkerFetchInit = {
         ...init,
         headers,
-        cache: 'no-store',
-    });
+    };
+
+    if (!requestInit.cache && !requestInit.next) {
+        requestInit.cache = 'no-store';
+    }
+
+    return fetch(`${getApiBaseUrl()}${cleanPath}`, requestInit);
 }
 
 export class WorkerRequestError extends Error {

@@ -1,10 +1,13 @@
 import { ProductModel } from '@/types/store';
-import { readWorkerJson, workerFetch } from './worker-client';
+import { readWorkerJson, storefrontReadInit, workerFetch } from './worker-client';
 import {
     getUrbanKicksDemoProduct,
     getUrbanKicksDemoProducts,
     isUrbanKicksDemoSubdomain,
 } from './demo/urban-kicks-demo';
+
+const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
+const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
 
 export const ProductService = {
     // Get products by store's selected product IDs
@@ -18,7 +21,11 @@ export const ProductService = {
 
         try {
             const response = await workerFetch(
-                `/storefront/${encodeURIComponent(subdomain)}/products/by-ids?ids=${encodeURIComponent(productIds.join(','))}`
+                `/storefront/${encodeURIComponent(subdomain)}/products/by-ids?ids=${encodeURIComponent(productIds.join(','))}`,
+                storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [
+                    `storefront:${subdomain}:products`,
+                    `storefront:${subdomain}:products:selected`,
+                ]),
             );
             const payload = await readWorkerJson(response);
             return readProductArray(payload);
@@ -34,7 +41,10 @@ export const ProductService = {
         }
 
         try {
-            const response = await workerFetch(`/storefront/${encodeURIComponent(subdomain)}/products?limit=100`);
+            const response = await workerFetch(
+                `/storefront/${encodeURIComponent(subdomain)}/products?limit=100`,
+                storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:${subdomain}:products`]),
+            );
             const payload = await readWorkerJson(response);
             return readProductArray(payload);
         } catch (error) {
@@ -50,7 +60,10 @@ export const ProductService = {
         }
 
         try {
-            const response = await workerFetch(`/storefront/store/${encodeURIComponent(storeId)}/products?limit=100`);
+            const response = await workerFetch(
+                `/storefront/store/${encodeURIComponent(storeId)}/products?limit=100`,
+                storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:store:${storeId}:products`]),
+            );
             const payload = await readWorkerJson(response);
             return readProductArray(payload);
         } catch (error) {
@@ -68,7 +81,11 @@ export const ProductService = {
 
         try {
             const response = await workerFetch(
-                `/storefront/${encodeURIComponent(subdomain)}/products/${encodeURIComponent(productId)}`
+                `/storefront/${encodeURIComponent(subdomain)}/products/${encodeURIComponent(productId)}`,
+                storefrontReadInit(PRODUCT_DETAIL_REVALIDATE_SECONDS, [
+                    `storefront:${subdomain}:products`,
+                    `storefront:${subdomain}:product:${productId}`,
+                ]),
             );
             if (response.status === 404) return null;
             const payload = await readWorkerJson(response);

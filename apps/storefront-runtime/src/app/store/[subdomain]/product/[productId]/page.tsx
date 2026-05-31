@@ -8,6 +8,8 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { buildProductJsonLd, buildStoreMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
+export const revalidate = 30;
+
 export async function generateMetadata({ params }: { params: Promise<{ subdomain: string; productId: string }> }): Promise<Metadata> {
     const { subdomain, productId } = await params;
     const [product, store] = await Promise.all([

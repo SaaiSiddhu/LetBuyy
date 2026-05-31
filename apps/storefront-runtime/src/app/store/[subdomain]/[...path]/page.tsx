@@ -6,8 +6,7 @@ import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { buildStoreMetadata } from '@/lib/seo';
 import type { Metadata } from 'next';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 type Props = {
     params: Promise<{ subdomain: string; path: string[] }>;

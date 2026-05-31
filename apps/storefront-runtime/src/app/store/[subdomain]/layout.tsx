@@ -14,8 +14,7 @@ import type { SectionRenderData } from '@/lib/theme-engine/types';
 import { resolveThemePreviewToken } from '@/lib/theme-preview-server';
 import { buildStoreMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+export const revalidate = 60;
 
 // ============= THEME FONT MAPPING =============
 const FONT_MAP: Record<string, string> = {
