@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,14 +12,10 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/payments/subscription?store_id=${encodeURIComponent(resolved.storeId)}`)
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().payments.subscription.get({ store_id: resolved.storeId })
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load plan' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load plan')
     }
 }

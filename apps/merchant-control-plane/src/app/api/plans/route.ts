@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 
 /**
  * GET /api/plans?site_type=store&slug=starter
@@ -19,20 +19,13 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        const query = new URLSearchParams({ site_type: siteType })
-        if (slug) query.set('slug', slug)
-
-        const workerResponse = await workerFetch(`/payments/plans?${query.toString()}`, {
-            method: 'GET',
-            requireSession: true,
+        const plans = await createWorkerApiClient().payments.plans({
+            site_type: siteType,
+            ...(slug ? { slug } : {}),
         })
-        const payload = await readWorkerJson(workerResponse) as { data?: unknown[] }
 
-        return NextResponse.json({ plans: payload.data || [] })
+        return NextResponse.json({ plans })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Internal server error')
     }
 }

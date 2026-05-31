@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,27 +12,21 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const [subscriptionResponse, historyResponse, paymentResponse] = await Promise.all([
-            workerFetch(`/payments/subscription?store_id=${encodeURIComponent(resolved.storeId)}`),
-            workerFetch(`/payments/subscription/history?store_id=${encodeURIComponent(resolved.storeId)}`),
-            workerFetch(`/stores/${encodeURIComponent(resolved.storeId)}/payment-config`),
+        const apiClient = createWorkerApiClient()
+        const [subscriptionPayload, historyPayload, paymentPayload] = await Promise.all([
+            apiClient.payments.subscription.get({ store_id: resolved.storeId }),
+            apiClient.payments.subscription.history({ store_id: resolved.storeId }),
+            apiClient.stores.paymentConfig.get(resolved.storeId),
         ])
-
-        const subscriptionPayload = await readWorkerJson(subscriptionResponse)
-        const historyPayload = await readWorkerJson(historyResponse)
-        const paymentPayload = await readWorkerJson(paymentResponse)
 
         return NextResponse.json({
             data: {
-                subscription: subscriptionPayload?.data?.subscription || null,
-                invoices: historyPayload?.data || [],
-                payment: paymentPayload?.data || null,
+                subscription: subscriptionPayload.subscription || null,
+                invoices: historyPayload,
+                payment: paymentPayload || null,
             },
         })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load billing data' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load billing data')
     }
 }

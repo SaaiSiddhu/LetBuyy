@@ -180,6 +180,8 @@ export const PaymentMethodSchema = z.enum([
   'paypal',
   'manual',
 ]);
+export const SubscriptionBillingPeriodSchema = z.enum(['monthly', 'yearly']);
+export const SubscriptionStatusSchema = z.enum(['trialing', 'active', 'past_due', 'cancelled', 'expired']);
 export const DiscountTypeSchema = z.enum(['percentage', 'fixed', 'free_shipping']);
 export const PageStatusSchema = z.enum(['draft', 'published', 'archived']);
 export const PolicyTypeSchema = z.enum(['privacy', 'refund', 'shipping', 'terms', 'contact', 'custom']);
@@ -518,6 +520,76 @@ export const PaymentSchema = AuditedEntitySchema.extend({
   failure_message: z.string().max(500).optional().nullable(),
   metadata: MetadataSchema.default({}),
 });
+
+export const SubscriptionPlanSchema = z.object({
+  id: UuidSchema.optional(),
+  site_type: SiteTypeSchema.or(z.string().min(1)).default('store'),
+  slug: z.string().min(1).max(120),
+  name: z.string().min(1).max(200),
+  description: z.string().max(1000).optional().nullable(),
+  price_monthly_inr: z.number().min(0).default(0),
+  price_yearly_inr: z.number().min(0).default(0),
+  promo_price_inr: z.number().min(0).optional().nullable(),
+  promo_months: z.number().int().min(0).optional().nullable(),
+  products_limit: z.number().int().min(0).optional().nullable(),
+  requires_contact: z.boolean().default(false),
+  is_active: z.boolean().default(true),
+  display_order: z.number().int().default(0),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const StoreSubscriptionSchema = z.object({
+  id: UuidSchema.optional(),
+  plan: z.string().min(1).max(120),
+  status: SubscriptionStatusSchema.or(z.string().min(1).max(80)),
+  billing_period: SubscriptionBillingPeriodSchema.or(z.string().min(1).max(80)).optional().nullable(),
+  current_period_start: z.string().datetime().optional().nullable(),
+  current_period_end: z.string().datetime().optional().nullable(),
+  promo_ends_at: z.string().datetime().optional().nullable(),
+  amount_paid: z.number().min(0).optional().nullable(),
+  cancelled_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const StoreSubscriptionStateSchema = z.object({
+  store: z.object({
+    id: UuidSchema,
+    trial_status: z.string().max(80).optional().nullable(),
+    trial_ends_at: z.string().datetime().optional().nullable(),
+    site_type: SiteTypeSchema.or(z.string().min(1)).default('store'),
+  }).passthrough(),
+  subscription: StoreSubscriptionSchema.nullable(),
+}).passthrough();
+
+export const BillingHistoryItemSchema = z.object({
+  id: UuidSchema,
+  amount_paid: z.number().min(0).optional().nullable(),
+  status: z.string().max(80).optional().nullable(),
+  billing_period: SubscriptionBillingPeriodSchema.or(z.string().min(1).max(80)).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const SubscriptionCancelResultSchema = z.object({
+  cancelled: z.boolean(),
+  subscriptions: z.array(StoreSubscriptionSchema).default([]),
+}).passthrough();
+
+export const SubscriptionOrderResultSchema = z.object({
+  razorpay_order_id: z.string().min(1),
+  amount: z.number().min(0),
+  currency: CurrencySchema,
+  key_id: z.string().min(1),
+  plan: SubscriptionPlanSchema.partial().passthrough(),
+  billing_period: SubscriptionBillingPeriodSchema,
+  is_promo: z.boolean().default(false),
+}).passthrough();
+
+export const SubscriptionVerificationResultSchema = z.object({
+  subscription: StoreSubscriptionSchema.extend({
+    plan_name: z.string().max(200).optional().nullable(),
+  }).passthrough(),
+  message: z.string().max(500).optional(),
+}).passthrough();
 
 export const StorePaymentSettingsSchema = z.object({
   mode: z.enum(['shared', 'ownAccount']).default('shared'),
@@ -1065,6 +1137,8 @@ export type PaymentStatus = z.infer<typeof PaymentStatusSchema>;
 export type FulfillmentStatus = z.infer<typeof FulfillmentStatusSchema>;
 export type PaymentProvider = z.infer<typeof PaymentProviderSchema>;
 export type PaymentMethod = z.infer<typeof PaymentMethodSchema>;
+export type SubscriptionBillingPeriod = z.infer<typeof SubscriptionBillingPeriodSchema>;
+export type SubscriptionStatus = z.infer<typeof SubscriptionStatusSchema>;
 export type DiscountType = z.infer<typeof DiscountTypeSchema>;
 export type PageStatus = z.infer<typeof PageStatusSchema>;
 export type PolicyType = z.infer<typeof PolicyTypeSchema>;
@@ -1099,6 +1173,13 @@ export type LineItem = z.infer<typeof LineItemSchema>;
 export type OrderItem = LineItem;
 export type Order = z.infer<typeof OrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
+export type SubscriptionPlan = z.infer<typeof SubscriptionPlanSchema>;
+export type StoreSubscription = z.infer<typeof StoreSubscriptionSchema>;
+export type StoreSubscriptionState = z.infer<typeof StoreSubscriptionStateSchema>;
+export type BillingHistoryItem = z.infer<typeof BillingHistoryItemSchema>;
+export type SubscriptionCancelResult = z.infer<typeof SubscriptionCancelResultSchema>;
+export type SubscriptionOrderResult = z.infer<typeof SubscriptionOrderResultSchema>;
+export type SubscriptionVerificationResult = z.infer<typeof SubscriptionVerificationResultSchema>;
 export type StorePaymentSettings = z.infer<typeof StorePaymentSettingsSchema>;
 export type StorePaymentConfig = z.infer<typeof StorePaymentConfigSchema>;
 export type EmployeeStatus = z.infer<typeof EmployeeStatusSchema>;

@@ -8,6 +8,7 @@ import type {
   BlogCommentStatus,
   BlogPost,
   BlogPostStatus,
+  BillingHistoryItem,
   Cart,
   Collection,
   Coupon,
@@ -46,6 +47,12 @@ import type {
   Store,
   StorePaymentConfig,
   StoreStatus,
+  StoreSubscriptionState,
+  SubscriptionBillingPeriod,
+  SubscriptionCancelResult,
+  SubscriptionOrderResult,
+  SubscriptionPlan,
+  SubscriptionVerificationResult,
   TaxRate,
   Theme,
   ThemeDraftSaveResult,
@@ -134,6 +141,11 @@ export interface AnalyticsQuery extends StoreScopedQuery {
 
 export interface AIUsageListQuery extends StoreScopedQuery {
   feature?: string;
+}
+
+export interface PlanListQuery extends QueryParams {
+  site_type: string;
+  slug?: string;
 }
 
 export interface PageListQuery extends StoreScopedQuery {
@@ -333,6 +345,25 @@ export type UpdateTaxRateInput = Partial<TaxRate>;
 export type CreateCouponInput = Pick<Coupon, 'store_id' | 'code' | 'type' | 'value'> & NewRecord<Coupon>;
 export type UpdateCouponInput = NewRecord<Coupon>;
 export type CreatePaymentInput = Pick<Payment, 'store_id' | 'provider' | 'method' | 'currency' | 'amount' | 'amount_minor' | 'idempotency_key'> & NewRecord<Payment>;
+export type CreateSubscriptionOrderInput = {
+  store_id: string;
+  plan_slug: string;
+  billing_period?: SubscriptionBillingPeriod;
+  site_type: string;
+};
+export type VerifySubscriptionInput = {
+  store_id: string;
+  plan_slug: string;
+  billing_period?: SubscriptionBillingPeriod;
+  site_type: string;
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+export type CancelSubscriptionInput = {
+  store_id: string;
+  reason?: string;
+};
 
 export class LetbuyyApiError extends Error {
   readonly status: number;
@@ -716,6 +747,20 @@ export class LetbuyyApiClient {
         body: input,
         idempotencyKey: options?.idempotencyKey ?? input.idempotency_key,
       }),
+    plans: (query: PlanListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<SubscriptionPlan[]>('/payments/plans', { ...options, query }),
+    subscription: {
+      get: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+        this.requestData<StoreSubscriptionState>('/payments/subscription', { ...options, query }),
+      history: (query: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+        this.requestData<BillingHistoryItem[]>('/payments/subscription/history', { ...options, query }),
+      cancel: (input: CancelSubscriptionInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<SubscriptionCancelResult>('/payments/subscription/cancel', { ...options, method: 'POST', body: input }),
+      createOrder: (input: CreateSubscriptionOrderInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<SubscriptionOrderResult>('/payments/subscription/order', { ...options, method: 'POST', body: input }),
+      verify: (input: VerifySubscriptionInput, options?: LetbuyyRequestOptions) =>
+        this.requestData<SubscriptionVerificationResult>('/payments/subscription/verify', { ...options, method: 'POST', body: input }),
+    },
   };
 
   readonly storefront = {
@@ -968,6 +1013,7 @@ export type {
   AnalyticsOrdersBreakdown,
   BlogComment,
   BlogPost,
+  BillingHistoryItem,
   Cart,
   Collection,
   Coupon,
@@ -999,6 +1045,12 @@ export type {
   ShippingZone,
   Store,
   StorePaymentConfig,
+  StoreSubscriptionState,
+  SubscriptionBillingPeriod,
+  SubscriptionCancelResult,
+  SubscriptionOrderResult,
+  SubscriptionPlan,
+  SubscriptionVerificationResult,
   TaxRate,
   Theme,
   ThemeDraftSaveResult,

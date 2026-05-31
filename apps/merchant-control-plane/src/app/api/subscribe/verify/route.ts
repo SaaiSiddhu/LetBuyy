@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/worker-client'
+import type { VerifySubscriptionInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 
 /**
  * POST /api/subscribe/verify
@@ -11,16 +12,12 @@ import { readWorkerJson, workerErrorResponse, workerFetch } from '@/lib/api/work
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const response = await workerFetch('/payments/subscription/verify', {
-            method: 'POST',
-            body: JSON.stringify(body),
-        })
-        const payload = await readWorkerJson(response)
+        const payload = await createWorkerApiClient().payments.subscription.verify(body as VerifySubscriptionInput)
 
         return NextResponse.json({
             success: true,
-            subscription: payload.data?.subscription,
-            message: payload.data?.message || 'Subscription activated',
+            subscription: payload.subscription,
+            message: payload.message || 'Subscription activated',
         })
     } catch (err) {
         return workerErrorResponse(err, 'Unable to verify subscription payment')
