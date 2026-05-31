@@ -255,6 +255,115 @@ export interface StoreModel {
   publishedAt?: string;
 }
 
+export interface PublishedStoreRecord {
+  id: string;
+}
+
+export interface StorefrontSiteRecord {
+  id: string;
+  user_id?: string | null;
+  custom_user_id?: string | null;
+  name?: string | null;
+  store_name?: string | null;
+  subdomain?: string | null;
+  site_type?: string | null;
+  tagline?: string | null;
+  logo_url?: string | null;
+  brand_color?: string | null;
+  custom_domain?: string | null;
+  currency?: string | null;
+  settings?: Record<string, unknown> | null;
+  theme_id?: string | null;
+  template_config?: Record<string, unknown> | null;
+  status?: string | null;
+  published_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+  cod_enabled?: boolean | null;
+  online_payment_enabled?: boolean | null;
+  payment_settings?: Record<string, unknown> | null;
+  current_theme_release_id?: string | null;
+  storefront_release_version?: number | null;
+}
+
+export interface StorefrontThemeReleaseRecord {
+  id: string;
+  theme_id: string;
+  theme_instance_id?: string | null;
+  theme_package_version_id?: string | null;
+  release_version: number;
+  release_config: Record<string, unknown> | null;
+  release_manifest?: Record<string, unknown> | null;
+  template_snapshot?: Record<string, unknown> | null;
+  settings_snapshot?: Record<string, unknown> | null;
+  asset_manifest?: Record<string, unknown> | null;
+  cache_manifest?: Record<string, unknown> | null;
+  data_binding_manifest?: Record<string, unknown> | null;
+  schema_manifest_version?: string | null;
+  engine_version?: string | null;
+  published_at: string | null;
+}
+
+export interface PublicStorefrontThemeRelease {
+  id: string;
+  theme_id: string;
+  theme_instance_id: string | null;
+  theme_package_version_id: string | null;
+  release_version: number;
+  release_config: Record<string, unknown>;
+  release_manifest: Record<string, unknown>;
+  template_snapshot: Record<string, unknown>;
+  settings_snapshot: Record<string, unknown>;
+  asset_manifest: Record<string, unknown>;
+  cache_manifest: Record<string, unknown>;
+  data_binding_manifest: Record<string, unknown>;
+  schema_manifest_version: string;
+  engine_version: string;
+  published_at: string | null;
+}
+
+export type PublicStorefrontPayload = StorefrontSiteRecord & {
+  name: string | null | undefined;
+  subdomain: string | null | undefined;
+  current_theme_release: PublicStorefrontThemeRelease | null;
+};
+
+export function normalizeStorefrontHandle(handle: string): string | null {
+  const normalized = handle.trim().toLowerCase();
+  if (!/^[a-z0-9-]{3,80}$/.test(normalized)) return null;
+  return normalized;
+}
+
+export function mapPublicStorePayload(
+  store: StorefrontSiteRecord,
+  release?: StorefrontThemeReleaseRecord | null,
+): PublicStorefrontPayload {
+  return {
+    ...store,
+    name: store.name || store.store_name,
+    subdomain: store.subdomain || store.store_name,
+    current_theme_release: release
+      ? {
+          id: release.id,
+          theme_id: release.theme_id,
+          theme_instance_id: release.theme_instance_id || null,
+          theme_package_version_id: release.theme_package_version_id || null,
+          release_version: release.release_version,
+          release_config: release.template_snapshot || release.release_config || {},
+          release_manifest: release.release_manifest || {},
+          template_snapshot: release.template_snapshot || release.release_config || {},
+          settings_snapshot: release.settings_snapshot || {},
+          asset_manifest: release.asset_manifest || {},
+          cache_manifest: release.cache_manifest || {},
+          data_binding_manifest: release.data_binding_manifest || {},
+          schema_manifest_version: release.schema_manifest_version || '1.0.0',
+          engine_version: release.engine_version || 'legacy',
+          published_at: release.published_at,
+        }
+      : null,
+  };
+}
+
 export interface TenantContext {
   site_id: string;
   subdomain?: string;

@@ -39,6 +39,13 @@ import {
     type CmsStorefrontPageRevisionRecord,
     type CmsStorefrontRoutePageRecord,
 } from '@letbuyy/cms-core';
+import {
+    mapPublicStorePayload,
+    normalizeStorefrontHandle,
+    type PublishedStoreRecord,
+    type StorefrontSiteRecord,
+    type StorefrontThemeReleaseRecord,
+} from '@letbuyy/tenant-core';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -88,55 +95,6 @@ type StorefrontRazorpayVerifyBody = {
     razorpay_payment_id: string;
     razorpay_signature: string;
     idempotencyKey: string;
-};
-
-type PublishedStore = {
-    id: string;
-};
-
-type StorefrontSiteRow = {
-    id: string;
-    user_id?: string | null;
-    custom_user_id?: string | null;
-    name?: string | null;
-    store_name?: string | null;
-    subdomain?: string | null;
-    site_type?: string | null;
-    tagline?: string | null;
-    logo_url?: string | null;
-    brand_color?: string | null;
-    custom_domain?: string | null;
-    currency?: string | null;
-    settings?: Record<string, unknown> | null;
-    theme_id?: string | null;
-    template_config?: Record<string, unknown> | null;
-    status?: string | null;
-    published_at?: string | null;
-    created_at?: string | null;
-    updated_at?: string | null;
-    cod_enabled?: boolean | null;
-    online_payment_enabled?: boolean | null;
-    payment_settings?: Record<string, unknown> | null;
-    current_theme_release_id?: string | null;
-    storefront_release_version?: number | null;
-};
-
-type ThemeReleaseRow = {
-    id: string;
-    theme_id: string;
-    theme_instance_id?: string | null;
-    theme_package_version_id?: string | null;
-    release_version: number;
-    release_config: Record<string, unknown> | null;
-    release_manifest?: Record<string, unknown> | null;
-    template_snapshot?: Record<string, unknown> | null;
-    settings_snapshot?: Record<string, unknown> | null;
-    asset_manifest?: Record<string, unknown> | null;
-    cache_manifest?: Record<string, unknown> | null;
-    data_binding_manifest?: Record<string, unknown> | null;
-    schema_manifest_version?: string | null;
-    engine_version?: string | null;
-    published_at: string | null;
 };
 
 type ThemePreviewSessionRow = {
@@ -401,9 +359,9 @@ function isSchemaMismatchError(error: DatabaseErrorLike): boolean {
     return text.includes('does not exist') || text.includes('schema cache') || text.includes('could not find');
 }
 
-async function loadPublishedStore(c: AppContext, subdomain: string): Promise<PublishedStore | null> {
+async function loadPublishedStore(c: AppContext, subdomain: string): Promise<PublishedStoreRecord | null> {
     const db = getSupabaseAdmin(c);
-    const handle = normalizeStoreHandle(subdomain);
+    const handle = normalizeStorefrontHandle(subdomain);
     if (!handle) return null;
 
     const selectStore = (includeDeletedAtFilter: boolean) => {
@@ -422,10 +380,10 @@ async function loadPublishedStore(c: AppContext, subdomain: string): Promise<Pub
         ({ data: store } = await selectStore(false).single());
     }
 
-    return store as PublishedStore | null;
+    return store as PublishedStoreRecord | null;
 }
 
-async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<PublishedStore | null> {
+async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<PublishedStoreRecord | null> {
     const db = getSupabaseAdmin(c);
     const selectStore = (includeDeletedAtFilter: boolean) => {
         const query = db
@@ -443,21 +401,15 @@ async function loadPublishedStoreById(c: AppContext, storeId: string): Promise<P
         ({ data: store } = await selectStore(false).single());
     }
 
-    return store as PublishedStore | null;
-}
-
-function normalizeStoreHandle(handle: string): string | null {
-    const normalized = handle.trim().toLowerCase();
-    if (!/^[a-z0-9-]{3,80}$/.test(normalized)) return null;
-    return normalized;
+    return store as PublishedStoreRecord | null;
 }
 
 async function loadSiteByHandle(
     c: AppContext,
     handle: string,
     options: { publishedOnly: boolean }
-): Promise<StorefrontSiteRow | null> {
-    const normalized = normalizeStoreHandle(handle);
+): Promise<StorefrontSiteRecord | null> {
+    const normalized = normalizeStorefrontHandle(handle);
     if (!normalized) return null;
 
     const db = getSupabaseAdmin(c);
@@ -484,10 +436,10 @@ async function loadSiteByHandle(
         ({ data } = await selectSite(false, false).single());
     }
 
-    return (data as StorefrontSiteRow | null) || null;
+    return (data as StorefrontSiteRecord | null) || null;
 }
 
-async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<ThemeReleaseRow | null> {
+async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
     const db = getSupabaseAdmin(c);
     const baseQuery = (select: string, includeDeletedAtFilter: boolean) => {
         let query = db
@@ -513,7 +465,7 @@ async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<
         ({ data } = await baseQuery(legacySelect, false).maybeSingle());
     }
 
-    return (data as ThemeReleaseRow | null) || null;
+    return (data as StorefrontThemeReleaseRecord | null) || null;
 }
 
 async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions) {
@@ -747,33 +699,6 @@ async function loadNavigationMenu(c: AppContext, storeId: string, location: stri
     };
 }
 
-function mapPublicStorePayload(store: StorefrontSiteRow, release?: ThemeReleaseRow | null) {
-    return {
-        ...store,
-        name: store.name || store.store_name,
-        subdomain: store.subdomain || store.store_name,
-        current_theme_release: release
-            ? {
-                id: release.id,
-                theme_id: release.theme_id,
-                theme_instance_id: release.theme_instance_id || null,
-                theme_package_version_id: release.theme_package_version_id || null,
-                release_version: release.release_version,
-                release_config: release.template_snapshot || release.release_config || {},
-                release_manifest: release.release_manifest || {},
-                template_snapshot: release.template_snapshot || release.release_config || {},
-                settings_snapshot: release.settings_snapshot || {},
-                asset_manifest: release.asset_manifest || {},
-                cache_manifest: release.cache_manifest || {},
-                data_binding_manifest: release.data_binding_manifest || {},
-                schema_manifest_version: release.schema_manifest_version || '1.0.0',
-                engine_version: release.engine_version || 'legacy',
-                published_at: release.published_at,
-            }
-            : null,
-    };
-}
-
 async function verifyStoreCustomer(c: AppContext, storeId: string, customerId: string): Promise<boolean> {
     const db = getSupabaseAdmin(c);
     const { data } = await db
@@ -996,7 +921,7 @@ router.post('/internal/payments/failure', async (c) => {
 
 // GET /storefront/lookup?q=handle — Public store lookup for routing/search surfaces
 router.get('/lookup', async (c) => {
-    const query = normalizeStoreHandle(c.req.query('q') || '');
+    const query = normalizeStorefrontHandle(c.req.query('q') || '');
     if (!query) {
         return c.json({
             success: true,
@@ -1130,7 +1055,7 @@ router.get('/store/:storeId', async (c) => {
 
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
-    const store = data as unknown as StorefrontSiteRow;
+    const store = data as unknown as StorefrontSiteRecord;
     const release = await loadCurrentThemeRelease(c, store.id);
     return c.json(success(mapPublicStorePayload(store, release)));
 });
@@ -1275,7 +1200,7 @@ router.get('/:subdomain/theme-preview', async (c) => {
     }
 
     const liveRelease = await loadCurrentThemeRelease(c, store.id);
-    const previewRelease: ThemeReleaseRow = {
+    const previewRelease: StorefrontThemeReleaseRecord = {
         id: previewSession.id,
         theme_id: previewSession.theme_id,
         theme_instance_id: liveRelease?.theme_instance_id || null,
