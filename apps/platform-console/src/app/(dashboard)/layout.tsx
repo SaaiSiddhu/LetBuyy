@@ -4,17 +4,21 @@ import {
     ClipboardList,
     CreditCard,
     Gauge,
+    LogOut,
     Settings,
     Shield,
     Store,
     Users,
 } from 'lucide-react';
+import { requireConsoleSession } from '@/lib/console-auth-server';
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
+    const session = await requireConsoleSession({ mfa: true });
+
     return (
         <div className="flex min-h-screen bg-zinc-950">
             {/* Sidebar */}
@@ -40,6 +44,18 @@ export default function DashboardLayout({
 
             {/* Main Content */}
             <main className="flex-1">
+                <header className="flex min-h-16 items-center justify-end gap-4 border-b border-zinc-800 px-6">
+                    <span className="text-sm text-zinc-400">{session.email}</span>
+                    <form action="/api/console-auth/logout" method="post">
+                        <button
+                            type="submit"
+                            className="flex min-h-11 items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                        >
+                            <LogOut size={16} />
+                            Logout
+                        </button>
+                    </form>
+                </header>
                 {children}
             </main>
         </div>

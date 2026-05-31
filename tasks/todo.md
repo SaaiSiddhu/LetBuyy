@@ -215,6 +215,8 @@ SKIP: Razorpay provider order creation smoke test — Reason: Razorpay test cred
 
 SKIP: Phase 3.7 merchant install/editor/publish live verification — Reason: local merchant auth/API database stack is unavailable because Docker Compose was skipped, and no authenticated merchant session or live worker credentials are available in this environment. Resume point: Phase 3 Task 3.7 after local infrastructure and merchant auth credentials are available.
 
+SKIP: Phase 4.1 live Supabase magic-link email delivery verification — Reason: real Supabase project URL, anon key, and email delivery configuration are not available in this environment; the platform console local development magic-link fallback and MFA flow were verified instead. Resume point: Phase 4 Task 4.1 after production Supabase Auth credentials are configured.
+
 ---
 
 ## GOVERNANCE FAILURES — PHASE 0
