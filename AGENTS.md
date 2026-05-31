@@ -57,6 +57,8 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 
 - Preserve tenant isolation. Every merchant-owned record must resolve through `site_id` or an explicit store ownership check.
 - Keep authentication centralized in the accounts app UI and API worker services. Landing must not host login/signup pages except redirects.
+- `services/api-gateway` is the sole Commerce API backend. Apps must reach commerce, checkout, customer, theme, payment, and tenant behavior through versioned gateway contracts, not app-local business logic or direct database clients.
+- `@letbuyy/shared-types` is the canonical cross-runtime domain contract for app and service boundaries. New hand-rolled app-local `Product`, `Order`, `Customer`, `Payment`, `Theme`, and related commerce DTOs are forbidden.
 - API routes must use `/v1` in the Hono worker and should use `/api/v1` at app boundaries when exposed through Next route handlers.
 - Use Zod schemas for inbound API payloads. Canonical shared schemas belong in domain packages; API gateway `src/schemas/*` files are compatibility facades for worker imports.
 - Never expose Supabase service role keys to client components. Current service-role references are server/worker files only and must remain so.
