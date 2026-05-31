@@ -10,28 +10,25 @@ import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import {
+    AUTH_OTP_EXPIRY_MS,
+    AUTH_SESSION_DURATION_MS,
+    AUTH_TOKEN_EXPIRY_MS,
     SignUpSchema,
     SignInSchema,
     OtpRequestSchema,
     OtpVerifySchema,
     PasswordResetRequestSchema,
     PasswordUpdateSchema,
+    isAuthTokenType,
+    isAuthUuid,
+    normalizeAuthEmail,
+    parseAuthDeviceName,
+    planCustomUserEnsure,
+    type AuthTokenType,
 } from '../schemas/auth.schema';
 import { validateSubdomainFormat } from '@letbuyy/tenant-core';
 
 const auth = new Hono<{ Bindings: import('../index').Env }>();
-
-type TokenType = 'email_verify' | 'magic_link' | 'password_reset';
-
-const TOKEN_EXPIRY_MS: Record<TokenType, number> = {
-    email_verify: 60 * 60 * 1000,
-    magic_link: 15 * 60 * 1000,
-    password_reset: 60 * 60 * 1000,
-};
-
-const OTP_EXPIRY_MS = 10 * 60 * 1000;
-const SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
-const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i;
 
 async function requireAccountsInternal(c: Context<{ Bindings: import('../index').Env }>) {
     if (await verifyInternalAppRequest(c, 'accounts')) return null;
@@ -50,27 +47,8 @@ function randomOtp(): string {
     return (100000 + (bytes[0] % 900000)).toString();
 }
 
-function parseDeviceName(userAgent: string): string {
-    const ua = userAgent.toLowerCase();
-    let browser = 'Unknown Browser';
-    if (ua.includes('chrome') && !ua.includes('edg')) browser = 'Chrome';
-    else if (ua.includes('safari') && !ua.includes('chrome')) browser = 'Safari';
-    else if (ua.includes('firefox')) browser = 'Firefox';
-    else if (ua.includes('edg')) browser = 'Edge';
-
-    let os = 'Unknown OS';
-    if (ua.includes('iphone')) os = 'iPhone';
-    else if (ua.includes('ipad')) os = 'iPad';
-    else if (ua.includes('android')) os = 'Android';
-    else if (ua.includes('mac')) os = 'macOS';
-    else if (ua.includes('windows')) os = 'Windows';
-    else if (ua.includes('linux')) os = 'Linux';
-
-    return `${browser} on ${os}`;
-}
-
 async function getOrCreateDevice(db: ReturnType<typeof getSupabaseAdmin>, userId: string, fingerprint: string, userAgent: string) {
-    const deviceName = parseDeviceName(userAgent);
+    const deviceName = parseAuthDeviceName(userAgent);
     const { data: existing } = await db
         .from('devices')
         .select('id')
@@ -128,7 +106,7 @@ auth.post('/custom/users/by-email', async (c) => {
     if (unauthorized) return unauthorized;
 
     const body = await c.req.json();
-    const email = String(body.email || '').toLowerCase().trim();
+    const email = normalizeAuthEmail(body.email);
     if (!email) {
         return c.json({ error: { code: 'VALIDATION', message: 'email is required' } }, 400);
     }
@@ -153,7 +131,7 @@ auth.post('/custom/users/first-store', async (c) => {
 
     const body = await c.req.json();
     const userId = String(body.user_id || '');
-    if (!UUID_REGEX.test(userId)) {
+    if (!isAuthUuid(userId)) {
         return c.json({ error: { code: 'VALIDATION', message: 'valid user_id is required' } }, 400);
     }
 
@@ -212,8 +190,8 @@ auth.post('/custom/users/ensure', async (c) => {
     if (unauthorized) return unauthorized;
 
     const body = await c.req.json();
-    const email = String(body.email || '').toLowerCase().trim();
-    if (!email) {
+    const userPlan = planCustomUserEnsure(body, new Date().toISOString());
+    if (!userPlan) {
         return c.json({ error: { code: 'VALIDATION', message: 'email is required' } }, 400);
     }
 
@@ -221,21 +199,13 @@ auth.post('/custom/users/ensure', async (c) => {
     const { data: existing } = await db
         .from('users_custom')
         .select('id, email, email_verified, full_name, avatar_url')
-        .eq('email', email)
+        .eq('email', userPlan.email)
         .maybeSingle();
-
-    const updates: Record<string, unknown> = {
-        updated_at: new Date().toISOString(),
-    };
-    if (body.email_verified !== undefined) updates.email_verified = Boolean(body.email_verified);
-    if (typeof body.full_name === 'string') updates.full_name = body.full_name;
-    if (typeof body.avatar_url === 'string') updates.avatar_url = body.avatar_url;
-    if (typeof body.auth_provider === 'string') updates.auth_provider = body.auth_provider;
 
     if (existing) {
         const { data, error } = await db
             .from('users_custom')
-            .update(updates)
+            .update(userPlan.updates)
             .eq('id', existing.id)
             .select('id, email, email_verified, full_name, avatar_url')
             .single();
@@ -248,13 +218,7 @@ auth.post('/custom/users/ensure', async (c) => {
 
     const { data, error } = await db
         .from('users_custom')
-        .insert({
-            email,
-            email_verified: Boolean(body.email_verified),
-            full_name: typeof body.full_name === 'string' ? body.full_name : null,
-            avatar_url: typeof body.avatar_url === 'string' ? body.avatar_url : null,
-            auth_provider: typeof body.auth_provider === 'string' ? body.auth_provider : 'email',
-        })
+        .insert(userPlan.insert)
         .select('id, email, email_verified, full_name, avatar_url')
         .single();
 
@@ -274,7 +238,7 @@ auth.post('/custom/users/verify-email', async (c) => {
     let query = db.from('users_custom').update({ email_verified: true, updated_at: new Date().toISOString() });
 
     if (body.user_id) query = query.eq('id', body.user_id);
-    else if (body.email) query = query.eq('email', String(body.email).toLowerCase().trim());
+    else if (body.email) query = query.eq('email', normalizeAuthEmail(body.email));
     else return c.json({ error: { code: 'VALIDATION', message: 'user_id or email is required' } }, 400);
 
     const { data, error } = await query.select('id, email, full_name, avatar_url, email_verified').single();
@@ -292,7 +256,7 @@ auth.post('/custom/users/set-password', async (c) => {
 
     const body = await c.req.json();
     const userId = String(body.user_id || '');
-    const email = String(body.email || '').toLowerCase().trim();
+    const email = normalizeAuthEmail(body.email);
     const passwordHash = String(body.password_hash || '');
 
     if (!userId || !email || !passwordHash) {
@@ -356,7 +320,7 @@ auth.post('/custom/devices/trusted', async (c) => {
     const body = await c.req.json();
     const userId = String(body.user_id || '');
     const fingerprint = String(body.fingerprint || '');
-    if (!UUID_REGEX.test(userId) || !fingerprint) {
+    if (!isAuthUuid(userId) || !fingerprint) {
         return c.json({ error: { code: 'VALIDATION', message: 'valid user_id and fingerprint are required' } }, 400);
     }
 
@@ -387,7 +351,7 @@ auth.post('/custom/sessions/create', async (c) => {
 
     const db = getSupabaseAdmin(c);
     const token = randomHex(32);
-    const expiresAt = new Date(Date.now() + SESSION_DURATION_MS).toISOString();
+    const expiresAt = new Date(Date.now() + AUTH_SESSION_DURATION_MS).toISOString();
     const { error } = await db.from('sessions').insert({
         user_id: userId,
         device_id: deviceId,
@@ -435,17 +399,17 @@ auth.post('/custom/tokens/create', async (c) => {
     if (unauthorized) return unauthorized;
 
     const body = await c.req.json();
-    const email = String(body.email || '').toLowerCase().trim();
-    const type = body.type as TokenType;
-    if (!email || !TOKEN_EXPIRY_MS[type]) {
+    const email = normalizeAuthEmail(body.email);
+    if (!email || !isAuthTokenType(body.type)) {
         return c.json({ error: { code: 'VALIDATION', message: 'valid email and token type are required' } }, 400);
     }
+    const type: AuthTokenType = body.type;
 
     const db = getSupabaseAdmin(c);
     await db.from('verification_tokens').update({ used: true }).eq('email', email).eq('type', type).eq('used', false);
 
     const token = type === 'email_verify' && body.otp === true ? randomOtp() : randomHex(32);
-    const expiresAt = new Date(Date.now() + (body.otp === true ? OTP_EXPIRY_MS : TOKEN_EXPIRY_MS[type])).toISOString();
+    const expiresAt = new Date(Date.now() + (body.otp === true ? AUTH_OTP_EXPIRY_MS : AUTH_TOKEN_EXPIRY_MS[type])).toISOString();
     const { error } = await db.from('verification_tokens').insert({
         email,
         token,
@@ -467,11 +431,11 @@ auth.post('/custom/tokens/validate', async (c) => {
 
     const body = await c.req.json();
     const token = String(body.token || '');
-    const type = body.type as TokenType;
-    const email = body.email ? String(body.email).toLowerCase().trim() : null;
-    if (!token || !TOKEN_EXPIRY_MS[type]) {
+    const email = body.email ? normalizeAuthEmail(body.email) : null;
+    if (!token || !isAuthTokenType(body.type)) {
         return c.json({ error: { code: 'VALIDATION', message: 'valid token and type are required' } }, 400);
     }
+    const type: AuthTokenType = body.type;
 
     const db = getSupabaseAdmin(c);
     let query = db
