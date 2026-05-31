@@ -537,6 +537,25 @@ export const StorePaymentConfigSchema = z.object({
   schema_ready: z.boolean().optional(),
 }).passthrough();
 
+export const EmployeeStatusSchema = z.enum(['invited', 'active', 'inactive', 'removed', 'suspended']);
+
+export const EmployeeSchema = z.object({
+  id: UuidSchema,
+  store_id: UuidSchema,
+  user_id: UuidSchema.optional().nullable(),
+  email: EmailSchema,
+  full_name: z.string().max(200).optional().nullable(),
+  role: z.string().min(1).max(80).default('staff'),
+  status: EmployeeStatusSchema.default('invited'),
+  is_active: z.boolean().default(true),
+  permissions: MetadataSchema.default({}),
+  invited_by: UuidSchema.optional().nullable(),
+  accepted_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  deleted_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
 export const CouponSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
   code: z.string().min(3).max(50),
@@ -992,6 +1011,8 @@ export type Order = z.infer<typeof OrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type StorePaymentSettings = z.infer<typeof StorePaymentSettingsSchema>;
 export type StorePaymentConfig = z.infer<typeof StorePaymentConfigSchema>;
+export type EmployeeStatus = z.infer<typeof EmployeeStatusSchema>;
+export type Employee = z.infer<typeof EmployeeSchema>;
 export type Coupon = z.infer<typeof CouponSchema>;
 export type ShippingZone = z.infer<typeof ShippingZoneSchema>;
 export type ShippingRate = z.infer<typeof ShippingRateSchema>;

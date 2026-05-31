@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { CreateEmployeeInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,15 +13,11 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/employees?store_id=${encodeURIComponent(resolved.storeId)}`)
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().employees.list({ store_id: resolved.storeId })
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to load staff' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to load staff')
     }
 }
 
@@ -35,20 +32,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch('/employees', {
-            method: 'POST',
-            body: JSON.stringify({
-                ...body,
-                store_id: resolved.storeId,
-            }),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().employees.create({
+            ...body,
+            store_id: resolved.storeId,
+        } as CreateEmployeeInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to create staff invite' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to create staff invite')
     }
 }

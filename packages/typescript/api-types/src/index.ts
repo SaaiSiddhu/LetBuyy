@@ -6,6 +6,7 @@
 
 export * from '@letbuyy/shared-types';
 export {
+  EmployeeStatusSchema,
   FormSubmissionStatusSchema,
   PageStatusSchema,
   NavigationItemSchema,
@@ -20,6 +21,8 @@ export {
   TaxAppliesToSchema,
 } from '@letbuyy/shared-types';
 export type {
+  Employee,
+  EmployeeStatus,
   FormSubmissionStatus,
   FulfillmentStatus,
   InventoryLevel,

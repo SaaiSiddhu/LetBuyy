@@ -9,6 +9,7 @@ import type {
   Coupon,
   Customer,
   CustomerAddress,
+  Employee,
   FormSubmission,
   FormSubmissionStatus,
   GiftCard,
@@ -214,6 +215,9 @@ export type SaveStorePaymentConfigInput = {
   key_secret: string;
   test_mode?: boolean;
 };
+export type EmployeeListQuery = Pick<StoreScopedQuery, 'store_id'>;
+export type CreateEmployeeInput = Pick<Employee, 'store_id' | 'email'> & Partial<Employee>;
+export type UpdateEmployeeInput = Partial<Pick<Employee, 'role' | 'permissions' | 'status' | 'is_active'>>;
 export type CreateProductInput = Pick<Product, 'store_id' | 'name' | 'price'> & NewRecord<Product>;
 export type UpdateProductInput = NewRecord<Product>;
 export type CreateCollectionInput = Pick<Collection, 'store_id' | 'title'> & NewRecord<Collection>;
@@ -380,6 +384,17 @@ export class LetbuyyApiClient {
       save: (id: string, input: SaveStorePaymentConfigInput, options?: LetbuyyRequestOptions) =>
         this.requestData<StorePaymentConfig>(`/stores/${encodePathSegment(id)}/payment-config`, { ...options, method: 'POST', body: input }),
     },
+  };
+
+  readonly employees = {
+    list: (query: EmployeeListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<Employee[]>('/employees', { ...options, query }),
+    create: (input: CreateEmployeeInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<Employee>('/employees', { ...options, method: 'POST', body: input }),
+    update: (id: string, input: UpdateEmployeeInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<Employee>(`/employees/${encodePathSegment(id)}`, { ...options, method: 'PATCH', body: input }),
+    remove: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ deleted: boolean }>(`/employees/${encodePathSegment(id)}`, { ...options, method: 'DELETE' }),
   };
 
   readonly products = {
@@ -885,6 +900,7 @@ export type {
   Coupon,
   Customer,
   CustomerAddress,
+  Employee,
   FormSubmission,
   GiftCard,
   InventoryLevel,

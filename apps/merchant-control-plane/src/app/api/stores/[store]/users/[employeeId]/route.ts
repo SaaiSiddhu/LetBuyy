@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { readWorkerJson, workerFetch } from '@/lib/api/worker-client'
+import type { UpdateEmployeeInput } from '@letbuyy/api-client'
+import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -13,18 +14,11 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const workerResponse = await workerFetch(`/employees/${encodeURIComponent(employeeId)}`, {
-            method: 'PATCH',
-            body: JSON.stringify(body),
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().employees.update(employeeId, body as UpdateEmployeeInput)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to update staff member' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to update staff member')
     }
 }
 
@@ -38,16 +32,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const workerResponse = await workerFetch(`/employees/${encodeURIComponent(employeeId)}`, {
-            method: 'DELETE',
-        })
-        const payload = await readWorkerJson(workerResponse)
+        const payload = await createWorkerApiClient().employees.remove(employeeId)
 
-        return NextResponse.json(payload)
+        return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return NextResponse.json(
-            { error: 'Unable to remove staff member' },
-            { status: 500 }
-        )
+        return workerErrorResponse(err, 'Unable to remove staff member')
     }
 }
