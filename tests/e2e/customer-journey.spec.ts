@@ -33,6 +33,31 @@ async function openStorefront(page: Page): Promise<void> {
   });
 }
 
+async function openVisibleProduct(page: Page): Promise<void> {
+  const productEntry = page.locator('a[href*="/product/"]').first();
+
+  if (!(await productEntry.isVisible().catch(() => false))) {
+    const productNavigation = page
+      .getByRole('link', { name: /shop|products|catalog|sneakers|collection/i })
+      .or(page.getByRole('button', { name: /shop|products|catalog|sneakers|collection/i }));
+    await clickFirstVisible(productNavigation);
+  }
+
+  await expect(productEntry).toBeVisible();
+  await productEntry.click({ position: { x: 16, y: 16 } });
+  await expect(page).toHaveURL(/\/product\//);
+}
+
+async function openCart(page: Page): Promise<void> {
+  if (await clickFirstVisible(page.getByRole('button', { name: /^open cart$/i }))) return;
+
+  const currentUrl = new URL(page.url());
+  const storeBasePath = currentUrl.pathname.match(/^(.*\/store\/[^/]+)/)?.[1];
+  test.skip(!storeBasePath, 'Could not resolve the storefront cart URL.');
+
+  await page.goto(`${currentUrl.origin}${storeBasePath}/cart`, { waitUntil: 'domcontentloaded' });
+}
+
 test.describe('customer journey', () => {
   test('customer browse to checkout', async ({ page, request }) => {
     await requireReachable(request, storefrontUrl, 'storefront runtime');
@@ -40,30 +65,26 @@ test.describe('customer journey', () => {
     await openStorefront(page);
     await expect(page.locator('body')).toBeVisible();
 
-    const productNavigation = page
-      .getByRole('link', { name: /shop|products|catalog|sneakers|collection/i })
-      .or(page.getByRole('button', { name: /shop|products|catalog|sneakers|collection/i }));
-    await clickFirstVisible(productNavigation);
+    await openVisibleProduct(page);
 
-    const productEntry = page
-      .getByRole('link', { name: /view|details|urban|kick|sneaker|shoe/i })
-      .or(page.locator('[data-testid="product-card"] a'))
-      .or(page.locator('a[href*="/products/"]'));
-    const openedProduct = await clickFirstVisible(productEntry);
-    test.skip(!openedProduct, 'No product entry was visible in the seeded storefront.');
-
-    await expect(page).toHaveURL(/product|products|store/i);
-
+    const buyNow = page.getByRole('button', { name: /buy now/i });
     const addToCart = page
-      .getByRole('button', { name: /add to cart|add bag|buy now/i })
+      .getByRole('button', { name: /add to cart|add bag/i })
       .or(page.locator('[data-testid="add-to-cart"]'));
-    await expect(addToCart.first()).toBeVisible();
-    await addToCart.first().click();
+
+    if (await clickFirstVisible(buyNow)) {
+      await expect(page).toHaveURL(/cart|checkout/i);
+    } else {
+      await expect(addToCart.first()).toBeVisible();
+      await addToCart.first().click();
+      await openCart(page);
+    }
 
     const checkout = page
       .getByRole('link', { name: /checkout|proceed/i })
       .or(page.getByRole('button', { name: /checkout|proceed/i }))
       .or(page.locator('[data-testid="checkout"]'));
+
     await expect(checkout.first()).toBeVisible();
     await checkout.first().click();
 
