@@ -227,6 +227,12 @@ SKIP: Phase 4.4 production infrastructure verification — Reason: Vercel, Cloud
 
 SKIP: Phase 4.4 monitoring provider verification — Reason: Sentry or equivalent error tracking and uptime monitoring provider access is not available, so production monitoring activation cannot be verified. Resume point: Phase 4 Task 4.4 after monitoring provider access is available.
 
+SKIP: Phase 4.5 Cloudflare Worker production deployment — Reason: `CLOUDFLARE_API_TOKEN` is not available in this environment, so production Worker deployment cannot be executed safely. Resume point: Phase 4 Task 4.5 after Cloudflare production credentials are available.
+
+SKIP: Phase 4.5 Vercel production deployment — Reason: `VERCEL_TOKEN` is not available in this environment, so production Next.js app deployment cannot be executed safely. Resume point: Phase 4 Task 4.5 after Vercel production credentials are available.
+
+SKIP: Phase 4.5 production smoke tests — Reason: no production deployment was executed because Cloudflare and Vercel deployment credentials are unavailable, so post-deployment smoke tests would not validate this release. Resume point: Phase 4 Task 4.5 after production deployment completes.
+
 ---
 
 ## GOVERNANCE FAILURES — PHASE 0
