@@ -1,10 +1,12 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
+import { createLetbuyyBoundaryConfig } from "../../config/eslint/letbuyy-boundaries.mjs";
 
 const eslintConfig = defineConfig([
   ...nextVitals,
   ...nextTs,
+  createLetbuyyBoundaryConfig(),
   {
     rules: {
       "react-hooks/purity": "warn",
