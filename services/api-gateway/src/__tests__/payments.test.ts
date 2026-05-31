@@ -24,7 +24,8 @@ test('razorpay order creation rejects stale client amounts and recalculates tota
     assert.match(checkoutSchemaSource, /StorefrontRazorpayOrderSchema[\s\S]*amountMinorUnits/);
     assert.match(checkoutSchemaSource, /RazorpayOrderSchema[\s\S]*amount_minor_units/);
     assert.match(storefrontSource, /paymentService\.loadStorefrontPayableOrder\(body\.orderId,\s*store\.id\)/);
-    assert.match(storefrontSource, /const amountMinorUnits = Math\.round\(Number\(order\.total\) \* 100\)/);
+    assert.match(storefrontSource, /function orderAmountMinorUnits/);
+    assert.match(storefrontSource, /amountMinor:\s*Math\.round\(Number\(order\.total\) \* 100\)/);
     assert.match(storefrontSource, /requestedMinorUnits !== null && requestedMinorUnits !== amountMinorUnits/);
     assert.match(storefrontSource, /code:\s*'AMOUNT_MISMATCH'/);
     assert.match(storefrontSource, /,\s*400\s*\)/);
@@ -39,10 +40,11 @@ test('razorpay order creation stores idempotency before provider calls', () => {
     assert.match(storefrontSource, /new IdempotencyExecutionAdapter\(db\)/);
     assert.match(storefrontSource, /scope:\s*`storefront\.payment\.razorpay\.order:\$\{body\.orderId\}`/);
     assert.match(storefrontSource, /const claim = await idempotency\.begin\(/);
-    assert.match(storefrontSource, /const providerOrder = await createRazorpayOrder/);
+    assert.match(storefrontSource, /createRazorpayPaymentProvider/);
+    assert.match(storefrontSource, /const intent = await provider\.createIntent\(/);
     assert.ok(
         storefrontSource.indexOf('const claim = await idempotency.begin(') <
-        storefrontSource.indexOf('const providerOrder = await createRazorpayOrder')
+        storefrontSource.indexOf('const intent = await provider.createIntent(')
     );
 
     assert.match(paymentsSource, /scope:\s*`payment\.razorpay\.order:\$\{body\.order_id\}`/);
@@ -57,9 +59,10 @@ test('razorpay order creation stores idempotency before provider calls', () => {
 test('razorpay payment verification validates signatures before confirming payment', () => {
     const storefrontSource = source('routes/storefront.ts');
 
-    assert.match(storefrontSource, /hmacSha256Hex\(\s*c\.env\.RAZORPAY_KEY_SECRET,\s*`\$\{body\.razorpay_order_id\}\|\$\{body\.razorpay_payment_id\}`/);
-    assert.match(storefrontSource, /!timingSafeEqualHex\(expected,\s*body\.razorpay_signature\)/);
-    assert.match(storefrontSource, /code:\s*'PAYMENT_SIGNATURE_INVALID'/);
+    assert.match(storefrontSource, /createRazorpayPaymentProvider/);
+    assert.match(storefrontSource, /const verification = await provider\.verify\(/);
+    assert.match(storefrontSource, /signature:\s*body\.razorpay_signature/);
+    assert.match(storefrontSource, /!verification\.verified/);
     assert.match(storefrontSource, /paymentService\.confirmPayment\(/);
 });
 
@@ -79,6 +82,8 @@ test('razorpay webhook verifies raw-body signatures, persists event ids, and ded
 
 test('payment provider adapters implement the unified payments contract', () => {
     const razorpayAdapter = repositorySource('packages/infrastructure/razorpay-adapter/index.ts');
+    const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
+    const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
     const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
     const phonePeAdapter = repositorySource('packages/infrastructure/phonepe-adapter/index.ts');
     const upiAdapter = repositorySource('packages/infrastructure/upi-adapter/index.ts');
@@ -90,7 +95,10 @@ test('payment provider adapters implement the unified payments contract', () => 
     assert.match(razorpayAdapter, /webhookVerify/);
     assert.match(razorpayAdapter, /hmacSha256Hex\(credentials\.keySecret,\s*`\$\{input\.providerOrderId\}\|\$\{input\.providerPaymentId\}`/);
 
-    for (const adapter of [cashfreeAdapter, phonePeAdapter, upiAdapter, codAdapter]) {
+    assert.match(stripeAdapter, /createStripePaymentProvider/);
+    assert.match(paypalAdapter, /createPayPalPaymentProvider/);
+
+    for (const adapter of [stripeAdapter, paypalAdapter, cashfreeAdapter, phonePeAdapter, upiAdapter, codAdapter]) {
         assert.match(adapter, /PaymentProvider/);
         assert.match(adapter, /createIntent/);
         assert.match(adapter, /verify/);
@@ -101,4 +109,30 @@ test('payment provider adapters implement the unified payments contract', () => 
 
     assert.match(upiAdapter, /upi_autopay_supported/);
     assert.match(codAdapter, /COD requires OTP\/call verification/);
+});
+
+test('storefront runtime no longer owns payment route handlers', () => {
+    const removedRoutes = [
+        'apps/storefront-runtime/src/app/api/payments/paypal/capture/route.ts',
+        'apps/storefront-runtime/src/app/api/payments/paypal/create/route.ts',
+        'apps/storefront-runtime/src/app/api/payments/paypal/webhook/route.ts',
+        'apps/storefront-runtime/src/app/api/payments/razorpay/create/route.ts',
+        'apps/storefront-runtime/src/app/api/payments/razorpay/verify/route.ts',
+        'apps/storefront-runtime/src/app/api/payments/stripe/checkout/route.ts',
+        'apps/storefront-runtime/src/app/api/payments/stripe/webhook/route.ts',
+    ];
+
+    for (const route of removedRoutes) {
+        assert.throws(() => repositorySource(route), /ENOENT/);
+    }
+
+    const checkoutClient = repositorySource('apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx');
+    const paypalReturn = repositorySource('apps/storefront-runtime/src/app/store/[subdomain]/checkout/paypal-return/page.tsx');
+
+    assert.doesNotMatch(checkoutClient, /\/api\/payments/);
+    assert.doesNotMatch(paypalReturn, /\/api\/payments/);
+    assert.match(checkoutClient, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/razorpay\/order'/);
+    assert.match(checkoutClient, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/stripe\/checkout'/);
+    assert.match(checkoutClient, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/paypal\/order'/);
+    assert.match(paypalReturn, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/paypal\/capture'/);
 });

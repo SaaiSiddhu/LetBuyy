@@ -1,4 +1,14 @@
 import Stripe from 'stripe';
+import {
+  inrMoney,
+  normalizeIdempotencyKey,
+  normalizePaymentMoney,
+  type PaymentCaptureResult,
+  type PaymentProvider,
+  type PaymentRefundResult,
+  type PaymentVerificationResult,
+  type PaymentWebhookVerificationResult,
+} from '@letbuyy/payments';
 
 let stripeClient: Stripe | null = null;
 
@@ -89,8 +99,10 @@ export async function createStripeCheckoutSessionWithFetch(params: {
   cancelUrl: string;
   idempotencyKey?: string;
   name: string;
+  fetch?: typeof fetch;
 }): Promise<StripeCheckoutSessionRestResult> {
-  const response = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+  const fetchImpl = params.fetch ?? fetch;
+  const response = await fetchImpl('https://api.stripe.com/v1/checkout/sessions', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -117,4 +129,124 @@ export async function createStripeCheckoutSessionWithFetch(params: {
     };
   }
   return data;
+}
+
+function metadataString(metadata: Record<string, unknown> | undefined, key: string): string | undefined {
+  const value = metadata?.[key];
+  return typeof value === 'string' && value.length > 0 ? value : undefined;
+}
+
+export function createStripePaymentProvider(params: {
+  secretKey: string;
+  fetch?: typeof fetch;
+}): PaymentProvider {
+  return {
+    name: 'stripe',
+
+    async createIntent(input) {
+      const amount = normalizePaymentMoney(input.amount);
+      const idempotencyKey = normalizeIdempotencyKey(input.idempotencyKey);
+      const successUrl = metadataString(input.metadata, 'success_url');
+      const cancelUrl = metadataString(input.metadata, 'cancel_url');
+
+      if (!successUrl || !cancelUrl) {
+        throw new Error('Stripe checkout requires success_url and cancel_url metadata');
+      }
+
+      const session = await createStripeCheckoutSessionWithFetch({
+        secretKey: params.secretKey,
+        orderId: input.orderId,
+        amountMinorUnits: amount.amountMinor,
+        currency: amount.currency,
+        successUrl,
+        cancelUrl,
+        idempotencyKey,
+        name: metadataString(input.metadata, 'name') || input.description || `LetBuyy order ${input.orderId}`,
+        fetch: params.fetch,
+      });
+
+      if (!session.id || !session.url) {
+        throw new Error(session.error?.message || 'Stripe checkout session creation failed');
+      }
+
+      return {
+        provider: 'stripe',
+        status: 'requires_action',
+        amount,
+        idempotencyKey,
+        references: {
+          providerOrderId: session.id,
+        },
+        redirectUrl: session.url,
+        metadata: {
+          ...input.metadata,
+          session_id: session.id,
+          session_url: session.url,
+        },
+      };
+    },
+
+    async verify(input): Promise<PaymentVerificationResult> {
+      const amount = normalizePaymentMoney(input.amount);
+      normalizeIdempotencyKey(input.idempotencyKey);
+
+      return {
+        provider: 'stripe',
+        verified: Boolean(input.providerPaymentId || input.providerOrderId),
+        status: input.providerPaymentId || input.providerOrderId ? 'paid' : 'failed',
+        amount,
+        references: {
+          providerOrderId: input.providerOrderId,
+          providerPaymentId: input.providerPaymentId,
+        },
+        failureCode: input.providerPaymentId || input.providerOrderId ? undefined : 'STRIPE_REFERENCE_MISSING',
+        failureMessage: input.providerPaymentId || input.providerOrderId ? undefined : 'Stripe verification requires a provider reference',
+        metadata: input.metadata,
+      };
+    },
+
+    async capture(input): Promise<PaymentCaptureResult> {
+      const amount = normalizePaymentMoney(input.amount);
+      normalizeIdempotencyKey(input.idempotencyKey);
+
+      return {
+        provider: 'stripe',
+        status: 'failed',
+        capturedAmount: amount,
+        references: {
+          providerOrderId: input.providerOrderId,
+          providerPaymentId: input.providerPaymentId,
+        },
+        failureCode: 'STRIPE_CAPTURE_NOT_APPLICABLE',
+        failureMessage: 'Stripe Checkout capture is completed by Stripe webhook confirmation',
+        metadata: input.metadata,
+      };
+    },
+
+    async refund(input): Promise<PaymentRefundResult> {
+      normalizePaymentMoney(input.amount);
+      normalizeIdempotencyKey(input.idempotencyKey);
+
+      return {
+        provider: 'stripe',
+        status: 'failed',
+        refundedAmount: inrMoney(0),
+        references: {
+          providerPaymentId: input.paymentId,
+        },
+        failureCode: 'STRIPE_REFUND_NOT_WIRED',
+        failureMessage: 'Stripe refunds are not wired in the storefront charge path yet',
+        metadata: input.metadata,
+      };
+    },
+
+    async webhookVerify(): Promise<PaymentWebhookVerificationResult> {
+      return {
+        provider: 'stripe',
+        verified: false,
+        failureCode: 'STRIPE_WEBHOOK_MOVED_TO_WEBHOOK_SERVICE',
+        failureMessage: 'Stripe webhook verification is owned by services/webhook-service',
+      };
+    },
+  };
 }

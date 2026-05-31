@@ -9,8 +9,11 @@ import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supa
 import { validate } from '../middleware/validation';
 import {
     StorefrontCreateOrderSchema,
+    StorefrontPayPalCaptureSchema,
+    StorefrontPayPalOrderSchema,
     StorefrontRazorpayOrderSchema,
     StorefrontRazorpayVerifySchema,
+    StorefrontStripeCheckoutSchema,
 } from '../schemas/order.schema';
 import {
     CreateStorefrontProductReviewSchema,
@@ -23,7 +26,9 @@ import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter'
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
-import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
+import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
 import {
     planCouponValidation,
     storefrontCouponValidationError,
@@ -99,6 +104,27 @@ type StorefrontRazorpayVerifyBody = {
     razorpay_order_id: string;
     razorpay_payment_id: string;
     razorpay_signature: string;
+    idempotencyKey: string;
+};
+
+type StorefrontStripeCheckoutBody = {
+    orderId: string;
+    successUrl: string;
+    cancelUrl: string;
+    customerEmail?: string;
+    idempotencyKey: string;
+};
+
+type StorefrontPayPalOrderBody = {
+    orderId: string;
+    returnUrl: string;
+    cancelUrl: string;
+    idempotencyKey: string;
+};
+
+type StorefrontPayPalCaptureBody = {
+    orderId: string;
+    paypalOrderId: string;
     idempotencyKey: string;
 };
 
@@ -300,6 +326,34 @@ function requestedAmountMinorUnits(input: { amount?: number; amountMinorUnits?: 
     if (typeof input.amountMinorUnits === 'number') return input.amountMinorUnits;
     if (typeof input.amount === 'number') return Math.round(input.amount * 100);
     return null;
+}
+
+function orderAmountMinorUnits(order: { total: number | string; currency?: string | null }): {
+    amountMinor: number;
+    currency: 'INR';
+} | null {
+    const currency = (order.currency || 'INR').toUpperCase();
+    if (currency !== 'INR') {
+        return null;
+    }
+
+    return {
+        amountMinor: Math.round(Number(order.total) * 100),
+        currency: 'INR',
+    };
+}
+
+function getPayPalCredentials(c: AppContext) {
+    if (!c.env.PAYPAL_CLIENT_ID || !c.env.PAYPAL_CLIENT_SECRET) {
+        return null;
+    }
+
+    return {
+        clientId: c.env.PAYPAL_CLIENT_ID,
+        clientSecret: c.env.PAYPAL_CLIENT_SECRET,
+        mode: c.env.PAYPAL_MODE === 'live' ? 'live' as const : 'sandbox' as const,
+        webhookId: c.env.PAYPAL_WEBHOOK_ID,
+    };
 }
 
 const STOREFRONT_SITE_SELECT: string =
@@ -1352,7 +1406,15 @@ router.post(
         const db = getSupabaseAdmin(c);
         const paymentService = new PaymentExecutionAdapter(db);
         const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
-        const amountMinorUnits = Math.round(Number(order.total) * 100);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
+
+        const amountMinorUnits = amount.amountMinor;
         const requestedMinorUnits = requestedAmountMinorUnits(body);
         if (requestedMinorUnits !== null && requestedMinorUnits !== amountMinorUnits) {
             return c.json(
@@ -1375,29 +1437,30 @@ router.post(
         }
 
         try {
-            const providerOrder = await createRazorpayOrder(
-                { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
-                {
-                    amount: amountMinorUnits,
-                    currency: order.currency || 'INR',
-                    receipt: body.orderId,
-                    notes: {
-                        order_id: body.orderId,
-                        store_id: store.id,
-                        source: 'storefront',
-                        idempotency_key: body.idempotencyKey,
-                    },
-                }
-            );
+            const provider = createRazorpayPaymentProvider({
+                keyId: c.env.RAZORPAY_KEY_ID,
+                keySecret: c.env.RAZORPAY_KEY_SECRET,
+            });
+            const intent = await provider.createIntent({
+                storeId: store.id,
+                orderId: body.orderId,
+                amount,
+                idempotencyKey: body.idempotencyKey,
+                receipt: body.orderId,
+                metadata: {
+                    source: 'storefront',
+                },
+            });
+            const providerOrderId = intent.references.providerOrderId;
 
-            if (!providerOrder.id) {
+            if (!providerOrderId) {
                 await idempotency.fail(claim.id);
                 return c.json(
                     {
                         success: false,
                         error: {
                             code: 'PAYMENT_PROVIDER_ERROR',
-                            message: providerOrder.error?.description || 'Failed to create Razorpay order',
+                            message: 'Failed to create Razorpay order',
                         },
                     },
                     502
@@ -1407,16 +1470,18 @@ router.post(
             await paymentService.attachPaymentReference({
                 orderId: body.orderId,
                 provider: 'razorpay',
-                providerOrderId: providerOrder.id,
+                providerOrderId,
                 requestId: getRequestId(c),
                 idempotencyKey: body.idempotencyKey,
             });
 
             const responseBody = success({
                 keyId: c.env.RAZORPAY_KEY_ID,
-                razorpayOrderId: providerOrder.id,
-                amount: providerOrder.amount ?? amountMinorUnits,
-                currency: providerOrder.currency || order.currency || 'INR',
+                key_id: c.env.RAZORPAY_KEY_ID,
+                razorpayOrderId: providerOrderId,
+                razorpay_order_id: providerOrderId,
+                amount: intent.amount.amountMinor,
+                currency: intent.amount.currency,
             });
 
             await idempotency.complete({
@@ -1461,6 +1526,13 @@ router.post(
         const db = getSupabaseAdmin(c);
         const paymentService = new PaymentExecutionAdapter(db);
         const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
         const idempotency = new IdempotencyExecutionAdapter(db);
         const claim = await idempotency.begin({
             siteId: store.id,
@@ -1482,15 +1554,30 @@ router.post(
             );
         }
 
-        const expected = await hmacSha256Hex(
-            c.env.RAZORPAY_KEY_SECRET,
-            `${body.razorpay_order_id}|${body.razorpay_payment_id}`
-        );
+        const provider = createRazorpayPaymentProvider({
+            keyId: c.env.RAZORPAY_KEY_ID || 'storefront',
+            keySecret: c.env.RAZORPAY_KEY_SECRET,
+        });
+        const verification = await provider.verify({
+            storeId: store.id,
+            orderId: body.orderId,
+            amount,
+            idempotencyKey: body.idempotencyKey,
+            providerOrderId: body.razorpay_order_id,
+            providerPaymentId: body.razorpay_payment_id,
+            signature: body.razorpay_signature,
+        });
 
-        if (!timingSafeEqualHex(expected, body.razorpay_signature)) {
+        if (!verification.verified) {
             await idempotency.fail(claim.id);
             return c.json(
-                { success: false, error: { code: 'PAYMENT_SIGNATURE_INVALID', message: 'Invalid payment signature' } },
+                {
+                    success: false,
+                    error: {
+                        code: verification.failureCode || 'PAYMENT_SIGNATURE_INVALID',
+                        message: verification.failureMessage || 'Invalid payment signature',
+                    },
+                },
                 400
             );
         }
@@ -1507,6 +1594,326 @@ router.post(
             });
 
             const responseBody = success({ verified: true, order: confirmedOrder });
+            await idempotency.complete({
+                id: claim.id,
+                responseBody,
+                statusCode: 200,
+                resourceType: 'order',
+                resourceId: body.orderId,
+            });
+
+            return c.json(responseBody);
+        } catch (error) {
+            await idempotency.fail(claim.id);
+            throw error;
+        }
+    }
+);
+
+// POST /storefront/:subdomain/payments/stripe/checkout — Public Stripe checkout session creation.
+router.post(
+    '/:subdomain/payments/stripe/checkout',
+    validate('json', StorefrontStripeCheckoutSchema),
+    async (c) => {
+        const subdomain = c.req.param('subdomain');
+        const body = c.get('validatedBody') as StorefrontStripeCheckoutBody;
+        const store = await loadPublishedStore(c, subdomain);
+
+        if (!store) {
+            return c.json(
+                { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                404
+            );
+        }
+
+        if (!c.env.STRIPE_SECRET_KEY) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Stripe is not configured' } },
+                503
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const paymentService = new PaymentExecutionAdapter(db);
+        const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
+
+        const idempotency = new IdempotencyExecutionAdapter(db);
+        const claim = await idempotency.begin({
+            siteId: store.id,
+            key: body.idempotencyKey,
+            scope: `storefront.payment.stripe.checkout:${body.orderId}`,
+            requestBody: body,
+            requestId: getRequestId(c),
+        });
+
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+
+        try {
+            const provider = createStripePaymentProvider({ secretKey: c.env.STRIPE_SECRET_KEY });
+            const intent = await provider.createIntent({
+                storeId: store.id,
+                orderId: body.orderId,
+                amount,
+                idempotencyKey: body.idempotencyKey,
+                description: `LetBuyy order ${body.orderId}`,
+                customer: {
+                    email: body.customerEmail,
+                },
+                metadata: {
+                    success_url: body.successUrl,
+                    cancel_url: body.cancelUrl,
+                    name: `LetBuyy order ${body.orderId}`,
+                    source: 'storefront',
+                },
+            });
+            const providerOrderId = intent.references.providerOrderId;
+            if (!providerOrderId || !intent.redirectUrl) {
+                await idempotency.fail(claim.id);
+                return c.json(
+                    { success: false, error: { code: 'PAYMENT_PROVIDER_ERROR', message: 'Failed to create Stripe checkout session' } },
+                    502
+                );
+            }
+
+            await paymentService.attachPaymentReference({
+                orderId: body.orderId,
+                provider: 'stripe',
+                providerOrderId,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+
+            const responseBody = success({
+                sessionId: providerOrderId,
+                session_id: providerOrderId,
+                url: intent.redirectUrl,
+                session_url: intent.redirectUrl,
+            });
+
+            await idempotency.complete({
+                id: claim.id,
+                responseBody,
+                statusCode: 200,
+                resourceType: 'order',
+                resourceId: body.orderId,
+            });
+
+            return c.json(responseBody);
+        } catch (error) {
+            await idempotency.fail(claim.id);
+            throw error;
+        }
+    }
+);
+
+// POST /storefront/:subdomain/payments/paypal/order — Public PayPal order creation.
+router.post(
+    '/:subdomain/payments/paypal/order',
+    validate('json', StorefrontPayPalOrderSchema),
+    async (c) => {
+        const subdomain = c.req.param('subdomain');
+        const body = c.get('validatedBody') as StorefrontPayPalOrderBody;
+        const store = await loadPublishedStore(c, subdomain);
+
+        if (!store) {
+            return c.json(
+                { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                404
+            );
+        }
+
+        const credentials = getPayPalCredentials(c);
+        if (!credentials) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'PayPal is not configured' } },
+                503
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const paymentService = new PaymentExecutionAdapter(db);
+        const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
+
+        const idempotency = new IdempotencyExecutionAdapter(db);
+        const claim = await idempotency.begin({
+            siteId: store.id,
+            key: body.idempotencyKey,
+            scope: `storefront.payment.paypal.order:${body.orderId}`,
+            requestBody: body,
+            requestId: getRequestId(c),
+        });
+
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+
+        try {
+            const provider = createPayPalPaymentProvider(credentials);
+            const intent = await provider.createIntent({
+                storeId: store.id,
+                orderId: body.orderId,
+                amount,
+                idempotencyKey: body.idempotencyKey,
+                description: `LetBuyy order ${body.orderId}`,
+                metadata: {
+                    return_url: body.returnUrl,
+                    cancel_url: body.cancelUrl,
+                    source: 'storefront',
+                },
+            });
+            const providerOrderId = intent.references.providerOrderId;
+            if (!providerOrderId || !intent.redirectUrl) {
+                await idempotency.fail(claim.id);
+                return c.json(
+                    { success: false, error: { code: 'PAYMENT_PROVIDER_ERROR', message: 'Failed to create PayPal order' } },
+                    502
+                );
+            }
+
+            await paymentService.attachPaymentReference({
+                orderId: body.orderId,
+                provider: 'paypal',
+                providerOrderId,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+
+            const responseBody = success({
+                paypalOrderId: providerOrderId,
+                paypal_order_id: providerOrderId,
+                approvalUrl: intent.redirectUrl,
+                approval_url: intent.redirectUrl,
+            });
+
+            await idempotency.complete({
+                id: claim.id,
+                responseBody,
+                statusCode: 200,
+                resourceType: 'order',
+                resourceId: body.orderId,
+            });
+
+            return c.json(responseBody);
+        } catch (error) {
+            await idempotency.fail(claim.id);
+            throw error;
+        }
+    }
+);
+
+// POST /storefront/:subdomain/payments/paypal/capture — Public PayPal capture confirmation.
+router.post(
+    '/:subdomain/payments/paypal/capture',
+    validate('json', StorefrontPayPalCaptureSchema),
+    async (c) => {
+        const subdomain = c.req.param('subdomain');
+        const body = c.get('validatedBody') as StorefrontPayPalCaptureBody;
+        const store = await loadPublishedStore(c, subdomain);
+
+        if (!store) {
+            return c.json(
+                { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                404
+            );
+        }
+
+        const credentials = getPayPalCredentials(c);
+        if (!credentials) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'PayPal is not configured' } },
+                503
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const paymentService = new PaymentExecutionAdapter(db);
+        const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
+
+        if (order.payment_id && order.payment_id !== body.paypalOrderId) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_REFERENCE_MISMATCH', message: 'PayPal order does not match this checkout order' } },
+                409
+            );
+        }
+
+        const idempotency = new IdempotencyExecutionAdapter(db);
+        const claim = await idempotency.begin({
+            siteId: store.id,
+            key: body.idempotencyKey,
+            scope: `storefront.payment.paypal.capture:${body.orderId}`,
+            requestBody: body,
+            requestId: getRequestId(c),
+        });
+
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+
+        try {
+            const provider = createPayPalPaymentProvider(credentials);
+            const capture = await provider.capture({
+                storeId: store.id,
+                orderId: body.orderId,
+                amount,
+                idempotencyKey: body.idempotencyKey,
+                providerOrderId: body.paypalOrderId,
+            });
+
+            if (capture.status !== 'paid' || !capture.references.providerPaymentId) {
+                await idempotency.fail(claim.id);
+                return c.json(
+                    {
+                        success: false,
+                        error: {
+                            code: capture.failureCode || 'PAYPAL_CAPTURE_FAILED',
+                            message: capture.failureMessage || 'PayPal capture failed',
+                        },
+                    },
+                    400
+                );
+            }
+
+            const confirmedOrder = await paymentService.confirmPayment({
+                orderId: body.orderId,
+                provider: 'paypal',
+                providerPaymentId: capture.references.providerPaymentId,
+                providerOrderId: body.paypalOrderId,
+                providerEventId: `paypal:checkout:${capture.references.providerPaymentId}`,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+
+            const responseBody = success({
+                captured: true,
+                captureId: capture.references.providerPaymentId,
+                capture_id: capture.references.providerPaymentId,
+                status: capture.status,
+                order: confirmedOrder,
+            });
+
             await idempotency.complete({
                 id: claim.id,
                 responseBody,

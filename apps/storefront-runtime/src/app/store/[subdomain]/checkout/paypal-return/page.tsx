@@ -5,6 +5,11 @@ import { useSearchParams } from 'next/navigation';
 import { CheckCircle, Loader2, ArrowLeft, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import {
+    readWorkerJson,
+    storefrontWorkerFetch,
+    workerErrorMessage,
+} from '@/lib/browser-worker-client';
 
 export default function PayPalReturnPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const searchParams = useSearchParams();
@@ -25,12 +30,13 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
             return;
         }
 
+        if (!subdomain) return;
+
         // Capture the PayPal payment
         const capturePayment = async () => {
             try {
-                const res = await fetch('/api/payments/paypal/capture', {
+                const res = await storefrontWorkerFetch(subdomain, '/payments/paypal/capture', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         paypalOrderId: token,
                         orderId,
@@ -38,12 +44,12 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
                     }),
                 });
 
-                const result = await res.json();
+                const result = await readWorkerJson<{ captured?: boolean }>(res);
 
-                if (result.success) {
+                if (res.ok && result.success !== false) {
                     setStatus('success');
                 } else {
-                    setErrorMessage(result.error || 'Payment capture failed.');
+                    setErrorMessage(workerErrorMessage(result, 'Payment capture failed.'));
                     setStatus('error');
                 }
             } catch (error) {
@@ -54,7 +60,7 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
         };
 
         capturePayment();
-    }, [token, orderId]);
+    }, [token, orderId, subdomain]);
 
     if (status === 'loading') {
         return (

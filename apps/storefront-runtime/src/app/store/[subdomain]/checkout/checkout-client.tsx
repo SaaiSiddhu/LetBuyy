@@ -10,6 +10,11 @@ import {
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Script from 'next/script';
+import {
+    readWorkerJson,
+    storefrontWorkerFetch,
+    workerErrorMessage,
+} from '@/lib/browser-worker-client';
 
 interface RazorpaySuccessResponse {
     razorpay_order_id: string;
@@ -101,6 +106,27 @@ interface AppliedCoupon {
     discount: number;
     freeShipping?: boolean;
 }
+
+type RazorpayOrderData = {
+    keyId?: string;
+    key_id?: string;
+    razorpayOrderId?: string;
+    razorpay_order_id?: string;
+    amount?: number;
+    currency?: string;
+};
+
+type StripeCheckoutData = {
+    url?: string;
+    session_url?: string;
+};
+
+type PayPalOrderData = {
+    paypalOrderId?: string;
+    paypal_order_id?: string;
+    approvalUrl?: string;
+    approval_url?: string;
+};
 
 export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled }: CheckoutClientProps) {
     const { items, cartTotal, clearCart } = useCart();
@@ -313,40 +339,38 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            const paymentRes = await fetch('/api/payments/razorpay/create', {
+            const paymentRes = await storefrontWorkerFetch(subdomain, '/payments/razorpay/order', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
-                    storeId,
-                    subdomain,
                     idempotencyKey: getIdempotencyKey(`razorpay-create-${orderResult.order.id}`),
                 }),
             });
 
-            const paymentResult = await paymentRes.json();
-            if (!paymentResult.success) {
-                alert(paymentResult.error || 'Online payment is not configured for this store yet.');
+            const paymentResult = await readWorkerJson<RazorpayOrderData>(paymentRes);
+            const paymentData = paymentResult.data;
+            const keyId = paymentData?.keyId || paymentData?.key_id;
+            const razorpayOrderId = paymentData?.razorpayOrderId || paymentData?.razorpay_order_id;
+            if (!paymentRes.ok || paymentResult.success === false || !keyId || !razorpayOrderId || !paymentData?.amount) {
+                alert(workerErrorMessage(paymentResult, 'Online payment is not configured for this store yet.'));
                 setIsProcessing(false);
                 return;
             }
 
             const options: RazorpayOptions = {
-                key: paymentResult.keyId,
-                amount: paymentResult.amount,
-                currency: paymentResult.currency || 'INR',
+                key: keyId,
+                amount: paymentData.amount,
+                currency: paymentData.currency || 'INR',
                 name: storeName,
                 description: `Order ${orderResult.order.orderNumber}`,
                 image: '/logo.png',
-                order_id: paymentResult.razorpayOrderId,
+                order_id: razorpayOrderId,
                 handler: async (response) => {
                     try {
-                        const verifyRes = await fetch('/api/payments/razorpay/verify', {
+                        const verifyRes = await storefrontWorkerFetch(subdomain, '/payments/razorpay/verify', {
                             method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
                                 orderId: orderResult.order!.id,
-                                subdomain,
                                 razorpay_order_id: response.razorpay_order_id,
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_signature: response.razorpay_signature,
@@ -354,14 +378,14 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                             }),
                         });
 
-                        const verifyResult = await verifyRes.json();
-                        if (verifyResult.success) {
+                        const verifyResult = await readWorkerJson<{ verified?: boolean }>(verifyRes);
+                        if (verifyRes.ok && verifyResult.success !== false) {
                             setOrderNumber(orderResult.order!.orderNumber);
                             setIsSuccess(true);
                             clearCart();
                             autoCreateCustomer(orderResult.order);
                         } else {
-                            alert(verifyResult.error || 'Payment verification failed. Please contact support.');
+                            alert(workerErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
                         }
                     } catch {
                         alert('Payment verification failed. Please contact support.');
@@ -413,14 +437,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            // 2. Create a Stripe Checkout Session
-            const stripeRes = await fetch('/api/payments/stripe/checkout', {
+            const stripeRes = await storefrontWorkerFetch(subdomain, '/payments/stripe/checkout', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
-                    storeId,
-                    currency: 'inr',
                     customerEmail: formData.email.toLowerCase(),
                     successUrl: `${window.location.origin}/store/${subdomain}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
                     cancelUrl: `${window.location.origin}/store/${subdomain}/checkout`,
@@ -428,13 +448,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 }),
             });
 
-            const stripeResult = await stripeRes.json();
+            const stripeResult = await readWorkerJson<StripeCheckoutData>(stripeRes);
+            const stripeUrl = stripeResult.data?.url || stripeResult.data?.session_url;
 
-            if (stripeResult.url) {
-                // Redirect to Stripe Checkout
-                window.location.href = stripeResult.url;
+            if (stripeRes.ok && stripeResult.success !== false && stripeUrl) {
+                window.location.href = stripeUrl;
             } else {
-                alert('Failed to create Stripe checkout session. Please try again.');
+                alert(workerErrorMessage(stripeResult, 'Failed to create Stripe checkout session. Please try again.'));
                 setIsProcessing(false);
             }
         } catch {
@@ -455,26 +475,23 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            // 2. Create PayPal order
-            const paypalRes = await fetch('/api/payments/paypal/create', {
+            const paypalRes = await storefrontWorkerFetch(subdomain, '/payments/paypal/order', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
-                    storeId,
                     returnUrl: `${window.location.origin}/store/${subdomain}/checkout/paypal-return?orderId=${orderResult.order.id}`,
                     cancelUrl: `${window.location.origin}/store/${subdomain}/checkout`,
                     idempotencyKey: getIdempotencyKey(`paypal-create-${orderResult.order.id}`),
                 }),
             });
 
-            const paypalResult = await paypalRes.json();
+            const paypalResult = await readWorkerJson<PayPalOrderData>(paypalRes);
+            const approvalUrl = paypalResult.data?.approvalUrl || paypalResult.data?.approval_url;
 
-            if (paypalResult.approvalUrl) {
-                // Redirect to PayPal for buyer approval
-                window.location.href = paypalResult.approvalUrl;
+            if (paypalRes.ok && paypalResult.success !== false && approvalUrl) {
+                window.location.href = approvalUrl;
             } else {
-                alert('Failed to create PayPal order. Please try again.');
+                alert(workerErrorMessage(paypalResult, 'Failed to create PayPal order. Please try again.'));
                 setIsProcessing(false);
             }
         } catch {

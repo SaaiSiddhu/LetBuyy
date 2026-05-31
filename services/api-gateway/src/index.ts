@@ -51,6 +51,10 @@ export interface Env {
     RAZORPAY_KEY_SECRET: string;
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
     STRIPE_SECRET_KEY: string;
+    PAYPAL_CLIENT_ID?: string;
+    PAYPAL_CLIENT_SECRET?: string;
+    PAYPAL_MODE?: 'sandbox' | 'live';
+    PAYPAL_WEBHOOK_ID?: string;
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;

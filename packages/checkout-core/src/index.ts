@@ -74,6 +74,27 @@ export const StorefrontRazorpayVerifySchema = z.object({
   idempotencyKey: z.string().min(8).max(200),
 });
 
+export const StorefrontStripeCheckoutSchema = z.object({
+  orderId: UuidSchema,
+  successUrl: z.string().url(),
+  cancelUrl: z.string().url(),
+  customerEmail: EmailSchema.optional(),
+  idempotencyKey: z.string().min(8).max(200),
+});
+
+export const StorefrontPayPalOrderSchema = z.object({
+  orderId: UuidSchema,
+  returnUrl: z.string().url(),
+  cancelUrl: z.string().url(),
+  idempotencyKey: z.string().min(8).max(200),
+});
+
+export const StorefrontPayPalCaptureSchema = z.object({
+  orderId: UuidSchema,
+  paypalOrderId: z.string().min(1).max(200),
+  idempotencyKey: z.string().min(8).max(200),
+});
+
 export const UpdateOrderStatusSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   status: z.enum([
@@ -821,6 +842,9 @@ export type CreateOrderInput = z.infer<typeof CreateOrderSchema>;
 export type StorefrontCreateOrderInput = z.infer<typeof StorefrontCreateOrderSchema>;
 export type StorefrontRazorpayOrderInput = z.infer<typeof StorefrontRazorpayOrderSchema>;
 export type StorefrontRazorpayVerifyInput = z.infer<typeof StorefrontRazorpayVerifySchema>;
+export type StorefrontStripeCheckoutInput = z.infer<typeof StorefrontStripeCheckoutSchema>;
+export type StorefrontPayPalOrderInput = z.infer<typeof StorefrontPayPalOrderSchema>;
+export type StorefrontPayPalCaptureInput = z.infer<typeof StorefrontPayPalCaptureSchema>;
 export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
 export type FulfillOrderInput = z.infer<typeof FulfillOrderSchema>;
 export type RefundOrderInput = z.infer<typeof RefundOrderSchema>;
