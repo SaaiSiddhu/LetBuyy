@@ -26,8 +26,8 @@ import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 import {
     planCouponValidation,
+    storefrontCouponValidationError,
     type CouponRecord,
-    type CouponValidationFailureCode,
 } from '@letbuyy/checkout-core';
 import {
     emptyPublicReviewsPayload,
@@ -1588,21 +1588,6 @@ router.get('/:subdomain/coupons/validate', async (c) => {
     return validateCouponForStore(c, store.id);
 });
 
-function storefrontCouponError(code: CouponValidationFailureCode | undefined, minimumOrderAmount: number) {
-    switch (code) {
-        case 'expired':
-            return 'This coupon has expired';
-        case 'not_started':
-            return 'This coupon is not yet active';
-        case 'usage_limit_reached':
-            return 'This coupon has reached its usage limit';
-        case 'minimum_order_not_met':
-            return `Minimum purchase of ₹${minimumOrderAmount.toLocaleString('en-IN')} required`;
-        default:
-            return 'Invalid coupon code';
-    }
-}
-
 async function validateCouponForStore(c: AppContext, storeId: string) {
     const code = (c.req.query('code') || '').trim().toUpperCase();
     const subtotal = Number(c.req.query('subtotal') || 0);
@@ -1635,7 +1620,7 @@ async function validateCouponForStore(c: AppContext, storeId: string) {
     if (!plan.valid) {
         return c.json(success({
             valid: false,
-            error: storefrontCouponError(plan.failureCode, plan.coupon.minimumOrderAmount),
+            error: storefrontCouponValidationError(plan.failureCode, plan.coupon.minimumOrderAmount),
         }));
     }
 

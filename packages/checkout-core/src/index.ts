@@ -490,6 +490,39 @@ export function planCouponValidation(
   };
 }
 
+export function couponValidationReason(code: CouponValidationFailureCode | undefined): string {
+  switch (code) {
+    case 'expired':
+      return 'Coupon has expired';
+    case 'not_started':
+      return 'Coupon is not yet active';
+    case 'usage_limit_reached':
+      return 'Coupon usage limit reached';
+    case 'minimum_order_not_met':
+      return 'Minimum order amount not met';
+    default:
+      return 'Coupon is invalid';
+  }
+}
+
+export function storefrontCouponValidationError(
+  code: CouponValidationFailureCode | undefined,
+  minimumOrderAmount: number,
+): string {
+  switch (code) {
+    case 'expired':
+      return 'This coupon has expired';
+    case 'not_started':
+      return 'This coupon is not yet active';
+    case 'usage_limit_reached':
+      return 'This coupon has reached its usage limit';
+    case 'minimum_order_not_met':
+      return `Minimum purchase of ₹${minimumOrderAmount.toLocaleString('en-IN')} required`;
+    default:
+      return 'Invalid coupon code';
+  }
+}
+
 export const VALID_TRANSITIONS: Record<string, string[]> = {
   pending: ['confirmed', 'cancelled'],
   confirmed: ['processing', 'cancelled'],

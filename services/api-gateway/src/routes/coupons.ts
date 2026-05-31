@@ -13,6 +13,7 @@ import {
     ListCouponsQuery,
 } from '../schemas/coupon.schema';
 import {
+    couponValidationReason,
     normalizeCouponRecord,
     planCouponCreate,
     planCouponUpdate,
@@ -29,21 +30,6 @@ type CouponPatchInput = Partial<CreateCouponInput>;
 interface CouponOwnerRow {
     id: string;
     store_id?: string | null;
-}
-
-function couponValidationReason(code: ReturnType<typeof planCouponValidation>['failureCode']) {
-    switch (code) {
-        case 'expired':
-            return 'Coupon has expired';
-        case 'not_started':
-            return 'Coupon is not yet active';
-        case 'usage_limit_reached':
-            return 'Coupon usage limit reached';
-        case 'minimum_order_not_met':
-            return 'Minimum order amount not met';
-        default:
-            return 'Coupon is invalid';
-    }
 }
 
 // GET /coupons — List coupons for a store
