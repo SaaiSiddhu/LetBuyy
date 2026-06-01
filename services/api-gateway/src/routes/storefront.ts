@@ -95,6 +95,16 @@ type OrderRpcResult = {
     total?: number | string;
 };
 
+type StorefrontPaidOrderSnapshot = {
+    id?: string;
+    store_id?: string;
+    site_id?: string;
+    order_number?: string;
+    customer_id?: string;
+    total?: number | string;
+    currency?: string | null;
+};
+
 type StorefrontRazorpayOrderBody = {
     orderId: string;
     idempotencyKey: string;
@@ -375,6 +385,42 @@ async function emitStorefrontOrderCreatedEvent(
             ...(total ? { total } : {}),
         },
         idempotencyKey: `order.created:${input.storeId}:${input.order.id}:${input.requestId}`,
+        requestId: input.requestId,
+        actorId: null,
+    });
+}
+
+async function emitStorefrontOrderPaidEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        storeId?: string | null;
+        orderId: string;
+        order: StorefrontPaidOrderSnapshot;
+        fallbackOrder?: StorefrontPaidOrderSnapshot;
+        requestId: string;
+        idempotencyKey: string;
+    },
+): Promise<void> {
+    const order = input.order || {};
+    const fallbackOrder = input.fallbackOrder || {};
+    const storeId = input.storeId || order.site_id || order.store_id || fallbackOrder.site_id || fallbackOrder.store_id;
+    if (!storeId) return;
+
+    const total = orderEventTotalPayload(order.total ?? fallbackOrder.total);
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId,
+        aggregateType: 'order',
+        aggregateId: order.id || input.orderId,
+        eventType: 'order.paid',
+        payload: {
+            site_id: storeId,
+            order_id: order.id || input.orderId,
+            order_number: order.order_number || fallbackOrder.order_number || undefined,
+            customer_id: order.customer_id || fallbackOrder.customer_id || undefined,
+            ...(total ? { total } : {}),
+        },
+        idempotencyKey: `order.paid:${storeId}:${input.orderId}:${input.idempotencyKey}`,
         requestId: input.requestId,
         actorId: null,
     });
@@ -956,6 +1002,12 @@ router.post('/internal/payments/confirm', async (c) => {
         providerEventId: body.providerEventId || `${body.provider}:storefront:${body.paymentId}`,
         requestId: getRequestId(c),
         idempotencyKey: body.idempotencyKey || null,
+    });
+    await emitStorefrontOrderPaidEvent(db, {
+        orderId: body.orderId,
+        order: order as StorefrontPaidOrderSnapshot,
+        requestId: getRequestId(c),
+        idempotencyKey: body.idempotencyKey || body.providerEventId || body.paymentId,
     });
 
     return c.json(success({ order }));
@@ -1640,6 +1692,14 @@ router.post(
                 requestId: getRequestId(c),
                 idempotencyKey: body.idempotencyKey,
             });
+            await emitStorefrontOrderPaidEvent(db, {
+                storeId: store.id,
+                orderId: body.orderId,
+                order: confirmedOrder as StorefrontPaidOrderSnapshot,
+                fallbackOrder: order,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
 
             const responseBody = success({ verified: true, order: confirmedOrder });
             await idempotency.complete({
@@ -1950,6 +2010,14 @@ router.post(
                 providerPaymentId: capture.references.providerPaymentId,
                 providerOrderId: body.paypalOrderId,
                 providerEventId: `paypal:checkout:${capture.references.providerPaymentId}`,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+            await emitStorefrontOrderPaidEvent(db, {
+                storeId: store.id,
+                orderId: body.orderId,
+                order: confirmedOrder as StorefrontPaidOrderSnapshot,
+                fallbackOrder: order,
                 requestId: getRequestId(c),
                 idempotencyKey: body.idempotencyKey,
             });

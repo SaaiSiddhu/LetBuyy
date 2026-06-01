@@ -7,6 +7,7 @@ const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
 const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-execution.adapter.ts';
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
+const PAYMENTS_ROUTE = 'services/api-gateway/src/routes/payments.ts';
 const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
 const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
@@ -119,6 +120,24 @@ test('public storefront checkout emits order.created through the gateway outbox'
   assert.match(source, /site_id: input\.storeId/);
   assert.match(source, /order_id: input\.order\.id/);
   assert.match(source, /emitStorefrontOrderCreatedEvent\(db/);
+});
+
+test('payment confirmations emit registered order.paid events', () => {
+  const paymentsSource = read(PAYMENTS_ROUTE);
+  const storefrontSource = read(STOREFRONT_ROUTE);
+
+  assert.match(paymentsSource, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(paymentsSource, /eventType: 'order\.paid'/);
+  assert.match(paymentsSource, /aggregateType: 'order'/);
+  assert.match(paymentsSource, /site_id: siteId/);
+  assert.match(paymentsSource, /order_id: orderId/);
+  assert.match(paymentsSource, /emitOrderPaidEvent\(db/);
+
+  assert.match(storefrontSource, /emitStorefrontOrderPaidEvent/);
+  assert.match(storefrontSource, /eventType: 'order\.paid'/);
+  assert.match(storefrontSource, /aggregateType: 'order'/);
+  assert.match(storefrontSource, /site_id: storeId/);
+  assert.match(storefrontSource, /order_id: order\.id \|\| input\.orderId/);
 });
 
 test('app install and uninstall producers use registered app lifecycle contracts', () => {

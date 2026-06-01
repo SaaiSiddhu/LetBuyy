@@ -8,6 +8,7 @@ import { ForbiddenError, ConflictError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { createRazorpayOrder, createRazorpaySubscription } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
@@ -68,6 +69,8 @@ type ClientAmountFields = {
     amount_minor_units?: number;
 };
 
+type JsonRecord = Record<string, unknown>;
+
 function getRequestId(c: AppContext): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
 }
@@ -86,6 +89,66 @@ function amountMismatchBody() {
             message: 'Order amount changed. Please refresh checkout and try again.',
         },
     };
+}
+
+function asRecord(value: unknown): JsonRecord {
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonRecord : {};
+}
+
+function stringOrNull(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value : null;
+}
+
+function numberOrNull(value: unknown): number | null {
+    if (typeof value !== 'number' && typeof value !== 'string') return null;
+    const numberValue = Number(value);
+    return Number.isFinite(numberValue) ? numberValue : null;
+}
+
+function orderPaidTotalPayload(order: JsonRecord): { amount_minor: number; currency: 'INR' } | undefined {
+    const currency = (stringOrNull(order.currency) || 'INR').toUpperCase();
+    if (currency !== 'INR') return undefined;
+
+    const total = numberOrNull(order.total);
+    if (total === null || total < 0) return undefined;
+
+    return { amount_minor: Math.round(total * 100), currency: 'INR' };
+}
+
+async function emitOrderPaidEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        order: unknown;
+        fallbackOrder?: unknown;
+        actorId?: string | null;
+        requestId: string;
+        idempotencyKey: string;
+    },
+): Promise<void> {
+    const order = asRecord(input.order);
+    const fallbackOrder = asRecord(input.fallbackOrder);
+    const orderId = stringOrNull(order.id) || stringOrNull(fallbackOrder.id);
+    const siteId = stringOrNull(order.site_id) || stringOrNull(order.store_id) || stringOrNull(fallbackOrder.site_id) || stringOrNull(fallbackOrder.store_id);
+
+    if (!orderId || !siteId) return;
+
+    const total = orderPaidTotalPayload({ ...fallbackOrder, ...order });
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: siteId,
+        aggregateType: 'order',
+        aggregateId: orderId,
+        eventType: 'order.paid',
+        payload: {
+            site_id: siteId,
+            order_id: orderId,
+            order_number: stringOrNull(order.order_number) || stringOrNull(fallbackOrder.order_number) || undefined,
+            customer_id: stringOrNull(order.customer_id) || stringOrNull(fallbackOrder.customer_id) || undefined,
+            ...(total ? { total } : {}),
+        },
+        idempotencyKey: `order.paid:${siteId}:${orderId}:${input.idempotencyKey}`,
+        requestId: input.requestId,
+        actorId: input.actorId || null,
+    });
 }
 
 function subscriptionPeriodEnd(now: Date, billingPeriod: 'monthly' | 'yearly'): Date {
@@ -763,6 +826,13 @@ router.post('/razorpay/verify', validate('json', RazorpayVerifySchema), async (c
         providerOrderId: body.razorpay_order_id,
         providerEventId: `razorpay:protected:${body.razorpay_payment_id}`,
         requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
+        idempotencyKey: body.idempotency_key,
+    });
+    await emitOrderPaidEvent(db, {
+        order: updated,
+        fallbackOrder: order,
+        actorId: customUser.id,
+        requestId: getRequestId(c),
         idempotencyKey: body.idempotency_key,
     });
 
