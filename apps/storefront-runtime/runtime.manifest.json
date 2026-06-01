@@ -34,6 +34,7 @@
     "workspacePackages": [
       "@letbuyy/api-client",
       "@letbuyy/api-types",
+      "@letbuyy/app-engine",
       "@letbuyy/auth-core",
       "@letbuyy/checkout-core",
       "@letbuyy/cms-core",

@@ -381,6 +381,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/app-engine':
+        specifier: workspace:*
+        version: link:../../packages/app-engine
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core

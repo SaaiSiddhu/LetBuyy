@@ -28,6 +28,7 @@ export type BuiltInSectionType =
   | 'faqAccordion'
   | 'videoHero'
   | 'trustBadges'
+  | 'appBlockSlot'
   | 'categoryGrid'
   | 'brandMarquee'
   | 'portfolioGrid'

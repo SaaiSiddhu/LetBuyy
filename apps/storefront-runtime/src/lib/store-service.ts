@@ -607,6 +607,8 @@ function normalizeSectionType(type: string): string {
         'category-grid': 'categoryGrid',
         'brand-marquee': 'brandMarquee',
         'trust-badges': 'trustBadges',
+        'app-block-slot': 'appBlockSlot',
+        'app_block_slot': 'appBlockSlot',
     };
     return typeMap[type] || type;
 }

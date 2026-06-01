@@ -14,6 +14,7 @@ import RichContentSection from '@/components/sections/rich-content-section';
 import CategoryGrid from '@/components/sections/category-grid';
 import BrandMarquee from '@/components/sections/brand-marquee';
 import TrustBadges from '@/components/sections/trust-badges';
+import AppBlockSlot from '@/components/sections/app-block-slot';
 import ProductDetailSection from '@/components/sections/product-detail-section';
 import DynamicHeader from '@/components/layout/dynamic-header';
 import DynamicFooter from '@/components/layout/dynamic-footer';
@@ -334,6 +335,12 @@ const SECTION_RENDERER_DEFINITIONS: RegisteredSectionRenderer[] = [
         sectionTypes: ['trustBadges', 'trust-badges'],
         schema: schemaFor('trustBadges'),
         render: ({ section }) => <TrustBadges section={section} />,
+    },
+    {
+        rendererKey: 'apps.app-block-slot',
+        sectionTypes: ['appBlockSlot', 'app-block-slot', 'app_block_slot'],
+        schema: schemaFor('appBlockSlot'),
+        render: ({ section, theme }) => <AppBlockSlot section={section} theme={theme} />,
     },
 ];
 

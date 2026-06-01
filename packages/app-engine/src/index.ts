@@ -52,6 +52,31 @@ export type CheckCreditsInput = z.infer<typeof CheckCreditsSchema>;
 
 export type AppEngineJsonRecord = Record<string, unknown>;
 
+export const AppBlockRenderModeSchema = z.enum(['inline', 'iframe']);
+
+export const AppBlockContentSchema = z.object({
+  heading: z.string().min(1).max(120).optional(),
+  body: z.string().min(1).max(500).optional(),
+  cta_label: z.string().min(1).max(80).optional(),
+  cta_href: z.string().min(1).max(500).optional(),
+}).strict();
+
+export const AppBlockInstanceSchema = z.object({
+  id: z.string().min(1).max(120),
+  app_id: z.string().min(1).max(120),
+  extension_id: z.string().min(1).max(120),
+  slot: z.string().min(1).max(160),
+  title: z.string().min(1).max(120),
+  render_mode: AppBlockRenderModeSchema.default('inline'),
+  settings: z.record(z.string(), z.unknown()).default({}),
+  content: AppBlockContentSchema.default({}),
+  iframe_url: z.string().min(1).max(500).optional(),
+}).strict();
+
+export type AppBlockRenderMode = z.infer<typeof AppBlockRenderModeSchema>;
+export type AppBlockContent = z.infer<typeof AppBlockContentSchema>;
+export type AppBlockInstance = z.infer<typeof AppBlockInstanceSchema>;
+
 export interface AppDeveloperRegistrationInsert {
   user_id: string;
   company_name: string;
@@ -109,6 +134,129 @@ export function appStoreStringArray(value: unknown): string[] {
 export function parseAppStoreJsonRecord(value: unknown): AppEngineJsonRecord {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   return value as AppEngineJsonRecord;
+}
+
+function appBlockString(value: unknown, fallback = ''): string {
+  return typeof value === 'string' && value.trim().length > 0 ? value.trim() : fallback;
+}
+
+function firstAppBlockString(record: AppEngineJsonRecord, keys: string[], fallback = ''): string {
+  for (const key of keys) {
+    const value = appBlockString(record[key]);
+    if (value) return value;
+  }
+  return fallback;
+}
+
+function safeAppBlockHref(value: unknown): string | undefined {
+  const href = appBlockString(value);
+  if (!href) return undefined;
+
+  if (href.startsWith('/') || href.startsWith('#') || href.startsWith('?')) return href;
+
+  try {
+    const parsed = new URL(href);
+    if (parsed.protocol === 'https:' || parsed.protocol === 'mailto:' || parsed.protocol === 'tel:') {
+      return parsed.toString();
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
+}
+
+function safeAppBlockIframeUrl(value: unknown): string | undefined {
+  const href = appBlockString(value);
+  if (!href) return undefined;
+
+  try {
+    const parsed = new URL(href);
+    const isLocalHttp = parsed.protocol === 'http:'
+      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
+
+    if (parsed.protocol === 'https:' || isLocalHttp) {
+      return parsed.toString();
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
+}
+
+function definedAppBlockContent(content: AppBlockContent): AppBlockContent {
+  return Object.fromEntries(
+    Object.entries(content).filter(([, value]) => typeof value === 'string' && value.length > 0),
+  ) as AppBlockContent;
+}
+
+export function normalizeAppBlockInstance(
+  value: unknown,
+  fallback: Partial<AppBlockInstance> = {},
+): AppBlockInstance | null {
+  const rawRecord = parseAppStoreJsonRecord(value);
+  const settings = parseAppStoreJsonRecord(rawRecord.settings);
+  const contentRecord = parseAppStoreJsonRecord(rawRecord.content);
+  const merged: AppEngineJsonRecord = {
+    ...settings,
+    ...rawRecord,
+  };
+  const content = definedAppBlockContent({
+    heading: firstAppBlockString(contentRecord, ['heading'], firstAppBlockString(merged, ['heading', 'headline'])),
+    body: firstAppBlockString(contentRecord, ['body'], firstAppBlockString(merged, ['body', 'description'])),
+    cta_label: firstAppBlockString(contentRecord, ['cta_label', 'ctaLabel'], firstAppBlockString(merged, ['cta_label', 'ctaLabel'])),
+    cta_href: safeAppBlockHref(
+      contentRecord.cta_href || contentRecord.ctaHref || merged.cta_href || merged.ctaHref,
+    ),
+  });
+
+  const renderMode = merged.render_mode === 'iframe' || merged.renderMode === 'iframe' ? 'iframe' : 'inline';
+  const normalized = AppBlockInstanceSchema.safeParse({
+    id: firstAppBlockString(merged, ['id'], fallback.id || 'app-block'),
+    app_id: firstAppBlockString(merged, ['app_id', 'appId'], fallback.app_id || 'unknown-app'),
+    extension_id: firstAppBlockString(merged, ['extension_id', 'extensionId'], fallback.extension_id || 'storefront-block'),
+    slot: firstAppBlockString(merged, ['slot'], fallback.slot || 'storefront.home.after-hero'),
+    title: firstAppBlockString(merged, ['title', 'name'], fallback.title || 'Installed app'),
+    render_mode: renderMode,
+    settings,
+    content,
+    iframe_url: safeAppBlockIframeUrl(merged.iframe_url || merged.iframeUrl),
+  });
+
+  return normalized.success ? normalized.data : null;
+}
+
+export function normalizeAppBlockInstances(blocks: unknown, slot?: string): AppBlockInstance[] {
+  const values = Array.isArray(blocks)
+    ? blocks
+    : Object.entries(parseAppStoreJsonRecord(blocks)).map(([id, value]) => ({ id, ...parseAppStoreJsonRecord(value) }));
+
+  return values
+    .map((block, index) => normalizeAppBlockInstance(block, {
+      id: `app-block-${index + 1}`,
+      slot: slot || 'storefront.home.after-hero',
+    }))
+    .filter((block): block is AppBlockInstance => block !== null)
+    .filter((block) => !slot || block.slot === slot);
+}
+
+export function createExampleAppBlockInstance(slot = 'storefront.home.after-hero'): AppBlockInstance {
+  return AppBlockInstanceSchema.parse({
+    id: 'example-loyalty-rewards',
+    app_id: 'letbuyy-loyalty',
+    extension_id: 'loyalty-rewards-card',
+    slot,
+    title: 'Loyalty Rewards',
+    render_mode: 'inline',
+    settings: {},
+    content: {
+      heading: 'Earn 2x rewards on this store',
+      body: 'Installed app blocks can now render inside portable JSON-contract storefront themes.',
+      cta_label: 'View rewards',
+      cta_href: '/account/rewards',
+    },
+  });
 }
 
 export function isAppStoreUuid(value: string): boolean {

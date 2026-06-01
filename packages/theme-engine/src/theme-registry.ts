@@ -241,6 +241,59 @@ const newsletter: SectionSchema = {
     },
 }
 
+const appBlockSlot: SectionSchema = {
+    name: 'App Block Slot',
+    type: 'appBlockSlot',
+    description: 'A storefront slot where installed app extensions can render portable app blocks',
+    defaults: {
+        slot: 'storefront.home.after-hero',
+        title: '',
+        layout: 'grid',
+    },
+    presets: [
+        { name: 'After Hero Slot', settings: { slot: 'storefront.home.after-hero', title: 'Store apps', layout: 'grid' } },
+        { name: 'Before Footer Slot', settings: { slot: 'storefront.home.before-footer', title: '', layout: 'stack' } },
+    ],
+    settings_schema: {
+        slot: { type: 'text', label: 'App Slot', default: 'storefront.home.after-hero', maxLength: 160 },
+        title: { type: 'text', label: 'Section Title', maxLength: 80 },
+        layout: { type: 'select', label: 'Layout', default: 'grid', options: ['grid', 'stack'] },
+    },
+    sample_blocks: [
+        {
+            type: 'app-block',
+            settings: {
+                app_id: 'letbuyy-loyalty',
+                extension_id: 'loyalty-rewards-card',
+                slot: 'storefront.home.after-hero',
+                title: 'Loyalty Rewards',
+                heading: 'Earn 2x rewards on this store',
+                body: 'Installed app blocks can render inside this theme slot.',
+                cta_label: 'View rewards',
+                cta_href: '/account/rewards',
+                render_mode: 'inline',
+            },
+        },
+    ],
+    blocks_schema: {
+        'app-block': {
+            name: 'App Block',
+            fields: {
+                app_id: { type: 'text', label: 'App ID', maxLength: 120 },
+                extension_id: { type: 'text', label: 'Extension ID', maxLength: 120 },
+                slot: { type: 'text', label: 'Slot', maxLength: 160 },
+                title: { type: 'text', label: 'Title', maxLength: 120 },
+                heading: { type: 'text', label: 'Heading', maxLength: 120 },
+                body: { type: 'textarea', label: 'Body', maxLength: 500 },
+                cta_label: { type: 'text', label: 'CTA Label', maxLength: 80 },
+                cta_href: { type: 'url', label: 'CTA Link' },
+                render_mode: { type: 'select', label: 'Render Mode', default: 'inline', options: ['inline', 'iframe'] },
+                iframe_url: { type: 'url', label: 'Iframe URL' },
+            },
+        },
+    },
+}
+
 const header: SectionSchema = {
     name: 'Header',
     type: 'header',
@@ -308,6 +361,7 @@ export const SECTION_SCHEMAS: Record<string, SectionSchema> = {
     testimonials,
     trustBadges,
     newsletter,
+    appBlockSlot,
     header,
     footer,
 }

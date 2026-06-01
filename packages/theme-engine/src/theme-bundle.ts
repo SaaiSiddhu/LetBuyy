@@ -125,6 +125,7 @@ export const ThemeBundleSectionDefinitionSchema = z.object({
   settings_schema: z.record(z.string(), ThemeBundleSettingFieldSchema).default({}),
   defaults: ThemeBundleJsonObjectSchema.default({}),
   block_types: z.array(z.string().min(1).max(120)).max(100).default([]),
+  accepts_app_blocks: z.boolean().default(false),
   presets: z.array(z.object({
     name: z.string().min(1).max(120),
     settings: ThemeBundleJsonObjectSchema.default({}),
