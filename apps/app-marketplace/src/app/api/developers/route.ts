@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
+import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
 
 /**
  * GET /api/developers — Get developer profile for current user
@@ -8,17 +8,12 @@ import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
  */
 export async function GET() {
     try {
-        const response = await appStoreWorkerFetch('/app-store/developers/me', {
-            method: 'GET',
-            requireSession: true,
-        });
-        return proxyWorkerJson(response);
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.developer();
+        return NextResponse.json({ data });
     } catch (error) {
         console.error('[API /developers GET] Error:', error);
-        return NextResponse.json(
-            { error: 'Failed to fetch developer profile' },
-            { status: 500 }
-        );
+        return appMarketplaceErrorResponse(error, 'Failed to fetch developer profile');
     }
 }
 
@@ -34,18 +29,15 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const response = await appStoreWorkerFetch('/app-store/developers/register', {
-            method: 'POST',
-            requireSession: true,
-            body: JSON.stringify({
-                company_name,
-                website_url: website,
-                support_email: contact_email,
-                description: bio,
-            }),
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.registerDeveloper({
+            company_name,
+            website_url: website,
+            support_email: contact_email,
+            description: bio,
         });
 
-        return proxyWorkerJson(response);
+        return NextResponse.json({ data }, { status: 201 });
     } catch {
         return NextResponse.json(
             { error: 'Invalid request body' },

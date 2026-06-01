@@ -7,7 +7,6 @@ import { AppService } from '@/lib/app-service';
 import Link from 'next/link';
 
 export default async function MarketplacePage() {
-    // Fetch all sections in parallel from Supabase
     const [staffPicks, trending, recent] = await Promise.all([
         AppService.listApps({ sort: 'rating', limit: 4 }),
         AppService.listApps({ sort: 'popular', limit: 4 }),
@@ -22,7 +21,7 @@ export default async function MarketplacePage() {
             <Header />
             <main className="appstore-main">
                 {/* Hero — Featured App */}
-                {featured && <HeroSection app={featured as any} />}
+                {featured && <HeroSection app={featured} />}
 
                 {/* Staff Picks */}
                 <section className="appstore-section" style={{ animationDelay: '0.1s' }}>
@@ -33,7 +32,7 @@ export default async function MarketplacePage() {
                         </Link>
                     </div>
                     <div className="app-card-grid">
-                        {staffPickApps.map((app: any) => (
+                        {staffPickApps.map((app) => (
                             <AppCard key={app.id} app={app} />
                         ))}
                     </div>
@@ -48,7 +47,7 @@ export default async function MarketplacePage() {
                         </Link>
                     </div>
                     <div className="app-card-grid">
-                        {trending.apps.map((app: any) => (
+                        {trending.apps.map((app) => (
                             <AppCard key={app.id} app={app} />
                         ))}
                     </div>
@@ -74,7 +73,7 @@ export default async function MarketplacePage() {
                         </Link>
                     </div>
                     <div className="app-card-grid">
-                        {recent.apps.map((app: any) => (
+                        {recent.apps.map((app) => (
                             <AppCard key={app.id} app={app} />
                         ))}
                     </div>

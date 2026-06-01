@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
+import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
 
 /**
  * POST /api/developers/register — Register as an app developer
@@ -16,16 +16,17 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const response = await appStoreWorkerFetch('/app-store/developers/register', {
-        method: 'POST',
-        requireSession: true,
-        body: JSON.stringify({
+    try {
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.registerDeveloper({
             company_name,
             website_url: website_url || null,
             support_email,
             description: description || null,
             country: country || 'IN',
-        }),
-    });
-    return proxyWorkerJson(response);
+        });
+        return NextResponse.json({ data }, { status: 201 });
+    } catch (error) {
+        return appMarketplaceErrorResponse(error, 'Developer registration failed');
+    }
 }

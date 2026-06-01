@@ -6,7 +6,8 @@ import { AppService } from '@/lib/app-service';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Download, Shield, Globe, Calendar, Star } from 'lucide-react';
+import { Download, Shield, Star } from 'lucide-react';
+import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 interface AppDetailPageProps {
     params: Promise<{ slug: string }>;
@@ -22,7 +23,12 @@ export async function generateMetadata({ params }: AppDetailPageProps) {
     };
 }
 
-function formatPrice(model: string, priceUsd?: number, priceInr?: number): { main: string; sub: string } {
+function getRating(app: MarketplaceApp): number {
+    const rating = Number(app.rating_avg ?? app.avg_rating ?? 0);
+    return Number.isFinite(rating) ? rating : 0;
+}
+
+function formatPrice(model: string | null | undefined, priceInr?: number | null): { main: string; sub: string } {
     if (model === 'free') return { main: 'Free', sub: 'No charges' };
     if (model === 'freemium') return { main: 'Free', sub: 'Paid features available' };
     if (model === 'usage_based') return { main: 'Usage-based', sub: 'Pay as you grow' };
@@ -33,14 +39,16 @@ function formatPrice(model: string, priceUsd?: number, priceInr?: number): { mai
 
 export default async function AppDetailPage({ params }: AppDetailPageProps) {
     const { slug } = await params;
-    const app = await AppService.getAppBySlug(slug) as any;
+    const app = await AppService.getAppBySlug(slug);
     if (!app) notFound();
 
     const { reviews } = await AppService.getAppReviews(app.id, 10);
     const category = APP_CATEGORIES.find(c => c.slug === app.app_categories?.slug) || app.app_categories;
-    const price = formatPrice(app.pricing_model, app.price_usd, app.price_inr);
+    const price = formatPrice(app.pricing_model, app.price_inr ?? app.price_monthly);
     const { apps: relatedApps } = await AppService.listApps({ category: app.app_categories?.slug, limit: 3 });
-    const filteredRelated = relatedApps.filter((a: any) => a.id !== app.id).slice(0, 3);
+    const filteredRelated = relatedApps.filter((a) => a.id !== app.id).slice(0, 3);
+    const screenshots = app.screenshots && app.screenshots.length > 0 ? app.screenshots : [null, null, null];
+    const apiScopes = app.api_scopes || [];
 
     return (
         <>
@@ -86,12 +94,12 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                 <div className="app-detail-meta">
                                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                         <Star size={14} fill="#F59E0B" stroke="#F59E0B" />
-                                        {Number(app.rating_avg).toFixed(1)} ({Number(app.review_count).toLocaleString()} reviews)
+                                        {getRating(app).toFixed(1)} ({Number(app.review_count ?? 0).toLocaleString()} reviews)
                                     </span>
                                     <span>•</span>
                                     <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                                         <Download size={14} />
-                                        {Number(app.install_count).toLocaleString()} installs
+                                        {Number(app.install_count ?? 0).toLocaleString()} installs
                                     </span>
                                 </div>
                             </div>
@@ -99,7 +107,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
 
                         {/* Screenshots */}
                         <div className="app-screenshots">
-                            {(app.screenshots?.length > 0 ? app.screenshots : [1, 2, 3]).map((item: any, i: number) => (
+                            {screenshots.map((item, i) => (
                                 <div key={i} className="app-screenshot">
                                     {typeof item === 'string' ? (
                                         <img src={item} alt={`Screenshot ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -120,7 +128,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                         {/* Description */}
                         <div className="app-description">
                             <h2 style={{ fontSize: 18, fontWeight: 700, marginBottom: 12, marginTop: 0 }}>About this app</h2>
-                            {(app.description || '').split('\n').map((line: string, i: number) => {
+                            {(app.description || '').split('\n').map((line, i) => {
                                 if (line.startsWith('## ')) return <h2 key={i}>{line.slice(3)}</h2>;
                                 if (line.startsWith('### ')) return <h3 key={i}>{line.slice(4)}</h3>;
                                 if (line.startsWith('- ')) return <li key={i}>{line.slice(2)}</li>;
@@ -136,7 +144,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                             </h2>
 
                             {reviews.length > 0 ? (
-                                reviews.map((review: any) => (
+                                reviews.map((review) => (
                                     <div key={review.id} className="review-card">
                                         <div className="review-header">
                                             <div className="review-avatar">
@@ -147,7 +155,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                                 <StarRating rating={review.rating} size={12} showValue={false} />
                                             </div>
                                             <span className="review-date">
-                                                {new Date(review.created_at).toLocaleDateString('en-IN', {
+                                                {new Date(review.created_at || '1970-01-01T00:00:00.000Z').toLocaleDateString('en-IN', {
                                                     month: 'short', day: 'numeric', year: 'numeric'
                                                 })}
                                             </span>
@@ -186,12 +194,12 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                 </div>
                                 <div className="app-sidebar-info-row">
                                     <span className="app-sidebar-info-label">Version</span>
-                                    <span className="app-sidebar-info-value">{app.version || '1.0.0'}</span>
+                                <span className="app-sidebar-info-value">{app.current_version || '1.0.0'}</span>
                                 </div>
                                 <div className="app-sidebar-info-row">
                                     <span className="app-sidebar-info-label">Updated</span>
                                     <span className="app-sidebar-info-value">
-                                        {new Date(app.updated_at).toLocaleDateString('en-IN', {
+                                        {new Date(app.updated_at || app.created_at || '1970-01-01T00:00:00.000Z').toLocaleDateString('en-IN', {
                                             month: 'short', day: 'numeric', year: 'numeric'
                                         })}
                                     </span>
@@ -200,14 +208,14 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                         </div>
 
                         {/* Permissions */}
-                        {app.api_scopes?.length > 0 && (
+                        {apiScopes.length > 0 && (
                             <div className="app-sidebar-card">
                                 <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>
                                     <Shield size={14} style={{ display: 'inline', marginRight: 6 }} />
                                     Permissions
                                 </h3>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                                    {app.api_scopes.map((scope: string) => (
+                                    {apiScopes.map((scope) => (
                                         <span key={scope} style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
                                             • {scope.replace(/_/g, ' ')}
                                         </span>
@@ -236,7 +244,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                             <h2 className="appstore-section-title">You might also like</h2>
                         </div>
                         <div className="app-card-grid">
-                            {filteredRelated.map((a: any) => (
+                            {filteredRelated.map((a) => (
                                 <AppCard key={a.id} app={a} />
                             ))}
                         </div>

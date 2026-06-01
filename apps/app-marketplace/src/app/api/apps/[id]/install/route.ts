@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
+import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -14,25 +14,19 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     try {
         const body = await request.json().catch(() => ({}));
-        const response = await appStoreWorkerFetch(`/app-store/apps/${appId}/install`, {
-            method: 'POST',
-            requireSession: true,
-            body: JSON.stringify({
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.install(appId, {
                 store_id: typeof body.store_id === 'string' ? body.store_id : undefined,
                 scopes: Array.isArray(body.scopes) ? body.scopes : undefined,
                 config: body.config && typeof body.config === 'object' ? body.config : undefined,
                 webhook_url: typeof body.webhook_url === 'string' ? body.webhook_url : undefined,
                 webhook_event: typeof body.webhook_event === 'string' ? body.webhook_event : undefined,
                 webhook_secret: typeof body.webhook_secret === 'string' ? body.webhook_secret : undefined,
-            }),
         });
-        return proxyWorkerJson(response);
+        return NextResponse.json({ data }, { status: 201 });
     } catch (err) {
         console.error('[install] Unexpected error:', err);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return appMarketplaceErrorResponse(err, 'Internal server error');
     }
 }
 
@@ -44,17 +38,11 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     try {
         const storeId = request.nextUrl.searchParams.get('store_id');
-        const suffix = storeId ? `?store_id=${encodeURIComponent(storeId)}` : '';
-        const response = await appStoreWorkerFetch(`/app-store/apps/${appId}/install${suffix}`, {
-            method: 'DELETE',
-            requireSession: true,
-        });
-        return proxyWorkerJson(response);
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.uninstall(appId, storeId ? { store_id: storeId } : undefined);
+        return NextResponse.json({ data });
     } catch (err) {
         console.error('[uninstall] Unexpected error:', err);
-        return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
-        );
+        return appMarketplaceErrorResponse(err, 'Internal server error');
     }
 }

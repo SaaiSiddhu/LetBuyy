@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AppService } from '@/lib/app-service';
-import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
+import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -34,22 +34,22 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             );
         }
 
-        const response = await appStoreWorkerFetch(`/app-store/apps/${id}/reviews`, {
-            method: 'POST',
-            requireSession: true,
-            body: JSON.stringify({
-                rating,
-                title: title || null,
-                body: reviewBody || '',
-                store_id,
-            }),
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.submitReview(id, {
+            rating,
+            title: title || null,
+            body: reviewBody || '',
+            store_id,
         });
 
-        return proxyWorkerJson(response);
-    } catch {
-        return NextResponse.json(
-            { error: 'Invalid request body' },
-            { status: 400 }
-        );
+        return NextResponse.json({ data }, { status: 201 });
+    } catch (error) {
+        if (error instanceof SyntaxError) {
+            return NextResponse.json(
+                { error: 'Invalid request body' },
+                { status: 400 }
+            );
+        }
+        return appMarketplaceErrorResponse(error, 'Invalid request body');
     }
 }

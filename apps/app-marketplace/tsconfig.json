@@ -23,6 +23,12 @@
       }
     ],
     "paths": {
+      "@letbuyy/api-client": [
+        "../../packages/typescript/api-client/src/index.ts"
+      ],
+      "@letbuyy/shared-types": [
+        "../../packages/shared-types/src/index.ts"
+      ],
       "@/*": [
         "./src/*"
       ]

@@ -72,7 +72,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                     </p>
 
                     <div className="app-card-grid">
-                        {displayApps.map((app: any) => (
+                        {displayApps.map((app) => (
                             <AppCard key={app.id} app={app} />
                         ))}
                     </div>

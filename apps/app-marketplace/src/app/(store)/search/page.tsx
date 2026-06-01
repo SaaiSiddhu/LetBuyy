@@ -7,6 +7,12 @@ import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import { Search } from 'lucide-react';
+import type { MarketplaceApp } from '@letbuyy/shared-types';
+
+function getRating(app: MarketplaceApp): number {
+    const rating = Number(app.rating_avg ?? app.avg_rating ?? 0);
+    return Number.isFinite(rating) ? rating : 0;
+}
 
 function SearchContent() {
     const searchParams = useSearchParams();
@@ -14,7 +20,7 @@ function SearchContent() {
     const [query, setQuery] = useState(initialQuery);
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [sortBy, setSortBy] = useState('popular');
-    const [results, setResults] = useState<any[]>([]);
+    const [results, setResults] = useState<MarketplaceApp[]>([]);
     const [loading, setLoading] = useState(true);
 
     const fetchApps = useCallback(async () => {
@@ -28,19 +34,19 @@ function SearchContent() {
 
             const endpoint = query ? `/api/apps/search?q=${encodeURIComponent(query)}&${params}` : `/api/apps?${params}`;
             const res = await fetch(endpoint);
-            const data = await res.json();
+            const data = await res.json() as { apps?: MarketplaceApp[]; results?: MarketplaceApp[] };
 
             let apps = data.apps || data.results || [];
 
             // Client-side sort (in case API doesn't fully sort)
-            if (sortBy === 'rating') apps = [...apps].sort((a: any, b: any) => (b.rating_avg || b.avg_rating || 0) - (a.rating_avg || a.avg_rating || 0));
-            if (sortBy === 'recent') apps = [...apps].sort((a: any, b: any) =>
-                new Date(b.published_at || b.created_at).getTime() - new Date(a.published_at || a.created_at).getTime()
+            if (sortBy === 'rating') apps = [...apps].sort((a, b) => getRating(b) - getRating(a));
+            if (sortBy === 'recent') apps = [...apps].sort((a, b) =>
+                new Date(b.published_at || b.created_at || 0).getTime() - new Date(a.published_at || a.created_at || 0).getTime()
             );
-            if (sortBy === 'popular') apps = [...apps].sort((a: any, b: any) => (b.install_count || 0) - (a.install_count || 0));
+            if (sortBy === 'popular') apps = [...apps].sort((a, b) => (b.install_count || 0) - (a.install_count || 0));
 
             if (selectedCategory) {
-                apps = apps.filter((a: any) => a.category_id === selectedCategory || a.app_categories?.slug === selectedCategory);
+                apps = apps.filter((a) => a.category_id === selectedCategory || a.app_categories?.slug === selectedCategory);
             }
 
             setResults(apps);
@@ -143,7 +149,7 @@ function SearchContent() {
                             </div>
                         ) : (
                             <div className="app-card-grid">
-                                {results.map((app: any) => (
+                                {results.map((app) => (
                                     <AppCard key={app.id} app={app} />
                                 ))}
                             </div>

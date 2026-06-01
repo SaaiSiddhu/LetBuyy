@@ -1,12 +1,19 @@
 import Link from 'next/link';
 import { Star, Download } from 'lucide-react';
-import type { LBApp } from '@/lib/types/apps';
+import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 interface HeroSectionProps {
-    app: LBApp;
+    app: MarketplaceApp;
+}
+
+function getRating(app: MarketplaceApp): number {
+    const rating = Number(app.rating_avg ?? app.avg_rating ?? 0);
+    return Number.isFinite(rating) ? rating : 0;
 }
 
 export function HeroSection({ app }: HeroSectionProps) {
+    const price = Number(app.price_monthly ?? app.price_inr ?? 0);
+
     return (
         <div className="hero-section">
             <div className="hero-content">
@@ -38,18 +45,18 @@ export function HeroSection({ app }: HeroSectionProps) {
                     <div className="hero-meta">
                         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <Star size={14} fill="white" stroke="white" />
-                            {app.avg_rating.toFixed(1)} ({app.review_count.toLocaleString()} reviews)
+                            {getRating(app).toFixed(1)} ({Number(app.review_count ?? 0).toLocaleString()} reviews)
                         </span>
                         <span className="hero-meta-divider" />
                         <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                             <Download size={14} />
-                            {app.install_count.toLocaleString()} installs
+                            {Number(app.install_count ?? 0).toLocaleString()} installs
                         </span>
                         <span className="hero-meta-divider" />
                         <span>
                             {app.pricing_model === 'free' ? 'Free' :
                                 app.pricing_model === 'freemium' ? 'Free plan available' :
-                                    `₹${app.price_monthly?.toLocaleString('en-IN')}/mo`}
+                                    `₹${price.toLocaleString('en-IN')}/mo`}
                         </span>
                     </div>
 

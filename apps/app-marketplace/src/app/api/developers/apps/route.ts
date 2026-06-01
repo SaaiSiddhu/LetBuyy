@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { appStoreWorkerFetch, proxyWorkerJson } from '@/lib/api/worker-client';
+import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
 
 /**
  * POST /api/developers/apps — Submit a new app for review
@@ -16,10 +16,9 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const response = await appStoreWorkerFetch('/app-store/developers/apps', {
-        method: 'POST',
-        requireSession: true,
-        body: JSON.stringify({
+    try {
+        const api = await createAppMarketplaceApiClient({ requireSession: true });
+        const data = await api.appStore.submitDeveloperApp({
             name,
             slug: slug || name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''),
             tagline,
@@ -30,7 +29,9 @@ export async function POST(request: NextRequest) {
             pricing_model: pricing_model || 'free',
             price_monthly,
             save_as_draft,
-        }),
-    });
-    return proxyWorkerJson(response);
+        });
+        return NextResponse.json({ data }, { status: 201 });
+    } catch (error) {
+        return appMarketplaceErrorResponse(error, 'App submission failed');
+    }
 }

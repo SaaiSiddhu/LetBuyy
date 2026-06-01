@@ -1,17 +1,23 @@
 import Link from 'next/link';
 import { Star } from 'lucide-react';
-import type { LBApp } from '@/lib/types/apps';
+import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 interface AppCardProps {
-    app: LBApp;
+    app: MarketplaceApp;
 }
 
-function formatPrice(app: LBApp): string {
+function getRating(app: MarketplaceApp): number {
+    const rating = Number(app.rating_avg ?? app.avg_rating ?? 0);
+    return Number.isFinite(rating) ? rating : 0;
+}
+
+function formatPrice(app: MarketplaceApp): string {
     if (app.pricing_model === 'free') return 'Free';
     if (app.pricing_model === 'freemium') return 'Free plan available';
     if (app.pricing_model === 'usage_based') return 'Usage-based';
-    if (app.pricing_model === 'one_time' && app.price_monthly) return `₹${app.price_monthly.toLocaleString('en-IN')}`;
-    if (app.pricing_model === 'recurring' && app.price_monthly) return `₹${app.price_monthly.toLocaleString('en-IN')}/mo`;
+    const price = Number(app.price_monthly ?? app.price_inr ?? 0);
+    if (app.pricing_model === 'one_time' && price > 0) return `₹${price.toLocaleString('en-IN')}`;
+    if (app.pricing_model === 'recurring' && price > 0) return `₹${price.toLocaleString('en-IN')}/mo`;
     return 'Free';
 }
 
@@ -69,16 +75,16 @@ export function AppCard({ app }: AppCardProps) {
                 <div className="app-card__meta">
                     <div className="app-card__rating">
                         <Star size={13} fill="#F59E0B" stroke="#F59E0B" />
-                        <span>{app.avg_rating.toFixed(1)}</span>
+                        <span>{getRating(app).toFixed(1)}</span>
                         <span className="app-card__review-count">
-                            ({app.review_count.toLocaleString()})
+                            ({Number(app.review_count ?? 0).toLocaleString()})
                         </span>
                     </div>
 
                     <span className="app-card__pricing">{formatPrice(app)}</span>
                 </div>
 
-                <p className="app-card__developer">{app.developer_name}</p>
+                <p className="app-card__developer">{app.developer_name || app.app_developers?.company_name || 'LetBuyy Partner'}</p>
             </div>
         </Link>
     );

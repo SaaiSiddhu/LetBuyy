@@ -65,7 +65,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     </div>
 
                     <div className="app-card-grid">
-                        {displayApps.map((app: any) => (
+                        {displayApps.map((app) => (
                             <AppCard key={app.id} app={app} />
                         ))}
                     </div>

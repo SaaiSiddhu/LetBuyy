@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
-import { appStoreWorkerFetch } from '@/lib/api/worker-client';
+import { LetbuyyApiError } from '@letbuyy/api-client';
+import { createAppMarketplaceApiClient } from '@/lib/api/client';
 import { Settings, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,33 +10,18 @@ export const metadata = {
     description: 'Manage your installed apps.',
 };
 
-interface InstalledApp {
-    id: string;
-    name?: string | null;
-    slug?: string | null;
-    icon_url?: string | null;
-    tagline?: string | null;
-    status?: string | null;
-    marketplace_apps?: {
-        id: string;
-        name?: string | null;
-        slug?: string | null;
-        icon_url?: string | null;
-        tagline?: string | null;
-    } | null;
-}
-
 export default async function MyAppsPage() {
-    const response = await appStoreWorkerFetch('/app-store/installations', {
-        method: 'GET',
-        requireSession: true,
-    });
+    const result = await createAppMarketplaceApiClient({ requireSession: true })
+        .then((api) => api.appStore.installations())
+        .then((installations) => ({ isAuthenticated: true, installedApps: installations }))
+        .catch((error) => {
+            if (error instanceof LetbuyyApiError && error.status === 401) {
+                return { isAuthenticated: false, installedApps: [] };
+            }
+            return { isAuthenticated: true, installedApps: [] };
+        });
 
-    const isAuthenticated = response.status !== 401;
-    const payload = response.ok
-        ? await response.json() as { data?: InstalledApp[] }
-        : null;
-    const installedApps = payload?.data || [];
+    const { isAuthenticated, installedApps } = result;
 
     return (
         <>
@@ -56,12 +42,13 @@ export default async function MyAppsPage() {
                     ) : installedApps.length > 0 ? (
                         <div className="my-apps-grid">
                             {installedApps.map((installation) => {
-                                const app = installation.marketplace_apps || installation;
+                                const app = installation.marketplace_apps;
+                                const appName = app?.name || 'Installed app';
                                 return (
-                                    <div key={installation.id || app.id} className="installed-app-card">
+                                    <div key={installation.id} className="installed-app-card">
                                         <div className="installed-app-icon">
-                                            {app.icon_url ? (
-                                                <img src={app.icon_url} alt={app.name || 'Installed app'} style={{
+                                            {app?.icon_url ? (
+                                                <img src={app.icon_url} alt={appName} style={{
                                                     width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover'
                                                 }} />
                                             ) : (
@@ -71,12 +58,12 @@ export default async function MyAppsPage() {
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
                                                     color: 'white', fontSize: 20, fontWeight: 800, borderRadius: 12,
                                                 }}>
-                                                    {(app.name || 'A').charAt(0)}
+                                                    {appName.charAt(0)}
                                                 </div>
                                             )}
                                         </div>
                                         <div className="installed-app-info">
-                                            <div className="installed-app-name">{app.name}</div>
+                                            <div className="installed-app-name">{appName}</div>
                                             <div className="installed-app-status">
                                                 {installation.status === 'active' ? '● Active' : `○ ${installation.status || 'Active'}`}
                                             </div>

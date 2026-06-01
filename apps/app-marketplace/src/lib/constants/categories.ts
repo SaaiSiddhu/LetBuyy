@@ -1,8 +1,8 @@
 // App categories from Doc 15 §4
 
-import { AppCategory } from '@/lib/types/apps';
+import type { MarketplaceAppCategory } from '@letbuyy/shared-types';
 
-export const APP_CATEGORIES: AppCategory[] = [
+export const APP_CATEGORIES: MarketplaceAppCategory[] = [
     // ── Finding Products ──
     { slug: 'sourcing', name: 'Product Sourcing', icon: '📦', group: 'Products' },
     { slug: 'dropshipping', name: 'Dropshipping', icon: '🚛', group: 'Products' },

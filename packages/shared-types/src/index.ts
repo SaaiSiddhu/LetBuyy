@@ -1263,6 +1263,33 @@ export const ThemeRollbackResultSchema = z.object({
 });
 
 export const AppInstallationStatusSchema = z.enum(['active', 'paused', 'uninstalled']);
+export const MarketplaceAppTypeSchema = z.enum(['public', 'unlisted', 'custom', 'draft']);
+export const MarketplaceAppStatusSchema = z.enum([
+  'draft',
+  'submitted',
+  'in_review',
+  'changes_needed',
+  'approved',
+  'published',
+  'suspended',
+  'removed',
+  'rejected',
+]);
+export const MarketplaceAppPricingModelSchema = z.enum([
+  'free',
+  'freemium',
+  'recurring',
+  'one_time',
+  'usage_based',
+]);
+export const MarketplaceAppExtensionTypeSchema = z.enum([
+  'storefront_block',
+  'storefront_embed',
+  'checkout_ui',
+  'post_purchase',
+  'admin_link',
+  'admin_block',
+]);
 
 export const AppBridgeCapabilitySchema = z.enum([
   'api.fetch',
@@ -1270,6 +1297,102 @@ export const AppBridgeCapabilitySchema = z.enum([
   'resize',
   'navigation.redirect',
 ]);
+
+export const MarketplaceAppCategorySchema = z.object({
+  slug: z.string().min(1).max(120),
+  name: z.string().min(1).max(160),
+  icon: z.string().min(1).max(80).optional().nullable(),
+  group: z.string().min(1).max(120).optional().nullable(),
+  count: z.number().int().nonnegative().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppDeveloperSchema = z.object({
+  id: z.string().min(1).optional().nullable(),
+  company_name: z.string().min(1).max(200).optional().nullable(),
+  slug: z.string().min(1).max(160).optional().nullable(),
+  logo_url: UrlSchema.optional().nullable(),
+  website_url: UrlSchema.optional().nullable(),
+  support_email: EmailSchema.optional().nullable(),
+  verified: z.boolean().optional().nullable(),
+  status: z.string().min(1).max(80).optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppExtensionSchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1).optional().nullable(),
+  type: MarketplaceAppExtensionTypeSchema.or(z.string().min(1)),
+  name: z.string().min(1).max(160).optional().nullable(),
+  entry_point: z.string().max(2000).optional().nullable(),
+  target: z.string().max(200).optional().nullable(),
+  label: z.string().max(120).optional().nullable(),
+  config: MetadataSchema.default({}),
+  status: z.string().min(1).max(80).optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppSchema = z.object({
+  id: z.string().min(1),
+  slug: z.string().min(1).max(160),
+  name: z.string().min(1).max(200),
+  tagline: z.string().max(300).optional().nullable(),
+  description: z.string().optional().nullable(),
+  type: MarketplaceAppTypeSchema.or(z.string().min(1)).optional().nullable(),
+  status: MarketplaceAppStatusSchema.or(z.string().min(1)).optional().nullable(),
+  developer_id: z.string().min(1).optional().nullable(),
+  developer_name: z.string().max(200).optional().nullable(),
+  developer_email: EmailSchema.optional().nullable(),
+  client_id: z.string().max(200).optional().nullable(),
+  redirect_uris: z.array(z.string().min(1)).optional().nullable(),
+  scopes: z.array(z.string().min(1)).optional().nullable(),
+  api_scopes: z.array(z.string().min(1)).optional().nullable(),
+  app_url: UrlSchema.optional().nullable(),
+  proxy_url: UrlSchema.optional().nullable(),
+  proxy_path: z.string().max(500).optional().nullable(),
+  privacy_url: UrlSchema.optional().nullable(),
+  privacy_policy_url: UrlSchema.optional().nullable(),
+  terms_url: UrlSchema.optional().nullable(),
+  icon_url: UrlSchema.optional().nullable(),
+  screenshots: z.array(UrlSchema).optional().nullable(),
+  video_url: UrlSchema.optional().nullable(),
+  pricing_model: MarketplaceAppPricingModelSchema.or(z.string().min(1)).optional().nullable(),
+  price_monthly: z.number().nonnegative().optional().nullable(),
+  price_yearly: z.number().nonnegative().optional().nullable(),
+  price_inr: z.number().nonnegative().optional().nullable(),
+  trial_days: z.number().int().nonnegative().optional().nullable(),
+  category_id: z.string().min(1).optional().nullable(),
+  tags: z.array(z.string().min(1)).optional().nullable(),
+  collection_ids: z.array(z.string().min(1)).optional().nullable(),
+  install_count: z.number().int().nonnegative().optional().nullable(),
+  review_count: z.number().int().nonnegative().optional().nullable(),
+  avg_rating: z.number().nonnegative().optional().nullable(),
+  rating_avg: z.number().or(z.string()).optional().nullable(),
+  extensions: z.array(MarketplaceAppExtensionSchema).optional().nullable(),
+  app_extensions: z.array(MarketplaceAppExtensionSchema).optional().nullable(),
+  app_developers: MarketplaceAppDeveloperSchema.optional().nullable(),
+  app_categories: MarketplaceAppCategorySchema.optional().nullable(),
+  current_version: z.string().max(80).optional().nullable(),
+  min_plan: z.string().max(80).optional().nullable(),
+  supported_locales: z.array(z.string().min(2)).optional().nullable(),
+  is_featured: z.boolean().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+  published_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceAppReviewSchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1),
+  user_id: z.string().min(1).optional().nullable(),
+  user_name: z.string().max(200).optional().nullable(),
+  store_name: z.string().max(200).optional().nullable(),
+  rating: z.number().int().min(1).max(5),
+  title: z.string().max(200).optional().nullable(),
+  body: z.string().optional().nullable(),
+  helpful_count: z.number().int().nonnegative().optional().nullable(),
+  is_verified: z.boolean().optional().nullable(),
+  status: z.string().max(80).optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
 
 export const InstalledMarketplaceAppSchema = z.object({
   id: z.string().min(1),
@@ -1424,6 +1547,15 @@ export type ThemePreviewSessionResult = z.infer<typeof ThemePreviewSessionResult
 export type ThemeRelease = z.infer<typeof ThemeReleaseSchema>;
 export type ThemeRollbackResult = z.infer<typeof ThemeRollbackResultSchema>;
 export type AppInstallationStatus = z.infer<typeof AppInstallationStatusSchema>;
+export type MarketplaceAppType = z.infer<typeof MarketplaceAppTypeSchema>;
+export type MarketplaceAppStatus = z.infer<typeof MarketplaceAppStatusSchema>;
+export type MarketplaceAppPricingModel = z.infer<typeof MarketplaceAppPricingModelSchema>;
+export type MarketplaceAppExtensionType = z.infer<typeof MarketplaceAppExtensionTypeSchema>;
+export type MarketplaceAppCategory = z.infer<typeof MarketplaceAppCategorySchema>;
+export type MarketplaceAppDeveloper = z.infer<typeof MarketplaceAppDeveloperSchema>;
+export type MarketplaceAppExtension = z.infer<typeof MarketplaceAppExtensionSchema>;
+export type MarketplaceApp = z.infer<typeof MarketplaceAppSchema>;
+export type MarketplaceAppReview = z.infer<typeof MarketplaceAppReviewSchema>;
 export type AppBridgeCapability = z.infer<typeof AppBridgeCapabilitySchema>;
 export type InstalledMarketplaceApp = z.infer<typeof InstalledMarketplaceAppSchema>;
 export type InstalledApp = z.infer<typeof InstalledAppSchema>;

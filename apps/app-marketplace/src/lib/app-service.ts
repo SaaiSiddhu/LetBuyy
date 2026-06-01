@@ -1,4 +1,7 @@
-import { appStoreWorkerFetch } from '@/lib/api/worker-client';
+import 'server-only';
+
+import { createAppMarketplaceApiClient } from '@/lib/api/client';
+import type { MarketplaceApp, MarketplaceAppCategory, MarketplaceAppReview } from '@letbuyy/shared-types';
 
 export interface AppFilters {
     category?: string;
@@ -10,32 +13,18 @@ export interface AppFilters {
 }
 
 export interface AppSearchResult {
-    apps: Record<string, unknown>[];
+    apps: MarketplaceApp[];
     total: number;
     limit: number;
     offset: number;
 }
 
-interface WorkerEnvelope<T> {
-    success?: boolean;
-    data?: T;
-    meta?: {
-        page?: number;
-        per_page?: number;
-        total?: number;
-    };
-}
-
-async function safeAppStoreFetch(path: string, init?: Parameters<typeof appStoreWorkerFetch>[1]): Promise<Response | null> {
+async function getAppStoreApi(requireSession = false) {
     try {
-        return await appStoreWorkerFetch(path, init);
+        return await createAppMarketplaceApiClient({ requireSession });
     } catch {
         return null;
     }
-}
-
-async function readWorkerEnvelope<T>(response: Response): Promise<WorkerEnvelope<T> | null> {
-    return response.json().catch(() => null) as Promise<WorkerEnvelope<T> | null>;
 }
 
 function appendIfPresent(params: URLSearchParams, key: string, value: string | number | undefined) {
@@ -49,6 +38,9 @@ export const AppService = {
         const limit = filters.limit ?? 20;
         const offset = filters.offset ?? 0;
         const page = Math.floor(offset / limit) + 1;
+        const api = await getAppStoreApi();
+        if (!api) return { apps: [], total: 0, limit, offset };
+
         const params = new URLSearchParams({
             page: String(page),
             limit: String(limit),
@@ -59,20 +51,21 @@ export const AppService = {
         appendIfPresent(params, 'pricing', filters.pricingModel);
         appendIfPresent(params, 'site_type', filters.siteType);
 
-        const response = await safeAppStoreFetch(`/app-store/apps?${params.toString()}`);
-        if (!response?.ok) return { apps: [], total: 0, limit, offset };
-
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
+        const catalog = await api.appStore.apps(Object.fromEntries(params.entries())).catch(() => null);
+        if (!catalog) return { apps: [], total: 0, limit, offset };
 
         return {
-            apps: payload?.data || [],
-            total: payload?.meta?.total || 0,
-            limit: payload?.meta?.per_page || limit,
+            apps: catalog.data,
+            total: catalog.total,
+            limit: catalog.limit,
             offset,
         };
     },
 
     async searchApps(query: string, category?: string, limit = 20): Promise<AppSearchResult> {
+        const api = await getAppStoreApi();
+        if (!api) return { apps: [], total: 0, limit, offset: 0 };
+
         const params = new URLSearchParams({
             search: query,
             limit: String(limit),
@@ -80,45 +73,37 @@ export const AppService = {
         });
         appendIfPresent(params, 'category', category);
 
-        const response = await safeAppStoreFetch(`/app-store/apps?${params.toString()}`);
-        if (!response?.ok) return { apps: [], total: 0, limit, offset: 0 };
-
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
+        const catalog = await api.appStore.apps(Object.fromEntries(params.entries())).catch(() => null);
+        if (!catalog) return { apps: [], total: 0, limit, offset: 0 };
 
         return {
-            apps: payload?.data || [],
-            total: payload?.meta?.total || 0,
-            limit: payload?.meta?.per_page || limit,
+            apps: catalog.data,
+            total: catalog.total,
+            limit: catalog.limit,
             offset: 0,
         };
     },
 
-    async getAppBySlug(slug: string): Promise<Record<string, unknown> | null> {
-        const response = await safeAppStoreFetch(`/app-store/apps/${encodeURIComponent(slug)}`);
-        if (!response?.ok) return null;
+    async getAppBySlug(slug: string): Promise<MarketplaceApp | null> {
+        const api = await getAppStoreApi();
+        if (!api) return null;
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>>(response);
-        return payload?.data || null;
+        return api.appStore.app(slug).catch(() => null);
     },
 
-    async getAppReviews(appId: string, limit = 10, offset = 0) {
+    async getAppReviews(appId: string, limit = 10, offset = 0): Promise<{ reviews: MarketplaceAppReview[]; total: number }> {
+        const api = await getAppStoreApi();
+        if (!api) return { reviews: [], total: 0 };
+
         const page = Math.floor(offset / limit) + 1;
-        const params = new URLSearchParams({
-            page: String(page),
-            limit: String(limit),
-        });
-        const response = await safeAppStoreFetch(`/app-store/apps/${encodeURIComponent(appId)}/reviews?${params.toString()}`);
-        if (!response?.ok) return { reviews: [], total: 0 };
-
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
-        return { reviews: payload?.data || [], total: payload?.meta?.total || 0 };
+        const result = await api.appStore.reviews(appId, { page, limit }).catch(() => null);
+        return { reviews: result?.data || [], total: result?.total || 0 };
     },
 
-    async getCategories() {
-        const response = await safeAppStoreFetch('/app-store/categories');
-        if (!response?.ok) return [];
+    async getCategories(): Promise<MarketplaceAppCategory[]> {
+        const api = await getAppStoreApi();
+        if (!api) return [];
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
-        return payload?.data || [];
+        return api.appStore.categories().catch(() => []);
     },
 };

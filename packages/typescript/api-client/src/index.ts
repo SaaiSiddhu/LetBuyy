@@ -28,6 +28,10 @@ import type {
   LineItem,
   MediaAsset,
   MediaType,
+  MarketplaceApp,
+  MarketplaceAppCategory,
+  MarketplaceAppDeveloper,
+  MarketplaceAppReview,
   NavigationItem,
   NavigationResponse,
   Order,
@@ -140,6 +144,52 @@ export interface StoreScopedQuery extends ListQuery {
 }
 
 export interface AppInstallationListQuery extends Pick<StoreScopedQuery, 'store_id'> {}
+export interface AppStoreListQuery extends ListQuery {
+  category?: string;
+  pricing?: string;
+  site_type?: string;
+}
+export interface AppReviewListQuery extends ListQuery {}
+export interface SubmitAppReviewInput extends JsonRecord {
+  rating: number;
+  title?: string | null;
+  body?: string | null;
+  store_id?: string;
+}
+export interface AppInstallInput extends JsonRecord {
+  store_id?: string;
+  scopes?: string[];
+  config?: JsonRecord;
+  webhook_url?: string;
+  webhook_event?: string;
+  webhook_secret?: string;
+}
+export interface AppDeveloperRegistrationInput extends JsonRecord {
+  company_name: string;
+  website_url?: string | null;
+  support_email: string;
+  description?: string | null;
+  country?: string;
+}
+export interface AppSubmissionInput extends JsonRecord {
+  name: string;
+  slug: string;
+  tagline: string;
+  description: string;
+  category_id: string | null;
+  app_url: string;
+  privacy_policy_url: string;
+  pricing_model: string;
+  price_monthly?: number | string | null;
+  save_as_draft?: boolean;
+}
+export interface AppDeveloperProfileResult extends JsonRecord {
+  developer: MarketplaceAppDeveloper | null;
+}
+export interface AppDeveloperAppsResult extends JsonRecord {
+  developer: MarketplaceAppDeveloper;
+  apps: MarketplaceApp[];
+}
 
 export interface AnalyticsQuery extends StoreScopedQuery {
   period?: '7d' | '30d' | '90d' | '12m' | string;
@@ -741,6 +791,16 @@ export class LetbuyyApiClient {
   };
 
   readonly appStore = {
+    apps: (query?: AppStoreListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<MarketplaceApp>('/app-store/apps', { ...options, query }),
+    app: (id: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<MarketplaceApp>(`/app-store/apps/${encodePathSegment(id)}`, options),
+    reviews: (appId: string, query?: AppReviewListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<MarketplaceAppReview>(`/app-store/apps/${encodePathSegment(appId)}/reviews`, { ...options, query }),
+    submitReview: (appId: string, input: SubmitAppReviewInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<MarketplaceAppReview>(`/app-store/apps/${encodePathSegment(appId)}/reviews`, { ...options, method: 'POST', body: input }),
+    categories: (options?: LetbuyyRequestOptions) =>
+      this.requestData<MarketplaceAppCategory[]>('/app-store/categories', options),
     installations: (query?: AppInstallationListQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<InstalledApp[]>('/app-store/installations', { ...options, query }),
     embedSession: (installationId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
@@ -748,6 +808,18 @@ export class LetbuyyApiClient {
         `/app-store/installations/${encodePathSegment(installationId)}/embed-session`,
         { ...options, method: 'POST', query },
       ),
+    install: (appId: string, input: AppInstallInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord>(`/app-store/apps/${encodePathSegment(appId)}/install`, { ...options, method: 'POST', body: input }),
+    uninstall: (appId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ uninstalled: boolean }>(`/app-store/apps/${encodePathSegment(appId)}/install`, { ...options, method: 'DELETE', query }),
+    developer: (options?: LetbuyyRequestOptions) =>
+      this.requestData<AppDeveloperProfileResult>('/app-store/developers/me', options),
+    registerDeveloper: (input: AppDeveloperRegistrationInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppDeveloperProfileResult>('/app-store/developers/register', { ...options, method: 'POST', body: input }),
+    developerApps: (options?: LetbuyyRequestOptions) =>
+      this.requestData<AppDeveloperAppsResult>('/app-store/developers/apps', options),
+    submitDeveloperApp: (input: AppSubmissionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<{ app: JsonRecord }>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
   };
 
   readonly employees = {
@@ -1410,6 +1482,10 @@ export type {
   LineItem,
   MediaAsset,
   MediaType,
+  MarketplaceApp,
+  MarketplaceAppCategory,
+  MarketplaceAppDeveloper,
+  MarketplaceAppReview,
   NavigationItem,
   NavigationResponse,
   Order,

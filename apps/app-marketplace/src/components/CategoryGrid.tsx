@@ -2,9 +2,6 @@ import Link from 'next/link';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 
 export function CategoryGrid() {
-    // Group categories — show unique groups
-    const groups = Array.from(new Set(APP_CATEGORIES.map(c => c.group)));
-
     return (
         <div className="category-grid">
             {APP_CATEGORIES.map(cat => (
@@ -35,7 +32,7 @@ export function CategoryGroupGrid() {
         Finance: '🧾',
     };
 
-    const groups = Array.from(new Set(APP_CATEGORIES.map(c => c.group)));
+    const groups = Array.from(new Set(APP_CATEGORIES.map(c => c.group).filter((group): group is string => Boolean(group))));
 
     return (
         <div className="category-grid">

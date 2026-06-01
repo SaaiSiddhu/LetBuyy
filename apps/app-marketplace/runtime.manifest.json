@@ -32,8 +32,10 @@
   },
   "allowedDependencies": {
     "workspacePackages": [
+      "@letbuyy/api-client",
       "@letbuyy/api-types",
       "@letbuyy/auth-core",
+      "@letbuyy/shared-types",
       "@letbuyy/ui",
       "@letbuyy/utils"
     ],

@@ -36,12 +36,18 @@ importers:
 
   apps/app-marketplace:
     dependencies:
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
+      '@letbuyy/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       '@letbuyy/ui':
         specifier: workspace:*
         version: link:../../packages/typescript/ui
@@ -63,6 +69,9 @@ importers:
       react-dom:
         specifier: 19.2.3
         version: 19.2.3(react@19.2.3)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4

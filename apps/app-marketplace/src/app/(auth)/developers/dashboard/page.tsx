@@ -2,7 +2,9 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
 import { Plus, Download, Star, Eye, ExternalLink, Pencil, BarChart3 } from 'lucide-react';
-import { appStoreWorkerFetch } from '@/lib/api/worker-client';
+import { LetbuyyApiError } from '@letbuyy/api-client';
+import { createAppMarketplaceApiClient } from '@/lib/api/client';
+import type { MarketplaceApp } from '@letbuyy/shared-types';
 import { redirect } from 'next/navigation';
 
 export const metadata = {
@@ -10,49 +12,23 @@ export const metadata = {
     description: 'Manage your published apps and view analytics.',
 };
 
-interface DeveloperProfile {
-    id: string;
-    company_name: string;
-    status: string;
-    verified: boolean;
-}
-
-interface DeveloperApp {
-    id: string;
-    name: string;
-    slug: string;
-    tagline?: string | null;
-    icon_url?: string | null;
-    status: string;
-    install_count?: number | null;
-    rating_avg?: number | string | null;
-    review_count?: number | null;
-}
-
-function getRating(app: DeveloperApp): number {
-    const rating = Number(app.rating_avg || 0);
+function getRating(app: MarketplaceApp): number {
+    const rating = Number(app.rating_avg ?? app.avg_rating ?? 0);
     return Number.isFinite(rating) ? rating : 0;
 }
 
 export default async function DeveloperDashboardPage() {
-    const response = await appStoreWorkerFetch('/app-store/developers/apps', {
-        method: 'GET',
-        requireSession: true,
-    });
+    const payload = await createAppMarketplaceApiClient({ requireSession: true })
+        .then((api) => api.appStore.developerApps())
+        .catch((error) => {
+            if (error instanceof LetbuyyApiError && (error.status === 401 || error.status === 404)) {
+                redirect('/developers/register');
+            }
+            redirect('/developers/register');
+        });
 
-    if (response.status === 401 || response.status === 404) redirect('/developers/register');
-
-    const payload = await response.json() as {
-        data?: {
-            developer: DeveloperProfile;
-            apps: DeveloperApp[];
-        };
-    };
-
-    if (!response.ok || !payload.data?.developer) redirect('/developers/register');
-
-    const developer = payload.data.developer;
-    const appList = payload.data.apps || [];
+    const developer = payload.developer;
+    const appList = payload.apps || [];
 
     // Calculate aggregate stats
     const totalInstalls = appList.reduce((sum, app) => sum + (app.install_count || 0), 0);
@@ -79,7 +55,7 @@ export default async function DeveloperDashboardPage() {
                     <div>
                         <h1 style={{ fontSize: 26, fontWeight: 800, marginBottom: 4 }}>Developer Dashboard</h1>
                         <p style={{ fontSize: 14, color: 'var(--text-tertiary)' }}>
-                            Welcome back, {developer.company_name}
+                            Welcome back, {developer.company_name || 'Developer'}
                             {developer.verified && <span title="Verified Developer" style={{ marginLeft: 6 }}>✅</span>}
                         </p>
                     </div>
@@ -139,10 +115,12 @@ export default async function DeveloperDashboardPage() {
                         </div>
                     ) : (
                         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                            {appList.map((app) => (
-                                <div
-                                    key={app.id}
-                                    style={{
+                            {appList.map((app) => {
+                                const status = app.status || 'draft';
+                                return (
+                                    <div
+                                        key={app.id}
+                                        style={{
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: 16,
@@ -150,8 +128,8 @@ export default async function DeveloperDashboardPage() {
                                         borderRadius: 12,
                                         border: '1px solid var(--border)',
                                         background: 'var(--bg)',
-                                    }}
-                                >
+                                        }}
+                                    >
                                     {/* Icon */}
                                     <div style={{
                                         width: 48, height: 48, borderRadius: 10,
@@ -172,11 +150,11 @@ export default async function DeveloperDashboardPage() {
                                             <span style={{
                                                 fontSize: 11, fontWeight: 600,
                                                 padding: '2px 8px', borderRadius: 6,
-                                                backgroundColor: `${statusColors[app.status] || '#6b7280'}15`,
-                                                color: statusColors[app.status] || '#6b7280',
+                                                backgroundColor: `${statusColors[status] || '#6b7280'}15`,
+                                                color: statusColors[status] || '#6b7280',
                                                 textTransform: 'capitalize',
                                             }}>
-                                                {app.status.replace('_', ' ')}
+                                                {status.replace('_', ' ')}
                                             </span>
                                         </div>
                                         <p style={{ fontSize: 13, color: 'var(--text-tertiary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -192,7 +170,7 @@ export default async function DeveloperDashboardPage() {
 
                                     {/* Actions */}
                                     <div style={{ display: 'flex', gap: 8, flexShrink: 0 }}>
-                                        {app.status === 'published' && (
+                                        {status === 'published' && (
                                             <Link
                                                 href={`/apps/${app.slug}`}
                                                 style={{ padding: '6px 10px', borderRadius: 8, border: '1px solid var(--border)', fontSize: 12, color: 'var(--text-secondary)', display: 'inline-flex', alignItems: 'center', gap: 4, textDecoration: 'none' }}
@@ -207,8 +185,9 @@ export default async function DeveloperDashboardPage() {
                                             <Pencil size={12} /> Edit
                                         </Link>
                                     </div>
-                                </div>
-                            ))}
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </section>
