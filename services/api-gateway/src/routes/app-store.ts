@@ -3,6 +3,7 @@ import type { Env } from '../index';
 import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
     createAppScopedAccessToken,
     getLetbuyyInternalAuthSecret,
@@ -73,16 +74,26 @@ async function insertAppLifecycleOutbox(
         requestId: string;
     },
 ): Promise<void> {
-    await db.from('outbox_events').upsert({
-        store_id: input.storeId,
-        aggregate_type: 'app_installation',
-        aggregate_id: input.installationId,
-        event_type: input.eventType,
-        payload: input.payload,
-        idempotency_key: `${input.eventType}:${input.storeId}:${input.installationId}`,
-        request_id: input.requestId,
-        actor_id: input.actorId,
-    }, { onConflict: 'idempotency_key', ignoreDuplicates: true });
+    const appId = stringOrNull(input.payload.app_id);
+    if (!appId) {
+        throw new Error('App lifecycle event payload requires app_id');
+    }
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.storeId,
+        aggregateType: 'app',
+        aggregateId: appId,
+        eventType: input.eventType,
+        payload: {
+            site_id: input.storeId,
+            app_id: appId,
+            installation_id: input.installationId,
+            scopes: stringArray(input.payload.scopes),
+        },
+        idempotencyKey: `${input.eventType}:${input.storeId}:${input.installationId}`,
+        requestId: input.requestId,
+        actorId: input.actorId,
+    });
 }
 
 async function insertAppWebhookSubscriptions(

@@ -8,6 +8,7 @@ const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-executio
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
 const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
+const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -116,4 +117,17 @@ test('public storefront checkout emits order.created through the gateway outbox'
   assert.match(source, /site_id: input\.storeId/);
   assert.match(source, /order_id: input\.order\.id/);
   assert.match(source, /emitStorefrontOrderCreatedEvent\(db/);
+});
+
+test('app install and uninstall producers use registered app lifecycle contracts', () => {
+  const source = read(APP_STORE_ROUTE);
+
+  assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(source, /eventType: input\.eventType/);
+  assert.match(source, /eventType: 'app\.installed'/);
+  assert.match(source, /eventType: 'app\.uninstalled'/);
+  assert.match(source, /aggregateType: 'app'/);
+  assert.match(source, /site_id: input\.storeId/);
+  assert.match(source, /app_id: appId/);
+  assert.match(source, /installation_id: input\.installationId/);
 });
