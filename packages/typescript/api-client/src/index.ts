@@ -40,6 +40,8 @@ import type {
   MarketplaceAppDeveloper,
   MarketplaceAppReview,
   MarketplaceReviewRecord,
+  MarketplaceReviewStatus,
+  MarketplaceSubmissionType,
   NavigationItem,
   NavigationResponse,
   Order,
@@ -227,6 +229,24 @@ export interface AppDeveloperAppsResult extends JsonRecord {
 export interface AppSubmissionResult extends JsonRecord {
   app: JsonRecord;
   review_record?: MarketplaceReviewRecord | null;
+}
+export type MarketplaceReviewDecision = Extract<MarketplaceReviewStatus, 'approved' | 'rejected' | 'changes_requested'>;
+export interface MarketplaceReviewListQuery extends QueryParams {
+  status?: MarketplaceReviewStatus;
+  submission_type?: MarketplaceSubmissionType;
+  limit?: number;
+}
+export interface MarketplaceReviewDecisionInput extends JsonRecord {
+  decision: MarketplaceReviewDecision;
+  reason?: string | null;
+}
+export interface MarketplaceReviewListResult extends JsonRecord {
+  review_records: MarketplaceReviewRecord[];
+}
+export interface MarketplaceReviewDecisionResult extends JsonRecord {
+  review_record: MarketplaceReviewRecord;
+  resource?: JsonRecord | null;
+  event_type?: string | null;
 }
 
 export interface AnalyticsQuery extends StoreScopedQuery {
@@ -880,6 +900,16 @@ export class LetbuyyApiClient {
       this.requestData<AppDeveloperAppsResult>('/app-store/developers/apps', options),
     submitDeveloperApp: (input: AppSubmissionInput, options?: LetbuyyRequestOptions) =>
       this.requestData<AppSubmissionResult>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
+  };
+
+  readonly operations = {
+    marketplaceReviews: (query?: MarketplaceReviewListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<MarketplaceReviewListResult>('/operations/marketplace-reviews', { ...options, query }),
+    decideMarketplaceReview: (id: string, input: MarketplaceReviewDecisionInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<MarketplaceReviewDecisionResult>(
+        `/operations/marketplace-reviews/${encodePathSegment(id)}/decision`,
+        { ...options, method: 'POST', body: input },
+      ),
   };
 
   readonly employees = {

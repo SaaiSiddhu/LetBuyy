@@ -11,7 +11,9 @@
     "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
+    "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "lucide-react": "^0.562.0",

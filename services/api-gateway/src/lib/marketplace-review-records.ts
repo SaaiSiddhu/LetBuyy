@@ -2,8 +2,29 @@ import type { getSupabaseAdmin } from './supabase';
 
 export type MarketplaceSubmissionType = 'app' | 'theme';
 export type MarketplaceReviewStatus = 'pending' | 'in_review' | 'approved' | 'rejected' | 'changes_requested';
+export type MarketplaceReviewDecision = Extract<MarketplaceReviewStatus, 'approved' | 'rejected' | 'changes_requested'>;
 
 type JsonRecord = Record<string, unknown>;
+
+export const MARKETPLACE_REVIEW_RECORD_COLUMNS = [
+    'id',
+    'submission_type',
+    'resource_id',
+    'resource_slug',
+    'resource_name',
+    'partner_user_id',
+    'app_developer_id',
+    'status',
+    'automated_checks',
+    'submitted_at',
+    'reviewed_by',
+    'reviewed_at',
+    'review_notes',
+    'metadata',
+    'created_at',
+    'updated_at',
+    'deleted_at',
+].join(', ');
 
 type MarketplaceReviewInsert = {
     submission_type: MarketplaceSubmissionType;
@@ -102,25 +123,7 @@ export async function createMarketplaceReviewRecord(
     const { data, error } = await db
         .from('marketplace_review_records')
         .insert(reviewInsert)
-        .select([
-            'id',
-            'submission_type',
-            'resource_id',
-            'resource_slug',
-            'resource_name',
-            'partner_user_id',
-            'app_developer_id',
-            'status',
-            'automated_checks',
-            'submitted_at',
-            'reviewed_by',
-            'reviewed_at',
-            'review_notes',
-            'metadata',
-            'created_at',
-            'updated_at',
-            'deleted_at',
-        ].join(', '))
+        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
         .single();
 
     if (error) {

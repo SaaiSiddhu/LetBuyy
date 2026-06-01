@@ -37,10 +37,13 @@ test('event-core declares the federation domain event registry', () => {
     'app.installed',
     'app.uninstalled',
     'app.submitted',
+    'app.approved',
+    'app.rejected',
     'app.charge.created',
     'app.charge.activated',
     'theme.submitted',
     'theme.approved',
+    'theme.rejected',
     'theme.installed',
     'payout.ledger_entry.created',
     'payout.released',
@@ -101,7 +104,9 @@ test('queue consumers drive analytics, search, notifications, and payout ledger 
   assert.match(notificationSource, /export function planInAppNotificationForEvent/);
   assert.match(notificationSource, /case 'order\.created'/);
   assert.match(notificationSource, /case 'app\.installed'/);
+  assert.match(notificationSource, /case 'app\.approved'/);
   assert.match(notificationSource, /case 'theme\.installed'/);
+  assert.match(notificationSource, /case 'theme\.rejected'/);
 
   assert.match(payoutMigration, /CREATE TABLE IF NOT EXISTS partner_payout_ledger_entries/);
   assert.match(payoutMigration, /amount_minor INTEGER NOT NULL/);

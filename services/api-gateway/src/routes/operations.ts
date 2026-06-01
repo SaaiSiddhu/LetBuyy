@@ -6,11 +6,19 @@ import { ValidationError } from '../lib/errors';
 import { getRequestId } from '../lib/tenant-context';
 import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 import { OutboxExecutionAdapter } from '../execution/outbox-execution.adapter';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import {
+    MARKETPLACE_REVIEW_RECORD_COLUMNS,
+    type MarketplaceReviewDecision,
+    type MarketplaceReviewRecord,
+} from '../lib/marketplace-review-records';
 import {
     ConsumeQueueJobsSchema,
     CreateWebhookSubscriptionSchema,
     DispatchOutboxSchema,
     DispatchWebhookDeliveriesSchema,
+    MarketplaceReviewDecisionSchema,
+    MarketplaceReviewListQuerySchema,
     OperationsListQuerySchema,
     AuthorizeRuntimeReplaySchema,
     RecordChaosExperimentSchema,
@@ -36,6 +44,7 @@ import {
     ArchiveDistributedEventsSchema,
     type DispatchOutboxInput,
     type DispatchWebhookDeliveriesInput,
+    type MarketplaceReviewListQuery,
     type OperationsListQuery,
 } from '../schemas/operations.schema';
 import { SaasExecutionAdapter } from '../execution/saas-execution.adapter';
@@ -43,6 +52,8 @@ import { QueueExecutionAdapter } from '../execution/queue-execution.adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
+type OperationsDb = ReturnType<typeof getSupabaseAdmin>;
+type JsonRecord = Record<string, unknown>;
 
 router.use('*', requireRoleCategory('ops'), requireSuperAdmin);
 
@@ -92,6 +103,284 @@ function parseLimit(c: AppContext, fallback = 50): number {
 
     return parsed.data.limit;
 }
+
+function parseMarketplaceReviewListQuery(c: AppContext): MarketplaceReviewListQuery {
+    const parsed = MarketplaceReviewListQuerySchema.safeParse({
+        status: c.req.query('status') || undefined,
+        submission_type: c.req.query('submission_type') || undefined,
+        limit: c.req.query('limit') || undefined,
+    });
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid marketplace review list query', parsed.error.flatten());
+    }
+
+    return parsed.data;
+}
+
+function asReviewRecord(value: unknown): MarketplaceReviewRecord {
+    return value as unknown as MarketplaceReviewRecord;
+}
+
+function asJsonRecord(value: unknown): JsonRecord {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as JsonRecord
+        : {};
+}
+
+function stringOrNull(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function marketplaceAppStatusForDecision(decision: MarketplaceReviewDecision): 'published' | 'rejected' | 'in_review' {
+    if (decision === 'approved') return 'published';
+    if (decision === 'rejected') return 'rejected';
+    return 'in_review';
+}
+
+function themePackageStatusForDecision(decision: MarketplaceReviewDecision): 'active' | 'disabled' | 'draft' {
+    if (decision === 'approved') return 'active';
+    if (decision === 'rejected') return 'disabled';
+    return 'draft';
+}
+
+function themeVersionStatusForDecision(decision: MarketplaceReviewDecision): 'published' | 'revoked' | 'draft' {
+    if (decision === 'approved') return 'published';
+    if (decision === 'rejected') return 'revoked';
+    return 'draft';
+}
+
+function eventTypeForMarketplaceReview(
+    record: MarketplaceReviewRecord,
+    decision: MarketplaceReviewDecision,
+): 'app.approved' | 'app.rejected' | 'theme.approved' | 'theme.rejected' | null {
+    if (record.submission_type === 'app' && decision === 'approved') return 'app.approved';
+    if (record.submission_type === 'app' && decision === 'rejected') return 'app.rejected';
+    if (record.submission_type === 'theme' && decision === 'approved') return 'theme.approved';
+    if (record.submission_type === 'theme' && decision === 'rejected') return 'theme.rejected';
+    return null;
+}
+
+async function publishMarketplaceAppReviewDecision(
+    db: OperationsDb,
+    record: MarketplaceReviewRecord,
+    decision: MarketplaceReviewDecision,
+): Promise<JsonRecord> {
+    const { data, error } = await db
+        .from('marketplace_apps')
+        .update({ status: marketplaceAppStatusForDecision(decision) })
+        .eq('id', record.resource_id)
+        .select('id, developer_id, slug, name, status')
+        .single();
+
+    if (error || !data) {
+        throw new Error(`Marketplace app review decision failed: ${error?.message || 'app not found'}`);
+    }
+
+    return asJsonRecord(data);
+}
+
+async function publishThemeReviewDecision(
+    db: OperationsDb,
+    record: MarketplaceReviewRecord,
+    decision: MarketplaceReviewDecision,
+    reviewedAt: string,
+): Promise<JsonRecord> {
+    const { data: themePackage, error: packageError } = await db
+        .from('theme_packages')
+        .update({ status: themePackageStatusForDecision(decision) })
+        .eq('id', record.resource_id)
+        .select('id, slug, name, status, legacy_theme_id')
+        .single();
+
+    if (packageError || !themePackage) {
+        throw new Error(`Theme package review decision failed: ${packageError?.message || 'theme package not found'}`);
+    }
+
+    const { data: latestVersion, error: versionLookupError } = await db
+        .from('theme_package_versions')
+        .select('id, version, version_number')
+        .eq('theme_package_id', record.resource_id)
+        .is('deleted_at', null)
+        .order('version_number', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+    if (versionLookupError || !latestVersion) {
+        throw new Error(`Theme package version lookup failed: ${versionLookupError?.message || 'theme version not found'}`);
+    }
+
+    const { data: version, error: versionError } = await db
+        .from('theme_package_versions')
+        .update({
+            release_status: themeVersionStatusForDecision(decision),
+            published_at: decision === 'approved' ? reviewedAt : null,
+        })
+        .eq('id', stringOrNull(asJsonRecord(latestVersion).id) || '')
+        .select('id, version, version_number, release_status, published_at')
+        .single();
+
+    if (versionError || !version) {
+        throw new Error(`Theme package version review decision failed: ${versionError?.message || 'theme version not found'}`);
+    }
+
+    const legacyThemeId = stringOrNull(asJsonRecord(themePackage).legacy_theme_id);
+    if (legacyThemeId) {
+        const { error: legacyThemeError } = await db
+            .from('themes')
+            .update({ is_active: decision === 'approved' })
+            .eq('id', legacyThemeId);
+
+        if (legacyThemeError) {
+            throw new Error(`Theme legacy listing update failed: ${legacyThemeError.message}`);
+        }
+    }
+
+    return {
+        ...asJsonRecord(themePackage),
+        version: asJsonRecord(version),
+    };
+}
+
+async function emitMarketplaceReviewDecisionEvent(
+    db: OperationsDb,
+    input: {
+        record: MarketplaceReviewRecord;
+        resource: JsonRecord;
+        eventType: 'app.approved' | 'app.rejected' | 'theme.approved' | 'theme.rejected';
+        actorId: string;
+        requestId: string;
+    },
+): Promise<void> {
+    if (input.record.submission_type === 'app') {
+        const appId = stringOrNull(input.resource.id) || input.record.resource_id;
+        const partnerId = stringOrNull(input.resource.developer_id) || input.record.app_developer_id;
+        if (!partnerId) throw new Error('Marketplace app review event requires a partner id');
+
+        await new EventExecutionAdapter(db).emitDomainEvent({
+            storeId: null,
+            aggregateType: 'app',
+            aggregateId: appId,
+            eventType: input.eventType,
+            payload: {
+                app_id: appId,
+                partner_id: partnerId,
+                review_id: input.record.id,
+                reviewer_id: input.actorId,
+            },
+            idempotencyKey: `${input.eventType}:${input.record.id}`,
+            requestId: input.requestId,
+            actorId: input.actorId,
+        });
+        return;
+    }
+
+    const version = asJsonRecord(input.resource.version);
+    const themeVersionId = stringOrNull(version.id);
+    if (!themeVersionId) throw new Error('Theme review event requires a theme version id');
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: null,
+        aggregateType: 'theme',
+        aggregateId: input.record.resource_id,
+        eventType: input.eventType,
+        payload: {
+            theme_package_id: input.record.resource_id,
+            theme_version_id: themeVersionId,
+            partner_id: input.record.partner_user_id,
+            review_id: input.record.id,
+            reviewer_id: input.actorId,
+        },
+        idempotencyKey: `${input.eventType}:${input.record.id}:${themeVersionId}`,
+        requestId: input.requestId,
+        actorId: input.actorId,
+    });
+}
+
+router.get('/marketplace-reviews', async (c) => {
+    const query = parseMarketplaceReviewListQuery(c);
+    const db = getSupabaseAdmin(c);
+
+    let request = db
+        .from('marketplace_review_records')
+        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
+        .is('deleted_at', null)
+        .order('submitted_at', { ascending: false })
+        .limit(query.limit);
+
+    if (query.status) request = request.eq('status', query.status);
+    if (query.submission_type) request = request.eq('submission_type', query.submission_type);
+
+    const { data, error } = await request;
+    if (error) throw new Error(`Marketplace review list failed: ${error.message}`);
+
+    return c.json(success({ review_records: (data || []) as unknown as MarketplaceReviewRecord[] }));
+});
+
+router.post('/marketplace-reviews/:id/decision', async (c) => {
+    const body = await readOptionalJson<unknown>(c, {});
+    const parsed = MarketplaceReviewDecisionSchema.safeParse(body);
+
+    if (!parsed.success) {
+        throw new ValidationError('Invalid marketplace review decision request', parsed.error.flatten());
+    }
+
+    const reviewId = c.req.param('id');
+    const db = getSupabaseAdmin(c);
+    const reviewerId = actorId(c);
+    const reviewedAt = new Date().toISOString();
+
+    const { data: recordData, error: recordError } = await db
+        .from('marketplace_review_records')
+        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
+        .eq('id', reviewId)
+        .is('deleted_at', null)
+        .single();
+
+    if (recordError || !recordData) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Marketplace review record not found' } }, 404);
+    }
+
+    const record = asReviewRecord(recordData);
+    const resource = record.submission_type === 'app'
+        ? await publishMarketplaceAppReviewDecision(db, record, parsed.data.decision)
+        : await publishThemeReviewDecision(db, record, parsed.data.decision, reviewedAt);
+
+    const { data: updatedRecord, error: updateError } = await db
+        .from('marketplace_review_records')
+        .update({
+            status: parsed.data.decision,
+            reviewed_by: reviewerId,
+            reviewed_at: reviewedAt,
+            review_notes: parsed.data.reason || null,
+            updated_by: reviewerId,
+        })
+        .eq('id', record.id)
+        .select(MARKETPLACE_REVIEW_RECORD_COLUMNS)
+        .single();
+
+    if (updateError || !updatedRecord) {
+        throw new Error(`Marketplace review update failed: ${updateError?.message || 'record not found'}`);
+    }
+
+    const reviewRecord = asReviewRecord(updatedRecord);
+    const eventType = eventTypeForMarketplaceReview(reviewRecord, parsed.data.decision);
+    if (eventType) {
+        await emitMarketplaceReviewDecisionEvent(db, {
+            record: reviewRecord,
+            resource,
+            eventType,
+            actorId: reviewerId,
+            requestId: getRequestId(c),
+        });
+    }
+
+    return c.json(success({
+        review_record: reviewRecord,
+        resource,
+        event_type: eventType,
+    }));
+});
 
 router.post('/outbox/dispatch', async (c) => {
     const body = await readOptionalJson<DispatchOutboxInput>(c, {});

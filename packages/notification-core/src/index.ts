@@ -136,19 +136,36 @@ export function planInAppNotificationForEvent(event: RuntimeEventEnvelope): Plan
         data,
       };
     case 'app.submitted':
+    case 'app.approved':
+    case 'app.rejected':
       return {
         type: 'app_review',
-        title: 'App submitted',
-        message: 'A marketplace app was submitted for review.',
+        title: event.event_type === 'app.approved'
+          ? 'App approved'
+          : event.event_type === 'app.rejected'
+            ? 'App rejected'
+            : 'App submitted',
+        message: event.event_type === 'app.approved'
+          ? 'A marketplace app was approved for listing.'
+          : event.event_type === 'app.rejected'
+            ? 'A marketplace app was rejected during review.'
+            : 'A marketplace app was submitted for review.',
         data,
       };
     case 'theme.submitted':
     case 'theme.approved':
+    case 'theme.rejected':
       return {
         type: 'theme_review',
-        title: event.event_type === 'theme.approved' ? 'Theme approved' : 'Theme submitted',
+        title: event.event_type === 'theme.approved'
+          ? 'Theme approved'
+          : event.event_type === 'theme.rejected'
+            ? 'Theme rejected'
+            : 'Theme submitted',
         message: event.event_type === 'theme.approved'
           ? 'A theme package was approved for marketplace listing.'
+          : event.event_type === 'theme.rejected'
+            ? 'A theme package was rejected during review.'
           : 'A theme package was submitted for review.',
         data,
       };

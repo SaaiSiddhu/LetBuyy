@@ -21,6 +21,17 @@ export const OperationsListQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(200).default(50),
 });
 
+export const MarketplaceReviewListQuerySchema = z.object({
+  status: z.enum(['pending', 'in_review', 'approved', 'rejected', 'changes_requested']).optional(),
+  submission_type: z.enum(['app', 'theme']).optional(),
+  limit: z.coerce.number().int().min(1).max(200).default(50),
+});
+
+export const MarketplaceReviewDecisionSchema = z.object({
+  decision: z.enum(['approved', 'rejected', 'changes_requested']),
+  reason: z.string().trim().max(2000).optional(),
+});
+
 export const CreateWebhookSubscriptionSchema = z.object({
   site_id: z.string().uuid(),
   name: z.string().trim().min(1).max(120),
@@ -73,10 +84,13 @@ export const DOMAIN_EVENT_TYPES = [
   'app.installed',
   'app.uninstalled',
   'app.submitted',
+  'app.approved',
+  'app.rejected',
   'app.charge.created',
   'app.charge.activated',
   'theme.submitted',
   'theme.approved',
+  'theme.rejected',
   'theme.installed',
   'payout.ledger_entry.created',
   'payout.released',
@@ -146,6 +160,7 @@ const AppReviewPayloadSchema = z.object({
   app_id: UuidSchema,
   partner_id: UuidSchema,
   review_id: UuidSchema.optional(),
+  reviewer_id: UuidSchema.optional(),
 });
 
 const AppChargePayloadSchema = z.object({
@@ -281,6 +296,22 @@ export const DOMAIN_EVENT_CONTRACTS = {
     aggregateType: 'app',
     payloadSchema: AppReviewPayloadSchema,
   },
+  'app.approved': {
+    eventType: 'app.approved',
+    schemaVersion: 1,
+    producer: 'platform-operations-portal',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'app',
+    payloadSchema: AppReviewPayloadSchema,
+  },
+  'app.rejected': {
+    eventType: 'app.rejected',
+    schemaVersion: 1,
+    producer: 'platform-operations-portal',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'app',
+    payloadSchema: AppReviewPayloadSchema,
+  },
   'app.charge.created': {
     eventType: 'app.charge.created',
     schemaVersion: 1,
@@ -310,6 +341,14 @@ export const DOMAIN_EVENT_CONTRACTS = {
     schemaVersion: 1,
     producer: 'platform-operations-portal',
     consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'theme',
+    payloadSchema: ThemeReviewPayloadSchema,
+  },
+  'theme.rejected': {
+    eventType: 'theme.rejected',
+    schemaVersion: 1,
+    producer: 'platform-operations-portal',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'theme',
     payloadSchema: ThemeReviewPayloadSchema,
   },
@@ -672,6 +711,8 @@ export type DispatchOutboxInput = z.infer<typeof DispatchOutboxSchema>;
 export type DispatchWebhookDeliveriesInput = z.infer<typeof DispatchWebhookDeliveriesSchema>;
 export type ConsumeQueueJobsInput = z.infer<typeof ConsumeQueueJobsSchema>;
 export type OperationsListQuery = z.infer<typeof OperationsListQuerySchema>;
+export type MarketplaceReviewListQuery = z.infer<typeof MarketplaceReviewListQuerySchema>;
+export type MarketplaceReviewDecisionInput = z.infer<typeof MarketplaceReviewDecisionSchema>;
 export type RecordUsageInput = z.infer<typeof RecordUsageSchema>;
 export type CreateWebhookSubscriptionInput = z.infer<typeof CreateWebhookSubscriptionSchema>;
 export type UpdateWebhookSubscriptionInput = z.infer<typeof UpdateWebhookSubscriptionSchema>;
