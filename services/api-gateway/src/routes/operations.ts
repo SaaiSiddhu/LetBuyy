@@ -220,7 +220,7 @@ router.post('/jobs/consume', async (c) => {
     const workerId = dispatcherId('manual-queue');
     const result = parsed.data.queue_name
         ? [await service.consumeQueue(workerId, parsed.data.queue_name, parsed.data.limit || 25)]
-        : await service.consumeQueues(workerId, ['analytics-events', 'search-indexing'], parsed.data.limit || 25);
+        : await service.consumeQueues(workerId, ['analytics-events', 'search-indexing', 'payment-events'], parsed.data.limit || 25);
 
     return c.json(success({ worker_id: workerId, queues: result }));
 });

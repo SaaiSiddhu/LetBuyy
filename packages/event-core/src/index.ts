@@ -10,7 +10,7 @@ export const DispatchWebhookDeliveriesSchema = z.object({
 });
 
 export const ConsumeQueueJobsSchema = z.object({
-  queue_name: z.enum(['analytics-events', 'search-indexing']).optional(),
+  queue_name: z.enum(['analytics-events', 'search-indexing', 'payment-events']).optional(),
   limit: z.number().int().min(1).max(100).optional(),
 });
 

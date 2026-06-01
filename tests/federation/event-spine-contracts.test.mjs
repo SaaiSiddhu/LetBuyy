@@ -5,6 +5,8 @@ import test from 'node:test';
 const EVENT_CORE = 'packages/event-core/src/index.ts';
 const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
 const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-execution.adapter.ts';
+const QUEUE_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/queue-execution.adapter.ts';
+const NOTIFICATION_CORE = 'packages/notification-core/src/index.ts';
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
 const PAYMENTS_ROUTE = 'services/api-gateway/src/routes/payments.ts';
@@ -14,6 +16,7 @@ const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
 const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
 const THEME_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/theme-execution.adapter.ts';
+const PAYOUT_LEDGER_MIGRATION = 'database/supabase/migrations/070_partner_payout_ledger.sql';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -76,6 +79,33 @@ test('orchestration queue fanout uses event-core contracts before legacy prefix 
   assert.match(source, /case 'analytics':\s+return 'analytics-events'/);
   assert.match(source, /case 'search-indexing':\s+return 'search-indexing'/);
   assert.match(source, /case 'payout-ledger':\s+return 'payment-events'/);
+});
+
+test('queue consumers drive analytics, search, notifications, and payout ledger side effects', () => {
+  const queueSource = read(QUEUE_EXECUTION_ADAPTER);
+  const notificationSource = read(NOTIFICATION_CORE);
+  const payoutMigration = read(PAYOUT_LEDGER_MIGRATION);
+
+  assert.match(queueSource, /type ConsumableQueueName = 'analytics-events' \| 'search-indexing' \| 'payment-events'/);
+  assert.match(queueSource, /processAnalyticsJob/);
+  assert.match(queueSource, /from\('analytics_event_stream'\)/);
+  assert.match(queueSource, /processSearchJob/);
+  assert.match(queueSource, /from\('search_documents'\)/);
+  assert.match(queueSource, /planInAppNotificationForEvent/);
+  assert.match(queueSource, /from\('notifications'\)\.insert/);
+  assert.match(queueSource, /processPaymentJob/);
+  assert.match(queueSource, /partner_payout_ledger_entries/);
+  assert.match(queueSource, /eventType: 'payout\.ledger_entry\.created'/);
+
+  assert.match(notificationSource, /export function planInAppNotificationForEvent/);
+  assert.match(notificationSource, /case 'order\.created'/);
+  assert.match(notificationSource, /case 'app\.installed'/);
+  assert.match(notificationSource, /case 'theme\.installed'/);
+
+  assert.match(payoutMigration, /CREATE TABLE IF NOT EXISTS partner_payout_ledger_entries/);
+  assert.match(payoutMigration, /amount_minor INTEGER NOT NULL/);
+  assert.match(payoutMigration, /currency TEXT NOT NULL DEFAULT 'INR'/);
+  assert.match(payoutMigration, /EXECUTE FUNCTION update_updated_at\(\)/);
 });
 
 test('gateway validates registered event payloads before outbox writes', () => {

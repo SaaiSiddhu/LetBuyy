@@ -14,10 +14,13 @@ import {
     planProductSearchProjectionDocument,
 } from '@letbuyy/runtime-composition';
 import { eventRetryDelaySeconds } from '@letbuyy/orchestration';
+import { getDomainEventContract, type RuntimeEventEnvelope } from '@letbuyy/event-core';
+import { planInAppNotificationForEvent } from '@letbuyy/notification-core';
+import { EventExecutionAdapter } from './event-execution.adapter';
 
 type JsonObject = Record<string, unknown>;
 
-type ConsumableQueueName = 'analytics-events' | 'search-indexing';
+type ConsumableQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
 
 interface PlatformQueueJob {
     id: string;
@@ -87,6 +90,34 @@ interface OrderSearchRow {
     deleted_at?: string | null;
 }
 
+interface SiteNotificationOwner {
+    custom_user_id?: string | null;
+    user_id?: string | null;
+}
+
+interface AppChargeEventPayload {
+    site_id?: string;
+    app_id?: string;
+    installation_id?: string;
+    charge_id?: string;
+    billing_mode?: 'recurring' | 'usage';
+    amount?: {
+        amount_minor?: number;
+        currency?: 'INR';
+    };
+}
+
+interface MarketplaceAppPayoutContext {
+    id: string;
+    developer_id: string;
+}
+
+interface PayoutLedgerEntry {
+    id: string;
+    partner_id: string;
+    partner_amount_minor: number;
+}
+
 export class QueueExecutionAdapter {
     static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = {
@@ -105,7 +136,7 @@ export class QueueExecutionAdapter {
 
     async consumeQueues(
         workerId: string,
-        queueNames: ConsumableQueueName[] = ['analytics-events', 'search-indexing'],
+        queueNames: ConsumableQueueName[] = ['analytics-events', 'search-indexing', 'payment-events'],
         limit = 25
     ): Promise<QueueConsumeResult[]> {
         const results: QueueConsumeResult[] = [];
@@ -132,7 +163,9 @@ export class QueueExecutionAdapter {
             try {
                 const processed = queueName === 'analytics-events'
                     ? await this.processAnalyticsJob(job)
-                    : await this.processSearchJob(job);
+                    : queueName === 'search-indexing'
+                        ? await this.processSearchJob(job)
+                        : await this.processPaymentJob(job);
 
                 await this.completeJob(workerId, job.id, { processed });
                 if (processed) {
@@ -162,6 +195,32 @@ export class QueueExecutionAdapter {
         }
 
         return Array.isArray(data) ? (data as PlatformQueueJob[]) : [];
+    }
+
+    private toRuntimeEventEnvelope(
+        job: PlatformQueueJob,
+        envelope: EventEnvelope,
+        input: {
+            eventType: string;
+            eventId: string;
+            siteId?: string | null;
+            aggregateType?: string | null;
+            aggregateId?: string | null;
+            occurredAt?: string;
+        }
+    ): RuntimeEventEnvelope<JsonObject> {
+        return {
+            event_id: input.eventId,
+            event_type: input.eventType,
+            source_runtime: 'services/api-gateway',
+            site_id: input.siteId || undefined,
+            aggregate_type: input.aggregateType || undefined,
+            aggregate_id: input.aggregateId || undefined,
+            occurred_at: input.occurredAt || new Date().toISOString(),
+            payload: envelope.payload || {},
+            request_id: envelope.request_id || job.request_id || undefined,
+            idempotency_key: envelope.idempotency_key || job.idempotency_key,
+        };
     }
 
     private async processAnalyticsJob(job: PlatformQueueJob): Promise<boolean> {
@@ -205,7 +264,70 @@ export class QueueExecutionAdapter {
             await this.incrementRollup(rollup);
         }
 
+        await this.processNotificationSideEffect(job, this.toRuntimeEventEnvelope(job, envelope, {
+            eventType,
+            eventId,
+            siteId,
+            aggregateType,
+            aggregateId,
+            occurredAt,
+        }));
+
         return true;
+    }
+
+    private async processNotificationSideEffect(job: PlatformQueueJob, event: RuntimeEventEnvelope<JsonObject>): Promise<void> {
+        const contract = getDomainEventContract(event.event_type);
+        if (!contract?.consumers.includes('notifications')) return;
+
+        const planned = planInAppNotificationForEvent(event);
+        if (!planned) return;
+
+        const userId = await this.resolveNotificationUserId(event.site_id || null, event.payload);
+        if (!userId) return;
+
+        const { error } = await this.db.from('notifications').insert({
+            user_id: userId,
+            type: planned.type,
+            title: planned.title,
+            message: planned.message,
+            data: {
+                ...planned.data,
+                queue_job_id: job.id,
+                idempotency_key: event.idempotency_key || job.idempotency_key,
+            },
+            action_url: planned.action_url || null,
+        });
+
+        if (error) throw new Error(`Notification dispatch write failed: ${error.message}`);
+    }
+
+    private async resolveNotificationUserId(siteId: string | null, payload: JsonObject): Promise<string | null> {
+        if (typeof payload.owner_user_id === 'string') return payload.owner_user_id;
+
+        if (typeof payload.partner_id === 'string') {
+            const { data, error } = await this.db
+                .from('app_developers')
+                .select('user_id')
+                .eq('id', payload.partner_id)
+                .maybeSingle();
+
+            if (error) throw new Error(`Notification partner lookup failed: ${error.message}`);
+            if (typeof data?.user_id === 'string') return data.user_id;
+        }
+
+        if (!siteId) return null;
+
+        const { data, error } = await this.db
+            .from('sites')
+            .select('custom_user_id, user_id')
+            .eq('id', siteId)
+            .maybeSingle();
+
+        if (error) throw new Error(`Notification site owner lookup failed: ${error.message}`);
+
+        const owner = data as SiteNotificationOwner | null;
+        return owner?.custom_user_id || owner?.user_id || null;
     }
 
     private async processSearchJob(job: PlatformQueueJob): Promise<boolean> {
@@ -224,6 +346,100 @@ export class QueueExecutionAdapter {
         }
 
         return false;
+    }
+
+    private async processPaymentJob(job: PlatformQueueJob): Promise<boolean> {
+        const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
+        const eventType = envelope.type || job.job_type;
+
+        if (eventType === 'app.charge.created' || eventType === 'app.charge.activated') {
+            return this.processAppChargePayout(job, envelope, eventType);
+        }
+
+        return false;
+    }
+
+    private async processAppChargePayout(job: PlatformQueueJob, envelope: EventEnvelope, eventType: string): Promise<boolean> {
+        const payload = (envelope.payload || {}) as AppChargeEventPayload;
+        const siteId = payload.site_id || job.site_id;
+        const appId = payload.app_id;
+        const installationId = payload.installation_id;
+        const chargeId = payload.charge_id;
+        const billingMode = payload.billing_mode;
+        const amountMinor = payload.amount?.amount_minor;
+        const eventId = envelope.id || job.event_id;
+
+        if (!siteId || !appId || !installationId || !chargeId || !billingMode || typeof amountMinor !== 'number') {
+            return false;
+        }
+
+        const { data: app, error: appError } = await this.db
+            .from('marketplace_apps')
+            .select('id, developer_id')
+            .eq('id', appId)
+            .maybeSingle();
+
+        if (appError) throw new Error(`Payout app lookup failed: ${appError.message}`);
+        const payoutContext = app as MarketplaceAppPayoutContext | null;
+        if (!payoutContext?.developer_id) return false;
+
+        const revenueShareBps = 8000;
+        const partnerAmountMinor = Math.floor((amountMinor * revenueShareBps) / 10000);
+        const platformFeeMinor = amountMinor - partnerAmountMinor;
+
+        const { data: entries, error: entryError } = await this.db
+            .from('partner_payout_ledger_entries')
+            .upsert(
+                {
+                    partner_id: payoutContext.developer_id,
+                    site_id: siteId,
+                    app_id: appId,
+                    installation_id: installationId,
+                    charge_id: chargeId,
+                    source_event_id: eventId,
+                    billing_mode: billingMode,
+                    amount_minor: amountMinor,
+                    currency: 'INR',
+                    revenue_share_bps: revenueShareBps,
+                    partner_amount_minor: partnerAmountMinor,
+                    platform_fee_minor: platformFeeMinor,
+                    status: 'pending',
+                    rail: 'manual',
+                    metadata: {
+                        source_event_type: eventType,
+                        queue_job_id: job.id,
+                    },
+                },
+                { onConflict: 'source_event_id' }
+            )
+            .select('id, partner_id, partner_amount_minor');
+
+        if (entryError) throw new Error(`Payout ledger write failed: ${entryError.message}`);
+
+        const entry = Array.isArray(entries) ? entries[0] as PayoutLedgerEntry | undefined : undefined;
+        if (!entry) return false;
+
+        await new EventExecutionAdapter(this.db).emitDomainEvent({
+            storeId: siteId,
+            aggregateType: 'payout',
+            aggregateId: entry.id,
+            eventType: 'payout.ledger_entry.created',
+            payload: {
+                partner_id: entry.partner_id,
+                payout_id: entry.id,
+                ledger_entry_id: entry.id,
+                amount: {
+                    amount_minor: entry.partner_amount_minor,
+                    currency: 'INR',
+                },
+                rail: 'manual',
+            },
+            idempotencyKey: `payout.ledger_entry.created:${eventId}`,
+            requestId: envelope.request_id || job.request_id,
+            actorId: null,
+        });
+
+        return true;
     }
 
     private async applyProductSearchIndex(job: PlatformQueueJob, productId: string): Promise<boolean> {

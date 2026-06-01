@@ -49,6 +49,126 @@ export interface NotificationRecipient {
   push_token?: string;
 }
 
+export type InAppNotificationType =
+  | 'app_installed'
+  | 'app_uninstalled'
+  | 'app_review'
+  | 'theme_purchased'
+  | 'theme_review'
+  | 'order_placed'
+  | 'order_shipped'
+  | 'order_delivered'
+  | 'new_lead'
+  | 'new_contact'
+  | 'plan_upgraded'
+  | 'store_published'
+  | 'system';
+
+export interface PlannedInAppNotification {
+  type: InAppNotificationType;
+  title: string;
+  message: string;
+  action_url?: string | null;
+  data: Record<string, unknown>;
+}
+
+function notificationData(event: RuntimeEventEnvelope): Record<string, unknown> {
+  return {
+    event_id: event.event_id,
+    event_type: event.event_type,
+    aggregate_type: event.aggregate_type || null,
+    aggregate_id: event.aggregate_id || null,
+    site_id: event.site_id || null,
+    payload: event.payload && typeof event.payload === 'object' ? event.payload : {},
+  };
+}
+
+export function planInAppNotificationForEvent(event: RuntimeEventEnvelope): PlannedInAppNotification | null {
+  const data = notificationData(event);
+
+  switch (event.event_type) {
+    case 'store.created':
+      return {
+        type: 'store_published',
+        title: 'Store created',
+        message: 'Your LetBuyy store workspace is ready.',
+        action_url: event.site_id ? `/stores/${event.site_id}` : null,
+        data,
+      };
+    case 'order.created':
+      return {
+        type: 'order_placed',
+        title: 'New order received',
+        message: 'A new storefront order needs review.',
+        action_url: event.site_id && event.aggregate_id ? `/stores/${event.site_id}/orders/${event.aggregate_id}` : null,
+        data,
+      };
+    case 'order.paid':
+      return {
+        type: 'order_placed',
+        title: 'Order payment confirmed',
+        message: 'A checkout payment was verified and the order is ready for fulfilment.',
+        action_url: event.site_id && event.aggregate_id ? `/stores/${event.site_id}/orders/${event.aggregate_id}` : null,
+        data,
+      };
+    case 'order.fulfilled':
+      return {
+        type: 'order_shipped',
+        title: 'Order fulfilled',
+        message: 'An order fulfilment was recorded.',
+        action_url: event.site_id && event.aggregate_id ? `/stores/${event.site_id}/orders/${event.aggregate_id}` : null,
+        data,
+      };
+    case 'app.installed':
+      return {
+        type: 'app_installed',
+        title: 'App installed',
+        message: 'An app was installed on this store.',
+        action_url: event.site_id ? `/stores/${event.site_id}/apps` : null,
+        data,
+      };
+    case 'app.uninstalled':
+      return {
+        type: 'app_uninstalled',
+        title: 'App uninstalled',
+        message: 'An app was removed from this store.',
+        action_url: event.site_id ? `/stores/${event.site_id}/apps` : null,
+        data,
+      };
+    case 'theme.submitted':
+    case 'theme.approved':
+      return {
+        type: 'theme_review',
+        title: event.event_type === 'theme.approved' ? 'Theme approved' : 'Theme submitted',
+        message: event.event_type === 'theme.approved'
+          ? 'A theme package was approved for marketplace listing.'
+          : 'A theme package was submitted for review.',
+        data,
+      };
+    case 'theme.installed':
+      return {
+        type: 'theme_purchased',
+        title: 'Theme installed',
+        message: 'A storefront theme was installed.',
+        action_url: event.site_id ? `/stores/${event.site_id}/online-store/themes` : null,
+        data,
+      };
+    case 'app.charge.created':
+    case 'app.charge.activated':
+    case 'payout.ledger_entry.created':
+    case 'payout.released':
+    case 'payout.failed':
+      return {
+        type: 'system',
+        title: 'Partner billing update',
+        message: 'A partner billing or payout event was recorded.',
+        data,
+      };
+    default:
+      return null;
+  }
+}
+
 export function isValidWebhookTarget(targetUrl: string): boolean {
   try {
     const url = new URL(targetUrl);

@@ -259,7 +259,7 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
             webhookLimit: 50,
         })
         .then(async (outboxResult) => {
-            const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing'], 50);
+            const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing', 'payment-events'], 50);
             const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
             await eventQueue?.enqueue({
                 id: crypto.randomUUID(),
