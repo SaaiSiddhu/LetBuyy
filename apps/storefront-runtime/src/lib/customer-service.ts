@@ -5,7 +5,7 @@
 
 import 'server-only';
 import type { CustomerAddress } from '@letbuyy/shared-types';
-import { createStorefrontApiClient } from './worker-client';
+import { createStorefrontApiClient } from './api/client';
 
 // ============================================================
 // Types

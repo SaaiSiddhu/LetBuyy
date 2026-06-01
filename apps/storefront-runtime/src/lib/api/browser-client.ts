@@ -1,6 +1,6 @@
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
-export type WorkerJsonEnvelope<TData> = {
+export type StorefrontApiJsonEnvelope<TData> = {
     success?: boolean;
     data?: TData;
     error?: string | {
@@ -38,8 +38,8 @@ function getPublicApiBaseUrl() {
     return configuredUrl;
 }
 
-export function workerErrorMessage(
-    payload: WorkerJsonEnvelope<unknown>,
+export function storefrontApiErrorMessage(
+    payload: StorefrontApiJsonEnvelope<unknown>,
     fallback: string,
 ): string {
     if (typeof payload.error === 'string') return payload.error;
@@ -48,7 +48,7 @@ export function workerErrorMessage(
     return fallback;
 }
 
-export async function storefrontWorkerFetch(
+export async function storefrontBrowserApiFetch(
     subdomain: string,
     path: string,
     init: RequestInit = {},
@@ -70,8 +70,8 @@ export async function storefrontWorkerFetch(
     );
 }
 
-export async function readWorkerJson<TData>(
+export async function readStorefrontApiJson<TData>(
     response: Response,
-): Promise<WorkerJsonEnvelope<TData>> {
-    return response.json().catch(() => ({})) as Promise<WorkerJsonEnvelope<TData>>;
+): Promise<StorefrontApiJsonEnvelope<TData>> {
+    return response.json().catch(() => ({})) as Promise<StorefrontApiJsonEnvelope<TData>>;
 }

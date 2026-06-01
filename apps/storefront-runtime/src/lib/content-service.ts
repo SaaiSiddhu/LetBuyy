@@ -1,6 +1,6 @@
 import 'server-only';
 
-import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
+import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 
 export type StorefrontContentResource = {
     id: string;

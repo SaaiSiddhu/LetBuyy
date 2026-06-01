@@ -6,14 +6,14 @@ import {
 
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
-type WorkerFetchInit = RequestInit & {
+type StorefrontApiFetchInit = RequestInit & {
     next?: {
         revalidate?: number | false;
         tags?: string[];
     };
 };
 
-export function storefrontReadInit(revalidate: number, tags: string[] = []): WorkerFetchInit {
+export function storefrontReadInit(revalidate: number, tags: string[] = []): StorefrontApiFetchInit {
     return {
         next: {
             revalidate,
@@ -51,7 +51,7 @@ function getApiBaseUrl() {
     return configuredUrl;
 }
 
-export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
+export async function storefrontApiFetch(path: string, init: StorefrontApiFetchInit = {}) {
     const cleanPath = path.startsWith('/') ? path : `/${path}`;
     const headers = new Headers(init.headers);
 
@@ -59,7 +59,7 @@ export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
     headers.set('X-Client', 'storefront-web');
     headers.set('X-Request-ID', headers.get('X-Request-ID') || crypto.randomUUID());
 
-    const requestInit: WorkerFetchInit = {
+    const requestInit: StorefrontApiFetchInit = {
         ...init,
         headers,
     };
@@ -71,12 +71,12 @@ export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
     return fetch(`${getApiBaseUrl()}${cleanPath}`, requestInit);
 }
 
-export function createStorefrontApiClient(defaultInit: WorkerFetchInit = {}): LetbuyyApiClient {
+export function createStorefrontApiClient(defaultInit: StorefrontApiFetchInit = {}): LetbuyyApiClient {
     const baseUrl = getApiBaseUrl();
 
     return createLetbuyyApiClient({
         baseUrl,
-        fetch: async (input, init) => workerFetch(apiClientInputToWorkerPath(input, baseUrl), {
+        fetch: async (input, init) => storefrontApiFetch(apiClientInputToStorefrontApiPath(input, baseUrl), {
             ...defaultInit,
             ...init,
             headers: mergeHeaders(defaultInit.headers, init?.headers),
@@ -84,18 +84,18 @@ export function createStorefrontApiClient(defaultInit: WorkerFetchInit = {}): Le
     });
 }
 
-export class WorkerRequestError extends Error {
+export class StorefrontApiRequestError extends Error {
     constructor(
         message: string,
         public readonly status: number,
         public readonly payload: unknown
     ) {
         super(message);
-        this.name = 'WorkerRequestError';
+        this.name = 'StorefrontApiRequestError';
     }
 }
 
-export async function internalWorkerFetch(path: string, init: RequestInit = {}) {
+export async function internalStorefrontApiFetch(path: string, init: RequestInit = {}) {
     const headers = new Headers(init.headers);
     const internalSecret = process.env.INTERNAL_API_SECRET || process.env.LETBUYY_INTERNAL_API_SECRET;
 
@@ -103,21 +103,21 @@ export async function internalWorkerFetch(path: string, init: RequestInit = {}) 
         headers.set('X-Internal-API-Secret', internalSecret);
     }
 
-    return workerFetch(path, {
+    return storefrontApiFetch(path, {
         ...init,
         headers,
     });
 }
 
-export async function readWorkerJson(response: Response) {
+export async function readStorefrontApiJson(response: Response) {
     const payload = await response.json().catch(() => null);
 
     if (!response.ok) {
         const message =
             payload?.error?.message ||
             payload?.message ||
-            `Worker request failed with status ${response.status}`;
-        throw new WorkerRequestError(message, response.status, payload);
+            `Storefront API request failed with status ${response.status}`;
+        throw new StorefrontApiRequestError(message, response.status, payload);
     }
 
     return payload;
@@ -133,7 +133,7 @@ function mergeHeaders(base: HeadersInit | undefined, override: HeadersInit | und
     return headers;
 }
 
-function apiClientInputToWorkerPath(input: RequestInfo | URL, baseUrl: string): string {
+function apiClientInputToStorefrontApiPath(input: RequestInfo | URL, baseUrl: string): string {
     const rawUrl = input instanceof Request ? input.url : input.toString();
     const url = new URL(rawUrl);
     const base = new URL(baseUrl);

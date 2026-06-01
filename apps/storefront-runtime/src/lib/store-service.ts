@@ -12,7 +12,7 @@ import {
     NavPage,
     StoreNavigation,
 } from '@/types/store';
-import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
+import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
     getDefaultStorefrontThemeTemplate,
     hasRenderableThemeTemplate,

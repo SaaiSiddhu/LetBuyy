@@ -1,6 +1,6 @@
 import StorefrontLanding from './storefront-landing';
 import type { Metadata } from 'next';
-import { createStorefrontApiClient } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 type StoreShowcase = {
   storeName: string;

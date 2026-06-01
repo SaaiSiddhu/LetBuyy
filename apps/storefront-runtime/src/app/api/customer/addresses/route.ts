@@ -8,7 +8,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getSession } from '@/lib/session';
-import { createStorefrontApiClient } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 // ── GET — List all addresses for current customer ──────────
 export async function GET() {

@@ -78,6 +78,18 @@ test('merchant control plane has no unused handwritten gateway fetch helper', ()
   assert.doesNotMatch(merchantApiClient, /createWorkerApiClient|worker-client/);
 });
 
+test('storefront runtime gateway transport uses storefront API naming', () => {
+  assert.equal(existsSync('apps/storefront-runtime/src/lib/worker-client.ts'), false);
+  assert.equal(existsSync('apps/storefront-runtime/src/lib/browser-worker-client.ts'), false);
+
+  const serverClient = read('apps/storefront-runtime/src/lib/api/client.ts');
+  const browserClient = read('apps/storefront-runtime/src/lib/api/browser-client.ts');
+  assert.match(serverClient, /createLetbuyyApiClient/);
+  assert.match(serverClient, /createStorefrontApiClient/);
+  assert.match(browserClient, /storefrontBrowserApiFetch/);
+  assert.doesNotMatch(`${serverClient}\n${browserClient}`, /worker-client|WorkerRequestError|workerFetch|readWorkerJson|workerErrorMessage/);
+});
+
 test('theme contracts resolve from theme-engine or shared-types in app source', () => {
   const merchantThemeSchemas = read('apps/merchant-control-plane/src/lib/theme-schemas.ts');
   const storefrontDemo = read('apps/storefront-runtime/src/lib/demo/urban-kicks-demo.ts');

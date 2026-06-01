@@ -1,6 +1,6 @@
 import { ProductModel } from '@/types/store';
 import type { Product as SharedProduct } from '@letbuyy/shared-types';
-import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
+import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
     getUrbanKicksDemoProduct,
     getUrbanKicksDemoProducts,

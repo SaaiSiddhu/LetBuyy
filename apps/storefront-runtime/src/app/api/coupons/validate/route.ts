@@ -5,7 +5,7 @@
 // ============================================================
 
 import { NextRequest, NextResponse } from 'next/server';
-import { createStorefrontApiClient } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 export async function GET(request: NextRequest) {
     try {

@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUrbanKicksDemoReviews, URBAN_KICKS_DEMO_STORE_ID } from '@/lib/demo/urban-kicks-demo';
 import { getSession } from '@/lib/session';
-import { createStorefrontApiClient, WorkerRequestError } from '@/lib/worker-client';
+import { createStorefrontApiClient, StorefrontApiRequestError } from '@/lib/api/client';
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -25,7 +25,7 @@ function getErrorMessage(payload: unknown, fallback: string) {
 }
 
 function reviewApiErrorResponse(error: unknown, fallbackMessage: string) {
-    if (error instanceof WorkerRequestError) {
+    if (error instanceof StorefrontApiRequestError) {
         return NextResponse.json(
             {
                 error: getErrorMessage(error.payload, error.message),

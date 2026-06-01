@@ -11,10 +11,10 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Script from 'next/script';
 import {
-    readWorkerJson,
-    storefrontWorkerFetch,
-    workerErrorMessage,
-} from '@/lib/browser-worker-client';
+    readStorefrontApiJson,
+    storefrontBrowserApiFetch,
+    storefrontApiErrorMessage,
+} from '@/lib/api/browser-client';
 
 interface RazorpaySuccessResponse {
     razorpay_order_id: string;
@@ -339,7 +339,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            const paymentRes = await storefrontWorkerFetch(subdomain, '/payments/razorpay/order', {
+            const paymentRes = await storefrontBrowserApiFetch(subdomain, '/payments/razorpay/order', {
                 method: 'POST',
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
@@ -347,12 +347,12 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 }),
             });
 
-            const paymentResult = await readWorkerJson<RazorpayOrderData>(paymentRes);
+            const paymentResult = await readStorefrontApiJson<RazorpayOrderData>(paymentRes);
             const paymentData = paymentResult.data;
             const keyId = paymentData?.keyId || paymentData?.key_id;
             const razorpayOrderId = paymentData?.razorpayOrderId || paymentData?.razorpay_order_id;
             if (!paymentRes.ok || paymentResult.success === false || !keyId || !razorpayOrderId || !paymentData?.amount) {
-                alert(workerErrorMessage(paymentResult, 'Online payment is not configured for this store yet.'));
+                alert(storefrontApiErrorMessage(paymentResult, 'Online payment is not configured for this store yet.'));
                 setIsProcessing(false);
                 return;
             }
@@ -367,7 +367,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 order_id: razorpayOrderId,
                 handler: async (response) => {
                     try {
-                        const verifyRes = await storefrontWorkerFetch(subdomain, '/payments/razorpay/verify', {
+                        const verifyRes = await storefrontBrowserApiFetch(subdomain, '/payments/razorpay/verify', {
                             method: 'POST',
                             body: JSON.stringify({
                                 orderId: orderResult.order!.id,
@@ -378,14 +378,14 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                             }),
                         });
 
-                        const verifyResult = await readWorkerJson<{ verified?: boolean }>(verifyRes);
+                        const verifyResult = await readStorefrontApiJson<{ verified?: boolean }>(verifyRes);
                         if (verifyRes.ok && verifyResult.success !== false) {
                             setOrderNumber(orderResult.order!.orderNumber);
                             setIsSuccess(true);
                             clearCart();
                             autoCreateCustomer(orderResult.order);
                         } else {
-                            alert(workerErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
+                            alert(storefrontApiErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
                         }
                     } catch {
                         alert('Payment verification failed. Please contact support.');
@@ -437,7 +437,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            const stripeRes = await storefrontWorkerFetch(subdomain, '/payments/stripe/checkout', {
+            const stripeRes = await storefrontBrowserApiFetch(subdomain, '/payments/stripe/checkout', {
                 method: 'POST',
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
@@ -448,13 +448,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 }),
             });
 
-            const stripeResult = await readWorkerJson<StripeCheckoutData>(stripeRes);
+            const stripeResult = await readStorefrontApiJson<StripeCheckoutData>(stripeRes);
             const stripeUrl = stripeResult.data?.url || stripeResult.data?.session_url;
 
             if (stripeRes.ok && stripeResult.success !== false && stripeUrl) {
                 window.location.href = stripeUrl;
             } else {
-                alert(workerErrorMessage(stripeResult, 'Failed to create Stripe checkout session. Please try again.'));
+                alert(storefrontApiErrorMessage(stripeResult, 'Failed to create Stripe checkout session. Please try again.'));
                 setIsProcessing(false);
             }
         } catch {
@@ -475,7 +475,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 return;
             }
 
-            const paypalRes = await storefrontWorkerFetch(subdomain, '/payments/paypal/order', {
+            const paypalRes = await storefrontBrowserApiFetch(subdomain, '/payments/paypal/order', {
                 method: 'POST',
                 body: JSON.stringify({
                     orderId: orderResult.order.id,
@@ -485,13 +485,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 }),
             });
 
-            const paypalResult = await readWorkerJson<PayPalOrderData>(paypalRes);
+            const paypalResult = await readStorefrontApiJson<PayPalOrderData>(paypalRes);
             const approvalUrl = paypalResult.data?.approvalUrl || paypalResult.data?.approval_url;
 
             if (paypalRes.ok && paypalResult.success !== false && approvalUrl) {
                 window.location.href = approvalUrl;
             } else {
-                alert(workerErrorMessage(paypalResult, 'Failed to create PayPal order. Please try again.'));
+                alert(storefrontApiErrorMessage(paypalResult, 'Failed to create PayPal order. Please try again.'));
                 setIsProcessing(false);
             }
         } catch {

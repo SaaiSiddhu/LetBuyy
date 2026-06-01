@@ -1,7 +1,7 @@
 // PATCH /api/customer/profile — Update customer profile
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/session';
-import { createStorefrontApiClient } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 export async function PATCH(request: NextRequest) {
     try {

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createStorefrontApiClient } from '@/lib/worker-client';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 /**
  * GET /api/themes — Storefront-facing theme catalog proxy.

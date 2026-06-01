@@ -6,10 +6,10 @@ import { CheckCircle, Loader2, ArrowLeft, XCircle } from 'lucide-react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
-    readWorkerJson,
-    storefrontWorkerFetch,
-    workerErrorMessage,
-} from '@/lib/browser-worker-client';
+    readStorefrontApiJson,
+    storefrontBrowserApiFetch,
+    storefrontApiErrorMessage,
+} from '@/lib/api/browser-client';
 
 export default function PayPalReturnPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const searchParams = useSearchParams();
@@ -35,7 +35,7 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
         // Capture the PayPal payment
         const capturePayment = async () => {
             try {
-                const res = await storefrontWorkerFetch(subdomain, '/payments/paypal/capture', {
+                const res = await storefrontBrowserApiFetch(subdomain, '/payments/paypal/capture', {
                     method: 'POST',
                     body: JSON.stringify({
                         paypalOrderId: token,
@@ -44,12 +44,12 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
                     }),
                 });
 
-                const result = await readWorkerJson<{ captured?: boolean }>(res);
+                const result = await readStorefrontApiJson<{ captured?: boolean }>(res);
 
                 if (res.ok && result.success !== false) {
                     setStatus('success');
                 } else {
-                    setErrorMessage(workerErrorMessage(result, 'Payment capture failed.'));
+                    setErrorMessage(storefrontApiErrorMessage(result, 'Payment capture failed.'));
                     setStatus('error');
                 }
             } catch (error) {

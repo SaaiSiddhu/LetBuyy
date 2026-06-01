@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createStorefrontApiClient, WorkerRequestError } from '@/lib/worker-client';
+import { createStorefrontApiClient, StorefrontApiRequestError } from '@/lib/api/client';
 
-function getWorkerErrorMessage(payload: unknown, fallback: string) {
+function getStorefrontApiErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
         const error = (payload as { error?: unknown }).error;
         if (typeof error === 'string') return error;
@@ -60,11 +60,11 @@ export async function POST(request: NextRequest) {
         }, { status: 201 });
 
     } catch (error) {
-        if (error instanceof WorkerRequestError) {
+        if (error instanceof StorefrontApiRequestError) {
             return NextResponse.json(
                 {
                     success: false,
-                    error: getWorkerErrorMessage(error.payload, error.message),
+                    error: getStorefrontApiErrorMessage(error.payload, error.message),
                 },
                 { status: error.status }
             );

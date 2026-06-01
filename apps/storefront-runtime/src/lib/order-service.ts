@@ -4,7 +4,7 @@
 // ============================================================
 
 import { OrderModel, OrderItem, OrderPricing, OrderPayment, OrderStatus, ShippingAddress } from '@/types/store';
-import { createStorefrontApiClient } from './worker-client';
+import { createStorefrontApiClient } from './api/client';
 
 // ============================================================
 // ORDER RETRIEVAL
