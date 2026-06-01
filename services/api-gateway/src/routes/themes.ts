@@ -15,6 +15,7 @@ import {
     ThemePurchaseOrderSchema,
     ThemePurchaseVerifySchema,
     ThemeStoreQuerySchema,
+    UploadThemePackageSchema,
     type InstallThemeInput,
     type PreviewTokenInput,
     type PublishThemeInput,
@@ -22,15 +23,17 @@ import {
     type SaveThemeDraftInput,
     type ThemePurchaseOrderInput,
     type ThemePurchaseVerifyInput,
+    type UploadThemePackageInput,
 } from '../schemas/theme.schema';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { SchemaRegistryExecutionAdapter } from '../execution/schema-registry-execution.adapter';
 import { ThemeExecutionAdapter } from '../execution/theme-execution.adapter';
 import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
-const SUPPORTED_THEME_SLUGS = ['urban-kicks'];
 
 router.use('/', optionalAuth);
+router.use('/packages/upload', authMiddleware);
 router.use('/:slug/editor', authMiddleware);
 router.use('/:slug/editor/*', authMiddleware);
 router.use('/:slug/publish', authMiddleware);
@@ -83,8 +86,7 @@ router.get('/', async (c) => {
     let query = db
         .from('themes')
         .select('*', { count: 'exact' })
-        .eq('is_active', true)
-        .in('slug', SUPPORTED_THEME_SLUGS);
+        .eq('is_active', true);
 
     if (category) query = query.eq('category', category);
     if (siteType) query = query.contains('supported_site_types', [siteType]);
@@ -412,6 +414,21 @@ router.post('/:slug/releases/:releaseId/rollback', validate('json', RollbackThem
     }
     const service = new ThemeExecutionAdapter(db);
     return c.json(success(await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c))));
+});
+
+// POST /themes/packages/upload — Validate and persist a portable JSON-contract theme bundle
+router.post('/packages/upload', validate('json', UploadThemePackageSchema), async (c) => {
+    const auth = c.get('auth');
+    const body = c.get('validatedBody') as UploadThemePackageInput;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const registry = new SchemaRegistryExecutionAdapter(db);
+    return c.json(success(await registry.uploadThemePackageBundle(body.bundle, customUser.id)), 201);
 });
 
 // GET /themes/:slug — Get theme details by slug

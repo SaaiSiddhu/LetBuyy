@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
-const SUPPORTED_ADMIN_THEME_SLUGS = new Set(['urban-kicks'])
-
 /**
  * GET /api/themes?store_name=xxx
  * 
@@ -29,10 +27,7 @@ export async function GET(request: NextRequest) {
         const payload = await createWorkerApiClient().themes.listCatalog(
             storeId ? { store_id: storeId } : undefined
         )
-        const allThemes = payload.data
-        const themes = allThemes.filter((theme) => (
-            typeof theme.slug === 'string' && SUPPORTED_ADMIN_THEME_SLUGS.has(theme.slug)
-        ))
+        const themes = payload.data
         const currentThemeSlug = payload.current_theme
 
         currentTheme = themes.find((theme) => (

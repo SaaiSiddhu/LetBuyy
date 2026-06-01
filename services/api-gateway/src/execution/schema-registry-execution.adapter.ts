@@ -7,6 +7,11 @@ import {
     type SectionSchema,
     type ThemeSettingsSchema,
 } from '@letbuyy/api-types';
+import {
+    buildThemePackagePersistencePayload,
+    parseThemePackageBundle,
+    type ThemePackageBundle,
+} from '@letbuyy/theme-engine';
 
 type DbRecord = Record<string, unknown>;
 type SectionSchemas = Record<string, SectionSchema>;
@@ -140,6 +145,75 @@ function stringArray(value: unknown): string[] {
     return value.filter((item): item is string => typeof item === 'string');
 }
 
+function readStringSetting(settings: DbRecord, keys: string[], fallback: string): string {
+    for (const key of keys) {
+        const value = settings[key];
+        if (typeof value === 'string' && value.trim().length > 0) {
+            return value;
+        }
+    }
+
+    return fallback;
+}
+
+function buildBundleTemplateConfig(bundle: ThemePackageBundle): DbRecord {
+    const settingsData = asRecord(bundle.config.settings_data);
+    const currentSettings = asRecord(settingsData.current);
+
+    return {
+        themeId: bundle.package.slug,
+        schema_version: bundle.schema_version,
+        engineVersion: bundle.renderer.renderer_version,
+        config: bundle.config,
+        settings_data: bundle.config.settings_data,
+        themeSettings: currentSettings,
+        sections: bundle.sections,
+        blocks: bundle.blocks,
+        templates: bundle.templates,
+        locales: bundle.locales,
+        renderer: bundle.renderer,
+    };
+}
+
+function buildBundleCatalogConfig(bundle: ThemePackageBundle): DbRecord {
+    const settings = asRecord(bundle.config.settings_data.current);
+
+    return {
+        theme_bundle: true,
+        colors: {
+            primary: readStringSetting(settings, ['primaryColor', 'primary_color', 'primary'], '#00B3B3'),
+            secondary: readStringSetting(settings, ['secondaryColor', 'secondary_color', 'secondary'], '#008080'),
+            background: readStringSetting(settings, ['backgroundColor', 'background_color', 'background'], '#FFFFFF'),
+            text: readStringSetting(settings, ['textColor', 'text_color', 'text'], '#1A1A2E'),
+            accent: readStringSetting(settings, ['accentColor', 'accent_color', 'accent'], '#A4E500'),
+        },
+        fonts: {
+            heading: readStringSetting(settings, ['headingFontFamily', 'heading_font_family', 'headingFont'], 'Inter'),
+            body: readStringSetting(settings, ['fontFamily', 'font_family', 'bodyFont'], 'Inter'),
+        },
+        layout: {
+            headerStyle: 'sticky',
+            footerStyle: 'standard',
+            maxWidth: 1280,
+        },
+        darkMode: settings.isDark === true,
+        settings_schema: bundle.config.settings_schema,
+        settings_data: bundle.config.settings_data,
+        section_schemas: bundle.sections,
+        block_schemas: bundle.blocks,
+        template_schema: bundle.templates,
+        default_template: buildBundleTemplateConfig(bundle),
+        renderer_manifest: bundle.renderer,
+        locales: bundle.locales,
+    };
+}
+
+function themePricingType(pricingType: ThemePackageBundle['package']['pricing_type']): 'free' | 'one_time' | 'subscription' {
+    if (pricingType === 'subscription') return 'subscription';
+    if (pricingType === 'paid') return 'one_time';
+    return 'free';
+}
+
 export class SchemaRegistryExecutionAdapter {
     static readonly applicationWorkflows = THEME_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = THEME_EXECUTION_PIPELINES;
@@ -152,6 +226,181 @@ export class SchemaRegistryExecutionAdapter {
     });
 
     constructor(private db: SupabaseClient) {}
+
+    async uploadThemePackageBundle(input: unknown, actorId: string) {
+        const bundle = parseThemePackageBundle(input);
+        const payload = buildThemePackagePersistencePayload(bundle);
+        const now = new Date().toISOString();
+        const templateConfig = buildBundleTemplateConfig(bundle);
+        const catalogConfig = buildBundleCatalogConfig(bundle);
+        const firstSiteType = payload.themePackage.site_types[0] || 'store';
+        const installable =
+            payload.themePackage.status === 'active' &&
+            payload.themePackageVersion.release_status === 'published';
+        const pricingType = themePricingType(payload.themePackage.pricing_type);
+
+        const { data: legacyTheme, error: legacyThemeError } = await this.db
+            .from('themes')
+            .upsert(
+                {
+                    slug: payload.themePackage.slug,
+                    name: payload.themePackage.name,
+                    site_type: firstSiteType,
+                    category: firstSiteType,
+                    description: payload.themePackage.description,
+                    long_description: payload.themePackage.description,
+                    preview_url: null,
+                    thumbnail_url: '/previews/store.png',
+                    is_premium: pricingType !== 'free',
+                    price: payload.themePackage.price,
+                    config: catalogConfig,
+                    default_template: templateConfig,
+                    section_schemas: payload.schemaManifest.section_schemas,
+                    block_schemas: payload.schemaManifest.block_schemas,
+                    settings_schema: payload.schemaManifest.settings_schema,
+                    renderer_manifest: payload.rendererManifest.renderer_manifest,
+                    schema_version: payload.themePackageVersion.schema_version,
+                    renderer_version: payload.themePackageVersion.renderer_version,
+                    author: payload.themePackage.author_name,
+                    version: payload.themePackageVersion.version,
+                    is_active: installable,
+                    sort_order: 1000 + payload.themePackageVersion.version_number,
+                    letbuyy_pricing_type: pricingType,
+                    letbuyy_price_usd: payload.themePackage.currency === 'USD' ? payload.themePackage.price : 0,
+                    letbuyy_price_inr: payload.themePackage.currency === 'INR' ? payload.themePackage.price : 0,
+                    industry: payload.themePackage.site_types,
+                    supported_site_types: payload.themePackage.site_types,
+                    supported_platforms: ['letbuyy'],
+                    tags: Array.from(new Set(['json-contract', 'uploaded', ...payload.themePackage.site_types])),
+                    features: [
+                        `${Object.keys(bundle.sections).length} sections`,
+                        'Schema-driven settings',
+                        'Portable theme bundle',
+                    ],
+                    updated_at: now,
+                },
+                { onConflict: 'slug' }
+            )
+            .select('id, slug, name')
+            .single();
+
+        if (legacyThemeError || !legacyTheme) {
+            throw new Error(`Theme catalog upsert failed: ${legacyThemeError?.message || 'Unknown error'}`);
+        }
+
+        const legacyThemeRecord = legacyTheme as DbRecord;
+        const legacyThemeId = String(legacyThemeRecord.id);
+
+        const { data: themePackage, error: packageError } = await this.db
+            .from('theme_packages')
+            .upsert(
+                {
+                    ...payload.themePackage,
+                    marketplace_metadata: {
+                        ...payload.themePackage.marketplace_metadata,
+                        uploaded_by_custom_user_id: actorId,
+                        uploaded_at: now,
+                    },
+                    legacy_theme_id: legacyThemeId,
+                    deleted_at: null,
+                    updated_at: now,
+                },
+                { onConflict: 'slug' }
+            )
+            .select('id, slug, name, status')
+            .single();
+
+        if (isMissingThemeEngineTable(packageError)) {
+            throw new Error('Theme package registry tables are unavailable');
+        }
+        if (packageError || !themePackage) {
+            throw new Error(`Theme package upload failed: ${packageError?.message || 'Unknown error'}`);
+        }
+
+        const themePackageRecord = themePackage as DbRecord;
+        const themePackageId = String(themePackageRecord.id);
+
+        const { data: version, error: versionError } = await this.db
+            .from('theme_package_versions')
+            .upsert(
+                {
+                    ...payload.themePackageVersion,
+                    theme_package_id: themePackageId,
+                    published_at: payload.themePackageVersion.release_status === 'published' ? now : null,
+                    deleted_at: null,
+                    updated_at: now,
+                },
+                { onConflict: 'theme_package_id,version' }
+            )
+            .select('id, version, version_number, release_status')
+            .single();
+
+        if (isMissingThemeEngineTable(versionError)) {
+            throw new Error('Theme package version table is unavailable');
+        }
+        if (versionError || !version) {
+            throw new Error(`Theme package version upload failed: ${versionError?.message || 'Unknown error'}`);
+        }
+
+        const versionRecord = version as DbRecord;
+        const themePackageVersionId = String(versionRecord.id);
+
+        const [schemaUpsert, rendererUpsert] = await Promise.all([
+            this.db
+                .from('theme_schema_manifests')
+                .upsert(
+                    {
+                        ...payload.schemaManifest,
+                        theme_package_version_id: themePackageVersionId,
+                        updated_at: now,
+                    },
+                    { onConflict: 'theme_package_version_id' }
+                ),
+            this.db
+                .from('theme_renderer_manifests')
+                .upsert(
+                    {
+                        ...payload.rendererManifest,
+                        theme_package_version_id: themePackageVersionId,
+                        updated_at: now,
+                    },
+                    { onConflict: 'theme_package_version_id' }
+                ),
+        ]);
+
+        if (isMissingThemeEngineTable(schemaUpsert.error) || isMissingThemeEngineTable(rendererUpsert.error)) {
+            throw new Error('Theme schema or renderer manifest tables are unavailable');
+        }
+        if (schemaUpsert.error) {
+            throw new Error(`Theme schema manifest upload failed: ${schemaUpsert.error.message}`);
+        }
+        if (rendererUpsert.error) {
+            throw new Error(`Theme renderer manifest upload failed: ${rendererUpsert.error.message}`);
+        }
+
+        return {
+            theme: {
+                id: legacyThemeId,
+                slug: payload.themePackage.slug,
+                name: payload.themePackage.name,
+            },
+            package: {
+                id: themePackageId,
+                slug: payload.themePackage.slug,
+                name: payload.themePackage.name,
+                status: payload.themePackage.status,
+            },
+            version: {
+                id: themePackageVersionId,
+                version: payload.themePackageVersion.version,
+                version_number: payload.themePackageVersion.version_number,
+                release_status: payload.themePackageVersion.release_status,
+            },
+            schema_manifest_version: payload.schemaManifest.manifest_version,
+            renderer_version: payload.themePackageVersion.renderer_version,
+            installable,
+        };
+    }
 
     async resolveThemeRuntime(theme: ThemeRegistryThemeInput): Promise<ThemeRuntimeSchema> {
         const legacy = legacyRuntime(theme);

@@ -4811,6 +4811,70 @@ body {
   font-size: 16px;
 }
 
+/* —— Theme Bundle Upload —— */
+.theme-upload-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.theme-upload-copy {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+.theme-upload-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-color, var(--primary));
+  flex-shrink: 0;
+}
+
+.theme-upload-icon .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.theme-upload-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.theme-upload-desc,
+.theme-upload-status {
+  font-size: 13px;
+  color: var(--text-tertiary);
+}
+
+.theme-upload-status {
+  margin-top: 6px;
+  color: var(--accent-color, var(--primary));
+}
+
+.theme-upload-input {
+  display: none;
+}
+
+.theme-upload-disabled {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
 /* —— Popular Themes Section —— */
 .theme-popular-section {
   background: var(--bg-primary);

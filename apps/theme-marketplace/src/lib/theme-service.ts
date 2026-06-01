@@ -69,6 +69,28 @@ export const ThemeService = {
         return payload?.data || null;
     },
 
+    async uploadThemePackage(bundle: Record<string, unknown>): Promise<Record<string, unknown>> {
+        const response = await safeThemeFetch('/themes/packages/upload', {
+            method: 'POST',
+            requireSession: true,
+            body: JSON.stringify({ bundle }),
+        });
+
+        if (!response?.ok) {
+            const payload = response ? await response.json().catch(() => null) as Record<string, unknown> | null : null;
+            const error = payload?.error && typeof payload.error === 'object'
+                ? payload.error as Record<string, unknown>
+                : null;
+            const message = typeof error?.message === 'string'
+                ? error.message
+                : 'Theme package upload failed';
+            throw new Error(message);
+        }
+
+        const payload = await readWorkerEnvelope<Record<string, unknown>>(response);
+        return payload?.data || {};
+    },
+
     async getThemeReviews(themeId: string) {
         const purchases = await this.getUserPurchases();
         const purchasedTheme = purchases.find((purchase) => {

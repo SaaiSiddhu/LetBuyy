@@ -31,3 +31,26 @@ export async function GET(req: NextRequest) {
         );
     }
 }
+
+export async function POST(req: NextRequest) {
+    try {
+        const body = await req.json() as Record<string, unknown>;
+        const bundle = body.bundle;
+
+        if (!bundle || typeof bundle !== 'object' || Array.isArray(bundle)) {
+            return NextResponse.json(
+                { error: 'bundle is required' },
+                { status: 400 }
+            );
+        }
+
+        const result = await ThemeService.uploadThemePackage(bundle as Record<string, unknown>);
+        return NextResponse.json(result, { status: 201 });
+    } catch (error) {
+        console.error('[API] /api/themes upload error:', error);
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : 'Failed to upload theme package' },
+            { status: 500 }
+        );
+    }
+}

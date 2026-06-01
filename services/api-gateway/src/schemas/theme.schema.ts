@@ -19,6 +19,7 @@ export {
   PublishThemeSchema,
   PreviewTokenSchema,
   RollbackThemeReleaseSchema,
+  UploadThemePackageSchema,
   ThemePurchaseOrderSchema,
   ThemePurchaseVerifySchema,
   type InstallThemeInput,
@@ -26,6 +27,7 @@ export {
   type PublishThemeInput,
   type PreviewTokenInput,
   type RollbackThemeReleaseInput,
+  type UploadThemePackageInput,
   type ThemePurchaseOrderInput,
   type ThemePurchaseVerifyInput,
 } from '@letbuyy/theme-engine';

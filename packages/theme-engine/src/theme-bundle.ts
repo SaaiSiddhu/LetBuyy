@@ -251,8 +251,13 @@ export const ThemePackageBundleSchema = z.object({
   }
 });
 
+export const UploadThemePackageSchema = z.object({
+  bundle: ThemePackageBundleSchema,
+}).strict();
+
 export type ThemeBundle = z.infer<typeof ThemePackageBundleSchema>;
 export type ThemePackageBundle = z.infer<typeof ThemePackageBundleSchema>;
+export type UploadThemePackageInput = z.infer<typeof UploadThemePackageSchema>;
 export type ThemeBundleTemplate = z.infer<typeof ThemeBundleTemplateSchema>;
 export type ThemeBundleTemplateSection = z.infer<typeof ThemeBundleTemplateSectionSchema>;
 export type ThemeBundleTemplateBlock = z.infer<typeof ThemeBundleTemplateBlockSchema>;
@@ -349,6 +354,26 @@ function formatThemeBundleIssues(issues: z.ZodIssue[]): string[] {
 export function buildThemePackagePersistencePayload(input: ThemePackageBundle): ThemePackagePersistencePayload {
   const bundle = parseThemePackageBundle(input);
   const rendererKeys = Array.from(new Set(Object.values(bundle.sections).map((section) => section.renderer_key)));
+  const runtimeSectionSchemas: Record<string, Record<string, unknown>> = {};
+
+  for (const [sectionType, section] of Object.entries(bundle.sections)) {
+    const blocksSchema: Record<string, { name: string; fields: Record<string, unknown> }> = {};
+
+    for (const blockType of section.block_types) {
+      const block = bundle.blocks[blockType];
+      if (!block) continue;
+
+      blocksSchema[blockType] = {
+        name: block.name,
+        fields: block.settings_schema,
+      };
+    }
+
+    runtimeSectionSchemas[sectionType] = {
+      ...section,
+      blocks_schema: blocksSchema,
+    };
+  }
 
   return {
     themePackage: {
@@ -396,7 +421,7 @@ export function buildThemePackagePersistencePayload(input: ThemePackageBundle): 
         templates_path: THEME_BUNDLE_PATHS.templates,
         locales_path: THEME_BUNDLE_PATHS.locales,
       },
-      section_schemas: bundle.sections,
+      section_schemas: runtimeSectionSchemas,
       block_schemas: bundle.blocks,
       settings_schema: bundle.config.settings_schema,
       template_schema: bundle.templates,

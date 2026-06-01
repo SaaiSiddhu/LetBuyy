@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useEffect, useCallback, Suspense } from 'react';
+import type { ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, X } from 'lucide-react';
+import { Search, Upload, X } from 'lucide-react';
 import ThemeCard from '@/components/theme-card';
 import { cn } from '@/lib/utils';
 
@@ -39,6 +40,8 @@ function GalleryContent() {
     const [themes, setThemes] = useState<any[]>([]);
     const [total, setTotal] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
+    const [uploadStatus, setUploadStatus] = useState<string | null>(null);
 
     const fetchThemes = useCallback(async () => {
         setLoading(true);
@@ -70,6 +73,49 @@ function GalleryContent() {
         return () => clearTimeout(debounce);
     }, [fetchThemes]);
 
+    const handleBundleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (!file || uploading) return;
+
+        setUploading(true);
+        setUploadStatus(null);
+
+        try {
+            const bundle = JSON.parse(await file.text()) as unknown;
+            if (!bundle || typeof bundle !== 'object' || Array.isArray(bundle)) {
+                throw new Error('Theme package must be a JSON object');
+            }
+
+            const res = await fetch('/api/themes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ bundle }),
+            });
+            const payload = await res.json().catch(() => null) as Record<string, unknown> | null;
+
+            if (!res.ok) {
+                const errorValue = payload?.error;
+                const message = typeof errorValue === 'string'
+                    ? errorValue
+                    : errorValue && typeof errorValue === 'object' && typeof (errorValue as Record<string, unknown>).message === 'string'
+                        ? String((errorValue as Record<string, unknown>).message)
+                        : 'Theme package upload failed';
+                throw new Error(message);
+            }
+
+            const theme = payload?.theme && typeof payload.theme === 'object'
+                ? payload.theme as Record<string, unknown>
+                : {};
+            setUploadStatus(`Uploaded ${typeof theme.name === 'string' ? theme.name : 'theme package'}`);
+            await fetchThemes();
+        } catch (err) {
+            setUploadStatus(err instanceof Error ? err.message : 'Theme package upload failed');
+        } finally {
+            setUploading(false);
+            event.target.value = '';
+        }
+    };
+
     const activeFilters = [category !== 'all', pricing !== 'all', search.trim()].filter(Boolean).length;
 
     return (
@@ -80,6 +126,27 @@ function GalleryContent() {
                 <p className="text-text-muted">
                     {loading ? 'Loading...' : <>Showing <strong className="text-text-heading">{total}</strong> themes</>}
                 </p>
+            </div>
+
+            <div className="mb-8 rounded-xl border border-border bg-bg-card p-4 md:p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div>
+                    <h2 className="text-base font-semibold text-text-heading">Upload theme package</h2>
+                    <p className="text-sm text-text-muted">Portable JSON-contract themes are validated by the Commerce API.</p>
+                    {uploadStatus && (
+                        <p className="text-xs text-primary-light mt-2">{uploadStatus}</p>
+                    )}
+                </div>
+                <label className={cn('btn-secondary text-sm inline-flex items-center justify-center gap-2 cursor-pointer', uploading && 'opacity-70 pointer-events-none')}>
+                    <Upload className="w-4 h-4" />
+                    {uploading ? 'Uploading' : 'Upload JSON'}
+                    <input
+                        type="file"
+                        accept="application/json,.json"
+                        className="sr-only"
+                        disabled={uploading}
+                        onChange={handleBundleUpload}
+                    />
+                </label>
             </div>
 
             {/* Search Bar */}

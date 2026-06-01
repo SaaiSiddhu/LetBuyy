@@ -513,6 +513,27 @@ export type ThemeInstallResult = {
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;
   release: JsonRecord;
 };
+export type ThemePackageUploadInput = {
+  bundle: JsonRecord;
+};
+export type ThemePackageUploadResult = {
+  theme: Pick<Theme, 'id' | 'slug' | 'name'>;
+  package: {
+    id: string;
+    slug: string;
+    name: string;
+    status: string;
+  };
+  version: {
+    id: string;
+    version: string;
+    version_number: number;
+    release_status: string;
+  };
+  schema_manifest_version: string;
+  renderer_version: string;
+  installable: boolean;
+};
 export type SaveThemeDraftInput = {
   store_id: string;
   template_config: JsonRecord;
@@ -992,6 +1013,8 @@ export class LetbuyyApiClient {
       this.requestData<string[]>('/themes/industries', options),
     install: (slug: string, input: ThemeInstallInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeInstallResult>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
+    uploadPackage: (input: ThemePackageUploadInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePackageUploadResult>('/themes/packages/upload', { ...options, method: 'POST', body: input }),
     editor: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { store_id: storeId } }),
     saveDraft: (slug: string, input: SaveThemeDraftInput, options?: LetbuyyRequestOptions) =>

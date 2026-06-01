@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, useCallback } from 'react'
+import type { ChangeEvent } from 'react'
 import { useParams } from 'next/navigation'
 
 /* ——————————————————————————————————————
@@ -77,6 +78,9 @@ export default function ThemesPage() {
     const [storeId, setStoreId] = useState<string | null>(null)
     const [installing, setInstalling] = useState<string | null>(null)
     const [publishing, setPublishing] = useState(false)
+    const [uploadingBundle, setUploadingBundle] = useState(false)
+    const [uploadMessage, setUploadMessage] = useState<string | null>(null)
+    const bundleInputRef = useRef<HTMLInputElement>(null)
 
     // Fetch store ID and themes from the API
     const fetchData = useCallback(async () => {
@@ -124,6 +128,56 @@ export default function ThemesPage() {
         }
     }
 
+    const handleBundleUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file || uploadingBundle) return
+
+        if (!storeId) {
+            setUploadMessage('Store context is unavailable')
+            event.target.value = ''
+            return
+        }
+
+        setUploadingBundle(true)
+        setUploadMessage(null)
+
+        try {
+            const bundle = JSON.parse(await file.text()) as unknown
+            if (!bundle || typeof bundle !== 'object' || Array.isArray(bundle)) {
+                throw new Error('Theme package must be a JSON object')
+            }
+
+            const res = await fetch('/api/themes/install', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ storeId, bundle }),
+            })
+            const data = await res.json().catch(() => null) as Record<string, unknown> | null
+
+            if (!res.ok) {
+                const errorRecord = data?.error && typeof data.error === 'object'
+                    ? data.error as Record<string, unknown>
+                    : null
+                const message = typeof errorRecord?.message === 'string'
+                    ? errorRecord.message
+                    : 'Theme package upload failed'
+                throw new Error(message)
+            }
+
+            const theme = data?.theme && typeof data.theme === 'object'
+                ? data.theme as Record<string, unknown>
+                : {}
+            const name = typeof theme.name === 'string' ? theme.name : 'theme package'
+            setUploadMessage(`Installed ${name}`)
+            await fetchData()
+        } catch (err) {
+            setUploadMessage(err instanceof Error ? err.message : 'Theme package upload failed')
+        } finally {
+            setUploadingBundle(false)
+            if (bundleInputRef.current) bundleInputRef.current.value = ''
+        }
+    }
+
     // Publish/Unpublish
     const handlePublishToggle = async () => {
         if (!storeId || publishing) return
@@ -164,7 +218,7 @@ export default function ThemesPage() {
         ? [themeColors.primary, themeColors.secondary, themeColors.accent, themeColors.text].filter(Boolean) as string[]
         : ['#6366f1', '#8b5cf6', '#f59e0b', '#1f2937']
 
-    const storeTemplateThemes = themes.filter((theme) => theme.slug === 'urban-kicks')
+    const availableThemes = themes
 
     const isPublished = storeStatus === 'published'
     const storefrontUrl = getStorefrontUrl(store)
@@ -364,8 +418,46 @@ export default function ThemesPage() {
                 </>
             )}
 
-            {/* Available Store Template */}
-            {!loading && storeTemplateThemes.length > 0 && (
+            {!loading && (
+                <div className="theme-upload-section">
+                    <div className="theme-upload-copy">
+                        <div className="theme-upload-icon">
+                            <span className="material-symbols-outlined">upload_file</span>
+                        </div>
+                        <div>
+                            <h3 className="theme-upload-title">Upload theme package</h3>
+                            <p className="theme-upload-desc">JSON-contract bundles are validated by the Commerce API before installation.</p>
+                            {uploadMessage && (
+                                <p className="theme-upload-status">{uploadMessage}</p>
+                            )}
+                        </div>
+                    </div>
+                    <label className={`os-btn os-btn-outline os-btn-sm ${uploadingBundle ? 'theme-upload-disabled' : ''}`}>
+                        {uploadingBundle ? (
+                            <>
+                                <span className="loading-spinner-sm" />
+                                Uploading
+                            </>
+                        ) : (
+                            <>
+                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>add</span>
+                                Upload JSON
+                            </>
+                        )}
+                        <input
+                            ref={bundleInputRef}
+                            type="file"
+                            accept="application/json,.json"
+                            className="theme-upload-input"
+                            disabled={uploadingBundle}
+                            onChange={handleBundleUpload}
+                        />
+                    </label>
+                </div>
+            )}
+
+            {/* Available Store Templates */}
+            {!loading && availableThemes.length > 0 && (
                 <div className="theme-popular-section">
                     <div className="theme-popular-header">
                         <div className="theme-popular-icon">
@@ -373,16 +465,16 @@ export default function ThemesPage() {
                         </div>
                         <div>
                             <h3 className="theme-popular-title">
-                                Store template
+                                Store themes
                             </h3>
                             <p className="theme-popular-desc">
-                                Only the production-ready Urban Kicks theme is available for stores.
+                                Install production and uploaded JSON-contract themes for this store.
                             </p>
                         </div>
                     </div>
 
                     <div className="theme-grid">
-                        {storeTemplateThemes.map((theme) => {
+                        {availableThemes.map((theme) => {
                             const colors = theme.config?.colors || {}
                             const c1 = colors.primary || '#6366f1'
                             const c2 = colors.secondary || '#8b5cf6'
