@@ -3,6 +3,7 @@ import type { Env } from '../index';
 import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
+import { requireRoleCategory } from '../middleware/rbac';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
     buildMarketplaceAutomatedChecks,
@@ -139,6 +140,52 @@ function appPayoutRail(value: unknown): IndiaPayoutRail | null {
         default:
             return null;
     }
+}
+
+function numberValue(value: unknown): number {
+    const numeric = Number(value || 0);
+    return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function sumMinor(rows: AppEngineJsonRecord[], key: string): number {
+    return rows.reduce((total, row) => total + Math.max(0, Math.trunc(numberValue(row[key]))), 0);
+}
+
+function partnerRequestCode(developerId: string): string {
+    return `LBP-${developerId.slice(0, 8).toUpperCase()}-${crypto.randomUUID().replace(/-/g, '').slice(0, 10).toUpperCase()}`;
+}
+
+function siteFromRelatedRecord(value: unknown): AppEngineJsonRecord {
+    const record = firstRelatedRecord(value);
+    return Object.keys(record).length > 0 ? record : parseJsonRecord(value);
+}
+
+function partnerStoreFromMembership(row: AppEngineJsonRecord): AppEngineJsonRecord {
+    const site = siteFromRelatedRecord(row.sites);
+    const roleSlugs = stringArray(row.role_slugs);
+    return {
+        id: stringOrNull(site.id) || stringOrNull(row.site_id) || '',
+        name: stringOrNull(site.name) || stringOrNull(site.store_name) || 'Managed store',
+        subdomain: stringOrNull(site.subdomain),
+        site_type: stringOrNull(site.site_type),
+        status: stringOrNull(site.status),
+        role_slugs: roleSlugs,
+        managed: !roleSlugs.includes('owner'),
+        created_at: stringOrNull(site.created_at) || stringOrNull(row.created_at),
+    };
+}
+
+function partnerStoreFromOwnedSite(row: AppEngineJsonRecord): AppEngineJsonRecord {
+    return {
+        id: stringOrNull(row.id) || '',
+        name: stringOrNull(row.name) || stringOrNull(row.store_name) || 'Development store',
+        subdomain: stringOrNull(row.subdomain),
+        site_type: stringOrNull(row.site_type),
+        status: stringOrNull(row.status),
+        role_slugs: ['owner'],
+        managed: false,
+        created_at: stringOrNull(row.created_at),
+    };
 }
 
 function appendAppOAuthTokenConfig(input: {
@@ -1825,6 +1872,213 @@ router.get('/developers/apps', authMiddleware, async (c) => {
     }
 
     return c.json(success({ developer, apps: apps || [], review_records: reviewRecords || [] }));
+});
+
+// GET /app-store/partners/dashboard — Partner console aggregate over listings, payouts, stores, and analytics
+router.get('/partners/dashboard', authMiddleware, requireRoleCategory('partner'), async (c) => {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: developer, error: developerError } = await db
+        .from('app_developers')
+        .select('id, user_id, company_name, slug, website_url, support_email, logo_url, description, verified, status, created_at, updated_at')
+        .eq('user_id', customUser.id)
+        .maybeSingle();
+
+    if (developerError) {
+        return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+    }
+
+    if (!developer) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Developer profile not found' } }, 404);
+    }
+
+    const developerId = stringOrNull(developer.id) || '';
+    const { data: apps, error: appsError } = await db
+        .from('marketplace_apps')
+        .select('id, name, slug, tagline, icon_url, status, install_count, rating_avg, review_count, pricing_model, price_inr, supported_site_types, created_at, updated_at')
+        .eq('developer_id', developerId)
+        .order('created_at', { ascending: false });
+
+    if (appsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
+    }
+
+    const appRows = (apps || []) as unknown as AppEngineJsonRecord[];
+    const appIds = appRows.map((app) => stringOrNull(app.id)).filter((id): id is string => Boolean(id));
+
+    const { data: reviewRecords, error: reviewError } = await db
+        .from('marketplace_review_records')
+        .select([
+            'id',
+            'submission_type',
+            'resource_id',
+            'resource_slug',
+            'resource_name',
+            'partner_user_id',
+            'app_developer_id',
+            'status',
+            'automated_checks',
+            'submitted_at',
+            'reviewed_by',
+            'reviewed_at',
+            'review_notes',
+            'metadata',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ].join(', '))
+        .or(`app_developer_id.eq.${developerId},partner_user_id.eq.${customUser.id}`)
+        .order('submitted_at', { ascending: false })
+        .limit(25);
+
+    if (reviewError) {
+        return c.json({ error: { code: 'DB_ERROR', message: reviewError.message } }, 500);
+    }
+
+    const { data: charges, error: chargesError } = await db
+        .from('app_billing_charges')
+        .select('id, site_id, app_id, partner_id, installation_id, billing_mode, status, name, amount_minor, currency, revenue_share_bps, partner_amount_minor, platform_fee_minor, partner_gst_bps, partner_gst_minor, payout_rail, provider, provider_mode, approved_at, activated_at, idempotency_key, metadata, created_at, updated_at')
+        .eq('partner_id', developerId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(25);
+
+    if (chargesError) {
+        return c.json({ error: { code: 'DB_ERROR', message: chargesError.message } }, 500);
+    }
+
+    const { data: payouts, error: payoutsError } = await db
+        .from('partner_payout_ledger_entries')
+        .select('id, partner_id, site_id, app_id, installation_id, charge_id, billing_mode, amount_minor, currency, revenue_share_bps, partner_amount_minor, platform_fee_minor, status, rail, metadata, created_at, updated_at')
+        .eq('partner_id', developerId)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(25);
+
+    if (payoutsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: payoutsError.message } }, 500);
+    }
+
+    const { data: installations, error: installationsError } = appIds.length > 0
+        ? await db
+            .from('app_installations')
+            .select('id, app_id, store_id, status, scopes_granted, installed_at, uninstalled_at')
+            .in('app_id', appIds)
+        : { data: [], error: null };
+
+    if (installationsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installationsError.message } }, 500);
+    }
+
+    const { data: memberships, error: membershipsError } = await db
+        .from('site_memberships')
+        .select('id, site_id, status, role_slugs, permissions, created_at, sites(id, name, store_name, subdomain, site_type, status, created_at)')
+        .eq('custom_user_id', customUser.id)
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .order('created_at', { ascending: false })
+        .limit(25);
+
+    if (membershipsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: membershipsError.message } }, 500);
+    }
+
+    const { data: ownedSites, error: ownedSitesError } = await db
+        .from('sites')
+        .select('id, name, store_name, subdomain, site_type, status, created_at')
+        .or(`custom_user_id.eq.${customUser.id},user_id.eq.${customUser.id}`)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+    if (ownedSitesError) {
+        return c.json({ error: { code: 'DB_ERROR', message: ownedSitesError.message } }, 500);
+    }
+
+    const chargeRows = (charges || []) as unknown as AppEngineJsonRecord[];
+    const payoutRows = (payouts || []) as unknown as AppEngineJsonRecord[];
+    const installationRows = (installations || []) as unknown as AppEngineJsonRecord[];
+    const membershipStores = ((memberships || []) as unknown as AppEngineJsonRecord[])
+        .map(partnerStoreFromMembership)
+        .filter((store) => stringOrNull(store.id));
+    const ownedDevelopmentStores = ((ownedSites || []) as unknown as AppEngineJsonRecord[])
+        .map(partnerStoreFromOwnedSite)
+        .filter((store) => stringOrNull(store.id));
+    const developmentStoresById = new Map<string, AppEngineJsonRecord>();
+
+    [...membershipStores, ...ownedDevelopmentStores].forEach((store) => {
+        const id = stringOrNull(store.id);
+        if (id && !developmentStoresById.has(id)) developmentStoresById.set(id, store);
+    });
+
+    const collaboratorAccess = {
+        request_code: partnerRequestCode(developerId),
+        expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        scopes: ['read_products', 'write_themes', 'read_orders', 'app_collaboration'],
+        managed_stores: membershipStores.filter((store) => store.managed === true),
+    };
+
+    const analytics = {
+        total_apps: appRows.length,
+        published_apps: appRows.filter((app) => app.status === 'published').length,
+        active_installations: installationRows.filter((installation) => installation.status === 'active').length,
+        uninstalls: installationRows.filter((installation) => installation.status === 'uninstalled').length,
+        charges: chargeRows.length,
+        gross_amount_minor: sumMinor(chargeRows, 'amount_minor'),
+        partner_earnings_minor: sumMinor(payoutRows, 'partner_amount_minor'),
+        partner_gst_minor: sumMinor(chargeRows, 'partner_gst_minor'),
+        payout_pending_minor: sumMinor(payoutRows.filter((row) => ['pending', 'processing'].includes(String(row.status))), 'partner_amount_minor'),
+        payout_released_minor: sumMinor(payoutRows.filter((row) => row.status === 'released'), 'partner_amount_minor'),
+        currency: 'INR',
+    };
+
+    return c.json(success({
+        developer,
+        apps: appRows,
+        review_records: reviewRecords || [],
+        charges: chargeRows,
+        payouts: payoutRows,
+        development_stores: Array.from(developmentStoresById.values()),
+        collaborator_access: collaboratorAccess,
+        analytics,
+    }));
+});
+
+// POST /app-store/partners/collaborator-code — Mint a short-lived partner request code
+router.post('/partners/collaborator-code', authMiddleware, requireRoleCategory('partner'), async (c) => {
+    const auth = c.get('auth');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: developer, error } = await db
+        .from('app_developers')
+        .select('id')
+        .eq('user_id', customUser.id)
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (!developer?.id) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Developer profile not found' } }, 404);
+    }
+
+    return c.json(success({
+        request_code: partnerRequestCode(String(developer.id)),
+        expires_at: new Date(Date.now() + 15 * 60 * 1000).toISOString(),
+        scopes: ['read_products', 'write_themes', 'read_orders', 'app_collaboration'],
+        managed_stores: [],
+    }));
 });
 
 // POST /app-store/developers/apps — Submit a new marketplace app for review

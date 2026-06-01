@@ -53,6 +53,7 @@ import type {
   ProductCategory,
   ProductReview,
   ProductStatus,
+  PartnerDashboard,
   PageStatus,
   PolicyType,
   ResumeContentItem,
@@ -900,6 +901,10 @@ export class LetbuyyApiClient {
       this.requestData<AppDeveloperAppsResult>('/app-store/developers/apps', options),
     submitDeveloperApp: (input: AppSubmissionInput, options?: LetbuyyRequestOptions) =>
       this.requestData<AppSubmissionResult>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
+    partnerDashboard: (options?: LetbuyyRequestOptions) =>
+      this.requestData<PartnerDashboard>('/app-store/partners/dashboard', options),
+    collaboratorCode: (options?: LetbuyyRequestOptions) =>
+      this.requestData<PartnerDashboard['collaborator_access']>('/app-store/partners/collaborator-code', { ...options, method: 'POST' }),
   };
 
   readonly operations = {

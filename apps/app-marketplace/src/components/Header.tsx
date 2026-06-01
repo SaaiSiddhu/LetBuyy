@@ -40,6 +40,7 @@ export function Header() {
                     <Link href="/categories">Categories</Link>
                     <Link href="/collections/staff-picks">Collections</Link>
                     <Link href="/developers">Developers</Link>
+                    <Link href="/developers/dashboard">Partner Console</Link>
                 </nav>
             </div>
 

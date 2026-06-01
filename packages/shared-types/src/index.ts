@@ -1545,6 +1545,69 @@ export const AppBillingChargeResultSchema = z.object({
   payout_plan: z.record(z.string(), z.unknown()).optional(),
 }).passthrough();
 
+export const PartnerPayoutLedgerEntrySchema = z.object({
+  id: UuidSchema,
+  partner_id: UuidSchema,
+  site_id: UuidSchema.optional().nullable(),
+  app_id: UuidSchema.optional().nullable(),
+  installation_id: UuidSchema.optional().nullable(),
+  charge_id: UuidSchema,
+  billing_mode: AppBillingChargeModeSchema,
+  amount_minor: z.number().int().nonnegative(),
+  currency: z.literal('INR').default('INR'),
+  revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
+  partner_amount_minor: z.number().int().nonnegative(),
+  platform_fee_minor: z.number().int().nonnegative(),
+  status: z.string().min(1).max(80),
+  rail: AppBillingIndiaPayoutRailSchema,
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const PartnerDevelopmentStoreSchema = z.object({
+  id: UuidSchema,
+  name: z.string().min(1).max(200),
+  subdomain: z.string().min(1).max(120).optional().nullable(),
+  site_type: SiteTypeSchema.or(z.string().min(1)).optional().nullable(),
+  status: z.string().min(1).max(80).optional().nullable(),
+  role_slugs: z.array(z.string().min(1)).default([]),
+  managed: z.boolean().default(false),
+  created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const PartnerCollaboratorAccessSchema = z.object({
+  request_code: z.string().min(8).max(80),
+  expires_at: z.string().datetime(),
+  scopes: z.array(z.string().min(1)).default([]),
+  managed_stores: z.array(PartnerDevelopmentStoreSchema).default([]),
+}).passthrough();
+
+export const PartnerAnalyticsSchema = z.object({
+  total_apps: z.number().int().nonnegative(),
+  published_apps: z.number().int().nonnegative(),
+  active_installations: z.number().int().nonnegative(),
+  uninstalls: z.number().int().nonnegative(),
+  charges: z.number().int().nonnegative(),
+  gross_amount_minor: z.number().int().nonnegative(),
+  partner_earnings_minor: z.number().int().nonnegative(),
+  partner_gst_minor: z.number().int().nonnegative(),
+  payout_pending_minor: z.number().int().nonnegative(),
+  payout_released_minor: z.number().int().nonnegative(),
+  currency: z.literal('INR').default('INR'),
+}).passthrough();
+
+export const PartnerDashboardSchema = z.object({
+  developer: MarketplaceAppDeveloperSchema,
+  apps: z.array(MarketplaceAppSchema).default([]),
+  review_records: z.array(MarketplaceReviewRecordSchema).default([]),
+  charges: z.array(AppBillingChargeSchema).default([]),
+  payouts: z.array(PartnerPayoutLedgerEntrySchema).default([]),
+  development_stores: z.array(PartnerDevelopmentStoreSchema).default([]),
+  collaborator_access: PartnerCollaboratorAccessSchema,
+  analytics: PartnerAnalyticsSchema,
+}).passthrough();
+
 export const AppOAuthAuthorizationSchema = z.object({
   code: z.string().min(1),
   redirect_uri: UrlSchema,
@@ -1704,6 +1767,11 @@ export type AppBillingCharge = z.infer<typeof AppBillingChargeSchema>;
 export type AppBillingChargeCreate = z.infer<typeof AppBillingChargeCreateSchema>;
 export type AppBillingChargeApprove = z.infer<typeof AppBillingChargeApproveSchema>;
 export type AppBillingChargeResult = z.infer<typeof AppBillingChargeResultSchema>;
+export type PartnerPayoutLedgerEntry = z.infer<typeof PartnerPayoutLedgerEntrySchema>;
+export type PartnerDevelopmentStore = z.infer<typeof PartnerDevelopmentStoreSchema>;
+export type PartnerCollaboratorAccess = z.infer<typeof PartnerCollaboratorAccessSchema>;
+export type PartnerAnalytics = z.infer<typeof PartnerAnalyticsSchema>;
+export type PartnerDashboard = z.infer<typeof PartnerDashboardSchema>;
 export type AppOAuthAuthorization = z.infer<typeof AppOAuthAuthorizationSchema>;
 export type AppOAuthAuthorizationResult = z.infer<typeof AppOAuthAuthorizationResultSchema>;
 export type AppOAuthTokenResult = z.infer<typeof AppOAuthTokenResultSchema>;
