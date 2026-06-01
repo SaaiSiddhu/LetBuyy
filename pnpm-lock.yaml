@@ -335,9 +335,6 @@ importers:
 
   apps/platform-operations-portal:
     dependencies:
-      '@letbuyy/api-types':
-        specifier: workspace:*
-        version: link:../../packages/typescript/api-types
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core

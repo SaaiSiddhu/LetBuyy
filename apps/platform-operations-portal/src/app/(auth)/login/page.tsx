@@ -9,7 +9,7 @@ export default function TeamLoginPage() {
                     </p>
                 </div>
 
-                {/* TODO: Employee login with email allowlist + Supabase Auth */}
+                {/* TODO: Employee login with email allowlist through the shared identity session. */}
                 <form className="space-y-4">
                     <div>
                         <label htmlFor="email" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
