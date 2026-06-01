@@ -1,4 +1,4 @@
-import type { RuntimeEventEnvelope } from '@letbuyy/event-core';
+import { getDomainEventContract, type DomainEventConsumer, type RuntimeEventEnvelope } from '@letbuyy/event-core';
 import type { CorrelationContext, DeadLetterPolicy, RetryPolicy } from './index';
 
 export interface EventExecutionMetadata {
@@ -177,6 +177,16 @@ export function eventMatchesSubscription(eventType: string, eventTypes: string[]
 
 export function queueNamesForEvent(eventType: string): RuntimeQueueName[] {
   const queues = new Set<RuntimeQueueName>();
+  const contract = getDomainEventContract(eventType);
+
+  if (contract) {
+    for (const consumer of contract.consumers) {
+      const queueName = queueNameForDomainEventConsumer(consumer);
+      if (queueName) queues.add(queueName);
+    }
+
+    return [...queues];
+  }
 
   if (eventType.startsWith('payment.') || eventType.startsWith('refund.')) queues.add('payment-events');
   if (eventType.startsWith('inventory.') || eventType.startsWith('po.') || eventType.startsWith('transfer.')) queues.add('inventory-jobs');
@@ -185,6 +195,20 @@ export function queueNamesForEvent(eventType: string): RuntimeQueueName[] {
 
   queues.add('analytics-events');
   return [...queues];
+}
+
+function queueNameForDomainEventConsumer(consumer: DomainEventConsumer): RuntimeQueueName | null {
+  switch (consumer) {
+    case 'analytics':
+      return 'analytics-events';
+    case 'search-indexing':
+      return 'search-indexing';
+    case 'payout-ledger':
+      return 'payment-events';
+    case 'webhook-service':
+    case 'notifications':
+      return null;
+  }
 }
 
 export function buildDomainEventEnvelope(event: DomainEventEnvelopeInput): Record<string, unknown> {

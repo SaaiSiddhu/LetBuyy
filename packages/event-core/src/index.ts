@@ -54,6 +54,342 @@ export const RecordUsageSchema = z.object({
 
 const JsonRecordSchema = z.record(z.string(), z.unknown());
 
+const UuidSchema = z.string().uuid();
+const InrMinorUnitsSchema = z.object({
+  amount_minor: z.number().int().nonnegative(),
+  currency: z.literal('INR').default('INR'),
+});
+
+export const DOMAIN_EVENT_TYPES = [
+  'store.created',
+  'product.created',
+  'product.updated',
+  'product.deleted',
+  'order.created',
+  'order.paid',
+  'order.fulfilled',
+  'order.cancelled',
+  'order.refunded',
+  'app.installed',
+  'app.uninstalled',
+  'app.charge.created',
+  'app.charge.activated',
+  'theme.submitted',
+  'theme.approved',
+  'theme.installed',
+  'payout.ledger_entry.created',
+  'payout.released',
+  'payout.failed',
+] as const;
+
+export type DomainEventType = (typeof DOMAIN_EVENT_TYPES)[number];
+
+export type DomainEventProducer =
+  | 'api-gateway'
+  | 'identity-platform'
+  | 'platform-console'
+  | 'platform-operations-portal'
+  | 'app-marketplace'
+  | 'theme-marketplace'
+  | 'storefront-runtime'
+  | 'queue-workers'
+  | 'webhook-service';
+
+export type DomainEventConsumer =
+  | 'analytics'
+  | 'search-indexing'
+  | 'notifications'
+  | 'payout-ledger'
+  | 'webhook-service';
+
+export interface DomainEventContract {
+  eventType: DomainEventType;
+  schemaVersion: 1;
+  producer: DomainEventProducer;
+  consumers: readonly DomainEventConsumer[];
+  aggregateType: 'store' | 'product' | 'order' | 'app' | 'app_charge' | 'theme' | 'payout';
+  payloadSchema: z.ZodType<unknown>;
+}
+
+const StoreCreatedPayloadSchema = z.object({
+  site_id: UuidSchema,
+  store_slug: z.string().trim().min(1).max(120),
+  owner_user_id: UuidSchema,
+  plan_code: z.string().trim().min(1).max(80).optional(),
+});
+
+const ProductPayloadSchema = z.object({
+  site_id: UuidSchema,
+  product_id: UuidSchema,
+  handle: z.string().trim().min(1).max(160).optional(),
+  status: z.enum(['draft', 'active', 'archived', 'deleted']).optional(),
+});
+
+const OrderPayloadSchema = z.object({
+  site_id: UuidSchema,
+  order_id: UuidSchema,
+  order_number: z.string().trim().min(1).max(120).optional(),
+  customer_id: UuidSchema.optional(),
+  total: InrMinorUnitsSchema.optional(),
+});
+
+const AppInstallationPayloadSchema = z.object({
+  site_id: UuidSchema,
+  app_id: UuidSchema,
+  installation_id: UuidSchema,
+  partner_id: UuidSchema.optional(),
+  scopes: z.array(z.string().trim().min(1).max(80)).default([]),
+});
+
+const AppChargePayloadSchema = z.object({
+  site_id: UuidSchema,
+  app_id: UuidSchema,
+  installation_id: UuidSchema,
+  charge_id: UuidSchema,
+  billing_mode: z.enum(['recurring', 'usage']),
+  amount: InrMinorUnitsSchema,
+});
+
+const ThemeReviewPayloadSchema = z.object({
+  theme_package_id: UuidSchema,
+  theme_version_id: UuidSchema,
+  partner_id: UuidSchema,
+  review_id: UuidSchema.optional(),
+  reviewer_id: UuidSchema.optional(),
+});
+
+const ThemeInstalledPayloadSchema = z.object({
+  site_id: UuidSchema,
+  theme_package_id: UuidSchema,
+  theme_version_id: UuidSchema,
+  installation_id: UuidSchema,
+});
+
+const PayoutPayloadSchema = z.object({
+  partner_id: UuidSchema,
+  payout_id: UuidSchema,
+  ledger_entry_id: UuidSchema.optional(),
+  amount: InrMinorUnitsSchema,
+  rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('manual'),
+});
+
+export const DOMAIN_EVENT_CONTRACTS = {
+  'store.created': {
+    eventType: 'store.created',
+    schemaVersion: 1,
+    producer: 'identity-platform',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'store',
+    payloadSchema: StoreCreatedPayloadSchema,
+  },
+  'product.created': {
+    eventType: 'product.created',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'search-indexing', 'webhook-service'],
+    aggregateType: 'product',
+    payloadSchema: ProductPayloadSchema,
+  },
+  'product.updated': {
+    eventType: 'product.updated',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'search-indexing', 'webhook-service'],
+    aggregateType: 'product',
+    payloadSchema: ProductPayloadSchema,
+  },
+  'product.deleted': {
+    eventType: 'product.deleted',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'search-indexing', 'webhook-service'],
+    aggregateType: 'product',
+    payloadSchema: ProductPayloadSchema,
+  },
+  'order.created': {
+    eventType: 'order.created',
+    schemaVersion: 1,
+    producer: 'storefront-runtime',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: OrderPayloadSchema,
+  },
+  'order.paid': {
+    eventType: 'order.paid',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: OrderPayloadSchema,
+  },
+  'order.fulfilled': {
+    eventType: 'order.fulfilled',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: OrderPayloadSchema,
+  },
+  'order.cancelled': {
+    eventType: 'order.cancelled',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: OrderPayloadSchema,
+  },
+  'order.refunded': {
+    eventType: 'order.refunded',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'order',
+    payloadSchema: OrderPayloadSchema,
+  },
+  'app.installed': {
+    eventType: 'app.installed',
+    schemaVersion: 1,
+    producer: 'app-marketplace',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'app',
+    payloadSchema: AppInstallationPayloadSchema,
+  },
+  'app.uninstalled': {
+    eventType: 'app.uninstalled',
+    schemaVersion: 1,
+    producer: 'app-marketplace',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'app',
+    payloadSchema: AppInstallationPayloadSchema,
+  },
+  'app.charge.created': {
+    eventType: 'app.charge.created',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'payout-ledger', 'webhook-service'],
+    aggregateType: 'app_charge',
+    payloadSchema: AppChargePayloadSchema,
+  },
+  'app.charge.activated': {
+    eventType: 'app.charge.activated',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'payout-ledger', 'webhook-service'],
+    aggregateType: 'app_charge',
+    payloadSchema: AppChargePayloadSchema,
+  },
+  'theme.submitted': {
+    eventType: 'theme.submitted',
+    schemaVersion: 1,
+    producer: 'platform-console',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'theme',
+    payloadSchema: ThemeReviewPayloadSchema,
+  },
+  'theme.approved': {
+    eventType: 'theme.approved',
+    schemaVersion: 1,
+    producer: 'platform-operations-portal',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'theme',
+    payloadSchema: ThemeReviewPayloadSchema,
+  },
+  'theme.installed': {
+    eventType: 'theme.installed',
+    schemaVersion: 1,
+    producer: 'theme-marketplace',
+    consumers: ['analytics', 'notifications', 'search-indexing', 'webhook-service'],
+    aggregateType: 'theme',
+    payloadSchema: ThemeInstalledPayloadSchema,
+  },
+  'payout.ledger_entry.created': {
+    eventType: 'payout.ledger_entry.created',
+    schemaVersion: 1,
+    producer: 'queue-workers',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'payout',
+    payloadSchema: PayoutPayloadSchema,
+  },
+  'payout.released': {
+    eventType: 'payout.released',
+    schemaVersion: 1,
+    producer: 'queue-workers',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'payout',
+    payloadSchema: PayoutPayloadSchema,
+  },
+  'payout.failed': {
+    eventType: 'payout.failed',
+    schemaVersion: 1,
+    producer: 'queue-workers',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'payout',
+    payloadSchema: PayoutPayloadSchema,
+  },
+} satisfies Record<DomainEventType, DomainEventContract>;
+
+export const DOMAIN_EVENT_PRODUCER_CONSUMER_CONTRACTS = DOMAIN_EVENT_TYPES.map((eventType) => {
+  const contract = DOMAIN_EVENT_CONTRACTS[eventType];
+  return {
+    event_type: eventType,
+    schema_version: contract.schemaVersion,
+    producer: contract.producer,
+    consumers: contract.consumers,
+    aggregate_type: contract.aggregateType,
+  };
+});
+
+export const DomainEventEnvelopeSchema = z.object({
+  event_id: z.string().trim().min(8).max(160),
+  event_type: z.enum(DOMAIN_EVENT_TYPES),
+  source_runtime: z.string().trim().min(1).max(120),
+  site_id: UuidSchema.optional(),
+  aggregate_type: z.string().trim().min(1).max(80),
+  aggregate_id: z.string().trim().min(1).max(160),
+  occurred_at: z.string().datetime(),
+  payload: JsonRecordSchema,
+  request_id: z.string().trim().min(1).max(160).optional(),
+  idempotency_key: z.string().trim().min(1).max(240).optional(),
+  schema_version: z.number().int().positive().default(1),
+});
+
+export function getDomainEventContract(eventType: string): DomainEventContract | null {
+  return DOMAIN_EVENT_TYPES.includes(eventType as DomainEventType)
+    ? DOMAIN_EVENT_CONTRACTS[eventType as DomainEventType]
+    : null;
+}
+
+export function parseDomainEventPayload(eventType: DomainEventType, payload: unknown): Record<string, unknown> {
+  const parsed = DOMAIN_EVENT_CONTRACTS[eventType].payloadSchema.parse(payload);
+  return JsonRecordSchema.parse(parsed);
+}
+
+export function validateDomainEventEnvelope(input: unknown): RuntimeEventEnvelope {
+  const base = DomainEventEnvelopeSchema.parse(input);
+  const contract = DOMAIN_EVENT_CONTRACTS[base.event_type];
+
+  if (base.schema_version !== contract.schemaVersion) {
+    throw new Error(`Unsupported schema version ${base.schema_version} for ${base.event_type}`);
+  }
+
+  if (base.aggregate_type !== contract.aggregateType) {
+    throw new Error(`Invalid aggregate type ${base.aggregate_type} for ${base.event_type}`);
+  }
+
+  return {
+    event_id: base.event_id,
+    event_type: base.event_type,
+    source_runtime: base.source_runtime,
+    site_id: base.site_id,
+    aggregate_type: base.aggregate_type,
+    aggregate_id: base.aggregate_id,
+    occurred_at: base.occurred_at,
+    payload: parseDomainEventPayload(base.event_type, base.payload),
+    request_id: base.request_id,
+    idempotency_key: base.idempotency_key,
+  };
+}
+
 export const RuntimeQueueRecoverySchema = z.object({
   limit: z.number().int().min(1).max(500).optional(),
   reason: z.string().trim().min(8).max(500),
