@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { UuidSchema } from '@letbuyy/shared-types';
+import { UuidSchema, type AdminAppEmbedSurface, type AppBridgeCapability } from '@letbuyy/shared-types';
 
 export const GenerateContentSchema = z.object({
   store_id: UuidSchema,
@@ -142,9 +142,39 @@ export interface AppLifecycleEventPayload extends Record<string, unknown> {
   occurred_at: string;
 }
 
+export interface AppAdminEmbedExtensionRecord extends AppEngineJsonRecord {
+  id?: string | null;
+  type?: string | null;
+  target?: string | null;
+  label?: string | null;
+  config?: unknown;
+  sort_order?: number | null;
+}
+
+export interface MarketplaceAppAdminEmbedRecord extends AppEngineJsonRecord {
+  id?: string | null;
+  name?: string | null;
+  slug?: string | null;
+  icon_url?: string | null;
+  tagline?: string | null;
+  app_url?: string | null;
+  app_extensions?: unknown;
+}
+
+export interface AppAdminEmbedInstallationRecord extends AppEngineJsonRecord {
+  id?: string | null;
+  app_id?: string | null;
+  store_id?: string | null;
+  scopes_granted?: unknown;
+  config?: unknown;
+  marketplace_apps?: unknown;
+}
+
 export type AppEnginePlanResult<T> =
   | { ok: true; value: T }
   | { ok: false; message: string };
+
+export const DEFAULT_APP_BRIDGE_CAPABILITIES: AppBridgeCapability[] = ['api.fetch', 'toast', 'resize'];
 
 export function appStoreSlugify(value: string): string {
   return value
@@ -170,6 +200,137 @@ export function appStoreStringArray(value: unknown): string[] {
 export function parseAppStoreJsonRecord(value: unknown): AppEngineJsonRecord {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   return value as AppEngineJsonRecord;
+}
+
+function parseAppStoreJsonRecordArray(value: unknown): AppEngineJsonRecord[] {
+  if (Array.isArray(value)) {
+    return value
+      .map((item) => parseAppStoreJsonRecord(item))
+      .filter((item) => Object.keys(item).length > 0);
+  }
+
+  const record = parseAppStoreJsonRecord(value);
+  return Object.keys(record).length > 0 ? [record] : [];
+}
+
+function firstRelatedAppRecord(value: unknown): MarketplaceAppAdminEmbedRecord {
+  return parseAppStoreJsonRecordArray(value)[0] || parseAppStoreJsonRecord(value);
+}
+
+function safeAppAdminEmbedUrl(value: unknown, allowLocalhost = false): URL | null {
+  const href = appStoreStringOrNull(value);
+  if (!href) return null;
+
+  try {
+    const parsed = new URL(href);
+    const isLocalHttp = allowLocalhost
+      && parsed.protocol === 'http:'
+      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
+
+    if (parsed.protocol === 'https:' || isLocalHttp) return parsed;
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+function normalizeAppBridgeCapabilities(value: unknown): AppBridgeCapability[] {
+  const allowed = new Set<AppBridgeCapability>(['api.fetch', 'toast', 'resize', 'navigation.redirect']);
+  const capabilities = appStoreStringArray(value)
+    .filter((capability): capability is AppBridgeCapability => allowed.has(capability as AppBridgeCapability));
+
+  return capabilities.length > 0 ? [...new Set(capabilities)] : DEFAULT_APP_BRIDGE_CAPABILITIES;
+}
+
+function isAdminEmbedExtension(extension: AppEngineJsonRecord): boolean {
+  const type = appStoreStringOrNull(extension.type);
+  return type === 'settings_page' || type === 'dashboard_widget' || type === 'admin_link';
+}
+
+function sortAppExtensions(left: AppEngineJsonRecord, right: AppEngineJsonRecord): number {
+  const leftSort = Number(left.sort_order ?? 0);
+  const rightSort = Number(right.sort_order ?? 0);
+  return (Number.isFinite(leftSort) ? leftSort : 0) - (Number.isFinite(rightSort) ? rightSort : 0);
+}
+
+export function normalizeAppAdminEmbedSurface(
+  installation: AppAdminEmbedInstallationRecord,
+  options: { allowLocalhost?: boolean } = {},
+): AdminAppEmbedSurface | null {
+  const installConfig = parseAppStoreJsonRecord(installation.config);
+  const configuredEmbed = parseAppStoreJsonRecord(installConfig.admin_embed || installConfig.adminEmbed);
+  const app = firstRelatedAppRecord(installation.marketplace_apps);
+  const extensions = parseAppStoreJsonRecordArray(app.app_extensions)
+    .filter(isAdminEmbedExtension)
+    .sort(sortAppExtensions);
+  const extension = extensions[0] || {};
+  const extensionConfig = parseAppStoreJsonRecord(extension.config);
+  const url = safeAppAdminEmbedUrl(
+    configuredEmbed.url
+      || configuredEmbed.embed_url
+      || configuredEmbed.embedUrl
+      || installConfig.admin_embed_url
+      || installConfig.adminEmbedUrl
+      || extensionConfig.url
+      || extensionConfig.embed_url
+      || extensionConfig.embedUrl
+      || extension.target
+      || app.app_url,
+    options.allowLocalhost === true,
+  );
+
+  if (!url) return null;
+
+  const title = appStoreStringOrNull(configuredEmbed.title)
+    || appStoreStringOrNull(extension.label)
+    || appStoreStringOrNull(app.name)
+    || 'Installed app';
+  const label = appStoreStringOrNull(configuredEmbed.label)
+    || appStoreStringOrNull(extension.label)
+    || title;
+  const capabilities = normalizeAppBridgeCapabilities(
+    configuredEmbed.capabilities || extensionConfig.capabilities || installConfig.bridge_capabilities,
+  );
+
+  return {
+    title,
+    label,
+    url: url.toString(),
+    origin: url.origin,
+    target: appStoreStringOrNull(configuredEmbed.target || extension.target) || 'embedded',
+    icon_url: appStoreStringOrNull(configuredEmbed.icon_url || configuredEmbed.iconUrl || app.icon_url),
+    capabilities,
+  };
+}
+
+export function createExampleAdminAppInstallation(embedUrl: string): AppAdminEmbedInstallationRecord {
+  return {
+    id: 'example-installation',
+    app_id: 'letbuyy-example-app',
+    store_id: 'example-store',
+    status: 'active',
+    scopes_granted: ['read_products'],
+    config: {},
+    marketplace_apps: {
+      id: 'letbuyy-example-app',
+      name: 'Example App Bridge',
+      slug: 'example-app-bridge',
+      icon_url: null,
+      tagline: 'Embedded app bridge example',
+      app_url: embedUrl,
+      app_extensions: [{
+        id: 'example-admin-embed',
+        type: 'settings_page',
+        target: embedUrl,
+        label: 'Example App',
+        config: {
+          capabilities: DEFAULT_APP_BRIDGE_CAPABILITIES,
+        },
+        sort_order: 0,
+      }],
+    },
+  };
 }
 
 export function normalizeAppInstallScopes(

@@ -13,6 +13,7 @@ import {
     appStoreStringArray as stringArray,
     appStoreStringOrNull as stringOrNull,
     isAppStoreUuid as isUuid,
+    normalizeAppAdminEmbedSurface,
     normalizeAppInstallScopes,
     normalizeAppWebhookDefinitions,
     parseAppStoreJsonRecord as parseJsonRecord,
@@ -361,7 +362,7 @@ router.get('/installations', authMiddleware, async (c) => {
 
     const { data, error } = await db
         .from('app_installations')
-        .select('*, marketplace_apps(id, name, slug, icon_url, tagline, pricing_model)')
+        .select('*, marketplace_apps(id, name, slug, icon_url, tagline, pricing_model, app_url)')
         .eq('store_id', resolvedStoreId)
         .eq('installed_by', customUser.id)
         .neq('status', 'uninstalled')
@@ -372,6 +373,83 @@ router.get('/installations', authMiddleware, async (c) => {
     }
 
     return c.json(success(data || []));
+});
+
+// POST /app-store/installations/:id/embed-session — Mint an admin app bridge session
+router.post('/installations/:id/embed-session', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const installationId = c.req.param('id');
+    const storeId = c.req.query('store_id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const now = new Date();
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: installation, error } = await db
+        .from('app_installations')
+        .select('id, app_id, store_id, status, scopes_granted, config, installed_at, uninstalled_at, marketplace_apps(id, name, slug, icon_url, tagline, pricing_model, app_url, app_extensions(id, type, target, label, config, sort_order))')
+        .eq('id', installationId)
+        .neq('status', 'uninstalled')
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (!installation) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App installation not found' } }, 404);
+    }
+
+    if (storeId && installation.store_id !== storeId) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Installation does not belong to this store' } }, 403);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const embed = normalizeAppAdminEmbedSurface(installation, { allowLocalhost: !isProductionEnv(c.env) });
+    if (!embed) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Installed app does not expose an admin embed surface' } }, 404);
+    }
+
+    const appSecret = appPlatformTokenSecret(c.env);
+    if (!appSecret) {
+        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App bridge token secret is not configured' } }, 500);
+    }
+
+    const expiresAt = new Date(now.getTime() + 15 * 60 * 1000).toISOString();
+    const scopes = stringArray(installation.scopes_granted);
+    const accessToken = await createAppScopedAccessToken({
+        appId: installation.app_id,
+        installationId: installation.id,
+        storeId: installation.store_id,
+        installedBy: customUser.id,
+        scopes,
+    }, appSecret, {
+        nowSeconds: Math.floor(now.getTime() / 1000),
+        ttlSeconds: 15 * 60,
+    });
+
+    return c.json(success({
+        installation,
+        embed,
+        bridge: {
+            version: '2026-06-01',
+            token_type: 'Bearer',
+            access_token: accessToken,
+            expires_at: expiresAt,
+            store_id: installation.store_id,
+            installation_id: installation.id,
+            app_id: installation.app_id,
+            scopes,
+            capabilities: embed.capabilities,
+        },
+    }));
 });
 
 // POST /app-store/apps/:id/install — Install an app

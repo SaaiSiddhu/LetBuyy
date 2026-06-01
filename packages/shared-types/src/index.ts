@@ -1153,6 +1153,63 @@ export const ThemeRollbackResultSchema = z.object({
   }).passthrough(),
 });
 
+export const AppInstallationStatusSchema = z.enum(['active', 'paused', 'uninstalled']);
+
+export const AppBridgeCapabilitySchema = z.enum([
+  'api.fetch',
+  'toast',
+  'resize',
+  'navigation.redirect',
+]);
+
+export const InstalledMarketplaceAppSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1).max(160),
+  slug: z.string().min(1).max(160).optional().nullable(),
+  icon_url: UrlSchema.optional().nullable(),
+  tagline: z.string().max(240).optional().nullable(),
+  pricing_model: z.string().max(80).optional().nullable(),
+  app_url: UrlSchema.optional().nullable(),
+}).passthrough();
+
+export const InstalledAppSchema = z.object({
+  id: z.string().min(1),
+  app_id: z.string().min(1),
+  store_id: z.string().min(1),
+  status: AppInstallationStatusSchema.or(z.string().min(1)),
+  scopes_granted: z.array(z.string().min(1)).default([]),
+  config: MetadataSchema.default({}),
+  installed_at: z.string().datetime().optional().nullable(),
+  uninstalled_at: z.string().datetime().optional().nullable(),
+  marketplace_apps: InstalledMarketplaceAppSchema.optional().nullable(),
+}).passthrough();
+
+export const AdminAppEmbedSurfaceSchema = z.object({
+  title: z.string().min(1).max(160),
+  label: z.string().min(1).max(80),
+  url: UrlSchema,
+  origin: z.string().min(1).max(300),
+  target: z.string().min(1).max(160).optional().nullable(),
+  icon_url: UrlSchema.optional().nullable(),
+  capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
+}).strict();
+
+export const AdminAppBridgeSessionSchema = z.object({
+  installation: InstalledAppSchema,
+  embed: AdminAppEmbedSurfaceSchema,
+  bridge: z.object({
+    version: z.string().min(1).max(40),
+    token_type: z.literal('Bearer'),
+    access_token: z.string().min(1),
+    expires_at: z.string().datetime(),
+    store_id: z.string().min(1),
+    installation_id: z.string().min(1),
+    app_id: z.string().min(1),
+    scopes: z.array(z.string().min(1)).default([]),
+    capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
+  }).strict(),
+}).strict();
+
 export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
@@ -1254,6 +1311,12 @@ export type ThemePublishResult = z.infer<typeof ThemePublishResultSchema>;
 export type ThemePreviewSessionResult = z.infer<typeof ThemePreviewSessionResultSchema>;
 export type ThemeRelease = z.infer<typeof ThemeReleaseSchema>;
 export type ThemeRollbackResult = z.infer<typeof ThemeRollbackResultSchema>;
+export type AppInstallationStatus = z.infer<typeof AppInstallationStatusSchema>;
+export type AppBridgeCapability = z.infer<typeof AppBridgeCapabilitySchema>;
+export type InstalledMarketplaceApp = z.infer<typeof InstalledMarketplaceAppSchema>;
+export type InstalledApp = z.infer<typeof InstalledAppSchema>;
+export type AdminAppEmbedSurface = z.infer<typeof AdminAppEmbedSurfaceSchema>;
+export type AdminAppBridgeSession = z.infer<typeof AdminAppBridgeSessionSchema>;
 
 export const RuntimeEnvironmentSchema = z.enum(['local', 'development', 'staging', 'production']);
 

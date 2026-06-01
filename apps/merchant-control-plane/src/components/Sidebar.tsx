@@ -49,6 +49,7 @@ const navConfig: Record<SiteType, NavGroup[]> = {
                 { href: 'reviews', label: 'Reviews', icon: 'rate_review' },
                 { href: 'coupons', label: 'Discounts', icon: 'sell' },
                 { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+                { href: 'apps', label: 'Apps', icon: 'extension' },
             ],
         },
         {
@@ -76,6 +77,7 @@ const navConfig: Record<SiteType, NavGroup[]> = {
                 { href: 'testimonials', label: 'Testimonials', icon: 'chat' },
                 { href: 'contact', label: 'Contact Form', icon: 'mail' },
                 { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+                { href: 'apps', label: 'Apps', icon: 'extension' },
             ],
         },
         {
@@ -97,6 +99,7 @@ const navConfig: Record<SiteType, NavGroup[]> = {
                 { href: 'export', label: 'PDF Export', icon: 'picture_as_pdf' },
                 { href: 'ats-score', label: 'ATS Score', icon: 'analytics' },
                 { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+                { href: 'apps', label: 'Apps', icon: 'extension' },
             ],
         },
     ],
@@ -107,6 +110,7 @@ const navConfig: Record<SiteType, NavGroup[]> = {
                 { href: 'pages', label: 'Pages', icon: 'article' },
                 { href: 'leads', label: 'Leads', icon: 'contact_page' },
                 { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+                { href: 'apps', label: 'Apps', icon: 'extension' },
             ],
         },
         {
@@ -124,6 +128,7 @@ const navConfig: Record<SiteType, NavGroup[]> = {
                 { href: 'categories', label: 'Categories', icon: 'category' },
                 { href: 'comments', label: 'Comments', icon: 'comment' },
                 { href: 'analytics', label: 'Analytics', icon: 'bar_chart' },
+                { href: 'apps', label: 'Apps', icon: 'extension' },
             ],
         },
         {

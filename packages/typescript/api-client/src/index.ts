@@ -1,6 +1,7 @@
 import type {
   AICreditBalance,
   AIUsageRecord,
+  AdminAppBridgeSession,
   AnalyticsDashboard,
   AnalyticsOrdersBreakdown,
   ApiResponse,
@@ -20,6 +21,7 @@ import type {
   FormSubmission,
   FormSubmissionStatus,
   GiftCard,
+  InstalledApp,
   InventoryAdjustmentReason,
   InventoryLevel,
   JsonRecord,
@@ -136,6 +138,8 @@ export interface ListQuery extends QueryParams {
 export interface StoreScopedQuery extends ListQuery {
   store_id?: string;
 }
+
+export interface AppInstallationListQuery extends Pick<StoreScopedQuery, 'store_id'> {}
 
 export interface AnalyticsQuery extends StoreScopedQuery {
   period?: '7d' | '30d' | '90d' | '12m' | string;
@@ -734,6 +738,16 @@ export class LetbuyyApiClient {
   readonly auth = {
     session: (options?: LetbuyyRequestOptions) =>
       this.request<AuthSessionResponse>('/auth/custom/session', options),
+  };
+
+  readonly appStore = {
+    installations: (query?: AppInstallationListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestData<InstalledApp[]>('/app-store/installations', { ...options, query }),
+    embedSession: (installationId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+      this.requestData<AdminAppBridgeSession>(
+        `/app-store/installations/${encodePathSegment(installationId)}/embed-session`,
+        { ...options, method: 'POST', query },
+      ),
   };
 
   readonly employees = {
