@@ -57,9 +57,10 @@ These are the human-gated items that prevent COMPLETE status. The append-only le
 - [SKIP] Identity live Google/Apple OAuth provider federation - requires provider client IDs/secrets, approved redirect domains, and exact gateway OAuth callback configuration. Unblocks live social-login proof for identity SSO journeys.
 - [SKIP] Live Razorpay Route/RazorpayX or UPI payout rails - requires human-owned provider test/live keys and account setup. Local/test-mode billing and payout-ledger contracts are green; provider-backed payout execution remains human-gated.
 
-## Current Head
+## Key Commits
 
-- Final status commit: `a8f2eb7 docs(federation): record final blocked status`
+- Final status report creation: `a8f2eb7 docs(federation): record final blocked status`
+- Final ledger reference cleanup: `54acebb docs(federation): finalize status ledger references`
 - Latest implementation commit: `63105f6 test(federation): align final gate smoke contracts`
 - F8 suite commit: `9ec6931 test(federation): add real-stack e2e journeys`
 - F7 gate commit: `65a971e chore(federation): record phase f7 gate`
