@@ -159,9 +159,11 @@ const authRoute = readFile("services/api-gateway/src/routes/auth.ts");
 reporter.assert(authRoute.includes("@letbuyy/tenant-core"), "Auth route must consume tenant-core subdomain governance");
 reporter.assert(!/\bRESERVED_SUBDOMAINS\b|\bSUBDOMAIN_REGEX\b|\bfunction\s+validateSubdomainFormat\b/.test(authRoute), "Auth route must not redefine tenant subdomain validation");
 
-const themeMarketplaceTypes = readFile("apps/theme-marketplace/src/types/index.ts");
-reporter.assert(themeMarketplaceTypes.includes("@letbuyy/theme-engine"), "Theme marketplace type facade must consume theme-engine contracts");
-reporter.assert(!/\bexport\s+(interface|type)\s+\w+/.test(themeMarketplaceTypes), "Theme marketplace must not own theme DTOs locally");
+reporter.assert(!exists("apps/theme-marketplace/src/types/index.ts"), "Theme marketplace must not own a local theme type facade");
+
+const themeMarketplaceCard = readFile("apps/theme-marketplace/src/components/theme-card.tsx");
+reporter.assert(themeMarketplaceCard.includes("@letbuyy/theme-engine"), "Theme marketplace presentation must consume theme-engine contracts directly");
+reporter.assert(!themeMarketplaceCard.includes("@/types"), "Theme marketplace presentation must not consume app-local theme DTOs");
 
 const themeMarketplaceService = readFile("apps/theme-marketplace/src/lib/theme-service.ts");
 reporter.assert(themeMarketplaceService.includes("@letbuyy/theme-engine"), "Theme marketplace service query contracts must consume theme-engine contracts");

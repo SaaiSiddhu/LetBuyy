@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Download, Eye, Heart } from 'lucide-react';
-import { Theme } from '@/types';
+import type { Theme } from '@letbuyy/theme-engine';
 import { formatPrice, formatCount, cn } from '@/lib/utils';
 
 interface ThemeCardProps {

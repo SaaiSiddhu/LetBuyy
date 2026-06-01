@@ -5,6 +5,7 @@ import test from 'node:test';
 test('theme marketplace no longer owns a Supabase client or bespoke worker client', () => {
   assert.equal(existsSync('apps/theme-marketplace/src/lib/supabase/client.ts'), false);
   assert.equal(existsSync('apps/theme-marketplace/src/lib/api/worker-client.ts'), false);
+  assert.equal(existsSync('apps/theme-marketplace/src/types/index.ts'), false);
 
   const packageJson = JSON.parse(readFileSync('apps/theme-marketplace/package.json', 'utf8'));
   assert.equal(packageJson.dependencies['@letbuyy/api-client'], 'workspace:*');
@@ -24,6 +25,7 @@ test('theme marketplace data and auth surfaces use shared API/auth contracts', (
   const apiClient = readFileSync('apps/theme-marketplace/src/lib/api/client.ts', 'utf8');
   const authHook = readFileSync('apps/theme-marketplace/src/hooks/useAuth.ts', 'utf8');
   const callbackRoute = readFileSync('apps/theme-marketplace/src/app/auth/callback/route.ts', 'utf8');
+  const themeCard = readFileSync('apps/theme-marketplace/src/components/theme-card.tsx', 'utf8');
 
   assert.match(themeService, /createThemeMarketplaceApiClient/);
   assert.doesNotMatch(themeService, /themeWorkerFetch|worker-client/);
@@ -33,4 +35,6 @@ test('theme marketplace data and auth surfaces use shared API/auth contracts', (
   assert.doesNotMatch(authHook, /supabase|identity-runtime-adapter/i);
   assert.match(callbackRoute, /new URL\('\/lookup'/);
   assert.doesNotMatch(callbackRoute, /supabase|exchangeCodeForSession|identity-runtime-adapter/i);
+  assert.match(themeCard, /@letbuyy\/theme-engine/);
+  assert.doesNotMatch(themeCard, /@\/types/);
 });
