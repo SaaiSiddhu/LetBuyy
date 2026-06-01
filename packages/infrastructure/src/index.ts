@@ -13,4 +13,5 @@ export * from '../queue-adapter/index';
 export * from '../analytics-adapter/index';
 export * from '../cache-adapter/index';
 export * from '../search-provider-adapter/index';
+export * from '../logistics-adapter/index';
 export * from '../provider-resilience-adapter/index';

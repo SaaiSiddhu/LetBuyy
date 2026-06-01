@@ -24,6 +24,12 @@ import {
     normalizeOrderRecord,
     type OrderSourceRow,
 } from '@letbuyy/checkout-core';
+import {
+    createLogisticsProvider,
+    toFulfillmentTrackingFields,
+    type LogisticsAddress,
+    type LogisticsProviderName,
+} from '@letbuyy/infrastructure/logistics-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -32,6 +38,14 @@ type DatabaseErrorLike = {
     details?: string;
     hint?: string;
 } | null | undefined;
+
+type FulfillmentOrderSnapshot = {
+    order_number?: string | null;
+    customer_name?: string | null;
+    customer_phone?: string | null;
+    customer_email?: string | null;
+    shipping_address?: unknown;
+};
 
 function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
@@ -54,6 +68,95 @@ function isMissingOrderItemsRelation(error: DatabaseErrorLike): boolean {
         text.includes('schema cache') ||
         text.includes('could not find')
     );
+}
+
+function recordValue(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function textValue(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function firstText(record: Record<string, unknown>, keys: string[]): string | null {
+    for (const key of keys) {
+        const value = textValue(record[key]);
+        if (value) return value;
+    }
+    return null;
+}
+
+function buildLogisticsDestination(order: FulfillmentOrderSnapshot): LogisticsAddress {
+    const shippingAddress = recordValue(order.shipping_address);
+    const line1 = firstText(shippingAddress, ['line1', 'address_line1', 'address']);
+    const city = firstText(shippingAddress, ['city']);
+    const state = firstText(shippingAddress, ['state']);
+    const postalCode = firstText(shippingAddress, ['zip', 'postal_code', 'pincode']);
+
+    if (!line1 || !city || !state || !postalCode) {
+        throw new Error('Shipping label creation requires a complete destination address');
+    }
+
+    return {
+        name: firstText(shippingAddress, ['name', 'full_name']) || textValue(order.customer_name) || 'Customer',
+        phone: firstText(shippingAddress, ['phone']) || textValue(order.customer_phone),
+        email: firstText(shippingAddress, ['email']) || textValue(order.customer_email),
+        line1,
+        line2: firstText(shippingAddress, ['line2', 'address_line2']),
+        city,
+        state,
+        postalCode,
+        country: firstText(shippingAddress, ['country']) || 'IN',
+    };
+}
+
+async function applyLogisticsLabel(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    siteId: string,
+    orderId: string,
+    input: FulfillOrderInput,
+): Promise<FulfillOrderInput> {
+    if (!input.create_shipping_label || !input.logistics_provider) return input;
+
+    const { data, error } = await db
+        .from('orders')
+        .select('order_number,customer_name,customer_phone,customer_email,shipping_address')
+        .eq('id', orderId)
+        .eq('store_id', siteId)
+        .maybeSingle();
+
+    if (error) throw new Error(`Order lookup for logistics failed: ${error.message}`);
+    if (!data) throw new Error('Order not found for logistics label creation');
+
+    const order = data as FulfillmentOrderSnapshot;
+    const provider = createLogisticsProvider(input.logistics_provider as LogisticsProviderName, { mode: 'test' });
+    const dimensions = input.package_dimensions_cm;
+    const label = await provider.createLabel({
+        orderId,
+        orderNumber: textValue(order.order_number) || orderId,
+        idempotencyKey: input.idempotency_key,
+        destination: buildLogisticsDestination(order),
+        parcels: [{
+            weightGrams: input.package_weight_grams || 500,
+            lengthCm: dimensions?.length,
+            widthCm: dimensions?.width,
+            heightCm: dimensions?.height,
+        }],
+        metadata: {
+            site_id: siteId,
+            source: 'orders.fulfill',
+        },
+    });
+    const tracking = toFulfillmentTrackingFields(label);
+
+    return {
+        ...input,
+        carrier: input.carrier || tracking.carrier,
+        tracking_number: input.tracking_number || tracking.tracking_number,
+        tracking_url: input.tracking_url || tracking.tracking_url,
+    };
 }
 
 // GET /orders — List orders for the authenticated seller
@@ -279,7 +382,8 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
 
     const service = new OrderExecutionAdapter(db);
     try {
-        const data = await service.fulfillOrder(orderId, tenant, body);
+        const fulfillmentInput = await applyLogisticsLabel(db, tenant.siteId, orderId, body);
+        const data = await service.fulfillOrder(orderId, tenant, fulfillmentInput);
         const responseBody = success(data);
         await idempotency.complete({
             id: claim.id,

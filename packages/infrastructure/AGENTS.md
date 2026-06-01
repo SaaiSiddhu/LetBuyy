@@ -7,7 +7,7 @@ Canonical source boundary: `packages/infrastructure`.
 
 ## Inventory
 
-- Files scanned: 19.
+- Files scanned: 20.
 - Env references: PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MODE, PAYPAL_WEBHOOK_ID, RESEND_API_KEY, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL.
 - Client components: 0.
 - SQL objects: 0 tables created in matching files.
@@ -59,6 +59,7 @@ Canonical source boundary: `packages/infrastructure`.
 - `packages/infrastructure/cashfree-adapter/index.ts`
 - `packages/infrastructure/cloudflare-adapter/index.ts`
 - `packages/infrastructure/cod-adapter/index.ts`
+- `packages/infrastructure/logistics-adapter/index.ts`
 - `packages/infrastructure/package.json`
 - `packages/infrastructure/paypal-adapter/index.ts`
 - `packages/infrastructure/phonepe-adapter/index.ts`
@@ -79,6 +80,7 @@ Canonical source boundary: `packages/infrastructure`.
 - `packages/infrastructure/cache-adapter/index.ts`: rate limiting reference.
 - `packages/infrastructure/cashfree-adapter/index.ts`: payment provider reference.
 - `packages/infrastructure/cod-adapter/index.ts`: payment provider reference.
+- `packages/infrastructure/logistics-adapter/index.ts`: logistics provider reference.
 - `packages/infrastructure/package.json`: payment provider reference, rate limiting reference.
 - `packages/infrastructure/paypal-adapter/index.ts`: payment provider reference, webhook reference.
 - `packages/infrastructure/phonepe-adapter/index.ts`: payment provider reference.

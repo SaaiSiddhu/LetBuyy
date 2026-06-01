@@ -119,6 +119,8 @@ export const FulfillmentLineSchema = z.object({
   quantity: z.number().int().min(1).max(999),
 });
 
+export const LogisticsProviderNameSchema = z.enum(['shiprocket', 'delhivery', 'pickrr']);
+
 export const FulfillOrderSchema = z.object({
   idempotency_key: z.string().min(8).max(200),
   location_id: UuidSchema.optional().nullable(),
@@ -126,6 +128,14 @@ export const FulfillOrderSchema = z.object({
   carrier: z.string().max(100).optional(),
   tracking_number: z.string().max(100).optional(),
   tracking_url: z.string().url().optional(),
+  logistics_provider: LogisticsProviderNameSchema.optional(),
+  create_shipping_label: z.boolean().default(false),
+  package_weight_grams: z.number().int().min(1).max(50_000).optional(),
+  package_dimensions_cm: z.object({
+    length: z.number().min(1).max(300),
+    width: z.number().min(1).max(300),
+    height: z.number().min(1).max(300),
+  }).optional(),
 });
 
 export const RefundLineSchema = z.object({
@@ -182,6 +192,14 @@ export interface FulfillOrderCommand {
   carrier?: string;
   tracking_number?: string;
   tracking_url?: string;
+  logistics_provider?: 'shiprocket' | 'delhivery' | 'pickrr';
+  create_shipping_label?: boolean;
+  package_weight_grams?: number;
+  package_dimensions_cm?: {
+    length: number;
+    width: number;
+    height: number;
+  };
 }
 
 export interface RefundLineCommand {
@@ -1092,6 +1110,7 @@ export type StorefrontStripeCheckoutInput = z.infer<typeof StorefrontStripeCheck
 export type StorefrontPayPalOrderInput = z.infer<typeof StorefrontPayPalOrderSchema>;
 export type StorefrontPayPalCaptureInput = z.infer<typeof StorefrontPayPalCaptureSchema>;
 export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
+export type LogisticsProviderName = z.infer<typeof LogisticsProviderNameSchema>;
 export type FulfillOrderInput = z.infer<typeof FulfillOrderSchema>;
 export type RefundOrderInput = z.infer<typeof RefundOrderSchema>;
 export type CompleteRefundInput = z.infer<typeof CompleteRefundSchema>;
