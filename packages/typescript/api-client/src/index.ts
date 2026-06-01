@@ -635,13 +635,21 @@ export type CreateSubscriptionOrderInput = {
   plan_slug: string;
   billing_period?: SubscriptionBillingPeriod;
   site_type: string;
+  approved_usage_charges?: Array<{
+    meter_name: string;
+    description?: string;
+    amount_minor: number;
+    quantity?: number;
+    idempotency_key: string;
+  }>;
 };
 export type VerifySubscriptionInput = {
   store_id: string;
   plan_slug: string;
   billing_period?: SubscriptionBillingPeriod;
   site_type: string;
-  razorpay_order_id: string;
+  razorpay_order_id?: string;
+  razorpay_subscription_id?: string;
   razorpay_payment_id: string;
   razorpay_signature: string;
 };

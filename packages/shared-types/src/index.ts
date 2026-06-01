@@ -602,13 +602,17 @@ export const SubscriptionCancelResultSchema = z.object({
 }).passthrough();
 
 export const SubscriptionOrderResultSchema = z.object({
-  razorpay_order_id: z.string().min(1),
+  razorpay_order_id: z.string().min(1).optional().nullable(),
+  razorpay_subscription_id: z.string().min(1).optional().nullable(),
+  checkout_mode: z.enum(['razorpay_order', 'razorpay_subscription']).default('razorpay_order'),
   amount: z.number().min(0),
   currency: CurrencySchema,
   key_id: z.string().min(1),
   plan: SubscriptionPlanSchema.partial().passthrough(),
   billing_period: SubscriptionBillingPeriodSchema,
   is_promo: z.boolean().default(false),
+  recurring: z.boolean().default(false),
+  short_url: UrlSchema.optional().nullable(),
 }).passthrough();
 
 export const SubscriptionVerificationResultSchema = z.object({

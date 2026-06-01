@@ -175,7 +175,7 @@ export default function SubscribeCheckoutClient({
 
             const orderData = await orderRes.json()
             if (!orderRes.ok) throw new Error(paymentErrorMessage(orderData, 'Failed to create order'))
-            if (!orderData.key_id || !orderData.razorpay_order_id) {
+            if (!orderData.key_id || (!orderData.razorpay_order_id && !orderData.razorpay_subscription_id)) {
                 throw new Error('Payment gateway is not configured for subscription checkout')
             }
 
@@ -193,7 +193,9 @@ export default function SubscribeCheckoutClient({
             // Step 3: Open Razorpay checkout
             const razorpay = new window.Razorpay({
                 key: orderData.key_id,
-                order_id: orderData.razorpay_order_id,
+                ...(orderData.razorpay_subscription_id
+                    ? { subscription_id: orderData.razorpay_subscription_id }
+                    : { order_id: orderData.razorpay_order_id }),
                 amount: orderData.amount,
                 currency: 'INR',
                 name: 'LetBuyy',
@@ -214,7 +216,8 @@ export default function SubscribeCheckoutClient({
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
-                                razorpay_order_id: response.razorpay_order_id,
+                                razorpay_order_id: response.razorpay_order_id || orderData.razorpay_order_id || undefined,
+                                razorpay_subscription_id: response.razorpay_subscription_id || orderData.razorpay_subscription_id || undefined,
                                 razorpay_payment_id: response.razorpay_payment_id,
                                 razorpay_signature: response.razorpay_signature,
                                 store_id: storeId,

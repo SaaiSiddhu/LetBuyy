@@ -8,7 +8,7 @@ import { ForbiddenError, ConflictError, NotFoundError } from '../lib/errors';
 import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
-import { createRazorpayOrder } from '@letbuyy/infrastructure/razorpay-adapter';
+import { createRazorpayOrder, createRazorpaySubscription } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
     RazorpayOrderSchema,
@@ -26,6 +26,10 @@ import {
     type PlanListQueryInput,
     type StoreSubscriptionQueryInput,
     type VerifySubscriptionInput,
+    normalizeMerchantApprovedUsageCharges,
+    planBillingAmountMinor,
+    planMerchantRazorpayBillingCheckout,
+    razorpayBillingSignaturePayload,
 } from '@letbuyy/billing-core';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -271,22 +275,13 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         return c.json({ error: { code: 'PLAN_REQUIRES_SALES', message: 'This plan requires contacting sales' } }, 400);
     }
 
-    const hasPromo = Number(plan.promo_price_inr || 0) > 0 && Number(plan.promo_months || 0) > 0;
-    const amountPaise = body.billing_period === 'yearly'
-        ? Number(plan.price_yearly_inr || 0) * 12
-        : hasPromo
-            ? Number(plan.promo_price_inr || 0)
-            : Number(plan.price_monthly_inr || 0);
-
-    const planPayload = {
-        id: plan.id,
-        name: plan.name,
-        slug: plan.slug,
-        price_monthly_inr: plan.price_monthly_inr,
-        price_yearly_inr: plan.price_yearly_inr,
-        promo_price_inr: plan.promo_price_inr,
-        promo_months: plan.promo_months,
-    };
+    const checkout = planMerchantRazorpayBillingCheckout({
+        plan,
+        storeId: body.store_id,
+        userId: customUser.id,
+        billingPeriod: body.billing_period,
+        approvedUsageCharges: normalizeMerchantApprovedUsageCharges(body.approved_usage_charges),
+    });
 
     if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
         return c.json(
@@ -295,19 +290,46 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         );
     }
 
+    if (checkout.mode === 'razorpay_subscription' && checkout.subscription) {
+        const subscription = await createRazorpaySubscription(
+            { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+            checkout.subscription
+        );
+
+        if (!subscription.id) {
+            return c.json(
+                errorBody('PAYMENT_PROVIDER_ERROR', subscription.error?.description || 'Failed to create recurring subscription'),
+                502
+            );
+        }
+
+        return c.json({
+            data: {
+                razorpay_order_id: null,
+                razorpay_subscription_id: subscription.id,
+                checkout_mode: checkout.mode,
+                amount: checkout.amount_minor,
+                currency: checkout.currency,
+                key_id: c.env.RAZORPAY_KEY_ID,
+                plan: checkout.plan_payload,
+                billing_period: checkout.billing_period,
+                is_promo: checkout.is_promo,
+                recurring: true,
+                short_url: subscription.short_url || null,
+            },
+        });
+    }
+
+    if (!checkout.order) {
+        return c.json(
+            errorBody('PAYMENT_PROVIDER_ERROR', 'Subscription checkout could not be planned'),
+            500
+        );
+    }
+
     const order = await createRazorpayOrder(
         { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
-        {
-            amount: amountPaise,
-            currency: 'INR',
-            receipt: `sub_${body.store_id.slice(-8)}_${Date.now()}`,
-            notes: {
-                store_id: body.store_id,
-                plan_slug: body.plan_slug,
-                billing_period: body.billing_period,
-                user_id: customUser.id,
-            },
-        }
+        checkout.order
     );
 
     if (!order.id) {
@@ -320,12 +342,15 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
     return c.json({
         data: {
             razorpay_order_id: order.id,
-            amount: order.amount ?? amountPaise,
+            razorpay_subscription_id: null,
+            checkout_mode: checkout.mode,
+            amount: order.amount ?? checkout.amount_minor,
             currency: order.currency || 'INR',
             key_id: c.env.RAZORPAY_KEY_ID,
-            plan: planPayload,
-            billing_period: body.billing_period,
-            is_promo: hasPromo && body.billing_period === 'monthly',
+            plan: checkout.plan_payload,
+            billing_period: checkout.billing_period,
+            is_promo: checkout.is_promo,
+            recurring: false,
         },
     });
 });
@@ -355,7 +380,11 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
 
     const expected = await hmacSha256Hex(
         c.env.RAZORPAY_KEY_SECRET,
-        `${body.razorpay_order_id}|${body.razorpay_payment_id}`
+        razorpayBillingSignaturePayload({
+            orderId: body.razorpay_order_id,
+            subscriptionId: body.razorpay_subscription_id,
+            paymentId: body.razorpay_payment_id,
+        })
     );
 
     if (!timingSafeEqualHex(expected, body.razorpay_signature)) {
@@ -389,11 +418,7 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         promoEndsAt = promoEnd.toISOString();
     }
 
-    const amountPaid = body.billing_period === 'yearly'
-        ? Number(plan.price_yearly_inr || 0) * 12
-        : promoEndsAt
-            ? Number(plan.promo_price_inr || 0)
-            : Number(plan.price_monthly_inr || 0);
+    const amountPaid = planBillingAmountMinor(plan, body.billing_period).amountMinor;
 
     await db
         .from('subscriptions')
@@ -414,8 +439,8 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
             current_period_end: periodEnd.toISOString(),
             promo_ends_at: promoEndsAt,
             payment_gateway: 'razorpay',
-            external_subscription_id: body.razorpay_order_id,
-            razorpay_order_id: body.razorpay_order_id,
+            external_subscription_id: body.razorpay_subscription_id || body.razorpay_order_id,
+            razorpay_order_id: body.razorpay_order_id || null,
             razorpay_payment_id: body.razorpay_payment_id,
             amount_paid: amountPaid,
             currency: 'INR',
@@ -464,6 +489,7 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
                 billing_period: body.billing_period,
                 current_period_end: periodEnd.toISOString(),
                 promo_ends_at: promoEndsAt,
+                external_subscription_id: body.razorpay_subscription_id || body.razorpay_order_id,
             },
             message: `Successfully subscribed to ${plan.name} plan!`,
         },

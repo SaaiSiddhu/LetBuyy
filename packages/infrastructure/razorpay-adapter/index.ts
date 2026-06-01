@@ -29,6 +29,43 @@ export interface RazorpayOrderCreateResult {
   error?: { description?: string };
 }
 
+export interface RazorpaySubscriptionAddon {
+  item: {
+    name: string;
+    amount: number;
+    currency: string;
+  };
+  quantity?: number;
+}
+
+export interface RazorpaySubscriptionCreateInput {
+  plan_id: string;
+  total_count: number;
+  quantity?: number;
+  customer_notify?: boolean;
+  start_at?: number;
+  expire_by?: number;
+  addons?: RazorpaySubscriptionAddon[];
+  notes?: Record<string, string>;
+}
+
+export interface RazorpaySubscriptionCreateResult {
+  id?: string;
+  entity?: 'subscription';
+  plan_id?: string;
+  status?: string;
+  short_url?: string;
+  total_count?: number;
+  paid_count?: number;
+  remaining_count?: number;
+  current_start?: number | null;
+  current_end?: number | null;
+  charge_at?: number | null;
+  start_at?: number | null;
+  end_at?: number | null;
+  error?: { description?: string };
+}
+
 interface RazorpayCaptureResult {
   id?: string;
   order_id?: string;
@@ -69,6 +106,31 @@ export async function createRazorpayOrder(
     return {
       ...data,
       error: data.error || { description: `Razorpay order create failed with ${response.status}` },
+    };
+  }
+  return data;
+}
+
+export async function createRazorpaySubscription(
+  credentials: RazorpayCredentials,
+  input: RazorpaySubscriptionCreateInput,
+  options: { fetch?: RazorpayFetch } = {},
+): Promise<RazorpaySubscriptionCreateResult> {
+  const fetchImpl = options.fetch ?? fetch;
+  const response = await fetchImpl('https://api.razorpay.com/v1/subscriptions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: basicAuth(credentials),
+    },
+    body: JSON.stringify(input),
+  });
+
+  const data = await response.json().catch(() => ({})) as RazorpaySubscriptionCreateResult;
+  if (!response.ok) {
+    return {
+      ...data,
+      error: data.error || { description: `Razorpay subscription create failed with ${response.status}` },
     };
   }
   return data;
