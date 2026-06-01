@@ -187,6 +187,57 @@ test('app bridge internal identity headers can be signed for gateway proxy calls
   );
 });
 
+test('Built-for-LetBuyy quality gate blocks weak app listings', () => {
+  const failingGate = appEngine.evaluateBuiltForLetBuyyQualityGate({
+    performance_score: 42,
+    rating_avg: 2.8,
+    review_count: 1,
+    install_count: 0,
+    app_extensions: [],
+    app_url: 'https://weak.example',
+    privacy_policy_url: 'https://weak.example/privacy',
+  });
+
+  assert.equal(failingGate.passed, false);
+  assert.equal(failingGate.checks.find((check) => check.key === 'performance').passed, false);
+  assert.equal(failingGate.checks.find((check) => check.key === 'app_blocks').passed, false);
+
+  const passingGate = appEngine.evaluateBuiltForLetBuyyQualityGate({
+    performance_score: 95,
+    rating_avg: 4.7,
+    review_count: 12,
+    install_count: 30,
+    app_extensions: [{ type: 'storefront_block' }],
+    app_url: 'https://loyalty.example',
+    privacy_policy_url: 'https://loyalty.example/privacy',
+  });
+
+  assert.equal(passingGate.passed, true);
+  assert.equal(passingGate.score, 100);
+
+  const blockedSubmission = appEngine.planMarketplaceAppSubmission(
+    {
+      name: 'Weak Loyalty',
+      tagline: 'Weak app',
+      description: 'A listing that should not pass the quality gate.',
+      category_id: 'marketing',
+      app_url: 'https://weak.example',
+      privacy_url: 'https://weak.example/privacy',
+      quality_gate: {
+        performance_score: 50,
+        rating_avg: 3.5,
+        review_count: 1,
+        install_count: 0,
+      },
+      app_extensions: [],
+    },
+    'developer_001',
+  );
+
+  assert.equal(blockedSubmission.ok, false);
+  assert.match(blockedSubmission.message, /Built-for-LetBuyy quality gate failed/);
+});
+
 test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks locally', async () => {
   const tokenSecret = 'app-token-secret';
   const signingSecret = 'app-webhook-signing-secret';

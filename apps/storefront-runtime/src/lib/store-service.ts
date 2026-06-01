@@ -1,4 +1,5 @@
 import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
+import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/app-engine';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
@@ -29,6 +30,7 @@ interface ThemeReleaseRow {
 
 type WorkerStorePayload = Record<string, unknown> & {
     current_theme_release?: ThemeReleaseRow | null;
+    app_blocks?: unknown;
 };
 
 type WorkerNavigationItem = {
@@ -178,6 +180,128 @@ function normalizeBlockCollection(value: unknown, orderValue: unknown): BlockMod
             return normalizeBlockRecord({ id: blockId, order: blockIndex, ...blockRecord }, blockIndex);
         })
         .filter((block): block is BlockModel => block !== null);
+}
+
+function appBlockSlotId(slot: string): string {
+    return slot
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || 'default';
+}
+
+function sectionAppBlockSlot(section: SectionModel): string {
+    const slot = section.settings.slot;
+    return typeof slot === 'string' && slot.trim().length > 0
+        ? slot.trim()
+        : 'storefront.home.after-hero';
+}
+
+function appBlockToThemeBlock(block: AppBlockInstance, order: number): BlockModel {
+    return {
+        id: block.id,
+        type: 'app-block',
+        order,
+        rendererKey: 'apps.app-block',
+        settings: {
+            ...block.settings,
+            id: block.id,
+            app_id: block.app_id,
+            extension_id: block.extension_id,
+            slot: block.slot,
+            title: block.title,
+            render_mode: block.render_mode,
+            iframe_url: block.iframe_url,
+            content: block.content,
+        },
+        isVisible: true,
+    };
+}
+
+function injectAppBlocksIntoSections(sections: SectionModel[], appBlocksInput: unknown): SectionModel[] {
+    const appBlocks = normalizeAppBlockInstances(appBlocksInput);
+    if (appBlocks.length === 0) return sections;
+
+    const blocksBySlot = new Map<string, AppBlockInstance[]>();
+    for (const block of appBlocks) {
+        const existing = blocksBySlot.get(block.slot) || [];
+        blocksBySlot.set(block.slot, [...existing, block]);
+    }
+
+    const usedBlockIds = new Set<string>();
+    const nextSections = sections.map((section) => {
+        const normalizedType = normalizeSectionType(section.type);
+        if (normalizedType !== 'appBlockSlot') return section;
+
+        const slot = sectionAppBlockSlot(section);
+        const matchingBlocks = blocksBySlot.get(slot) || [];
+        if (matchingBlocks.length === 0) return section;
+
+        const existingBlocks = section.blocks || [];
+        const existingIds = new Set(existingBlocks.map((block) => block.id));
+        const injectedBlocks = matchingBlocks
+            .filter((block) => !existingIds.has(block.id))
+            .map((block, index) => {
+                usedBlockIds.add(block.id);
+                return appBlockToThemeBlock(block, existingBlocks.length + index);
+            });
+
+        if (injectedBlocks.length === 0) return section;
+
+        return {
+            ...section,
+            type: 'appBlockSlot' as SectionType,
+            rendererKey: section.rendererKey || 'apps.app-block-slot',
+            settings: {
+                ...section.settings,
+                slot,
+            },
+            blocks: [...existingBlocks, ...injectedBlocks],
+        };
+    });
+
+    const remainingBlocks = appBlocks.filter((block) => !usedBlockIds.has(block.id));
+    if (remainingBlocks.length === 0) return nextSections;
+
+    const maxOrder = nextSections.reduce((max, section) => Math.max(max, section.order), 0);
+    const remainingSlots = Array.from(new Set(remainingBlocks.map((block) => block.slot)));
+    const generatedSections = remainingSlots.map((slot, slotIndex): SectionModel => {
+        const blocks = remainingBlocks
+            .filter((block) => block.slot === slot)
+            .map((block, blockIndex) => appBlockToThemeBlock(block, blockIndex));
+
+        return {
+            id: `app-block-slot-${appBlockSlotId(slot)}`,
+            type: 'appBlockSlot',
+            order: maxOrder + slotIndex + 1,
+            rendererKey: 'apps.app-block-slot',
+            settings: {
+                slot,
+                title: 'Apps',
+                layout: 'grid',
+            },
+            blocks,
+            isVisible: true,
+        };
+    });
+
+    return [...nextSections, ...generatedSections];
+}
+
+function injectAppBlocksIntoTemplates(
+    templates: Record<string, StorefrontTemplateConfig> | undefined,
+    appBlocksInput: unknown,
+): Record<string, StorefrontTemplateConfig> | undefined {
+    if (!templates) return templates;
+
+    const nextTemplates: Record<string, StorefrontTemplateConfig> = {};
+    for (const [key, template] of Object.entries(templates)) {
+        nextTemplates[key] = {
+            ...template,
+            sections: injectAppBlocksIntoSections(template.sections || [], appBlocksInput),
+        };
+    }
+
+    return nextTemplates;
 }
 
 function normalizeSectionRecord(
@@ -530,7 +654,9 @@ function mapSupabaseToStore(
         ];
     }
 
-    const sections = sectionArray;
+    const appBlocks = data.app_blocks;
+    const sections = injectAppBlocksIntoSections(sectionArray, appBlocks);
+    templates = injectAppBlocksIntoTemplates(templates, appBlocks);
 
     // Parse payment gateways from store settings
     const paymentSettings = asRecord(data.payment_settings);

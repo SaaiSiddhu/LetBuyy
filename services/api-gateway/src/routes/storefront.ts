@@ -57,6 +57,7 @@ import {
     type StorefrontSiteRecord,
     type StorefrontThemeReleaseRecord,
 } from '@letbuyy/tenant-core';
+import { normalizeAppBlockInstance, type AppBlockInstance } from '@letbuyy/app-engine';
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
@@ -273,6 +274,31 @@ type NavigationMenuRow = {
     location: string;
     metadata?: Record<string, unknown> | null;
 };
+
+function storefrontJsonRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function storefrontJsonRecordArray(value: unknown): Record<string, unknown>[] {
+    if (Array.isArray(value)) {
+        return value
+            .map((item) => storefrontJsonRecord(item))
+            .filter((item) => Object.keys(item).length > 0);
+    }
+
+    const record = storefrontJsonRecord(value);
+    return Object.keys(record).length > 0 ? [record] : [];
+}
+
+function firstStorefrontRelatedRecord(value: unknown): Record<string, unknown> {
+    return storefrontJsonRecordArray(value)[0] || storefrontJsonRecord(value);
+}
+
+function storefrontString(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
 
 function isMissingTableError(error: DatabaseErrorLike, tableName: string): boolean {
     const text = databaseErrorText(error);
@@ -581,6 +607,79 @@ async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<
     }
 
     return (data as StorefrontThemeReleaseRecord | null) || null;
+}
+
+async function loadPublicStorefrontAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
+    const { data, error } = await getSupabaseAdmin(c)
+        .from('app_installations')
+        .select('id, app_id, store_id, config, marketplace_apps(id, name, slug, app_url, app_extensions(id, type, target, label, config, sort_order))')
+        .eq('store_id', storeId)
+        .eq('status', 'active');
+
+    if (error || !Array.isArray(data)) return [];
+
+    const blocks: AppBlockInstance[] = [];
+    for (const installation of data as Record<string, unknown>[]) {
+        const app = firstStorefrontRelatedRecord(installation.marketplace_apps);
+        const installConfig = storefrontJsonRecord(installation.config);
+        const appId = storefrontString(installation.app_id) || storefrontString(app.id);
+        if (!appId) continue;
+
+        const appName = storefrontString(app.name) || 'Installed app';
+        const extensions = storefrontJsonRecordArray(app.app_extensions)
+            .filter((extension) => {
+                const type = storefrontString(extension.type);
+                return type === 'storefront_block' || type === 'app-block' || type === 'app_block';
+            })
+            .sort((left, right) => Number(left.sort_order ?? 0) - Number(right.sort_order ?? 0));
+
+        for (const [index, extension] of extensions.entries()) {
+            const config = storefrontJsonRecord(extension.config);
+            const extensionId = storefrontString(extension.id) || `storefront-block-${index + 1}`;
+            const renderMode = config.render_mode === 'iframe' || config.renderMode === 'iframe' ? 'iframe' : 'inline';
+            const slot = storefrontString(config.slot)
+                || storefrontString(installConfig.default_app_block_slot)
+                || storefrontString(extension.target)
+                || 'storefront.home.after-hero';
+            const title = storefrontString(config.title)
+                || storefrontString(extension.label)
+                || appName;
+
+            const block = normalizeAppBlockInstance({
+                id: `app-${appId}-${extensionId}`,
+                app_id: appId,
+                extension_id: extensionId,
+                slot,
+                title,
+                render_mode: renderMode,
+                iframe_url: config.iframe_url || config.iframeUrl || (renderMode === 'iframe' ? extension.target : undefined),
+                settings: {
+                    ...config,
+                    app_id: appId,
+                    extension_id: extensionId,
+                    slot,
+                    title,
+                    render_mode: renderMode,
+                },
+                content: {
+                    heading: config.heading || config.headline,
+                    body: config.body || config.description,
+                    cta_label: config.cta_label || config.ctaLabel,
+                    cta_href: config.cta_href || config.ctaHref,
+                },
+            }, {
+                id: `app-${appId}-${extensionId}`,
+                app_id: appId,
+                extension_id: extensionId,
+                slot,
+                title,
+            });
+
+            if (block) blocks.push(block);
+        }
+    }
+
+    return blocks;
 }
 
 async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions) {
@@ -1177,8 +1276,14 @@ router.get('/store/:storeId', async (c) => {
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
     const store = data as unknown as StorefrontSiteRecord;
-    const release = await loadCurrentThemeRelease(c, store.id);
-    return c.json(success(mapPublicStorePayload(store, release)));
+    const [release, appBlocks] = await Promise.all([
+        loadCurrentThemeRelease(c, store.id),
+        loadPublicStorefrontAppBlocks(c, store.id),
+    ]);
+    return c.json(success({
+        ...mapPublicStorePayload(store, release),
+        app_blocks: appBlocks,
+    }));
 });
 
 // GET /storefront/store/:storeId/products — Public published product listing by store ID
@@ -1345,8 +1450,11 @@ router.get('/:subdomain/theme-preview', async (c) => {
         published_at: draftSavedAt,
     };
 
+    const appBlocks = await loadPublicStorefrontAppBlocks(c, store.id);
+
     return c.json(success({
         ...mapPublicStorePayload(store, previewRelease),
+        app_blocks: appBlocks,
         theme_preview: {
             session_id: previewSession.id,
             draft_id: draftId,
@@ -1362,8 +1470,14 @@ router.get('/:subdomain', async (c) => {
     const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
     if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
 
-    const release = await loadCurrentThemeRelease(c, store.id);
-    return c.json(success(mapPublicStorePayload(store, release)));
+    const [release, appBlocks] = await Promise.all([
+        loadCurrentThemeRelease(c, store.id),
+        loadPublicStorefrontAppBlocks(c, store.id),
+    ]);
+    return c.json(success({
+        ...mapPublicStorePayload(store, release),
+        app_blocks: appBlocks,
+    }));
 });
 
 // GET /storefront/:subdomain/status — Public limited status data for coming-soon routing.

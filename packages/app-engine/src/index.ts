@@ -619,6 +619,101 @@ export function createExampleAppBlockInstance(slot = 'storefront.home.after-hero
   });
 }
 
+export interface BuiltForLetBuyyQualityGateCheck {
+  key: 'performance' | 'reviews' | 'installs' | 'app_blocks' | 'privacy';
+  passed: boolean;
+  message: string;
+  value: number | string | boolean | null;
+}
+
+export interface BuiltForLetBuyyQualityGateResult {
+  passed: boolean;
+  score: number;
+  checks: BuiltForLetBuyyQualityGateCheck[];
+}
+
+function qualityGateNumber(value: unknown, fallback = 0): number {
+  const numberValue = Number(value);
+  return Number.isFinite(numberValue) ? numberValue : fallback;
+}
+
+function qualityGateHttpsUrl(value: unknown): boolean {
+  const href = appStoreStringOrNull(value);
+  if (!href) return false;
+
+  try {
+    const parsed = new URL(href);
+    const isLocalHttp = parsed.protocol === 'http:'
+      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
+    return parsed.protocol === 'https:' || isLocalHttp;
+  } catch {
+    return false;
+  }
+}
+
+function hasStorefrontAppBlock(value: unknown): boolean {
+  const records = Array.isArray(value)
+    ? value.map((item) => parseAppStoreJsonRecord(item))
+    : Object.values(parseAppStoreJsonRecord(value)).map((item) => parseAppStoreJsonRecord(item));
+
+  return records.some((record) => {
+    const type = appStoreStringOrNull(record.type);
+    return type === 'storefront_block' || type === 'app-block' || type === 'app_block';
+  });
+}
+
+export function evaluateBuiltForLetBuyyQualityGate(input: AppEngineJsonRecord): BuiltForLetBuyyQualityGateResult {
+  const performanceScore = qualityGateNumber(
+    input.performance_score || input.performanceScore || input.lighthouse_performance,
+  );
+  const ratingAverage = qualityGateNumber(input.rating_avg || input.average_rating || input.avg_rating);
+  const reviewCount = qualityGateNumber(input.review_count || input.reviews_count);
+  const installCount = qualityGateNumber(input.install_count || input.installs);
+  const hasAppBlock = hasStorefrontAppBlock(input.app_extensions || input.extensions || input.app_blocks);
+  const privacyOk = qualityGateHttpsUrl(input.privacy_policy_url || input.privacy_url)
+    && qualityGateHttpsUrl(input.app_url || input.embedded_url || input.website_url);
+
+  const checks: BuiltForLetBuyyQualityGateCheck[] = [
+    {
+      key: 'performance',
+      passed: performanceScore >= 70,
+      message: 'Lighthouse performance score must be at least 70 before listing.',
+      value: performanceScore,
+    },
+    {
+      key: 'reviews',
+      passed: reviewCount >= 1 && ratingAverage >= 4,
+      message: 'Built-for-LetBuyy listing requires at least one qualifying review and a 4.0+ rating.',
+      value: `${ratingAverage.toFixed(1)} (${reviewCount} reviews)`,
+    },
+    {
+      key: 'installs',
+      passed: installCount >= 1,
+      message: 'Built-for-LetBuyy listing requires at least one successful install signal.',
+      value: installCount,
+    },
+    {
+      key: 'app_blocks',
+      passed: hasAppBlock,
+      message: 'App must expose at least one storefront app block extension.',
+      value: hasAppBlock,
+    },
+    {
+      key: 'privacy',
+      passed: privacyOk,
+      message: 'App and privacy URLs must use HTTPS, with localhost allowed only for local testing.',
+      value: privacyOk,
+    },
+  ];
+  const passedCount = checks.filter((check) => check.passed).length;
+
+  return {
+    passed: passedCount === checks.length,
+    score: Math.round((passedCount / checks.length) * 100),
+    checks,
+  };
+}
+
 export function isAppStoreUuid(value: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
 }
@@ -681,6 +776,21 @@ export function planMarketplaceAppSubmission(
 
   const priceMonthly = Number(body.price_monthly || 0);
   const priceInr = Number.isFinite(priceMonthly) ? Math.max(Math.round(priceMonthly * 100) / 100, 0) : 0;
+  const qualityGateInput = parseAppStoreJsonRecord(body.quality_gate || body.built_for_letbuyy || body.builtForLetBuyy);
+  if (Object.keys(qualityGateInput).length > 0 && body.save_as_draft !== true) {
+    const gate = evaluateBuiltForLetBuyyQualityGate({
+      ...qualityGateInput,
+      app_url: appUrl,
+      privacy_policy_url: privacyUrl,
+      app_extensions: body.app_extensions || body.extensions || qualityGateInput.app_extensions || qualityGateInput.extensions,
+      app_blocks: body.app_blocks || qualityGateInput.app_blocks,
+    });
+
+    if (!gate.passed) {
+      const failed = gate.checks.filter((check) => !check.passed).map((check) => check.key).join(', ');
+      return { ok: false, message: `Built-for-LetBuyy quality gate failed: ${failed}` };
+    }
+  }
 
   return {
     ok: true,
