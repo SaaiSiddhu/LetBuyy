@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { DesignSystemRoot } from "@letbuyy/ui";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -43,7 +44,9 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        {children}
+        <DesignSystemRoot surface="admin">
+          {children}
+        </DesignSystemRoot>
       </body>
     </html>
   );

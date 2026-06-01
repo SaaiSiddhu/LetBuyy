@@ -7,6 +7,7 @@ import Footer from '@/components/layout/footer';
 import ThemeProvider from '@/components/theme-provider';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
+import { DesignSystemRoot } from '@letbuyy/ui';
 
 const inter = Inter({
     subsets: ['latin'],
@@ -77,15 +78,17 @@ export default async function RootLayout({
                 />
             </head>
             <body className="min-h-screen flex flex-col">
-                <ThemeProvider>
-                    <AuthProvider initialAuthenticated={session.accepted}>
-                        <Navbar />
-                        <main className="flex-grow pt-[72px]">
-                            {children}
-                        </main>
-                        <Footer />
-                    </AuthProvider>
-                </ThemeProvider>
+                <DesignSystemRoot surface="marketplace" className="min-h-screen flex flex-col">
+                    <ThemeProvider>
+                        <AuthProvider initialAuthenticated={session.accepted}>
+                            <Navbar />
+                            <main className="flex-grow pt-[72px]">
+                                {children}
+                            </main>
+                            <Footer />
+                        </AuthProvider>
+                    </ThemeProvider>
+                </DesignSystemRoot>
             </body>
         </html>
     );

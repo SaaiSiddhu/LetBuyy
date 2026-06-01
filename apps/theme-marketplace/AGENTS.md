@@ -20,7 +20,7 @@ Actual source root: `apps/theme-marketplace`.
 - Package: @letbuyy/theme-marketplace
 - File: apps/theme-marketplace/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/shared-types, @letbuyy/theme-engine, @letbuyy/utils, clsx, framer-motion, lucide-react, next, react, react-dom, server-only, tailwind-merge
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/shared-types, @letbuyy/theme-engine, @letbuyy/ui, @letbuyy/utils, clsx, framer-motion, lucide-react, next, react, react-dom, server-only, tailwind-merge
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 

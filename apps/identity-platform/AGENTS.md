@@ -20,7 +20,7 @@ Actual source root: `apps/identity-platform`.
 - Package: @letbuyy/identity-platform
 - File: apps/identity-platform/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/utils, @react-email/components, bcryptjs, jose, next, react, react-dom, react-email
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/ui, @letbuyy/utils, @react-email/components, bcryptjs, jose, next, react, react-dom, react-email
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 

@@ -20,7 +20,7 @@ Actual source root: `apps/storefront-runtime`.
 - Package: @letbuyy/storefront-runtime
 - File: apps/storefront-runtime/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-client, @letbuyy/app-engine, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/utils, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/app-engine, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/ui, @letbuyy/utils, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 

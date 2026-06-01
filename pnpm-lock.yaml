@@ -106,6 +106,9 @@ importers:
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
+      '@letbuyy/ui':
+        specifier: workspace:*
+        version: link:../../packages/typescript/ui
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
@@ -414,6 +417,9 @@ importers:
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../packages/theme-engine
+      '@letbuyy/ui':
+        specifier: workspace:*
+        version: link:../../packages/typescript/ui
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
@@ -487,6 +493,9 @@ importers:
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../packages/theme-engine
+      '@letbuyy/ui':
+        specifier: workspace:*
+        version: link:../../packages/typescript/ui
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils

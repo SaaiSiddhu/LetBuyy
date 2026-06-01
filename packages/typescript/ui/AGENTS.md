@@ -56,6 +56,7 @@ Canonical source boundary: `packages/typescript/ui`.
 - `packages/typescript/ui/package.json`
 - `packages/typescript/ui/src/button.tsx`
 - `packages/typescript/ui/src/data-table.tsx`
+- `packages/typescript/ui/src/design-system-root.tsx`
 - `packages/typescript/ui/src/index.ts`
 - `packages/typescript/ui/src/input.tsx`
 - `packages/typescript/ui/tsconfig.json`

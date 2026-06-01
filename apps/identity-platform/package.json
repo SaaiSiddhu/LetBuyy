@@ -13,6 +13,7 @@
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/ui": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "@react-email/components": "^1.0.7",
     "bcryptjs": "^3.0.3",

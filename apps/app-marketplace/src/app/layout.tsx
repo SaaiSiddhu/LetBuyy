@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { DesignSystemRoot } from "@letbuyy/ui";
 import "./globals.css";
 
 const inter = Inter({
@@ -45,9 +46,9 @@ export default function RootLayout({
                 }} />
             </head>
             <body className={`${inter.variable} antialiased`}>
-                <div className="appstore-shell">
+                <DesignSystemRoot surface="marketplace" className="appstore-shell">
                     {children}
-                </div>
+                </DesignSystemRoot>
             </body>
         </html>
     );

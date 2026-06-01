@@ -42,6 +42,7 @@
       "@letbuyy/shared-types",
       "@letbuyy/tenant-core",
       "@letbuyy/theme-engine",
+      "@letbuyy/ui",
       "@letbuyy/utils"
     ],
     "runtimeImports": []

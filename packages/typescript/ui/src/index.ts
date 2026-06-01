@@ -9,3 +9,6 @@ export type { InputProps, TextareaProps } from './input';
 
 export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
+
+export { DesignSystemRoot } from './design-system-root';
+export type { DesignSystemRootProps } from './design-system-root';
