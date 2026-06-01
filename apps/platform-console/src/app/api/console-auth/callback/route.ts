@@ -38,7 +38,7 @@ async function issueConsoleSession(input: {
         action: input.auditAction,
         email,
         session: {
-            type: 'console_session',
+            type: 'platform_session',
             email,
             userId: input.userId || null,
             mfaVerified: false,

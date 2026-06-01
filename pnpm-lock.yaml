@@ -271,6 +271,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
       '@letbuyy/runtime-composition':
         specifier: workspace:*
         version: link:../../packages/runtime-composition
@@ -329,6 +332,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
       '@letbuyy/ui':
         specifier: workspace:*
         version: link:../../packages/typescript/ui

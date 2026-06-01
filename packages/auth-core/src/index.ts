@@ -109,8 +109,11 @@ export const AUTH_OTP_EXPIRY_MS = 10 * 60 * 1000;
 export const AUTH_SESSION_DURATION_MS = 30 * 24 * 60 * 60 * 1000;
 export const LETBUYY_MERCHANT_SESSION_COOKIE = 'lb_session';
 export const LETBUYY_CUSTOMER_SESSION_COOKIE = 'lb_customer_session';
+export const LETBUYY_PLATFORM_SESSION_COOKIE = 'lb_console_session';
 export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
+export const LETBUYY_PLATFORM_SESSION_TTL_SECONDS = 8 * 60 * 60;
+export const LETBUYY_PLATFORM_MAGIC_LINK_TTL_SECONDS = 15 * 60;
 
 const SAFE_SESSION_TOKEN_PATTERN = /^[A-Za-z0-9._~-]+$/;
 const INTERNAL_SESSION_HEADER_PREFIX = 'X-LetBuyy-Internal';
@@ -173,6 +176,34 @@ export interface LetbuyyCustomerSessionPayload {
 export interface CustomerSessionTokenOptions {
   ttlSeconds?: number;
   nowSeconds?: number;
+}
+
+export interface LetbuyyPlatformSessionPayload {
+  type: 'platform_session';
+  email: string;
+  userId: string | null;
+  mfaVerified: boolean;
+  issuedAt: number;
+  exp: number;
+}
+
+export interface LetbuyyPlatformMagicLinkPayload {
+  type: 'platform_magic_link';
+  email: string;
+  exp: number;
+}
+
+export interface LetbuyyPlatformSessionTokenOptions {
+  ttlSeconds?: number;
+  nowSeconds?: number;
+}
+
+export interface LetbuyyPlatformTokenVerificationResult<TPayload> {
+  accepted: boolean;
+  status: LetbuyySessionVerificationStatus;
+  token?: string;
+  payload?: TPayload;
+  reason?: string;
 }
 
 export const LETBUYY_APP_ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
@@ -497,6 +528,73 @@ export async function verifyCustomerSessionToken(
   };
 }
 
+export async function createLetbuyyPlatformSessionToken(
+  input: { email: string; userId?: string | null; mfaVerified: boolean },
+  secret: string | null | undefined,
+  options: LetbuyyPlatformSessionTokenOptions = {},
+): Promise<string | null> {
+  if (!secret) return null;
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  const ttlSeconds = options.ttlSeconds ?? LETBUYY_PLATFORM_SESSION_TTL_SECONDS;
+  return signLetbuyyJsonPayload(
+    {
+      type: 'platform_session',
+      email: normalizeAuthEmail(input.email),
+      userId: input.userId || null,
+      mfaVerified: input.mfaVerified,
+      issuedAt: nowSeconds,
+      exp: nowSeconds + ttlSeconds,
+    } satisfies LetbuyyPlatformSessionPayload,
+    secret,
+  );
+}
+
+export async function verifyLetbuyyPlatformSessionToken(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  options: LetbuyyPlatformSessionTokenOptions = {},
+): Promise<LetbuyyPlatformTokenVerificationResult<LetbuyyPlatformSessionPayload>> {
+  return verifyLetbuyyJsonPayload(
+    token,
+    secret,
+    isPlatformSessionPayload,
+    options.nowSeconds ?? Math.floor(Date.now() / 1000),
+    'Platform session',
+  );
+}
+
+export async function createLetbuyyPlatformMagicLinkToken(
+  email: string,
+  secret: string | null | undefined,
+  options: LetbuyyPlatformSessionTokenOptions = {},
+): Promise<string | null> {
+  if (!secret) return null;
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  const ttlSeconds = options.ttlSeconds ?? LETBUYY_PLATFORM_MAGIC_LINK_TTL_SECONDS;
+  return signLetbuyyJsonPayload(
+    {
+      type: 'platform_magic_link',
+      email: normalizeAuthEmail(email),
+      exp: nowSeconds + ttlSeconds,
+    } satisfies LetbuyyPlatformMagicLinkPayload,
+    secret,
+  );
+}
+
+export async function verifyLetbuyyPlatformMagicLinkToken(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  options: LetbuyyPlatformSessionTokenOptions = {},
+): Promise<LetbuyyPlatformTokenVerificationResult<LetbuyyPlatformMagicLinkPayload>> {
+  return verifyLetbuyyJsonPayload(
+    token,
+    secret,
+    isPlatformMagicLinkPayload,
+    options.nowSeconds ?? Math.floor(Date.now() / 1000),
+    'Platform magic link',
+  );
+}
+
 export async function createAppScopedAccessToken(
   subject: AppScopedAccessTokenSubject,
   secret: string,
@@ -625,6 +723,66 @@ function base64UrlToBytes(value: string): Uint8Array {
   return bytes;
 }
 
+async function signLetbuyyJsonPayload<TPayload extends { exp: number }>(payload: TPayload, secret: string): Promise<string> {
+  const encodedPayload = base64UrlEncodeJson(payload);
+  const signature = base64UrlEncodeBytes(await hmacSha256Bytes(secret, encodedPayload));
+  return `${encodedPayload}.${signature}`;
+}
+
+async function verifyLetbuyyJsonPayload<TPayload extends { exp: number }>(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  isPayload: (value: unknown) => value is TPayload,
+  nowSeconds: number,
+  label: string,
+): Promise<LetbuyyPlatformTokenVerificationResult<TPayload>> {
+  if (!token) {
+    return { accepted: false, status: 'missing', reason: `${label} token is missing` };
+  }
+
+  if (!secret) {
+    return { accepted: false, status: 'misconfigured', reason: `${label} secret is not configured` };
+  }
+
+  const normalizedToken = token.trim();
+  if (
+    normalizedToken !== token ||
+    normalizedToken.length > 4096 ||
+    normalizedToken.split('.').length !== 2 ||
+    !SAFE_SESSION_TOKEN_PATTERN.test(normalizedToken)
+  ) {
+    return { accepted: false, status: 'malformed', reason: `${label} token is malformed` };
+  }
+
+  const [encodedPayload, signature] = normalizedToken.split('.');
+  const expectedSignature = base64UrlEncodeBytes(await hmacSha256Bytes(secret, encodedPayload));
+  if (!timingSafeEqualBase64Url(expectedSignature, signature)) {
+    return { accepted: false, status: 'invalid_signature', reason: `${label} signature is invalid` };
+  }
+
+  let payload: unknown;
+  try {
+    payload = JSON.parse(textDecoder.decode(base64UrlToBytes(encodedPayload)));
+  } catch {
+    return { accepted: false, status: 'malformed', reason: `${label} payload is not valid JSON` };
+  }
+
+  if (!isPayload(payload)) {
+    return { accepted: false, status: 'malformed', reason: `${label} payload is incomplete` };
+  }
+
+  if (payload.exp <= nowSeconds) {
+    return { accepted: false, status: 'expired', reason: `${label} is expired` };
+  }
+
+  return {
+    accepted: true,
+    status: 'accepted',
+    token: normalizedToken,
+    payload,
+  };
+}
+
 async function verifyCustomerJwtSignature(secret: string, signingInput: string, signature: string): Promise<boolean> {
   const expected = await hmacSha256Bytes(secret, signingInput);
   return timingSafeEqualBase64Url(base64UrlEncodeBytes(expected), signature);
@@ -652,6 +810,29 @@ function isCustomerSessionPayload(value: LetbuyyCustomerSessionPayload): value i
     (value.name === null || typeof value.name === 'string') &&
     Number.isFinite(value.iat) &&
     Number.isFinite(value.exp),
+  );
+}
+
+function isPlatformSessionPayload(value: unknown): value is LetbuyyPlatformSessionPayload {
+  const payload = value as LetbuyyPlatformSessionPayload;
+  return Boolean(
+    payload &&
+    payload.type === 'platform_session' &&
+    isSafeAuthEmail(payload.email) &&
+    (payload.userId === null || typeof payload.userId === 'string') &&
+    typeof payload.mfaVerified === 'boolean' &&
+    Number.isFinite(payload.issuedAt) &&
+    Number.isFinite(payload.exp),
+  );
+}
+
+function isPlatformMagicLinkPayload(value: unknown): value is LetbuyyPlatformMagicLinkPayload {
+  const payload = value as LetbuyyPlatformMagicLinkPayload;
+  return Boolean(
+    payload &&
+    payload.type === 'platform_magic_link' &&
+    isSafeAuthEmail(payload.email) &&
+    Number.isFinite(payload.exp),
   );
 }
 

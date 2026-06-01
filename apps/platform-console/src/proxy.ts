@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { CONSOLE_SESSION_COOKIE, readConsoleSession } from './lib/console-session';
 
 const protectedPrefixes = [
@@ -20,6 +21,10 @@ function isProtectedPath(pathname: string) {
 export async function proxy(request: NextRequest) {
     const pathname = request.nextUrl.pathname;
     const session = await readConsoleSession(request.cookies.get(CONSOLE_SESSION_COOKIE)?.value);
+    const merchantSession = verifyLetbuyySessionCookieValue(
+        'merchant',
+        request.cookies.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value,
+    );
 
     if (pathname === '/login') {
         if (session?.mfaVerified) {
@@ -46,6 +51,13 @@ export async function proxy(request: NextRequest) {
     }
 
     if (!session) {
+        if (!merchantSession.accepted) {
+            const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store';
+            const loginUrl = new URL('/lookup', accountsUrl);
+            loginUrl.searchParams.set('return_to', request.url);
+            return NextResponse.redirect(loginUrl);
+        }
+
         return NextResponse.redirect(new URL('/login', request.url));
     }
 

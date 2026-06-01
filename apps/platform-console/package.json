@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@letbuyy/api-types": "workspace:*",
+    "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/runtime-composition": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "@letbuyy/utils": "workspace:*",

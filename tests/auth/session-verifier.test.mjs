@@ -56,8 +56,11 @@ test('merchant apps accept and reject the same lb_session values identically', (
   const appSurfaces = [
     'identity-platform',
     'merchant-control-plane',
+    'storefront-runtime',
     'app-marketplace',
     'theme-marketplace',
+    'platform-console',
+    'platform-operations-portal',
   ];
   const cases = [
     { token: 's'.repeat(32), accepted: true, status: 'accepted' },
@@ -139,6 +142,39 @@ test('customer session JWTs are signed and verified only by auth-core', async ()
   assert.equal(tampered.status, 'invalid_signature');
 });
 
+test('platform console session and magic-link tokens are signed and verified only by auth-core', async () => {
+  const token = await authCore.createLetbuyyPlatformSessionToken(
+    {
+      email: 'operator@example.com',
+      userId: 'user_123',
+      mfaVerified: true,
+    },
+    'platform-secret',
+    { nowSeconds: 200, ttlSeconds: 60 },
+  );
+
+  const accepted = await authCore.verifyLetbuyyPlatformSessionToken(token, 'platform-secret', { nowSeconds: 220 });
+  assert.equal(accepted.accepted, true);
+  assert.equal(accepted.payload.type, 'platform_session');
+  assert.equal(accepted.payload.email, 'operator@example.com');
+
+  const expired = await authCore.verifyLetbuyyPlatformSessionToken(token, 'platform-secret', { nowSeconds: 261 });
+  assert.equal(expired.status, 'expired');
+
+  const tampered = await authCore.verifyLetbuyyPlatformSessionToken(`${token.slice(0, -1)}x`, 'platform-secret', { nowSeconds: 220 });
+  assert.equal(tampered.status, 'invalid_signature');
+
+  const magicLink = await authCore.createLetbuyyPlatformMagicLinkToken('Operator@Example.com', 'platform-secret', {
+    nowSeconds: 300,
+    ttlSeconds: 60,
+  });
+  const verifiedMagicLink = await authCore.verifyLetbuyyPlatformMagicLinkToken(magicLink, 'platform-secret', {
+    nowSeconds: 320,
+  });
+  assert.equal(verifiedMagicLink.accepted, true);
+  assert.equal(verifiedMagicLink.payload.email, 'operator@example.com');
+});
+
 test('runtime auth surfaces import the shared verifier instead of local HMAC session copies', () => {
   const sharedAuthFiles = [
     'apps/identity-platform/src/lib/api/worker-client.ts',
@@ -149,11 +185,18 @@ test('runtime auth surfaces import the shared verifier instead of local HMAC ses
     'apps/app-marketplace/src/proxy.ts',
     'apps/theme-marketplace/src/lib/api/worker-client.ts',
     'apps/storefront-runtime/src/lib/session.ts',
+    'apps/platform-console/src/lib/console-session.ts',
+    'apps/platform-console/src/proxy.ts',
+    'apps/platform-operations-portal/src/proxy.ts',
   ];
 
   for (const file of sharedAuthFiles) {
     const source = readFileSync(file, 'utf8');
     assert.match(source, /@letbuyy\/auth-core/, `${file} must use @letbuyy/auth-core`);
-    assert.doesNotMatch(source, /function hmacSha256Hex|function bytesToHex|const textEncoder = new TextEncoder/, `${file} must not carry a local HMAC verifier`);
+    assert.doesNotMatch(
+      source,
+      /function hmacSha256Hex|function bytesToHex|function hmacSha256|constantTimeEqual|base64UrlEncode|base64UrlDecode|crypto\.subtle\.sign|const textEncoder = new TextEncoder/,
+      `${file} must not carry a local HMAC verifier`,
+    );
   }
 });
