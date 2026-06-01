@@ -5,6 +5,8 @@
         "build": "turbo build",
         "dev": "turbo dev --concurrency 15",
         "setup:env": "node scripts/setup-local-env.mjs",
+        "federation:local:up": "node scripts/dev/local-stack-up.mjs",
+        "federation:local:down": "node scripts/dev/local-stack-down.mjs",
         "local:bootstrap": "node infrastructure/scripts/local/bootstrap-local.mjs",
         "local:up": "node infrastructure/scripts/local/start-local-stack.mjs",
         "local:health": "node infrastructure/scripts/local/health-local-stack.mjs",

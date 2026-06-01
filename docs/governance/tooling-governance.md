@@ -5,6 +5,7 @@ Repository tooling must be owned, discoverable, reusable, and CI-safe.
 ## Canonical Script Structure
 
 - `scripts/validators/`: executable governance validators and shared validator helpers.
+- `scripts/dev/`: developer-only local stack orchestration for browser and Playwright verification.
 - `scripts/governance/`: reusable governance orchestration.
 - `scripts/generators/`: reusable repository intelligence and docs generators.
 - `scripts/migration/`: documented migration tools.

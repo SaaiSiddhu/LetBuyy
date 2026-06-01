@@ -10,6 +10,7 @@ const reporter = createReporter("Tooling governance validator");
 
 const requiredScriptDirectories = [
   "scripts/cloudflare",
+  "scripts/dev",
   "scripts/github",
   "scripts/supabase",
   "scripts/validators",
