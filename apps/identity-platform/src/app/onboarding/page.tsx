@@ -3,7 +3,6 @@
 export const dynamic = 'force-dynamic'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createClient } from '@/lib/supabase/client'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
@@ -283,7 +282,6 @@ export default function OnboardingPage() {
     // User dropdown
     const [showUserMenu, setShowUserMenu] = useState(false)
 
-    const supabase = createClient()
     const t = translations[lang]
 
     /* ——— Initialize theme & language from localStorage ——— */

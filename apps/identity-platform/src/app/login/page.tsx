@@ -204,29 +204,7 @@ function LoginContent() {
     }, [email, password, redirectTo, t.invalidCredentials])
 
     const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
-        try {
-            const { createClient } = await import('@/lib/supabase/client')
-            const supabase = createClient()
-
-            const callbackUrl = `${window.location.origin}/auth/callback`
-
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo: callbackUrl,
-                    queryParams: provider === 'google' ? {
-                        access_type: 'offline',
-                        prompt: 'consent',
-                    } : undefined,
-                },
-            })
-
-            if (error) {
-                setError(error.message || 'Failed to start sign in')
-            }
-        } catch (error) {
-            setError(error instanceof Error && error.message ? error.message : 'Failed to start sign in')
-        }
+        setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-in is not configured. Use email sign-in.`)
     }, [])
 
     const handleTurnstileVerify = useCallback((token: string) => {

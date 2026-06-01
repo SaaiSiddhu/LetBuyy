@@ -154,6 +154,7 @@ function LookupContent() {
         if (urlError === 'expired_link') setError('Link has expired. Please try again.')
         if (urlError === 'invalid_link') setError('Invalid link. Please try again.')
         if (urlError === 'rate_limit') setError('Too many requests. Please try later.')
+        if (urlError === 'oauth_unavailable') setError('Social sign-in is not configured. Use email sign-in.')
 
         // Auto-advance from signup redirect
         const fromSignup = searchParams.get('from') === 'signup'
@@ -325,29 +326,7 @@ function LookupContent() {
     }
 
     const handleOAuth = useCallback(async (provider: 'google' | 'apple') => {
-        try {
-            const { createClient } = await import('@/lib/supabase/client')
-            const supabase = createClient()
-
-            const redirectTo = `${window.location.origin}/auth/callback`
-
-            const { error } = await supabase.auth.signInWithOAuth({
-                provider,
-                options: {
-                    redirectTo,
-                    queryParams: provider === 'google' ? {
-                        access_type: 'offline',
-                        prompt: 'consent',
-                    } : undefined,
-                },
-            })
-
-            if (error) {
-                setError(error.message || 'Failed to start sign in')
-            }
-        } catch (error) {
-            setError(error instanceof Error && error.message ? error.message : 'Failed to start sign in')
-        }
+        setError(`${provider === 'google' ? 'Google' : 'Apple'} sign-in is not configured. Use email sign-in.`)
     }, [])
 
     const handleTurnstileVerify = useCallback((token: string) => {
