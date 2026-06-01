@@ -35,13 +35,36 @@ export const MoneySchema = z
 
 export const CurrencySchema = z.string().length(3).toUpperCase().default('INR');
 
+export const GstinSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .regex(
+    /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/,
+    'GSTIN must be a valid 15 character Indian GSTIN',
+  );
+
+export const IndianStateCodeSchema = z
+  .string()
+  .trim()
+  .regex(/^(0[1-9]|[12][0-9]|3[0-8]|97)$/, 'GST state code must be 01-38 or 97');
+
+export const HsnCodeSchema = z
+  .string()
+  .trim()
+  .regex(/^\d{4,8}$/, 'HSN code must be 4 to 8 digits');
+
 export const AddressSchema = z.object({
+  name: z.string().max(200).optional(),
   line1: z.string().min(1).max(500),
   line2: z.string().max(500).optional(),
   city: z.string().min(1).max(100),
   state: z.string().min(1).max(100),
+  state_code: IndianStateCodeSchema.optional(),
   zip: z.string().min(3).max(20),
   country: z.string().length(2).toUpperCase().default('IN'),
+  phone: z.string().max(30).optional(),
+  gstin: GstinSchema.optional(),
 });
 
 export const SeoSchema = z.object({
@@ -53,6 +76,9 @@ export const SeoSchema = z.object({
 export type PaginationQueryInput = z.infer<typeof PaginationQuery>;
 export type AddressInput = z.infer<typeof AddressSchema>;
 export type CurrencyCode = z.infer<typeof CurrencySchema>;
+export type Gstin = z.infer<typeof GstinSchema>;
+export type IndianStateCode = z.infer<typeof IndianStateCodeSchema>;
+export type HsnCode = z.infer<typeof HsnCodeSchema>;
 
 export interface Address {
   name: string;
@@ -60,9 +86,11 @@ export interface Address {
   line2?: string;
   city: string;
   state: string;
+  state_code?: string;
   postal_code: string;
   country: string;
   phone?: string;
+  gstin?: string;
 }
 
 export interface ApiResponse<T> {
@@ -247,6 +275,10 @@ export const StoreSchema = AuditedEntitySchema.extend({
   timezone: z.string().min(1).max(80).default('Asia/Kolkata'),
   logo_url: UrlSchema.optional().nullable(),
   favicon_url: UrlSchema.optional().nullable(),
+  legal_name: z.string().max(200).optional().nullable(),
+  gstin: GstinSchema.optional().nullable(),
+  gst_state_code: IndianStateCodeSchema.optional().nullable(),
+  invoice_prefix: z.string().min(1).max(20).optional().nullable(),
   theme_config: MetadataSchema.default({}),
   settings: MetadataSchema.default({}),
   navigation: MetadataSchema.default({}),
@@ -322,6 +354,7 @@ export const ProductSchema = AuditedEntitySchema.extend({
   is_physical: z.boolean().default(true),
   charge_tax: z.boolean().default(true),
   hs_code: z.string().max(30).optional().nullable(),
+  hsn_code: HsnCodeSchema.optional().nullable(),
   country_of_origin: z.string().max(100).optional().nullable(),
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
@@ -421,8 +454,10 @@ export const CustomerAddressSchema = AuditedEntitySchema.extend({
   address_line2: z.string().max(500).optional().nullable(),
   city: z.string().min(1).max(100),
   state: z.string().min(1).max(100),
+  state_code: IndianStateCodeSchema.optional().nullable(),
   postal_code: z.string().min(3).max(20),
   country: z.string().length(2).toUpperCase().default('IN'),
+  gstin: GstinSchema.optional().nullable(),
   landmark: z.string().max(255).optional().nullable(),
   label: z.string().max(50).optional().nullable(),
   is_default: z.boolean().default(false),
@@ -432,6 +467,7 @@ export const CustomerSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
   email: EmailSchema.optional().nullable(),
   phone: z.string().max(30).optional().nullable(),
+  gstin: GstinSchema.optional().nullable(),
   first_name: z.string().max(100).optional().nullable(),
   last_name: z.string().max(100).optional().nullable(),
   display_name: z.string().max(200).optional().nullable(),
@@ -490,10 +526,62 @@ export const LineItemSchema = z.object({
   unit_price: MoneySchema,
   total: MoneySchema,
   currency: CurrencySchema,
+  hsn_code: HsnCodeSchema.optional().nullable(),
+  gst_rate: z.number().min(0).max(40).optional().nullable(),
+  taxable_amount: MoneySchema.optional().nullable(),
+  cgst_amount: MoneySchema.default(0).optional(),
+  sgst_amount: MoneySchema.default(0).optional(),
+  igst_amount: MoneySchema.default(0).optional(),
   image_url: UrlSchema.optional().nullable(),
   variant_title: z.string().max(200).optional().nullable(),
   properties: MetadataSchema.default({}),
 });
+
+export const GstInvoicePartySchema = z.object({
+  name: z.string().min(1).max(200),
+  gstin: GstinSchema.optional().nullable(),
+  state: z.string().min(1).max(100).optional().nullable(),
+  state_code: IndianStateCodeSchema,
+  address: AddressSchema.partial().optional().nullable(),
+}).passthrough();
+
+export const GstInvoiceLineSchema = z.object({
+  id: z.string().min(1).max(120).optional(),
+  product_id: UuidSchema.optional().nullable(),
+  variant_id: UuidSchema.optional().nullable(),
+  description: z.string().min(1).max(256),
+  sku: z.string().max(100).optional().nullable(),
+  hsn_code: HsnCodeSchema.optional().nullable(),
+  quantity: z.number().int().min(1).max(999),
+  unit_amount_minor: z.number().int().min(0),
+  discount_amount_minor: z.number().int().min(0).default(0),
+  taxable_amount_minor: z.number().int().min(0),
+  gst_rate_bps: z.number().int().min(0).max(4000),
+  cgst_amount_minor: z.number().int().min(0).default(0),
+  sgst_amount_minor: z.number().int().min(0).default(0),
+  igst_amount_minor: z.number().int().min(0).default(0),
+  tax_amount_minor: z.number().int().min(0),
+  total_amount_minor: z.number().int().min(0),
+}).strict();
+
+export const GstInvoiceSchema = z.object({
+  invoice_number: z.string().min(1).max(80),
+  order_id: z.string().min(1).max(120),
+  order_number: z.string().min(1).max(80),
+  invoice_date: z.string().datetime(),
+  currency: CurrencySchema,
+  supplier: GstInvoicePartySchema,
+  recipient: GstInvoicePartySchema,
+  place_of_supply_state_code: IndianStateCodeSchema,
+  supply_type: z.enum(['intra_state', 'inter_state']),
+  lines: z.array(GstInvoiceLineSchema).min(1).max(250),
+  taxable_amount_minor: z.number().int().min(0),
+  cgst_amount_minor: z.number().int().min(0),
+  sgst_amount_minor: z.number().int().min(0),
+  igst_amount_minor: z.number().int().min(0),
+  tax_amount_minor: z.number().int().min(0),
+  total_amount_minor: z.number().int().min(0),
+}).strict();
 
 export const OrderSchema = AuditedEntitySchema.extend({
   store_id: UuidSchema,
@@ -502,6 +590,7 @@ export const OrderSchema = AuditedEntitySchema.extend({
   customer_email: EmailSchema.optional().nullable(),
   customer_phone: z.string().max(30).optional().nullable(),
   customer_name: z.string().max(200).optional().nullable(),
+  customer_gstin: GstinSchema.optional().nullable(),
   status: OrderStatusSchema,
   payment_status: PaymentStatusSchema,
   fulfillment_status: FulfillmentStatusSchema,
@@ -516,6 +605,9 @@ export const OrderSchema = AuditedEntitySchema.extend({
   payment_id: z.string().max(200).optional().nullable(),
   shipping_address: CustomerAddressSchema.partial().optional().nullable(),
   billing_address: CustomerAddressSchema.partial().optional().nullable(),
+  place_of_supply_state: IndianStateCodeSchema.optional().nullable(),
+  gst_invoice_number: z.string().max(80).optional().nullable(),
+  gst_invoice: GstInvoiceSchema.optional().nullable(),
   shipping_method: z.string().max(100).optional().nullable(),
   tracking_number: z.string().max(100).optional().nullable(),
   tracking_url: UrlSchema.optional().nullable(),
@@ -1262,6 +1354,9 @@ export type CartLine = z.infer<typeof CartLineSchema>;
 export type Cart = z.infer<typeof CartSchema>;
 export type LineItem = z.infer<typeof LineItemSchema>;
 export type OrderItem = LineItem;
+export type GstInvoiceParty = z.infer<typeof GstInvoicePartySchema>;
+export type GstInvoiceLine = z.infer<typeof GstInvoiceLineSchema>;
+export type GstInvoice = z.infer<typeof GstInvoiceSchema>;
 export type Order = z.infer<typeof OrderSchema>;
 export type Payment = z.infer<typeof PaymentSchema>;
 export type SubscriptionPlan = z.infer<typeof SubscriptionPlanSchema>;

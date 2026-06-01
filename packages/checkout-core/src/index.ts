@@ -1,7 +1,11 @@
 import { z } from 'zod';
 import {
   AddressSchema,
+  CurrencySchema,
   EmailSchema,
+  GstinSchema,
+  HsnCodeSchema,
+  IndianStateCodeSchema,
   MoneySchema,
   PaginationQuery,
   UuidSchema,
@@ -25,6 +29,7 @@ export const CreateOrderSchema = z.object({
   customer_email: EmailSchema,
   customer_name: z.string().min(1).max(200).trim(),
   customer_phone: z.string().max(20).optional(),
+  customer_gstin: GstinSchema.optional(),
   shipping_address: AddressSchema.optional(),
   items: z.array(OrderItemInput).min(1).max(50),
   payment_method: z.enum(['razorpay', 'stripe', 'cod']).default('cod'),
@@ -39,10 +44,12 @@ export const StorefrontCreateOrderSchema = z.object({
     name: z.string().min(1).max(200).trim(),
     email: EmailSchema,
     phone: z.string().max(20).optional(),
+    gstin: GstinSchema.optional(),
     address: z.object({
       address: z.string().min(1).max(500),
       city: z.string().min(1).max(100),
       state: z.string().min(1).max(100),
+      stateCode: IndianStateCodeSchema.optional(),
       pincode: z.string().min(3).max(20),
     }),
   }),
@@ -153,6 +160,7 @@ export interface CreateCheckoutOrderCommand {
   customer_email: string;
   customer_phone?: string;
   shipping_address?: Record<string, unknown>;
+  customer_gstin?: string;
   items: CheckoutOrderItemCommand[];
   payment_method: string;
   shipping_method?: 'standard' | 'express';
@@ -195,6 +203,244 @@ export interface CompleteRefundCommand {
   refund_id: string;
   provider_refund_id?: string;
   provider_event_id?: string;
+}
+
+export const GstInvoicePartyInputSchema = z.object({
+  name: z.string().min(1).max(200).trim(),
+  gstin: GstinSchema.optional().nullable(),
+  state: z.string().min(1).max(100).optional().nullable(),
+  state_code: IndianStateCodeSchema.optional().nullable(),
+  address: AddressSchema.partial().optional().nullable(),
+}).passthrough();
+
+export const GstInvoiceLineInputSchema = z.object({
+  id: z.string().min(1).max(120).optional(),
+  product_id: UuidSchema.optional().nullable(),
+  variant_id: UuidSchema.optional().nullable(),
+  description: z.string().min(1).max(256),
+  sku: z.string().max(100).optional().nullable(),
+  hsn_code: HsnCodeSchema.optional().nullable(),
+  quantity: z.number().int().min(1).max(999),
+  unit_amount_minor: z.number().int().min(0),
+  discount_amount_minor: z.number().int().min(0).default(0),
+  gst_rate_bps: z.number().int().min(0).max(4000).default(0),
+  tax_inclusive: z.boolean().default(false),
+}).strict();
+
+export const GenerateGstInvoiceSchema = z.object({
+  order_id: z.string().min(1).max(120),
+  order_number: z.string().min(1).max(80),
+  invoice_number: z.string().min(1).max(80).optional(),
+  invoice_date: z.union([z.string().datetime(), z.date()]).optional(),
+  currency: CurrencySchema,
+  supplier: GstInvoicePartyInputSchema,
+  recipient: GstInvoicePartyInputSchema,
+  place_of_supply_state_code: IndianStateCodeSchema.optional().nullable(),
+  lines: z.array(GstInvoiceLineInputSchema).min(1).max(250),
+}).strict();
+
+export type GstInvoicePartyInput = z.infer<typeof GstInvoicePartyInputSchema>;
+export type GstInvoiceLineInput = z.infer<typeof GstInvoiceLineInputSchema>;
+export type GenerateGstInvoiceInput = z.infer<typeof GenerateGstInvoiceSchema>;
+
+export interface GeneratedGstInvoiceParty {
+  name: string;
+  gstin: string | null;
+  state: string | null;
+  state_code: string;
+  address?: Record<string, unknown> | null;
+}
+
+export interface GeneratedGstInvoiceLine {
+  id?: string;
+  product_id?: string | null;
+  variant_id?: string | null;
+  description: string;
+  sku?: string | null;
+  hsn_code?: string | null;
+  quantity: number;
+  unit_amount_minor: number;
+  discount_amount_minor: number;
+  taxable_amount_minor: number;
+  gst_rate_bps: number;
+  cgst_amount_minor: number;
+  sgst_amount_minor: number;
+  igst_amount_minor: number;
+  tax_amount_minor: number;
+  total_amount_minor: number;
+}
+
+export interface GeneratedGstInvoice {
+  invoice_number: string;
+  order_id: string;
+  order_number: string;
+  invoice_date: string;
+  currency: string;
+  supplier: GeneratedGstInvoiceParty;
+  recipient: GeneratedGstInvoiceParty;
+  place_of_supply_state_code: string;
+  supply_type: 'intra_state' | 'inter_state';
+  lines: GeneratedGstInvoiceLine[];
+  taxable_amount_minor: number;
+  cgst_amount_minor: number;
+  sgst_amount_minor: number;
+  igst_amount_minor: number;
+  tax_amount_minor: number;
+  total_amount_minor: number;
+}
+
+function parseOptionalGstin(value: string | null | undefined, fieldName: string): string | null {
+  if (!value) return null;
+  const normalized = String(value).trim().toUpperCase();
+  const parsed = GstinSchema.safeParse(normalized);
+  if (!parsed.success) throw new Error(`${fieldName} must be a valid GSTIN`);
+  return parsed.data;
+}
+
+export function normalizeGstin(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const normalized = String(value).trim().toUpperCase();
+  return GstinSchema.safeParse(normalized).success ? normalized : null;
+}
+
+export function normalizeHsnCode(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const normalized = String(value).trim();
+  return HsnCodeSchema.safeParse(normalized).success ? normalized : null;
+}
+
+export function extractGstStateCode(value: string | null | undefined): string | null {
+  const gstin = normalizeGstin(value);
+  return gstin ? gstin.slice(0, 2) : null;
+}
+
+export function normalizeIndianStateCode(value: string | number | null | undefined): string | null {
+  if (value === null || value === undefined || value === '') return null;
+  const normalized = String(value).trim().padStart(2, '0');
+  return IndianStateCodeSchema.safeParse(normalized).success ? normalized : null;
+}
+
+function requireIndianStateCode(
+  explicitStateCode: string | null | undefined,
+  gstin: string | null,
+  fieldName: string,
+): string {
+  const stateCode = normalizeIndianStateCode(explicitStateCode) || extractGstStateCode(gstin);
+  if (!stateCode) throw new Error(`${fieldName} requires a GST state code`);
+  return stateCode;
+}
+
+function toInvoiceDate(value: string | Date | undefined): string {
+  if (!value) return new Date().toISOString();
+  if (value instanceof Date) return value.toISOString();
+  return new Date(value).toISOString();
+}
+
+function defaultInvoiceNumber(orderNumber: string, invoiceDate: string): string {
+  const yyyymmdd = invoiceDate.slice(0, 10).replace(/-/g, '');
+  const safeOrderNumber = orderNumber.replace(/[^A-Za-z0-9-]/g, '').slice(0, 40) || 'ORDER';
+  return `LBY-${yyyymmdd}-${safeOrderNumber}`;
+}
+
+function positiveMinorUnit(value: number | undefined, fieldName: string): number {
+  const amount = Number(value ?? 0);
+  if (!Number.isFinite(amount) || amount < 0) throw new Error(`${fieldName} must be a non-negative minor-unit amount`);
+  return Math.round(amount);
+}
+
+function buildGstInvoiceParty(input: GstInvoicePartyInput, fieldName: string): GeneratedGstInvoiceParty {
+  const gstin = parseOptionalGstin(input.gstin ?? null, `${fieldName}.gstin`);
+  const stateCode = requireIndianStateCode(input.state_code ?? null, gstin, fieldName);
+
+  return {
+    name: input.name,
+    gstin,
+    state: input.state ?? null,
+    state_code: stateCode,
+    address: input.address ?? null,
+  };
+}
+
+export function calculateGstLine(input: GstInvoiceLineInput, supplyType: 'intra_state' | 'inter_state'): GeneratedGstInvoiceLine {
+  const quantity = Math.max(1, Math.trunc(Number(input.quantity)));
+  const unitAmountMinor = positiveMinorUnit(input.unit_amount_minor, 'unit_amount_minor');
+  const discountAmountMinor = positiveMinorUnit(input.discount_amount_minor, 'discount_amount_minor');
+  const lineAmountMinor = Math.max(0, (unitAmountMinor * quantity) - discountAmountMinor);
+  const gstRateBps = Math.max(0, Math.min(4000, Math.trunc(Number(input.gst_rate_bps ?? 0))));
+  const taxableAmountMinor = input.tax_inclusive
+    ? Math.round((lineAmountMinor * 10_000) / (10_000 + gstRateBps))
+    : lineAmountMinor;
+  const taxAmountMinor = input.tax_inclusive
+    ? lineAmountMinor - taxableAmountMinor
+    : Math.round((taxableAmountMinor * gstRateBps) / 10_000);
+  const totalAmountMinor = taxableAmountMinor + taxAmountMinor;
+  const cgstAmountMinor = supplyType === 'intra_state' ? Math.floor(taxAmountMinor / 2) : 0;
+  const sgstAmountMinor = supplyType === 'intra_state' ? taxAmountMinor - cgstAmountMinor : 0;
+  const igstAmountMinor = supplyType === 'inter_state' ? taxAmountMinor : 0;
+
+  return {
+    id: input.id,
+    product_id: input.product_id ?? null,
+    variant_id: input.variant_id ?? null,
+    description: input.description,
+    sku: input.sku ?? null,
+    hsn_code: normalizeHsnCode(input.hsn_code ?? null),
+    quantity,
+    unit_amount_minor: unitAmountMinor,
+    discount_amount_minor: discountAmountMinor,
+    taxable_amount_minor: taxableAmountMinor,
+    gst_rate_bps: gstRateBps,
+    cgst_amount_minor: cgstAmountMinor,
+    sgst_amount_minor: sgstAmountMinor,
+    igst_amount_minor: igstAmountMinor,
+    tax_amount_minor: taxAmountMinor,
+    total_amount_minor: totalAmountMinor,
+  };
+}
+
+export function generateGstInvoice(input: GenerateGstInvoiceInput): GeneratedGstInvoice {
+  if (!input.lines.length) throw new Error('GST invoice requires at least one line item');
+
+  const invoiceDate = toInvoiceDate(input.invoice_date);
+  const supplier = buildGstInvoiceParty(input.supplier, 'supplier');
+  const recipient = buildGstInvoiceParty(input.recipient, 'recipient');
+  const placeOfSupplyStateCode = normalizeIndianStateCode(input.place_of_supply_state_code)
+    || recipient.state_code;
+  const supplyType = supplier.state_code === placeOfSupplyStateCode ? 'intra_state' : 'inter_state';
+  const lines = input.lines.map((line) => calculateGstLine(line, supplyType));
+  const totals = lines.reduce(
+    (acc, line) => {
+      acc.taxable_amount_minor += line.taxable_amount_minor;
+      acc.cgst_amount_minor += line.cgst_amount_minor;
+      acc.sgst_amount_minor += line.sgst_amount_minor;
+      acc.igst_amount_minor += line.igst_amount_minor;
+      acc.tax_amount_minor += line.tax_amount_minor;
+      acc.total_amount_minor += line.total_amount_minor;
+      return acc;
+    },
+    {
+      taxable_amount_minor: 0,
+      cgst_amount_minor: 0,
+      sgst_amount_minor: 0,
+      igst_amount_minor: 0,
+      tax_amount_minor: 0,
+      total_amount_minor: 0,
+    },
+  );
+
+  return {
+    invoice_number: input.invoice_number || defaultInvoiceNumber(input.order_number, invoiceDate),
+    order_id: input.order_id,
+    order_number: input.order_number,
+    invoice_date: invoiceDate,
+    currency: input.currency || 'INR',
+    supplier,
+    recipient,
+    place_of_supply_state_code: placeOfSupplyStateCode,
+    supply_type: supplyType,
+    lines,
+    ...totals,
+  };
 }
 
 export const ListOrdersQuery = z.object({

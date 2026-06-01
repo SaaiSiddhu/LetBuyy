@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EmailSchema, MoneySchema, PaginationQuery, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+import { EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -45,6 +45,7 @@ export const CreateProductSchema = z
     weight_unit: z.string().max(20).default('kg'),
     country_of_origin: z.string().max(100).optional().nullable(),
     hs_code: z.string().max(30).optional().nullable(),
+    hsn_code: HsnCodeSchema.optional().nullable(),
     url_handle: z.string().max(200).optional().nullable(),
     seo_title: z.string().max(70).optional().nullable(),
     seo_description: z.string().max(160).optional().nullable(),
@@ -81,6 +82,7 @@ export const UpdateProductSchema = z.object({
   weight_unit: z.string().max(20).optional(),
   country_of_origin: z.string().max(100).optional().nullable(),
   hs_code: z.string().max(30).optional().nullable(),
+  hsn_code: HsnCodeSchema.optional().nullable(),
   url_handle: z.string().max(200).optional().nullable(),
   seo_title: z.string().max(70).optional().nullable(),
   seo_description: z.string().max(160).optional().nullable(),
@@ -496,6 +498,7 @@ export const PRODUCT_UPDATE_FIELDS = [
   'weight_unit',
   'country_of_origin',
   'hs_code',
+  'hsn_code',
   'url_handle',
   'seo_title',
   'seo_description',
@@ -1023,6 +1026,7 @@ export function planProductCreate(input: CreateProductCommand): ProductCreatePla
       weight_unit: input.weight_unit || 'kg',
       country_of_origin: input.country_of_origin || null,
       hs_code: input.hs_code || null,
+      hsn_code: input.hsn_code || input.hs_code || null,
       url_handle: input.url_handle || slug,
       seo_title: input.seo_title || null,
       seo_description: input.seo_description || null,
@@ -1049,6 +1053,14 @@ export function planProductUpdate(updates: Record<string, unknown>): ProductUpda
 
   if (typeof safeUpdates.is_active === 'boolean' && updates.status === undefined) {
     safeUpdates.status = safeUpdates.is_active ? 'active' : 'draft';
+  }
+
+  if (safeUpdates.hsn_code !== undefined && safeUpdates.hs_code === undefined) {
+    safeUpdates.hs_code = safeUpdates.hsn_code;
+  }
+
+  if (safeUpdates.hs_code !== undefined && safeUpdates.hsn_code === undefined) {
+    safeUpdates.hsn_code = safeUpdates.hs_code;
   }
 
   return {

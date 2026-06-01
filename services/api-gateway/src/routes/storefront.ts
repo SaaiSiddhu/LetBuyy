@@ -65,10 +65,12 @@ type StorefrontCreateOrderBody = {
         name: string;
         email: string;
         phone?: string;
+        gstin?: string;
         address: {
             address: string;
             city: string;
             state: string;
+            stateCode?: string;
             pincode: string;
         };
     };
@@ -1335,12 +1337,17 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
                 customer_email: body.customer.email,
                 customer_phone: body.customer.phone,
                 shipping_address: {
+                    name: body.customer.name,
                     line1: body.customer.address.address,
                     city: body.customer.address.city,
                     state: body.customer.address.state,
+                    state_code: body.customer.address.stateCode,
                     zip: body.customer.address.pincode,
                     country: 'IN',
+                    phone: body.customer.phone,
+                    gstin: body.customer.gstin,
                 },
+                customer_gstin: body.customer.gstin,
                 items: body.items.map((item) => ({
                     product_id: item.productId,
                     variant_id: item.variantId || null,

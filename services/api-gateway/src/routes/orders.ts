@@ -231,6 +231,7 @@ router.post('/', validate('json', CreateOrderSchema), async (c) => {
                 customer_email: body.customer_email,
                 customer_phone: body.customer_phone,
                 shipping_address: body.shipping_address,
+                customer_gstin: body.customer_gstin,
                 items: body.items,
                 payment_method: body.payment_method,
                 shipping_method: body.shipping_method,

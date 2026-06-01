@@ -53,13 +53,15 @@ export class OrderExecutionAdapter {
      */
     async createOrder(input: CreateCheckoutOrderCommand, tenant: TenantContext) {
         await this.assertOrderQuota(tenant.siteId);
+        const shippingAddress = { ...(input.shipping_address || {}) };
+        if (input.customer_gstin) shippingAddress.gstin = input.customer_gstin;
 
         const { data, error } = await this.db.rpc('create_checkout_order', {
             p_store_id: tenant.siteId,
             p_customer_name: input.customer_name,
             p_customer_email: input.customer_email,
             p_customer_phone: input.customer_phone || null,
-            p_shipping_address: input.shipping_address || {},
+            p_shipping_address: shippingAddress,
             p_items: input.items,
             p_payment_method: input.payment_method,
             p_notes: input.notes || null,
