@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin, success, paginated } from '../lib/supabase';
-import { requireSuperAdmin } from '../middleware/rbac';
+import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 
 const router = new Hono<{ Bindings: Env }>();
 
 // All admin routes require super admin access
-router.use('*', requireSuperAdmin);
+router.use('*', requireRoleCategory('ops'), requireSuperAdmin);
 
 // ============================================================
 // DASHBOARD

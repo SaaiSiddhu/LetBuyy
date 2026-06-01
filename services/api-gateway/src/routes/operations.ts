@@ -4,7 +4,7 @@ import type { Env } from '../index';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { ValidationError } from '../lib/errors';
 import { getRequestId } from '../lib/tenant-context';
-import { requireSuperAdmin } from '../middleware/rbac';
+import { requireRoleCategory, requireSuperAdmin } from '../middleware/rbac';
 import { OutboxExecutionAdapter } from '../execution/outbox-execution.adapter';
 import {
     ConsumeQueueJobsSchema,
@@ -44,7 +44,7 @@ import { QueueExecutionAdapter } from '../execution/queue-execution.adapter';
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 
-router.use('*', requireSuperAdmin);
+router.use('*', requireRoleCategory('ops'), requireSuperAdmin);
 
 function dispatcherId(prefix: string): string {
     return `${prefix}:${crypto.randomUUID()}`;

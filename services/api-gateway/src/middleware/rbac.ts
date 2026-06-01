@@ -3,9 +3,51 @@
 // ============================================================
 
 import { createMiddleware } from 'hono/factory';
+import {
+    hasAnyLetbuyyRoleCategory,
+    normalizeLetbuyyRoleAssignments,
+    type LetbuyyRoleAssignment,
+    type RbacRoleCategory,
+} from '@letbuyy/auth-core';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin } from '../lib/supabase';
+
+type AuthUserWithRoles = {
+    id: string;
+    role?: string;
+    roles?: LetbuyyRoleAssignment[];
+};
+
+function getAuthRoleAssignments(authUser: AuthUserWithRoles): LetbuyyRoleAssignment[] {
+    if (Array.isArray(authUser.roles) && authUser.roles.length > 0) {
+        return authUser.roles;
+    }
+
+    return normalizeLetbuyyRoleAssignments(authUser.role);
+}
+
+async function hasOpsAllowlistEntry(db: ReturnType<typeof getSupabaseAdmin>, userId: string): Promise<boolean> {
+    const { data } = await db
+        .from('super_admin_allowlist')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    return Boolean(data);
+}
+
+async function hasPartnerDeveloperEntry(db: ReturnType<typeof getSupabaseAdmin>, userId: string): Promise<boolean> {
+    const { data } = await db
+        .from('app_developers')
+        .select('id')
+        .eq('user_id', userId)
+        .in('status', ['approved'])
+        .maybeSingle();
+
+    return Boolean(data);
+}
 
 /**
  * Requires the authenticated user to have one of the specified roles.
@@ -30,6 +72,50 @@ export function requireRole(...roles: string[]) {
                     error: {
                         code: 'FORBIDDEN',
                         message: `Insufficient permissions. Required: ${roles.join(' or ')}`,
+                    },
+                },
+                403
+            );
+        }
+
+        await next();
+    });
+}
+
+/**
+ * Requires an authenticated user to belong to one of the LetBuyy role categories.
+ * Category checks are the gateway boundary for cross-app RBAC.
+ */
+export function requireRoleCategory(...categories: RbacRoleCategory[]) {
+    return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        const auth = c.get('auth');
+
+        if (!auth?.user) {
+            return c.json(
+                { error: { code: 'UNAUTHORIZED', message: 'Authentication required' } },
+                401
+            );
+        }
+
+        const assignments = getAuthRoleAssignments(auth.user);
+        if (hasAnyLetbuyyRoleCategory(assignments, categories)) {
+            await next();
+            return;
+        }
+
+        const db = getSupabaseAdmin(c);
+        const allowedByPersistence = await Promise.all(categories.map(async (category) => {
+            if (category === 'ops') return hasOpsAllowlistEntry(db, auth.user.id);
+            if (category === 'partner') return hasPartnerDeveloperEntry(db, auth.user.id);
+            return false;
+        }));
+
+        if (!allowedByPersistence.some(Boolean)) {
+            return c.json(
+                {
+                    error: {
+                        code: 'FORBIDDEN',
+                        message: `Insufficient role category. Required: ${categories.join(' or ')}`,
                     },
                 },
                 403

@@ -41,6 +41,8 @@ export const PasswordUpdateSchema = z.object({
 export type ActorType = 'shopper' | 'customer' | 'merchant' | 'partner' | 'platform-employee' | 'platform-operator' | 'service';
 export type SessionKind = 'merchant' | 'customer' | 'employee' | 'service';
 export type PermissionAction = 'read' | 'create' | 'update' | 'delete' | 'manage';
+export type RbacRoleCategory = 'store' | 'organization' | 'partner' | 'ops';
+export type LetbuyyPredefinedRole = 'Administrator' | 'Merchandiser' | 'Support' | 'Partner' | 'Ops-Reviewer';
 
 export interface ActorIdentity {
   actor_id: string;
@@ -48,6 +50,7 @@ export interface ActorIdentity {
   site_id?: string;
   email?: string;
   roles: string[];
+  role_categories?: RbacRoleCategory[];
   permissions: Permission[];
 }
 
@@ -68,8 +71,20 @@ export interface SessionContract {
 
 export interface RbacPolicy {
   role: string;
+  category?: RbacRoleCategory;
   permissions: Permission[];
   description?: string;
+}
+
+export interface LetbuyyRoleDefinition {
+  name: LetbuyyPredefinedRole;
+  category: RbacRoleCategory;
+  description: string;
+}
+
+export interface LetbuyyRoleAssignment {
+  name: LetbuyyPredefinedRole;
+  category: RbacRoleCategory;
 }
 
 export interface CustomerCredential {
@@ -114,6 +129,33 @@ export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
 export const LETBUYY_PLATFORM_SESSION_TTL_SECONDS = 8 * 60 * 60;
 export const LETBUYY_PLATFORM_MAGIC_LINK_TTL_SECONDS = 15 * 60;
+export const LETBUYY_PREDEFINED_ROLES: Record<LetbuyyPredefinedRole, LetbuyyRoleDefinition> = {
+  Administrator: {
+    name: 'Administrator',
+    category: 'store',
+    description: 'Full store administration for a merchant-owned site.',
+  },
+  Merchandiser: {
+    name: 'Merchandiser',
+    category: 'store',
+    description: 'Catalog, inventory, content, and merchandising operations for a store.',
+  },
+  Support: {
+    name: 'Support',
+    category: 'organization',
+    description: 'Organization support role for non-owner operational assistance.',
+  },
+  Partner: {
+    name: 'Partner',
+    category: 'partner',
+    description: 'Partner developer or theme/app marketplace role.',
+  },
+  'Ops-Reviewer': {
+    name: 'Ops-Reviewer',
+    category: 'ops',
+    description: 'Platform operations review and trust-and-safety role.',
+  },
+};
 
 const SAFE_SESSION_TOKEN_PATTERN = /^[A-Za-z0-9._~-]+$/;
 const INTERNAL_SESSION_HEADER_PREFIX = 'X-LetBuyy-Internal';
@@ -328,6 +370,78 @@ export function isAuthUuid(value: string): boolean {
 
 export function isSafeAuthEmail(value: string | undefined): value is string {
   return !!value && value.length <= 320 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+export function normalizeLetbuyyRoleName(value: unknown): LetbuyyPredefinedRole | null {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[_\s]+/g, '-');
+
+  switch (normalized) {
+    case 'administrator':
+    case 'admin':
+    case 'owner':
+    case 'seller':
+    case 'store-owner':
+      return 'Administrator';
+    case 'merchandiser':
+    case 'editor':
+    case 'staff':
+    case 'catalog-manager':
+      return 'Merchandiser';
+    case 'support':
+    case 'support-agent':
+    case 'organization-support':
+      return 'Support';
+    case 'partner':
+    case 'developer':
+    case 'app-developer':
+    case 'theme-developer':
+      return 'Partner';
+    case 'ops-reviewer':
+    case 'ops':
+    case 'operator':
+    case 'platform-operator':
+    case 'platform-employee':
+    case 'super-admin':
+      return 'Ops-Reviewer';
+    default:
+      return null;
+  }
+}
+
+export function normalizeLetbuyyRoleAssignments(input: unknown): LetbuyyRoleAssignment[] {
+  const candidates = Array.isArray(input) ? input : [input];
+  const assignments = new Map<LetbuyyPredefinedRole, LetbuyyRoleAssignment>();
+
+  for (const candidate of candidates) {
+    const roleName = typeof candidate === 'object' && candidate !== null
+      ? normalizeLetbuyyRoleName((candidate as { name?: unknown; role?: unknown; slug?: unknown }).name ?? (candidate as { role?: unknown }).role ?? (candidate as { slug?: unknown }).slug)
+      : normalizeLetbuyyRoleName(candidate);
+
+    if (!roleName) continue;
+
+    const definition = LETBUYY_PREDEFINED_ROLES[roleName];
+    assignments.set(roleName, {
+      name: definition.name,
+      category: definition.category,
+    });
+  }
+
+  return [...assignments.values()];
+}
+
+export function getLetbuyyRoleCategories(assignments: LetbuyyRoleAssignment[]): RbacRoleCategory[] {
+  return [...new Set(assignments.map((assignment) => assignment.category))].sort();
+}
+
+export function hasLetbuyyRoleCategory(assignments: LetbuyyRoleAssignment[], category: RbacRoleCategory): boolean {
+  return assignments.some((assignment) => assignment.category === category);
+}
+
+export function hasAnyLetbuyyRoleCategory(assignments: LetbuyyRoleAssignment[], categories: RbacRoleCategory[]): boolean {
+  return categories.some((category) => hasLetbuyyRoleCategory(assignments, category));
 }
 
 export function verifyLetbuyySessionCookieValue(

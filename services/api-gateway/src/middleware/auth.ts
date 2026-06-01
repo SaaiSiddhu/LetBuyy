@@ -5,11 +5,15 @@ import {
 } from '@letbuyy/infrastructure/supabase-adapter';
 import {
     getLetbuyyInternalAuthSecret,
+    getLetbuyyRoleCategories,
     isAuthUuid,
     isFreshLetbuyyInternalTimestamp,
     isSafeAuthEmail,
+    normalizeLetbuyyRoleAssignments,
     verifyLetbuyyInternalSessionHeaders,
     verifyLetbuyySignedPayload,
+    type LetbuyyRoleAssignment,
+    type RbacRoleCategory,
 } from '@letbuyy/auth-core';
 import type { Context } from 'hono';
 import type { Env } from '../index';
@@ -19,6 +23,8 @@ interface AuthContext {
         id: string;
         email: string;
         role?: string;
+        roles?: LetbuyyRoleAssignment[];
+        roleCategories?: RbacRoleCategory[];
         storeId?: string;
         authSource?: 'supabase' | 'internal-sso';
     };
@@ -29,6 +35,30 @@ declare module 'hono' {
         auth: AuthContext;
         requestStartTime: number;
     }
+}
+
+function buildAuthContextUser(input: {
+    id: string;
+    email: string;
+    role?: unknown;
+    roles?: unknown;
+    storeId?: string;
+    authSource: 'supabase' | 'internal-sso';
+}): AuthContext['user'] {
+    const roleAssignments = normalizeLetbuyyRoleAssignments([
+        input.role,
+        ...(Array.isArray(input.roles) ? input.roles : [input.roles]),
+    ]);
+
+    return {
+        id: input.id,
+        email: input.email,
+        role: roleAssignments[0]?.name || (typeof input.role === 'string' ? input.role : undefined),
+        roles: roleAssignments,
+        roleCategories: getLetbuyyRoleCategories(roleAssignments),
+        storeId: input.storeId,
+        authSource: input.authSource,
+    };
 }
 
 async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<AuthContext | null> {
@@ -59,12 +89,12 @@ async function getInternalAuthContext(c: Context<{ Bindings: Env }>): Promise<Au
     }
 
     return {
-        user: {
+        user: buildAuthContextUser({
             id: userId,
             email,
             storeId,
             authSource: 'internal-sso',
-        },
+        }),
     };
 }
 
@@ -119,11 +149,11 @@ async function getInternalSessionAuthContext(c: Context<{ Bindings: Env }>): Pro
         .eq('id', session.id);
 
     return {
-        user: {
+        user: buildAuthContextUser({
             id: user.id,
             email: user.email,
             authSource: 'internal-sso',
-        },
+        }),
     };
 }
 
@@ -184,12 +214,13 @@ export const authMiddleware = createMiddleware<{ Bindings: Env }>(
             }
 
             c.set('auth', {
-                user: {
+                user: buildAuthContextUser({
                     id: user.id,
                     email: user.email!,
                     role: user.user_metadata?.role,
+                    roles: user.user_metadata?.roles,
                     authSource: 'supabase',
-                },
+                }),
             });
 
             await next();
@@ -234,11 +265,13 @@ export const optionalAuth = createMiddleware<{ Bindings: Env }>(
 
                 if (user) {
                     c.set('auth', {
-                        user: {
+                        user: buildAuthContextUser({
                             id: user.id,
                             email: user.email!,
                             role: user.user_metadata?.role,
-                        },
+                            roles: user.user_metadata?.roles,
+                            authSource: 'supabase',
+                        }),
                     });
                 }
             } catch {
