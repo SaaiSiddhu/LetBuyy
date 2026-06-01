@@ -191,6 +191,14 @@ export interface LetbuyyInternalSessionHeaderPlan {
   reason?: string;
 }
 
+export interface LetbuyyInternalIdentityHeaderInput {
+  userId: string;
+  email: string;
+  storeId?: string | null;
+  secret: string | null | undefined;
+  nowMs?: number;
+}
+
 export interface LetbuyyInternalSessionHeaderInput {
   sessionToken?: string | null;
   timestamp?: string | null;
@@ -441,7 +449,7 @@ export function getLetbuyyInternalAuthSecret(env: {
 }
 
 export function isAuthUuid(value: string): boolean {
-  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{12}$/i.test(value);
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
 
 export function isSafeAuthEmail(value: string | undefined): value is string {
@@ -614,6 +622,40 @@ export async function createLetbuyyInternalSessionHeaders(
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Session-Token`]: verification.token,
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Timestamp`]: timestamp,
       [`${INTERNAL_SESSION_HEADER_PREFIX}-Signature`]: signature,
+    },
+  };
+}
+
+export async function createLetbuyyInternalIdentityHeaders(
+  input: LetbuyyInternalIdentityHeaderInput,
+): Promise<LetbuyyInternalSessionHeaderPlan> {
+  if (!isAuthUuid(input.userId) || !isSafeAuthEmail(input.email)) {
+    return { ok: false, status: 'malformed', reason: 'Internal identity is malformed' };
+  }
+
+  const storeId = input.storeId || '';
+  if (storeId && !isAuthUuid(storeId)) {
+    return { ok: false, status: 'malformed', reason: 'Internal identity store is malformed' };
+  }
+
+  if (!input.secret) {
+    return { ok: false, status: 'misconfigured', reason: 'Internal auth secret is not configured' };
+  }
+
+  const timestamp = (input.nowMs ?? Date.now()).toString();
+  const signature = await hmacSha256Hex(input.secret, `${input.userId}.${input.email}.${storeId}.${timestamp}`);
+
+  return {
+    ok: true,
+    status: 'accepted',
+    timestamp,
+    signature,
+    headers: {
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-User-ID`]: input.userId,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Email`]: normalizeAuthEmail(input.email),
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Timestamp`]: timestamp,
+      [`${INTERNAL_SESSION_HEADER_PREFIX}-Signature`]: signature,
+      ...(storeId ? { [`${INTERNAL_SESSION_HEADER_PREFIX}-Store-ID`]: storeId } : {}),
     },
   };
 }

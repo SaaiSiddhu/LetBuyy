@@ -2,6 +2,7 @@ import type {
   AICreditBalance,
   AIUsageRecord,
   AdminAppBridgeSession,
+  AppBridgeApiFetchResult,
   AppOAuthAuthorizationResult,
   AppOAuthTokenResult,
   AnalyticsDashboard,
@@ -180,6 +181,11 @@ export interface AppOAuthTokenExchangeInput extends JsonRecord {
   installation_id: string;
   store_id?: string;
   scopes?: string[];
+}
+export interface AppBridgeFetchInput extends JsonRecord {
+  method?: 'GET';
+  path: string;
+  store_id?: string;
 }
 export interface AppDeveloperRegistrationInput extends JsonRecord {
   company_name: string;
@@ -836,6 +842,8 @@ export class LetbuyyApiClient {
       this.requestData<AppOAuthTokenResult>('/app-store/oauth/token', { ...options, method: 'POST', body: input }),
     oauthTokenExchange: (input: AppOAuthTokenExchangeInput, options?: LetbuyyRequestOptions) =>
       this.requestData<AppOAuthTokenResult>('/app-store/oauth/token-exchange', { ...options, method: 'POST', body: input }),
+    bridgeFetch: (input: AppBridgeFetchInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppBridgeApiFetchResult>('/app-store/bridge/fetch', { ...options, method: 'POST', body: input }),
     uninstall: (appId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<{ uninstalled: boolean }>(`/app-store/apps/${encodePathSegment(appId)}/install`, { ...options, method: 'DELETE', query }),
     developer: (options?: LetbuyyRequestOptions) =>
@@ -1491,6 +1499,7 @@ export type {
   AIUsageRecord,
   AnalyticsDashboard,
   AnalyticsOrdersBreakdown,
+  AppBridgeApiFetchResult,
   AppOAuthAuthorizationResult,
   AppOAuthTokenResult,
   AuthSessionResponse,

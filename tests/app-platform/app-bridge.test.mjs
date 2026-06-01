@@ -5,6 +5,9 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
+const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
+const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
+const SHARED_TYPES_SOURCE = 'packages/shared-types/src/index.ts';
 
 function createZodStub() {
   const zChain = new Proxy(function zChain() {}, {
@@ -93,4 +96,20 @@ test('admin app bridge resolves installed app embed surfaces safely', () => {
   assert.equal(productionSurface.origin, 'https://apps.example.com');
   assert.equal(productionSurface.label, 'Production app');
   assert.deepEqual(Array.from(productionSurface.capabilities), ['api.fetch', 'toast', 'navigation.redirect']);
+});
+
+test('admin app bridge sends iframe API calls through the gateway with the app session token', () => {
+  const bridgeClient = readFileSync(EMBEDDED_BRIDGE_CLIENT_SOURCE, 'utf8');
+  const appStoreRoute = readFileSync(APP_STORE_ROUTE_SOURCE, 'utf8');
+  const sharedTypes = readFileSync(SHARED_TYPES_SOURCE, 'utf8');
+
+  assert.match(sharedTypes, /api_base_url: UrlSchema/);
+  assert.match(bridgeClient, /\/app-store\/bridge\/fetch/);
+  assert.match(bridgeClient, /Authorization: `\$\{session\.bridge\.token_type\} \$\{session\.bridge\.access_token\}`/);
+  assert.doesNotMatch(bridgeClient, /api_base_path: `\/api\/stores/);
+
+  assert.match(appStoreRoute, /\/bridge\/fetch/);
+  assert.match(appStoreRoute, /verifyAppScopedAccessToken/);
+  assert.match(appStoreRoute, /createLetbuyyInternalIdentityHeaders/);
+  assert.match(appStoreRoute, /Bridge request path is not allowed/);
 });

@@ -1434,12 +1434,20 @@ export const AdminAppBridgeSessionSchema = z.object({
     token_type: z.literal('Bearer'),
     access_token: z.string().min(1),
     expires_at: z.string().datetime(),
+    api_base_url: UrlSchema,
     store_id: z.string().min(1),
     installation_id: z.string().min(1),
     app_id: z.string().min(1),
     scopes: z.array(z.string().min(1)).default([]),
     capabilities: z.array(AppBridgeCapabilitySchema).default(['api.fetch', 'toast', 'resize']),
   }).strict(),
+}).strict();
+
+export const AppBridgeApiFetchResultSchema = z.object({
+  ok: z.boolean(),
+  status: z.number().int().min(100).max(599),
+  data: z.unknown().optional().nullable(),
+  error: z.string().optional().nullable(),
 }).strict();
 
 export const AppOAuthAuthorizationSchema = z.object({
@@ -1589,6 +1597,7 @@ export type InstalledMarketplaceApp = z.infer<typeof InstalledMarketplaceAppSche
 export type InstalledApp = z.infer<typeof InstalledAppSchema>;
 export type AdminAppEmbedSurface = z.infer<typeof AdminAppEmbedSurfaceSchema>;
 export type AdminAppBridgeSession = z.infer<typeof AdminAppBridgeSessionSchema>;
+export type AppBridgeApiFetchResult = z.infer<typeof AppBridgeApiFetchResultSchema>;
 export type AppOAuthAuthorization = z.infer<typeof AppOAuthAuthorizationSchema>;
 export type AppOAuthAuthorizationResult = z.infer<typeof AppOAuthAuthorizationResultSchema>;
 export type AppOAuthTokenResult = z.infer<typeof AppOAuthTokenResultSchema>;

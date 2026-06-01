@@ -7,9 +7,11 @@ import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
     createAppAuthorizationCode,
     createAppScopedAccessToken,
+    createLetbuyyInternalIdentityHeaders,
     getLetbuyyInternalAuthSecret,
     sha256Hex,
     verifyAppAuthorizationCode,
+    verifyAppScopedAccessToken,
 } from '@letbuyy/auth-core';
 import {
     appOAuthClientId,
@@ -45,6 +47,12 @@ interface AppOAuthTokenResponse {
     installation_id: string;
     app_id: string;
     store_id: string;
+}
+
+interface BridgeApiRequest {
+    method: 'GET';
+    path: string;
+    storeId?: string | null;
 }
 
 function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
@@ -137,6 +145,57 @@ async function mintAppOAuthAccessToken(input: {
             store_id: input.storeId,
         },
     };
+}
+
+function apiBaseUrlFromRequest(requestUrl: string): string {
+    const url = new URL('/v1', requestUrl);
+    return url.toString().replace(/\/$/, '');
+}
+
+function readBearerToken(value: string | undefined): string | null {
+    if (!value?.startsWith('Bearer ')) return null;
+    const token = value.slice('Bearer '.length).trim();
+    return token || null;
+}
+
+function normalizeBridgeApiRequest(body: AppEngineJsonRecord): BridgeApiRequest | null {
+    const method = typeof body.method === 'string' ? body.method.toUpperCase() : 'GET';
+    const path = stringOrNull(body.path);
+    const storeId = stringOrNull(body.store_id || body.storeId);
+    if (method !== 'GET' || !path) return null;
+    if (/^https?:\/\//i.test(path) || path.includes('..') || path.includes('//')) return null;
+    const normalizedPath = path.startsWith('/v1/') ? path.slice(3) : path;
+    return {
+        method: 'GET',
+        path: normalizedPath.startsWith('/') ? normalizedPath : `/${normalizedPath}`,
+        storeId,
+    };
+}
+
+function bridgeRequiredScopes(path: string): string[] | null {
+    const firstSegment = path.replace(/^\/+/, '').split(/[/?#]/)[0];
+    switch (firstSegment) {
+        case 'products':
+            return ['read_products'];
+        case 'orders':
+            return ['read_orders'];
+        case 'customers':
+            return ['read_customers'];
+        case 'themes':
+            return ['read_themes'];
+        case 'storefront':
+            return ['read_storefront'];
+        default:
+            return null;
+    }
+}
+
+function bridgeTargetUrl(requestUrl: string, path: string, storeId: string): string | null {
+    const target = new URL(`/v1${path}`, requestUrl);
+    const requestedStoreId = target.searchParams.get('store_id');
+    if (requestedStoreId && requestedStoreId !== storeId) return null;
+    target.searchParams.set('store_id', storeId);
+    return target.toString();
 }
 
 function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJsonRecord, allowLocalhost: boolean): AppWebhookDefinition[] {
@@ -537,6 +596,28 @@ router.post('/installations/:id/embed-session', authMiddleware, async (c) => {
         nowSeconds: Math.floor(now.getTime() / 1000),
         ttlSeconds: 15 * 60,
     });
+    const accessTokenHash = await sha256Hex(accessToken);
+    const installConfig = parseJsonRecord(installation.config);
+    const oauth = appOAuthConfig(installConfig);
+    const { error: bridgeTokenError } = await db
+        .from('app_installations')
+        .update({
+            config: {
+                ...installConfig,
+                oauth: {
+                    ...oauth,
+                    bridge_token_hash: accessTokenHash,
+                    bridge_token_issued_at: now.toISOString(),
+                    bridge_token_expires_at: expiresAt,
+                    bridge_scopes: scopes,
+                },
+            },
+        })
+        .eq('id', installation.id);
+
+    if (bridgeTokenError) {
+        return c.json({ error: { code: 'DB_ERROR', message: bridgeTokenError.message } }, 500);
+    }
 
     return c.json(success({
         installation,
@@ -546,12 +627,112 @@ router.post('/installations/:id/embed-session', authMiddleware, async (c) => {
             token_type: 'Bearer',
             access_token: accessToken,
             expires_at: expiresAt,
+            api_base_url: apiBaseUrlFromRequest(c.req.url),
             store_id: installation.store_id,
             installation_id: installation.id,
             app_id: installation.app_id,
             scopes,
             capabilities: embed.capabilities,
         },
+    }));
+});
+
+// POST /app-store/bridge/fetch — Proxy embedded app reads through a verified app session token
+router.post('/bridge/fetch', async (c) => {
+    const body = await c.req.json().catch(() => ({})) as AppEngineJsonRecord;
+    const bridgeRequest = normalizeBridgeApiRequest(body);
+    if (!bridgeRequest) {
+        return c.json({ error: { code: 'VALIDATION', message: 'Only scoped GET bridge requests are supported' } }, 400);
+    }
+
+    const requiredScopes = bridgeRequiredScopes(bridgeRequest.path);
+    if (!requiredScopes) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Bridge request path is not allowed' } }, 403);
+    }
+
+    const appSecret = appPlatformTokenSecret(c.env);
+    if (!appSecret) {
+        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App bridge token secret is not configured' } }, 500);
+    }
+
+    const token = readBearerToken(c.req.header('Authorization'));
+    const verification = await verifyAppScopedAccessToken(token, appSecret, { requiredScopes });
+    if (!verification.accepted || !verification.payload || !verification.token) {
+        return c.json({ error: { code: 'UNAUTHORIZED', message: verification.reason || 'Invalid app bridge token' } }, 401);
+    }
+
+    if (bridgeRequest.storeId && bridgeRequest.storeId !== verification.payload.storeId) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Bridge request store_id does not match token store' } }, 403);
+    }
+
+    const targetUrl = bridgeTargetUrl(c.req.url, bridgeRequest.path, verification.payload.storeId);
+    if (!targetUrl) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Bridge request store_id does not match token store' } }, 403);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data: installation, error: installError } = await db
+        .from('app_installations')
+        .select('id, app_id, store_id, installed_by, status, scopes_granted, config')
+        .eq('id', verification.payload.installationId)
+        .eq('app_id', verification.payload.appId)
+        .eq('store_id', verification.payload.storeId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+    if (installError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installError.message } }, 500);
+    }
+
+    if (!installation || installation.installed_by !== verification.payload.installedBy) {
+        return c.json({ error: { code: 'UNAUTHORIZED', message: 'App installation is not active' } }, 401);
+    }
+
+    const tokenHash = await sha256Hex(verification.token);
+    const oauth = appOAuthConfig(installation.config);
+    const isKnownToken = stringOrNull(oauth.bridge_token_hash) === tokenHash
+        || stringOrNull(oauth.access_token_hash) === tokenHash;
+    if (!isKnownToken) {
+        return c.json({ error: { code: 'UNAUTHORIZED', message: 'App bridge token has been revoked or replaced' } }, 401);
+    }
+
+    const { data: installedBy } = await db
+        .from('users_custom')
+        .select('id, email')
+        .eq('id', verification.payload.installedBy)
+        .maybeSingle();
+
+    if (!installedBy?.email) {
+        return c.json({ error: { code: 'UNAUTHORIZED', message: 'Installed app owner could not be resolved' } }, 401);
+    }
+
+    const internalHeaders = await createLetbuyyInternalIdentityHeaders({
+        userId: verification.payload.installedBy,
+        email: installedBy.email,
+        storeId: verification.payload.storeId,
+        secret: appSecret,
+    });
+    if (!internalHeaders.ok || !internalHeaders.headers) {
+        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: internalHeaders.reason || 'Bridge internal identity could not be signed' } }, 500);
+    }
+
+    const response = await fetch(targetUrl, {
+        method: bridgeRequest.method,
+        headers: {
+            ...internalHeaders.headers,
+            Accept: 'application/json',
+            'X-LetBuyy-App-Bridge': verification.payload.installationId,
+            'X-Request-ID': getRequestId(c),
+        },
+    });
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : null;
+
+    return c.json(success({
+        ok: response.ok,
+        status: response.status,
+        data,
+        error: response.ok ? null : 'Bridge gateway request failed',
     }));
 });
 

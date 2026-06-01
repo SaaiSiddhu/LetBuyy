@@ -161,6 +161,32 @@ test('app OAuth authorization codes bind client, redirect URI, scopes, and expir
   assert.equal(rejectedRedirect.ok, false);
 });
 
+test('app bridge internal identity headers can be signed for gateway proxy calls', async () => {
+  const secret = 'internal-bridge-secret';
+  const userId = '11111111-1111-4111-8111-111111111111';
+  const storeId = '22222222-2222-4222-8222-222222222222';
+  const plan = await authCore.createLetbuyyInternalIdentityHeaders({
+    userId,
+    email: 'merchant@example.com',
+    storeId,
+    secret,
+    nowMs: 1_700_000_000_000,
+  });
+
+  assert.equal(plan.ok, true);
+  assert.equal(plan.headers['X-LetBuyy-Internal-User-ID'], userId);
+  assert.equal(plan.headers['X-LetBuyy-Internal-Email'], 'merchant@example.com');
+  assert.equal(plan.headers['X-LetBuyy-Internal-Store-ID'], storeId);
+  assert.equal(
+    await authCore.verifyLetbuyySignedPayload(
+      secret,
+      `${userId}.merchant@example.com.${storeId}.${plan.timestamp}`,
+      plan.signature,
+    ),
+    true,
+  );
+});
+
 test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks locally', async () => {
   const tokenSecret = 'app-token-secret';
   const signingSecret = 'app-webhook-signing-secret';

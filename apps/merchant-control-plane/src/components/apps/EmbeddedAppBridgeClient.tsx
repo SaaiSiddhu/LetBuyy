@@ -46,16 +46,19 @@ function normalizeApiRequest(payload: unknown): BridgeApiRequest | null {
     }
 }
 
-function normalizeBridgePath(rawPath: string | undefined, store: string) {
+function normalizeBridgePath(rawPath: string | undefined) {
     if (!rawPath) return null
     if (/^https?:\/\//i.test(rawPath) || rawPath.includes('..') || rawPath.includes('//')) return null
 
-    const apiBasePath = `/api/stores/${store}`
     const normalized = rawPath.startsWith('/')
         ? rawPath
-        : `${apiBasePath}/${rawPath.replace(/^\/+/, '')}`
+        : `/${rawPath.replace(/^\/+/, '')}`
+    const path = normalized.startsWith('/v1/') ? normalized.slice(3) : normalized
+    const allowedPrefixes = ['/products', '/orders', '/customers', '/themes', '/storefront']
 
-    if (normalized === apiBasePath || normalized.startsWith(`${apiBasePath}/`)) return normalized
+    if (allowedPrefixes.some((prefix) => path === prefix || path.startsWith(`${prefix}/`) || path.startsWith(`${prefix}?`))) {
+        return path
+    }
     return null
 }
 
@@ -69,9 +72,9 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
         store_id: session.bridge.store_id,
         installation_id: session.bridge.installation_id,
         app_id: session.bridge.app_id,
-        api_base_path: `/api/stores/${store}`,
+        api_base_url: session.bridge.api_base_url,
         capabilities: session.bridge.capabilities,
-    }), [session.bridge.app_id, session.bridge.capabilities, session.bridge.installation_id, session.bridge.store_id, store])
+    }), [session.bridge.api_base_url, session.bridge.app_id, session.bridge.capabilities, session.bridge.installation_id, session.bridge.store_id, store])
 
     useEffect(() => {
         if (!toast) return undefined
@@ -88,7 +91,7 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
             if (!requestId) return
 
             const request = normalizeApiRequest(payload)
-            const path = normalizeBridgePath(request?.path, store)
+            const path = normalizeBridgePath(request?.path)
 
             if (!request || !path || request.method !== 'GET') {
                 postToApp({
@@ -97,31 +100,37 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
                     payload: {
                         ok: false,
                         status: 400,
-                        error: 'Only scoped GET requests under this store are allowed by the admin app bridge.',
+                        error: 'Only scoped gateway GET requests are allowed by the admin app bridge.',
                     },
                 })
                 return
             }
 
             try {
-                const response = await fetch(path, {
-                    method: 'GET',
-                    credentials: 'same-origin',
+                const response = await fetch(`${session.bridge.api_base_url}/app-store/bridge/fetch`, {
+                    method: 'POST',
                     headers: {
                         Accept: 'application/json',
-                        'X-LetBuyy-App-Bridge': session.installation.id,
+                        'Content-Type': 'application/json',
+                        Authorization: `${session.bridge.token_type} ${session.bridge.access_token}`,
                     },
+                    body: JSON.stringify({
+                        method: request.method,
+                        path,
+                        store_id: session.bridge.store_id,
+                    }),
                 })
-                const text = await response.text()
-                const data = text ? JSON.parse(text) : null
+                const envelope = await response.json().catch(() => null)
+                const bridgePayload = envelope?.data || envelope
 
                 postToApp({
                     type: 'letbuyy:bridge.api.response',
                     requestId,
                     payload: {
-                        ok: response.ok,
-                        status: response.status,
-                        data,
+                        ok: response.ok && bridgePayload?.ok !== false,
+                        status: typeof bridgePayload?.status === 'number' ? bridgePayload.status : response.status,
+                        data: bridgePayload?.data ?? bridgePayload,
+                        error: bridgePayload?.error,
                     },
                 })
             } catch (error) {
@@ -175,7 +184,7 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
 
         window.addEventListener('message', onMessage)
         return () => window.removeEventListener('message', onMessage)
-    }, [context, session.embed.origin, session.installation.id, store])
+    }, [context, session.bridge.access_token, session.bridge.api_base_url, session.bridge.store_id, session.bridge.token_type, session.embed.origin, store])
 
     return (
         <section className="admin-app-embed" aria-label={session.embed.title}>
