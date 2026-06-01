@@ -40,10 +40,12 @@ test('identity-platform still routes backend calls through the shared api client
 
 test('identity-platform has no runtime-composition provider adapter dependency', () => {
   const packageJson = JSON.parse(read(`${appRoot}/package.json`));
+  assert.equal(packageJson.dependencies['@letbuyy/api-types'], undefined);
   assert.equal(packageJson.dependencies['@letbuyy/runtime-composition'], undefined);
 
   const manifest = read(`${appRoot}/runtime.manifest.json`);
-  assert.doesNotMatch(manifest, /runtime-composition/);
+  assert.doesNotMatch(manifest, /@letbuyy\/api-types|runtime-composition/);
+  assert.doesNotMatch(read(`${appRoot}/AGENTS.md`), /@letbuyy\/api-types|runtime-composition/);
 
   const sources = sourceFiles(join(appRoot, 'src')).map((path) => [path, read(path)]);
   for (const [path, source] of sources) {

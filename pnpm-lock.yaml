@@ -39,9 +39,6 @@ importers:
       '@letbuyy/api-client':
         specifier: workspace:*
         version: link:../../packages/typescript/api-client
-      '@letbuyy/api-types':
-        specifier: workspace:*
-        version: link:../../packages/typescript/api-types
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
@@ -106,9 +103,6 @@ importers:
       '@letbuyy/api-client':
         specifier: workspace:*
         version: link:../../packages/typescript/api-client
-      '@letbuyy/api-types':
-        specifier: workspace:*
-        version: link:../../packages/typescript/api-types
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
@@ -481,9 +475,6 @@ importers:
       '@letbuyy/api-client':
         specifier: workspace:*
         version: link:../../packages/typescript/api-client
-      '@letbuyy/api-types':
-        specifier: workspace:*
-        version: link:../../packages/typescript/api-types
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core

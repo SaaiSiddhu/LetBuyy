@@ -8,13 +8,15 @@ test('theme marketplace no longer owns a Supabase client or bespoke worker clien
 
   const packageJson = JSON.parse(readFileSync('apps/theme-marketplace/package.json', 'utf8'));
   assert.equal(packageJson.dependencies['@letbuyy/api-client'], 'workspace:*');
+  assert.equal(packageJson.dependencies['@letbuyy/api-types'], undefined);
   assert.equal(packageJson.dependencies['@letbuyy/shared-types'], 'workspace:*');
   assert.equal(packageJson.dependencies['@letbuyy/runtime-composition'], undefined);
 
   const manifest = readFileSync('apps/theme-marketplace/runtime.manifest.json', 'utf8');
   assert.match(manifest, /"@letbuyy\/api-client"/);
   assert.match(manifest, /"@letbuyy\/shared-types"/);
-  assert.doesNotMatch(manifest, /"@letbuyy\/runtime-composition"/);
+  assert.doesNotMatch(manifest, /@letbuyy\/api-types|runtime-composition/);
+  assert.doesNotMatch(readFileSync('apps/theme-marketplace/AGENTS.md', 'utf8'), /@letbuyy\/api-types|runtime-composition/);
 });
 
 test('theme marketplace data and auth surfaces use shared API/auth contracts', () => {

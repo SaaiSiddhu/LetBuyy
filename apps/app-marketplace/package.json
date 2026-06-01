@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
-    "@letbuyy/api-types": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/ui": "workspace:*",

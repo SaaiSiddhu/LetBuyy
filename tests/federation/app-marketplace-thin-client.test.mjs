@@ -16,11 +16,14 @@ test('app-marketplace has no bespoke gateway worker client or local app domain c
 
   const packageJson = JSON.parse(read('apps/app-marketplace/package.json'));
   assert.equal(packageJson.dependencies['@letbuyy/api-client'], 'workspace:*');
+  assert.equal(packageJson.dependencies['@letbuyy/api-types'], undefined);
   assert.equal(packageJson.dependencies['@letbuyy/shared-types'], 'workspace:*');
 
   const manifest = JSON.parse(read('apps/app-marketplace/runtime.manifest.json'));
   assert.ok(manifest.allowedDependencies.workspacePackages.includes('@letbuyy/api-client'));
+  assert.equal(manifest.allowedDependencies.workspacePackages.includes('@letbuyy/api-types'), false);
   assert.ok(manifest.allowedDependencies.workspacePackages.includes('@letbuyy/shared-types'));
+  assert.doesNotMatch(read('apps/app-marketplace/AGENTS.md'), /@letbuyy\/api-types|runtime-composition/);
 });
 
 test('app-marketplace data surfaces use the shared api client and shared types', () => {

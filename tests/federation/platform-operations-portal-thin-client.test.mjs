@@ -35,5 +35,7 @@ test('platform-operations-portal does not carry unused legacy api-types dependen
 
   const manifest = read(`${appRoot}/runtime.manifest.json`);
   assert.doesNotMatch(manifest, /"@letbuyy\/api-types"/);
+  assert.doesNotMatch(manifest, /runtime-composition/);
   assert.match(manifest, /"@letbuyy\/auth-core"/);
+  assert.doesNotMatch(read(`${appRoot}/AGENTS.md`), /@letbuyy\/api-types|runtime-composition/);
 });
