@@ -143,7 +143,7 @@ export class ProductExecutionAdapter {
 
         if (error) throw new Error(`Delete failed: ${error.message}`);
         await this.recordProductUsage(ownedProduct.store_id, -1, `product.delete:${productId}`, userId, productId);
-        return { deleted: true };
+        return { deleted: true, product_id: productId, store_id: ownedProduct.store_id };
     }
 
     /**
@@ -217,7 +217,7 @@ export class ProductExecutionAdapter {
                 );
             }
         }
-        return { affected: data?.length || 0, action };
+        return { affected: data?.length || 0, action, products: ownedProducts };
     }
 
     /**

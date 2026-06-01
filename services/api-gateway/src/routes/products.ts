@@ -4,6 +4,7 @@ import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
     CreateProductSchema,
     UpdateProductSchema,
@@ -25,6 +26,7 @@ import {
 
 const router = new Hono<{ Bindings: Env }>();
 type ListProductsQueryInput = ListProductsInput;
+type ProductEventType = 'product.created' | 'product.updated' | 'product.deleted';
 
 type DatabaseErrorLike = {
     message?: string;
@@ -60,6 +62,57 @@ function isMissingTableError(error: DatabaseErrorLike, tableName: string): boole
         text.includes('schema cache') ||
         text.includes('could not find')
     );
+}
+
+function stringOrNull(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function objectRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function productStatus(record: Record<string, unknown>, deleted = false): 'draft' | 'active' | 'archived' | 'deleted' | undefined {
+    if (deleted || stringOrNull(record.deleted_at)) return 'deleted';
+    if (record.is_active === true) return 'active';
+    if (record.is_active === false) return 'archived';
+    return undefined;
+}
+
+async function emitProductEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        eventType: ProductEventType;
+        product: unknown;
+        fallbackStoreId?: string;
+        actorId: string;
+        requestId?: string | null;
+        deleted?: boolean;
+    },
+): Promise<void> {
+    const product = objectRecord(input.product);
+    const productId = stringOrNull(product.id) || stringOrNull(product.product_id);
+    const storeId = stringOrNull(product.store_id) || input.fallbackStoreId;
+
+    if (!productId || !storeId) return;
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId,
+        aggregateType: 'product',
+        aggregateId: productId,
+        eventType: input.eventType,
+        payload: {
+            site_id: storeId,
+            product_id: productId,
+            handle: stringOrNull(product.handle) || stringOrNull(product.slug) || undefined,
+            status: productStatus(product, input.deleted),
+        },
+        idempotencyKey: `${input.eventType}:${productId}:${input.requestId || crypto.randomUUID()}`,
+        requestId: input.requestId || null,
+        actorId: input.actorId,
+    });
 }
 
 // GET /products — List products (optionally by store)
@@ -343,6 +396,13 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
 
     const service = new ProductExecutionAdapter(db);
     const data = await service.createProduct(body, customUser.id, auth.user.storeId);
+    await emitProductEvent(db, {
+        eventType: 'product.created',
+        product: data,
+        fallbackStoreId: body.store_id,
+        actorId: customUser.id,
+        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
+    });
 
     return c.json(success(data), 201);
 });
@@ -361,6 +421,12 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
 
     const service = new ProductExecutionAdapter(db);
     const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
+    await emitProductEvent(db, {
+        eventType: 'product.updated',
+        product: data,
+        actorId: customUser.id,
+        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
+    });
 
     return c.json(success(data));
 });
@@ -378,6 +444,17 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
 
     const service = new ProductExecutionAdapter(db);
     const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
+    const eventType = body.action === 'delete' ? 'product.deleted' : 'product.updated';
+    const requestId = c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
+
+    await Promise.all(result.products.map((product) => emitProductEvent(db, {
+        eventType,
+        product,
+        fallbackStoreId: body.store_id,
+        actorId: customUser.id,
+        requestId,
+        deleted: body.action === 'delete',
+    })));
 
     return c.json(success(result));
 });
@@ -395,6 +472,13 @@ router.delete('/:id', async (c) => {
 
     const service = new ProductExecutionAdapter(db);
     const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
+    await emitProductEvent(db, {
+        eventType: 'product.deleted',
+        product: result,
+        actorId: customUser.id,
+        requestId: c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null,
+        deleted: true,
+    });
 
     return c.json({ data: result });
 });

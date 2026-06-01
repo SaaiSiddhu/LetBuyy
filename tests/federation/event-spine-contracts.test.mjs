@@ -4,6 +4,8 @@ import test from 'node:test';
 
 const EVENT_CORE = 'packages/event-core/src/index.ts';
 const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
+const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-execution.adapter.ts';
+const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -66,4 +68,25 @@ test('orchestration queue fanout uses event-core contracts before legacy prefix 
   assert.match(source, /case 'analytics':\s+return 'analytics-events'/);
   assert.match(source, /case 'search-indexing':\s+return 'search-indexing'/);
   assert.match(source, /case 'payout-ledger':\s+return 'payment-events'/);
+});
+
+test('gateway validates registered event payloads before outbox writes', () => {
+  const source = read(GATEWAY_EVENT_ADAPTER);
+
+  assert.match(source, /getDomainEventContract/);
+  assert.match(source, /parseDomainEventPayload/);
+  assert.match(source, /Event .* must use aggregate type/);
+  assert.match(source, /schema_version: contract\?\.schemaVersion \|\| 1/);
+});
+
+test('product gateway mutations emit registered product events', () => {
+  const source = read(PRODUCT_ROUTE);
+
+  assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(source, /eventType: 'product\.created'/);
+  assert.match(source, /eventType: 'product\.updated'/);
+  assert.match(source, /eventType: 'product\.deleted'/);
+  assert.match(source, /aggregateType: 'product'/);
+  assert.match(source, /site_id: storeId/);
+  assert.match(source, /product_id: productId/);
 });

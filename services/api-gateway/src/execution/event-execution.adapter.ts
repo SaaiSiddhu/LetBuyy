@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@letbuyy/infrastructure/supabase-adapter';
 import { NOTIFICATION_APPLICATION_WORKFLOWS, NOTIFICATION_EXECUTION_PIPELINES, defineRuntimeBridge } from '@letbuyy/application-services';
+import { getDomainEventContract, parseDomainEventPayload } from '@letbuyy/event-core';
 
 type JsonRecord = Record<string, unknown>;
 
@@ -45,6 +46,15 @@ export class EventExecutionAdapter {
     constructor(private db: SupabaseClient) { }
 
     async emitDomainEvent(input: DomainEventInput) {
+        const contract = getDomainEventContract(input.eventType);
+        if (contract && input.aggregateType !== contract.aggregateType) {
+            throw new Error(`Event ${input.eventType} must use aggregate type ${contract.aggregateType}`);
+        }
+
+        const payload = contract
+            ? parseDomainEventPayload(contract.eventType, input.payload || {})
+            : input.payload || {};
+
         const { data, error } = await this.db
             .from('outbox_events')
             .upsert(
@@ -53,10 +63,11 @@ export class EventExecutionAdapter {
                     aggregate_type: input.aggregateType,
                     aggregate_id: input.aggregateId,
                     event_type: input.eventType,
-                    payload: input.payload || {},
+                    payload,
                     idempotency_key: input.idempotencyKey,
                     request_id: input.requestId || null,
                     actor_id: input.actorId || null,
+                    schema_version: contract?.schemaVersion || 1,
                 },
                 { onConflict: 'idempotency_key' }
             )
