@@ -13,7 +13,11 @@ import {
     StoreNavigation,
 } from '@/types/store';
 import { createStorefrontApiClient, storefrontReadInit } from './worker-client';
-import { getDefaultStorefrontThemeTemplate, hasRenderableThemeTemplate } from '@letbuyy/api-types';
+import {
+    getDefaultStorefrontThemeTemplate,
+    hasRenderableThemeTemplate,
+    localizeThemeTemplateConfig,
+} from '@letbuyy/theme-engine';
 import { getUrbanKicksDemoStore, isUrbanKicksDemoSubdomain } from './demo/urban-kicks-demo';
 
 interface ThemeReleaseRow {
@@ -396,6 +400,7 @@ function normalizeSiteType(value: unknown): SiteType {
 
 function mapStatusOnlyStore(data: WorkerStorePayload): StoreModel {
     const themeId = (data.theme_id as string) || 'default';
+    const storeLocale = (data.locale as string) || 'en-IN';
     return {
         id: data.id as string,
         sellerId: (data.user_id as string) || (data.custom_user_id as string) || '',
@@ -413,6 +418,7 @@ function mapStatusOnlyStore(data: WorkerStorePayload): StoreModel {
         plan: 'free',
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,
+        locale: storeLocale,
         codEnabled: true,
         onlinePaymentEnabled: true,
         paymentGateways: ['razorpay'],
@@ -444,8 +450,9 @@ function mapSupabaseToStore(
             ? manifestTemplateConfig
             : legacyTemplateConfig;
     const themeId = release?.theme_id || (data.theme_id as string) || (rawTemplateConfig.themeId as string) || 'urban-kicks';
+    const storeLocale = (data.locale as string) || 'en-IN';
     const fallbackTemplateConfig = getDefaultStorefrontThemeTemplate(themeId);
-    const templateConfig: Record<string, unknown> = hasRenderableThemeTemplate(rawTemplateConfig)
+    const resolvedTemplateConfig: Record<string, unknown> = hasRenderableThemeTemplate(rawTemplateConfig)
         ? {
             ...rawTemplateConfig,
             themeId,
@@ -459,6 +466,7 @@ function mapSupabaseToStore(
             },
             themeId,
         };
+    const templateConfig = localizeThemeTemplateConfig(resolvedTemplateConfig, storeLocale);
     const bundleSettingsData = asRecord(asRecord(templateConfig.config).settings_data);
     const themeSettingsRecord = {
         ...asRecord(bundleSettingsData.current),
@@ -557,6 +565,7 @@ function mapSupabaseToStore(
         plan: 'free',
         seoTitle: data.seo_title as string,
         seoDescription: data.seo_description as string,
+        locale: storeLocale,
         codEnabled: (data.cod_enabled as boolean) ?? true,
         onlinePaymentEnabled: (data.online_payment_enabled as boolean) ?? true,
         paymentGateways: gateways,

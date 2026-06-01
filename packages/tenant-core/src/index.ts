@@ -76,6 +76,7 @@ export const CreateStoreSchema = z.object({
   subdomain: SubdomainSchema,
   site_type: SiteTypeSchema.default('store'),
   tagline: z.string().max(200).optional(),
+  locale: z.string().min(2).max(16).default('en-IN'),
   theme_id: z.string().max(50).default('modern'),
   template_config: z.record(z.string(), z.unknown()).default({}),
   ...SeoSchema.shape,
@@ -92,6 +93,7 @@ export const UpdateStoreSchema = z.object({
   logo_url: z.string().url().optional().nullable(),
   custom_domain: z.string().max(255).optional().nullable(),
   currency: z.string().length(3).optional(),
+  locale: z.string().min(2).max(16).optional(),
   refund_policy: z.string().max(20000).optional(),
   privacy_policy: z.string().max(20000).optional(),
   terms_of_service: z.string().max(20000).optional(),
@@ -246,6 +248,7 @@ export interface StoreModel {
   plan?: 'free' | 'premium';
   seoTitle?: string;
   seoDescription?: string;
+  locale?: string;
   codEnabled?: boolean;
   onlinePaymentEnabled?: boolean;
   paymentGateways?: PaymentGateway[];
@@ -272,6 +275,7 @@ export interface StorefrontSiteRecord {
   brand_color?: string | null;
   custom_domain?: string | null;
   currency?: string | null;
+  locale?: string | null;
   settings?: Record<string, unknown> | null;
   theme_id?: string | null;
   template_config?: Record<string, unknown> | null;

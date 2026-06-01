@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { DEFAULT_ADMIN_LOCALE, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
 
 interface GeneralData {
     id: string
@@ -11,6 +12,7 @@ interface GeneralData {
     subdomain: string
     custom_domain: string
     currency: string
+    locale: string
     site_type: string
 }
 
@@ -27,8 +29,11 @@ export default function GeneralSettingsPage() {
         subdomain: '',
         custom_domain: '',
         currency: 'INR',
+        locale: DEFAULT_ADMIN_LOCALE,
         site_type: 'store',
     })
+
+    const localeOptions = getAdminLocaleOptions()
 
     // Load store data through the store-scoped worker proxy.
     useEffect(() => {
@@ -48,6 +53,7 @@ export default function GeneralSettingsPage() {
                     subdomain: storeData.subdomain || storeData.store_name || '',
                     custom_domain: storeData.custom_domain || '',
                     currency: storeData.currency || 'INR',
+                    locale: normalizeAdminLocale(storeData.locale),
                     site_type: storeData.site_type || 'store',
                 })
             }
@@ -68,6 +74,7 @@ export default function GeneralSettingsPage() {
             name: data.name,
             description: data.description,
             currency: data.currency,
+            locale: data.locale,
             }),
         })
 
@@ -151,20 +158,33 @@ export default function GeneralSettingsPage() {
                     </div>
                 </div>
 
-                {/* Store currency */}
+                {/* Store currency and language */}
                 <div className="settings-card">
-                    <h2>Store currency</h2>
-                    <div className="settings-form-group">
-                        <label>Currency</label>
-                        <select
-                            value={data.currency}
-                            onChange={(e) => setData(s => ({ ...s, currency: e.target.value }))}
-                        >
-                            <option value="INR">₹ Indian Rupee (INR)</option>
-                            <option value="USD">$ US Dollar (USD)</option>
-                            <option value="EUR">€ Euro (EUR)</option>
-                            <option value="GBP">£ British Pound (GBP)</option>
-                        </select>
+                    <h2>Store currency and language</h2>
+                    <div className="settings-form-grid">
+                        <div className="settings-form-group">
+                            <label>Currency</label>
+                            <select
+                                value={data.currency}
+                                onChange={(e) => setData(s => ({ ...s, currency: e.target.value }))}
+                            >
+                                <option value="INR">₹ Indian Rupee (INR)</option>
+                                <option value="USD">$ US Dollar (USD)</option>
+                                <option value="EUR">€ Euro (EUR)</option>
+                                <option value="GBP">£ British Pound (GBP)</option>
+                            </select>
+                        </div>
+                        <div className="settings-form-group">
+                            <label>Storefront language</label>
+                            <select
+                                value={data.locale}
+                                onChange={(e) => setData(s => ({ ...s, locale: normalizeAdminLocale(e.target.value) }))}
+                            >
+                                {localeOptions.map((option) => (
+                                    <option key={option.value} value={option.value}>{option.label}</option>
+                                ))}
+                            </select>
+                        </div>
                     </div>
                 </div>
 

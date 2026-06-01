@@ -342,7 +342,7 @@ router.get('/public/:subdomain', async (c) => {
     const { data, error } = await db
         .from('sites')
         .select(
-            'id, name, subdomain, tagline, logo_url, custom_domain, site_type, theme_id, template_config, description, published_at'
+            'id, name, subdomain, tagline, logo_url, custom_domain, site_type, currency, locale, theme_id, template_config, description, published_at'
         )
         .eq('subdomain', subdomain)
         .eq('status', 'published')
@@ -434,7 +434,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as {
         name: string; subdomain: string; site_type: string;
-        tagline?: string; theme_id: string; template_config: Record<string, unknown>;
+        tagline?: string; locale?: string; theme_id: string; template_config: Record<string, unknown>;
     };
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -464,6 +464,7 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
             site_type: body.site_type,
             status: 'draft',
             tagline: body.tagline || null,
+            locale: body.locale || 'en-IN',
             theme_id: body.theme_id,
             template_config: body.template_config,
         })
@@ -493,7 +494,7 @@ router.patch('/:id', validate('json', UpdateStoreSchema), async (c) => {
     const updates: Record<string, unknown> = {};
     const allowed = [
         'name', 'description', 'tagline', 'status', 'theme_id', 'template_config',
-        'site_settings', 'logo_url', 'custom_domain', 'currency',
+        'site_settings', 'logo_url', 'custom_domain', 'currency', 'locale',
         'refund_policy', 'privacy_policy', 'terms_of_service', 'shipping_policy',
         'seo_title', 'seo_description',
         'tax_inclusive',

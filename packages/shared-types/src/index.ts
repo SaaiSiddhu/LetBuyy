@@ -1099,7 +1099,7 @@ export const ThemeBundleSchema = z.object({
   templates: z.record(z.string(), ThemeTemplateSchema).default({}),
   section_definitions: z.record(z.string(), MetadataSchema).default({}),
   block_definitions: z.record(z.string(), MetadataSchema).default({}),
-  locales: z.record(z.string(), z.record(z.string(), z.string())).default({}),
+  locales: z.record(z.string(), MetadataSchema).default({}),
   assets: z.record(z.string(), z.string()).default({}),
 });
 

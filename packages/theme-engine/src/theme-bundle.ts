@@ -266,6 +266,130 @@ export type ThemeBundleSectionDefinition = z.infer<typeof ThemeBundleSectionDefi
 export type ThemeBundleBlockDefinition = z.infer<typeof ThemeBundleBlockDefinitionSchema>;
 export type ThemeBundleSettingsSchemaDefinition = z.infer<typeof ThemeBundleSettingsSchema>;
 export type ThemeBundleSettingsData = z.infer<typeof ThemeBundleSettingsDataSchema>;
+export type ThemeBundleLocale = z.infer<typeof ThemeBundleLocaleSchema>;
+export type ThemeBundleLocaleMap = Record<string, ThemeBundleLocale>;
+
+export const DEFAULT_THEME_LOCALE = 'en';
+export const THEME_TRANSLATION_PREFIX = 't:';
+
+function asThemeBundleRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? value as Record<string, unknown>
+    : {};
+}
+
+export function normalizeThemeLocale(locale?: string | null): string {
+  const normalized = (locale || DEFAULT_THEME_LOCALE).trim().replace(/_/g, '-');
+  if (!normalized) return DEFAULT_THEME_LOCALE;
+
+  const [language, ...rest] = normalized.split('-').filter(Boolean);
+  if (!language) return DEFAULT_THEME_LOCALE;
+
+  return [
+    language.toLowerCase(),
+    ...rest.map((part) => (part.length === 2 ? part.toUpperCase() : part.toLowerCase())),
+  ].join('-');
+}
+
+export function getThemeLocaleCandidates(locale?: string | null): string[] {
+  const normalized = normalizeThemeLocale(locale);
+  const language = normalized.split('-')[0] || DEFAULT_THEME_LOCALE;
+
+  return Array.from(new Set([
+    normalized,
+    normalized.toLowerCase(),
+    language,
+    DEFAULT_THEME_LOCALE,
+  ]));
+}
+
+function resolveLocaleEntry(locales: ThemeBundleLocaleMap, candidate: string): ThemeBundleLocale | undefined {
+  if (locales[candidate]) return locales[candidate];
+
+  const lowerCandidate = candidate.toLowerCase();
+  const matchingKey = Object.keys(locales).find((key) => key.toLowerCase() === lowerCandidate);
+  return matchingKey ? locales[matchingKey] : undefined;
+}
+
+export function resolveThemeLocaleDictionary(
+  locales: ThemeBundleLocaleMap,
+  locale?: string | null,
+): ThemeBundleLocale | undefined {
+  for (const candidate of getThemeLocaleCandidates(locale)) {
+    const entry = resolveLocaleEntry(locales, candidate);
+    if (entry) return entry;
+  }
+
+  return undefined;
+}
+
+function readThemeLocalePath(dictionary: ThemeBundleLocale, path: string): ThemeBundleJson | undefined {
+  let current: unknown = dictionary;
+
+  for (const segment of path.split('.').map((part) => part.trim()).filter(Boolean)) {
+    const record = asThemeBundleRecord(current);
+    if (!(segment in record)) return undefined;
+    current = record[segment];
+  }
+
+  return current as ThemeBundleJson | undefined;
+}
+
+export function resolveThemeTranslation(
+  locales: ThemeBundleLocaleMap,
+  locale: string | null | undefined,
+  value: string,
+): ThemeBundleJson | undefined {
+  if (!value.startsWith(THEME_TRANSLATION_PREFIX)) return value;
+
+  const translationKey = value.slice(THEME_TRANSLATION_PREFIX.length).trim();
+  if (!translationKey) return undefined;
+
+  for (const candidate of getThemeLocaleCandidates(locale)) {
+    const dictionary = resolveLocaleEntry(locales, candidate);
+    if (!dictionary) continue;
+
+    const translated = readThemeLocalePath(dictionary, translationKey);
+    if (translated !== undefined) return translated;
+  }
+
+  return undefined;
+}
+
+function localizeThemeNode(
+  value: unknown,
+  locales: ThemeBundleLocaleMap,
+  locale: string | null | undefined,
+): unknown {
+  if (typeof value === 'string') {
+    const translated = resolveThemeTranslation(locales, locale, value);
+    return translated === undefined ? value : translated;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => localizeThemeNode(item, locales, locale));
+  }
+
+  if (value && typeof value === 'object') {
+    const localized: Record<string, unknown> = {};
+    for (const [key, child] of Object.entries(value as Record<string, unknown>)) {
+      localized[key] = key === 'locales' ? child : localizeThemeNode(child, locales, locale);
+    }
+    return localized;
+  }
+
+  return value;
+}
+
+export function localizeThemeTemplateConfig(
+  templateConfig: Record<string, unknown>,
+  locale?: string | null,
+): Record<string, unknown> {
+  const locales = asThemeBundleRecord(templateConfig.locales) as ThemeBundleLocaleMap;
+  if (Object.keys(locales).length === 0) return templateConfig;
+
+  return localizeThemeNode(templateConfig, locales, locale) as Record<string, unknown>;
+}
 
 export interface ThemePackagePersistencePayload {
   themePackage: {
@@ -509,6 +633,36 @@ export function createMinimalThemeBundleFixture(): ThemeBundle {
       en: {
         general: {
           cart: 'Cart',
+        },
+      },
+      hi: {
+        general: {
+          cart: 'कार्ट',
+        },
+      },
+      bn: {
+        general: {
+          cart: 'কার্ট',
+        },
+      },
+      mr: {
+        general: {
+          cart: 'कार्ट',
+        },
+      },
+      ta: {
+        general: {
+          cart: 'வண்டி',
+        },
+      },
+      te: {
+        general: {
+          cart: 'కార్ట్',
+        },
+      },
+      kn: {
+        general: {
+          cart: 'ಕಾರ್ಟ್',
         },
       },
     },
