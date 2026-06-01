@@ -23,12 +23,20 @@ test('platform-console auth routes do not own a Supabase auth client', () => {
 
 test('platform-console depends on auth-core without runtime-composition', () => {
   const packageJson = JSON.parse(read('apps/platform-console/package.json'));
+  assert.equal(packageJson.dependencies['@letbuyy/api-client'], 'workspace:*');
+  assert.equal(packageJson.dependencies['@letbuyy/api-types'], undefined);
   assert.equal(packageJson.dependencies['@letbuyy/auth-core'], 'workspace:*');
   assert.equal(packageJson.dependencies['@letbuyy/runtime-composition'], undefined);
 
   const manifest = read('apps/platform-console/runtime.manifest.json');
+  assert.match(manifest, /"@letbuyy\/api-client"/);
+  assert.doesNotMatch(manifest, /"@letbuyy\/api-types"/);
   assert.match(manifest, /"@letbuyy\/auth-core"/);
-  assert.doesNotMatch(manifest, /"@letbuyy\/runtime-composition"/);
+  assert.doesNotMatch(manifest, /runtime-composition/);
+
+  const consoleApi = read('apps/platform-console/src/lib/console-api.ts');
+  assert.match(consoleApi, /createLetbuyyApiClient/);
+  assert.doesNotMatch(consoleApi, /await fetch\(/);
 
   const session = read('apps/platform-console/src/lib/console-session.ts');
   assert.match(session, /@letbuyy\/auth-core/);

@@ -3,7 +3,7 @@ import 'server-only';
 import { createHmac } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { consoleApiBaseUrl } from './console-api';
+import { fetchConsoleApi, type ConsoleDataResponse } from './console-api';
 import {
     CONSOLE_SESSION_COOKIE,
     CONSOLE_SESSION_MAX_AGE_SECONDS,
@@ -173,14 +173,9 @@ export async function writeConsoleAuditLog(input: {
     const userAgent = input.requestHeaders?.get('user-agent') || null;
 
     try {
-        const response = await fetch(`${consoleApiBaseUrl()}/internal/console/audit-logs`, {
+        const response = await fetchConsoleApi<ConsoleDataResponse<{ id: string }>>('/internal/console/audit-logs', {
             method: 'POST',
-            headers: {
-                Authorization: `Bearer ${process.env.PLATFORM_CONSOLE_API_TOKEN}`,
-                'Content-Type': 'application/json',
-                'X-Request-ID': `platform-console-audit-${Date.now()}`,
-            },
-            body: JSON.stringify({
+            body: {
                 actor_id: input.session?.userId || null,
                 actor_type: 'super_admin',
                 actor_email: normalizeConsoleEmail(input.email),
@@ -191,11 +186,11 @@ export async function writeConsoleAuditLog(input: {
                 },
                 ip_address: ipAddress,
                 user_agent: userAgent,
-            }),
+            },
         });
 
-        if (!response.ok) {
-            console.error('[platform-console] audit API failed:', response.status);
+        if (response.error) {
+            console.error('[platform-console] audit API failed:', response.error);
         }
     } catch (error) {
         console.error('[platform-console] audit API failed:', error instanceof Error ? error.message : 'unknown');

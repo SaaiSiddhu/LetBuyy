@@ -1,3 +1,10 @@
+import {
+    createLetbuyyApiClient,
+    LetbuyyApiError,
+    type HttpMethod,
+    type QueryValue,
+} from '@letbuyy/api-client';
+
 export type ConsolePagination = {
     page: number;
     per_page: number;
@@ -18,19 +25,16 @@ export type ConsoleDataResponse<T> = {
     data: T;
 };
 
-type ConsoleApiError = {
-    error?: {
-        code?: string;
-        message?: string;
-    };
-};
-
 type ConsoleApiResult<T> = {
     data?: T;
     error?: string;
 };
 
-type QueryValue = string | number | boolean | null | undefined;
+type ConsoleApiRequest = {
+    query?: Record<string, QueryValue>;
+    method?: HttpMethod;
+    body?: unknown;
+};
 
 export function consoleApiBaseUrl(): string {
     const configured =
@@ -45,7 +49,7 @@ export function consoleApiBaseUrl(): string {
 
 export async function fetchConsoleApi<T>(
     path: string,
-    query: Record<string, QueryValue> = {}
+    input: Record<string, QueryValue> | ConsoleApiRequest = {}
 ): Promise<ConsoleApiResult<T>> {
     const token = process.env.PLATFORM_CONSOLE_API_TOKEN;
 
@@ -54,35 +58,31 @@ export async function fetchConsoleApi<T>(
     }
 
     const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-    const url = new URL(`${consoleApiBaseUrl()}${normalizedPath}`);
-
-    for (const [key, value] of Object.entries(query)) {
-        if (value === undefined || value === null || value === '') continue;
-        url.searchParams.set(key, String(value));
-    }
+    const request = 'query' in input || 'method' in input || 'body' in input
+        ? input as ConsoleApiRequest
+        : { query: input as Record<string, QueryValue> };
+    const api = createLetbuyyApiClient({
+        baseUrl: consoleApiBaseUrl(),
+        token,
+        headers: {
+            'X-Request-ID': `platform-console-${Date.now()}`,
+        },
+        fetch: (url, init) => fetch(url, { ...init, cache: 'no-store' }),
+    });
 
     try {
-        const response = await fetch(url, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'X-Request-ID': `platform-console-${Date.now()}`,
-            },
-            cache: 'no-store',
+        const payload = await api.request<T>(normalizedPath, {
+            method: request.method,
+            query: request.query,
+            body: request.body,
         });
-        const payload = (await response.json().catch(() => ({}))) as T & ConsoleApiError;
-
-        if (!response.ok) {
-            return {
-                error: payload.error?.message || payload.error?.code || `Console API returned HTTP ${response.status}.`,
-            };
-        }
-
-        if (payload.error) {
-            return { error: payload.error.message || payload.error.code || 'Console API returned an error.' };
-        }
 
         return { data: payload };
     } catch (error) {
+        if (error instanceof LetbuyyApiError) {
+            return { error: error.message || `Console API returned HTTP ${error.status}.` };
+        }
+
         return {
             error: error instanceof Error ? error.message : 'Console API request failed.',
         };

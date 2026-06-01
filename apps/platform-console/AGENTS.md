@@ -20,7 +20,7 @@ Actual source root: `apps/platform-console`.
 - Package: @letbuyy/platform-console
 - File: apps/platform-console/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, lucide-react, next, react, react-dom
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/auth-core, @letbuyy/ui, @letbuyy/utils, lucide-react, next, react, react-dom, server-only, zod
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -47,11 +47,11 @@ Actual source root: `apps/platform-console`.
 
 ## Runtime Rules
 
-- Keep business logic out of page components. Use runtime-composition query layers, presentation adapters, or worker routes.
-- App-owned read aggregation and projection shaping belongs in `packages/runtime-composition`.
+- Keep business logic out of page components. Use `@letbuyy/api-client`, presentation adapters, or worker routes.
+- App-owned read aggregation and projection shaping belongs behind service API contracts.
 - Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in application-services and backend service execution containers.
 - Keep tenant context explicit: every store/merchant operation must bind to `site_id`, `[store]`, `[subdomain]`, or an ownership-checked resource.
-- Use shared types from `@letbuyy/api-types` when interacting with worker or database-shaped data.
+- Use shared types from `@letbuyy/shared-types` through `@letbuyy/api-client` when interacting with worker data.
 - Do not introduce secrets, provider keys, or service-role access into client components.
 - Prefer skeletons and retryable error states over spinner-only loading.
 - Use dark mode tokens and app-level CSS variables. Do not hardcode new raw color values in components.

@@ -277,9 +277,9 @@ importers:
 
   apps/platform-console:
     dependencies:
-      '@letbuyy/api-types':
+      '@letbuyy/api-client':
         specifier: workspace:*
-        version: link:../../packages/typescript/api-types
+        version: link:../../packages/typescript/api-client
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core

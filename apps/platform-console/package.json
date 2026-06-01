@@ -11,7 +11,7 @@
     "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
-    "@letbuyy/api-types": "workspace:*",
+    "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
     "@letbuyy/ui": "workspace:*",
     "@letbuyy/utils": "workspace:*",
