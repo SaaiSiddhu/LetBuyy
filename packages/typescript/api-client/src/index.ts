@@ -39,6 +39,7 @@ import type {
   MarketplaceAppCategory,
   MarketplaceAppDeveloper,
   MarketplaceAppReview,
+  MarketplaceReviewRecord,
   NavigationItem,
   NavigationResponse,
   Order,
@@ -221,6 +222,11 @@ export interface AppDeveloperProfileResult extends JsonRecord {
 export interface AppDeveloperAppsResult extends JsonRecord {
   developer: MarketplaceAppDeveloper;
   apps: MarketplaceApp[];
+  review_records?: MarketplaceReviewRecord[];
+}
+export interface AppSubmissionResult extends JsonRecord {
+  app: JsonRecord;
+  review_record?: MarketplaceReviewRecord | null;
 }
 
 export interface AnalyticsQuery extends StoreScopedQuery {
@@ -619,6 +625,7 @@ export type ThemePackageUploadResult = {
   schema_manifest_version: string;
   renderer_version: string;
   installable: boolean;
+  review_record?: MarketplaceReviewRecord | null;
 };
 export type SaveThemeDraftInput = {
   store_id: string;
@@ -872,7 +879,7 @@ export class LetbuyyApiClient {
     developerApps: (options?: LetbuyyRequestOptions) =>
       this.requestData<AppDeveloperAppsResult>('/app-store/developers/apps', options),
     submitDeveloperApp: (input: AppSubmissionInput, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ app: JsonRecord }>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
+      this.requestData<AppSubmissionResult>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
   };
 
   readonly employees = {
@@ -1542,6 +1549,7 @@ export type {
   MarketplaceAppCategory,
   MarketplaceAppDeveloper,
   MarketplaceAppReview,
+  MarketplaceReviewRecord,
   NavigationItem,
   NavigationResponse,
   Order,

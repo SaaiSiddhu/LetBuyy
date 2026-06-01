@@ -36,6 +36,7 @@ test('event-core declares the federation domain event registry', () => {
     'order.refunded',
     'app.installed',
     'app.uninstalled',
+    'app.submitted',
     'app.charge.created',
     'app.charge.activated',
     'theme.submitted',
@@ -198,6 +199,17 @@ test('app install and uninstall producers use registered app lifecycle contracts
   assert.match(source, /site_id: input\.storeId/);
   assert.match(source, /app_id: appId/);
   assert.match(source, /installation_id: input\.installationId/);
+});
+
+test('app submissions emit registered app.submitted review events', () => {
+  const source = read(APP_STORE_ROUTE);
+
+  assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(source, /eventType: 'app\.submitted'/);
+  assert.match(source, /aggregateType: 'app'/);
+  assert.match(source, /app_id: app\.id/);
+  assert.match(source, /partner_id: developer\.id/);
+  assert.match(source, /review_id: reviewRecord\.id/);
 });
 
 test('theme package upload emits registered theme.submitted events', () => {

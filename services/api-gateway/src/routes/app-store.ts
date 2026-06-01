@@ -5,6 +5,11 @@ import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
+    buildMarketplaceAutomatedChecks,
+    createMarketplaceReviewRecord,
+    type MarketplaceReviewRecord,
+} from '../lib/marketplace-review-records';
+import {
     createAppAuthorizationCode,
     createAppScopedAccessToken,
     createLetbuyyInternalIdentityHeaders,
@@ -1791,7 +1796,35 @@ router.get('/developers/apps', authMiddleware, async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: appsError.message } }, 500);
     }
 
-    return c.json(success({ developer, apps: apps || [] }));
+    const { data: reviewRecords, error: reviewError } = await db
+        .from('marketplace_review_records')
+        .select([
+            'id',
+            'submission_type',
+            'resource_id',
+            'resource_slug',
+            'resource_name',
+            'partner_user_id',
+            'app_developer_id',
+            'status',
+            'automated_checks',
+            'submitted_at',
+            'reviewed_by',
+            'reviewed_at',
+            'review_notes',
+            'metadata',
+            'created_at',
+            'updated_at',
+            'deleted_at',
+        ].join(', '))
+        .eq('app_developer_id', developer.id)
+        .order('submitted_at', { ascending: false });
+
+    if (reviewError) {
+        return c.json({ error: { code: 'DB_ERROR', message: reviewError.message } }, 500);
+    }
+
+    return c.json(success({ developer, apps: apps || [], review_records: reviewRecords || [] }));
 });
 
 // POST /app-store/developers/apps — Submit a new marketplace app for review
@@ -1840,7 +1873,70 @@ router.post('/developers/apps', authMiddleware, async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(success({ app }), 201);
+    let reviewRecord: MarketplaceReviewRecord | null = null;
+    if (submission.value.status !== 'draft') {
+        try {
+            reviewRecord = await createMarketplaceReviewRecord(db, {
+                submissionType: 'app',
+                resourceId: app.id,
+                resourceSlug: submission.value.slug,
+                resourceName: submission.value.name,
+                partnerUserId: customUser.id,
+                appDeveloperId: developer.id,
+                actorId: customUser.id,
+                automatedChecks: buildMarketplaceAutomatedChecks({
+                    source: 'platform-console.app_submission',
+                    checks: [
+                        {
+                            name: 'schema_validation',
+                            status: 'passed',
+                            message: 'App submission payload matched the marketplace contract.',
+                        },
+                        {
+                            name: 'developer_profile',
+                            status: 'passed',
+                            message: 'Submitting user owns an app developer profile.',
+                        },
+                        {
+                            name: 'built_for_letbuyy_quality_gate',
+                            status: Object.keys(parseJsonRecord(body.quality_gate || body.built_for_letbuyy || body.builtForLetBuyy)).length > 0
+                                ? 'passed'
+                                : 'warning',
+                            message: 'Built-for-LetBuyy evidence is optional until listing review requests the badge.',
+                        },
+                    ],
+                    metadata: {
+                        app_url: submission.value.app_url,
+                        pricing_model: submission.value.pricing_model,
+                    },
+                }),
+                metadata: {
+                    source_route: '/app-store/developers/apps',
+                    submitted_status: submission.value.status,
+                },
+            });
+
+            await new EventExecutionAdapter(db).emitDomainEvent({
+                storeId: null,
+                aggregateType: 'app',
+                aggregateId: app.id,
+                eventType: 'app.submitted',
+                payload: {
+                    app_id: app.id,
+                    partner_id: developer.id,
+                    review_id: reviewRecord.id,
+                },
+                idempotencyKey: `app.submitted:${app.id}:${reviewRecord.id}`,
+                requestId: getRequestId(c),
+                actorId: customUser.id,
+            });
+        } catch (reviewError) {
+            const message = reviewError instanceof Error ? reviewError.message : 'Failed to create marketplace review record';
+            return c.json({ error: { code: 'DB_ERROR', message } }, 500);
+        }
+    }
+
+    return c.json(success({ app, review_record: reviewRecord }), 201);
 });
 
 // GET /app-store/developers/:id — Get developer profile + apps

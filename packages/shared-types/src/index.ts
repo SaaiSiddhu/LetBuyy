@@ -1290,6 +1290,14 @@ export const MarketplaceAppExtensionTypeSchema = z.enum([
   'admin_link',
   'admin_block',
 ]);
+export const MarketplaceSubmissionTypeSchema = z.enum(['app', 'theme']);
+export const MarketplaceReviewStatusSchema = z.enum([
+  'pending',
+  'in_review',
+  'approved',
+  'rejected',
+  'changes_requested',
+]);
 
 export const AppBridgeCapabilitySchema = z.enum([
   'api.fetch',
@@ -1392,6 +1400,22 @@ export const MarketplaceAppReviewSchema = z.object({
   is_verified: z.boolean().optional().nullable(),
   status: z.string().max(80).optional().nullable(),
   created_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const MarketplaceReviewRecordSchema = AuditedEntitySchema.extend({
+  submission_type: MarketplaceSubmissionTypeSchema,
+  resource_id: UuidSchema,
+  resource_slug: z.string().min(1).max(200).optional().nullable(),
+  resource_name: z.string().min(1).max(240),
+  partner_user_id: UuidSchema,
+  app_developer_id: UuidSchema.optional().nullable(),
+  status: MarketplaceReviewStatusSchema,
+  automated_checks: MetadataSchema.default({}),
+  submitted_at: z.string().datetime(),
+  reviewed_by: UuidSchema.optional().nullable(),
+  reviewed_at: z.string().datetime().optional().nullable(),
+  review_notes: z.string().optional().nullable(),
+  metadata: MetadataSchema.default({}),
 }).passthrough();
 
 export const InstalledMarketplaceAppSchema = z.object({
@@ -1663,6 +1687,9 @@ export type MarketplaceAppDeveloper = z.infer<typeof MarketplaceAppDeveloperSche
 export type MarketplaceAppExtension = z.infer<typeof MarketplaceAppExtensionSchema>;
 export type MarketplaceApp = z.infer<typeof MarketplaceAppSchema>;
 export type MarketplaceAppReview = z.infer<typeof MarketplaceAppReviewSchema>;
+export type MarketplaceSubmissionType = z.infer<typeof MarketplaceSubmissionTypeSchema>;
+export type MarketplaceReviewStatus = z.infer<typeof MarketplaceReviewStatusSchema>;
+export type MarketplaceReviewRecord = z.infer<typeof MarketplaceReviewRecordSchema>;
 export type AppBridgeCapability = z.infer<typeof AppBridgeCapabilitySchema>;
 export type InstalledMarketplaceApp = z.infer<typeof InstalledMarketplaceAppSchema>;
 export type InstalledApp = z.infer<typeof InstalledAppSchema>;

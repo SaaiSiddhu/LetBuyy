@@ -72,6 +72,7 @@ export const DOMAIN_EVENT_TYPES = [
   'order.refunded',
   'app.installed',
   'app.uninstalled',
+  'app.submitted',
   'app.charge.created',
   'app.charge.activated',
   'theme.submitted',
@@ -139,6 +140,12 @@ const AppInstallationPayloadSchema = z.object({
   installation_id: UuidSchema,
   partner_id: UuidSchema.optional(),
   scopes: z.array(z.string().trim().min(1).max(80)).default([]),
+});
+
+const AppReviewPayloadSchema = z.object({
+  app_id: UuidSchema,
+  partner_id: UuidSchema,
+  review_id: UuidSchema.optional(),
 });
 
 const AppChargePayloadSchema = z.object({
@@ -265,6 +272,14 @@ export const DOMAIN_EVENT_CONTRACTS = {
     consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'app',
     payloadSchema: AppInstallationPayloadSchema,
+  },
+  'app.submitted': {
+    eventType: 'app.submitted',
+    schemaVersion: 1,
+    producer: 'platform-console',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'app',
+    payloadSchema: AppReviewPayloadSchema,
   },
   'app.charge.created': {
     eventType: 'app.charge.created',

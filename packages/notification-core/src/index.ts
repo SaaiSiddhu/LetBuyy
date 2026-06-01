@@ -135,6 +135,13 @@ export function planInAppNotificationForEvent(event: RuntimeEventEnvelope): Plan
         action_url: event.site_id ? `/stores/${event.site_id}/apps` : null,
         data,
       };
+    case 'app.submitted':
+      return {
+        type: 'app_review',
+        title: 'App submitted',
+        message: 'A marketplace app was submitted for review.',
+        data,
+      };
     case 'theme.submitted':
     case 'theme.approved':
       return {

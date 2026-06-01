@@ -7,6 +7,10 @@ import { dbErrorBody, errorBody, getSupabaseAdmin, paginated, success } from '..
 import { authMiddleware, optionalAuth } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import {
+    buildMarketplaceAutomatedChecks,
+    createMarketplaceReviewRecord,
+} from '../lib/marketplace-review-records';
+import {
     InstallThemeSchema,
     PreviewTokenSchema,
     PublishThemeSchema,
@@ -84,6 +88,7 @@ async function emitThemeSubmittedEvent(
         upload: unknown;
         partnerId: string;
         requestId: string;
+        reviewId?: string | null;
     },
 ): Promise<void> {
     const upload = recordValue(input.upload);
@@ -105,6 +110,7 @@ async function emitThemeSubmittedEvent(
             theme_package_id: themePackageId,
             theme_version_id: themeVersionId,
             partner_id: input.partnerId,
+            ...(input.reviewId ? { review_id: input.reviewId } : {}),
         },
     });
 }
@@ -470,13 +476,55 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
 
     const registry = new SchemaRegistryExecutionAdapter(db);
     const upload = await registry.uploadThemePackageBundle(body.bundle, customUser.id);
+    const uploadRecord = recordValue(upload);
+    const theme = recordValue(uploadRecord.theme);
+    const themePackage = recordValue(uploadRecord.package);
+    const themePackageId = stringOrNull(themePackage.id);
+
+    if (!themePackageId) {
+        return c.json({ error: { code: 'DB_ERROR', message: 'Theme upload did not return a package id' } }, 500);
+    }
+
+    const reviewRecord = await createMarketplaceReviewRecord(db, {
+        submissionType: 'theme',
+        resourceId: themePackageId,
+        resourceSlug: stringOrNull(themePackage.slug),
+        resourceName: stringOrNull(themePackage.name) || stringOrNull(theme.name) || 'Theme package',
+        partnerUserId: customUser.id,
+        actorId: customUser.id,
+        automatedChecks: buildMarketplaceAutomatedChecks({
+            source: 'platform-console.theme_submission',
+            checks: [
+                {
+                    name: 'bundle_schema_validation',
+                    status: 'passed',
+                    message: 'Theme bundle validated against the JSON-contract schema registry.',
+                },
+                {
+                    name: 'theme_package_persistence',
+                    status: 'passed',
+                    message: 'Theme package and version records were persisted successfully.',
+                },
+            ],
+            metadata: {
+                schema_manifest_version: uploadRecord.schema_manifest_version,
+                renderer_version: uploadRecord.renderer_version,
+            },
+        }),
+        metadata: {
+            source_route: '/themes/packages/upload',
+            schema_manifest_version: uploadRecord.schema_manifest_version,
+        },
+    });
+
     await emitThemeSubmittedEvent(db, {
         upload,
         partnerId: customUser.id,
         requestId: getRequestId(c),
+        reviewId: reviewRecord.id,
     });
 
-    return c.json(success(upload), 201);
+    return c.json(success({ ...uploadRecord, review_record: reviewRecord }), 201);
 });
 
 // GET /themes/:slug — Get theme details by slug
