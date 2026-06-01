@@ -94,6 +94,15 @@ export interface Env {
 
 const app = new Hono<{ Bindings: Env }>();
 
+function healthResponse(environment: string | undefined) {
+    return {
+        status: 'healthy',
+        timestamp: new Date().toISOString(),
+        environment,
+        version: '2.0.0',
+    };
+}
+
 // Global middleware
 app.use('*', securityHeaders);
 app.use('*', requestId);
@@ -142,17 +151,15 @@ app.use(
 
 // Health check
 app.get('/health', (c) => {
-    return c.json({
-        status: 'healthy',
-        timestamp: new Date().toISOString(),
-        environment: c.env.ENVIRONMENT,
-        version: '2.0.0',
-    });
+    return c.json(healthResponse(c.env.ENVIRONMENT));
 });
 
 // API version prefix
 const api = app.basePath('/v1');
 api.use('/*', apiVersioning);
+api.get('/health', (c) => {
+    return c.json(healthResponse(c.env.ENVIRONMENT));
+});
 api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
 
 // Public routes (no auth required)
