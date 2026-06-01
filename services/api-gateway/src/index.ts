@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { authMiddleware } from './middleware/auth';
-import { rateLimit, authRateLimit } from './middleware/rateLimit';
+import { rateLimit, authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
+import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { observability } from './middleware/observability';
 import { AppError, formatAppError } from './lib/errors';
@@ -131,8 +132,8 @@ app.use(
             return 'https://letbuyy.store';
         },
         allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'X-Platform-Console-Token'],
-        exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-Response-Time'],
+        allowHeaders: ['Content-Type', 'Authorization', 'X-Store-ID', 'X-Request-ID', 'X-Trace-ID', 'X-Idempotency-Key', 'X-Platform-Console-Token', 'X-LetBuyy-API-Version', 'LetBuyy-API-Version'],
+        exposeHeaders: ['X-Request-ID', 'X-Trace-ID', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset', 'X-RateLimit-Cost', 'X-RateLimit-Policy', 'X-LetBuyy-API-Version', 'X-Response-Time'],
         maxAge: 86400,
         credentials: true,
     })
@@ -150,6 +151,8 @@ app.get('/health', (c) => {
 
 // API version prefix
 const api = app.basePath('/v1');
+api.use('/*', apiVersioning);
+api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
 
 // Public routes (no auth required)
 api.use('/auth/*', async (c, next) => {
