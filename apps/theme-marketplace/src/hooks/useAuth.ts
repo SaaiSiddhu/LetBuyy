@@ -1,18 +1,22 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import type { User, Session, AuthChangeEvent } from '@letbuyy/runtime-composition/identity-runtime-adapter';
-import { getSupabaseClient } from '@/lib/supabase/client';
+import { createContext, useContext, useState, useCallback } from 'react';
+import type { AuthSessionUser } from '@letbuyy/shared-types';
 
-/* ─── Types ─── */
+const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000';
+
 interface AuthState {
-    user: User | null;
+    user: AuthSessionUser | null;
     isAuthenticated: boolean;
     isLoading: boolean;
     signOut: () => Promise<void>;
 }
 
-/* ─── Context ─── */
+interface AuthProviderOptions {
+    initialAuthenticated?: boolean;
+    initialUser?: AuthSessionUser | null;
+}
+
 export const AuthContext = createContext<AuthState>({
     user: null,
     isAuthenticated: false,
@@ -25,50 +29,31 @@ export function useAuth() {
     return useContext(AuthContext);
 }
 
-/* ─── Provider logic (used inside AuthProvider component) ─── */
-export function useAuthProvider(): AuthState {
-    const [user, setUser] = useState<User | null>(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
-            setUser(null);
-            setIsLoading(false);
-            return;
-        }
-
-        // 1. Check initial session
-        supabase.auth.getSession().then(({ data: { session } }: { data: { session: Session | null } }) => {
-            setUser(session?.user ?? null);
-            setIsLoading(false);
-        });
-
-        // 2. Listen for auth changes (login, logout, token refresh)
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange((_event: AuthChangeEvent, session: Session | null) => {
-            setUser(session?.user ?? null);
-            setIsLoading(false);
-        });
-
-        return () => subscription.unsubscribe();
-    }, []);
+export function useAuthProvider(options: AuthProviderOptions = {}): AuthState {
+    const [user, setUser] = useState<AuthSessionUser | null>(options.initialUser ?? null);
+    const [isAuthenticated, setIsAuthenticated] = useState(Boolean(options.initialAuthenticated));
 
     const signOut = useCallback(async () => {
-        const supabase = getSupabaseClient();
-        if (!supabase) {
+        try {
+            await fetch(`${ACCOUNTS_URL}/api/auth/logout`, {
+                method: 'POST',
+                credentials: 'include',
+            });
+        } finally {
             setUser(null);
-            return;
+            setIsAuthenticated(false);
+            if (typeof window !== 'undefined') {
+                const loginUrl = new URL('/lookup', ACCOUNTS_URL);
+                loginUrl.searchParams.set('return_to', window.location.href);
+                window.location.href = loginUrl.toString();
+            }
         }
-        await supabase.auth.signOut();
-        setUser(null);
     }, []);
 
     return {
         user,
-        isAuthenticated: !!user,
-        isLoading,
+        isAuthenticated,
+        isLoading: false,
         signOut,
     };
 }

@@ -216,9 +216,9 @@ function UserMenu() {
         return () => document.removeEventListener('mousedown', handler);
     }, [open]);
 
-    const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+    const displayName = user?.fullName || user?.email?.split('@')[0] || 'User';
     const displayEmail = user?.email || '';
-    const avatarUrl = user?.user_metadata?.avatar_url;
+    const avatarUrl = user?.avatarUrl;
     const initials = displayName.charAt(0).toUpperCase();
 
     const menuItems = [
@@ -438,9 +438,9 @@ export default function Navbar() {
     const signupUrl = `${ACCOUNTS_URL}/signup${returnToParam}`;
 
     // User info for mobile drawer
-    const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
+    const displayName = user?.fullName || user?.email?.split('@')[0] || 'User';
     const displayEmail = user?.email || '';
-    const avatarUrl = user?.user_metadata?.avatar_url;
+    const avatarUrl = user?.avatarUrl;
     const initials = displayName.charAt(0).toUpperCase();
 
     return (

@@ -1,31 +1,18 @@
-import { themeWorkerFetch } from '@/lib/api/worker-client';
+import 'server-only';
+import { createThemeMarketplaceApiClient } from '@/lib/api/client';
 import type { ThemeSearchFilters, ThemeSearchResult } from '@letbuyy/theme-engine';
-
-interface WorkerEnvelope<T> {
-    success?: boolean;
-    data?: T;
-    meta?: {
-        page?: number;
-        per_page?: number;
-        total?: number;
-    };
-}
-
-async function readWorkerEnvelope<T>(response: Response): Promise<WorkerEnvelope<T> | null> {
-    return response.json().catch(() => null) as Promise<WorkerEnvelope<T> | null>;
-}
-
-async function safeThemeFetch(path: string, init?: Parameters<typeof themeWorkerFetch>[1]): Promise<Response | null> {
-    try {
-        return await themeWorkerFetch(path, init);
-    } catch {
-        return null;
-    }
-}
 
 function appendIfPresent(params: URLSearchParams, key: string, value: string | number | undefined) {
     if (value !== undefined && value !== '') {
         params.set(key, String(value));
+    }
+}
+
+async function getThemeApi(requireSession = false) {
+    try {
+        return await createThemeMarketplaceApiClient({ requireSession });
+    } catch {
+        return null;
     }
 }
 
@@ -34,61 +21,51 @@ export const ThemeService = {
         const limit = filters.limit ?? 20;
         const offset = filters.offset ?? 0;
         const page = Math.floor(offset / limit) + 1;
-        const params = new URLSearchParams({
+        const api = await getThemeApi();
+
+        if (!api) {
+            return { themes: [], total: 0, limit, offset };
+        }
+
+        const query = new URLSearchParams({
             page: String(page),
             limit: String(limit),
             sort: filters.sort || 'popular',
         });
 
-        appendIfPresent(params, 'category', filters.category);
-        appendIfPresent(params, 'pricing', filters.pricingType);
-        appendIfPresent(params, 'site_type', filters.siteType);
-        appendIfPresent(params, 'industry', filters.industry);
-        appendIfPresent(params, 'search', filters.search);
+        appendIfPresent(query, 'category', filters.category);
+        appendIfPresent(query, 'pricing', filters.pricingType);
+        appendIfPresent(query, 'site_type', filters.siteType);
+        appendIfPresent(query, 'industry', filters.industry);
+        appendIfPresent(query, 'search', filters.search);
 
-        const response = await safeThemeFetch(`/themes?${params.toString()}`);
-        if (!response?.ok) {
+        const catalog = await api.themes.listCatalog(Object.fromEntries(query.entries())).catch(() => null);
+        if (!catalog) {
             return { themes: [], total: 0, limit, offset };
         }
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
-
         return {
-            themes: payload?.data || [],
-            total: payload?.meta?.total || 0,
-            limit: payload?.meta?.per_page || limit,
+            themes: catalog.data as Record<string, unknown>[],
+            total: catalog.total,
+            limit: catalog.limit,
             offset,
         };
     },
 
     async getThemeBySlug(slug: string): Promise<Record<string, unknown> | null> {
-        const response = await safeThemeFetch(`/themes/${encodeURIComponent(slug)}`);
-        if (!response?.ok) return null;
+        const api = await getThemeApi();
+        if (!api) return null;
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>>(response);
-        return payload?.data || null;
+        return api.themes.get(slug).then((theme) => theme as Record<string, unknown>).catch(() => null);
     },
 
     async uploadThemePackage(bundle: Record<string, unknown>): Promise<Record<string, unknown>> {
-        const response = await safeThemeFetch('/themes/packages/upload', {
-            method: 'POST',
-            requireSession: true,
-            body: JSON.stringify({ bundle }),
-        });
-
-        if (!response?.ok) {
-            const payload = response ? await response.json().catch(() => null) as Record<string, unknown> | null : null;
-            const error = payload?.error && typeof payload.error === 'object'
-                ? payload.error as Record<string, unknown>
-                : null;
-            const message = typeof error?.message === 'string'
-                ? error.message
-                : 'Theme package upload failed';
-            throw new Error(message);
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
         }
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>>(response);
-        return payload?.data || {};
+        return api.themes.uploadPackage({ bundle }).then((result) => result as unknown as Record<string, unknown>);
     },
 
     async getThemeReviews(themeId: string) {
@@ -111,40 +88,30 @@ export const ThemeService = {
     },
 
     async getUserPurchases(_userId?: string): Promise<Record<string, unknown>[]> {
-        const response = await safeThemeFetch('/themes/purchases/list', {
-            method: 'GET',
-            requireSession: true,
-        });
-        if (!response?.ok) return [];
+        const api = await getThemeApi(true);
+        if (!api) return [];
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
-        return payload?.data || [];
+        return api.themes.purchases().catch(() => []);
     },
 
     async getUserInstallations(): Promise<Record<string, unknown>[]> {
-        const response = await safeThemeFetch('/themes/installations/list', {
-            method: 'GET',
-            requireSession: true,
-        });
-        if (!response?.ok) return [];
+        const api = await getThemeApi(true);
+        if (!api) return [];
 
-        const payload = await readWorkerEnvelope<Record<string, unknown>[]>(response);
-        return payload?.data || [];
+        return api.themes.installations().catch(() => []);
     },
 
     async getCategories(): Promise<string[]> {
-        const response = await safeThemeFetch('/themes/categories');
-        if (!response?.ok) return [];
+        const api = await getThemeApi();
+        if (!api) return [];
 
-        const payload = await readWorkerEnvelope<string[]>(response);
-        return (payload?.data || []).sort();
+        return api.themes.categories().then((categories) => categories.sort()).catch(() => []);
     },
 
     async getIndustries(): Promise<string[]> {
-        const response = await safeThemeFetch('/themes/industries');
-        if (!response?.ok) return [];
+        const api = await getThemeApi();
+        if (!api) return [];
 
-        const payload = await readWorkerEnvelope<string[]>(response);
-        return (payload?.data || []).sort();
+        return api.themes.industries().then((industries) => industries.sort()).catch(() => []);
     },
 };

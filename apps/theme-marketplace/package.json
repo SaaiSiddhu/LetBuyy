@@ -11,9 +11,10 @@
     "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
+    "@letbuyy/api-client": "workspace:*",
     "@letbuyy/api-types": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
-    "@letbuyy/runtime-composition": "workspace:*",
+    "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "clsx": "^2.1.1",

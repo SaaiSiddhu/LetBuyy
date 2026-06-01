@@ -1,41 +1,12 @@
-import { createSupabaseServerClient } from '@letbuyy/runtime-composition/identity-runtime-adapter';
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url);
-    const code = searchParams.get('code');
     const next = searchParams.get('next') ?? '/';
+    const returnTo = next.startsWith('/') ? `${origin}${next}` : origin;
+    const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store';
+    const loginUrl = new URL('/lookup', accountsUrl);
 
-    if (code) {
-        const cookieStore = await cookies();
-
-        const supabase = createSupabaseServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                getAll() {
-                    return cookieStore.getAll();
-                },
-                setAll(cookiesToSet) {
-                    try {
-                        cookiesToSet.forEach(({ name, value, options }) =>
-                            cookieStore.set(name, value, options)
-                        );
-                    } catch {
-                        // Called from Server Component — can be ignored
-                    }
-                },
-            }
-        );
-
-        const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (!error) {
-            return NextResponse.redirect(`${origin}${next}`);
-        }
-    }
-
-    // Auth error — redirect to home
-    return NextResponse.redirect(`${origin}/?error=auth_failed`);
+    loginUrl.searchParams.set('return_to', returnTo);
+    return NextResponse.redirect(loginUrl);
 }

@@ -475,15 +475,18 @@ importers:
 
   apps/theme-marketplace:
     dependencies:
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
-      '@letbuyy/runtime-composition':
+      '@letbuyy/shared-types':
         specifier: workspace:*
-        version: link:../../packages/runtime-composition
+        version: link:../../packages/shared-types
       '@letbuyy/theme-engine':
         specifier: workspace:*
         version: link:../../packages/theme-engine

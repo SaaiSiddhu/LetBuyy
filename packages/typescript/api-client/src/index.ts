@@ -1033,6 +1033,10 @@ export class LetbuyyApiClient {
       this.requestData<string[]>('/themes/categories', options),
     industries: (options?: LetbuyyRequestOptions) =>
       this.requestData<string[]>('/themes/industries', options),
+    purchases: (options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord[]>('/themes/purchases/list', options),
+    installations: (options?: LetbuyyRequestOptions) =>
+      this.requestData<JsonRecord[]>('/themes/installations/list', options),
     install: (slug: string, input: ThemeInstallInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeInstallResult>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
     uploadPackage: (input: ThemePackageUploadInput, options?: LetbuyyRequestOptions) =>

@@ -29,14 +29,14 @@
       "@letbuyy/shared-types": [
         "../../packages/shared-types/src/index.ts"
       ],
+      "@letbuyy/api-client": [
+        "../../packages/typescript/api-client/src/index.ts"
+      ],
       "@letbuyy/distributed-runtime": [
         "../../packages/distributed-runtime/src/index.ts"
       ],
       "@letbuyy/projection-runtime": [
         "../../packages/projection-runtime/src/index.ts"
-      ],
-      "@letbuyy/runtime-composition/*": [
-        "../../packages/runtime-composition/*/index.ts"
       ],
       "@/*": [
         "./src/*"
