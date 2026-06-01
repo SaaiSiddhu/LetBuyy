@@ -5,6 +5,7 @@ import { dbErrorBody, getSupabaseAdmin, paginated, success } from '../lib/supaba
 import { validate } from '../middleware/validation';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { resolveTenantContextForOrder, resolveTenantContextForOwnedSite } from '../lib/tenant-context';
 import {
     CreateOrderSchema,
@@ -32,6 +33,7 @@ import {
 } from '@letbuyy/infrastructure/logistics-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
+type OrderEventType = 'order.created' | 'order.paid' | 'order.fulfilled' | 'order.cancelled' | 'order.refunded';
 
 type DatabaseErrorLike = {
     message?: string;
@@ -86,6 +88,71 @@ function firstText(record: Record<string, unknown>, keys: string[]): string | nu
         if (value) return value;
     }
     return null;
+}
+
+function numberValue(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+}
+
+function orderTotalPayload(record: Record<string, unknown>): { amount_minor: number; currency: 'INR' } | undefined {
+    const minorUnits = numberValue(record.total_minor) ?? numberValue(record.total_amount_minor) ?? numberValue(record.amount_minor);
+    if (minorUnits !== null && Number.isInteger(minorUnits) && minorUnits >= 0) {
+        return { amount_minor: minorUnits, currency: 'INR' };
+    }
+
+    const total = numberValue(record.total);
+    if (total !== null && total >= 0) {
+        return { amount_minor: Math.round(total * 100), currency: 'INR' };
+    }
+
+    return undefined;
+}
+
+async function emitOrderEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        eventType: OrderEventType;
+        order: unknown;
+        fallbackOrderId?: string;
+        siteId: string;
+        actorId?: string | null;
+        requestId?: string | null;
+    },
+): Promise<void> {
+    const order = recordValue(input.order);
+    const orderId = textValue(order.id) || textValue(order.order_id) || input.fallbackOrderId;
+    if (!orderId) return;
+
+    const total = orderTotalPayload(order);
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.siteId,
+        aggregateType: 'order',
+        aggregateId: orderId,
+        eventType: input.eventType,
+        payload: {
+            site_id: input.siteId,
+            order_id: orderId,
+            order_number: textValue(order.order_number) || undefined,
+            customer_id: textValue(order.customer_id) || undefined,
+            ...(total ? { total } : {}),
+        },
+        idempotencyKey: `${input.eventType}:${input.siteId}:${orderId}:${input.requestId || crypto.randomUUID()}`,
+        requestId: input.requestId || null,
+        actorId: input.actorId || null,
+    });
+}
+
+function orderEventsForStatus(status: UpdateOrderStatusInput['status']): OrderEventType[] {
+    if (status === 'delivered') return ['order.paid'];
+    if (status === 'shipped') return ['order.fulfilled'];
+    if (status === 'cancelled') return ['order.cancelled'];
+    if (status === 'refunded') return ['order.refunded'];
+    return [];
 }
 
 function buildLogisticsDestination(order: FulfillmentOrderSnapshot): LogisticsAddress {
@@ -291,6 +358,16 @@ router.patch('/:id', validate('json', UpdateOrderStatusSchema), async (c) => {
     const service = new OrderExecutionAdapter(db);
     try {
         const data = await service.transitionStatus(orderId, tenant, body.status, body);
+        for (const eventType of orderEventsForStatus(body.status)) {
+            await emitOrderEvent(db, {
+                eventType,
+                order: data,
+                fallbackOrderId: orderId,
+                siteId: tenant.siteId,
+                actorId: tenant.userId,
+                requestId: tenant.requestId,
+            });
+        }
         const responseBody = success(data);
         await idempotency.complete({
             id: claim.id,
@@ -345,6 +422,13 @@ router.post('/', validate('json', CreateOrderSchema), async (c) => {
             },
             tenant
         );
+        await emitOrderEvent(db, {
+            eventType: 'order.created',
+            order,
+            siteId: tenant.siteId,
+            actorId: tenant.userId,
+            requestId: tenant.requestId,
+        });
         const responseBody = success(order);
         await idempotency.complete({
             id: claim.id,
@@ -384,6 +468,14 @@ router.post('/:id/fulfill', validate('json', FulfillOrderSchema), async (c) => {
     try {
         const fulfillmentInput = await applyLogisticsLabel(db, tenant.siteId, orderId, body);
         const data = await service.fulfillOrder(orderId, tenant, fulfillmentInput);
+        await emitOrderEvent(db, {
+            eventType: 'order.fulfilled',
+            order: data,
+            fallbackOrderId: orderId,
+            siteId: tenant.siteId,
+            actorId: tenant.userId,
+            requestId: tenant.requestId,
+        });
         const responseBody = success(data);
         await idempotency.complete({
             id: claim.id,
@@ -421,6 +513,14 @@ router.post('/:id/refund/complete', validate('json', CompleteRefundSchema), asyn
     const service = new OrderExecutionAdapter(db);
     try {
         const data = await service.completeRefund(orderId, tenant, body);
+        await emitOrderEvent(db, {
+            eventType: 'order.refunded',
+            order: data,
+            fallbackOrderId: orderId,
+            siteId: tenant.siteId,
+            actorId: tenant.userId,
+            requestId: tenant.requestId,
+        });
         const responseBody = success(data);
         await idempotency.complete({
             id: claim.id,

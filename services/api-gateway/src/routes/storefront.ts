@@ -25,6 +25,7 @@ import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
@@ -343,6 +344,40 @@ function orderAmountMinorUnits(order: { total: number | string; currency?: strin
         amountMinor: Math.round(Number(order.total) * 100),
         currency: 'INR',
     };
+}
+
+function orderEventTotalPayload(totalValue: unknown): { amount_minor: number; currency: 'INR' } | undefined {
+    const total = typeof totalValue === 'number' || typeof totalValue === 'string' ? Number(totalValue) : Number.NaN;
+    if (!Number.isFinite(total) || total < 0) return undefined;
+    return { amount_minor: Math.round(total * 100), currency: 'INR' };
+}
+
+async function emitStorefrontOrderCreatedEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        storeId: string;
+        order: OrderRpcResult;
+        requestId: string;
+    },
+): Promise<void> {
+    if (!input.order.id) return;
+
+    const total = orderEventTotalPayload(input.order.total);
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.storeId,
+        aggregateType: 'order',
+        aggregateId: input.order.id,
+        eventType: 'order.created',
+        payload: {
+            site_id: input.storeId,
+            order_id: input.order.id,
+            order_number: input.order.order_number || undefined,
+            ...(total ? { total } : {}),
+        },
+        idempotencyKey: `order.created:${input.storeId}:${input.order.id}:${input.requestId}`,
+        requestId: input.requestId,
+        actorId: null,
+    });
 }
 
 function getPayPalCredentials(c: AppContext) {
@@ -1362,6 +1397,12 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
             },
             tenant
         ) as OrderRpcResult;
+
+        await emitStorefrontOrderCreatedEvent(db, {
+            storeId: store.id,
+            order,
+            requestId: tenant.requestId,
+        });
 
         const responseBody = success({
             order: {

@@ -6,6 +6,8 @@ const EVENT_CORE = 'packages/event-core/src/index.ts';
 const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
 const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-execution.adapter.ts';
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
+const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
+const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -89,4 +91,29 @@ test('product gateway mutations emit registered product events', () => {
   assert.match(source, /aggregateType: 'product'/);
   assert.match(source, /site_id: storeId/);
   assert.match(source, /product_id: productId/);
+});
+
+test('order gateway mutations emit registered order lifecycle events', () => {
+  const source = read(ORDER_ROUTE);
+
+  assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(source, /eventType: 'order\.created'/);
+  assert.match(source, /'order\.paid'/);
+  assert.match(source, /'order\.fulfilled'/);
+  assert.match(source, /'order\.cancelled'/);
+  assert.match(source, /'order\.refunded'/);
+  assert.match(source, /aggregateType: 'order'/);
+  assert.match(source, /site_id: input\.siteId/);
+  assert.match(source, /order_id: orderId/);
+});
+
+test('public storefront checkout emits order.created through the gateway outbox', () => {
+  const source = read(STOREFRONT_ROUTE);
+
+  assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(source, /eventType: 'order\.created'/);
+  assert.match(source, /aggregateType: 'order'/);
+  assert.match(source, /site_id: input\.storeId/);
+  assert.match(source, /order_id: input\.order\.id/);
+  assert.match(source, /emitStorefrontOrderCreatedEvent\(db/);
 });
