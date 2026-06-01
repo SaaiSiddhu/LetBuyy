@@ -283,9 +283,6 @@ importers:
       '@letbuyy/auth-core':
         specifier: workspace:*
         version: link:../../packages/auth-core
-      '@letbuyy/runtime-composition':
-        specifier: workspace:*
-        version: link:../../packages/runtime-composition
       '@letbuyy/ui':
         specifier: workspace:*
         version: link:../../packages/typescript/ui

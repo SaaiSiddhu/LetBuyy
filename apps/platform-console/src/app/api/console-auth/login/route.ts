@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import {
-    createConsoleSupabaseServerClient,
-    hasSupabaseConsoleAuthConfig,
     isConsoleEmailAllowed,
     normalizeConsoleEmail,
     writeConsoleAuditLog,
@@ -32,37 +30,20 @@ export async function POST(request: NextRequest) {
         return redirectWithError(request, 'access_denied');
     }
 
-    if (hasSupabaseConsoleAuthConfig()) {
-        const supabase = await createConsoleSupabaseServerClient();
-        const callbackUrl = new URL('/api/console-auth/callback', request.url).toString();
-        const { error } = await supabase.auth.signInWithOtp({
-            email,
-            options: {
-                emailRedirectTo: callbackUrl,
-            },
-        });
-
-        if (error) {
-            return redirectWithError(request, 'send_failed');
-        }
-
-        await writeConsoleAuditLog({
-            action: 'platform_console_login_magic_sent',
-            email,
-            requestHeaders: request.headers,
-        });
-
-        return NextResponse.redirect(new URL('/login?sent=1', request.url), 303);
-    }
-
     if (process.env.NODE_ENV === 'production') {
-        return redirectWithError(request, 'supabase_not_configured');
+        return redirectWithError(request, 'magic_link_delivery_not_configured');
     }
 
     const token = await createConsoleMagicLinkToken(email);
     if (!token) {
         return redirectWithError(request, 'session_secret_not_configured');
     }
+
+    await writeConsoleAuditLog({
+        action: 'platform_console_login_magic_sent',
+        email,
+        requestHeaders: request.headers,
+    });
 
     const devMagicLink = new URL('/api/console-auth/callback', request.url);
     devMagicLink.searchParams.set('token', token);

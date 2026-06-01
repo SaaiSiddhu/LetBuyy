@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
     clearConsoleSessionCookie,
-    createConsoleSupabaseServerClient,
     getConsoleSessionFromCookies,
-    hasSupabaseConsoleAuthConfig,
     writeConsoleAuditLog,
 } from '@/lib/console-auth-server';
 
@@ -17,11 +15,6 @@ export async function POST(request: NextRequest) {
             session,
             requestHeaders: request.headers,
         });
-    }
-
-    if (hasSupabaseConsoleAuthConfig()) {
-        const supabase = await createConsoleSupabaseServerClient();
-        await supabase.auth.signOut();
     }
 
     await clearConsoleSessionCookie();

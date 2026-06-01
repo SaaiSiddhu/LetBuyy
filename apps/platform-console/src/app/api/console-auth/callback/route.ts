@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import {
-    createConsoleSupabaseServerClient,
     isConsoleEmailAllowed,
     normalizeConsoleEmail,
     setConsoleSessionCookie,
@@ -53,37 +52,19 @@ async function issueConsoleSession(input: {
 
 export async function GET(request: NextRequest) {
     const token = request.nextUrl.searchParams.get('token');
-    const code = request.nextUrl.searchParams.get('code');
 
-    if (token) {
-        const payload = await readConsoleMagicLinkToken(token);
-        if (!payload) {
-            return redirectWithError(request, 'invalid_magic_link');
-        }
-
-        return issueConsoleSession({
-            request,
-            email: payload.email,
-            auditAction: 'platform_console_login_local_magic_verified',
-        });
+    if (!token) {
+        return redirectWithError(request, 'missing_token');
     }
 
-    if (!code) {
-        return redirectWithError(request, 'missing_code');
-    }
-
-    const supabase = await createConsoleSupabaseServerClient();
-    const { data, error } = await supabase.auth.exchangeCodeForSession(code);
-    const email = data.user?.email;
-
-    if (error || !email) {
-        return redirectWithError(request, 'callback_failed');
+    const payload = await readConsoleMagicLinkToken(token);
+    if (!payload) {
+        return redirectWithError(request, 'invalid_magic_link');
     }
 
     return issueConsoleSession({
         request,
-        email,
-        userId: data.user?.id || null,
-        auditAction: 'platform_console_login_magic_verified',
+        email: payload.email,
+        auditAction: 'platform_console_login_local_magic_verified',
     });
 }

@@ -3,7 +3,6 @@ import 'server-only';
 import { createHmac } from 'node:crypto';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-import { createSupabaseServerClient } from '@letbuyy/runtime-composition/identity-runtime-adapter';
 import { consoleApiBaseUrl } from './console-api';
 import {
     CONSOLE_SESSION_COOKIE,
@@ -26,7 +25,6 @@ function configured(value: string | undefined) {
     if (!value) return false;
     if (value.includes('replace-with')) return false;
     if (value.startsWith('dev-only-placeholder')) return false;
-    if (value.includes('example.supabase.co')) return false;
     return true;
 }
 
@@ -45,29 +43,6 @@ export function isConsoleEmailAllowed(email: string) {
     const allowedEmails = getAllowedConsoleEmails();
     if (allowedEmails.length === 0) return false;
     return allowedEmails.includes(normalizeConsoleEmail(email));
-}
-
-export function hasSupabaseConsoleAuthConfig() {
-    return configured(process.env.NEXT_PUBLIC_SUPABASE_URL) && configured(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-}
-
-export async function createConsoleSupabaseServerClient() {
-    const cookieStore = await cookies();
-
-    return createSupabaseServerClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-        {
-            getAll() {
-                return cookieStore.getAll();
-            },
-            setAll(cookiesToSet) {
-                cookiesToSet.forEach(({ name, value, options }) => {
-                    cookieStore.set(name, value, options);
-                });
-            },
-        },
-    );
 }
 
 export async function getConsoleSessionFromCookies() {

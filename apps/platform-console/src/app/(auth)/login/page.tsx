@@ -14,16 +14,14 @@ function errorMessage(code: string | undefined) {
             return 'Enter a valid email address.';
         case 'send_failed':
             return 'Unable to send the magic link.';
-        case 'supabase_not_configured':
-            return 'Supabase Auth is not configured.';
+        case 'magic_link_delivery_not_configured':
+            return 'Platform console magic-link delivery is not configured.';
         case 'session_secret_not_configured':
             return 'Console session signing is not configured.';
         case 'invalid_magic_link':
             return 'This magic link is invalid or expired.';
-        case 'callback_failed':
-            return 'Unable to verify the magic link.';
-        case 'missing_code':
-            return 'The authentication callback is missing a code.';
+        case 'missing_token':
+            return 'The authentication callback is missing a token.';
         default:
             return null;
     }
