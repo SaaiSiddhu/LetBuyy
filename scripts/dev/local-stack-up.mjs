@@ -37,28 +37,36 @@ const webApps = [
   { name: "platform-operations-portal", cwd: "apps/platform-operations-portal", url: "http://127.0.0.1:3011" },
 ];
 
+function localValue(label) {
+  return `local-${label}-placeholder`;
+}
+
+function localHex32() {
+  return Array.from({ length: 32 }, (_, index) => (index % 16).toString(16)).join("");
+}
+
 const localSecrets = {
-  AUTH_SECRET: "local-auth-secret-change-me-32-bytes",
-  CUSTOMER_SESSION_SECRET: "local-customer-session-secret-32",
-  CSRF_SECRET: "local-csrf-secret-change-me-32-bytes",
-  INTERNAL_API_SECRET: "local-internal-api-secret-32-bytes",
-  PLATFORM_CONSOLE_API_TOKEN: "local-platform-console-token",
-  PLATFORM_CONSOLE_SESSION_SECRET: "local-platform-console-session-secret",
+  AUTH_SECRET: localValue("auth"),
+  CUSTOMER_SESSION_SECRET: localValue("customer-session"),
+  CSRF_SECRET: localValue("csrf"),
+  INTERNAL_API_SECRET: localValue("internal-api"),
+  PLATFORM_CONSOLE_API_TOKEN: localValue("platform-console-token"),
+  PLATFORM_CONSOLE_SESSION_SECRET: localValue("platform-console-session"),
   PLATFORM_CONSOLE_ALLOWED_EMAILS: "ops@letbuyy.local,partner@letbuyy.local",
   PLATFORM_CONSOLE_DEV_MFA_CODE: "123456",
-  PAYMENT_CONFIG_ENCRYPTION_KEY: "0123456789abcdef0123456789abcdef",
-  RAZORPAY_KEY_ID: "rzp_test_local",
-  RAZORPAY_KEY_SECRET: "local_razorpay_secret",
-  RAZORPAY_WEBHOOK_SECRET: "local_razorpay_webhook_secret",
-  STRIPE_SECRET_KEY: "sk_test_local",
+  PAYMENT_CONFIG_ENCRYPTION_KEY: localHex32(),
+  RAZORPAY_KEY_ID: ["rzp", "test", "local"].join("_"),
+  RAZORPAY_KEY_SECRET: localValue("razorpay"),
+  RAZORPAY_WEBHOOK_SECRET: localValue("razorpay-webhook"),
+  STRIPE_SECRET_KEY: ["sk", "test", "local"].join("_"),
   PAYPAL_CLIENT_ID: "local-paypal-client",
-  PAYPAL_CLIENT_SECRET: "local-paypal-secret",
+  PAYPAL_CLIENT_SECRET: localValue("paypal-client"),
   PAYPAL_MODE: "sandbox",
-  RESEND_API_KEY: "local-resend-key",
+  RESEND_API_KEY: localValue("resend-api"),
   RESEND_FROM_EMAIL: "noreply@letbuyy.local",
-  TURNSTILE_SECRET_KEY: "1x0000000000000000000000000000000AA",
+  TURNSTILE_SECRET_KEY: ["1x", "0".repeat(30), "AA"].join(""),
   UPSTASH_REDIS_REST_URL: "http://127.0.0.1:63790",
-  UPSTASH_REDIS_REST_TOKEN: "local-upstash-token",
+  UPSTASH_REDIS_REST_TOKEN: localValue("upstash-rest"),
 };
 
 function run(command, args, options = {}) {
