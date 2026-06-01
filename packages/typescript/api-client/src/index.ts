@@ -2,6 +2,8 @@ import type {
   AICreditBalance,
   AIUsageRecord,
   AdminAppBridgeSession,
+  AppOAuthAuthorizationResult,
+  AppOAuthTokenResult,
   AnalyticsDashboard,
   AnalyticsOrdersBreakdown,
   ApiResponse,
@@ -163,6 +165,21 @@ export interface AppInstallInput extends JsonRecord {
   webhook_url?: string;
   webhook_event?: string;
   webhook_secret?: string;
+}
+export interface AppOAuthAuthorizeInput extends AppInstallInput {
+  redirect_uri: string;
+  state?: string | null;
+}
+export interface AppOAuthTokenInput extends JsonRecord {
+  grant_type: 'authorization_code';
+  code: string;
+  client_id: string;
+  redirect_uri: string;
+}
+export interface AppOAuthTokenExchangeInput extends JsonRecord {
+  installation_id: string;
+  store_id?: string;
+  scopes?: string[];
 }
 export interface AppDeveloperRegistrationInput extends JsonRecord {
   company_name: string;
@@ -810,6 +827,15 @@ export class LetbuyyApiClient {
       ),
     install: (appId: string, input: AppInstallInput, options?: LetbuyyRequestOptions) =>
       this.requestData<JsonRecord>(`/app-store/apps/${encodePathSegment(appId)}/install`, { ...options, method: 'POST', body: input }),
+    oauthAuthorize: (appId: string, input: AppOAuthAuthorizeInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppOAuthAuthorizationResult>(
+        `/app-store/apps/${encodePathSegment(appId)}/oauth/authorize`,
+        { ...options, method: 'POST', body: input },
+      ),
+    oauthToken: (input: AppOAuthTokenInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppOAuthTokenResult>('/app-store/oauth/token', { ...options, method: 'POST', body: input }),
+    oauthTokenExchange: (input: AppOAuthTokenExchangeInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppOAuthTokenResult>('/app-store/oauth/token-exchange', { ...options, method: 'POST', body: input }),
     uninstall: (appId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<{ uninstalled: boolean }>(`/app-store/apps/${encodePathSegment(appId)}/install`, { ...options, method: 'DELETE', query }),
     developer: (options?: LetbuyyRequestOptions) =>
@@ -1465,6 +1491,8 @@ export type {
   AIUsageRecord,
   AnalyticsDashboard,
   AnalyticsOrdersBreakdown,
+  AppOAuthAuthorizationResult,
+  AppOAuthTokenResult,
   AuthSessionResponse,
   BlogComment,
   BlogPost,

@@ -296,6 +296,7 @@ export interface LetbuyyPlatformTokenVerificationResult<TPayload> {
 export const LETBUYY_APP_ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
 export const LETBUYY_APP_ACCESS_TOKEN_ISSUER = 'letbuyy-app-platform';
 export const LETBUYY_APP_ACCESS_TOKEN_AUDIENCE = 'letbuyy-commerce-api';
+export const LETBUYY_APP_AUTHORIZATION_CODE_TTL_SECONDS = 15 * 60;
 
 export interface AppScopedAccessTokenSubject {
   appId: string;
@@ -346,6 +347,36 @@ export interface AppScopedAccessTokenVerificationResult {
   payload?: LetbuyyAppAccessTokenPayload;
   reason?: string;
 }
+
+export interface AppAuthorizationCodeSubject extends AppScopedAccessTokenSubject {
+  clientId: string;
+  redirectUri: string;
+  state?: string | null;
+}
+
+export interface AppAuthorizationCodeOptions {
+  ttlSeconds?: number;
+  nowSeconds?: number;
+  tokenId?: string;
+}
+
+export interface LetbuyyAppAuthorizationCodePayload {
+  type: 'app_authorization_code';
+  appId: string;
+  clientId: string;
+  installationId: string;
+  storeId: string;
+  installedBy: string;
+  scopes: string[];
+  redirectUri: string;
+  state: string | null;
+  iat: number;
+  exp: number;
+  jti: string;
+}
+
+export type AppAuthorizationCodeVerificationResult =
+  LetbuyyPlatformTokenVerificationResult<LetbuyyAppAuthorizationCodePayload>;
 
 export interface CustomUserEnsurePlan {
   email: string;
@@ -852,6 +883,48 @@ export async function verifyLetbuyyPlatformMagicLinkToken(
   );
 }
 
+export async function createAppAuthorizationCode(
+  subject: AppAuthorizationCodeSubject,
+  secret: string,
+  options: AppAuthorizationCodeOptions = {},
+): Promise<string> {
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  const ttlSeconds = options.ttlSeconds ?? LETBUYY_APP_AUTHORIZATION_CODE_TTL_SECONDS;
+  const scopes = normalizeAppAccessScopes(subject.scopes);
+
+  return signLetbuyyJsonPayload(
+    {
+      type: 'app_authorization_code',
+      appId: subject.appId,
+      clientId: subject.clientId,
+      installationId: subject.installationId,
+      storeId: subject.storeId,
+      installedBy: subject.installedBy,
+      scopes,
+      redirectUri: subject.redirectUri,
+      state: subject.state || null,
+      iat: nowSeconds,
+      exp: nowSeconds + ttlSeconds,
+      jti: options.tokenId || crypto.randomUUID(),
+    } satisfies LetbuyyAppAuthorizationCodePayload,
+    secret,
+  );
+}
+
+export async function verifyAppAuthorizationCode(
+  code: string | null | undefined,
+  secret: string | null | undefined,
+  options: AppAuthorizationCodeOptions = {},
+): Promise<AppAuthorizationCodeVerificationResult> {
+  return verifyLetbuyyJsonPayload(
+    code,
+    secret,
+    isAppAuthorizationCodePayload,
+    options.nowSeconds ?? Math.floor(Date.now() / 1000),
+    'App authorization code',
+  );
+}
+
 export async function createAppScopedAccessToken(
   subject: AppScopedAccessTokenSubject,
   secret: string,
@@ -1131,6 +1204,33 @@ function normalizeAppAccessScopes(scopes: string[]): string[] {
     }
   }
   return [...normalized].sort();
+}
+
+function isAppAuthorizationCodePayload(value: unknown): value is LetbuyyAppAuthorizationCodePayload {
+  const payload = value as LetbuyyAppAuthorizationCodePayload;
+  return Boolean(
+    payload &&
+    payload.type === 'app_authorization_code' &&
+    typeof payload.appId === 'string' &&
+    payload.appId.length > 0 &&
+    typeof payload.clientId === 'string' &&
+    payload.clientId.length > 0 &&
+    typeof payload.installationId === 'string' &&
+    payload.installationId.length > 0 &&
+    typeof payload.storeId === 'string' &&
+    payload.storeId.length > 0 &&
+    typeof payload.installedBy === 'string' &&
+    payload.installedBy.length > 0 &&
+    Array.isArray(payload.scopes) &&
+    payload.scopes.every((scope) => typeof scope === 'string') &&
+    typeof payload.redirectUri === 'string' &&
+    payload.redirectUri.length > 0 &&
+    (payload.state === null || typeof payload.state === 'string') &&
+    Number.isFinite(payload.iat) &&
+    Number.isFinite(payload.exp) &&
+    typeof payload.jti === 'string' &&
+    payload.jti.length > 0,
+  );
 }
 
 function isAppAccessTokenPayload(value: LetbuyyAppAccessTokenPayload): value is LetbuyyAppAccessTokenPayload {

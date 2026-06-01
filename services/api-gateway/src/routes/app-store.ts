@@ -5,17 +5,22 @@ import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
+    createAppAuthorizationCode,
     createAppScopedAccessToken,
     getLetbuyyInternalAuthSecret,
     sha256Hex,
+    verifyAppAuthorizationCode,
 } from '@letbuyy/auth-core';
 import {
+    appOAuthClientId,
+    buildAppOAuthRedirectUrl,
     buildAppLifecycleEventPayload,
     appStoreStringArray as stringArray,
     appStoreStringOrNull as stringOrNull,
     isAppStoreUuid as isUuid,
     normalizeAppAdminEmbedSurface,
     normalizeAppInstallScopes,
+    normalizeAppOAuthRedirectUri,
     normalizeAppWebhookDefinitions,
     parseAppStoreJsonRecord as parseJsonRecord,
     planAppWebhookSubscriptions,
@@ -29,6 +34,18 @@ import {
 const router = new Hono<{ Bindings: Env }>();
 
 type AppLifecycleEventType = 'app.installed' | 'app.uninstalled';
+type AppOAuthGrantType = 'authorization_code';
+
+interface AppOAuthTokenResponse {
+    access_token: string;
+    token_type: 'Bearer';
+    expires_at: string;
+    scope: string;
+    scopes: string[];
+    installation_id: string;
+    app_id: string;
+    store_id: string;
+}
 
 function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
@@ -45,6 +62,81 @@ function appPlatformTokenSecret(env: Env): string | undefined {
         INTERNAL_API_SECRET: env.INTERNAL_API_SECRET,
         AUTH_SECRET: env.AUTH_SECRET,
     });
+}
+
+function appOAuthState(value: unknown): string | null {
+    const state = stringOrNull(value);
+    return state && state.length <= 500 ? state : null;
+}
+
+function appOAuthGrantType(value: unknown): AppOAuthGrantType | null {
+    return value === 'authorization_code' ? value : null;
+}
+
+function appOAuthConfig(config: unknown): AppEngineJsonRecord {
+    return parseJsonRecord(parseJsonRecord(config).oauth);
+}
+
+function appendAppOAuthTokenConfig(input: {
+    existingConfig: unknown;
+    accessTokenHash: string;
+    scopes: string[];
+    issuedAt: string;
+    expiresAt: string;
+    authorizationCode?: AppEngineJsonRecord;
+}): AppEngineJsonRecord {
+    const rootConfig = parseJsonRecord(input.existingConfig);
+    const oauth = appOAuthConfig(rootConfig);
+    return {
+        ...rootConfig,
+        oauth: {
+            ...oauth,
+            token_type: 'Bearer',
+            access_token_hash: input.accessTokenHash,
+            scopes: input.scopes,
+            issued_at: input.issuedAt,
+            expires_at: input.expiresAt,
+            ...(input.authorizationCode ? { authorization_code: input.authorizationCode } : {}),
+        },
+    };
+}
+
+async function mintAppOAuthAccessToken(input: {
+    appId: string;
+    installationId: string;
+    storeId: string;
+    installedBy: string;
+    scopes: string[];
+    secret: string;
+    now: Date;
+    ttlSeconds?: number;
+}): Promise<{ token: string; hash: string; response: AppOAuthTokenResponse }> {
+    const nowSeconds = Math.floor(input.now.getTime() / 1000);
+    const ttlSeconds = input.ttlSeconds || 60 * 60;
+    const expiresAt = new Date((nowSeconds + ttlSeconds) * 1000).toISOString();
+    const accessToken = await createAppScopedAccessToken({
+        appId: input.appId,
+        installationId: input.installationId,
+        storeId: input.storeId,
+        installedBy: input.installedBy,
+        scopes: input.scopes,
+    }, input.secret, { nowSeconds, ttlSeconds });
+    const hash = await sha256Hex(accessToken);
+
+    return {
+        token: accessToken,
+        hash,
+        response: {
+            access_token: accessToken,
+            token_type: 'Bearer',
+            expires_at: expiresAt,
+            scope: input.scopes.join(' '),
+            scopes: input.scopes,
+            installation_id: input.installationId,
+            app_id: input.appId,
+            store_id: input.storeId,
+        },
+    };
 }
 
 function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJsonRecord, allowLocalhost: boolean): AppWebhookDefinition[] {
@@ -461,6 +553,343 @@ router.post('/installations/:id/embed-session', authMiddleware, async (c) => {
             capabilities: embed.capabilities,
         },
     }));
+});
+
+// POST /app-store/apps/:id/oauth/authorize — Install/authorize an app and issue a short-lived code
+router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const appId = c.req.param('id');
+    const body = await c.req.json() as AppEngineJsonRecord;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+    const now = new Date();
+    const nowSeconds = Math.floor(now.getTime() / 1000);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const storeId = stringOrNull(body.store_id) || await findFirstOwnedSiteId(db, customUser.id);
+    if (!storeId) {
+        return c.json({ error: { code: 'VALIDATION', message: 'store_id is required' } }, 400);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, storeId, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data: app } = await db
+        .from('marketplace_apps')
+        .select('id, name, oauth_client_id, oauth_redirect_uris, api_scopes, app_webhooks(id, event, url, secret, is_active)')
+        .eq('id', appId)
+        .eq('status', 'published')
+        .single();
+
+    if (!app) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App not found or not available' } }, 404);
+    }
+
+    const scopes = normalizeAppInstallScopes(body.scopes, app.api_scopes || []);
+    if (!scopes.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: scopes.message } }, 400);
+    }
+
+    const redirect = normalizeAppOAuthRedirectUri(body.redirect_uri || body.redirectUri, app.oauth_redirect_uris, {
+        allowLocalhost: !isProductionEnv(c.env),
+    });
+    if (!redirect.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: redirect.message } }, 400);
+    }
+
+    const appSecret = appPlatformTokenSecret(c.env);
+    if (!appSecret) {
+        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App OAuth token secret is not configured' } }, 500);
+    }
+
+    const { data: installation, error } = await db
+        .from('app_installations')
+        .upsert(
+            {
+                app_id: app.id,
+                store_id: storeId,
+                installed_by: customUser.id,
+                status: 'active',
+                scopes_granted: scopes.value,
+                config: parseJsonRecord(body.config),
+                installed_at: now.toISOString(),
+                uninstalled_at: null,
+            },
+            { onConflict: 'app_id,store_id' }
+        )
+        .select()
+        .single();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    const state = appOAuthState(body.state);
+    const clientId = appOAuthClientId(app);
+    const authorizationCodeId = `app_oauth_code:${installation.id}:${crypto.randomUUID()}`;
+    const authorizationCode = await createAppAuthorizationCode({
+        appId: app.id,
+        clientId,
+        installationId: installation.id,
+        storeId,
+        installedBy: customUser.id,
+        scopes: scopes.value,
+        redirectUri: redirect.value,
+        state,
+    }, appSecret, { nowSeconds, tokenId: authorizationCodeId });
+    const authorizationCodeHash = await sha256Hex(authorizationCode);
+    const authorizationExpiresAt = new Date((nowSeconds + 15 * 60) * 1000).toISOString();
+    const allowLocalhost = !isProductionEnv(c.env);
+    const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body, allowLocalhost);
+    const defaultSigningSecret = stringOrNull(body.webhook_secret || body.webhookSecret) || crypto.randomUUID();
+    const webhookSubscriptions = planAppWebhookSubscriptions({
+        app,
+        storeId,
+        installationId: installation.id,
+        installedBy: customUser.id,
+        webhookDefinitions,
+        defaultSigningSecret,
+    });
+    const insertedSubscriptions = await insertAppWebhookSubscriptions(db, webhookSubscriptions);
+    const finalConfig = {
+        ...parseJsonRecord(body.config),
+        oauth: {
+            authorization_code: {
+                code_hash: authorizationCodeHash,
+                client_id: clientId,
+                redirect_uri: redirect.value,
+                scopes: scopes.value,
+                state,
+                issued_at: now.toISOString(),
+                expires_at: authorizationExpiresAt,
+                redeemed_at: null,
+            },
+        },
+        webhooks: {
+            subscription_ids: insertedSubscriptions.map((subscription) => subscription.id),
+        },
+    };
+    const { data: finalInstallation, error: updateError } = await db
+        .from('app_installations')
+        .update({ config: finalConfig })
+        .eq('id', installation.id)
+        .select()
+        .single();
+
+    if (updateError) {
+        return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+    }
+
+    const lifecyclePayload = buildAppLifecycleEventPayload({
+        app,
+        installationId: installation.id,
+        storeId,
+        installedBy: customUser.id,
+        scopes: scopes.value,
+        occurredAt: now.toISOString(),
+    });
+    await insertAppLifecycleOutbox(db, {
+        storeId,
+        installationId: installation.id,
+        eventType: 'app.installed',
+        payload: lifecyclePayload,
+        actorId: customUser.id,
+        requestId,
+    });
+
+    await dispatchAppLifecycleSubscriptions(c.env, {
+        eventType: 'app.installed',
+        installationId: installation.id,
+        payload: lifecyclePayload,
+        requestId,
+        subscriptions: webhookSubscriptions,
+    });
+
+    return c.json(success({
+        installation: finalInstallation || installation,
+        authorization: {
+            code: authorizationCode,
+            redirect_uri: redirect.value,
+            redirect_to: buildAppOAuthRedirectUrl(redirect.value, { code: authorizationCode, state }),
+            state,
+            scopes: scopes.value,
+            expires_at: authorizationExpiresAt,
+            installation_id: installation.id,
+            app_id: app.id,
+            store_id: storeId,
+        },
+    }), 201);
+});
+
+// POST /app-store/oauth/token — Exchange an app authorization code for a scoped token
+router.post('/oauth/token', async (c) => {
+    const body = await c.req.json() as AppEngineJsonRecord;
+    const grantType = appOAuthGrantType(body.grant_type || body.grantType);
+    if (!grantType) {
+        return c.json({ error: { code: 'VALIDATION', message: 'grant_type must be authorization_code' } }, 400);
+    }
+
+    const code = stringOrNull(body.code);
+    const clientId = stringOrNull(body.client_id || body.clientId);
+    const redirectUri = stringOrNull(body.redirect_uri || body.redirectUri);
+    if (!code || !clientId || !redirectUri) {
+        return c.json({ error: { code: 'VALIDATION', message: 'code, client_id, and redirect_uri are required' } }, 400);
+    }
+
+    const appSecret = appPlatformTokenSecret(c.env);
+    const verification = await verifyAppAuthorizationCode(code, appSecret);
+    if (!verification.accepted || !verification.payload) {
+        return c.json({ error: { code: 'INVALID_GRANT', message: verification.reason || 'Authorization code is invalid' } }, 400);
+    }
+
+    if (verification.payload.clientId !== clientId || verification.payload.redirectUri !== redirectUri) {
+        return c.json({ error: { code: 'INVALID_GRANT', message: 'Authorization code client or redirect_uri mismatch' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data: installation, error } = await db
+        .from('app_installations')
+        .select('id, app_id, store_id, installed_by, status, scopes_granted, config')
+        .eq('id', verification.payload.installationId)
+        .eq('app_id', verification.payload.appId)
+        .eq('store_id', verification.payload.storeId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (!installation) {
+        return c.json({ error: { code: 'INVALID_GRANT', message: 'App installation is not active' } }, 400);
+    }
+
+    const oauth = appOAuthConfig(installation.config);
+    const authorizationCodeConfig = parseJsonRecord(oauth.authorization_code);
+    const expectedCodeHash = stringOrNull(authorizationCodeConfig.code_hash);
+    const codeHash = await sha256Hex(code);
+    if (
+        !expectedCodeHash ||
+        expectedCodeHash !== codeHash ||
+        stringOrNull(authorizationCodeConfig.redeemed_at)
+    ) {
+        return c.json({ error: { code: 'INVALID_GRANT', message: 'Authorization code has already been redeemed or is not recognized' } }, 400);
+    }
+
+    const now = new Date();
+    const minted = await mintAppOAuthAccessToken({
+        appId: verification.payload.appId,
+        installationId: verification.payload.installationId,
+        storeId: verification.payload.storeId,
+        installedBy: verification.payload.installedBy,
+        scopes: verification.payload.scopes,
+        secret: appSecret || '',
+        now,
+    });
+    const finalConfig = appendAppOAuthTokenConfig({
+        existingConfig: installation.config,
+        accessTokenHash: minted.hash,
+        scopes: verification.payload.scopes,
+        issuedAt: now.toISOString(),
+        expiresAt: minted.response.expires_at,
+        authorizationCode: {
+            ...authorizationCodeConfig,
+            redeemed_at: now.toISOString(),
+        },
+    });
+    const { error: updateError } = await db
+        .from('app_installations')
+        .update({ config: finalConfig })
+        .eq('id', installation.id);
+
+    if (updateError) {
+        return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+    }
+
+    return c.json(success(minted.response));
+});
+
+// POST /app-store/oauth/token-exchange — Exchange a merchant session for an embedded app token
+router.post('/oauth/token-exchange', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const body = await c.req.json() as AppEngineJsonRecord;
+    const installationId = stringOrNull(body.installation_id || body.installationId);
+    const storeId = stringOrNull(body.store_id || body.storeId);
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    if (!installationId) {
+        return c.json({ error: { code: 'VALIDATION', message: 'installation_id is required' } }, 400);
+    }
+
+    const { data: installation, error } = await db
+        .from('app_installations')
+        .select('id, app_id, store_id, installed_by, status, scopes_granted, config')
+        .eq('id', installationId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (!installation || (storeId && installation.store_id !== storeId)) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App installation not found' } }, 404);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const scopes = normalizeAppInstallScopes(body.scopes, installation.scopes_granted || []);
+    if (!scopes.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: scopes.message } }, 400);
+    }
+
+    const appSecret = appPlatformTokenSecret(c.env);
+    if (!appSecret) {
+        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App OAuth token secret is not configured' } }, 500);
+    }
+
+    const now = new Date();
+    const minted = await mintAppOAuthAccessToken({
+        appId: installation.app_id,
+        installationId: installation.id,
+        storeId: installation.store_id,
+        installedBy: customUser.id,
+        scopes: scopes.value,
+        secret: appSecret,
+        now,
+        ttlSeconds: 15 * 60,
+    });
+    const finalConfig = appendAppOAuthTokenConfig({
+        existingConfig: installation.config,
+        accessTokenHash: minted.hash,
+        scopes: scopes.value,
+        issuedAt: now.toISOString(),
+        expiresAt: minted.response.expires_at,
+    });
+    const { error: updateError } = await db
+        .from('app_installations')
+        .update({ config: finalConfig })
+        .eq('id', installation.id);
+
+    if (updateError) {
+        return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+    }
+
+    return c.json(success(minted.response));
 });
 
 // POST /app-store/apps/:id/install — Install an app

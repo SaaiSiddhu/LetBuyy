@@ -1442,6 +1442,34 @@ export const AdminAppBridgeSessionSchema = z.object({
   }).strict(),
 }).strict();
 
+export const AppOAuthAuthorizationSchema = z.object({
+  code: z.string().min(1),
+  redirect_uri: UrlSchema,
+  redirect_to: UrlSchema,
+  state: z.string().max(500).optional().nullable(),
+  scopes: z.array(z.string().min(1)).default([]),
+  expires_at: z.string().datetime(),
+  installation_id: z.string().min(1),
+  app_id: z.string().min(1),
+  store_id: z.string().min(1),
+}).strict();
+
+export const AppOAuthAuthorizationResultSchema = z.object({
+  installation: InstalledAppSchema,
+  authorization: AppOAuthAuthorizationSchema,
+}).strict();
+
+export const AppOAuthTokenResultSchema = z.object({
+  access_token: z.string().min(1),
+  token_type: z.literal('Bearer'),
+  expires_at: z.string().datetime(),
+  scope: z.string().default(''),
+  scopes: z.array(z.string().min(1)).default([]),
+  installation_id: z.string().min(1),
+  app_id: z.string().min(1),
+  store_id: z.string().min(1),
+}).strict();
+
 export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
@@ -1561,6 +1589,9 @@ export type InstalledMarketplaceApp = z.infer<typeof InstalledMarketplaceAppSche
 export type InstalledApp = z.infer<typeof InstalledAppSchema>;
 export type AdminAppEmbedSurface = z.infer<typeof AdminAppEmbedSurfaceSchema>;
 export type AdminAppBridgeSession = z.infer<typeof AdminAppBridgeSessionSchema>;
+export type AppOAuthAuthorization = z.infer<typeof AppOAuthAuthorizationSchema>;
+export type AppOAuthAuthorizationResult = z.infer<typeof AppOAuthAuthorizationResultSchema>;
+export type AppOAuthTokenResult = z.infer<typeof AppOAuthTokenResultSchema>;
 
 export const RuntimeEnvironmentSchema = z.enum(['local', 'development', 'staging', 'production']);
 

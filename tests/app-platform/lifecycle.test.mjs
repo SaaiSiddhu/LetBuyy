@@ -100,6 +100,67 @@ async function readRequestBody(request) {
   return Buffer.concat(chunks).toString('utf8');
 }
 
+test('app OAuth authorization codes bind client, redirect URI, scopes, and expiry', async () => {
+  const tokenSecret = 'app-token-secret';
+  const app = {
+    id: 'app_loyalty',
+    name: 'Loyalty Rewards',
+    oauth_client_id: 'client_loyalty',
+    oauth_redirect_uris: ['https://partner.example/callback'],
+    api_scopes: ['read_products', 'write_orders'],
+  };
+  const scopesPlan = appEngine.normalizeAppInstallScopes(['write_orders', 'read_products'], app.api_scopes);
+  const redirectPlan = appEngine.normalizeAppOAuthRedirectUri('https://partner.example/callback', app.oauth_redirect_uris);
+
+  assert.equal(scopesPlan.ok, true);
+  assert.equal(redirectPlan.ok, true);
+  assert.equal(appEngine.appOAuthClientId(app), 'client_loyalty');
+
+  const authorizationCode = await authCore.createAppAuthorizationCode(
+    {
+      appId: app.id,
+      clientId: appEngine.appOAuthClientId(app),
+      installationId: 'install_loyalty_001',
+      storeId: 'site_001',
+      installedBy: 'merchant_001',
+      scopes: scopesPlan.value,
+      redirectUri: redirectPlan.value,
+      state: 'csrf-state-001',
+    },
+    tokenSecret,
+    { nowSeconds: 1_700_000_000, ttlSeconds: 900, tokenId: 'oauth_code_001' },
+  );
+
+  const acceptedCode = await authCore.verifyAppAuthorizationCode(authorizationCode, tokenSecret, {
+    nowSeconds: 1_700_000_100,
+  });
+  assert.equal(acceptedCode.accepted, true);
+  assert.equal(acceptedCode.payload.clientId, 'client_loyalty');
+  assert.equal(acceptedCode.payload.redirectUri, 'https://partner.example/callback');
+  assert.deepEqual(Array.from(acceptedCode.payload.scopes), ['read_products', 'write_orders']);
+
+  const redirectTo = appEngine.buildAppOAuthRedirectUrl(acceptedCode.payload.redirectUri, {
+    code: authorizationCode,
+    state: acceptedCode.payload.state,
+  });
+  const redirectUrl = new URL(redirectTo);
+  assert.equal(redirectUrl.searchParams.get('code'), authorizationCode);
+  assert.equal(redirectUrl.searchParams.get('state'), 'csrf-state-001');
+
+  const expiredCode = await authCore.verifyAppAuthorizationCode(authorizationCode, tokenSecret, {
+    nowSeconds: 1_700_001_000,
+  });
+  assert.equal(expiredCode.status, 'expired');
+
+  const localhostRedirect = appEngine.normalizeAppOAuthRedirectUri('http://127.0.0.1:3456/callback', [], {
+    allowLocalhost: true,
+  });
+  assert.equal(localhostRedirect.ok, true);
+
+  const rejectedRedirect = appEngine.normalizeAppOAuthRedirectUri('http://partner.example/callback', app.oauth_redirect_uris);
+  assert.equal(rejectedRedirect.ok, false);
+});
+
 test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks locally', async () => {
   const tokenSecret = 'app-token-secret';
   const signingSecret = 'app-webhook-signing-secret';

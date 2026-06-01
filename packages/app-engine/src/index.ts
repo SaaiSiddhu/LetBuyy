@@ -112,6 +112,11 @@ export interface MarketplaceAppLifecycleRecord {
   api_scopes?: string[] | null;
 }
 
+export interface MarketplaceAppOAuthRecord extends MarketplaceAppLifecycleRecord {
+  oauth_client_id?: string | null;
+  oauth_redirect_uris?: unknown;
+}
+
 export interface AppWebhookDefinition {
   id?: string | null;
   event: string;
@@ -357,6 +362,52 @@ export function normalizeAppInstallScopes(
   }
 
   return { ok: true, value: [...new Set(scopes)].sort() };
+}
+
+export function appOAuthClientId(app: MarketplaceAppOAuthRecord): string {
+  return appStoreStringOrNull(app.oauth_client_id) || app.id;
+}
+
+export function normalizeAppOAuthRedirectUri(
+  requestedRedirectUri: unknown,
+  allowedRedirectUris: unknown,
+  options: { allowLocalhost?: boolean } = {},
+): AppEnginePlanResult<string> {
+  const requested = appStoreStringOrNull(requestedRedirectUri);
+  if (!requested) {
+    return { ok: false, message: 'redirect_uri is required' };
+  }
+
+  let parsed: URL;
+  try {
+    parsed = new URL(requested);
+  } catch {
+    return { ok: false, message: 'redirect_uri must be a valid URL' };
+  }
+
+  const isLocalHttp = options.allowLocalhost === true
+    && parsed.protocol === 'http:'
+    && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
+  if (parsed.protocol !== 'https:' && !isLocalHttp) {
+    return { ok: false, message: 'redirect_uri must use HTTPS' };
+  }
+
+  const allowed = new Set(appStoreStringArray(allowedRedirectUris));
+  if (allowed.has(parsed.toString()) || (isLocalHttp && allowed.size === 0)) {
+    return { ok: true, value: parsed.toString() };
+  }
+
+  return { ok: false, message: 'redirect_uri is not registered for this app' };
+}
+
+export function buildAppOAuthRedirectUrl(
+  redirectUri: string,
+  params: { code: string; state?: string | null },
+): string {
+  const url = new URL(redirectUri);
+  url.searchParams.set('code', params.code);
+  if (params.state) url.searchParams.set('state', params.state);
+  return url.toString();
 }
 
 export function isSafeAppWebhookTarget(targetUrl: string, allowLocalhost = false): boolean {
