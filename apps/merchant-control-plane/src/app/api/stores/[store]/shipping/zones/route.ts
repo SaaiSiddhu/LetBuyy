@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateShippingZoneInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,7 +13,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createWorkerApiClient()
+        const apiClient = createMerchantApiClient()
         const [zones, rates] = await Promise.all([
             apiClient.shipping.zones.list({ store_id: resolved.storeId }),
             apiClient.shipping.rates.list({ store_id: resolved.storeId }),
@@ -27,7 +27,7 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load shipping zones')
+        return merchantApiErrorResponse(err, 'Unable to load shipping zones')
     }
 }
 
@@ -42,13 +42,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().shipping.zones.create({
+        const payload = await createMerchantApiClient().shipping.zones.create({
             ...body,
             store_id: resolved.storeId,
         } as CreateShippingZoneInput)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save shipping zone')
+        return merchantApiErrorResponse(err, 'Unable to save shipping zone')
     }
 }

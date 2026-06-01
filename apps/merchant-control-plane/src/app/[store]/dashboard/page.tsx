@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { createMerchantApiClient } from '@/lib/api/client'
 import DashboardClient from './DashboardClient'
 
 /* ——————————————————————————————————————
@@ -71,7 +71,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     const domainConfigured = !!storeData.custom_domain
 
     let setupStatus: SetupStatus
-    const apiClient = createWorkerApiClient()
+    const apiClient = createMerchantApiClient()
 
     if (storeData.site_type === 'store') {
         const [productsPayload, shippingZones] = await Promise.all([

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { ProductReviewListQuery } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 function normalizeReviewStatus(value: string | null): ProductReviewListQuery['status'] {
@@ -20,7 +20,7 @@ export async function GET(
         const searchParams = request.nextUrl.searchParams
         const page = Number(searchParams.get('page') || '1')
         const limit = Number(searchParams.get('limit') || '100')
-        const payload = await createWorkerApiClient().reviews.list({
+        const payload = await createMerchantApiClient().reviews.list({
             store_id: resolved.storeId,
             page,
             limit,
@@ -40,6 +40,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load reviews')
+        return merchantApiErrorResponse(err, 'Unable to load reviews')
     }
 }

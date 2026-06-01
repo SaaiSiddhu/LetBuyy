@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 
 /**
  * GET /api/themes/[themeId]/sections
@@ -12,7 +12,7 @@ export async function GET(
 ) {
     try {
         const { themeId } = await params
-        const payload = await createWorkerApiClient().themes.schema(themeId)
+        const payload = await createMerchantApiClient().themes.schema(themeId)
         const schemas = payload.schemas?.sections || {}
 
         return NextResponse.json({
@@ -27,6 +27,6 @@ export async function GET(
             schemas,
         })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }

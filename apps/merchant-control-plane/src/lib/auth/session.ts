@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { createMerchantApiClient } from '@/lib/api/client'
 
 export interface SessionUser {
     id: string
@@ -10,7 +10,7 @@ export interface SessionUser {
 
 export const getSessionUser = cache(async (): Promise<SessionUser | null> => {
     try {
-        const payload = await createWorkerApiClient().auth.session()
+        const payload = await createMerchantApiClient().auth.session()
 
         if (!payload.authenticated || !payload.user) return null
 
@@ -42,7 +42,7 @@ export const getStoreForUser = cache(async (
     custom_domain: string | null
 } | null> => {
     try {
-        const data = await createWorkerApiClient().stores.getByHandle(storeName)
+        const data = await createMerchantApiClient().stores.getByHandle(storeName)
 
         if (!data) return null
 
@@ -75,7 +75,7 @@ export const getUserStores = cache(async (
     status: string
 }>> => {
     try {
-        const payload = await createWorkerApiClient().stores.list({ limit: 50 })
+        const payload = await createMerchantApiClient().stores.list({ limit: 50 })
 
         return payload.data.map((store) => ({
             id: store.id,

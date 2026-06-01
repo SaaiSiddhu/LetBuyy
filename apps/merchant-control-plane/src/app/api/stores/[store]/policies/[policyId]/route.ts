@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -12,10 +12,10 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().pages.policies.update(policyId, body)
+        const payload = await createMerchantApiClient().pages.policies.update(policyId, body)
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to update policy')
+        return merchantApiErrorResponse(error, 'Unable to update policy')
     }
 }
 
@@ -28,9 +28,9 @@ export async function DELETE(
         const resolved = await resolveOwnedStoreId(decodeURIComponent(store))
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().pages.policies.remove(policyId)
+        const payload = await createMerchantApiClient().pages.policies.remove(policyId)
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to delete policy')
+        return merchantApiErrorResponse(error, 'Unable to delete policy')
     }
 }

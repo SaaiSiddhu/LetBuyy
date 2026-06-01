@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function POST(
@@ -22,13 +22,13 @@ export async function POST(
         const resolved = await resolveOwnedStoreId(String(storeName))
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().themes.previewSession(themeId, {
+        const payload = await createMerchantApiClient().themes.previewSession(themeId, {
             store_id: resolved.storeId,
             ttl_seconds: Number(body.ttl_seconds || 900),
         })
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to create preview session')
+        return merchantApiErrorResponse(err, 'Unable to create preview session')
     }
 }

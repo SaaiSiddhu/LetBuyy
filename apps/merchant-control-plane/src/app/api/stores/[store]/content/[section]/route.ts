@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateResumeContentItemInput, ResumeContentSection } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,13 +13,13 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().resume.content.list(section as ResumeContentSection, {
+        const payload = await createMerchantApiClient().resume.content.list(section as ResumeContentSection, {
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load content section')
+        return merchantApiErrorResponse(err, 'Unable to load content section')
     }
 }
 
@@ -34,7 +34,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().resume.content.create(
+        const payload = await createMerchantApiClient().resume.content.create(
             section as ResumeContentSection,
             {
                 ...body,
@@ -44,6 +44,6 @@ export async function POST(
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save content item')
+        return merchantApiErrorResponse(err, 'Unable to save content item')
     }
 }

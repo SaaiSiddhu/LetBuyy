@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,14 +12,14 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const categories = await createWorkerApiClient().categories.list({
+        const categories = await createMerchantApiClient().categories.list({
             store_id: resolved.storeId,
             flat: true,
         })
 
         return NextResponse.json({ data: categories })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load categories')
+        return merchantApiErrorResponse(err, 'Unable to load categories')
     }
 }
 
@@ -34,13 +34,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const category = await createWorkerApiClient().categories.create({
+        const category = await createMerchantApiClient().categories.create({
             ...body,
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ data: category }, { status: 201 })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save category')
+        return merchantApiErrorResponse(err, 'Unable to save category')
     }
 }

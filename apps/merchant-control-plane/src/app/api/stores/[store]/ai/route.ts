@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,7 +12,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createWorkerApiClient()
+        const apiClient = createMerchantApiClient()
         const [credits, usage] = await Promise.all([
             apiClient.ai.credits({ store_id: resolved.storeId }),
             apiClient.ai.usage({ store_id: resolved.storeId, limit: 20 }),
@@ -25,6 +25,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load AI studio data')
+        return merchantApiErrorResponse(err, 'Unable to load AI studio data')
     }
 }

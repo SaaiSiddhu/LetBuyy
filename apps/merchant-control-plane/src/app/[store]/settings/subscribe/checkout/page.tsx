@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { createMerchantApiClient } from '@/lib/api/client'
 import { toSubscriptionPlanView } from '@/lib/billing/plan-ui'
 import SubscribeCheckoutClient from './SubscribeCheckoutClient'
 
@@ -31,7 +31,7 @@ export default async function SubscribeCheckoutPage({ params, searchParams }: Pa
     const siteType = site_type || storeData.site_type || 'store'
     const billingPeriod = bp === 'YEARLY' ? 'yearly' : 'monthly'
 
-    const plans = await createWorkerApiClient().payments.plans({ site_type: siteType, slug: planSlug })
+    const plans = await createMerchantApiClient().payments.plans({ site_type: siteType, slug: planSlug })
     const plan = plans[0]
 
     if (!plan) return notFound()

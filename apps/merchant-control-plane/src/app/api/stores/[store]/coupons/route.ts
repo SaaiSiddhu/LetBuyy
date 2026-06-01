@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateCouponInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type AdminCouponBody = {
@@ -58,7 +58,7 @@ export async function GET(
         const { searchParams } = new URL(request.url)
         const page = Number(searchParams.get('page') || '1')
         const limit = Number(searchParams.get('limit') || '100')
-        const payload = await createWorkerApiClient().coupons.list({
+        const payload = await createMerchantApiClient().coupons.list({
             store_id: resolved.storeId,
             status: normalizeCouponStatus(searchParams.get('status')),
             page,
@@ -79,7 +79,7 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load coupons')
+        return merchantApiErrorResponse(err, 'Unable to load coupons')
     }
 }
 
@@ -94,7 +94,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json() as AdminCouponBody
-        const payload = await createWorkerApiClient().coupons.create(
+        const payload = await createMerchantApiClient().coupons.create(
             toWorkerCoupon(body, resolved.storeId) as CreateCouponInput
         )
 
@@ -103,6 +103,6 @@ export async function POST(
             data: fromWorkerCoupon(payload as unknown as Record<string, unknown>),
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save coupon')
+        return merchantApiErrorResponse(err, 'Unable to save coupon')
     }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 import type { InventoryAdjustInput } from '@letbuyy/api-client'
 
@@ -23,7 +23,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json() as InventoryAdjustBody
-        const payload = await createWorkerApiClient().inventory.adjust({
+        const payload = await createMerchantApiClient().inventory.adjust({
             product_id: body.product_id,
             variant_id: body.variant_id || null,
             location_id: body.location_id || undefined,
@@ -34,6 +34,6 @@ export async function POST(
 
         return NextResponse.json({ data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to adjust inventory')
+        return merchantApiErrorResponse(err, 'Unable to adjust inventory')
     }
 }

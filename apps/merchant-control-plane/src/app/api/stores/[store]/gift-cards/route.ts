@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,13 +12,13 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const giftCards = await createWorkerApiClient().products.giftCards.list({
+        const giftCards = await createMerchantApiClient().products.giftCards.list({
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ data: giftCards })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load gift cards')
+        return merchantApiErrorResponse(err, 'Unable to load gift cards')
     }
 }
 
@@ -33,13 +33,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const giftCard = await createWorkerApiClient().products.giftCards.create({
+        const giftCard = await createMerchantApiClient().products.giftCards.create({
             ...body,
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ data: giftCard }, { status: 201 })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to issue gift card')
+        return merchantApiErrorResponse(err, 'Unable to issue gift card')
     }
 }

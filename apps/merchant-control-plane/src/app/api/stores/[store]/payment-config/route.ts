@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { SaveStorePaymentConfigInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,11 +13,11 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().stores.paymentConfig.get(resolved.storeId)
+        const payload = await createMerchantApiClient().stores.paymentConfig.get(resolved.storeId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load payment config')
+        return merchantApiErrorResponse(err, 'Unable to load payment config')
     }
 }
 
@@ -32,7 +32,7 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().stores.paymentConfig.save(
+        const payload = await createMerchantApiClient().stores.paymentConfig.save(
             resolved.storeId,
             {
                 key_id: body.key_id,
@@ -43,6 +43,6 @@ export async function POST(
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save payment config')
+        return merchantApiErrorResponse(err, 'Unable to save payment config')
     }
 }

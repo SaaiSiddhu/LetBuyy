@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -13,11 +13,11 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().pages.update(pageId, body)
+        const payload = await createMerchantApiClient().pages.update(pageId, body)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to update page')
+        return merchantApiErrorResponse(error, 'Unable to update page')
     }
 }
 
@@ -31,10 +31,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().pages.remove(pageId)
+        const payload = await createMerchantApiClient().pages.remove(pageId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to delete page')
+        return merchantApiErrorResponse(error, 'Unable to delete page')
     }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
@@ -37,7 +37,7 @@ export async function POST(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().themes.saveDraft(themeId, {
+        const payload = await createMerchantApiClient().themes.saveDraft(themeId, {
             store_id: resolved.storeId,
             template_config: draftConfig,
             client: 'admin-web',
@@ -49,7 +49,7 @@ export async function POST(
             version: payload.version,
         })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }
 
@@ -77,10 +77,10 @@ export async function DELETE(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        await createWorkerApiClient().themes.deleteDraft(themeId, resolved.storeId)
+        await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId)
 
         return NextResponse.json({ success: true })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }

@@ -240,13 +240,13 @@ test('platform console session and magic-link tokens are signed and verified onl
 
 test('runtime auth surfaces import the shared verifier instead of local HMAC session copies', () => {
   const sharedAuthFiles = [
-    'apps/identity-platform/src/lib/api/worker-client.ts',
+    'apps/identity-platform/src/lib/api/client.ts',
     'apps/identity-platform/src/proxy.ts',
-    'apps/merchant-control-plane/src/lib/api/worker-client.ts',
+    'apps/merchant-control-plane/src/lib/api/client.ts',
     'apps/merchant-control-plane/src/proxy.ts',
-    'apps/app-marketplace/src/lib/api/worker-client.ts',
+    'apps/app-marketplace/src/lib/api/client.ts',
     'apps/app-marketplace/src/proxy.ts',
-    'apps/theme-marketplace/src/lib/api/worker-client.ts',
+    'apps/theme-marketplace/src/lib/api/client.ts',
     'apps/storefront-runtime/src/lib/session.ts',
     'apps/platform-console/src/lib/console-session.ts',
     'apps/platform-console/src/proxy.ts',

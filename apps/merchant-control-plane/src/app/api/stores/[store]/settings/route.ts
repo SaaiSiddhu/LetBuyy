@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { UpdateStoreInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,11 +13,11 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().stores.get(resolved.storeId)
+        const payload = await createMerchantApiClient().stores.get(resolved.storeId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load store settings')
+        return merchantApiErrorResponse(err, 'Unable to load store settings')
     }
 }
 
@@ -32,11 +32,11 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().stores.update(resolved.storeId, body as UpdateStoreInput)
+        const payload = await createMerchantApiClient().stores.update(resolved.storeId, body as UpdateStoreInput)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to update store settings')
+        return merchantApiErrorResponse(err, 'Unable to update store settings')
     }
 }
 
@@ -50,10 +50,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().stores.remove(resolved.storeId)
+        const payload = await createMerchantApiClient().stores.remove(resolved.storeId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to delete store')
+        return merchantApiErrorResponse(err, 'Unable to delete store')
     }
 }

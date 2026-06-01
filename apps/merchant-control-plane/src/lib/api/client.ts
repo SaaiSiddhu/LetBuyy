@@ -13,18 +13,18 @@ import {
 
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1'
 
-interface WorkerFetchInit extends RequestInit {
+interface MerchantApiFetchInit extends RequestInit {
     requireSession?: boolean
 }
 
-export class WorkerRequestError extends Error {
+export class MerchantApiRequestError extends Error {
     constructor(
         message: string,
         public readonly status: number,
         public readonly payload: unknown
     ) {
         super(message)
-        this.name = 'WorkerRequestError'
+        this.name = 'MerchantApiRequestError'
     }
 }
 
@@ -59,7 +59,7 @@ function getApiBaseUrl() {
     return configuredUrl
 }
 
-export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
+export async function merchantApiFetch(path: string, init: MerchantApiFetchInit = {}) {
     const cleanPath = path.startsWith('/') ? path : `/${path}`
     const headers = new Headers(init.headers)
     const cookieStore = await cookies()
@@ -105,33 +105,33 @@ export async function workerFetch(path: string, init: WorkerFetchInit = {}) {
     })
 }
 
-export function createWorkerApiClient(): LetbuyyApiClient {
+export function createMerchantApiClient(): LetbuyyApiClient {
     const baseUrl = getApiBaseUrl()
 
     return createLetbuyyApiClient({
         baseUrl,
-        fetch: async (input, init) => workerFetch(apiClientInputToWorkerPath(input, baseUrl), {
+        fetch: async (input, init) => merchantApiFetch(apiClientInputToMerchantApiPath(input, baseUrl), {
             ...init,
             requireSession: true,
         }),
     })
 }
 
-export async function readWorkerJson(response: Response) {
+export async function readMerchantApiJson(response: Response) {
     const payload = await response.json().catch(() => null)
 
     if (!response.ok) {
         const message =
             payload?.error?.message ||
             payload?.message ||
-            `Worker request failed with status ${response.status}`
-        throw new WorkerRequestError(message, response.status, payload)
+            `Merchant API request failed with status ${response.status}`
+        throw new MerchantApiRequestError(message, response.status, payload)
     }
 
     return payload
 }
 
-export function workerErrorResponse(error: unknown, fallbackMessage = 'Internal server error') {
+export function merchantApiErrorResponse(error: unknown, fallbackMessage = 'Internal server error') {
     if (error instanceof LetbuyyApiError) {
         const payload = error.body && typeof error.body === 'object'
             ? error.body
@@ -139,10 +139,10 @@ export function workerErrorResponse(error: unknown, fallbackMessage = 'Internal 
         return NextResponse.json(payload, { status: error.status })
     }
 
-    if (error instanceof WorkerRequestError) {
+    if (error instanceof MerchantApiRequestError) {
         const payload = error.payload && typeof error.payload === 'object'
             ? error.payload
-            : { error: { code: 'WORKER_REQUEST_FAILED', message: error.message } }
+            : { error: { code: 'MERCHANT_API_REQUEST_FAILED', message: error.message } }
         return NextResponse.json(payload, { status: error.status })
     }
 
@@ -157,7 +157,7 @@ export function workerErrorResponse(error: unknown, fallbackMessage = 'Internal 
     )
 }
 
-function apiClientInputToWorkerPath(input: RequestInfo | URL, baseUrl: string): string {
+function apiClientInputToMerchantApiPath(input: RequestInfo | URL, baseUrl: string): string {
     const rawUrl = input instanceof Request ? input.url : input.toString()
     const url = new URL(rawUrl)
     const base = new URL(baseUrl)

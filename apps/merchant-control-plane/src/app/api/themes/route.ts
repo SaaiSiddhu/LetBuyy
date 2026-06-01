@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
             storeId = resolved.storeId
         }
 
-        const payload = await createWorkerApiClient().themes.listCatalog(
+        const payload = await createMerchantApiClient().themes.listCatalog(
             storeId ? { store_id: storeId } : undefined
         )
         const themes = payload.data
@@ -42,6 +42,6 @@ export async function GET(request: NextRequest) {
             storeId,
         })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }

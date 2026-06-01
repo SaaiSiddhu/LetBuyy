@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 function normalizePageStatus(value: string | null) {
@@ -19,7 +19,7 @@ export async function GET(
         const searchParams = request.nextUrl.searchParams
         const page = Number(searchParams.get('page') || '1')
         const limit = Number(searchParams.get('limit') || '100')
-        const payload = await createWorkerApiClient().pages.list({
+        const payload = await createMerchantApiClient().pages.list({
             store_id: resolved.storeId,
             page,
             limit,
@@ -39,7 +39,7 @@ export async function GET(
             },
         })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to load pages')
+        return merchantApiErrorResponse(error, 'Unable to load pages')
     }
 }
 
@@ -54,13 +54,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().pages.create({
+        const payload = await createMerchantApiClient().pages.create({
             ...body,
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to create page')
+        return merchantApiErrorResponse(error, 'Unable to create page')
     }
 }

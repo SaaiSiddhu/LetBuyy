@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { UpdateTaxRateInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PATCH(
@@ -14,11 +14,11 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().taxes.update(taxId, body as UpdateTaxRateInput)
+        const payload = await createMerchantApiClient().taxes.update(taxId, body as UpdateTaxRateInput)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to update tax rate')
+        return merchantApiErrorResponse(err, 'Unable to update tax rate')
     }
 }
 
@@ -32,10 +32,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().taxes.remove(taxId)
+        const payload = await createMerchantApiClient().taxes.remove(taxId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to delete tax rate')
+        return merchantApiErrorResponse(err, 'Unable to delete tax rate')
     }
 }

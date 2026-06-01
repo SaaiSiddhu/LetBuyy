@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function PUT(
@@ -12,13 +12,13 @@ export async function PUT(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().pages.navigation.replace(location, {
+        const payload = await createMerchantApiClient().pages.navigation.replace(location, {
             ...body,
             store_id: resolved.storeId,
             location,
         })
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to save navigation')
+        return merchantApiErrorResponse(error, 'Unable to save navigation')
     }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 
 /**
  * GET /api/plans?site_type=store&slug=starter
@@ -19,13 +19,13 @@ export async function GET(request: NextRequest) {
             )
         }
 
-        const plans = await createWorkerApiClient().payments.plans({
+        const plans = await createMerchantApiClient().payments.plans({
             site_type: siteType,
             ...(slug ? { slug } : {}),
         })
 
         return NextResponse.json({ plans })
     } catch (err) {
-        return workerErrorResponse(err, 'Internal server error')
+        return merchantApiErrorResponse(err, 'Internal server error')
     }
 }

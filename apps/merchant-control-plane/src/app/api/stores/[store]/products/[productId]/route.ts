@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type RouteParams = {
@@ -16,7 +16,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
         if (resolved.error) return resolved.error
 
-        const product = await createWorkerApiClient().products.get(productId)
+        const product = await createMerchantApiClient().products.get(productId)
 
         if (!product || product.store_id !== resolved.storeId) {
             return NextResponse.json({ error: 'Product not found' }, { status: 404 })
@@ -24,7 +24,7 @@ export async function GET(_request: NextRequest, { params }: RouteParams) {
 
         return NextResponse.json({ data: product })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load product')
+        return merchantApiErrorResponse(err, 'Unable to load product')
     }
 }
 
@@ -36,11 +36,11 @@ export async function PATCH(request: NextRequest, { params }: RouteParams) {
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const product = await createWorkerApiClient().products.update(productId, body)
+        const product = await createMerchantApiClient().products.update(productId, body)
 
         return NextResponse.json({ data: product })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to update product')
+        return merchantApiErrorResponse(err, 'Unable to update product')
     }
 }
 
@@ -51,10 +51,10 @@ export async function DELETE(_request: NextRequest, { params }: RouteParams) {
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().products.remove(productId)
+        const payload = await createMerchantApiClient().products.remove(productId)
 
         return NextResponse.json({ data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to delete product')
+        return merchantApiErrorResponse(err, 'Unable to delete product')
     }
 }

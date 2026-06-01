@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function POST(
@@ -13,13 +13,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json().catch(() => ({}))
-        const payload = await createWorkerApiClient().payments.subscription.cancel({
+        const payload = await createMerchantApiClient().payments.subscription.cancel({
             ...body,
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to cancel subscription')
+        return merchantApiErrorResponse(err, 'Unable to cancel subscription')
     }
 }

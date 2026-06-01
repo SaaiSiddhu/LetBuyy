@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { createMerchantApiClient } from '@/lib/api/client'
 import { toSubscriptionPlanView } from '@/lib/billing/plan-ui'
 import SelectPlanClient from './SelectPlanClient'
 
@@ -27,7 +27,7 @@ export default async function SelectPlanPage({ params }: PageProps) {
     // Determine site type (stores table may have site_type)
     const siteType = storeData.site_type || 'store'
 
-    const apiClient = createWorkerApiClient()
+    const apiClient = createMerchantApiClient()
     const [plans, subscriptionPayload] = await Promise.all([
         apiClient.payments.plans({ site_type: siteType }),
         apiClient.payments.subscription.get({ store_id: storeData.id }),

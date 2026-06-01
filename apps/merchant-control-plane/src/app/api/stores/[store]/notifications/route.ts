@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 interface AdminNotification {
@@ -31,7 +31,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createWorkerApiClient()
+        const apiClient = createMerchantApiClient()
         const [ordersPayload, formsPayload] = await Promise.all([
             apiClient.orders.list({ store_id: resolved.storeId, limit: 3 }).catch(() => null),
             apiClient.formSubmissions.list({ store_id: resolved.storeId, limit: 2 }).catch(() => null),
@@ -65,6 +65,6 @@ export async function GET(
         notifications.sort((a, b) => Number(b.unread) - Number(a.unread))
         return NextResponse.json({ data: notifications.slice(0, 5) })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load notifications')
+        return merchantApiErrorResponse(err, 'Unable to load notifications')
     }
 }

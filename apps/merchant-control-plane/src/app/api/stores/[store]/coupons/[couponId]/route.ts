@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { UpdateCouponInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 type AdminCouponBody = {
@@ -38,14 +38,14 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json() as AdminCouponBody
-        const payload = await createWorkerApiClient().coupons.update(
+        const payload = await createMerchantApiClient().coupons.update(
             couponId,
             toWorkerCoupon(body) as UpdateCouponInput
         )
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to update coupon')
+        return merchantApiErrorResponse(err, 'Unable to update coupon')
     }
 }
 
@@ -59,10 +59,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().coupons.remove(couponId)
+        const payload = await createMerchantApiClient().coupons.remove(couponId)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to delete coupon')
+        return merchantApiErrorResponse(err, 'Unable to delete coupon')
     }
 }

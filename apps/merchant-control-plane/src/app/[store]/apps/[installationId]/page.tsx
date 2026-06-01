@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import EmbeddedAppBridgeClient from '@/components/apps/EmbeddedAppBridgeClient'
-import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { createMerchantApiClient } from '@/lib/api/client'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 
 interface EmbeddedAppPageProps {
@@ -18,7 +18,7 @@ export default async function EmbeddedAppPage({ params }: EmbeddedAppPageProps) 
     const storeData = await getStoreForUser(store, user.id)
     if (!storeData) notFound()
 
-    const session = await createWorkerApiClient().appStore.embedSession(installationId, { store_id: storeData.id })
+    const session = await createMerchantApiClient().appStore.embedSession(installationId, { store_id: storeData.id })
 
     return <EmbeddedAppBridgeClient session={session} store={store} />
 }

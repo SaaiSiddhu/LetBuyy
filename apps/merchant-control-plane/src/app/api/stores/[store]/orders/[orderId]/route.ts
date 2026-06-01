@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,11 +12,11 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const order = await createWorkerApiClient().orders.get(orderId)
+        const order = await createMerchantApiClient().orders.get(orderId)
 
         return NextResponse.json({ data: order })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load order')
+        return merchantApiErrorResponse(err, 'Unable to load order')
     }
 }
 
@@ -31,7 +31,7 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const order = await createWorkerApiClient().orders.update(orderId, {
+        const order = await createMerchantApiClient().orders.update(orderId, {
             idempotency_key: body.idempotency_key,
             status: body.status,
             tracking_number: body.tracking_number,
@@ -42,6 +42,6 @@ export async function PATCH(
 
         return NextResponse.json({ data: order })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to update order')
+        return merchantApiErrorResponse(err, 'Unable to update order')
     }
 }

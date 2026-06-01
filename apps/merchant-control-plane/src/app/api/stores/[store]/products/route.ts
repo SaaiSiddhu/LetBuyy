@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 import type { ProductListQuery } from '@letbuyy/api-client'
 
@@ -32,7 +32,7 @@ export async function GET(
         if (searchParams.get('search')) query.search = searchParams.get('search')!
         if (searchParams.get('category')) query.category = searchParams.get('category')!
 
-        const products = await createWorkerApiClient().products.list(query)
+        const products = await createMerchantApiClient().products.list(query)
 
         return NextResponse.json({
             data: products.data,
@@ -44,7 +44,7 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load products')
+        return merchantApiErrorResponse(err, 'Unable to load products')
     }
 }
 
@@ -59,13 +59,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const product = await createWorkerApiClient().products.create({
+        const product = await createMerchantApiClient().products.create({
             ...body,
             store_id: resolved.storeId,
         })
 
         return NextResponse.json({ data: product }, { status: 201 })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save product')
+        return merchantApiErrorResponse(err, 'Unable to save product')
     }
 }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 
 /**
  * POST /api/themes/publish
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const api = createWorkerApiClient()
+        const api = createMerchantApiClient()
         const data = action === 'publish'
             ? await api.stores.publish(storeId)
             : await api.stores.update(storeId, { status: 'draft' })
@@ -36,6 +36,6 @@ export async function POST(request: NextRequest) {
             status: data.status,
         })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }

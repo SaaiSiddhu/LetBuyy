@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 /**
@@ -38,7 +38,7 @@ export async function PUT(
         if (resolved.error) return resolved.error
 
         const { themeId } = await params
-        const api = createWorkerApiClient()
+        const api = createMerchantApiClient()
         const editorPayload = await api.themes.editor(themeId, resolved.storeId)
         const config = (editorPayload.template_config || {}) as Record<string, unknown>
         const sections = (config.sections || {}) as Record<string, unknown>
@@ -78,6 +78,6 @@ export async function PUT(
             sectionOrder: reordered.map(s => s.id),
         })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }

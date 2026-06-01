@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateMediaInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function POST(
@@ -22,7 +22,7 @@ export async function POST(
 
         formData.set('folder', `${resolved.storeId}/products`)
 
-        const apiClient = createWorkerApiClient()
+        const apiClient = createMerchantApiClient()
         const uploaded = await apiClient.upload.file(formData)
 
         if (uploaded?.url) {
@@ -39,6 +39,6 @@ export async function POST(
 
         return NextResponse.json({ data: uploaded }, { status: 201 })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to upload file')
+        return merchantApiErrorResponse(err, 'Unable to upload file')
     }
 }

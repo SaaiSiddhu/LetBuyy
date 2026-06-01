@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import type { InstalledApp } from '@letbuyy/shared-types'
-import { createWorkerApiClient } from '@/lib/api/worker-client'
+import { createMerchantApiClient } from '@/lib/api/client'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 
 interface AppsPageProps {
@@ -24,7 +24,7 @@ export default async function AppsPage({ params }: AppsPageProps) {
     const storeData = await getStoreForUser(store, user.id)
     if (!storeData) notFound()
 
-    const installations = await createWorkerApiClient().appStore.installations({ store_id: storeData.id })
+    const installations = await createMerchantApiClient().appStore.installations({ store_id: storeData.id })
 
     return (
         <div className="admin-apps-page">

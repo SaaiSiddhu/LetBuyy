@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,12 +12,12 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const location = request.nextUrl.searchParams.get('location') || 'main'
-        const payload = await createWorkerApiClient().pages.navigation.get({
+        const payload = await createMerchantApiClient().pages.navigation.get({
             store_id: resolved.storeId,
             location,
         })
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to load navigation')
+        return merchantApiErrorResponse(error, 'Unable to load navigation')
     }
 }

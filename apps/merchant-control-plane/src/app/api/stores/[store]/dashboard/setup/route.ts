@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -12,7 +12,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createWorkerApiClient()
+        const apiClient = createMerchantApiClient()
         const [productsPayload, shippingPayload, pagesPayload] = await Promise.all([
             apiClient.products.list({ store_id: resolved.storeId, limit: 1 }).catch(() => null),
             apiClient.shipping.zones.list({ store_id: resolved.storeId }).catch(() => null),
@@ -27,6 +27,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load dashboard setup data')
+        return merchantApiErrorResponse(err, 'Unable to load dashboard setup data')
     }
 }

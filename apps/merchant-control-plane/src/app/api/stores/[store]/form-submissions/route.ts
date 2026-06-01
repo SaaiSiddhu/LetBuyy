@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { FormSubmissionListQuery } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 function normalizeFormSubmissionType(value: string | null): FormSubmissionListQuery['type'] {
@@ -32,7 +32,7 @@ export async function GET(
         const searchParams = request.nextUrl.searchParams
         const page = Number(searchParams.get('page') || '1')
         const limit = Number(searchParams.get('limit') || '100')
-        const payload = await createWorkerApiClient().formSubmissions.list({
+        const payload = await createMerchantApiClient().formSubmissions.list({
             store_id: resolved.storeId,
             page,
             limit,
@@ -53,6 +53,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load form submissions')
+        return merchantApiErrorResponse(err, 'Unable to load form submissions')
     }
 }

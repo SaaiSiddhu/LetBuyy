@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 import type { OrderListQuery } from '@letbuyy/api-client'
 
@@ -26,7 +26,7 @@ export async function GET(
         if (searchParams.get('sort')) query.sort = searchParams.get('sort')!
         if (searchParams.get('order')) query.order = searchParams.get('order') === 'asc' ? 'asc' : 'desc'
 
-        const orders = await createWorkerApiClient().orders.list(query)
+        const orders = await createMerchantApiClient().orders.list(query)
 
         return NextResponse.json({
             data: orders.data,
@@ -38,6 +38,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load orders')
+        return merchantApiErrorResponse(err, 'Unable to load orders')
     }
 }

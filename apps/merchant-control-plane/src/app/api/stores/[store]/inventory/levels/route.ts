@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 import type { InventoryLevelQuery } from '@letbuyy/api-client'
 
@@ -23,7 +23,7 @@ export async function GET(
         if (searchParams.get('product_id')) query.product_id = searchParams.get('product_id')!
         if (searchParams.get('low_stock')) query.low_stock = searchParams.get('low_stock') === 'true'
 
-        const inventory = await createWorkerApiClient().inventory.levels(query)
+        const inventory = await createMerchantApiClient().inventory.levels(query)
 
         return NextResponse.json({
             data: inventory.data,
@@ -35,6 +35,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load inventory')
+        return merchantApiErrorResponse(err, 'Unable to load inventory')
     }
 }

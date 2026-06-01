@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { BlogCommentListQuery } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 function normalizeBlogCommentStatus(value: string | null): BlogCommentListQuery['status'] {
@@ -22,7 +22,7 @@ export async function GET(
         const searchParams = request.nextUrl.searchParams
         const page = Number(searchParams.get('page') || '1')
         const limit = Number(searchParams.get('limit') || '100')
-        const payload = await createWorkerApiClient().blog.comments.list({
+        const payload = await createMerchantApiClient().blog.comments.list({
             store_id: resolved.storeId,
             page,
             limit,
@@ -42,6 +42,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load comments')
+        return merchantApiErrorResponse(err, 'Unable to load comments')
     }
 }

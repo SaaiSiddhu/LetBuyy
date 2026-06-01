@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function DELETE(
@@ -12,10 +12,10 @@ export async function DELETE(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().media.remove(mediaId)
+        const payload = await createMerchantApiClient().media.remove(mediaId)
 
         return NextResponse.json({ data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to delete media')
+        return merchantApiErrorResponse(err, 'Unable to delete media')
     }
 }

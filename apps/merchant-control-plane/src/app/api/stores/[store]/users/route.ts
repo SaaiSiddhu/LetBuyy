@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateEmployeeInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,11 +13,11 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().employees.list({ store_id: resolved.storeId })
+        const payload = await createMerchantApiClient().employees.list({ store_id: resolved.storeId })
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load staff')
+        return merchantApiErrorResponse(err, 'Unable to load staff')
     }
 }
 
@@ -32,13 +32,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().employees.create({
+        const payload = await createMerchantApiClient().employees.create({
             ...body,
             store_id: resolved.storeId,
         } as CreateEmployeeInput)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to create staff invite')
+        return merchantApiErrorResponse(err, 'Unable to create staff invite')
     }
 }

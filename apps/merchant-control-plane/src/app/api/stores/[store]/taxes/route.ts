@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateTaxRateInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -13,7 +13,7 @@ export async function GET(
 
         if (resolved.error) return resolved.error
 
-        const apiClient = createWorkerApiClient()
+        const apiClient = createMerchantApiClient()
         const [storePayload, rates] = await Promise.all([
             apiClient.stores.get(resolved.storeId),
             apiClient.taxes.list({ store_id: resolved.storeId }),
@@ -27,7 +27,7 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load tax settings')
+        return merchantApiErrorResponse(err, 'Unable to load tax settings')
     }
 }
 
@@ -42,13 +42,13 @@ export async function PATCH(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().stores.update(resolved.storeId, {
+        const payload = await createMerchantApiClient().stores.update(resolved.storeId, {
             tax_inclusive: Boolean(body.tax_inclusive),
         })
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to update tax settings')
+        return merchantApiErrorResponse(err, 'Unable to update tax settings')
     }
 }
 
@@ -63,13 +63,13 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().taxes.create({
+        const payload = await createMerchantApiClient().taxes.create({
             ...body,
             store_id: resolved.storeId,
         } as CreateTaxRateInput)
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to save tax rate')
+        return merchantApiErrorResponse(err, 'Unable to save tax rate')
     }
 }

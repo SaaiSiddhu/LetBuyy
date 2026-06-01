@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 
 /**
  * POST /api/themes/install
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const client = createWorkerApiClient()
+        const client = createMerchantApiClient()
         const upload = bundle
             ? await client.themes.uploadPackage({ bundle: bundle as Record<string, unknown> })
             : null
@@ -50,6 +50,6 @@ export async function POST(request: NextRequest) {
             uploaded: upload || undefined,
         })
     } catch (err) {
-        return workerErrorResponse(err)
+        return merchantApiErrorResponse(err)
     }
 }

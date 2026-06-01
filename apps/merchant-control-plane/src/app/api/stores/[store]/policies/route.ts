@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 function normalizePolicyStatus(value: string | null) {
@@ -16,13 +16,13 @@ export async function GET(
         if (resolved.error) return resolved.error
 
         const searchParams = request.nextUrl.searchParams
-        const payload = await createWorkerApiClient().pages.policies.list({
+        const payload = await createMerchantApiClient().pages.policies.list({
             store_id: resolved.storeId,
             status: normalizePolicyStatus(searchParams.get('status')),
         })
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to load policies')
+        return merchantApiErrorResponse(error, 'Unable to load policies')
     }
 }
 
@@ -36,12 +36,12 @@ export async function POST(
         if (resolved.error) return resolved.error
 
         const body = await request.json()
-        const payload = await createWorkerApiClient().pages.policies.create({
+        const payload = await createMerchantApiClient().pages.policies.create({
             ...body,
             store_id: resolved.storeId,
         })
         return NextResponse.json({ success: true, data: payload })
     } catch (error) {
-        return workerErrorResponse(error, 'Unable to save policy')
+        return merchantApiErrorResponse(error, 'Unable to save policy')
     }
 }

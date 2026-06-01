@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { CreateSubscriptionOrderInput } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 
 /**
  * POST /api/subscribe
@@ -10,10 +10,10 @@ import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-cli
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const payload = await createWorkerApiClient().payments.subscription.createOrder(body as CreateSubscriptionOrderInput)
+        const payload = await createMerchantApiClient().payments.subscription.createOrder(body as CreateSubscriptionOrderInput)
 
         return NextResponse.json(payload)
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to create subscription order')
+        return merchantApiErrorResponse(err, 'Unable to create subscription order')
     }
 }

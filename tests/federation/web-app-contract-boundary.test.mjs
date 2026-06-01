@@ -70,6 +70,12 @@ test('merchant and storefront apps no longer depend on the api-types aggregate',
 
 test('merchant control plane has no unused handwritten gateway fetch helper', () => {
   assert.equal(existsSync('apps/merchant-control-plane/src/lib/api.ts'), false);
+  assert.equal(existsSync('apps/merchant-control-plane/src/lib/api/worker-client.ts'), false);
+
+  const merchantApiClient = read('apps/merchant-control-plane/src/lib/api/client.ts');
+  assert.match(merchantApiClient, /createLetbuyyApiClient/);
+  assert.match(merchantApiClient, /createMerchantApiClient/);
+  assert.doesNotMatch(merchantApiClient, /createWorkerApiClient|worker-client/);
 });
 
 test('theme contracts resolve from theme-engine or shared-types in app source', () => {

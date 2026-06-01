@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { MediaListQuery } from '@letbuyy/api-client'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function GET(
@@ -29,7 +29,7 @@ export async function GET(
             query.type = type
         }
 
-        const payload = await createWorkerApiClient().media.list(query)
+        const payload = await createMerchantApiClient().media.list(query)
 
         return NextResponse.json({
             data: payload.data,
@@ -41,6 +41,6 @@ export async function GET(
             },
         })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to load media')
+        return merchantApiErrorResponse(err, 'Unable to load media')
     }
 }

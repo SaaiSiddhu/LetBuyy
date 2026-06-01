@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createWorkerApiClient, workerErrorResponse } from '@/lib/api/worker-client'
+import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
 export async function POST(
@@ -22,7 +22,7 @@ export async function POST(
         const resolved = await resolveOwnedStoreId(String(storeName))
         if (resolved.error) return resolved.error
 
-        const payload = await createWorkerApiClient().themes.rollbackRelease(themeId, releaseId, {
+        const payload = await createMerchantApiClient().themes.rollbackRelease(themeId, releaseId, {
             store_id: resolved.storeId,
             make_store_live: body.make_store_live !== false,
             rollback_message: body.rollback_message,
@@ -30,6 +30,6 @@ export async function POST(
 
         return NextResponse.json({ success: true, data: payload })
     } catch (err) {
-        return workerErrorResponse(err, 'Unable to rollback theme release')
+        return merchantApiErrorResponse(err, 'Unable to rollback theme release')
     }
 }
