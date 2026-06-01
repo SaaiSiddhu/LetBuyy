@@ -1,5 +1,5 @@
 import { createHash } from 'crypto'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 
 /**
  * Generate a device fingerprint from request headers.
@@ -50,7 +50,7 @@ export async function getOrCreateDevice(
     fingerprint: string,
     userAgent: string
 ): Promise<{ deviceId: string; isNew: boolean }> {
-    const response = await accountWorkerFetch('/auth/custom/devices/get-or-create', {
+    const response = await identityApiRequest('/auth/custom/devices/get-or-create', {
         method: 'POST',
         body: JSON.stringify({
             user_id: userId,
@@ -82,7 +82,7 @@ export async function isDeviceTrusted(
     userId: string,
     fingerprint: string
 ): Promise<boolean> {
-    const response = await accountWorkerFetch('/auth/custom/devices/trusted', {
+    const response = await identityApiRequest('/auth/custom/devices/trusted', {
         method: 'POST',
         body: JSON.stringify({
             user_id: userId,

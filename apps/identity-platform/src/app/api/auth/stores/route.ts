@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { validateSession } from '@/lib/auth/session'
 import { getSessionCookie } from '@/lib/auth/cookies'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 
 /**
  * GET /api/auth/stores
@@ -22,7 +22,7 @@ export async function GET() {
             return NextResponse.json({ authenticated: false })
         }
 
-        const storesResponse = await accountWorkerFetch('/stores?limit=50', {
+        const storesResponse = await identityApiRequest('/stores?limit=50', {
             method: 'GET',
             requireSession: true,
         })

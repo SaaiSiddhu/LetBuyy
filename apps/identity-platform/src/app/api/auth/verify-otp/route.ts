@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch, getAccountWorkerFailureMessage } from '@/lib/api/worker-client'
+import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateOTPToken } from '@/lib/auth/tokens'
 import { validateCsrf } from '@/lib/auth/csrf'
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Mark email as verified
-        const verifyResponse = await accountWorkerFetch('/auth/custom/users/verify-email', {
+        const verifyResponse = await identityApiRequest('/auth/custom/users/verify-email', {
             method: 'POST',
             body: JSON.stringify({ user_id: result.user_id, email: result.email }),
         })
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         } | null
 
         if (!verifyResponse.ok || !verifyPayload?.data) {
-            const message = getAccountWorkerFailureMessage(
+            const message = getIdentityApiFailureMessage(
                 verifyPayload,
                 'Unable to verify email. Please request a new code.'
             )

@@ -1,4 +1,4 @@
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 
 type TokenType = 'email_verify' | 'magic_link' | 'password_reset'
 
@@ -27,7 +27,7 @@ export async function createOTPToken(
     email: string,
     userId?: string
 ): Promise<string> {
-    const response = await accountWorkerFetch('/auth/custom/tokens/create', {
+    const response = await identityApiRequest('/auth/custom/tokens/create', {
         method: 'POST',
         body: JSON.stringify({
             email,
@@ -57,7 +57,7 @@ export async function validateOTPToken(
     email: string
     user_id: string | null
 } | null> {
-    const response = await accountWorkerFetch('/auth/custom/tokens/validate', {
+    const response = await identityApiRequest('/auth/custom/tokens/validate', {
         method: 'POST',
         body: JSON.stringify({
             email,
@@ -79,7 +79,7 @@ export async function createVerificationToken(
     type: TokenType,
     userId?: string
 ): Promise<string> {
-    const response = await accountWorkerFetch('/auth/custom/tokens/create', {
+    const response = await identityApiRequest('/auth/custom/tokens/create', {
         method: 'POST',
         body: JSON.stringify({
             email,
@@ -108,7 +108,7 @@ export async function validateToken(
     email: string
     user_id: string | null
 } | null> {
-    const response = await accountWorkerFetch('/auth/custom/tokens/validate', {
+    const response = await identityApiRequest('/auth/custom/tokens/validate', {
         method: 'POST',
         body: JSON.stringify({
             token,

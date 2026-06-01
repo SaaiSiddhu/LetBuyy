@@ -3,7 +3,7 @@ import { createSession, destroySession } from '@/lib/auth/session'
 import { getSessionCookie, setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Find the target user
-        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+        const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
             method: 'POST',
             body: JSON.stringify({ email: normalizedEmail }),
         })
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         })
 
         // Check if user has a store → redirect appropriately
-        const storeResponse = await accountWorkerFetch('/auth/custom/users/first-store', {
+        const storeResponse = await identityApiRequest('/auth/custom/users/first-store', {
             method: 'POST',
             body: JSON.stringify({ user_id: user.id }),
         })

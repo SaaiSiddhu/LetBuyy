@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { sendStoreCreatedEmail } from '@/lib/email/resend'
 
 /**
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
         // Log to email_logs table
         try {
-            await accountWorkerFetch('/notifications/email-log', {
+            await identityApiRequest('/notifications/email-log', {
                 method: 'POST',
                 requireSession: true,
                 body: JSON.stringify({

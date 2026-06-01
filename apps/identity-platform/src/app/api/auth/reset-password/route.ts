@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
 import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Get user
-        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+        const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
             method: 'POST',
             body: JSON.stringify({ email: result.email }),
         })
@@ -72,7 +72,7 @@ export async function POST(request: NextRequest) {
 
         // Hash and update password
         const passwordHash = await hashPassword(password)
-        const passwordResponse = await accountWorkerFetch('/auth/custom/users/set-password', {
+        const passwordResponse = await identityApiRequest('/auth/custom/users/set-password', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: user.id,
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
         sendPasswordChangedEmail(user.email).catch(() => { })
 
         // Check if user has a store → redirect appropriately
-        const storesResponse = await accountWorkerFetch('/stores?limit=1', {
+        const storesResponse = await identityApiRequest('/stores?limit=1', {
             method: 'GET',
             requireSession: true,
             sessionToken,

@@ -3,7 +3,7 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
 import { createSession } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
@@ -39,7 +39,7 @@ export async function GET(request: NextRequest) {
 
         if (type === 'email_verify') {
             // Mark user as verified
-            await accountWorkerFetch('/auth/custom/users/verify-email', {
+            await identityApiRequest('/auth/custom/users/verify-email', {
                 method: 'POST',
                 body: JSON.stringify({ email: result.email }),
             })
@@ -58,7 +58,7 @@ export async function GET(request: NextRequest) {
 
         if (type === 'magic_link') {
             // Get user for magic link login
-            const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+            const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
                 method: 'POST',
                 body: JSON.stringify({ email: result.email }),
             })
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest) {
 
             // Ensure email is verified
             if (!user.email_verified) {
-                await accountWorkerFetch('/auth/custom/users/verify-email', {
+                await identityApiRequest('/auth/custom/users/verify-email', {
                     method: 'POST',
                     body: JSON.stringify({ user_id: user.id }),
                 })
@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
             })
 
             // Check if user has a store → redirect appropriately
-            const storesResponse = await accountWorkerFetch('/stores?limit=1', {
+            const storesResponse = await identityApiRequest('/stores?limit=1', {
                 method: 'GET',
                 requireSession: true,
                 sessionToken,

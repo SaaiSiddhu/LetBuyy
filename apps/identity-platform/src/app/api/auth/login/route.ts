@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { verifyPassword } from '@/lib/auth/password'
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        const userResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+        const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
             method: 'POST',
             body: JSON.stringify({ email: normalizedEmail }),
         })
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
         }
 
         // CHECK IF USER HAS COMPLETED ONBOARDING (store exists?)
-        const storesResponse = await accountWorkerFetch('/stores?limit=2', {
+        const storesResponse = await identityApiRequest('/stores?limit=2', {
             method: 'GET',
             requireSession: true,
             sessionToken,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { sendStoreCreationFailedEmail } from '@/lib/email/resend'
 
 /**
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
 
         // Log to email_logs table
         try {
-            await accountWorkerFetch('/notifications/email-log', {
+            await identityApiRequest('/notifications/email-log', {
                 method: 'POST',
                 requireSession: true,
                 body: JSON.stringify({
@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
                 }),
             })
 
-            await accountWorkerFetch('/notifications/onboarding-failure-log', {
+            await identityApiRequest('/notifications/onboarding-failure-log', {
                 method: 'POST',
                 requireSession: true,
                 body: JSON.stringify({

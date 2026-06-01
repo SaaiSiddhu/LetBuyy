@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { validateSession } from '@/lib/auth/session'
 import { getSessionCookie } from '@/lib/auth/cookies'
 import { validateCsrf } from '@/lib/auth/csrf'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
         const normalizedSubdomain = subdomain.toLowerCase().trim()
 
-        const storeResponse = await accountWorkerFetch('/stores', {
+        const storeResponse = await identityApiRequest('/stores', {
             method: 'POST',
             requireSession: true,
             body: JSON.stringify({

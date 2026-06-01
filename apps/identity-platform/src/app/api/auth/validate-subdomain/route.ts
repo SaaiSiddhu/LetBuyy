@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 
 /**
  * GET /api/auth/validate-subdomain?subdomain=mystore
@@ -8,7 +8,7 @@ import { accountWorkerFetch } from '@/lib/api/worker-client'
 export async function GET(request: NextRequest) {
     const subdomain = request.nextUrl.searchParams.get('subdomain')?.toLowerCase().trim()
     try {
-        const response = await accountWorkerFetch('/auth/custom/subdomains/validate', {
+        const response = await identityApiRequest('/auth/custom/subdomains/validate', {
             method: 'POST',
             body: JSON.stringify({ subdomain }),
         })

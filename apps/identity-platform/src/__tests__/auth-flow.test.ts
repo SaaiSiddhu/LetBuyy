@@ -14,8 +14,8 @@ function routeSource(path: string): string {
 test('signup returns a verification response after creating or finding an account', () => {
     const source = routeSource('app/api/auth/signup/route.ts')
 
-    assert.match(source, /accountWorkerFetch\('\/auth\/custom\/users\/by-email'/)
-    assert.match(source, /accountWorkerFetch\('\/auth\/custom\/users\/ensure'/)
+    assert.match(source, /identityApiRequest\('\/auth\/custom\/users\/by-email'/)
+    assert.match(source, /identityApiRequest\('\/auth\/custom\/users\/ensure'/)
     assert.match(source, /createOTPToken\(normalizedEmail,\s*newUser\.id\)/)
     assert.match(source, /sendOTPEmail\(normalizedEmail,\s*otp\)/)
     assert.match(source, /success:\s*true/)
@@ -29,7 +29,7 @@ test('verify-otp rejects invalid codes and persists verified email state', () =>
     assert.match(source, /validateOTPToken\(email\.toLowerCase\(\)\.trim\(\),\s*otp\)/)
     assert.match(source, /Invalid or expired verification code/)
     assert.match(source, /status:\s*400/)
-    assert.match(source, /accountWorkerFetch\('\/auth\/custom\/users\/verify-email'/)
+    assert.match(source, /identityApiRequest\('\/auth\/custom\/users\/verify-email'/)
     assert.match(source, /user_id:\s*result\.user_id/)
     assert.match(source, /!verifyResponse\.ok\s*\|\|\s*!verifyPayload\?\.data/)
 })
@@ -37,21 +37,22 @@ test('verify-otp rejects invalid codes and persists verified email state', () =>
 test('set-password creates the authenticated session cookie after OTP verification', () => {
     const source = routeSource('app/api/auth/set-password/route.ts')
 
-    assert.match(source, /accountWorkerFetch\('\/auth\/custom\/users\/set-password'/)
+    assert.match(source, /identityApiRequest\('\/auth\/custom\/users\/set-password'/)
     assert.match(source, /createSession\(userId,\s*device\.deviceId\)/)
     assert.match(source, /setSessionCookie\(sessionToken\)/)
     assert.match(source, /addAccount\(/)
     assert.match(source, /redirectTo:\s*'\/onboarding'/)
 })
 
-test('create-store uses the versioned worker client with a required session', () => {
+test('create-store uses the shared api client facade with a required session', () => {
     const source = routeSource('app/api/auth/create-store/route.ts')
-    const workerClientSource = routeSource('lib/api/worker-client.ts')
+    const apiClientSource = routeSource('lib/api/client.ts')
 
     assert.match(source, /validateSession\(sessionToken\)/)
-    assert.match(source, /accountWorkerFetch\('\/stores'/)
+    assert.match(source, /identityApiRequest\('\/stores'/)
     assert.match(source, /requireSession:\s*true/)
     assert.match(source, /site_type:\s*siteType/)
     assert.match(source, /subdomain:\s*normalizedSubdomain/)
-    assert.match(workerClientSource, /normalizedBase\.endsWith\('\/v1'\)/)
+    assert.match(apiClientSource, /createLetbuyyApiClient/)
+    assert.match(apiClientSource, /path\.endsWith\('\/v1'\)/)
 })

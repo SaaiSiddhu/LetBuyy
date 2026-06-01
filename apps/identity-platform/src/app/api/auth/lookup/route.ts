@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch, getAccountWorkerFailureMessage } from '@/lib/api/worker-client'
+import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 
 /**
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        const response = await accountWorkerFetch('/auth/custom/users/by-email', {
+        const response = await identityApiRequest('/auth/custom/users/by-email', {
             method: 'POST',
             body: JSON.stringify({ email: normalizedEmail }),
         })
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         } | null
 
         if (!response.ok) {
-            const message = getAccountWorkerFailureMessage(payload, 'Unable to look up account')
+            const message = getIdentityApiFailureMessage(payload, 'Unable to look up account')
             return NextResponse.json({ error: message }, { status: response.status })
         }
 

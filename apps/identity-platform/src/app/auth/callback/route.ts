@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 import { createSession } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 /**
@@ -47,7 +47,7 @@ export async function GET(request: Request) {
         const fullName = oauthUser.user_metadata?.full_name || oauthUser.user_metadata?.name || null
         const avatarUrl = oauthUser.user_metadata?.avatar_url || oauthUser.user_metadata?.picture || null
 
-        const userResponse = await accountWorkerFetch('/auth/custom/users/ensure', {
+        const userResponse = await identityApiRequest('/auth/custom/users/ensure', {
             method: 'POST',
             body: JSON.stringify({
                 email: oauthEmail,
@@ -94,7 +94,7 @@ export async function GET(request: Request) {
         })
 
         // Step 5: Check if user has a store → redirect appropriately
-        const storesResponse = await accountWorkerFetch('/stores?limit=1', {
+        const storesResponse = await identityApiRequest('/stores?limit=1', {
             method: 'GET',
             requireSession: true,
             sessionToken,

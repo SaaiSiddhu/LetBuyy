@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 
 /**
  * GET /api/auth/session
@@ -8,7 +8,7 @@ import { accountWorkerFetch } from '@/lib/api/worker-client'
  */
 export async function GET() {
     try {
-        const response = await accountWorkerFetch('/auth/custom/session', {
+        const response = await identityApiRequest('/auth/custom/session', {
             method: 'GET',
             requireSession: true,
         })

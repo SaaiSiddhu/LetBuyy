@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
 import { createSession } from '@/lib/auth/session'
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
         // Hash and store password
         const passwordHash = await hashPassword(password)
-        const passwordResponse = await accountWorkerFetch('/auth/custom/users/set-password', {
+        const passwordResponse = await identityApiRequest('/auth/custom/users/set-password', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: userId,

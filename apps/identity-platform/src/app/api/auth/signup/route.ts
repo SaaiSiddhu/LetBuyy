@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { accountWorkerFetch, getAccountWorkerFailureMessage } from '@/lib/api/worker-client'
+import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createOTPToken } from '@/lib/auth/tokens'
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Check if user already exists
-        const existingResponse = await accountWorkerFetch('/auth/custom/users/by-email', {
+        const existingResponse = await identityApiRequest('/auth/custom/users/by-email', {
             method: 'POST',
             body: JSON.stringify({ email: normalizedEmail }),
         })
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
         } | null
 
         if (!existingResponse.ok) {
-            const message = getAccountWorkerFailureMessage(existingPayload, 'Unable to check account status')
+            const message = getIdentityApiFailureMessage(existingPayload, 'Unable to check account status')
             return NextResponse.json({ error: message }, { status: existingResponse.status })
         }
 
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
             })
         }
 
-        const createResponse = await accountWorkerFetch('/auth/custom/users/ensure', {
+        const createResponse = await identityApiRequest('/auth/custom/users/ensure', {
             method: 'POST',
             body: JSON.stringify({ email: normalizedEmail }),
         })
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 
         if (!createResponse.ok || !createPayload?.data) {
             console.error('User creation error:', createPayload?.error?.message || createResponse.statusText)
-            const message = getAccountWorkerFailureMessage(createPayload, 'Failed to create account')
+            const message = getIdentityApiFailureMessage(createPayload, 'Failed to create account')
             return NextResponse.json({ error: message }, { status: createResponse.status || 500 })
         }
         const newUser = createPayload.data

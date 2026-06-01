@@ -103,6 +103,9 @@ importers:
 
   apps/identity-platform:
     dependencies:
+      '@letbuyy/api-client':
+        specifier: workspace:*
+        version: link:../../packages/typescript/api-client
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types

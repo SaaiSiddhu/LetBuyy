@@ -1,4 +1,4 @@
-import { accountWorkerFetch } from '@/lib/api/worker-client'
+import { identityApiRequest } from '@/lib/api/client'
 
 /**
  * Create a new session for a user. Returns the session token.
@@ -8,7 +8,7 @@ export async function createSession(
     userId: string,
     deviceId?: string
 ): Promise<string> {
-    const response = await accountWorkerFetch('/auth/custom/sessions/create', {
+    const response = await identityApiRequest('/auth/custom/sessions/create', {
         method: 'POST',
         body: JSON.stringify({
             user_id: userId,
@@ -41,7 +41,7 @@ export async function validateSession(token: string): Promise<{
     fullName: string | null
     avatarUrl: string | null
 } | null> {
-    const response = await accountWorkerFetch('/auth/custom/session', {
+    const response = await identityApiRequest('/auth/custom/session', {
         method: 'GET',
         requireSession: true,
         sessionToken: token,
@@ -70,7 +70,7 @@ export async function validateSession(token: string): Promise<{
  * Destroy a specific session (logout current device).
  */
 export async function destroySession(token: string): Promise<void> {
-    await accountWorkerFetch('/auth/custom/sessions/destroy', {
+    await identityApiRequest('/auth/custom/sessions/destroy', {
         method: 'POST',
         body: JSON.stringify({ token }),
     })
@@ -80,7 +80,7 @@ export async function destroySession(token: string): Promise<void> {
  * Destroy all sessions for a user (logout everywhere).
  */
 export async function destroyAllUserSessions(userId: string): Promise<void> {
-    await accountWorkerFetch('/auth/custom/sessions/destroy-all', {
+    await identityApiRequest('/auth/custom/sessions/destroy-all', {
         method: 'POST',
         body: JSON.stringify({ user_id: userId }),
     })
