@@ -148,6 +148,10 @@ const AppChargePayloadSchema = z.object({
   charge_id: UuidSchema,
   billing_mode: z.enum(['recurring', 'usage']),
   amount: InrMinorUnitsSchema,
+  payout_rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('razorpay_route'),
+  revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
+  partner_gst_bps: z.number().int().min(0).max(10000).default(1800),
+  partner_gst_minor: z.number().int().nonnegative().default(0),
 });
 
 const ThemeReviewPayloadSchema = z.object({
@@ -266,7 +270,7 @@ export const DOMAIN_EVENT_CONTRACTS = {
     eventType: 'app.charge.created',
     schemaVersion: 1,
     producer: 'api-gateway',
-    consumers: ['analytics', 'notifications', 'payout-ledger', 'webhook-service'],
+    consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'app_charge',
     payloadSchema: AppChargePayloadSchema,
   },

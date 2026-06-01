@@ -260,3 +260,40 @@ test('billing entitlement snapshots gate usage limits in test mode', () => {
   assert.equal(businessAllowed.allowed, true);
   assert.equal(businessAllowed.limit, 1000);
 });
+
+test('billing core plans merchant-approved app charges with India payout math', () => {
+  const payout = billingCore.planIndiaAppChargePayout({
+    amountMinor: 100000,
+    revenueShareBps: 8000,
+    partnerGstBps: 1800,
+    payoutRail: 'razorpay_route',
+    providerMode: 'test',
+  });
+
+  assert.equal(payout.currency, 'INR');
+  assert.equal(payout.partner_amount_minor, 80000);
+  assert.equal(payout.platform_fee_minor, 20000);
+  assert.equal(payout.partner_gst_minor, 14400);
+  assert.equal(payout.payout_rail, 'razorpay_route');
+  assert.equal(payout.provider_mode, 'test');
+
+  const charge = billingCore.planAppBillingCharge({
+    appId: '11111111-1111-4111-8111-111111111111',
+    installationId: '22222222-2222-4222-8222-222222222222',
+    storeId: '33333333-3333-4333-8333-333333333333',
+    partnerId: '44444444-4444-4444-8444-444444444444',
+    billingMode: 'usage',
+    name: 'Usage charge',
+    amountMinor: 100000,
+    idempotencyKey: 'app-usage-june-001',
+    approvalUrl: '/v1/app-store/charges/charge_001/approve',
+    payoutRail: 'razorpay_route',
+    providerMode: 'test',
+  });
+
+  assert.equal(charge.status, 'pending_merchant_approval');
+  assert.equal(charge.billing_mode, 'usage');
+  assert.equal(charge.amount_minor, 100000);
+  assert.equal(charge.payout.partner_amount_minor, 80000);
+  assert.equal(charge.metadata.india_payout.payout_rail, 'razorpay_route');
+});

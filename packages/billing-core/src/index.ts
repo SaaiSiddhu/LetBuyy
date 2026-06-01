@@ -66,6 +66,37 @@ export const VerifySubscriptionSchema = z.object({
   path: ['razorpay_order_id'],
 });
 
+export const AppChargeBillingModeSchema = z.enum(['recurring', 'usage']);
+export const AppChargeStatusSchema = z.enum([
+  'pending_merchant_approval',
+  'approved',
+  'active',
+  'cancelled',
+  'failed',
+]);
+export const IndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
+export const AppChargeProviderModeSchema = z.enum(['test', 'live']);
+
+export const CreateAppBillingChargeSchema = z.object({
+  store_id: z.string().uuid(),
+  installation_id: z.string().uuid(),
+  billing_mode: AppChargeBillingModeSchema.default('recurring'),
+  name: z.string().trim().min(1).max(160),
+  amount_minor: z.number().int().positive(),
+  currency: z.enum(['INR']).default('INR'),
+  idempotency_key: z.string().trim().min(8).max(200),
+  return_url: z.string().url().optional(),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+});
+
+export const ApproveAppBillingChargeSchema = z.object({
+  store_id: z.string().uuid(),
+  charge_id: z.string().uuid(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  provider_reference: z.string().trim().min(1).max(200).optional(),
+  provider_mode: AppChargeProviderModeSchema.default('test'),
+});
+
 export interface BillingPlan {
   plan_id: string;
   tier: SubscriptionTier;
@@ -163,6 +194,10 @@ export interface StoreBillingTierDefinition extends BillingTierEntitlementSnapsh
 }
 
 export type MerchantBillingCheckoutMode = 'free_activation' | 'razorpay_subscription' | 'razorpay_order';
+export type AppChargeBillingMode = z.infer<typeof AppChargeBillingModeSchema>;
+export type AppChargeStatus = z.infer<typeof AppChargeStatusSchema>;
+export type IndiaPayoutRail = z.infer<typeof IndiaPayoutRailSchema>;
+export type AppChargeProviderMode = z.infer<typeof AppChargeProviderModeSchema>;
 
 export interface MerchantBillingCheckoutPlan {
   mode: MerchantBillingCheckoutMode;
@@ -193,6 +228,44 @@ export interface MerchantBillingCheckoutPlan {
     notes: Record<string, string>;
   };
 }
+
+export interface AppBillingChargePayoutPlan {
+  amount_minor: number;
+  currency: 'INR';
+  revenue_share_bps: number;
+  partner_amount_minor: number;
+  platform_fee_minor: number;
+  partner_gst_bps: number;
+  partner_gst_minor: number;
+  payout_rail: IndiaPayoutRail;
+  provider: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+  provider_mode: AppChargeProviderMode;
+}
+
+export interface AppBillingChargePlan {
+  app_id: string;
+  installation_id: string;
+  store_id: string;
+  partner_id: string;
+  billing_mode: AppChargeBillingMode;
+  status: 'pending_merchant_approval';
+  name: string;
+  amount_minor: number;
+  currency: 'INR';
+  idempotency_key: string;
+  approval_url: string;
+  payout: AppBillingChargePayoutPlan;
+  metadata: Record<string, unknown>;
+}
+
+export const INDIA_APP_PAYOUT_RAILS: readonly IndiaPayoutRail[] = [
+  'razorpay_route',
+  'razorpayx',
+  'upi',
+  'manual',
+];
+export const DEFAULT_APP_REVENUE_SHARE_BPS = 8000;
+export const DEFAULT_PARTNER_GST_BPS = 1800;
 
 // Interim India-native tier contract for local/test wiring. Final production
 // price points remain an owner policy decision and are recorded in the ledger.
@@ -361,6 +434,15 @@ export function billingNumber(value: unknown, fallback = 0): number {
   return Number.isFinite(numberValue) ? numberValue : fallback;
 }
 
+function billingInteger(value: unknown, fallback = 0): number {
+  const numberValue = Math.trunc(billingNumber(value, fallback));
+  return Number.isFinite(numberValue) ? numberValue : fallback;
+}
+
+function clampBillingBps(value: unknown, fallback: number): number {
+  return Math.max(0, Math.min(10000, billingInteger(value, fallback)));
+}
+
 function cloneRecord<T extends Record<string, unknown>>(record: T): T {
   return { ...record };
 }
@@ -482,6 +564,82 @@ export function normalizeMerchantApprovedUsageCharges(value: unknown): MerchantA
     .map((result) => result.data);
 }
 
+export function planIndiaAppChargePayout(input: {
+  amountMinor: number;
+  revenueShareBps?: number | null;
+  partnerGstBps?: number | null;
+  payoutRail?: IndiaPayoutRail | null;
+  providerMode?: AppChargeProviderMode | null;
+}): AppBillingChargePayoutPlan {
+  const amountMinor = Math.max(0, billingInteger(input.amountMinor));
+  const revenueShareBps = clampBillingBps(input.revenueShareBps, DEFAULT_APP_REVENUE_SHARE_BPS);
+  const partnerGstBps = clampBillingBps(input.partnerGstBps, DEFAULT_PARTNER_GST_BPS);
+  const partnerAmountMinor = Math.floor((amountMinor * revenueShareBps) / 10000);
+  const platformFeeMinor = amountMinor - partnerAmountMinor;
+  const partnerGstMinor = Math.round((partnerAmountMinor * partnerGstBps) / 10000);
+  const payoutRail = input.payoutRail && INDIA_APP_PAYOUT_RAILS.includes(input.payoutRail)
+    ? input.payoutRail
+    : 'razorpay_route';
+  const providerMode = input.providerMode === 'live' ? 'live' : 'test';
+
+  return {
+    amount_minor: amountMinor,
+    currency: 'INR',
+    revenue_share_bps: revenueShareBps,
+    partner_amount_minor: partnerAmountMinor,
+    platform_fee_minor: platformFeeMinor,
+    partner_gst_bps: partnerGstBps,
+    partner_gst_minor: partnerGstMinor,
+    payout_rail: payoutRail,
+    provider: payoutRail,
+    provider_mode: providerMode,
+  };
+}
+
+export function planAppBillingCharge(input: {
+  appId: string;
+  installationId: string;
+  storeId: string;
+  partnerId: string;
+  billingMode: AppChargeBillingMode;
+  name: string;
+  amountMinor: number;
+  idempotencyKey: string;
+  approvalUrl: string;
+  metadata?: Record<string, unknown>;
+  revenueShareBps?: number | null;
+  partnerGstBps?: number | null;
+  payoutRail?: IndiaPayoutRail | null;
+  providerMode?: AppChargeProviderMode | null;
+}): AppBillingChargePlan {
+  const payout = planIndiaAppChargePayout({
+    amountMinor: input.amountMinor,
+    revenueShareBps: input.revenueShareBps,
+    partnerGstBps: input.partnerGstBps,
+    payoutRail: input.payoutRail,
+    providerMode: input.providerMode,
+  });
+
+  return {
+    app_id: input.appId,
+    installation_id: input.installationId,
+    store_id: input.storeId,
+    partner_id: input.partnerId,
+    billing_mode: input.billingMode,
+    status: 'pending_merchant_approval',
+    name: input.name,
+    amount_minor: payout.amount_minor,
+    currency: 'INR',
+    idempotency_key: input.idempotencyKey,
+    approval_url: input.approvalUrl,
+    payout,
+    metadata: {
+      ...(input.metadata || {}),
+      india_payout: payout,
+    },
+  };
+}
+
 export function planMerchantRazorpayBillingCheckout(input: {
   plan: BillingPlanCatalogRecord;
   storeId: string;
@@ -600,3 +758,5 @@ export type CancelSubscriptionInput = z.infer<typeof CancelSubscriptionSchema>;
 export type MerchantApprovedUsageChargeInput = z.infer<typeof MerchantApprovedUsageChargeSchema>;
 export type CreateSubscriptionOrderInput = z.infer<typeof CreateSubscriptionOrderSchema>;
 export type VerifySubscriptionInput = z.infer<typeof VerifySubscriptionSchema>;
+export type CreateAppBillingChargeInput = z.infer<typeof CreateAppBillingChargeSchema>;
+export type ApproveAppBillingChargeInput = z.infer<typeof ApproveAppBillingChargeSchema>;

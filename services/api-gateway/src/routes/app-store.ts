@@ -32,6 +32,14 @@ import {
     type AppWebhookDefinition,
     type AppWebhookSubscriptionInsert,
 } from '@letbuyy/app-engine';
+import {
+    ApproveAppBillingChargeSchema,
+    CreateAppBillingChargeSchema,
+    planAppBillingCharge,
+    type AppChargeBillingMode,
+    type AppChargeProviderMode,
+    type IndiaPayoutRail,
+} from '@letbuyy/billing-core';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -53,6 +61,21 @@ interface BridgeApiRequest {
     method: 'GET';
     path: string;
     storeId?: string | null;
+}
+
+interface AppBillingChargeRecord {
+    id: string;
+    site_id: string;
+    app_id: string;
+    partner_id: string;
+    installation_id: string;
+    billing_mode: AppChargeBillingMode;
+    status: string;
+    name: string;
+    amount_minor: number;
+    currency: 'INR';
+    idempotency_key: string;
+    metadata?: AppEngineJsonRecord | null;
 }
 
 function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
@@ -83,6 +106,34 @@ function appOAuthGrantType(value: unknown): AppOAuthGrantType | null {
 
 function appOAuthConfig(config: unknown): AppEngineJsonRecord {
     return parseJsonRecord(parseJsonRecord(config).oauth);
+}
+
+function firstRelatedRecord(value: unknown): AppEngineJsonRecord {
+    if (Array.isArray(value)) {
+        return parseJsonRecord(value[0]);
+    }
+
+    return parseJsonRecord(value);
+}
+
+function appBillingMode(value: unknown): AppChargeBillingMode {
+    return value === 'usage' ? 'usage' : 'recurring';
+}
+
+function appChargeProviderMode(value: unknown): AppChargeProviderMode {
+    return value === 'live' ? 'live' : 'test';
+}
+
+function appPayoutRail(value: unknown): IndiaPayoutRail | null {
+    switch (value) {
+        case 'razorpay_route':
+        case 'razorpayx':
+        case 'upi':
+        case 'manual':
+            return value;
+        default:
+            return null;
+    }
 }
 
 function appendAppOAuthTokenConfig(input: {
@@ -242,6 +293,44 @@ async function insertAppLifecycleOutbox(
             scopes: stringArray(input.payload.scopes),
         },
         idempotencyKey: `${input.eventType}:${input.storeId}:${input.installationId}`,
+        requestId: input.requestId,
+        actorId: input.actorId,
+    });
+}
+
+async function insertAppChargeOutbox(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        charge: AppBillingChargeRecord;
+        eventType: 'app.charge.created' | 'app.charge.activated';
+        actorId: string;
+        requestId: string;
+    },
+): Promise<void> {
+    const metadata = parseJsonRecord(input.charge.metadata);
+    const indiaPayout = parseJsonRecord(metadata.india_payout);
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.charge.site_id,
+        aggregateType: 'app_charge',
+        aggregateId: input.charge.id,
+        eventType: input.eventType,
+        payload: {
+            site_id: input.charge.site_id,
+            app_id: input.charge.app_id,
+            installation_id: input.charge.installation_id,
+            charge_id: input.charge.id,
+            billing_mode: input.charge.billing_mode,
+            amount: {
+                amount_minor: input.charge.amount_minor,
+                currency: input.charge.currency,
+            },
+            payout_rail: stringOrNull(indiaPayout.payout_rail) || 'razorpay_route',
+            revenue_share_bps: Number(indiaPayout.revenue_share_bps || 8000),
+            partner_gst_bps: Number(indiaPayout.partner_gst_bps || 1800),
+            partner_gst_minor: Number(indiaPayout.partner_gst_minor || 0),
+        },
+        idempotencyKey: `${input.eventType}:${input.charge.site_id}:${input.charge.id}`,
         requestId: input.requestId,
         actorId: input.actorId,
     });
@@ -733,6 +822,265 @@ router.post('/bridge/fetch', async (c) => {
         status: response.status,
         data,
         error: response.ok ? null : 'Bridge gateway request failed',
+    }));
+});
+
+// POST /app-store/installations/:id/charges — Create a merchant-approved app charge
+router.post('/installations/:id/charges', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const installationId = c.req.param('id');
+    const body = await c.req.json().catch(() => ({})) as AppEngineJsonRecord;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: installation, error: installationError } = await db
+        .from('app_installations')
+        .select('id, app_id, store_id, installed_by, status, marketplace_apps(id, developer_id, name, pricing_model, price_inr)')
+        .eq('id', installationId)
+        .eq('status', 'active')
+        .maybeSingle();
+
+    if (installationError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installationError.message } }, 500);
+    }
+
+    if (!installation) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App installation not found' } }, 404);
+    }
+
+    const storeId = stringOrNull(body.store_id || body.storeId) || installation.store_id;
+    if (storeId !== installation.store_id) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Charge store_id does not match installation store' } }, 403);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const input = CreateAppBillingChargeSchema.safeParse({
+        ...body,
+        store_id: installation.store_id,
+        installation_id: installation.id,
+        billing_mode: appBillingMode(body.billing_mode || body.billingMode),
+        currency: 'INR',
+    });
+    if (!input.success) {
+        return c.json({ error: { code: 'VALIDATION', message: input.error.issues[0]?.message || 'Invalid app charge' } }, 400);
+    }
+
+    const app = firstRelatedRecord(installation.marketplace_apps);
+    const partnerId = stringOrNull(app.developer_id);
+    if (!partnerId) {
+        return c.json({ error: { code: 'VALIDATION', message: 'Installed app does not have a partner account' } }, 400);
+    }
+
+    const { data: existingCharge, error: existingError } = await db
+        .from('app_billing_charges')
+        .select('*')
+        .eq('site_id', input.data.store_id)
+        .eq('idempotency_key', input.data.idempotency_key)
+        .maybeSingle();
+
+    if (existingError) {
+        return c.json({ error: { code: 'DB_ERROR', message: existingError.message } }, 500);
+    }
+
+    if (existingCharge) {
+        return c.json(success({
+            charge: existingCharge,
+            approval: {
+                required: existingCharge.status === 'pending_merchant_approval',
+                url: existingCharge.approval_url,
+            },
+        }));
+    }
+
+    const chargeId = crypto.randomUUID();
+    const providerMode = appChargeProviderMode(body.provider_mode || body.providerMode);
+    const plan = planAppBillingCharge({
+        appId: installation.app_id,
+        installationId: installation.id,
+        storeId: installation.store_id,
+        partnerId,
+        billingMode: input.data.billing_mode,
+        name: input.data.name,
+        amountMinor: input.data.amount_minor,
+        idempotencyKey: input.data.idempotency_key,
+        approvalUrl: `/v1/app-store/charges/${chargeId}/approve`,
+        metadata: input.data.metadata,
+        revenueShareBps: Number(body.revenue_share_bps || body.revenueShareBps || 8000),
+        partnerGstBps: Number(body.partner_gst_bps || body.partnerGstBps || 1800),
+        payoutRail: appPayoutRail(body.payout_rail || body.payoutRail),
+        providerMode,
+    });
+
+    const { data: charge, error: chargeError } = await db
+        .from('app_billing_charges')
+        .insert({
+            id: chargeId,
+            site_id: plan.store_id,
+            app_id: plan.app_id,
+            partner_id: plan.partner_id,
+            installation_id: plan.installation_id,
+            billing_mode: plan.billing_mode,
+            status: plan.status,
+            name: plan.name,
+            amount_minor: plan.amount_minor,
+            currency: plan.currency,
+            revenue_share_bps: plan.payout.revenue_share_bps,
+            partner_amount_minor: plan.payout.partner_amount_minor,
+            platform_fee_minor: plan.payout.platform_fee_minor,
+            partner_gst_bps: plan.payout.partner_gst_bps,
+            partner_gst_minor: plan.payout.partner_gst_minor,
+            payout_rail: plan.payout.payout_rail,
+            provider: plan.payout.provider,
+            provider_mode: plan.payout.provider_mode,
+            approval_url: plan.approval_url,
+            idempotency_key: plan.idempotency_key,
+            metadata: plan.metadata,
+            created_by: customUser.id,
+            updated_by: customUser.id,
+        })
+        .select()
+        .single();
+
+    if (chargeError) {
+        return c.json({ error: { code: 'DB_ERROR', message: chargeError.message } }, 500);
+    }
+
+    await insertAppChargeOutbox(db, {
+        charge: charge as AppBillingChargeRecord,
+        eventType: 'app.charge.created',
+        actorId: customUser.id,
+        requestId,
+    });
+
+    return c.json(success({
+        charge,
+        approval: {
+            required: true,
+            url: plan.approval_url,
+        },
+        payout_plan: plan.payout,
+    }), 201);
+});
+
+// POST /app-store/charges/:id/approve — Merchant approval activates an app charge
+router.post('/charges/:id/approve', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const chargeId = c.req.param('id');
+    const body = await c.req.json().catch(() => ({})) as AppEngineJsonRecord;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: charge, error: chargeLookupError } = await db
+        .from('app_billing_charges')
+        .select('*')
+        .eq('id', chargeId)
+        .maybeSingle();
+
+    if (chargeLookupError) {
+        return c.json({ error: { code: 'DB_ERROR', message: chargeLookupError.message } }, 500);
+    }
+
+    if (!charge) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App charge not found' } }, 404);
+    }
+
+    const input = ApproveAppBillingChargeSchema.safeParse({
+        ...body,
+        charge_id: chargeId,
+        store_id: stringOrNull(body.store_id || body.storeId) || charge.site_id,
+        provider_mode: appChargeProviderMode(body.provider_mode || body.providerMode),
+    });
+    if (!input.success) {
+        return c.json({ error: { code: 'VALIDATION', message: input.error.issues[0]?.message || 'Invalid app charge approval' } }, 400);
+    }
+
+    if (input.data.store_id !== charge.site_id) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Charge store_id does not match' } }, 403);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, charge.site_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    if (charge.status === 'active') {
+        return c.json(success({
+            charge,
+            billing: {
+                activated: false,
+                reason: 'already_active',
+            },
+        }));
+    }
+
+    if (charge.status !== 'pending_merchant_approval' && charge.status !== 'approved') {
+        return c.json({ error: { code: 'CONFLICT', message: 'Only pending app charges can be approved' } }, 409);
+    }
+
+    const now = new Date().toISOString();
+    const metadata = parseJsonRecord(charge.metadata);
+    const providerReference = input.data.provider_reference || `rzp_route_test_${chargeId.replaceAll('-', '').slice(0, 18)}`;
+    const { data: activatedCharge, error: updateError } = await db
+        .from('app_billing_charges')
+        .update({
+            status: 'active',
+            approved_by: customUser.id,
+            approved_at: now,
+            activated_at: now,
+            provider_reference: providerReference,
+            provider_mode: input.data.provider_mode,
+            updated_by: customUser.id,
+            metadata: {
+                ...metadata,
+                approval: {
+                    idempotency_key: input.data.idempotency_key,
+                    provider_reference: providerReference,
+                    provider_mode: input.data.provider_mode,
+                    approved_at: now,
+                },
+            },
+        })
+        .eq('id', chargeId)
+        .select()
+        .single();
+
+    if (updateError) {
+        return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+    }
+
+    await insertAppChargeOutbox(db, {
+        charge: activatedCharge as AppBillingChargeRecord,
+        eventType: 'app.charge.activated',
+        actorId: customUser.id,
+        requestId,
+    });
+
+    return c.json(success({
+        charge: activatedCharge,
+        billing: {
+            activated: true,
+            provider_reference: providerReference,
+            provider_mode: input.data.provider_mode,
+        },
+        payout: {
+            ledger_event: 'app.charge.activated',
+            queue: 'payment-events',
+            rail: activatedCharge.payout_rail,
+        },
     }));
 });
 

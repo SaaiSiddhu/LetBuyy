@@ -105,6 +105,10 @@ interface AppChargeEventPayload {
         amount_minor?: number;
         currency?: 'INR';
     };
+    payout_rail?: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+    revenue_share_bps?: number;
+    partner_gst_bps?: number;
+    partner_gst_minor?: number;
 }
 
 interface MarketplaceAppPayoutContext {
@@ -116,6 +120,24 @@ interface PayoutLedgerEntry {
     id: string;
     partner_id: string;
     partner_amount_minor: number;
+}
+
+function clampBps(value: unknown, fallback: number): number {
+    const numberValue = Math.trunc(Number(value));
+    if (!Number.isFinite(numberValue)) return fallback;
+    return Math.max(0, Math.min(10000, numberValue));
+}
+
+function payoutRail(value: unknown): 'razorpay_route' | 'razorpayx' | 'upi' | 'manual' {
+    switch (value) {
+        case 'razorpay_route':
+        case 'razorpayx':
+        case 'upi':
+        case 'manual':
+            return value;
+        default:
+            return 'razorpay_route';
+    }
 }
 
 export class QueueExecutionAdapter {
@@ -352,7 +374,7 @@ export class QueueExecutionAdapter {
         const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
         const eventType = envelope.type || job.job_type;
 
-        if (eventType === 'app.charge.created' || eventType === 'app.charge.activated') {
+        if (eventType === 'app.charge.activated') {
             return this.processAppChargePayout(job, envelope, eventType);
         }
 
@@ -383,9 +405,14 @@ export class QueueExecutionAdapter {
         const payoutContext = app as MarketplaceAppPayoutContext | null;
         if (!payoutContext?.developer_id) return false;
 
-        const revenueShareBps = 8000;
+        const revenueShareBps = clampBps(payload.revenue_share_bps, 8000);
         const partnerAmountMinor = Math.floor((amountMinor * revenueShareBps) / 10000);
         const platformFeeMinor = amountMinor - partnerAmountMinor;
+        const partnerGstBps = clampBps(payload.partner_gst_bps, 1800);
+        const partnerGstMinor = typeof payload.partner_gst_minor === 'number'
+            ? Math.max(0, Math.trunc(payload.partner_gst_minor))
+            : Math.round((partnerAmountMinor * partnerGstBps) / 10000);
+        const rail = payoutRail(payload.payout_rail);
 
         const { data: entries, error: entryError } = await this.db
             .from('partner_payout_ledger_entries')
@@ -404,10 +431,13 @@ export class QueueExecutionAdapter {
                     partner_amount_minor: partnerAmountMinor,
                     platform_fee_minor: platformFeeMinor,
                     status: 'pending',
-                    rail: 'manual',
+                    rail,
                     metadata: {
                         source_event_type: eventType,
                         queue_job_id: job.id,
+                        partner_gst_bps: partnerGstBps,
+                        partner_gst_minor: partnerGstMinor,
+                        payout_provider_mode: 'test',
                     },
                 },
                 { onConflict: 'source_event_id' }
@@ -432,7 +462,7 @@ export class QueueExecutionAdapter {
                     amount_minor: entry.partner_amount_minor,
                     currency: 'INR',
                 },
-                rail: 'manual',
+                rail,
             },
             idempotencyKey: `payout.ledger_entry.created:${eventId}`,
             requestId: envelope.request_id || job.request_id,

@@ -1450,6 +1450,77 @@ export const AppBridgeApiFetchResultSchema = z.object({
   error: z.string().optional().nullable(),
 }).strict();
 
+export const AppBillingChargeModeSchema = z.enum(['recurring', 'usage']);
+export const AppBillingChargeStatusSchema = z.enum([
+  'pending_merchant_approval',
+  'approved',
+  'active',
+  'cancelled',
+  'failed',
+]);
+export const AppBillingIndiaPayoutRailSchema = z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']);
+export const AppBillingChargeProviderModeSchema = z.enum(['test', 'live']);
+
+export const AppBillingChargeSchema = z.object({
+  id: UuidSchema,
+  site_id: UuidSchema,
+  app_id: UuidSchema,
+  partner_id: UuidSchema,
+  installation_id: UuidSchema,
+  billing_mode: AppBillingChargeModeSchema,
+  status: AppBillingChargeStatusSchema.or(z.string().min(1)),
+  name: z.string().min(1).max(160),
+  amount_minor: z.number().int().positive(),
+  currency: z.literal('INR').default('INR'),
+  revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
+  partner_amount_minor: z.number().int().nonnegative(),
+  platform_fee_minor: z.number().int().nonnegative(),
+  partner_gst_bps: z.number().int().min(0).max(10000).default(1800),
+  partner_gst_minor: z.number().int().nonnegative().default(0),
+  payout_rail: AppBillingIndiaPayoutRailSchema.default('razorpay_route'),
+  provider: AppBillingIndiaPayoutRailSchema.default('razorpay_route'),
+  provider_mode: AppBillingChargeProviderModeSchema.default('test'),
+  provider_reference: z.string().max(200).optional().nullable(),
+  approval_url: z.string().min(1).max(500).optional().nullable(),
+  approved_by: z.string().min(1).optional().nullable(),
+  approved_at: z.string().datetime().optional().nullable(),
+  activated_at: z.string().datetime().optional().nullable(),
+  idempotency_key: z.string().min(8).max(200),
+  metadata: MetadataSchema.default({}),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppBillingChargeCreateSchema = z.object({
+  store_id: UuidSchema,
+  installation_id: UuidSchema,
+  billing_mode: AppBillingChargeModeSchema.default('recurring'),
+  name: z.string().trim().min(1).max(160),
+  amount_minor: z.number().int().positive(),
+  idempotency_key: z.string().trim().min(8).max(200),
+  return_url: UrlSchema.optional(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
+export const AppBillingChargeApproveSchema = z.object({
+  store_id: UuidSchema,
+  charge_id: UuidSchema,
+  idempotency_key: z.string().trim().min(8).max(200),
+  provider_reference: z.string().trim().min(1).max(200).optional(),
+  provider_mode: AppBillingChargeProviderModeSchema.default('test'),
+}).strict();
+
+export const AppBillingChargeResultSchema = z.object({
+  charge: AppBillingChargeSchema,
+  approval: z.object({
+    required: z.boolean(),
+    url: z.string().min(1).max(500).optional().nullable(),
+  }).optional(),
+  billing: z.record(z.string(), z.unknown()).optional(),
+  payout: z.record(z.string(), z.unknown()).optional(),
+  payout_plan: z.record(z.string(), z.unknown()).optional(),
+}).passthrough();
+
 export const AppOAuthAuthorizationSchema = z.object({
   code: z.string().min(1),
   redirect_uri: UrlSchema,
@@ -1598,6 +1669,14 @@ export type InstalledApp = z.infer<typeof InstalledAppSchema>;
 export type AdminAppEmbedSurface = z.infer<typeof AdminAppEmbedSurfaceSchema>;
 export type AdminAppBridgeSession = z.infer<typeof AdminAppBridgeSessionSchema>;
 export type AppBridgeApiFetchResult = z.infer<typeof AppBridgeApiFetchResultSchema>;
+export type AppBillingChargeMode = z.infer<typeof AppBillingChargeModeSchema>;
+export type AppBillingChargeStatus = z.infer<typeof AppBillingChargeStatusSchema>;
+export type AppBillingIndiaPayoutRail = z.infer<typeof AppBillingIndiaPayoutRailSchema>;
+export type AppBillingChargeProviderMode = z.infer<typeof AppBillingChargeProviderModeSchema>;
+export type AppBillingCharge = z.infer<typeof AppBillingChargeSchema>;
+export type AppBillingChargeCreate = z.infer<typeof AppBillingChargeCreateSchema>;
+export type AppBillingChargeApprove = z.infer<typeof AppBillingChargeApproveSchema>;
+export type AppBillingChargeResult = z.infer<typeof AppBillingChargeResultSchema>;
 export type AppOAuthAuthorization = z.infer<typeof AppOAuthAuthorizationSchema>;
 export type AppOAuthAuthorizationResult = z.infer<typeof AppOAuthAuthorizationResultSchema>;
 export type AppOAuthTokenResult = z.infer<typeof AppOAuthTokenResultSchema>;

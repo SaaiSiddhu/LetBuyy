@@ -2,6 +2,10 @@ import type {
   AICreditBalance,
   AIUsageRecord,
   AdminAppBridgeSession,
+  AppBillingCharge,
+  AppBillingChargeApprove,
+  AppBillingChargeCreate,
+  AppBillingChargeResult,
   AppBridgeApiFetchResult,
   AppOAuthAuthorizationResult,
   AppOAuthTokenResult,
@@ -187,6 +191,11 @@ export interface AppBridgeFetchInput extends JsonRecord {
   path: string;
   store_id?: string;
 }
+export type AppBillingChargeCreateInput = AppBillingChargeCreate;
+export type AppBillingChargeApproveInput = AppBillingChargeApprove;
+export type AppBillingChargeApprovalResult = AppBillingChargeResult & {
+  charge: AppBillingCharge;
+};
 export interface AppDeveloperRegistrationInput extends JsonRecord {
   company_name: string;
   website_url?: string | null;
@@ -844,6 +853,16 @@ export class LetbuyyApiClient {
       this.requestData<AppOAuthTokenResult>('/app-store/oauth/token-exchange', { ...options, method: 'POST', body: input }),
     bridgeFetch: (input: AppBridgeFetchInput, options?: LetbuyyRequestOptions) =>
       this.requestData<AppBridgeApiFetchResult>('/app-store/bridge/fetch', { ...options, method: 'POST', body: input }),
+    createCharge: (installationId: string, input: AppBillingChargeCreateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppBillingChargeApprovalResult>(
+        `/app-store/installations/${encodePathSegment(installationId)}/charges`,
+        { ...options, method: 'POST', body: input },
+      ),
+    approveCharge: (chargeId: string, input: AppBillingChargeApproveInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppBillingChargeApprovalResult>(
+        `/app-store/charges/${encodePathSegment(chargeId)}/approve`,
+        { ...options, method: 'POST', body: input },
+      ),
     uninstall: (appId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<{ uninstalled: boolean }>(`/app-store/apps/${encodePathSegment(appId)}/install`, { ...options, method: 'DELETE', query }),
     developer: (options?: LetbuyyRequestOptions) =>
