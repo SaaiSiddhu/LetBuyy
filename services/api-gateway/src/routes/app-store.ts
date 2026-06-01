@@ -4,16 +4,153 @@ import { findFirstOwnedSiteId, resolveCustomUser, verifySiteOwnership } from '..
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import {
+    createAppScopedAccessToken,
+    getLetbuyyInternalAuthSecret,
+    sha256Hex,
+} from '@letbuyy/auth-core';
+import {
+    buildAppLifecycleEventPayload,
     appStoreStringArray as stringArray,
     appStoreStringOrNull as stringOrNull,
     isAppStoreUuid as isUuid,
+    normalizeAppInstallScopes,
+    normalizeAppWebhookDefinitions,
     parseAppStoreJsonRecord as parseJsonRecord,
+    planAppWebhookSubscriptions,
     planAppDeveloperRegistration,
     planMarketplaceAppSubmission,
     type AppEngineJsonRecord,
+    type AppWebhookDefinition,
+    type AppWebhookSubscriptionInsert,
 } from '@letbuyy/app-engine';
 
 const router = new Hono<{ Bindings: Env }>();
+
+type AppLifecycleEventType = 'app.installed' | 'app.uninstalled';
+
+function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
+    return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function isProductionEnv(env: Env): boolean {
+    return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase() === 'production' || String(value).toLowerCase() === 'prod');
+}
+
+function appPlatformTokenSecret(env: Env): string | undefined {
+    return getLetbuyyInternalAuthSecret({
+        INTERNAL_API_SECRET: env.INTERNAL_API_SECRET,
+        AUTH_SECRET: env.AUTH_SECRET,
+    });
+}
+
+function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJsonRecord, allowLocalhost: boolean): AppWebhookDefinition[] {
+    const configured = normalizeAppWebhookDefinitions(appWebhooks, { allowLocalhost });
+    const requestedUrl = stringOrNull(body.webhook_url || body.webhookUrl);
+    if (!requestedUrl) return configured;
+
+    return [
+        ...configured,
+        ...normalizeAppWebhookDefinitions([{
+            event: body.webhook_event || body.webhookEvent || 'app.installed',
+            url: requestedUrl,
+            secret: body.webhook_secret || body.webhookSecret,
+            is_active: true,
+        }], { allowLocalhost }),
+    ];
+}
+
+async function insertAppLifecycleOutbox(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        storeId: string;
+        installationId: string;
+        eventType: AppLifecycleEventType;
+        payload: Record<string, unknown>;
+        actorId: string;
+        requestId: string;
+    },
+): Promise<void> {
+    await db.from('outbox_events').upsert({
+        store_id: input.storeId,
+        aggregate_type: 'app_installation',
+        aggregate_id: input.installationId,
+        event_type: input.eventType,
+        payload: input.payload,
+        idempotency_key: `${input.eventType}:${input.storeId}:${input.installationId}`,
+        request_id: input.requestId,
+        actor_id: input.actorId,
+    }, { onConflict: 'idempotency_key', ignoreDuplicates: true });
+}
+
+async function insertAppWebhookSubscriptions(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    subscriptions: AppWebhookSubscriptionInsert[],
+): Promise<Array<{ id: string }>> {
+    if (subscriptions.length === 0) return [];
+
+    const { data, error } = await db
+        .from('webhook_subscriptions')
+        .insert(subscriptions)
+        .select('id');
+
+    if (error) {
+        throw new Error(`App webhook subscription creation failed: ${error.message}`);
+    }
+
+    return Array.isArray(data) ? data as Array<{ id: string }> : [];
+}
+
+async function dispatchAppLifecycleThroughWebhookService(env: Env, input: {
+    eventId: string;
+    eventType: AppLifecycleEventType;
+    payload: Record<string, unknown>;
+    targetUrl: string;
+    signingSecret: string;
+    requestId: string;
+}): Promise<void> {
+    if (!env.WEBHOOK_SERVICE || !env.INTERNAL_API_SECRET) return;
+
+    await env.WEBHOOK_SERVICE.fetch('https://webhook-service/app-lifecycle/dispatch', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-LetBuyy-Internal-Secret': env.INTERNAL_API_SECRET,
+        },
+        body: JSON.stringify({
+            target_url: input.targetUrl,
+            event_id: input.eventId,
+            event_type: input.eventType,
+            payload: input.payload,
+            signing_secret: input.signingSecret,
+            request_id: input.requestId,
+        }),
+    }).catch(() => undefined);
+}
+
+async function dispatchAppLifecycleSubscriptions(env: Env, input: {
+    eventType: AppLifecycleEventType;
+    installationId: string;
+    payload: Record<string, unknown>;
+    requestId: string;
+    subscriptions: Array<{
+        target_url: string;
+        signing_secret: string;
+        event_types?: unknown;
+    }>;
+}): Promise<void> {
+    const targets = input.subscriptions.filter((subscription) => stringArray(subscription.event_types).includes(input.eventType));
+
+    await Promise.all(targets.map((subscription, index) => dispatchAppLifecycleThroughWebhookService(env, {
+        eventId: `${input.eventType}:${input.installationId}:${index}`,
+        eventType: input.eventType,
+        payload: input.payload,
+        targetUrl: subscription.target_url,
+        signingSecret: subscription.signing_secret,
+        requestId: input.requestId,
+    })));
+}
 
 // GET /app-store/categories — List active app categories
 router.get('/categories', async (c) => {
@@ -241,9 +378,11 @@ router.get('/installations', authMiddleware, async (c) => {
 router.post('/apps/:id/install', authMiddleware, async (c) => {
     const auth = c.get('auth');
     const appId = c.req.param('id');
-    const body = await c.req.json();
+    const body = await c.req.json() as AppEngineJsonRecord;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+    const now = new Date();
 
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
@@ -264,13 +403,23 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
     // Verify app exists and is published
     const { data: app } = await db
         .from('marketplace_apps')
-        .select('id, name, api_scopes')
+        .select('id, name, api_scopes, app_webhooks(id, event, url, secret, is_active)')
         .eq('id', appId)
         .eq('status', 'published')
         .single();
 
     if (!app) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'App not found or not available' } }, 404);
+    }
+
+    const scopes = normalizeAppInstallScopes(body.scopes, app.api_scopes || []);
+    if (!scopes.ok) {
+        return c.json({ error: { code: 'VALIDATION', message: scopes.message } }, 400);
+    }
+
+    const appSecret = appPlatformTokenSecret(c.env);
+    if (!appSecret) {
+        return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App OAuth token secret is not configured' } }, 500);
     }
 
     // Upsert installation
@@ -282,9 +431,9 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
                 store_id: storeId,
                 installed_by: customUser.id,
                 status: 'active',
-                scopes_granted: stringArray(body.scopes).length > 0 ? stringArray(body.scopes) : (app.api_scopes || []),
+                scopes_granted: scopes.value,
                 config: parseJsonRecord(body.config),
-                installed_at: new Date().toISOString(),
+                installed_at: now.toISOString(),
                 uninstalled_at: null,
             },
             { onConflict: 'app_id,store_id' }
@@ -295,6 +444,76 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
+
+    const expiresAt = new Date((Math.floor(now.getTime() / 1000) + 60 * 60) * 1000).toISOString();
+    const accessToken = await createAppScopedAccessToken({
+        appId: app.id,
+        installationId: data.id,
+        storeId,
+        installedBy: customUser.id,
+        scopes: scopes.value,
+    }, appSecret, { nowSeconds: Math.floor(now.getTime() / 1000) });
+    const accessTokenHash = await sha256Hex(accessToken);
+    const lifecyclePayload = buildAppLifecycleEventPayload({
+        app,
+        installationId: data.id,
+        storeId,
+        installedBy: customUser.id,
+        scopes: scopes.value,
+        occurredAt: now.toISOString(),
+    });
+    const allowLocalhost = !isProductionEnv(c.env);
+    const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body, allowLocalhost);
+    const defaultSigningSecret = stringOrNull(body.webhook_secret || body.webhookSecret) || crypto.randomUUID();
+    const webhookSubscriptions = planAppWebhookSubscriptions({
+        app,
+        storeId,
+        installationId: data.id,
+        installedBy: customUser.id,
+        webhookDefinitions,
+        defaultSigningSecret,
+    });
+    const insertedSubscriptions = await insertAppWebhookSubscriptions(db, webhookSubscriptions);
+    const finalConfig = {
+        ...parseJsonRecord(body.config),
+        oauth: {
+            token_type: 'Bearer',
+            access_token_hash: accessTokenHash,
+            scopes: scopes.value,
+            issued_at: now.toISOString(),
+            expires_at: expiresAt,
+        },
+        webhooks: {
+            subscription_ids: insertedSubscriptions.map((subscription) => subscription.id),
+        },
+    };
+    const { data: finalInstallation, error: updateError } = await db
+        .from('app_installations')
+        .update({ config: finalConfig })
+        .eq('id', data.id)
+        .select()
+        .single();
+
+    if (updateError) {
+        return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+    }
+
+    await insertAppLifecycleOutbox(db, {
+        storeId,
+        installationId: data.id,
+        eventType: 'app.installed',
+        payload: lifecyclePayload,
+        actorId: customUser.id,
+        requestId,
+    });
+
+    await dispatchAppLifecycleSubscriptions(c.env, {
+        eventType: 'app.installed',
+        installationId: data.id,
+        payload: lifecyclePayload,
+        requestId,
+        subscriptions: webhookSubscriptions,
+    });
 
     // Increment install count (best-effort, non-blocking)
     try {
@@ -312,7 +531,18 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         // Non-critical — install count update failed silently
     }
 
-    return c.json(success(data), 201);
+    return c.json(success({
+        installation: finalInstallation || data,
+        oauth: {
+            access_token: accessToken,
+            token_type: 'Bearer',
+            expires_at: expiresAt,
+            scopes: scopes.value,
+        },
+        webhooks: {
+            subscriptions: insertedSubscriptions,
+        },
+    }), 201);
 });
 
 // DELETE /app-store/apps/:id/install — Uninstall an app
@@ -322,6 +552,8 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
     const storeId = c.req.query('store_id');
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
+    const requestId = getRequestId(c);
+    const now = new Date();
 
     if (!customUser) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
@@ -338,11 +570,29 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    const { data: installation } = await db
+        .from('app_installations')
+        .select('id, scopes_granted, config, marketplace_apps(id, name)')
+        .eq('app_id', appId)
+        .eq('store_id', resolvedStoreId)
+        .eq('installed_by', customUser.id)
+        .maybeSingle();
+
+    const installConfig = parseJsonRecord(installation?.config);
+    const revokedConfig = {
+        ...installConfig,
+        oauth: {
+            ...parseJsonRecord(installConfig.oauth),
+            revoked_at: now.toISOString(),
+        },
+    };
+
     const { error } = await db
         .from('app_installations')
         .update({
             status: 'uninstalled',
-            uninstalled_at: new Date().toISOString(),
+            config: revokedConfig,
+            uninstalled_at: now.toISOString(),
         })
         .eq('app_id', appId)
         .eq('store_id', resolvedStoreId)
@@ -350,6 +600,56 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
 
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (installation?.id) {
+        const { data: appWebhookSubscriptions } = await db
+            .from('webhook_subscriptions')
+            .select('target_url, signing_secret, event_types')
+            .eq('site_id', resolvedStoreId)
+            .eq('status', 'active')
+            .contains('metadata', { app_id: appId, installation_id: installation.id });
+
+        await db
+            .from('webhook_subscriptions')
+            .update({
+                status: 'disabled',
+                deleted_at: now.toISOString(),
+                updated_by: customUser.id,
+            })
+            .eq('site_id', resolvedStoreId)
+            .contains('metadata', { app_id: appId, installation_id: installation.id });
+
+        const appRecord = parseJsonRecord(installation.marketplace_apps);
+        const lifecyclePayload = buildAppLifecycleEventPayload({
+            app: {
+                id: appId,
+                name: stringOrNull(appRecord.name) || 'App',
+                api_scopes: stringArray(installation.scopes_granted),
+            },
+            installationId: installation.id,
+            storeId: resolvedStoreId,
+            installedBy: customUser.id,
+            scopes: stringArray(installation.scopes_granted),
+            occurredAt: now.toISOString(),
+        });
+
+        await insertAppLifecycleOutbox(db, {
+            storeId: resolvedStoreId,
+            installationId: installation.id,
+            eventType: 'app.uninstalled',
+            payload: lifecyclePayload,
+            actorId: customUser.id,
+            requestId,
+        });
+
+        await dispatchAppLifecycleSubscriptions(c.env, {
+            eventType: 'app.uninstalled',
+            installationId: installation.id,
+            payload: lifecyclePayload,
+            requestId,
+            subscriptions: Array.isArray(appWebhookSubscriptions) ? appWebhookSubscriptions : [],
+        });
     }
 
     return c.json({ data: { uninstalled: true } });

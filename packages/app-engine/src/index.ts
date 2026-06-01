@@ -106,6 +106,42 @@ export interface MarketplaceAppSubmissionInsert {
   review_count: 0;
 }
 
+export interface MarketplaceAppLifecycleRecord {
+  id: string;
+  name: string;
+  api_scopes?: string[] | null;
+}
+
+export interface AppWebhookDefinition {
+  id?: string | null;
+  event: string;
+  url: string;
+  secret?: string | null;
+  is_active?: boolean | null;
+}
+
+export interface AppWebhookSubscriptionInsert {
+  site_id: string;
+  name: string;
+  target_url: string;
+  event_types: string[];
+  signing_secret: string;
+  status: 'active';
+  metadata: Record<string, unknown>;
+  created_by: string;
+  updated_by: string;
+}
+
+export interface AppLifecycleEventPayload extends Record<string, unknown> {
+  app_id: string;
+  app_name: string;
+  installation_id: string;
+  store_id: string;
+  installed_by: string;
+  scopes: string[];
+  occurred_at: string;
+}
+
 export type AppEnginePlanResult<T> =
   | { ok: true; value: T }
   | { ok: false; message: string };
@@ -134,6 +170,107 @@ export function appStoreStringArray(value: unknown): string[] {
 export function parseAppStoreJsonRecord(value: unknown): AppEngineJsonRecord {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return {};
   return value as AppEngineJsonRecord;
+}
+
+export function normalizeAppInstallScopes(
+  requestedScopes: unknown,
+  allowedScopes: unknown,
+): AppEnginePlanResult<string[]> {
+  const allowed = new Set(appStoreStringArray(allowedScopes).map((scope) => scope.trim()).filter(Boolean));
+  const requested = appStoreStringArray(requestedScopes)
+    .map((scope) => scope.trim())
+    .filter(Boolean);
+  const scopes = requested.length > 0 ? requested : [...allowed];
+  const unsupported = scopes.filter((scope) => !allowed.has(scope));
+
+  if (unsupported.length > 0) {
+    return { ok: false, message: `Unsupported app scopes requested: ${unsupported.join(', ')}` };
+  }
+
+  return { ok: true, value: [...new Set(scopes)].sort() };
+}
+
+export function isSafeAppWebhookTarget(targetUrl: string, allowLocalhost = false): boolean {
+  try {
+    const url = new URL(targetUrl);
+    const isLocalHttp = allowLocalhost
+      && url.protocol === 'http:'
+      && (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
+    return (url.protocol === 'https:' || isLocalHttp) && url.hostname.length > 0;
+  } catch {
+    return false;
+  }
+}
+
+export function normalizeAppWebhookDefinitions(
+  value: unknown,
+  options: { allowLocalhost?: boolean } = {},
+): AppWebhookDefinition[] {
+  const values = Array.isArray(value) ? value : Object.values(parseAppStoreJsonRecord(value));
+  const definitions: Array<AppWebhookDefinition | null> = values
+    .map((item): AppWebhookDefinition | null => {
+      const record = parseAppStoreJsonRecord(item);
+      const event = appStoreStringOrNull(record.event || record.event_type);
+      const url = appStoreStringOrNull(record.url || record.target_url || record.webhook_url);
+      if (!event || !url || record.is_active === false || !isSafeAppWebhookTarget(url, options.allowLocalhost === true)) {
+        return null;
+      }
+
+      return {
+        id: appStoreStringOrNull(record.id),
+        event,
+        url,
+        secret: appStoreStringOrNull(record.secret || record.signing_secret),
+        is_active: true,
+      };
+    });
+
+  return definitions.filter((definition): definition is AppWebhookDefinition => definition !== null);
+}
+
+export function planAppWebhookSubscriptions(input: {
+  app: MarketplaceAppLifecycleRecord;
+  storeId: string;
+  installationId: string;
+  installedBy: string;
+  webhookDefinitions: AppWebhookDefinition[];
+  defaultSigningSecret: string;
+}): AppWebhookSubscriptionInsert[] {
+  return input.webhookDefinitions.map((webhook) => ({
+    site_id: input.storeId,
+    name: `${input.app.name} ${webhook.event}`,
+    target_url: webhook.url,
+    event_types: [webhook.event],
+    signing_secret: webhook.secret || input.defaultSigningSecret,
+    status: 'active',
+    metadata: {
+      source: 'app-platform',
+      app_id: input.app.id,
+      installation_id: input.installationId,
+      app_webhook_id: webhook.id || null,
+    },
+    created_by: input.installedBy,
+    updated_by: input.installedBy,
+  }));
+}
+
+export function buildAppLifecycleEventPayload(input: {
+  app: MarketplaceAppLifecycleRecord;
+  installationId: string;
+  storeId: string;
+  installedBy: string;
+  scopes: string[];
+  occurredAt: string;
+}): AppLifecycleEventPayload {
+  return {
+    app_id: input.app.id,
+    app_name: input.app.name,
+    installation_id: input.installationId,
+    store_id: input.storeId,
+    installed_by: input.installedBy,
+    scopes: [...new Set(input.scopes)].sort(),
+    occurred_at: input.occurredAt,
+  };
 }
 
 function appBlockString(value: unknown, fallback = ''): string {

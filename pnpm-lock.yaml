@@ -1037,6 +1037,9 @@ importers:
 
   services/webhook-service:
     dependencies:
+      '@letbuyy/auth-core':
+        specifier: workspace:*
+        version: link:../../packages/auth-core
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure

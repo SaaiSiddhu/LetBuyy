@@ -11,6 +11,7 @@ import {
     selectSupabaseRows,
     upsertSupabaseRows,
 } from "@letbuyy/infrastructure/supabase-adapter";
+import { dispatchAppLifecycleWebhook } from "./app-lifecycle-dispatch";
 
 // ============================================================
 // WEBHOOK HANDLER — Payment Provider Signature Verification
@@ -29,6 +30,8 @@ interface Env {
     PAYPAL_MODE?: "sandbox" | "live";
     STRIPE_WEBHOOK_SECRET: string;
     STRIPE_SECRET_KEY?: string;
+    INTERNAL_API_SECRET?: string;
+    AUTH_SECRET?: string;
     ENVIRONMENT: string;
     APP_ENV?: string;
     NODE_ENV?: string;
@@ -642,6 +645,68 @@ app.get("/health", (c) => {
         status: "healthy",
         timestamp: new Date().toISOString(),
     });
+});
+
+function isProductionWebhookEnvironment(env: Env): boolean {
+    return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
+        .filter(Boolean)
+        .some((value) => String(value).toLowerCase() === "production" || String(value).toLowerCase() === "prod");
+}
+
+function internalDispatchSecret(env: Env): string | undefined {
+    return env.INTERNAL_API_SECRET || env.AUTH_SECRET || undefined;
+}
+
+function dispatchAuthHeader(headers: Headers): string | null {
+    const direct = headers.get("X-LetBuyy-Internal-Secret");
+    if (direct) return direct;
+
+    const authorization = headers.get("Authorization") || "";
+    return authorization.toLowerCase().startsWith("bearer ") ? authorization.slice(7).trim() : null;
+}
+
+function asDispatchRecord(value: unknown): JsonObject {
+    return value && typeof value === "object" && !Array.isArray(value) ? value as JsonObject : {};
+}
+
+// ─── Internal App Lifecycle Webhook Dispatch ────────────────────────
+// API Gateway owns app install/uninstall state. This service owns signed
+// outbound lifecycle webhook delivery so app callbacks stay out of UI apps.
+
+app.post("/app-lifecycle/dispatch", async (c) => {
+    const secret = internalDispatchSecret(c.env);
+    if (!secret) {
+        return c.json({ error: { code: "SERVER_MISCONFIGURED", message: "Internal dispatch secret is not configured" } }, 500);
+    }
+
+    if (dispatchAuthHeader(c.req.raw.headers) !== secret) {
+        return c.json({ error: { code: "UNAUTHORIZED", message: "Invalid internal dispatch secret" } }, 401);
+    }
+
+    const body = asDispatchRecord(await c.req.json().catch(() => null));
+    const targetUrl = typeof body.target_url === "string" ? body.target_url : "";
+    const eventId = typeof body.event_id === "string" ? body.event_id : "";
+    const eventType = typeof body.event_type === "string" ? body.event_type : "";
+    const signingSecret = typeof body.signing_secret === "string" ? body.signing_secret : "";
+    const payload = asDispatchRecord(body.payload);
+
+    if (!targetUrl || !eventId || !eventType || !signingSecret) {
+        return c.json({ error: { code: "VALIDATION", message: "target_url, event_id, event_type, and signing_secret are required" } }, 400);
+    }
+
+    const result = await dispatchAppLifecycleWebhook({
+        target_url: targetUrl,
+        event_id: eventId,
+        event_type: eventType,
+        payload,
+        signing_secret: signingSecret,
+        request_id: typeof body.request_id === "string" ? body.request_id : null,
+        trace_id: typeof body.trace_id === "string" ? body.trace_id : null,
+    }, fetch, {
+        allowLocalhost: !isProductionWebhookEnvironment(c.env),
+    });
+
+    return c.json({ data: result }, result.ok ? 200 : 502);
 });
 
 // ─── Razorpay Webhooks ──────────────────────────────────────────────

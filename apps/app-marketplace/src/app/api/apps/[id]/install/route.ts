@@ -19,6 +19,11 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
             requireSession: true,
             body: JSON.stringify({
                 store_id: typeof body.store_id === 'string' ? body.store_id : undefined,
+                scopes: Array.isArray(body.scopes) ? body.scopes : undefined,
+                config: body.config && typeof body.config === 'object' ? body.config : undefined,
+                webhook_url: typeof body.webhook_url === 'string' ? body.webhook_url : undefined,
+                webhook_event: typeof body.webhook_event === 'string' ? body.webhook_event : undefined,
+                webhook_secret: typeof body.webhook_secret === 'string' ? body.webhook_secret : undefined,
             }),
         });
         return proxyWorkerJson(response);

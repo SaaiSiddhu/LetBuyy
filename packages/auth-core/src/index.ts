@@ -175,6 +175,60 @@ export interface CustomerSessionTokenOptions {
   nowSeconds?: number;
 }
 
+export const LETBUYY_APP_ACCESS_TOKEN_TTL_SECONDS = 60 * 60;
+export const LETBUYY_APP_ACCESS_TOKEN_ISSUER = 'letbuyy-app-platform';
+export const LETBUYY_APP_ACCESS_TOKEN_AUDIENCE = 'letbuyy-commerce-api';
+
+export interface AppScopedAccessTokenSubject {
+  appId: string;
+  installationId: string;
+  storeId: string;
+  installedBy: string;
+  scopes: string[];
+}
+
+export interface AppScopedAccessTokenOptions {
+  ttlSeconds?: number;
+  nowSeconds?: number;
+  tokenId?: string;
+}
+
+export interface AppScopedAccessTokenVerificationOptions {
+  nowSeconds?: number;
+  requiredScopes?: string[];
+}
+
+export interface LetbuyyAppAccessTokenPayload {
+  iss: typeof LETBUYY_APP_ACCESS_TOKEN_ISSUER;
+  aud: typeof LETBUYY_APP_ACCESS_TOKEN_AUDIENCE;
+  sub: string;
+  appId: string;
+  installationId: string;
+  storeId: string;
+  installedBy: string;
+  scopes: string[];
+  iat: number;
+  exp: number;
+  jti: string;
+}
+
+export type AppScopedTokenVerificationStatus =
+  | 'accepted'
+  | 'missing'
+  | 'malformed'
+  | 'expired'
+  | 'invalid_signature'
+  | 'misconfigured'
+  | 'insufficient_scope';
+
+export interface AppScopedAccessTokenVerificationResult {
+  accepted: boolean;
+  status: AppScopedTokenVerificationStatus;
+  token?: string;
+  payload?: LetbuyyAppAccessTokenPayload;
+  reason?: string;
+}
+
 export interface CustomUserEnsurePlan {
   email: string;
   updates: Record<string, unknown>;
@@ -443,8 +497,97 @@ export async function verifyCustomerSessionToken(
   };
 }
 
+export async function createAppScopedAccessToken(
+  subject: AppScopedAccessTokenSubject,
+  secret: string,
+  options: AppScopedAccessTokenOptions = {},
+): Promise<string> {
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  const ttlSeconds = options.ttlSeconds ?? LETBUYY_APP_ACCESS_TOKEN_TTL_SECONDS;
+  const scopes = normalizeAppAccessScopes(subject.scopes);
+  const payload: LetbuyyAppAccessTokenPayload = {
+    iss: LETBUYY_APP_ACCESS_TOKEN_ISSUER,
+    aud: LETBUYY_APP_ACCESS_TOKEN_AUDIENCE,
+    sub: subject.appId,
+    appId: subject.appId,
+    installationId: subject.installationId,
+    storeId: subject.storeId,
+    installedBy: subject.installedBy,
+    scopes,
+    iat: nowSeconds,
+    exp: nowSeconds + ttlSeconds,
+    jti: options.tokenId || crypto.randomUUID(),
+  };
+  const signingInput = `${base64UrlEncodeJson({ alg: 'HS256', typ: 'JWT' })}.${base64UrlEncodeJson(payload)}`;
+  const signature = base64UrlEncodeBytes(await hmacSha256Bytes(secret, signingInput));
+
+  return `${signingInput}.${signature}`;
+}
+
+export async function verifyAppScopedAccessToken(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  options: AppScopedAccessTokenVerificationOptions = {},
+): Promise<AppScopedAccessTokenVerificationResult> {
+  if (!token) {
+    return { accepted: false, status: 'missing', reason: 'App access token is missing' };
+  }
+
+  const normalizedToken = token.trim();
+  if (normalizedToken !== token || normalizedToken.length > 4096 || normalizedToken.split('.').length !== 3) {
+    return { accepted: false, status: 'malformed', reason: 'App access token is malformed' };
+  }
+
+  if (!secret) {
+    return { accepted: false, status: 'misconfigured', reason: 'App token secret is not configured' };
+  }
+
+  const [encodedHeader, encodedPayload, signature] = normalizedToken.split('.');
+  let header: Record<string, unknown>;
+  let payload: LetbuyyAppAccessTokenPayload;
+
+  try {
+    header = JSON.parse(textDecoder.decode(base64UrlToBytes(encodedHeader))) as Record<string, unknown>;
+    payload = JSON.parse(textDecoder.decode(base64UrlToBytes(encodedPayload))) as LetbuyyAppAccessTokenPayload;
+  } catch {
+    return { accepted: false, status: 'malformed', reason: 'App access token payload is not valid JSON' };
+  }
+
+  if (header.alg !== 'HS256' || !isAppAccessTokenPayload(payload)) {
+    return { accepted: false, status: 'malformed', reason: 'App access token payload is incomplete' };
+  }
+
+  const signed = await verifyCustomerJwtSignature(secret, `${encodedHeader}.${encodedPayload}`, signature);
+  if (!signed) {
+    return { accepted: false, status: 'invalid_signature', reason: 'App access token signature is invalid' };
+  }
+
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  if (payload.exp <= nowSeconds) {
+    return { accepted: false, status: 'expired', reason: 'App access token is expired' };
+  }
+
+  const requiredScopes = normalizeAppAccessScopes(options.requiredScopes || []);
+  const hasRequiredScopes = requiredScopes.every((scope) => payload.scopes.includes(scope));
+  if (!hasRequiredScopes) {
+    return { accepted: false, status: 'insufficient_scope', reason: 'App access token is missing a required scope' };
+  }
+
+  return {
+    accepted: true,
+    status: 'accepted',
+    token: normalizedToken,
+    payload,
+  };
+}
+
 function internalSessionSigningPayload(sessionToken: string, timestamp: string): string {
   return `session.${sessionToken}.${timestamp}`;
+}
+
+export async function sha256Hex(payload: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', textEncoder.encode(payload));
+  return bytesToHex(new Uint8Array(digest));
 }
 
 async function hmacSha256Bytes(secret: string, payload: string): Promise<Uint8Array> {
@@ -509,6 +652,41 @@ function isCustomerSessionPayload(value: LetbuyyCustomerSessionPayload): value i
     (value.name === null || typeof value.name === 'string') &&
     Number.isFinite(value.iat) &&
     Number.isFinite(value.exp),
+  );
+}
+
+function normalizeAppAccessScopes(scopes: string[]): string[] {
+  const normalized = new Set<string>();
+  for (const scope of scopes) {
+    const value = typeof scope === 'string' ? scope.trim() : '';
+    if (value && value.length <= 120 && /^[a-z0-9:._*-]+$/i.test(value)) {
+      normalized.add(value);
+    }
+  }
+  return [...normalized].sort();
+}
+
+function isAppAccessTokenPayload(value: LetbuyyAppAccessTokenPayload): value is LetbuyyAppAccessTokenPayload {
+  return Boolean(
+    value &&
+    value.iss === LETBUYY_APP_ACCESS_TOKEN_ISSUER &&
+    value.aud === LETBUYY_APP_ACCESS_TOKEN_AUDIENCE &&
+    typeof value.sub === 'string' &&
+    value.sub.length > 0 &&
+    typeof value.appId === 'string' &&
+    value.appId === value.sub &&
+    typeof value.installationId === 'string' &&
+    value.installationId.length > 0 &&
+    typeof value.storeId === 'string' &&
+    value.storeId.length > 0 &&
+    typeof value.installedBy === 'string' &&
+    value.installedBy.length > 0 &&
+    Array.isArray(value.scopes) &&
+    value.scopes.every((scope) => typeof scope === 'string') &&
+    Number.isFinite(value.iat) &&
+    Number.isFinite(value.exp) &&
+    typeof value.jti === 'string' &&
+    value.jti.length > 0,
   );
 }
 
