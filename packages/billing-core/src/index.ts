@@ -106,8 +106,6 @@ export type BillingEvent = RuntimeEventEnvelope<{
   plan_id?: string;
 }>;
 
-export type MerchantBillingCheckoutMode = 'razorpay_subscription' | 'razorpay_order';
-
 export interface MerchantApprovedUsageCharge {
   meter_name: string;
   description?: string;
@@ -120,17 +118,53 @@ export interface BillingPlanCatalogRecord {
   id: string;
   slug: string;
   name: string;
+  tagline?: string | null;
+  is_popular?: boolean | null;
   price_monthly_inr?: number | null;
   price_yearly_inr?: number | null;
   promo_price_inr?: number | null;
   promo_months?: number | null;
+  promo_label?: string | null;
+  gmv_percentage?: number | null;
   products_limit?: number | null;
+  orders_limit?: number | null;
+  storage_mb?: number | null;
+  staff_limit?: number | null;
+  ai_credits_monthly?: number | null;
   requires_contact?: boolean | null;
   razorpay_plan_id_monthly?: string | null;
   razorpay_plan_id_yearly?: string | null;
+  features?: unknown;
+  compare_features?: unknown;
+  limits?: Record<string, unknown> | null;
+  entitlements?: Record<string, unknown> | null;
 }
 
-export interface MerchantRazorpayBillingCheckoutPlan {
+export interface BillingTierEntitlementSnapshot {
+  plan: SubscriptionTier;
+  features: string[];
+  limits: Record<string, number | null>;
+  entitlements: Record<string, boolean | number | string | null>;
+}
+
+export interface StoreBillingTierDefinition extends BillingTierEntitlementSnapshot {
+  site_type: 'store';
+  slug: SubscriptionTier;
+  name: string;
+  tagline: string;
+  display_order: number;
+  is_popular: boolean;
+  requires_contact: boolean;
+  price_monthly_inr: number;
+  price_yearly_inr: number;
+  gmv_percentage: number;
+  trial_days: number;
+  features_view: Array<{ label: string; icon: string }>;
+}
+
+export type MerchantBillingCheckoutMode = 'free_activation' | 'razorpay_subscription' | 'razorpay_order';
+
+export interface MerchantBillingCheckoutPlan {
   mode: MerchantBillingCheckoutMode;
   amount_minor: number;
   currency: 'INR';
@@ -160,6 +194,160 @@ export interface MerchantRazorpayBillingCheckoutPlan {
   };
 }
 
+// Interim India-native tier contract for local/test wiring. Final production
+// price points remain an owner policy decision and are recorded in the ledger.
+export const STORE_BILLING_TIER_DEFINITIONS: readonly StoreBillingTierDefinition[] = [
+  {
+    site_type: 'store',
+    slug: 'free',
+    plan: 'free',
+    name: 'Free',
+    tagline: 'Start selling with the essentials',
+    display_order: 0,
+    is_popular: false,
+    requires_contact: false,
+    price_monthly_inr: 0,
+    price_yearly_inr: 0,
+    gmv_percentage: 2.5,
+    trial_days: 0,
+    features: ['storefront', 'products', 'orders'],
+    limits: {
+      products: 25,
+      orders_monthly: 50,
+      storage_mb: 100,
+      staff: 1,
+      ai_credits_monthly: 5,
+      api_requests_monthly: 1000,
+      webhook_subscriptions: 0,
+    },
+    entitlements: {
+      custom_domain: false,
+      remove_branding: false,
+      multi_location_inventory: false,
+      advanced_promotions: false,
+      api_access: false,
+    },
+    features_view: [
+      { label: '25 products', icon: 'inventory_2' },
+      { label: '50 orders/month', icon: 'shopping_bag' },
+      { label: '100 MB storage', icon: 'cloud' },
+      { label: 'LetBuyy branding', icon: 'storefront' },
+    ],
+  },
+  {
+    site_type: 'store',
+    slug: 'starter',
+    plan: 'starter',
+    name: 'Starter',
+    tagline: 'For solo entrepreneurs launching their first store',
+    display_order: 1,
+    is_popular: false,
+    requires_contact: false,
+    price_monthly_inr: 39900,
+    price_yearly_inr: 31900,
+    gmv_percentage: 2,
+    trial_days: 7,
+    features: ['storefront', 'products', 'orders', 'custom_domain', 'basic_analytics', 'webhooks'],
+    limits: {
+      products: 100,
+      orders_monthly: 250,
+      storage_mb: 2048,
+      staff: 1,
+      ai_credits_monthly: 30,
+      api_requests_monthly: 10000,
+      webhook_subscriptions: 3,
+    },
+    entitlements: {
+      custom_domain: true,
+      remove_branding: false,
+      multi_location_inventory: false,
+      advanced_promotions: false,
+      api_access: true,
+    },
+    features_view: [
+      { label: '100 products', icon: 'inventory_2' },
+      { label: '250 orders/month', icon: 'shopping_bag' },
+      { label: '2 GB storage', icon: 'cloud' },
+      { label: 'Custom domain', icon: 'language' },
+    ],
+  },
+  {
+    site_type: 'store',
+    slug: 'business',
+    plan: 'business',
+    name: 'Business',
+    tagline: 'For growing brands with advanced operations',
+    display_order: 2,
+    is_popular: true,
+    requires_contact: false,
+    price_monthly_inr: 99900,
+    price_yearly_inr: 79900,
+    gmv_percentage: 1.2,
+    trial_days: 7,
+    features: ['storefront', 'products', 'orders', 'custom_domain', 'advanced_analytics', 'webhooks', 'multi_location_inventory', 'advanced_promotions'],
+    limits: {
+      products: 1000,
+      orders_monthly: 2500,
+      storage_mb: 10240,
+      staff: 3,
+      ai_credits_monthly: 100,
+      api_requests_monthly: 100000,
+      webhook_subscriptions: 25,
+    },
+    entitlements: {
+      custom_domain: true,
+      remove_branding: true,
+      multi_location_inventory: true,
+      advanced_promotions: true,
+      api_access: true,
+    },
+    features_view: [
+      { label: '1,000 products', icon: 'inventory_2' },
+      { label: '2,500 orders/month', icon: 'shopping_bag' },
+      { label: '10 GB storage', icon: 'cloud' },
+      { label: 'Advanced promotions', icon: 'local_offer' },
+    ],
+  },
+  {
+    site_type: 'store',
+    slug: 'enterprise',
+    plan: 'enterprise',
+    name: 'Enterprise',
+    tagline: 'For high-volume brands that need custom scale',
+    display_order: 3,
+    is_popular: false,
+    requires_contact: true,
+    price_monthly_inr: 0,
+    price_yearly_inr: 0,
+    gmv_percentage: 0.8,
+    trial_days: 7,
+    features: ['storefront', 'products', 'orders', 'custom_domain', 'enterprise_analytics', 'webhooks', 'multi_location_inventory', 'advanced_promotions', 'dedicated_support'],
+    limits: {
+      products: null,
+      orders_monthly: null,
+      storage_mb: 51200,
+      staff: null,
+      ai_credits_monthly: 500,
+      api_requests_monthly: null,
+      webhook_subscriptions: null,
+    },
+    entitlements: {
+      custom_domain: true,
+      remove_branding: true,
+      multi_location_inventory: true,
+      advanced_promotions: true,
+      api_access: true,
+      dedicated_support: true,
+    },
+    features_view: [
+      { label: 'Unlimited products', icon: 'inventory_2' },
+      { label: 'Unlimited orders', icon: 'shopping_bag' },
+      { label: '50 GB storage', icon: 'cloud' },
+      { label: 'Dedicated support', icon: 'support_agent' },
+    ],
+  },
+];
+
 export function normalizeBillingStringArray(value: unknown): string[] {
   return Array.isArray(value) ? value.filter((item): item is string => typeof item === 'string') : [];
 }
@@ -171,6 +359,94 @@ export function normalizeBillingObject(value: unknown): Record<string, unknown> 
 export function billingNumber(value: unknown, fallback = 0): number {
   const numberValue = Number(value);
   return Number.isFinite(numberValue) ? numberValue : fallback;
+}
+
+function cloneRecord<T extends Record<string, unknown>>(record: T): T {
+  return { ...record };
+}
+
+function cloneNumberLimitRecord(record: Record<string, number | null>): Record<string, number | null> {
+  return { ...record };
+}
+
+function cloneStringArray(value: readonly string[]): string[] {
+  return [...value];
+}
+
+export function getStoreBillingTierDefinition(slug: string | null | undefined): StoreBillingTierDefinition | null {
+  const normalized = String(slug || '').trim().toLowerCase();
+  return STORE_BILLING_TIER_DEFINITIONS.find((tier) => tier.slug === normalized) || null;
+}
+
+export function getStoreBillingTierDefinitions(): StoreBillingTierDefinition[] {
+  return STORE_BILLING_TIER_DEFINITIONS.map((tier) => ({
+    ...tier,
+    features: cloneStringArray(tier.features),
+    limits: cloneNumberLimitRecord(tier.limits),
+    entitlements: cloneRecord(tier.entitlements),
+    features_view: tier.features_view.map((feature) => ({ ...feature })),
+  }));
+}
+
+export function resolvePlanEntitlementSnapshot(slug: string | null | undefined): BillingTierEntitlementSnapshot {
+  const tier = getStoreBillingTierDefinition(slug) || getStoreBillingTierDefinition('free')!;
+  return {
+    plan: tier.slug,
+    features: cloneStringArray(tier.features),
+    limits: cloneNumberLimitRecord(tier.limits),
+    entitlements: cloneRecord(tier.entitlements),
+  };
+}
+
+export function applyStorePlanTierDefaults(plan: BillingPlanCatalogRecord): BillingPlanCatalogRecord {
+  const tier = getStoreBillingTierDefinition(plan.slug);
+  if (!tier) return plan;
+
+  return {
+    ...plan,
+    name: plan.name || tier.name,
+    tagline: plan.tagline || tier.tagline,
+    is_popular: typeof plan.is_popular === 'boolean' ? plan.is_popular : tier.is_popular,
+    price_monthly_inr: plan.price_monthly_inr ?? tier.price_monthly_inr,
+    price_yearly_inr: plan.price_yearly_inr ?? tier.price_yearly_inr,
+    gmv_percentage: plan.gmv_percentage ?? tier.gmv_percentage,
+    products_limit: plan.products_limit ?? tier.limits.products,
+    orders_limit: plan.orders_limit ?? tier.limits.orders_monthly,
+    storage_mb: plan.storage_mb ?? tier.limits.storage_mb,
+    staff_limit: plan.staff_limit ?? tier.limits.staff,
+    ai_credits_monthly: plan.ai_credits_monthly ?? tier.limits.ai_credits_monthly,
+    requires_contact: typeof plan.requires_contact === 'boolean' ? plan.requires_contact : tier.requires_contact,
+    features: Array.isArray(plan.features) && plan.features.length > 0 ? plan.features : tier.features_view,
+    limits: normalizeBillingObject(plan.limits).products || normalizeBillingObject(plan.limits).orders_monthly
+      ? normalizeBillingObject(plan.limits)
+      : cloneNumberLimitRecord(tier.limits),
+    entitlements: Object.keys(normalizeBillingObject(plan.entitlements)).length > 0
+      ? normalizeBillingObject(plan.entitlements)
+      : cloneRecord(tier.entitlements),
+  };
+}
+
+export function evaluatePlanLimit(input: {
+  plan: string | null | undefined;
+  limitName: string;
+  currentUsage: number;
+  increment?: number;
+}): { allowed: boolean; limit: number | null; nextUsage: number; plan: SubscriptionTier } {
+  const snapshot = resolvePlanEntitlementSnapshot(input.plan);
+  const rawLimit = snapshot.limits[input.limitName];
+  const limit = rawLimit === null || rawLimit === undefined ? null : Number(rawLimit);
+  const nextUsage = input.currentUsage + (input.increment ?? 1);
+
+  if (limit === null || !Number.isFinite(limit)) {
+    return { allowed: true, limit: null, nextUsage, plan: snapshot.plan };
+  }
+
+  return {
+    allowed: nextUsage <= limit,
+    limit,
+    nextUsage,
+    plan: snapshot.plan,
+  };
 }
 
 export function planBillingAmountMinor(
@@ -213,26 +489,43 @@ export function planMerchantRazorpayBillingCheckout(input: {
   billingPeriod: SubscriptionBillingPeriod;
   approvedUsageCharges?: MerchantApprovedUsageCharge[];
   nowMs?: number;
-}): MerchantRazorpayBillingCheckoutPlan {
+}): MerchantBillingCheckoutPlan {
   const nowMs = input.nowMs ?? Date.now();
-  const amount = planBillingAmountMinor(input.plan, input.billingPeriod);
+  const plan = applyStorePlanTierDefaults(input.plan);
+  const amount = planBillingAmountMinor(plan, input.billingPeriod);
   const notes = {
     store_id: input.storeId,
-    plan_slug: input.plan.slug,
+    plan_slug: plan.slug,
     billing_period: input.billingPeriod,
     user_id: input.userId,
   };
   const planPayload = {
-    id: input.plan.id,
-    name: input.plan.name,
-    slug: input.plan.slug,
-    price_monthly_inr: input.plan.price_monthly_inr,
-    price_yearly_inr: input.plan.price_yearly_inr,
-    promo_price_inr: input.plan.promo_price_inr,
-    promo_months: input.plan.promo_months,
-    razorpay_plan_id_configured: Boolean(selectRazorpayPlanId(input.plan, input.billingPeriod)),
+    id: plan.id,
+    name: plan.name,
+    slug: plan.slug,
+    tagline: plan.tagline,
+    price_monthly_inr: plan.price_monthly_inr,
+    price_yearly_inr: plan.price_yearly_inr,
+    promo_price_inr: plan.promo_price_inr,
+    promo_months: plan.promo_months,
+    promo_label: plan.promo_label,
+    gmv_percentage: plan.gmv_percentage,
+    limits: plan.limits || resolvePlanEntitlementSnapshot(plan.slug).limits,
+    entitlements: plan.entitlements || resolvePlanEntitlementSnapshot(plan.slug).entitlements,
+    razorpay_plan_id_configured: Boolean(selectRazorpayPlanId(plan, input.billingPeriod)),
   };
-  const razorpayPlanId = selectRazorpayPlanId(input.plan, input.billingPeriod);
+  const razorpayPlanId = selectRazorpayPlanId(plan, input.billingPeriod);
+
+  if (amount.amountMinor <= 0 && !plan.requires_contact) {
+    return {
+      mode: 'free_activation',
+      amount_minor: 0,
+      currency: 'INR',
+      billing_period: input.billingPeriod,
+      is_promo: false,
+      plan_payload: planPayload,
+    };
+  }
 
   if (razorpayPlanId) {
     const approvedUsageCharges = input.approvedUsageCharges || [];

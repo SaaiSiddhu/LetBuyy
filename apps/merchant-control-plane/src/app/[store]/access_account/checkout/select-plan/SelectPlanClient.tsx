@@ -61,6 +61,8 @@ export default function SelectPlanClient({
     // Compare features
     const compareFeatures = plans.find(p => p.compare_features?.length > 0)?.compare_features || []
     const planSlugs = plans.map(p => p.slug)
+    const gridColumns = 'repeat(auto-fit, minmax(240px, 1fr))'
+    const compareGridColumns = `1.5fr repeat(${Math.max(plans.length, 1)}, minmax(120px, 1fr))`
 
     return (
         <div style={{
@@ -175,7 +177,7 @@ export default function SelectPlanClient({
             {plans.length > 0 ? (
                 <div style={{
                     display: 'grid',
-                    gridTemplateColumns: plans.length <= 2 ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)',
+                    gridTemplateColumns: gridColumns,
                     gap: 20,
                     marginTop: 0,
                     marginBottom: 56,
@@ -188,6 +190,7 @@ export default function SelectPlanClient({
                         const hasPromo = plan.promo_price_inr > 0 && plan.promo_months > 0
                         const isCurrent = currentPlan === plan.slug
                         const isPopular = plan.is_popular
+                        const isFree = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
 
                         return (
                             <div
@@ -306,7 +309,7 @@ export default function SelectPlanClient({
                                                 lineHeight: 1,
                                             }}>{formatINR(price)}</span>
                                         )}
-                                        {!plan.requires_contact && (
+                                        {!plan.requires_contact && !isFree && (
                                             <span style={{
                                                 fontSize: 14,
                                                 color: 'var(--text-hint, #64748B)',
@@ -354,7 +357,7 @@ export default function SelectPlanClient({
                                                 : 'var(--text-primary, #F1F5F9)',
                                     }}
                                 >
-                                    {isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : 'Start free trial'}
+                                    {isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Start free trial'}
                                 </button>
 
                                 {/* Features */}
@@ -459,7 +462,7 @@ export default function SelectPlanClient({
                             {/* Sticky main header — sticks below 56px page header */}
                             <div style={{
                                 display: 'grid',
-                                gridTemplateColumns: '1.5fr repeat(3, 1fr)',
+                                gridTemplateColumns: compareGridColumns,
                                 background: '#1E293B',
                                 borderBottom: '2px solid var(--border, #334155)',
                                 position: 'sticky',
@@ -509,7 +512,7 @@ export default function SelectPlanClient({
                                     {cat.items.map((item, ii) => (
                                         <div key={ii} style={{
                                             display: 'grid',
-                                            gridTemplateColumns: '1.5fr repeat(3, 1fr)',
+                                            gridTemplateColumns: compareGridColumns,
                                             borderBottom: '1px solid var(--border, #334155)',
                                         }}>
                                             <div style={{
@@ -525,7 +528,7 @@ export default function SelectPlanClient({
                                                 )}
                                             </div>
                                             {planSlugs.map(slug => {
-                                                const val = (item as unknown as Record<string, unknown>)[slug]
+                                                const val = (item as unknown as Record<string, unknown>)[slug] ?? false
                                                 return (
                                                     <div key={slug} style={{
                                                         padding: '14px 20px',

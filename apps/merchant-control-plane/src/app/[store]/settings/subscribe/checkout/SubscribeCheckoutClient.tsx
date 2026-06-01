@@ -105,6 +105,7 @@ export default function SubscribeCheckoutClient({
     const yearlyPrice = plan.price_yearly_inr / 100
     const promoPrice = plan.promo_price_inr / 100
     const hasPromo = plan.promo_price_inr > 0 && plan.promo_months > 0
+    const isFreePlan = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
     const currentPrice = billingPeriod === 'yearly' ? yearlyPrice : hasPromo ? promoPrice : monthlyPrice
     const yearlySavings = Math.round((monthlyPrice - yearlyPrice) * 12)
 
@@ -175,6 +176,12 @@ export default function SubscribeCheckoutClient({
 
             const orderData = await orderRes.json()
             if (!orderRes.ok) throw new Error(paymentErrorMessage(orderData, 'Failed to create order'))
+
+            if (orderData.activated || orderData.checkout_mode === 'free_activation') {
+                router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
+                return
+            }
+
             if (!orderData.key_id || (!orderData.razorpay_order_id && !orderData.razorpay_subscription_id)) {
                 throw new Error('Payment gateway is not configured for subscription checkout')
             }
@@ -280,6 +287,7 @@ export default function SubscribeCheckoutClient({
                 {/* Left: Payment form */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
                     {/* Yearly toggle */}
+                    {!isFreePlan && (
                     <div style={{
                         display: 'flex',
                         alignItems: 'center',
@@ -320,8 +328,22 @@ export default function SubscribeCheckoutClient({
                             }} />
                         </button>
                     </div>
+                    )}
 
                     {/* Payment method */}
+                    {isFreePlan ? (
+                    <div style={{
+                        padding: '18px 20px',
+                        borderRadius: 12,
+                        background: 'rgba(34, 197, 94, 0.06)',
+                        border: '1px solid rgba(34, 197, 94, 0.15)',
+                    }}>
+                        <h3 style={{ ...sectionTitleStyle, marginBottom: 8 }}>Activation</h3>
+                        <p style={{ fontSize: 13, color: 'var(--text-secondary, #94A3B8)', margin: 0 }}>
+                            No payment method is required for the Free plan.
+                        </p>
+                    </div>
+                    ) : (
                     <div>
                         <h3 style={sectionTitleStyle}>Payment method</h3>
 
@@ -393,8 +415,10 @@ export default function SubscribeCheckoutClient({
                             </div>
                         </label>
                     </div>
+                    )}
 
                     {/* Billing address */}
+                    {!isFreePlan && (
                     <div>
                         <h3 style={sectionTitleStyle}>Billing address</h3>
                         <p style={{ fontSize: 13, color: 'var(--text-hint, #64748B)', margin: '-8px 0 16px' }}>
@@ -431,6 +455,7 @@ export default function SubscribeCheckoutClient({
                             </div>
                         </div>
                     </div>
+                    )}
                 </div>
 
                 {/* Right: Plan summary */}
@@ -508,7 +533,9 @@ export default function SubscribeCheckoutClient({
                             <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary, #F1F5F9)' }}>
                                 ₹{currentPrice.toLocaleString('en-IN')} INR
                             </div>
-                            <div style={{ fontSize: 11, color: 'var(--text-hint, #64748B)' }}>plus applicable taxes</div>
+                            <div style={{ fontSize: 11, color: 'var(--text-hint, #64748B)' }}>
+                                {isFreePlan ? 'no payment required' : 'plus applicable taxes'}
+                            </div>
                         </div>
                     </div>
 
@@ -531,7 +558,7 @@ export default function SubscribeCheckoutClient({
                             marginBottom: 12,
                         }}
                     >
-                        {isProcessing ? 'Processing...' : `Subscribe · ₹${currentPrice.toLocaleString('en-IN')}`}
+                        {isProcessing ? 'Processing...' : isFreePlan ? 'Activate Free plan' : `Subscribe · ₹${currentPrice.toLocaleString('en-IN')}`}
                     </button>
 
                     {error && (
@@ -558,7 +585,7 @@ export default function SubscribeCheckoutClient({
                         color: 'var(--text-hint, #64748B)',
                         margin: '0 0 16px',
                     }}>
-                        Change or cancel your plan anytime.
+                        {isFreePlan ? 'Upgrade whenever you need higher limits.' : 'Change or cancel your plan anytime.'}
                     </p>
 
                     {/* Benefits */}
@@ -597,7 +624,7 @@ export default function SubscribeCheckoutClient({
                         color: 'var(--text-hint, #64748B)',
                     }}>
                         <span className="material-symbols-outlined" style={{ fontSize: 12 }}>lock</span>
-                        Secured by Razorpay
+                        {isFreePlan ? 'LetBuyy billing' : 'Secured by Razorpay'}
                     </div>
                 </div>
             </div>

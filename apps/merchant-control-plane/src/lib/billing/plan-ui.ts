@@ -8,9 +8,7 @@ export interface SubscriptionPlanFeatureView {
 export interface SubscriptionPlanCompareItemView {
     label: string
     description?: string
-    starter: string | boolean
-    business: string | boolean
-    enterprise: string | boolean
+    [planSlug: string]: string | boolean | undefined
 }
 
 export interface SubscriptionPlanCompareGroupView {
@@ -84,13 +82,17 @@ function compareItemViews(value: unknown): SubscriptionPlanCompareItemView[] {
         const label = record ? stringField(record, 'label') : ''
         if (!record || !label) return []
 
-        return [{
+        const view: SubscriptionPlanCompareItemView = {
             label,
             description: nullableStringField(record, 'description') || undefined,
-            starter: compareValue(record.starter),
-            business: compareValue(record.business),
-            enterprise: compareValue(record.enterprise),
-        }]
+        }
+
+        Object.entries(record).forEach(([key, value]) => {
+            if (key === 'label' || key === 'description') return
+            view[key] = compareValue(value)
+        })
+
+        return [view]
     })
 }
 

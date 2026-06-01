@@ -208,3 +208,55 @@ test('billing checkout keeps order fallback and verifies the correct Razorpay si
     'pay_test|sub_test',
   );
 });
+
+test('billing core exposes India-first tier defaults and free activation planning', () => {
+  const tiers = billingCore.getStoreBillingTierDefinitions();
+  assert.deepEqual(JSON.parse(JSON.stringify(tiers.map((tier) => tier.slug))), ['free', 'starter', 'business', 'enterprise']);
+  assert.equal(tiers.find((tier) => tier.slug === 'free').price_monthly_inr, 0);
+  assert.equal(tiers.find((tier) => tier.slug === 'starter').price_monthly_inr, 39900);
+  assert.equal(tiers.find((tier) => tier.slug === 'business').price_monthly_inr, 99900);
+
+  const freeCheckout = billingCore.planMerchantRazorpayBillingCheckout({
+    plan: {
+      id: 'plan_row_free',
+      slug: 'free',
+      name: 'Free',
+      price_monthly_inr: 0,
+      price_yearly_inr: 0,
+      razorpay_plan_id_monthly: null,
+      razorpay_plan_id_yearly: null,
+    },
+    storeId: '55555555-5555-4555-8555-555555555555',
+    userId: '66666666-6666-4666-8666-666666666666',
+    billingPeriod: 'monthly',
+  });
+
+  assert.equal(freeCheckout.mode, 'free_activation');
+  assert.equal(freeCheckout.amount_minor, 0);
+  assert.equal(freeCheckout.order, undefined);
+  assert.equal(freeCheckout.subscription, undefined);
+});
+
+test('billing entitlement snapshots gate usage limits in test mode', () => {
+  const freeSnapshot = billingCore.resolvePlanEntitlementSnapshot('free');
+  assert.equal(freeSnapshot.limits.products, 25);
+  assert.equal(freeSnapshot.entitlements.custom_domain, false);
+
+  const atLimit = billingCore.evaluatePlanLimit({
+    plan: 'free',
+    limitName: 'products',
+    currentUsage: 25,
+    increment: 1,
+  });
+  assert.equal(atLimit.allowed, false);
+  assert.equal(atLimit.limit, 25);
+
+  const businessAllowed = billingCore.evaluatePlanLimit({
+    plan: 'business',
+    limitName: 'products',
+    currentUsage: 999,
+    increment: 1,
+  });
+  assert.equal(businessAllowed.allowed, true);
+  assert.equal(businessAllowed.limit, 1000);
+});

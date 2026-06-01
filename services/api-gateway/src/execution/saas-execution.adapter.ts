@@ -7,6 +7,7 @@ import {
 import {
     normalizeBillingObject,
     normalizeBillingStringArray,
+    resolvePlanEntitlementSnapshot,
 } from '@letbuyy/billing-core';
 
 type JsonObject = Record<string, unknown>;
@@ -64,6 +65,7 @@ export class SaasExecutionAdapter {
     constructor(private db: SupabaseClient) {}
 
     async resolveEntitlements(siteId: string, fallbackPlan = 'free'): Promise<SiteEntitlementSnapshot> {
+        const fallback = resolvePlanEntitlementSnapshot(fallbackPlan);
         const { data, error } = await this.db.rpc('resolve_site_entitlements', {
             p_site_id: siteId,
         });
@@ -73,10 +75,10 @@ export class SaasExecutionAdapter {
                 return {
                     site_id: siteId,
                     site_type: 'store',
-                    plan: fallbackPlan,
-                    features: [],
-                    limits: {},
-                    entitlements: {},
+                    plan: fallback.plan,
+                    features: fallback.features,
+                    limits: fallback.limits,
+                    entitlements: fallback.entitlements,
                 };
             }
 
@@ -84,13 +86,22 @@ export class SaasExecutionAdapter {
         }
 
         const raw = (data || {}) as RawSiteEntitlements;
+        const defaults = resolvePlanEntitlementSnapshot(raw.plan || fallbackPlan);
         return {
             site_id: raw.site_id || siteId,
             site_type: raw.site_type || 'store',
-            plan: raw.plan || fallbackPlan,
-            features: normalizeBillingStringArray(raw.features),
-            limits: normalizeBillingObject(raw.limits),
-            entitlements: normalizeBillingObject(raw.entitlements),
+            plan: raw.plan || defaults.plan,
+            features: normalizeBillingStringArray(raw.features).length > 0
+                ? normalizeBillingStringArray(raw.features)
+                : defaults.features,
+            limits: {
+                ...defaults.limits,
+                ...normalizeBillingObject(raw.limits),
+            },
+            entitlements: {
+                ...defaults.entitlements,
+                ...normalizeBillingObject(raw.entitlements),
+            },
         };
     }
 

@@ -22,10 +22,12 @@ import {
     StoreSubscriptionQuerySchema,
     VerifySubscriptionSchema,
     type CancelSubscriptionInput,
+    type BillingPlanCatalogRecord,
     type CreateSubscriptionOrderInput,
     type PlanListQueryInput,
     type StoreSubscriptionQueryInput,
     type VerifySubscriptionInput,
+    applyStorePlanTierDefaults,
     normalizeMerchantApprovedUsageCharges,
     planBillingAmountMinor,
     planMerchantRazorpayBillingCheckout,
@@ -49,6 +51,15 @@ type RazorpayOrderCreateResponse = {
     amount?: number;
     currency?: string;
     error?: { description?: string };
+};
+
+type SubscriptionPlanRow = {
+    id: string;
+    slug: string;
+    name: string;
+    products_limit?: number | null;
+    promo_price_inr?: number | null;
+    promo_months?: number | null;
 };
 
 type ClientAmountFields = {
@@ -77,6 +88,114 @@ function amountMismatchBody() {
     };
 }
 
+function subscriptionPeriodEnd(now: Date, billingPeriod: 'monthly' | 'yearly'): Date {
+    const periodEnd = new Date(now);
+    if (billingPeriod === 'yearly') {
+        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
+    } else {
+        periodEnd.setMonth(periodEnd.getMonth() + 1);
+    }
+    return periodEnd;
+}
+
+function subscriptionPromoEnd(now: Date, plan: SubscriptionPlanRow, billingPeriod: 'monthly' | 'yearly'): string | null {
+    if (Number(plan.promo_price_inr || 0) <= 0 || Number(plan.promo_months || 0) <= 0 || billingPeriod !== 'monthly') {
+        return null;
+    }
+
+    const promoEnd = new Date(now);
+    promoEnd.setMonth(promoEnd.getMonth() + Number(plan.promo_months || 0));
+    return promoEnd.toISOString();
+}
+
+async function activateMerchantSubscription(input: {
+    db: ReturnType<typeof getSupabaseAdmin>;
+    userId: string;
+    storeId: string;
+    plan: SubscriptionPlanRow;
+    billingPeriod: 'monthly' | 'yearly';
+    amountPaid: number;
+    paymentGateway?: 'razorpay' | null;
+    externalSubscriptionId?: string | null;
+    razorpayOrderId?: string | null;
+    razorpayPaymentId?: string | null;
+    now?: Date;
+}) {
+    const now = input.now || new Date();
+    const periodEnd = subscriptionPeriodEnd(now, input.billingPeriod);
+    const promoEndsAt = subscriptionPromoEnd(now, input.plan, input.billingPeriod);
+
+    await input.db
+        .from('subscriptions')
+        .update({ status: 'cancelled', cancelled_at: now.toISOString() })
+        .eq('store_id', input.storeId)
+        .eq('status', 'active');
+
+    const { data: subscription, error: subError } = await input.db
+        .from('subscriptions')
+        .insert({
+            user_id: input.userId,
+            store_id: input.storeId,
+            plan: input.plan.slug,
+            plan_id: input.plan.id,
+            status: 'active',
+            billing_period: input.billingPeriod,
+            current_period_start: now.toISOString(),
+            current_period_end: periodEnd.toISOString(),
+            promo_ends_at: promoEndsAt,
+            payment_gateway: input.paymentGateway || null,
+            external_subscription_id: input.externalSubscriptionId || null,
+            razorpay_order_id: input.razorpayOrderId || null,
+            razorpay_payment_id: input.razorpayPaymentId || null,
+            amount_paid: input.amountPaid,
+            currency: 'INR',
+            products_limit: input.plan.products_limit,
+            stores_limit: 1,
+        })
+        .select()
+        .single();
+
+    if (subError || !subscription) {
+        throw new Error('Failed to create subscription');
+    }
+
+    await input.db
+        .from('sites')
+        .update({ trial_status: input.amountPaid > 0 ? 'paid' : 'active', updated_at: now.toISOString() })
+        .eq('id', input.storeId);
+
+    const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+    await input.db
+        .from('billing_history')
+        .insert({
+            user_id: input.userId,
+            store_id: input.storeId,
+            subscription_id: subscription.id,
+            invoice_number: invoiceNumber,
+            description: `${input.plan.name} plan - ${input.billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}`,
+            amount: input.amountPaid,
+            currency: 'INR',
+            tax_amount: Math.round(input.amountPaid * 0.18),
+            total_amount: input.amountPaid + Math.round(input.amountPaid * 0.18),
+            payment_gateway: input.paymentGateway || null,
+            payment_id: input.razorpayPaymentId || null,
+            payment_status: 'paid',
+            period_start: now.toISOString(),
+            period_end: periodEnd.toISOString(),
+        });
+
+    return {
+        id: subscription.id,
+        plan: input.plan.slug,
+        plan_name: input.plan.name,
+        status: 'active',
+        billing_period: input.billingPeriod,
+        current_period_end: periodEnd.toISOString(),
+        promo_ends_at: promoEndsAt,
+        external_subscription_id: input.externalSubscriptionId || null,
+    };
+}
+
 // GET /payments/plans — Fetch active subscription plans through the worker boundary
 router.get('/plans', validate('query', PlanListQuerySchema), async (c) => {
     const query = c.get('validatedQuery') as PlanListQueryInput;
@@ -99,7 +218,7 @@ router.get('/plans', validate('query', PlanListQuerySchema), async (c) => {
         return c.json(dbErrorBody(), 500);
     }
 
-    return c.json({ data: data || [] });
+    return c.json({ data: (data || []).map((plan) => applyStorePlanTierDefaults(plan as BillingPlanCatalogRecord)) });
 });
 
 async function loadPayableOrder(
@@ -259,7 +378,7 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         throw new ForbiddenError('Not authorized for this store');
     }
 
-    const { data: plan } = await db
+    const { data: rawPlan } = await db
         .from('plans')
         .select('*')
         .eq('site_type', body.site_type)
@@ -267,9 +386,11 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         .eq('is_active', true)
         .single();
 
-    if (!plan) {
+    if (!rawPlan) {
         throw new NotFoundError('Plan not found');
     }
+
+    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as SubscriptionPlanRow & Record<string, unknown>;
 
     if (plan.requires_contact) {
         return c.json({ error: { code: 'PLAN_REQUIRES_SALES', message: 'This plan requires contacting sales' } }, 400);
@@ -282,6 +403,36 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         billingPeriod: body.billing_period,
         approvedUsageCharges: normalizeMerchantApprovedUsageCharges(body.approved_usage_charges),
     });
+
+    if (checkout.mode === 'free_activation') {
+        const subscription = await activateMerchantSubscription({
+            db,
+            userId: customUser.id,
+            storeId: body.store_id,
+            plan,
+            billingPeriod: body.billing_period,
+            amountPaid: 0,
+            paymentGateway: null,
+            externalSubscriptionId: `free:${body.store_id}:${Date.now()}`,
+        });
+
+        return c.json({
+            data: {
+                razorpay_order_id: null,
+                razorpay_subscription_id: null,
+                checkout_mode: checkout.mode,
+                amount: 0,
+                currency: checkout.currency,
+                key_id: null,
+                plan: checkout.plan_payload,
+                billing_period: checkout.billing_period,
+                is_promo: false,
+                recurring: false,
+                activated: true,
+                subscription,
+            },
+        }, 201);
+    }
 
     if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
         return c.json(
@@ -391,7 +542,7 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         return c.json({ error: { code: 'PAYMENT_SIGNATURE_INVALID', message: 'Payment verification failed' } }, 400);
     }
 
-    const { data: plan } = await db
+    const { data: rawPlan } = await db
         .from('plans')
         .select('*')
         .eq('site_type', body.site_type)
@@ -399,98 +550,35 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         .eq('is_active', true)
         .single();
 
-    if (!plan) {
+    if (!rawPlan) {
         throw new NotFoundError('Plan not found');
     }
 
-    const now = new Date();
-    const periodEnd = new Date(now);
-    if (body.billing_period === 'yearly') {
-        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
-    } else {
-        periodEnd.setMonth(periodEnd.getMonth() + 1);
-    }
-
-    let promoEndsAt: string | null = null;
-    if (Number(plan.promo_price_inr || 0) > 0 && Number(plan.promo_months || 0) > 0 && body.billing_period === 'monthly') {
-        const promoEnd = new Date(now);
-        promoEnd.setMonth(promoEnd.getMonth() + Number(plan.promo_months || 0));
-        promoEndsAt = promoEnd.toISOString();
-    }
+    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as SubscriptionPlanRow & Record<string, unknown>;
 
     const amountPaid = planBillingAmountMinor(plan, body.billing_period).amountMinor;
 
-    await db
-        .from('subscriptions')
-        .update({ status: 'cancelled', cancelled_at: now.toISOString() })
-        .eq('store_id', body.store_id)
-        .eq('status', 'active');
-
-    const { data: subscription, error: subError } = await db
-        .from('subscriptions')
-        .insert({
-            user_id: customUser.id,
-            store_id: body.store_id,
-            plan: body.plan_slug,
-            plan_id: plan.id,
-            status: 'active',
-            billing_period: body.billing_period,
-            current_period_start: now.toISOString(),
-            current_period_end: periodEnd.toISOString(),
-            promo_ends_at: promoEndsAt,
-            payment_gateway: 'razorpay',
-            external_subscription_id: body.razorpay_subscription_id || body.razorpay_order_id,
-            razorpay_order_id: body.razorpay_order_id || null,
-            razorpay_payment_id: body.razorpay_payment_id,
-            amount_paid: amountPaid,
-            currency: 'INR',
-            products_limit: plan.products_limit,
-            stores_limit: 1,
-        })
-        .select()
-        .single();
-
-    if (subError || !subscription) {
+    let subscription;
+    try {
+        subscription = await activateMerchantSubscription({
+            db,
+            userId: customUser.id,
+            storeId: body.store_id,
+            plan,
+            billingPeriod: body.billing_period,
+            amountPaid,
+            paymentGateway: 'razorpay',
+            externalSubscriptionId: body.razorpay_subscription_id || body.razorpay_order_id || null,
+            razorpayOrderId: body.razorpay_order_id || null,
+            razorpayPaymentId: body.razorpay_payment_id,
+        });
+    } catch {
         return c.json(dbErrorBody('Failed to create subscription'), 500);
     }
 
-    await db
-        .from('sites')
-        .update({ trial_status: 'paid', updated_at: now.toISOString() })
-        .eq('id', body.store_id);
-
-    const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
-    await db
-        .from('billing_history')
-        .insert({
-            user_id: customUser.id,
-            store_id: body.store_id,
-            subscription_id: subscription.id,
-            invoice_number: invoiceNumber,
-            description: `${plan.name} plan - ${body.billing_period === 'yearly' ? 'Annual' : 'Monthly'}`,
-            amount: amountPaid,
-            currency: 'INR',
-            tax_amount: Math.round(amountPaid * 0.18),
-            total_amount: amountPaid + Math.round(amountPaid * 0.18),
-            payment_gateway: 'razorpay',
-            payment_id: body.razorpay_payment_id || null,
-            payment_status: 'paid',
-            period_start: now.toISOString(),
-            period_end: periodEnd.toISOString(),
-        });
-
     return c.json({
         data: {
-            subscription: {
-                id: subscription.id,
-                plan: body.plan_slug,
-                plan_name: plan.name,
-                status: 'active',
-                billing_period: body.billing_period,
-                current_period_end: periodEnd.toISOString(),
-                promo_ends_at: promoEndsAt,
-                external_subscription_id: body.razorpay_subscription_id || body.razorpay_order_id,
-            },
+            subscription,
             message: `Successfully subscribed to ${plan.name} plan!`,
         },
     }, 201);
