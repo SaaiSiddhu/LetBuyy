@@ -59,6 +59,7 @@ These are the human-gated items that prevent COMPLETE status. The append-only le
 
 ## Current Head
 
+- Final status commit: `a8f2eb7 docs(federation): record final blocked status`
 - Latest implementation commit: `63105f6 test(federation): align final gate smoke contracts`
 - F8 suite commit: `9ec6931 test(federation): add real-stack e2e journeys`
 - F7 gate commit: `65a971e chore(federation): record phase f7 gate`
