@@ -824,25 +824,27 @@ export class ThemeExecutionAdapter {
             activate: true,
         });
 
-        const events = new EventExecutionAdapter(this.db);
-        await events.emitDomainEvent({
-            storeId: input.store_id,
-            aggregateType: 'theme',
-            aggregateId: theme.slug,
-            eventType: 'theme.installed',
-            idempotencyKey: `theme.installed:${input.store_id}:${theme.slug}:${release.release_version}`,
-            requestId,
-            actorId: userId,
-            payload: {
-                store_id: input.store_id,
-                theme_id: theme.slug,
-                theme_package_id: runtime.themePackageId || null,
-                theme_package_version_id: runtime.themePackageVersionId || null,
-                theme_instance_id: themeInstance?.id || null,
-                release_id: release.release_id,
-                release_version: release.release_version,
-            },
-        });
+        const installationId = typeof (installation as DbRecord).id === 'string'
+            ? String((installation as DbRecord).id)
+            : null;
+        if (runtime.themePackageId && runtime.themePackageVersionId && installationId) {
+            const events = new EventExecutionAdapter(this.db);
+            await events.emitDomainEvent({
+                storeId: input.store_id,
+                aggregateType: 'theme',
+                aggregateId: runtime.themePackageId,
+                eventType: 'theme.installed',
+                idempotencyKey: `theme.installed:${input.store_id}:${runtime.themePackageId}:${installationId}`,
+                requestId,
+                actorId: userId,
+                payload: {
+                    site_id: input.store_id,
+                    theme_package_id: runtime.themePackageId,
+                    theme_version_id: runtime.themePackageVersionId,
+                    installation_id: installationId,
+                },
+            });
+        }
 
         return {
             installation,

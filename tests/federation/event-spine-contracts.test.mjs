@@ -9,6 +9,8 @@ const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
 const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
 const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
+const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
+const THEME_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/theme-execution.adapter.ts';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -130,4 +132,28 @@ test('app install and uninstall producers use registered app lifecycle contracts
   assert.match(source, /site_id: input\.storeId/);
   assert.match(source, /app_id: appId/);
   assert.match(source, /installation_id: input\.installationId/);
+});
+
+test('theme package upload emits registered theme.submitted events', () => {
+  const source = read(THEMES_ROUTE);
+
+  assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+  assert.match(source, /eventType: 'theme\.submitted'/);
+  assert.match(source, /aggregateType: 'theme'/);
+  assert.match(source, /theme_package_id: themePackageId/);
+  assert.match(source, /theme_version_id: themeVersionId/);
+  assert.match(source, /partner_id: input\.partnerId/);
+});
+
+test('theme install producer uses registered theme.installed payload fields', () => {
+  const source = read(THEME_EXECUTION_ADAPTER);
+
+  assert.match(source, /new EventExecutionAdapter\(this\.db\)/);
+  assert.match(source, /events\.emitDomainEvent/);
+  assert.match(source, /eventType: 'theme\.installed'/);
+  assert.match(source, /aggregateType: 'theme'/);
+  assert.match(source, /site_id: input\.store_id/);
+  assert.match(source, /theme_package_id: runtime\.themePackageId/);
+  assert.match(source, /theme_version_id: runtime\.themePackageVersionId/);
+  assert.match(source, /installation_id: installationId/);
 });

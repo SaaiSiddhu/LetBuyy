@@ -68,6 +68,47 @@ function getRequestId(c: Context<{ Bindings: Env }>): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
 }
 
+function recordValue(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function stringOrNull(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+async function emitThemeSubmittedEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        upload: unknown;
+        partnerId: string;
+        requestId: string;
+    },
+): Promise<void> {
+    const upload = recordValue(input.upload);
+    const themePackage = recordValue(upload.package);
+    const version = recordValue(upload.version);
+    const themePackageId = stringOrNull(themePackage.id);
+    const themeVersionId = stringOrNull(version.id);
+    if (!themePackageId || !themeVersionId) return;
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: null,
+        aggregateType: 'theme',
+        aggregateId: themePackageId,
+        eventType: 'theme.submitted',
+        idempotencyKey: `theme.submitted:${themePackageId}:${themeVersionId}`,
+        requestId: input.requestId,
+        actorId: input.partnerId,
+        payload: {
+            theme_package_id: themePackageId,
+            theme_version_id: themeVersionId,
+            partner_id: input.partnerId,
+        },
+    });
+}
+
 // GET /themes — List available themes (public)
 router.get('/', async (c) => {
     const auth = c.get('auth');
@@ -428,7 +469,14 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
     }
 
     const registry = new SchemaRegistryExecutionAdapter(db);
-    return c.json(success(await registry.uploadThemePackageBundle(body.bundle, customUser.id)), 201);
+    const upload = await registry.uploadThemePackageBundle(body.bundle, customUser.id);
+    await emitThemeSubmittedEvent(db, {
+        upload,
+        partnerId: customUser.id,
+        requestId: getRequestId(c),
+    });
+
+    return c.json(success(upload), 201);
 });
 
 // GET /themes/:slug — Get theme details by slug
