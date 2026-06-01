@@ -132,7 +132,7 @@ export default async function ThemeDetailPage({ params }: Props) {
                         </div>
 
                         <Link
-                            href={isFree ? '/dashboard' : `/checkout?theme=${theme.slug}`}
+                            href={isFree ? `/install?theme=${theme.slug}` : `/checkout?theme=${theme.slug}`}
                             className="btn-primary w-full text-center py-3 flex items-center justify-center gap-2"
                         >
                             {isFree ? (

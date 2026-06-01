@@ -628,6 +628,7 @@ export type ThemeInstallResult = {
 };
 export type ThemePackageUploadInput = {
   bundle: JsonRecord;
+  submission_mode?: 'marketplace' | 'private_install';
 };
 export type ThemePackageUploadResult = {
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;

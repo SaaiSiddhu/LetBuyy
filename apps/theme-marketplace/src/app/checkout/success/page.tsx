@@ -4,7 +4,15 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Purchase Complete' };
 
-export default function SuccessPage() {
+type SuccessPageProps = {
+    searchParams?: Promise<{
+        theme?: string;
+    }>;
+};
+
+export default async function SuccessPage({ searchParams }: SuccessPageProps) {
+    const params = await searchParams;
+    const themeSlug = params?.theme || '';
     const licenseKey = 'LBTH-A4B2-C8D1-E6F3-G9H7';
 
     return (
@@ -88,8 +96,8 @@ export default function SuccessPage() {
 
             {/* CTA */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-                <Link href="/dashboard" className="btn-primary py-3 px-6 flex items-center gap-2">
-                    Go to Dashboard
+                <Link href={themeSlug ? `/install?theme=${themeSlug}` : '/dashboard/installations'} className="btn-primary py-3 px-6 flex items-center gap-2">
+                    Install Theme
                     <ArrowRight className="w-4 h-4" />
                 </Link>
                 <Link href="/themes" className="btn-secondary py-3 px-6">

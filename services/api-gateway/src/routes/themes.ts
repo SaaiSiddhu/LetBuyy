@@ -475,7 +475,10 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
     }
 
     const registry = new SchemaRegistryExecutionAdapter(db);
-    const upload = await registry.uploadThemePackageBundle(body.bundle, customUser.id);
+    const submissionMode = body.submission_mode || 'marketplace';
+    const upload = await registry.uploadThemePackageBundle(body.bundle, customUser.id, {
+        publicationMode: submissionMode,
+    });
     const uploadRecord = recordValue(upload);
     const theme = recordValue(uploadRecord.theme);
     const themePackage = recordValue(uploadRecord.package);
@@ -483,6 +486,10 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
 
     if (!themePackageId) {
         return c.json({ error: { code: 'DB_ERROR', message: 'Theme upload did not return a package id' } }, 500);
+    }
+
+    if (submissionMode === 'private_install') {
+        return c.json(success({ ...uploadRecord, review_record: null }), 201);
     }
 
     const reviewRecord = await createMarketplaceReviewRecord(db, {

@@ -101,6 +101,26 @@ export const ThemeService = {
         return api.themes.installations().catch(() => []);
     },
 
+    async getUserStores(): Promise<Record<string, unknown>[]> {
+        const api = await getThemeApi(true);
+        if (!api) return [];
+
+        const stores = await api.stores.list({ limit: 50 }).catch(() => null);
+        return stores?.data as Record<string, unknown>[] || [];
+    },
+
+    async installTheme(slug: string, storeId: string): Promise<Record<string, unknown>> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.install(slug, {
+            store_id: storeId,
+            config_overrides: {},
+        }).then((result) => result as unknown as Record<string, unknown>);
+    },
+
     async getCategories(): Promise<string[]> {
         const api = await getThemeApi();
         if (!api) return [];

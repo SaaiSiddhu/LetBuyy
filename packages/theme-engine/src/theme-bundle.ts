@@ -254,6 +254,7 @@ export const ThemePackageBundleSchema = z.object({
 
 export const UploadThemePackageSchema = z.object({
   bundle: ThemePackageBundleSchema,
+  submission_mode: z.enum(['marketplace', 'private_install']).default('marketplace'),
 }).strict();
 
 export type ThemeBundle = z.infer<typeof ThemePackageBundleSchema>;

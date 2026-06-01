@@ -227,16 +227,23 @@ export class SchemaRegistryExecutionAdapter {
 
     constructor(private db: SupabaseClient) {}
 
-    async uploadThemePackageBundle(input: unknown, actorId: string) {
+    async uploadThemePackageBundle(
+        input: unknown,
+        actorId: string,
+        options: { publicationMode?: 'marketplace' | 'private_install' } = {}
+    ) {
         const bundle = parseThemePackageBundle(input);
         const payload = buildThemePackagePersistencePayload(bundle);
         const now = new Date().toISOString();
         const templateConfig = buildBundleTemplateConfig(bundle);
         const catalogConfig = buildBundleCatalogConfig(bundle);
         const firstSiteType = payload.themePackage.site_types[0] || 'store';
+        const reviewRequired = options.publicationMode !== 'private_install';
+        const packageStatus = reviewRequired ? 'draft' : payload.themePackage.status;
+        const versionStatus = reviewRequired ? 'draft' : payload.themePackageVersion.release_status;
         const installable =
-            payload.themePackage.status === 'active' &&
-            payload.themePackageVersion.release_status === 'published';
+            packageStatus === 'active' &&
+            versionStatus === 'published';
         const pricingType = themePricingType(payload.themePackage.pricing_type);
 
         const { data: legacyTheme, error: legacyThemeError } = await this.db
@@ -296,10 +303,12 @@ export class SchemaRegistryExecutionAdapter {
             .upsert(
                 {
                     ...payload.themePackage,
+                    status: packageStatus,
                     marketplace_metadata: {
                         ...payload.themePackage.marketplace_metadata,
                         uploaded_by_custom_user_id: actorId,
                         uploaded_at: now,
+                        review_required: reviewRequired,
                     },
                     legacy_theme_id: legacyThemeId,
                     deleted_at: null,
@@ -326,7 +335,8 @@ export class SchemaRegistryExecutionAdapter {
                 {
                     ...payload.themePackageVersion,
                     theme_package_id: themePackageId,
-                    published_at: payload.themePackageVersion.release_status === 'published' ? now : null,
+                    release_status: versionStatus,
+                    published_at: versionStatus === 'published' ? now : null,
                     deleted_at: null,
                     updated_at: now,
                 },
@@ -388,13 +398,13 @@ export class SchemaRegistryExecutionAdapter {
                 id: themePackageId,
                 slug: payload.themePackage.slug,
                 name: payload.themePackage.name,
-                status: payload.themePackage.status,
+                status: packageStatus,
             },
             version: {
                 id: themePackageVersionId,
                 version: payload.themePackageVersion.version,
                 version_number: payload.themePackageVersion.version_number,
-                release_status: payload.themePackageVersion.release_status,
+                release_status: versionStatus,
             },
             schema_manifest_version: payload.schemaManifest.manifest_version,
             renderer_version: payload.themePackageVersion.renderer_version,

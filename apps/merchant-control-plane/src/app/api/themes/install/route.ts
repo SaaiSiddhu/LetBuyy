@@ -24,7 +24,10 @@ export async function POST(request: NextRequest) {
 
         const client = createMerchantApiClient()
         const upload = bundle
-            ? await client.themes.uploadPackage({ bundle: bundle as Record<string, unknown> })
+            ? await client.themes.uploadPackage({
+                bundle: bundle as Record<string, unknown>,
+                submission_mode: 'private_install',
+            })
             : null
         const installSlug = upload?.theme.slug || themeSlug
 
