@@ -9,7 +9,10 @@ import {
     LETBUYY_CUSTOMER_SESSION_COOKIE,
     LETBUYY_CUSTOMER_SESSION_TTL_SECONDS,
     createCustomerSessionToken,
+    redeemCustomerFederationToken,
     verifyCustomerSessionToken,
+    type CustomerFederationTokenStore,
+    type LetbuyyCustomerFederationRedemptionResult,
     type LetbuyyCustomerSessionPayload,
 } from '@letbuyy/auth-core';
 
@@ -18,6 +21,9 @@ import {
 // ============================================================
 
 export type CustomerSessionPayload = LetbuyyCustomerSessionPayload;
+export type CustomerFederationSessionResult = LetbuyyCustomerFederationRedemptionResult & {
+    sessionToken?: string;
+};
 
 // ============================================================
 // Constants
@@ -73,6 +79,22 @@ export async function getSession(): Promise<CustomerSessionPayload | null> {
     } catch {
         return null;
     }
+}
+
+export async function createSessionFromFederationToken(
+    token: string | null | undefined,
+    tokenStore: CustomerFederationTokenStore,
+): Promise<CustomerFederationSessionResult> {
+    const redemption = await redeemCustomerFederationToken(token, getSecret(), tokenStore);
+    if (!redemption.accepted || !redemption.customer) {
+        return redemption;
+    }
+
+    const sessionToken = await createSession(redemption.customer);
+    return {
+        ...redemption,
+        sessionToken,
+    };
 }
 
 // ============================================================

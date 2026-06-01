@@ -142,6 +142,69 @@ test('customer session JWTs are signed and verified only by auth-core', async ()
   assert.equal(tampered.status, 'invalid_signature');
 });
 
+test('customer federation tokens mint, redeem once, and expire after 15 minutes', async () => {
+  const token = await authCore.createCustomerFederationToken(
+    {
+      id: 'customer_123',
+      storeId: 'store_123',
+      email: 'buyer@example.com',
+      fullName: 'Buyer Example',
+      origin: 'https://accounts.letbuyy.store',
+      returnTo: 'https://demo.letbuyy.store/account',
+    },
+    'customer-secret',
+    { nowSeconds: 100, tokenId: 'federation_123' },
+  );
+
+  assert.equal(typeof token, 'string');
+
+  const verified = await authCore.verifyCustomerFederationToken(token, 'customer-secret', { nowSeconds: 999 });
+  assert.equal(verified.accepted, true);
+  assert.equal(verified.payload.type, 'customer_federation');
+  assert.equal(verified.payload.exp, 1000);
+  assert.equal(verified.payload.jti, 'federation_123');
+
+  const consumedIds = new Set();
+  const tokenStore = {
+    consume(tokenId, expiresAt) {
+      assert.equal(expiresAt, 1000);
+      if (consumedIds.has(tokenId)) return false;
+      consumedIds.add(tokenId);
+      return true;
+    },
+  };
+
+  const firstRedeem = await authCore.redeemCustomerFederationToken(token, 'customer-secret', tokenStore, {
+    nowSeconds: 120,
+  });
+  assert.equal(firstRedeem.accepted, true);
+  assert.equal(firstRedeem.customer.id, 'customer_123');
+  assert.equal(firstRedeem.customer.storeId, 'store_123');
+
+  const replay = await authCore.redeemCustomerFederationToken(token, 'customer-secret', tokenStore, {
+    nowSeconds: 121,
+  });
+  assert.equal(replay.accepted, false);
+  assert.equal(replay.status, 'replayed');
+
+  const expiredToken = await authCore.createCustomerFederationToken(
+    {
+      id: 'customer_expired',
+      storeId: 'store_123',
+      email: 'expired@example.com',
+      fullName: null,
+    },
+    'customer-secret',
+    { nowSeconds: 100, ttlSeconds: 1, tokenId: 'federation_expired' },
+  );
+  const expired = await authCore.redeemCustomerFederationToken(expiredToken, 'customer-secret', tokenStore, {
+    nowSeconds: 102,
+  });
+  assert.equal(expired.accepted, false);
+  assert.equal(expired.status, 'expired');
+  assert.equal(consumedIds.has('federation_expired'), false);
+});
+
 test('platform console session and magic-link tokens are signed and verified only by auth-core', async () => {
   const token = await authCore.createLetbuyyPlatformSessionToken(
     {
@@ -199,4 +262,12 @@ test('runtime auth surfaces import the shared verifier instead of local HMAC ses
       `${file} must not carry a local HMAC verifier`,
     );
   }
+});
+
+test('storefront exposes customer federation redemption through the shared verifier', () => {
+  const source = readFileSync('apps/storefront-runtime/src/lib/session.ts', 'utf8');
+
+  assert.match(source, /createSessionFromFederationToken/);
+  assert.match(source, /redeemCustomerFederationToken/);
+  assert.match(source, /CustomerFederationTokenStore/);
 });

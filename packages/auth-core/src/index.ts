@@ -129,6 +129,7 @@ export const LETBUYY_CUSTOMER_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const LETBUYY_INTERNAL_AUTH_MAX_AGE_MS = 5 * 60 * 1000;
 export const LETBUYY_PLATFORM_SESSION_TTL_SECONDS = 8 * 60 * 60;
 export const LETBUYY_PLATFORM_MAGIC_LINK_TTL_SECONDS = 15 * 60;
+export const LETBUYY_CUSTOMER_FEDERATION_TTL_SECONDS = 15 * 60;
 export const LETBUYY_PREDEFINED_ROLES: Record<LetbuyyPredefinedRole, LetbuyyRoleDefinition> = {
   Administrator: {
     name: 'Administrator',
@@ -218,6 +219,50 @@ export interface LetbuyyCustomerSessionPayload {
 export interface CustomerSessionTokenOptions {
   ttlSeconds?: number;
   nowSeconds?: number;
+}
+
+export interface CustomerFederationSubject extends CustomerSessionSubject {
+  origin?: string | null;
+  returnTo?: string | null;
+}
+
+export interface LetbuyyCustomerFederationPayload {
+  type: 'customer_federation';
+  sub: string;
+  storeId: string;
+  email: string;
+  name: string | null;
+  origin: string | null;
+  returnTo: string | null;
+  iat: number;
+  exp: number;
+  jti: string;
+}
+
+export interface CustomerFederationTokenOptions {
+  ttlSeconds?: number;
+  nowSeconds?: number;
+  tokenId?: string;
+  origin?: string | null;
+  returnTo?: string | null;
+}
+
+export interface CustomerFederationTokenStore {
+  consume(tokenId: string, expiresAt: number): boolean | Promise<boolean>;
+}
+
+export type LetbuyyCustomerFederationTokenStatus = LetbuyySessionVerificationStatus | 'replayed';
+
+export interface LetbuyyCustomerFederationVerificationResult
+  extends LetbuyyPlatformTokenVerificationResult<LetbuyyCustomerFederationPayload> {}
+
+export interface LetbuyyCustomerFederationRedemptionResult {
+  accepted: boolean;
+  status: LetbuyyCustomerFederationTokenStatus;
+  token?: string;
+  payload?: LetbuyyCustomerFederationPayload;
+  customer?: CustomerSessionSubject;
+  reason?: string;
 }
 
 export interface LetbuyyPlatformSessionPayload {
@@ -642,6 +687,104 @@ export async function verifyCustomerSessionToken(
   };
 }
 
+export async function createCustomerFederationToken(
+  customer: CustomerFederationSubject,
+  secret: string | null | undefined,
+  options: CustomerFederationTokenOptions = {},
+): Promise<string | null> {
+  if (!secret) return null;
+  const nowSeconds = options.nowSeconds ?? Math.floor(Date.now() / 1000);
+  const ttlSeconds = options.ttlSeconds ?? LETBUYY_CUSTOMER_FEDERATION_TTL_SECONDS;
+  return signLetbuyyJsonPayload(
+    {
+      type: 'customer_federation',
+      sub: customer.id,
+      storeId: customer.storeId,
+      email: normalizeAuthEmail(customer.email),
+      name: customer.fullName,
+      origin: normalizeCustomerFederationUrl(options.origin ?? customer.origin),
+      returnTo: normalizeCustomerFederationUrl(options.returnTo ?? customer.returnTo),
+      iat: nowSeconds,
+      exp: nowSeconds + ttlSeconds,
+      jti: options.tokenId || crypto.randomUUID(),
+    } satisfies LetbuyyCustomerFederationPayload,
+    secret,
+  );
+}
+
+export async function verifyCustomerFederationToken(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  options: CustomerFederationTokenOptions = {},
+): Promise<LetbuyyCustomerFederationVerificationResult> {
+  return verifyLetbuyyJsonPayload(
+    token,
+    secret,
+    isCustomerFederationPayload,
+    options.nowSeconds ?? Math.floor(Date.now() / 1000),
+    'Customer federation',
+  );
+}
+
+export function customerSubjectFromFederationPayload(
+  payload: LetbuyyCustomerFederationPayload,
+): CustomerSessionSubject {
+  return {
+    id: payload.sub,
+    storeId: payload.storeId,
+    email: payload.email,
+    fullName: payload.name,
+  };
+}
+
+export async function redeemCustomerFederationToken(
+  token: string | null | undefined,
+  secret: string | null | undefined,
+  store: CustomerFederationTokenStore,
+  options: CustomerFederationTokenOptions = {},
+): Promise<LetbuyyCustomerFederationRedemptionResult> {
+  const verification = await verifyCustomerFederationToken(token, secret, options);
+  if (!verification.accepted || !verification.payload) {
+    return {
+      accepted: false,
+      status: verification.status,
+      token: verification.token,
+      reason: verification.reason,
+    };
+  }
+
+  let consumed = false;
+  try {
+    consumed = await store.consume(verification.payload.jti, verification.payload.exp);
+  } catch {
+    return {
+      accepted: false,
+      status: 'misconfigured',
+      token: verification.token,
+      payload: verification.payload,
+      reason: 'Customer federation token store rejected the consume operation',
+    };
+  }
+
+  if (!consumed) {
+    return {
+      accepted: false,
+      status: 'replayed',
+      token: verification.token,
+      payload: verification.payload,
+      reason: 'Customer federation token was already redeemed',
+    };
+  }
+
+  return {
+    accepted: true,
+    status: 'accepted',
+    token: verification.token,
+    payload: verification.payload,
+    customer: customerSubjectFromFederationPayload(verification.payload),
+  };
+}
+
 export async function createLetbuyyPlatformSessionToken(
   input: { email: string; userId?: string | null; mfaVerified: boolean },
   secret: string | null | undefined,
@@ -913,6 +1056,15 @@ function timingSafeEqualBase64Url(left: string, right: string): boolean {
   return mismatch === 0;
 }
 
+function normalizeCustomerFederationUrl(value: unknown): string | null {
+  if (typeof value !== 'string') return null;
+  const normalized = value.trim();
+  if (!normalized || normalized.length > 2048 || /[\u0000-\u001F\u007F]/.test(normalized)) {
+    return null;
+  }
+  return normalized;
+}
+
 function isCustomerSessionPayload(value: LetbuyyCustomerSessionPayload): value is LetbuyyCustomerSessionPayload {
   return Boolean(
     value &&
@@ -924,6 +1076,26 @@ function isCustomerSessionPayload(value: LetbuyyCustomerSessionPayload): value i
     (value.name === null || typeof value.name === 'string') &&
     Number.isFinite(value.iat) &&
     Number.isFinite(value.exp),
+  );
+}
+
+function isCustomerFederationPayload(value: unknown): value is LetbuyyCustomerFederationPayload {
+  const payload = value as LetbuyyCustomerFederationPayload;
+  return Boolean(
+    payload &&
+    payload.type === 'customer_federation' &&
+    typeof payload.sub === 'string' &&
+    payload.sub.length > 0 &&
+    typeof payload.storeId === 'string' &&
+    payload.storeId.length > 0 &&
+    isSafeAuthEmail(payload.email) &&
+    (payload.name === null || typeof payload.name === 'string') &&
+    (payload.origin === null || typeof payload.origin === 'string') &&
+    (payload.returnTo === null || typeof payload.returnTo === 'string') &&
+    Number.isFinite(payload.iat) &&
+    Number.isFinite(payload.exp) &&
+    typeof payload.jti === 'string' &&
+    payload.jti.length > 0,
   );
 }
 
