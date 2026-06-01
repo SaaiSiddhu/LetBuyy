@@ -37,3 +37,16 @@ test('identity-platform still routes backend calls through the shared api client
   assert.match(callback, /oauth_unavailable/);
   assert.doesNotMatch(callback, /supabase|exchangeCodeForSession/i);
 });
+
+test('identity-platform has no runtime-composition provider adapter dependency', () => {
+  const packageJson = JSON.parse(read(`${appRoot}/package.json`));
+  assert.equal(packageJson.dependencies['@letbuyy/runtime-composition'], undefined);
+
+  const manifest = read(`${appRoot}/runtime.manifest.json`);
+  assert.doesNotMatch(manifest, /runtime-composition/);
+
+  const sources = sourceFiles(join(appRoot, 'src')).map((path) => [path, read(path)]);
+  for (const [path, source] of sources) {
+    assert.doesNotMatch(source, /@letbuyy\/runtime-composition|identity-runtime-adapter/i, path);
+  }
+});

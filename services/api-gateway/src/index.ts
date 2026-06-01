@@ -71,6 +71,7 @@ export interface Env {
     WEBHOOK_SERVICE?: Fetcher;
     RUNTIME_TELEMETRY?: AnalyticsEngineDataset;
     RESEND_API_KEY: string;
+    RESEND_FROM_EMAIL?: string;
     ENVIRONMENT: string;
     APP_ENV?: string;
     NODE_ENV?: string;

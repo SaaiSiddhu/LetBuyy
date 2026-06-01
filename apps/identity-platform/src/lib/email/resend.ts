@@ -1,4 +1,4 @@
-import { sendResendEmail } from '@letbuyy/runtime-composition/identity-runtime-adapter'
+import { identityApiRequest } from '../api/client'
 
 const FROM_EMAIL = process.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'
 const LOCAL_ACCOUNTS_URL = 'http://localhost:3001'
@@ -14,16 +14,26 @@ interface SendEmailOptions {
  */
 export async function sendEmail({ to, subject, html }: SendEmailOptions): Promise<{ success: boolean; error?: string }> {
   try {
-    const result = await sendResendEmail({
+    const response = await identityApiRequest<{
+      data?: { success: boolean; error?: string }
+      success?: boolean
+      error?: string
+    }>('/auth/custom/emails/send', {
+      method: 'POST',
+      body: JSON.stringify({
       from: `LetBuyy <${FROM_EMAIL}>`,
       to,
       subject,
       html,
+      }),
     })
+    const payload = await response.json()
+    const result = payload?.data || payload
 
-    if (!result.success) {
-      console.error('Resend error:', result.error)
-      return { success: false, error: result.error }
+    if (!response.ok || !result?.success) {
+      const error = result?.error || response.statusText || 'Email provider request failed'
+      console.error('Resend error:', error)
+      return { success: false, error }
     }
 
     return { success: true }
@@ -37,9 +47,7 @@ export async function sendEmail({ to, subject, html }: SendEmailOptions): Promis
  * Send verification email with a link.
  */
 export async function sendVerificationEmail(email: string, token: string): Promise<{ success: boolean; error?: string }> {
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?
-    (process.env.NODE_ENV === 'production' ? 'https://accounts.letbuyy.store' : LOCAL_ACCOUNTS_URL) :
-    LOCAL_ACCOUNTS_URL
+  const baseUrl = process.env.NODE_ENV === 'production' ? 'https://accounts.letbuyy.store' : LOCAL_ACCOUNTS_URL
   const verifyUrl = `${baseUrl}/api/auth/verify?token=${token}&type=email_verify`
 
   return sendEmail({

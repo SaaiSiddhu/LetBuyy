@@ -31,9 +31,6 @@
       ],
       "@letbuyy/projection-runtime": [
         "../../packages/projection-runtime/src/index.ts"
-      ],
-      "@letbuyy/runtime-composition/*": [
-        "../../packages/runtime-composition/*/index.ts"
       ]
     }
   },

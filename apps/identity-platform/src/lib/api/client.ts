@@ -9,7 +9,7 @@ import {
     getLetbuyyInternalAuthSecret,
     hmacSha256Hex,
 } from '@letbuyy/auth-core'
-import { getSessionCookie } from '@/lib/auth/cookies'
+import { getSessionCookie } from '../auth/cookies'
 
 const DEFAULT_API_BASE_URL = 'http://localhost:8787/v1'
 

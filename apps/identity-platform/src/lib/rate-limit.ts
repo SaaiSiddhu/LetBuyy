@@ -1,8 +1,7 @@
-import { createUpstashSlidingWindowLimiter, type RateLimiterPort } from '@letbuyy/runtime-composition/identity-runtime-adapter'
+import { identityApiRequest } from './api/client'
 
-const redisConfig = {
-    url: process.env.UPSTASH_REDIS_REST_URL,
-    token: process.env.UPSTASH_REDIS_REST_TOKEN,
+export type RateLimiterPort = {
+    limit(identifier: string): Promise<{ success: boolean; reset: number }>
 }
 
 type AuthRateLimitConfig = {
@@ -13,7 +12,7 @@ type AuthRateLimitConfig = {
 
 /**
  * Rate limiter configurations for different auth endpoints.
- * Uses sliding window algorithm for smooth rate limiting.
+ * Gateway-owned rate limits keep auth throttling outside the Next app boundary.
  */
 export const AUTH_RATE_LIMITS = {
     // Lookup: 10 requests per 15 minutes
@@ -44,12 +43,14 @@ export const AUTH_RATE_LIMITS = {
     verify_otp: { limit: 5, window: '15 m', prefix: 'rl:verify_otp' },
 } satisfies Record<string, AuthRateLimitConfig>
 
-const limiters: Record<string, RateLimiterPort | null> = Object.fromEntries(
-    Object.entries(AUTH_RATE_LIMITS).map(([endpoint, config]) => [
-        endpoint,
-        createUpstashSlidingWindowLimiter({ ...redisConfig, ...config }),
-    ])
-)
+type RateLimitPayload = {
+    data?: {
+        allowed: boolean
+        retryAfter?: number
+    }
+    allowed?: boolean
+    retryAfter?: number
+}
 
 export async function checkRateLimitWithLimiters(
     registeredLimiters: Record<string, RateLimiterPort | null>,
@@ -82,5 +83,19 @@ export async function checkRateLimit(
     endpoint: string,
     identifier: string
 ): Promise<{ allowed: boolean; retryAfter?: number }> {
-    return checkRateLimitWithLimiters(limiters, endpoint, identifier)
+    const response = await identityApiRequest<RateLimitPayload>('/auth/custom/rate-limit/check', {
+        method: 'POST',
+        body: JSON.stringify({ endpoint, identifier }),
+    })
+    const payload = await response.json().catch(() => null)
+    const result = payload?.data || payload
+
+    if (!response.ok || !result) {
+        return { allowed: false, retryAfter: 60 }
+    }
+
+    return {
+        allowed: result.allowed === true,
+        retryAfter: result.retryAfter,
+    }
 }

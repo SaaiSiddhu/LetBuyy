@@ -4,10 +4,12 @@ import {
     createSupabaseAnonClient,
     createSupabaseServiceClient,
 } from '@letbuyy/infrastructure/supabase-adapter';
+import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import { resolveCustomUser } from '../lib/auth-user';
 import { bytesToHex, verifyInternalAppRequest } from '../lib/internal-auth';
 import { dbErrorBody, errorBody, getSupabaseAdmin } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
+import { checkRateLimitKey } from '../middleware/rateLimit';
 import { validate } from '../middleware/validation';
 import {
     AUTH_OTP_EXPIRY_MS,
@@ -29,10 +31,25 @@ import {
 import { validateSubdomainFormat } from '@letbuyy/tenant-core';
 
 const auth = new Hono<{ Bindings: import('../index').Env }>();
+const AUTH_RATE_LIMITS = {
+    lookup: { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:lookup' },
+    signup: { limit: 3, windowMs: 60 * 60_000, prefix: 'rl:signup' },
+    login: { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:login' },
+    'send-magic': { limit: 3, windowMs: 15 * 60_000, prefix: 'rl:magic' },
+    'send-reset': { limit: 3, windowMs: 15 * 60_000, prefix: 'rl:reset' },
+    'set-password': { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:setpw' },
+    'reset-password': { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:resetpw' },
+    verify: { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:verify' },
+    verify_otp: { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:verify_otp' },
+} as const;
 
 async function requireAccountsInternal(c: Context<{ Bindings: import('../index').Env }>) {
     if (await verifyInternalAppRequest(c, 'accounts')) return null;
     return c.json({ error: { code: 'UNAUTHORIZED', message: 'Invalid internal auth signature' } }, 401);
+}
+
+function isAuthRateLimitEndpoint(endpoint: string): endpoint is keyof typeof AUTH_RATE_LIMITS {
+    return endpoint in AUTH_RATE_LIMITS;
 }
 
 function randomHex(byteCount: number): string {
@@ -123,6 +140,78 @@ auth.post('/custom/users/by-email', async (c) => {
     }
 
     return c.json({ data: data || null });
+});
+
+auth.post('/custom/rate-limit/check', async (c) => {
+    const unauthorized = await requireAccountsInternal(c);
+    if (unauthorized) return unauthorized;
+
+    const body = await c.req.json();
+    const endpoint = String(body.endpoint || '');
+    const identifier = String(body.identifier || '');
+    if (!isAuthRateLimitEndpoint(endpoint) || !identifier) {
+        return c.json({ error: { code: 'VALIDATION', message: 'valid endpoint and identifier are required' } }, 400);
+    }
+
+    const config = AUTH_RATE_LIMITS[endpoint];
+    const result = await checkRateLimitKey(c.env, {
+        key: identifier,
+        max: config.limit,
+        windowMs: config.windowMs,
+        prefix: config.prefix,
+    });
+
+    if (result.unavailable) {
+        return c.json({ error: { code: 'RATE_LIMIT_UNAVAILABLE', message: 'Rate limiting infrastructure is unavailable' } }, 503);
+    }
+
+    return c.json({
+        data: {
+            allowed: result.allowed,
+            retryAfter: result.allowed ? undefined : Math.ceil((result.resetAt - Date.now()) / 1000),
+        },
+    });
+});
+
+auth.post('/custom/emails/send', async (c) => {
+    const unauthorized = await requireAccountsInternal(c);
+    if (unauthorized) return unauthorized;
+
+    const body = await c.req.json();
+    const to = body.to;
+    const subject = typeof body.subject === 'string' ? body.subject : '';
+    const html = typeof body.html === 'string' ? body.html : undefined;
+    const text = typeof body.text === 'string' ? body.text : undefined;
+    const from = typeof body.from === 'string'
+        ? body.from
+        : `LetBuyy <${c.env.RESEND_FROM_EMAIL || 'noreply@letbuyy.store'}>`;
+
+    if ((!Array.isArray(to) && typeof to !== 'string') || !subject || (!html && !text)) {
+        return c.json({ error: { code: 'VALIDATION', message: 'to, subject, and html or text are required' } }, 400);
+    }
+
+    try {
+        const result = await sendResendEmail({
+            apiKey: c.env.RESEND_API_KEY,
+            from,
+            to,
+            subject,
+            html,
+            text,
+        });
+
+        return c.json({ data: result });
+    } catch (error) {
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'auth.custom.emails.send',
+            status_code: 502,
+            reason: 'email_provider_failed',
+            error: error instanceof Error ? error.message : 'Email provider request failed',
+        }));
+        return c.json({ data: { success: false, error: 'Email provider request failed' } });
+    }
 });
 
 auth.post('/custom/users/first-store', async (c) => {

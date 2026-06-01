@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
-import type { RateLimiterPort } from '@letbuyy/runtime-composition/identity-runtime-adapter'
-import { AUTH_RATE_LIMITS, checkRateLimitWithLimiters } from '../lib/rate-limit'
+import { AUTH_RATE_LIMITS, checkRateLimitWithLimiters, type RateLimiterPort } from '../lib/rate-limit'
 
 test('verify_otp has a dedicated strict limiter configuration', () => {
     assert.deepEqual(AUTH_RATE_LIMITS.verify_otp, {

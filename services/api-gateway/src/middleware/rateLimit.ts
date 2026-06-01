@@ -17,7 +17,7 @@ interface RateLimitEntry {
     resetAt: number;
 }
 
-interface RateLimitResult {
+export interface RateLimitResult {
     allowed: boolean;
     remaining: number;
     resetAt: number;
@@ -43,6 +43,13 @@ interface RateLimitOptions {
     max?: number;        // Max requests per window (default: 60)
     prefix?: string;     // Key prefix for Redis (default: 'rl')
     keyGenerator?: (c: any) => string;
+}
+
+export interface DirectRateLimitOptions {
+    key: string;
+    windowMs?: number;
+    max?: number;
+    prefix?: string;
 }
 
 // ─── Redis-backed Rate Limiting ─────────────────────────────────────
@@ -133,6 +140,42 @@ function checkMemoryRateLimit(
     };
 }
 
+export async function checkRateLimitKey(
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT'>,
+    options: DirectRateLimitOptions
+): Promise<RateLimitResult> {
+    const {
+        key,
+        windowMs = 60_000,
+        max = 60,
+        prefix = 'rl',
+    } = options;
+    const fullKey = `${prefix}:${key}`;
+    const redisUrl = env.UPSTASH_REDIS_REST_URL;
+    const redisToken = env.UPSTASH_REDIS_REST_TOKEN;
+    const useRedis = Boolean(redisUrl && redisToken);
+    const isProduction = env.ENVIRONMENT === 'production';
+
+    if (isProduction && !useRedis) {
+        return {
+            allowed: false,
+            remaining: 0,
+            resetAt: Date.now() + windowMs,
+            unavailable: true,
+        };
+    }
+
+    const result = useRedis
+        ? await checkRedisRateLimit(redisUrl, redisToken, fullKey, windowMs, max)
+        : checkMemoryRateLimit(fullKey, windowMs, max);
+
+    if (result.unavailable && !isProduction) {
+        return checkMemoryRateLimit(fullKey, windowMs, max);
+    }
+
+    return result;
+}
+
 // ─── Middleware Factory ─────────────────────────────────────────────
 
 export function rateLimit(options: RateLimitOptions = {}) {
@@ -148,31 +191,14 @@ export function rateLimit(options: RateLimitOptions = {}) {
 
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
         const clientKey = keyGenerator(c);
-        const fullKey = `${prefix}:${clientKey}`;
-
-        const redisUrl = c.env.UPSTASH_REDIS_REST_URL;
-        const redisToken = c.env.UPSTASH_REDIS_REST_TOKEN;
-        const useRedis = Boolean(redisUrl && redisToken);
         const isProduction = c.env.ENVIRONMENT === 'production';
 
-        if (isProduction && !useRedis) {
-            c.header('X-RateLimit-Limit', max.toString());
-            c.header('X-RateLimit-Remaining', '0');
-            c.header('X-RateLimit-Reset', Math.ceil((Date.now() + windowMs) / 1000).toString());
-            return c.json(
-                {
-                    error: {
-                        code: 'RATE_LIMIT_UNAVAILABLE',
-                        message: 'Rate limiting infrastructure is unavailable',
-                    },
-                },
-                503
-            );
-        }
-
-        let result = useRedis
-            ? await checkRedisRateLimit(redisUrl, redisToken, fullKey, windowMs, max)
-            : checkMemoryRateLimit(fullKey, windowMs, max);
+        const result = await checkRateLimitKey(c.env, {
+            key: clientKey,
+            windowMs,
+            max,
+            prefix,
+        });
 
         if (result.unavailable) {
             if (isProduction) {
@@ -189,8 +215,6 @@ export function rateLimit(options: RateLimitOptions = {}) {
                     503
                 );
             }
-
-            result = checkMemoryRateLimit(fullKey, windowMs, max);
         }
 
         // Set standard rate limit headers
