@@ -421,6 +421,40 @@ function validateThemeBlocks(
   });
 }
 
+function validateThemeBlock(
+  schema: SectionSchema,
+  block: unknown,
+  path: string,
+  issues: string[],
+) {
+  const record = asThemeRecord(block);
+  if (!hasThemeKeys(record)) {
+    issues.push(`${path} must be an object`);
+    return;
+  }
+
+  const type = typeof record.type === 'string' ? record.type : '';
+  const blockSchema = schema.blocks_schema?.[type];
+  if (!blockSchema) {
+    issues.push(`${path}.type is not defined by the ${schema.type} schema`);
+    return;
+  }
+
+  if (record.disabled !== undefined && typeof record.disabled !== 'boolean') {
+    issues.push(`${path}.disabled must be a boolean`);
+  }
+
+  for (const [key, value] of Object.entries(asThemeRecord(record.settings))) {
+    const field = blockSchema.fields[key];
+    if (!field) {
+      issues.push(`${path}.settings.${key} is not defined by the ${type} block schema`);
+      continue;
+    }
+    validateThemeFieldValue(field, value, `${path}.settings.${key}`, issues);
+    validateSafeThemeJson(value, `${path}.settings.${key}`, issues);
+  }
+}
+
 function validateThemeSection(
   section: unknown,
   sectionSchemas: Record<string, SectionSchema>,
@@ -453,6 +487,57 @@ function validateThemeSection(
   validateSafeThemeJson(record, path, issues);
 }
 
+function validatePortableThemeSection(
+  section: unknown,
+  sectionSchemas: Record<string, SectionSchema>,
+  sectionDefinitions: ThemeTemplateRecord,
+  path: string,
+  issues: string[],
+) {
+  const record = asThemeRecord(section) as ThemeSectionConfig & { disabled?: unknown; block_order?: unknown };
+  if (!hasThemeKeys(record)) {
+    issues.push(`${path} must be an object`);
+    return;
+  }
+
+  const type = typeof record.type === 'string' ? record.type : '';
+  const definition = asThemeRecord(sectionDefinitions[type]);
+  const rendererKey = typeof definition.renderer_key === 'string' ? definition.renderer_key : '';
+  const schema = sectionSchemas[type] || sectionSchemas[rendererKey];
+  if (!schema) {
+    issues.push(`${path}.type "${type || 'unknown'}" is not registered for this theme`);
+    return;
+  }
+
+  if (record.disabled !== undefined && typeof record.disabled !== 'boolean') {
+    issues.push(`${path}.disabled must be a boolean`);
+  }
+
+  validateThemeSectionSettings(schema, asThemeRecord(record.settings), `${path}.settings`, issues);
+
+  const blocks = asThemeRecord(record.blocks);
+  if (Object.keys(blocks).length > 50) {
+    issues.push(`${path}.blocks exceeds the maximum block count`);
+  }
+
+  for (const [blockId, block] of Object.entries(blocks)) {
+    validateThemeBlock(schema, block, `${path}.blocks.${blockId}`, issues);
+  }
+
+  if (Array.isArray(record.block_order)) {
+    const blockIds = new Set(Object.keys(blocks));
+    for (const blockId of record.block_order) {
+      if (typeof blockId !== 'string' || !blockIds.has(blockId)) {
+        issues.push(`${path}.block_order references missing block "${String(blockId)}"`);
+      }
+    }
+  } else if (record.block_order !== undefined) {
+    issues.push(`${path}.block_order must be an array`);
+  }
+
+  validateSafeThemeJson(record, path, issues);
+}
+
 function validateThemeSettings(
   settingsSchema: ThemeSettingsSchema,
   settings: ThemeTemplateRecord,
@@ -477,6 +562,83 @@ function validateThemeSettings(
 
     validateThemeFieldValue(field, value, `themeSettings.${key}`, issues);
     validateSafeThemeJson(value, `themeSettings.${key}`, issues);
+  }
+}
+
+function collectTemplateSettings(templateConfig: ThemeTemplateRecord): ThemeTemplateRecord {
+  const configSettings = asThemeRecord(asThemeRecord(asThemeRecord(templateConfig.config).settings_data).current);
+  const rootSettings = asThemeRecord(asThemeRecord(templateConfig.settings_data).current);
+
+  return {
+    ...configSettings,
+    ...rootSettings,
+    ...asThemeRecord(templateConfig.themeSettings),
+  };
+}
+
+function validateLegacySectionSlots(
+  sections: ThemeTemplateRecord,
+  sectionSchemas: Record<string, SectionSchema>,
+  issues: string[],
+) {
+  const sectionKeys = Object.keys(sections);
+
+  for (const key of sectionKeys) {
+    if (!['header', 'footer', 'template'].includes(key)) {
+      issues.push(`sections.${key} is not a supported section slot`);
+    }
+  }
+
+  if (sections.header !== undefined) {
+    validateThemeSection(sections.header, sectionSchemas, 'sections.header', issues);
+  }
+
+  if (sections.footer !== undefined) {
+    validateThemeSection(sections.footer, sectionSchemas, 'sections.footer', issues);
+  }
+
+  if (sections.template !== undefined) {
+    if (!Array.isArray(sections.template)) {
+      issues.push('sections.template must be an array');
+    } else if (sections.template.length > 50) {
+      issues.push('sections.template exceeds the maximum section count');
+    } else {
+      sections.template.forEach((section, index) => {
+        validateThemeSection(section, sectionSchemas, `sections.template[${index}]`, issues);
+      });
+    }
+  }
+}
+
+function validatePortableTemplates(
+  templates: ThemeTemplateRecord,
+  sectionSchemas: Record<string, SectionSchema>,
+  sectionDefinitions: ThemeTemplateRecord,
+  issues: string[],
+) {
+  for (const [templateKey, template] of Object.entries(templates)) {
+    const templateRecord = asThemeRecord(template);
+    const sections = asThemeRecord(templateRecord.sections);
+    const sectionIds = new Set(Object.keys(sections));
+
+    if (sectionIds.size > 80) {
+      issues.push(`templates.${templateKey}.sections exceeds the maximum section count`);
+      continue;
+    }
+
+    for (const [sectionId, section] of Object.entries(sections)) {
+      validatePortableThemeSection(section, sectionSchemas, sectionDefinitions, `templates.${templateKey}.sections.${sectionId}`, issues);
+    }
+
+    if (Array.isArray(templateRecord.order)) {
+      for (const sectionId of templateRecord.order) {
+        if (typeof sectionId !== 'string' || !sectionIds.has(sectionId)) {
+          issues.push(`templates.${templateKey}.order references missing section "${String(sectionId)}"`);
+        }
+      }
+    } else if (templateRecord.order !== undefined) {
+      issues.push(`templates.${templateKey}.order must be an array`);
+    }
   }
 }
 
@@ -545,35 +707,19 @@ export function collectThemeTemplateValidationIssues(input: {
 
   const { sectionSchemas, settingsSchema } = input.runtime;
   const sections = asThemeRecord(input.templateConfig.sections);
-  const sectionKeys = Object.keys(sections);
+  const templates = asThemeRecord(input.templateConfig.templates);
+  const hasPortableTemplates = Object.keys(templates).length > 0;
+  const hasLegacySlots = ['header', 'footer', 'template'].some((key) => sections[key] !== undefined);
 
-  for (const key of sectionKeys) {
-    if (!['header', 'footer', 'template'].includes(key)) {
-      issues.push(`sections.${key} is not a supported section slot`);
-    }
+  if (hasLegacySlots || !hasPortableTemplates) {
+    validateLegacySectionSlots(sections, sectionSchemas, issues);
   }
 
-  if (sections.header !== undefined) {
-    validateThemeSection(sections.header, sectionSchemas, 'sections.header', issues);
+  if (hasPortableTemplates) {
+    validatePortableTemplates(templates, sectionSchemas, sections, issues);
   }
 
-  if (sections.footer !== undefined) {
-    validateThemeSection(sections.footer, sectionSchemas, 'sections.footer', issues);
-  }
-
-  if (sections.template !== undefined) {
-    if (!Array.isArray(sections.template)) {
-      issues.push('sections.template must be an array');
-    } else if (sections.template.length > 50) {
-      issues.push('sections.template exceeds the maximum section count');
-    } else {
-      sections.template.forEach((section, index) => {
-        validateThemeSection(section, sectionSchemas, `sections.template[${index}]`, issues);
-      });
-    }
-  }
-
-  validateThemeSettings(settingsSchema, asThemeRecord(input.templateConfig.themeSettings), issues);
+  validateThemeSettings(settingsSchema, collectTemplateSettings(input.templateConfig), issues);
   validateSafeThemeJson(input.templateConfig, 'template_config', issues);
 
   return issues;

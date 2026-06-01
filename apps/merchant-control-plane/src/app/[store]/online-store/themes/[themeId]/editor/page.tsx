@@ -1,346 +1,417 @@
 'use client'
 
-import { useState, useCallback, useEffect, Suspense } from 'react'
+import Link from 'next/link'
+import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
-import EditorHeader from '@/components/theme-editor/EditorHeader'
-import IconRail from '@/components/theme-editor/IconRail'
-import LeftSidebar from '@/components/theme-editor/LeftSidebar'
-import ThemeSettingsPanel from '@/components/theme-editor/ThemeSettingsPanel'
-import CenterPanel from '@/components/theme-editor/CenterPanel'
-import RightSidebar from '@/components/theme-editor/RightSidebar'
-import AddSectionModal from '@/components/theme-editor/AddSectionModal'
-import { useEditorHistory, type TemplateConfig, type SectionEntry } from '@/hooks/useEditorHistory'
-import { useEditorUrl } from '@/hooks/useEditorUrl'
-import type { SectionSchema, ThemeSettingsSchema } from '@/lib/theme-schemas'
+import { AlertTriangle, ArrowLeft, CheckCircle2, FileJson, RefreshCw, Save, Send, Settings } from 'lucide-react'
+import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
-const EMPTY_TEMPLATE: TemplateConfig = {
-    sections: {
-        header: {
-            id: 'header',
-            type: 'header',
-            visible: false,
-            settings: {},
-        },
-        footer: {
-            id: 'footer',
-            type: 'footer',
-            visible: false,
-            settings: {},
-        },
-        template: [],
-    },
-    themeSettings: {},
+type JsonRecord = Record<string, unknown>
+
+type SettingsData = {
+    current: JsonRecord
+    presets: JsonRecord
 }
 
-const EMPTY_THEME_SETTINGS_SCHEMA: ThemeSettingsSchema = {
-    schema_version: 'runtime',
+type ApiEditorResponse = {
+    store?: {
+        name?: string
+        subdomain?: string
+        status?: string
+    }
+    theme?: {
+        name?: string
+        slug?: string
+        schema_source?: string
+        schema_manifest_version?: string
+    }
+    templateConfig?: unknown
+    draftConfig?: unknown
+    draftSavedAt?: string | null
+    release?: {
+        version?: number
+        published_at?: string
+    } | null
+    themeSettingsSchema?: unknown
+    version?: number
+}
+
+type SaveMessage = {
+    kind: 'success' | 'error'
+    text: string
+} | null
+
+type FieldOption = {
+    label: string
+    value: string
+}
+
+const EMPTY_SETTINGS_SCHEMA: ThemeSettingsSchema = {
+    schema_version: '2026-05-json-contract',
     settings: {},
 }
 
-function normalizeTemplateConfig(input: unknown): TemplateConfig {
-    const fallback = structuredClone(EMPTY_TEMPLATE)
-
-    if (!input || typeof input !== 'object') {
-        return fallback
-    }
-
-    const value = input as Record<string, unknown>
-    const rawSections = value.sections
-
-    if (rawSections && typeof rawSections === 'object' && !Array.isArray(rawSections)) {
-        const sections = rawSections as Record<string, unknown>
-        return {
-            sections: {
-                header: (sections.header as SectionEntry) || fallback.sections.header,
-                footer: (sections.footer as SectionEntry) || fallback.sections.footer,
-                template: Array.isArray(sections.template)
-                    ? (sections.template as SectionEntry[])
-                    : fallback.sections.template,
-            },
-            themeSettings: {
-                ...fallback.themeSettings,
-                ...((value.themeSettings as Record<string, unknown>) || {}),
-            },
-        }
-    }
-
-    if (Array.isArray(rawSections)) {
-        const allSections = rawSections as SectionEntry[]
-        const header = allSections.find(section => section.type === 'header') || fallback.sections.header
-        const footer = allSections.find(section => section.type === 'footer') || fallback.sections.footer
-        const template = allSections.filter(section => section.type !== 'header' && section.type !== 'footer')
-
-        return {
-            sections: {
-                header,
-                footer,
-                template,
-            },
-            themeSettings: {
-                ...fallback.themeSettings,
-                ...((value.themeSettings as Record<string, unknown>) || {}),
-            },
-        }
-    }
-
-    return fallback
+const EMPTY_SETTINGS_DATA: SettingsData = {
+    current: {},
+    presets: {},
 }
 
-function ThemeEditorInner() {
+const FIELD_TYPES = new Set([
+    'text',
+    'textarea',
+    'richtext',
+    'color',
+    'image',
+    'select',
+    'toggle',
+    'range',
+    'number',
+    'url',
+    'radio',
+])
+
+function asRecord(value: unknown): JsonRecord {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? (value as JsonRecord)
+        : {}
+}
+
+function stringValue(value: unknown, fallback = ''): string {
+    return typeof value === 'string' && value.trim().length > 0 ? value : fallback
+}
+
+function optionalString(value: unknown): string | undefined {
+    const text = stringValue(value)
+    return text.length > 0 ? text : undefined
+}
+
+function numberValue(value: unknown): number | undefined {
+    return typeof value === 'number' && Number.isFinite(value) ? value : undefined
+}
+
+function labelFromKey(key: string): string {
+    return key
+        .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
+function normalizeFieldType(value: unknown): SchemaField['type'] {
+    const rawType = typeof value === 'string' ? value : 'text'
+    if (rawType === 'checkbox') return 'toggle'
+    if (rawType === 'font') return 'select'
+    return FIELD_TYPES.has(rawType) ? (rawType as SchemaField['type']) : 'text'
+}
+
+function normalizeFieldOptions(value: unknown): string[] | undefined {
+    if (!Array.isArray(value)) return undefined
+
+    const options = value.flatMap((entry) => {
+        if (typeof entry === 'string') return [entry]
+        const record = asRecord(entry)
+        const optionValue = record.value
+        if (typeof optionValue === 'string') return [optionValue]
+        if (typeof optionValue === 'number' || typeof optionValue === 'boolean') return [String(optionValue)]
+        return []
+    })
+
+    return options.length > 0 ? options : undefined
+}
+
+function normalizeField(key: string, value: unknown): SchemaField {
+    const record = asRecord(value)
+    return {
+        type: normalizeFieldType(record.type),
+        label: stringValue(record.label, labelFromKey(key)),
+        default: record.default,
+        maxLength: numberValue(record.maxLength) ?? numberValue(record.max_length),
+        options: normalizeFieldOptions(record.options),
+        min: numberValue(record.min),
+        max: numberValue(record.max),
+        step: numberValue(record.step),
+        unit: optionalString(record.unit),
+        info: optionalString(record.info) || optionalString(record.help_text),
+        description: optionalString(record.description),
+    }
+}
+
+function normalizeFields(value: unknown): Record<string, SchemaField> {
+    if (Array.isArray(value)) {
+        return value.reduce<Record<string, SchemaField>>((acc, entry, index) => {
+            const record = asRecord(entry)
+            const id = stringValue(record.id, `field_${index + 1}`)
+            acc[id] = normalizeField(id, record)
+            return acc
+        }, {})
+    }
+
+    return Object.entries(asRecord(value)).reduce<Record<string, SchemaField>>((acc, [key, field]) => {
+        acc[key] = normalizeField(key, field)
+        return acc
+    }, {})
+}
+
+function normalizeSettingsSchema(value: unknown): ThemeSettingsSchema {
+    const record = asRecord(value)
+    const groups = asRecord(record.settings)
+
+    if (Object.keys(groups).length > 0) {
+        return {
+            schema_version: stringValue(record.schema_version, EMPTY_SETTINGS_SCHEMA.schema_version),
+            settings: Object.entries(groups).reduce<Record<string, ThemeSettingsGroup>>((acc, [groupKey, groupValue]) => {
+                const group = asRecord(groupValue)
+                acc[groupKey] = {
+                    label: stringValue(group.label, labelFromKey(groupKey)),
+                    description: stringValue(group.description),
+                    fields: normalizeFields(group.fields),
+                }
+                return acc
+            }, {}),
+        }
+    }
+
+    const fields = normalizeFields(Array.isArray(value) ? value : record)
+    if (Object.keys(fields).length === 0) return EMPTY_SETTINGS_SCHEMA
+
+    return {
+        schema_version: stringValue(record.schema_version, EMPTY_SETTINGS_SCHEMA.schema_version),
+        settings: {
+            general: {
+                label: 'Theme settings',
+                description: '',
+                fields,
+            },
+        },
+    }
+}
+
+function defaultValueForField(field: SchemaField): unknown {
+    if (field.default !== undefined) return field.default
+    if (field.type === 'toggle') return false
+    if (field.type === 'number' || field.type === 'range') return field.min ?? 0
+    if (field.type === 'color') return '#000000'
+    return ''
+}
+
+function defaultSettings(schema: ThemeSettingsSchema): JsonRecord {
+    return Object.values(schema.settings).reduce<JsonRecord>((acc, group) => {
+        for (const [key, field] of Object.entries(group.fields)) {
+            acc[key] = defaultValueForField(field)
+        }
+        return acc
+    }, {})
+}
+
+function normalizeTemplateConfig(value: unknown): JsonRecord {
+    return asRecord(value)
+}
+
+function normalizeSettingsData(templateConfig: JsonRecord, schema: ThemeSettingsSchema): SettingsData {
+    const configSettingsData = asRecord(asRecord(asRecord(templateConfig.config).settings_data))
+    const rootSettingsData = asRecord(templateConfig.settings_data)
+
+    return {
+        current: {
+            ...defaultSettings(schema),
+            ...asRecord(configSettingsData.current),
+            ...asRecord(rootSettingsData.current),
+            ...asRecord(templateConfig.themeSettings),
+        },
+        presets: {
+            ...asRecord(configSettingsData.presets),
+            ...asRecord(rootSettingsData.presets),
+        },
+    }
+}
+
+function buildDraftConfig(templateConfig: JsonRecord, settingsData: SettingsData): JsonRecord {
+    const config = asRecord(templateConfig.config)
+    const configSettingsData = asRecord(config.settings_data)
+    const rootSettingsData = asRecord(templateConfig.settings_data)
+    const nextSettingsData = {
+        current: settingsData.current,
+        presets: {
+            ...asRecord(configSettingsData.presets),
+            ...asRecord(rootSettingsData.presets),
+            ...settingsData.presets,
+        },
+    }
+
+    return {
+        ...templateConfig,
+        config: {
+            ...config,
+            settings_data: nextSettingsData,
+        },
+        settings_data: {
+            ...rootSettingsData,
+            ...nextSettingsData,
+        },
+        themeSettings: settingsData.current,
+    }
+}
+
+function findField(schema: ThemeSettingsSchema, key: string): SchemaField | null {
+    for (const group of Object.values(schema.settings)) {
+        const field = group.fields[key]
+        if (field) return field
+    }
+    return null
+}
+
+function coerceFieldValue(field: SchemaField | null, value: unknown): unknown {
+    if (!field) return value
+    if (field.type === 'toggle') return Boolean(value)
+    if (field.type === 'number' || field.type === 'range') {
+        return typeof value === 'number' && Number.isFinite(value) ? value : Number(value || 0)
+    }
+    return value
+}
+
+function previewBaseUrl() {
+    const configured = process.env.NEXT_PUBLIC_STOREFRONT_URL?.replace(/\/$/, '')
+    if (configured) return configured
+    if (typeof window === 'undefined') return ''
+    return window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:3003'
+        : window.location.origin
+}
+
+function ThemeSettingsEditorInner() {
     const params = useParams()
     const store = params?.store as string
     const themeId = params?.themeId as string
 
-    const { state, canUndo, canRedo, pushState, replaceState, undo, redo } = useEditorHistory(EMPTY_TEMPLATE)
-    const { selectedSection, setSelectedSection } = useEditorUrl()
-
-    const [activePanel, setActivePanel] = useState<'sections' | 'themeSettings'>('sections')
-    const [viewport, setViewport] = useState<'desktop' | 'tablet' | 'mobile'>('desktop')
+    const [schema, setSchema] = useState<ThemeSettingsSchema>(EMPTY_SETTINGS_SCHEMA)
+    const [baseConfig, setBaseConfig] = useState<JsonRecord>({})
+    const [settingsData, setSettingsData] = useState<SettingsData>(EMPTY_SETTINGS_DATA)
+    const [themeName, setThemeName] = useState(themeId)
+    const [schemaSource, setSchemaSource] = useState('runtime')
+    const [version, setVersion] = useState<number | null>(null)
+    const [savedAt, setSavedAt] = useState<string | null>(null)
+    const [activeGroup, setActiveGroup] = useState<string | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isDirty, setIsDirty] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
-    const [showAddModal, setShowAddModal] = useState(false)
+    const [saveMessage, setSaveMessage] = useState<SaveMessage>(null)
     const [previewToken, setPreviewToken] = useState<string | null>(null)
-    const [previewError, setPreviewError] = useState<string | null>(null)
-    const [isPreviewRefreshing, setIsPreviewRefreshing] = useState(false)
-    const [sectionSchemas, setSectionSchemas] = useState<Record<string, SectionSchema>>({})
-    const [themeSettingsSchema, setThemeSettingsSchema] = useState<ThemeSettingsSchema>(EMPTY_THEME_SETTINGS_SCHEMA)
-    const [themeName, setThemeName] = useState(themeId)
 
-    useEffect(() => {
-        let cancelled = false
+    const groups = useMemo(() => Object.entries(schema.settings), [schema])
+    const visibleGroups = useMemo(() => {
+        if (!activeGroup) return groups
+        return groups.filter(([key]) => key === activeGroup)
+    }, [activeGroup, groups])
 
-        async function loadEditor() {
-            setIsLoading(true)
-            setLoadError(null)
+    const previewUrl = useMemo(() => {
+        const baseUrl = previewBaseUrl()
+        if (!baseUrl || !store) return ''
+        const url = new URL(`/store/${encodeURIComponent(store)}`, baseUrl)
+        url.searchParams.set('editor', '1')
+        if (previewToken) url.searchParams.set('theme_preview_token', previewToken)
+        return url.toString()
+    }, [previewToken, store])
 
-            try {
-                const res = await fetch(
-                    `/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`,
-                    { cache: 'no-store' }
-                )
-                const data = await res.json().catch(() => ({}))
+    const refreshPreview = useCallback(async () => {
+        if (!store || !themeId) return
+        const res = await fetch(`/api/themes/${themeId}/preview-session?store_name=${encodeURIComponent(store)}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ store_name: store, ttl_seconds: 900 }),
+        })
+        const data = await res.json().catch(() => ({}))
+        if (!res.ok) return
+        const token = asRecord(data.data).preview_token
+        if (typeof token === 'string') setPreviewToken(token)
+    }, [store, themeId])
 
-                if (!res.ok) {
-                    throw new Error(data.error || 'Failed to load theme editor')
-                }
+    const loadEditor = useCallback(async () => {
+        if (!store || !themeId) return
 
-                if (!cancelled) {
-                    replaceState(normalizeTemplateConfig(data.draftConfig || data.templateConfig))
-                    if (data.sectionSchemas && typeof data.sectionSchemas === 'object') {
-                        setSectionSchemas(data.sectionSchemas)
-                    }
-                    if (data.themeSettingsSchema?.settings) {
-                        setThemeSettingsSchema(data.themeSettingsSchema)
-                    }
-                    if (typeof data.theme?.name === 'string') {
-                        setThemeName(data.theme.name)
-                    }
-                    setIsDirty(false)
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setLoadError(err instanceof Error ? err.message : 'Failed to load theme editor')
-                }
-            } finally {
-                if (!cancelled) {
-                    setIsLoading(false)
-                }
-            }
-        }
+        setIsLoading(true)
+        setLoadError(null)
+        setSaveMessage(null)
 
-        if (store && themeId) {
-            loadEditor()
-        }
-
-        return () => {
-            cancelled = true
-        }
-    }, [store, themeId, replaceState])
-
-    // Keyboard shortcuts: Ctrl+Z / Ctrl+Shift+Z
-    useEffect(() => {
-        function handleKeyDown(e: KeyboardEvent) {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'z') {
-                e.preventDefault()
-                if (e.shiftKey) {
-                    redo()
-                } else {
-                    undo()
-                }
-            }
-            if ((e.metaKey || e.ctrlKey) && e.key === 's') {
-                e.preventDefault()
-                handleSave()
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown)
-        return () => window.removeEventListener('keydown', handleKeyDown)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [undo, redo])
-
-    // Find the currently selected section
-    const selectedSectionEntry = (() => {
-        if (!selectedSection) return null
-        if (state.sections.header.id === selectedSection) return state.sections.header
-        if (state.sections.footer.id === selectedSection) return state.sections.footer
-        return state.sections.template.find(s => s.id === selectedSection) || null
-    })()
-
-    // --- Handlers ---
-
-    const updateSetting = useCallback((sectionId: string, key: string, value: unknown) => {
-        const next = structuredClone(state)
-        const update = (s: SectionEntry) => {
-            if (s.id === sectionId) {
-                s.settings[key] = value
-                return true
-            }
-            return false
-        }
-        if (!update(next.sections.header) && !update(next.sections.footer)) {
-            next.sections.template.forEach(update)
-        }
-        pushState(next)
-        setIsDirty(true)
-    }, [state, pushState])
-
-    const toggleVisibility = useCallback((sectionId: string) => {
-        const next = structuredClone(state)
-        const toggle = (s: SectionEntry) => {
-            if (s.id === sectionId) { s.visible = !s.visible; return true }
-            return false
-        }
-        if (!toggle(next.sections.header) && !toggle(next.sections.footer)) {
-            next.sections.template.forEach(toggle)
-        }
-        pushState(next)
-        setIsDirty(true)
-    }, [state, pushState])
-
-    const deleteSection = useCallback((sectionId: string) => {
-        const next = structuredClone(state)
-        next.sections.template = next.sections.template.filter(s => s.id !== sectionId)
-        if (selectedSection === sectionId) setSelectedSection(null)
-        pushState(next)
-        setIsDirty(true)
-    }, [state, pushState, selectedSection, setSelectedSection])
-
-    const addSection = useCallback((sectionType: string) => {
-        const schema = sectionSchemas[sectionType]
-        if (!schema) return
-        const newSection: SectionEntry = {
-            id: `${sectionType}-${Date.now()}`,
-            type: sectionType,
-            visible: true,
-            settings: { ...schema.defaults },
-        }
-        const next = structuredClone(state)
-        next.sections.template.push(newSection)
-        pushState(next)
-        setIsDirty(true)
-        setSelectedSection(newSection.id)
-    }, [sectionSchemas, state, pushState, setSelectedSection])
-
-    const updateThemeSetting = useCallback((key: string, value: unknown) => {
-        const next = structuredClone(state)
-        next.themeSettings[key] = value
-        pushState(next)
-        setIsDirty(true)
-    }, [state, pushState])
-
-    const updateBlockSetting = useCallback((sectionId: string, blockId: string, key: string, value: unknown) => {
-        const next = structuredClone(state)
-        const update = (section: SectionEntry) => {
-            if (section.id !== sectionId) return false
-            const block = section.blocks?.find(entry => entry.id === blockId)
-            if (!block) return true
-            block.settings[key] = value
-            return true
-        }
-
-        if (!update(next.sections.header) && !update(next.sections.footer)) {
-            next.sections.template.forEach(update)
-        }
-
-        pushState(next)
-        setIsDirty(true)
-    }, [state, pushState])
-
-    const addBlock = useCallback((sectionId: string, blockType: string) => {
-        const next = structuredClone(state)
-        const add = (section: SectionEntry) => {
-            if (section.id !== sectionId) return false
-            const sectionSchema = sectionSchemas[section.type]
-            const blockSchema = sectionSchema?.blocks_schema?.[blockType]
-            if (!blockSchema) return true
-
-            const settings = Object.fromEntries(
-                Object.entries(blockSchema.fields).map(([key, field]) => [key, field.default ?? ''])
+        try {
+            const res = await fetch(
+                `/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`,
+                { cache: 'no-store' }
             )
+            const data = await res.json().catch(() => ({})) as ApiEditorResponse
 
-            section.blocks = [
-                ...(section.blocks || []),
-                {
-                    id: `${blockType}-${Date.now()}`,
-                    type: blockType,
-                    settings,
-                },
-            ]
-            return true
+            if (!res.ok) {
+                const errorRecord = asRecord((data as { error?: unknown }).error)
+                throw new Error(stringValue(errorRecord.message, stringValue((data as { error?: unknown }).error, 'Failed to load theme editor')))
+            }
+
+            const nextSchema = normalizeSettingsSchema(data.themeSettingsSchema)
+            const nextConfig = normalizeTemplateConfig(data.draftConfig || data.templateConfig)
+            setSchema(nextSchema)
+            setBaseConfig(nextConfig)
+            setSettingsData(normalizeSettingsData(nextConfig, nextSchema))
+            setThemeName(stringValue(data.theme?.name, themeId))
+            setSchemaSource(stringValue(data.theme?.schema_source, 'runtime'))
+            setVersion(typeof data.version === 'number' ? data.version : null)
+            setSavedAt(data.draftSavedAt || null)
+            setActiveGroup((current) => current || Object.keys(nextSchema.settings)[0] || null)
+            setIsDirty(false)
+            await refreshPreview()
+        } catch (err) {
+            setLoadError(err instanceof Error ? err.message : 'Failed to load theme editor')
+        } finally {
+            setIsLoading(false)
         }
+    }, [refreshPreview, store, themeId])
 
-        if (!add(next.sections.header) && !add(next.sections.footer)) {
-            next.sections.template.forEach(add)
-        }
+    useEffect(() => {
+        void loadEditor()
+    }, [loadEditor])
 
-        pushState(next)
+    const updateSetting = useCallback((key: string, value: unknown) => {
+        setSettingsData((current) => ({
+            ...current,
+            current: {
+                ...current.current,
+                [key]: coerceFieldValue(findField(schema, key), value),
+            },
+        }))
         setIsDirty(true)
-    }, [sectionSchemas, state, pushState])
-
-    const deleteBlock = useCallback((sectionId: string, blockId: string) => {
-        const next = structuredClone(state)
-        const remove = (section: SectionEntry) => {
-            if (section.id !== sectionId) return false
-            section.blocks = (section.blocks || []).filter(block => block.id !== blockId)
-            return true
-        }
-
-        if (!remove(next.sections.header) && !remove(next.sections.footer)) {
-            next.sections.template.forEach(remove)
-        }
-
-        pushState(next)
-        setIsDirty(true)
-    }, [state, pushState])
+        setSaveMessage(null)
+    }, [schema])
 
     const saveDraft = useCallback(async () => {
+        const draftConfig = buildDraftConfig(baseConfig, settingsData)
         const res = await fetch(
             `/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}`,
             {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ draftConfig: state }),
+                body: JSON.stringify({ draftConfig }),
             }
         )
         const data = await res.json().catch(() => ({}))
         if (!res.ok) {
-            throw new Error(data.error?.message || (typeof data.error === 'string' ? data.error : res.statusText))
+            const errorRecord = asRecord(asRecord(data).error)
+            throw new Error(stringValue(errorRecord.message, stringValue(asRecord(data).error, res.statusText)))
         }
 
+        setBaseConfig(draftConfig)
+        setVersion(typeof asRecord(data).version === 'number' ? (asRecord(data).version as number) : version)
+        setSavedAt(stringValue(asRecord(data).savedAt, new Date().toISOString()))
+        setIsDirty(false)
+        await refreshPreview()
         return data
-    }, [themeId, store, state])
+    }, [baseConfig, refreshPreview, settingsData, store, themeId, version])
 
     const handleSave = useCallback(async () => {
         setIsSaving(true)
+        setSaveMessage(null)
         try {
             await saveDraft()
-            setLoadError(null)
-            setIsDirty(false)
+            setSaveMessage({ kind: 'success', text: 'Settings data saved' })
         } catch (err) {
-            setLoadError(err instanceof Error ? err.message : 'Failed to save draft')
+            setSaveMessage({ kind: 'error', text: err instanceof Error ? err.message : 'Failed to save settings data' })
         } finally {
             setIsSaving(false)
         }
@@ -348,188 +419,289 @@ function ThemeEditorInner() {
 
     const handlePublish = useCallback(async () => {
         setIsPublishing(true)
+        setSaveMessage(null)
         try {
+            const templateConfig = buildDraftConfig(baseConfig, settingsData)
             const res = await fetch(
                 `/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`,
                 {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ templateConfig: state }),
+                    body: JSON.stringify({ templateConfig }),
                 }
             )
             const data = await res.json().catch(() => ({}))
             if (!res.ok) {
-                throw new Error(data.error?.message || (typeof data.error === 'string' ? data.error : res.statusText))
+                const errorRecord = asRecord(asRecord(data).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(data).error, res.statusText)))
             }
-            setLoadError(null)
+            setBaseConfig(templateConfig)
             setIsDirty(false)
+            setSavedAt(new Date().toISOString())
+            setSaveMessage({ kind: 'success', text: 'Theme published' })
+            await refreshPreview()
         } catch (err) {
-            setLoadError(err instanceof Error ? err.message : 'Failed to publish theme')
+            setSaveMessage({ kind: 'error', text: err instanceof Error ? err.message : 'Failed to publish theme' })
         } finally {
             setIsPublishing(false)
         }
-    }, [themeId, store, state])
+    }, [baseConfig, refreshPreview, settingsData, store, themeId])
 
-    useEffect(() => {
-        if (!store || !themeId || isLoading || loadError) return
-
-        let cancelled = false
-        const timer = window.setTimeout(async () => {
-            setIsPreviewRefreshing(true)
-            setPreviewError(null)
-
-            try {
-                await saveDraft()
-                const res = await fetch(`/api/themes/${themeId}/preview-session?store_name=${encodeURIComponent(store)}`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ store_name: store, ttl_seconds: 900 }),
-                })
-                const data = await res.json().catch(() => ({}))
-                if (!res.ok) {
-                    throw new Error(data.error?.message || data.error || res.statusText)
-                }
-
-                const token = data.data?.preview_token
-                if (!cancelled && typeof token === 'string') {
-                    setPreviewToken(token)
-                }
-            } catch (err) {
-                if (!cancelled) {
-                    setPreviewError(err instanceof Error ? err.message : 'Unable to refresh preview')
-                }
-            } finally {
-                if (!cancelled) {
-                    setIsPreviewRefreshing(false)
-                }
-            }
-        }, 700)
-
-        return () => {
-            cancelled = true
-            window.clearTimeout(timer)
-        }
-    }, [store, themeId, state, isLoading, loadError, saveDraft])
-
-    if (isLoading) {
-        return <ThemeEditorLoading />
-    }
+    if (isLoading) return <EditorLoading />
 
     if (loadError) {
         return (
-            <div className="te-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--clr-bg-secondary, #f8f8f8)' }}>
-                <div style={{ textAlign: 'center', maxWidth: 420 }}>
-                    <p style={{ fontWeight: 700, marginBottom: 8 }}>Theme editor could not load</p>
-                    <p style={{ color: 'var(--clr-text-secondary)', marginBottom: 16 }}>{loadError}</p>
-                    <button className="te-header-save" onClick={() => window.location.reload()}>
+            <main className="generic-theme-editor generic-theme-editor--centered">
+                <section className="generic-theme-editor__state" role="alert">
+                    <AlertTriangle size={28} aria-hidden="true" />
+                    <h1>Theme editor could not load</h1>
+                    <p>{loadError}</p>
+                    <button className="os-btn os-btn-primary" type="button" onClick={() => void loadEditor()}>
+                        <RefreshCw size={16} aria-hidden="true" />
                         Retry
                     </button>
-                </div>
-            </div>
+                </section>
+            </main>
         )
     }
 
     return (
-        <div className="te-root">
-            {/* Header */}
-            <EditorHeader
-                storeName={store}
-                themeName={themeName}
-                themeId={themeId}
-                isDirty={isDirty}
-                isSaving={isSaving}
-                isPublishing={isPublishing}
-                canUndo={canUndo}
-                canRedo={canRedo}
-                onSave={handleSave}
-                onPublish={handlePublish}
-                onUndo={undo}
-                onRedo={redo}
-            />
+        <main className="generic-theme-editor">
+            <header className="generic-theme-editor__header">
+                <div className="generic-theme-editor__header-left">
+                    <Link href={`/${store}/online-store/themes`} className="generic-theme-editor__icon-button" aria-label="Back to themes">
+                        <ArrowLeft size={18} aria-hidden="true" />
+                    </Link>
+                    <div>
+                        <p className="generic-theme-editor__eyebrow">{schemaSource} schema</p>
+                        <h1>{themeName}</h1>
+                    </div>
+                </div>
+                <div className="generic-theme-editor__header-actions">
+                    {saveMessage ? (
+                        <p className={`generic-theme-editor__save-message generic-theme-editor__save-message--${saveMessage.kind}`}>
+                            {saveMessage.kind === 'success' ? <CheckCircle2 size={16} aria-hidden="true" /> : <AlertTriangle size={16} aria-hidden="true" />}
+                            {saveMessage.text}
+                        </p>
+                    ) : null}
+                    <button className="os-btn os-btn-outline" type="button" onClick={handleSave} disabled={isSaving || isPublishing || !isDirty}>
+                        {isSaving ? <RefreshCw className="generic-theme-editor__spin" size={16} aria-hidden="true" /> : <Save size={16} aria-hidden="true" />}
+                        Save
+                    </button>
+                    <button className="os-btn os-btn-primary" type="button" onClick={handlePublish} disabled={isSaving || isPublishing}>
+                        {isPublishing ? <RefreshCw className="generic-theme-editor__spin" size={16} aria-hidden="true" /> : <Send size={16} aria-hidden="true" />}
+                        Publish
+                    </button>
+                </div>
+            </header>
 
-            {/* Body */}
-            <div className="te-body">
-                {/* Icon Rail */}
-                <IconRail
-                    activePanel={activePanel}
-                    viewport={viewport}
-                    onPanelChange={setActivePanel}
-                    onViewportChange={setViewport}
-                />
+            <div className="generic-theme-editor__body">
+                <aside className="generic-theme-editor__sidebar" aria-label="Settings groups">
+                    <div className="generic-theme-editor__sidebar-card">
+                        <div className="generic-theme-editor__sidebar-title">
+                            <Settings size={16} aria-hidden="true" />
+                            <span>Settings groups</span>
+                        </div>
+                        <button
+                            className={`generic-theme-editor__group-button ${activeGroup === null ? 'generic-theme-editor__group-button--active' : ''}`}
+                            type="button"
+                            onClick={() => setActiveGroup(null)}
+                        >
+                            All settings
+                        </button>
+                        {groups.map(([groupKey, group]) => (
+                            <button
+                                key={groupKey}
+                                className={`generic-theme-editor__group-button ${activeGroup === groupKey ? 'generic-theme-editor__group-button--active' : ''}`}
+                                type="button"
+                                onClick={() => setActiveGroup(groupKey)}
+                            >
+                                {group.label}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="generic-theme-editor__schema-card">
+                        <FileJson size={18} aria-hidden="true" />
+                        <div>
+                            <span>config/settings_schema.json</span>
+                            <strong>config/settings_data.json</strong>
+                            {version ? <small>Draft v{version}</small> : null}
+                            {savedAt ? <small>Saved {new Date(savedAt).toLocaleString()}</small> : null}
+                        </div>
+                    </div>
+                </aside>
 
-                {/* Left Panel */}
-                {activePanel === 'sections' ? (
-                    <LeftSidebar
-                        headerSection={state.sections.header}
-                        footerSection={state.sections.footer}
-                        templateSections={state.sections.template}
-                        sectionSchemas={sectionSchemas}
-                        selectedSectionId={selectedSection}
-                        onSelectSection={setSelectedSection}
-                        onToggleVisibility={toggleVisibility}
-                        onDeleteSection={deleteSection}
-                        onAddSection={() => setShowAddModal(true)}
-                    />
-                ) : (
-                    <ThemeSettingsPanel
-                        themeSettings={state.themeSettings}
-                        settingsSchema={themeSettingsSchema}
-                        onSettingChange={updateThemeSetting}
-                    />
-                )}
+                <section className="generic-theme-editor__settings" aria-label="Generated theme settings">
+                    {visibleGroups.length === 0 ? (
+                        <div className="generic-theme-editor__empty">
+                            <FileJson size={28} aria-hidden="true" />
+                            <h2>No editable fields in this schema</h2>
+                        </div>
+                    ) : (
+                        visibleGroups.map(([groupKey, group]) => (
+                            <section className="generic-theme-editor__group" key={groupKey}>
+                                <div className="generic-theme-editor__group-header">
+                                    <h2>{group.label}</h2>
+                                    {group.description ? <p>{group.description}</p> : null}
+                                </div>
+                                <div className="generic-theme-editor__fields">
+                                    {Object.entries(group.fields).map(([fieldKey, field]) => (
+                                        <GeneratedField
+                                            key={fieldKey}
+                                            fieldKey={fieldKey}
+                                            field={field}
+                                            value={settingsData.current[fieldKey] ?? defaultValueForField(field)}
+                                            onChange={updateSetting}
+                                        />
+                                    ))}
+                                </div>
+                            </section>
+                        ))
+                    )}
+                </section>
 
-                {/* Center Preview */}
-                <CenterPanel
-                    storeName={store}
-                    viewport={viewport}
-                    previewToken={previewToken}
-                    previewError={previewError}
-                    isPreviewRefreshing={isPreviewRefreshing}
-                    selectedSectionId={selectedSection}
-                />
-
-                {/* Right Sidebar */}
-                {selectedSection && activePanel === 'sections' && (
-                    <RightSidebar
-                        section={selectedSectionEntry}
-                        sectionSchemas={sectionSchemas}
-                        onSettingChange={updateSetting}
-                        onBlockSettingChange={updateBlockSetting}
-                        onAddBlock={addBlock}
-                        onDeleteBlock={deleteBlock}
-                        onClose={() => setSelectedSection(null)}
-                        storeName={store}
-                    />
-                )}
+                <aside className="generic-theme-editor__preview" aria-label="Theme preview">
+                    <div className="generic-theme-editor__preview-header">
+                        <span>{store}.letbuyy.store</span>
+                        <button className="generic-theme-editor__icon-button" type="button" onClick={() => void refreshPreview()} aria-label="Refresh preview">
+                            <RefreshCw size={16} aria-hidden="true" />
+                        </button>
+                    </div>
+                    {previewUrl ? (
+                        <iframe
+                            className="generic-theme-editor__iframe"
+                            title={`${store} storefront preview`}
+                            src={previewUrl}
+                            sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+                        />
+                    ) : (
+                        <div className="generic-theme-editor__preview-empty">Preview unavailable</div>
+                    )}
+                </aside>
             </div>
-
-            {/* Add Section Modal */}
-            <AddSectionModal
-                open={showAddModal}
-                sectionSchemas={sectionSchemas}
-                existingSectionTypes={state.sections.template.map(s => s.type)}
-                onAdd={addSection}
-                onClose={() => setShowAddModal(false)}
-            />
-        </div>
+        </main>
     )
+}
+
+function GeneratedField({
+    fieldKey,
+    field,
+    value,
+    onChange,
+}: {
+    fieldKey: string
+    field: SchemaField
+    value: unknown
+    onChange: (key: string, value: unknown) => void
+}) {
+    const label = field.label || labelFromKey(fieldKey)
+    const helpText = field.info || field.description
+    const options = fieldOptions(field)
+
+    return (
+        <label className={`generic-theme-editor__field generic-theme-editor__field--${field.type}`}>
+            <span className="generic-theme-editor__field-label">{label}</span>
+            {field.type === 'textarea' || field.type === 'richtext' ? (
+                <textarea
+                    className="te-field-textarea"
+                    maxLength={field.maxLength}
+                    rows={4}
+                    value={String(value ?? '')}
+                    onChange={(event) => onChange(fieldKey, event.target.value)}
+                />
+            ) : field.type === 'color' ? (
+                <div className="te-field-color-wrapper">
+                    <input
+                        className="te-field-color"
+                        type="color"
+                        value={String(value || '#000000')}
+                        onChange={(event) => onChange(fieldKey, event.target.value)}
+                    />
+                    <input
+                        className="te-field-input te-field-color-text"
+                        value={String(value || '')}
+                        maxLength={9}
+                        onChange={(event) => onChange(fieldKey, event.target.value)}
+                    />
+                </div>
+            ) : field.type === 'select' || field.type === 'radio' ? (
+                <select
+                    className="te-field-select"
+                    value={String(value ?? '')}
+                    onChange={(event) => onChange(fieldKey, event.target.value)}
+                >
+                    {options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                            {option.label}
+                        </option>
+                    ))}
+                </select>
+            ) : field.type === 'toggle' ? (
+                <button
+                    type="button"
+                    className={`te-toggle ${Boolean(value) ? 'te-toggle--on' : ''}`}
+                    role="switch"
+                    aria-checked={Boolean(value)}
+                    onClick={(event) => {
+                        event.preventDefault()
+                        onChange(fieldKey, !Boolean(value))
+                    }}
+                >
+                    <span className="te-toggle-thumb" />
+                </button>
+            ) : field.type === 'range' ? (
+                <div className="te-field-range-wrapper">
+                    <input
+                        className="te-field-range"
+                        type="range"
+                        min={field.min ?? 0}
+                        max={field.max ?? 100}
+                        step={field.step ?? 1}
+                        value={Number(value ?? field.min ?? 0)}
+                        onChange={(event) => onChange(fieldKey, Number(event.target.value))}
+                    />
+                    <span className="te-field-range-value">
+                        {Number(value ?? 0)}
+                        {field.unit || ''}
+                    </span>
+                </div>
+            ) : (
+                <input
+                    className="te-field-input"
+                    type={field.type === 'number' ? 'number' : field.type === 'url' || field.type === 'image' ? 'url' : 'text'}
+                    maxLength={field.maxLength}
+                    value={String(value ?? '')}
+                    onChange={(event) => onChange(fieldKey, field.type === 'number' ? Number(event.target.value) : event.target.value)}
+                />
+            )}
+            {helpText ? <span className="generic-theme-editor__field-help">{helpText}</span> : null}
+        </label>
+    )
+}
+
+function fieldOptions(field: SchemaField): FieldOption[] {
+    const options = Array.isArray(field.options) ? field.options : []
+    return options.map((option) => ({
+        label: labelFromKey(option),
+        value: option,
+    }))
 }
 
 export default function ThemeEditorPage() {
     return (
-        <Suspense fallback={<ThemeEditorLoading />}>
-            <ThemeEditorInner />
+        <Suspense fallback={<EditorLoading />}>
+            <ThemeSettingsEditorInner />
         </Suspense>
     )
 }
 
-function ThemeEditorLoading() {
+function EditorLoading() {
     return (
-        <div className="te-root" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', background: 'var(--clr-bg-secondary, #f8f8f8)' }}>
-            <div style={{ textAlign: 'center' }}>
-                <span className="te-spinner" style={{ width: 32, height: 32 }} />
-                <p style={{ marginTop: 16, color: 'var(--clr-text-secondary)' }}>Loading editor…</p>
-            </div>
-        </div>
+        <main className="generic-theme-editor generic-theme-editor--centered">
+            <section className="generic-theme-editor__state" role="status">
+                <RefreshCw className="generic-theme-editor__spin" size={28} aria-hidden="true" />
+                <h1>Loading editor</h1>
+            </section>
+        </main>
     )
 }
