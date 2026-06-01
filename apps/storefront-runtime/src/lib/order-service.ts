@@ -3,7 +3,7 @@
 // Order creation and payment mutation flows are owned by the Hono worker.
 // ============================================================
 
-import { OrderModel, OrderItem, OrderPricing, OrderPayment, OrderStatus, ShippingAddress } from '@/types/store';
+import type { OrderModel, OrderItem, OrderPricing, OrderPayment, OrderStatus, ShippingAddress } from '@letbuyy/checkout-core';
 import { createStorefrontApiClient } from './api/client';
 
 // ============================================================

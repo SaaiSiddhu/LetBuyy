@@ -1,6 +1,6 @@
 'use client';
 
-import type { SectionModel } from '@/types/store';
+import type { SectionModel } from '@letbuyy/theme-engine';
 
 interface BrandMarqueeProps {
     section: SectionModel;

@@ -1,13 +1,8 @@
 import { getDefaultStorefrontThemeTemplate } from '@letbuyy/theme-engine';
-import {
-    DEFAULT_THEME_SETTINGS,
-    ProductModel,
-    SectionModel,
-    StoreModel,
-    StoreNavigation,
-    StoreTemplateConfig,
-    ThemeSettings,
-} from '@/types/store';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import type { SectionModel, StoreTemplateConfig, ThemeSettings } from '@letbuyy/theme-engine';
+import type { ProductModel } from '@letbuyy/commerce-core';
+import type { StoreModel, StoreNavigation } from '@letbuyy/tenant-core';
 
 export const URBAN_KICKS_DEMO_SUBDOMAIN = 'urban-kicks-demo';
 export const URBAN_KICKS_DEMO_STORE_ID = 'demo-urban-kicks-store';

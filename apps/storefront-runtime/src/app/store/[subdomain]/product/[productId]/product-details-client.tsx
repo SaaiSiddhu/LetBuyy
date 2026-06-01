@@ -1,7 +1,9 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ProductModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import type { ThemeSettings } from '@letbuyy/theme-engine';
 import { useCart } from '@/context/cart-context';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';

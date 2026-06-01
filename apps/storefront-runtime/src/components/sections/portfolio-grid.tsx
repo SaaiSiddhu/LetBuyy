@@ -1,6 +1,7 @@
 'use client';
 
-import { SectionModel, ThemeSettings, PortfolioProject } from '@/types/store';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
+import type { PortfolioProject } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
 import { ExternalLink, ArrowUpRight } from 'lucide-react';
 import Image from 'next/image';

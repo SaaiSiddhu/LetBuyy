@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { SectionModel, TestimonialsSettings, ThemeSettings } from '@/types/store';
+import type { SectionModel, TestimonialsSettings, ThemeSettings } from '@letbuyy/theme-engine';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface Props {

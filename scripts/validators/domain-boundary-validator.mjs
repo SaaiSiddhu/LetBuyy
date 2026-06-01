@@ -1,6 +1,7 @@
 import {
   createReporter,
   exists,
+  listWorkspaceFiles,
   readFile,
   readJson,
 } from "./governance-common.mjs";
@@ -106,13 +107,16 @@ for (const [file, packageName] of Object.entries(extractedSchemaFacades)) {
   reporter.assert(!content.includes("./common.schema"), `Extracted schema facade must not rebuild contracts from service-local common schema: ${file}`);
 }
 
-const storefrontTypes = readFile("apps/storefront-runtime/src/types/store.ts");
-reporter.assert(storefrontTypes.includes("@letbuyy/theme-engine"), "Storefront runtime type facade must consume theme-engine contracts");
-reporter.assert(storefrontTypes.includes("@letbuyy/commerce-core"), "Storefront runtime type facade must consume commerce-core contracts");
-reporter.assert(storefrontTypes.includes("@letbuyy/checkout-core"), "Storefront runtime type facade must consume checkout-core contracts");
+reporter.assert(!exists("apps/storefront-runtime/src/types/store.ts"), "Storefront runtime must not keep a local domain type facade");
+const storefrontSourceFiles = listWorkspaceFiles(["apps/storefront-runtime/src"]).filter((file) => /\.(ts|tsx)$/.test(file));
+for (const file of storefrontSourceFiles) {
+  reporter.assert(!readFile(file).includes("@/types/store"), `Storefront source must import domain contracts directly, not through @/types/store: ${file}`);
+}
 reporter.assert(
-  !/\bexport\s+(interface|type)\s+\w+|\bexport\s+const\s+(DEFAULT_THEME_SETTINGS|DEFAULT_NAV_PAGES)\b/.test(storefrontTypes),
-  "Storefront runtime must not redefine extracted domain contracts in apps/storefront-runtime/src/types/store.ts",
+  readFile("apps/storefront-runtime/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/theme-engine") &&
+    readFile("apps/storefront-runtime/src/lib/demo/urban-kicks-demo.ts").includes("@letbuyy/commerce-core") &&
+    readFile("apps/storefront-runtime/src/lib/store-service.ts").includes("@letbuyy/tenant-core"),
+  "Storefront runtime must consume extracted domain contracts directly from owning packages",
 );
 
 const apiTypesIndex = readFile("packages/typescript/api-types/src/index.ts");

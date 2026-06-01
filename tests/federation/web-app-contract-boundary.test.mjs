@@ -93,9 +93,14 @@ test('storefront runtime gateway transport uses storefront API naming', () => {
 test('theme contracts resolve from theme-engine or shared-types in app source', () => {
   const merchantThemeSchemas = read('apps/merchant-control-plane/src/lib/theme-schemas.ts');
   const storefrontDemo = read('apps/storefront-runtime/src/lib/demo/urban-kicks-demo.ts');
+  const storefrontStoreService = read('apps/storefront-runtime/src/lib/store-service.ts');
 
+  assert.equal(existsSync('apps/storefront-runtime/src/types/store.ts'), false);
   assert.match(merchantThemeSchemas, /from '@letbuyy\/theme-engine'/);
   assert.match(storefrontDemo, /from '@letbuyy\/theme-engine'/);
+  assert.match(storefrontDemo, /from '@letbuyy\/commerce-core'/);
+  assert.match(storefrontStoreService, /from '@letbuyy\/tenant-core'/);
   assert.doesNotMatch(merchantThemeSchemas, /@letbuyy\/api-types/);
   assert.doesNotMatch(storefrontDemo, /@letbuyy\/api-types/);
+  assert.doesNotMatch(storefrontStoreService, /@\/types\/store/);
 });

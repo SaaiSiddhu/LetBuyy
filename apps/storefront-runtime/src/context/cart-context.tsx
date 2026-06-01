@@ -1,6 +1,7 @@
 'use client';
 
-import { CartItem, ProductModel } from '@/types/store';
+import type { CartItem } from '@letbuyy/checkout-core';
+import type { ProductModel } from '@letbuyy/commerce-core';
 import { createContext, useContext, useEffect, useState } from 'react';
 
 interface CartContextType {

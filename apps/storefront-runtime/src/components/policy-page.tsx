@@ -3,7 +3,8 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, Printer, Calendar, Shield, FileText, Truck, RefreshCcw } from 'lucide-react';
-import { StoreModel, ThemeSettings } from '@/types/store';
+import type { StoreModel } from '@letbuyy/tenant-core';
+import type { ThemeSettings } from '@letbuyy/theme-engine';
 
 interface PolicyPageProps {
     title: string;

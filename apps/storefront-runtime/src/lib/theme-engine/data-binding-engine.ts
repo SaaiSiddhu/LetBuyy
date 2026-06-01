@@ -1,5 +1,7 @@
 import { ProductService } from '@/lib/product-service';
-import type { ProductModel, SectionModel, StoreModel } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
+import type { SectionModel } from '@letbuyy/theme-engine';
+import type { StoreModel } from '@letbuyy/tenant-core';
 import type { SectionRenderData, StorefrontRouteContext } from './types';
 
 const PRODUCT_SECTION_TYPES = new Set(['productGrid', 'featuredProducts']);

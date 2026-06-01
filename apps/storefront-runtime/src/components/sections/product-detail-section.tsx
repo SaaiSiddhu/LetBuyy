@@ -1,6 +1,7 @@
 import ProductReviews from '@/components/product/product-reviews';
 import ProductDetailsClient from '@/app/store/[subdomain]/product/[productId]/product-details-client';
-import type { ProductModel, SectionModel, ThemeSettings } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 
 export default function ProductDetailSection({
     product,

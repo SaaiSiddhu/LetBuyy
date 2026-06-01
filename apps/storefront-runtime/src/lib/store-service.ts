@@ -1,17 +1,6 @@
-import {
-    StoreModel,
-    DEFAULT_THEME_SETTINGS,
-    ThemeSettings,
-    SectionModel,
-    SectionType,
-    BlockModel,
-    SiteType,
-    PaymentGateway,
-    StorefrontSectionGroupConfig,
-    StorefrontTemplateConfig,
-    NavPage,
-    StoreNavigation,
-} from '@/types/store';
+import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
+import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
     getDefaultStorefrontThemeTemplate,

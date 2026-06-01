@@ -1,9 +1,5 @@
-import type {
-    SectionModel,
-    StorefrontSectionGroupConfig,
-    StorefrontTemplateConfig,
-    StoreModel,
-} from '@/types/store';
+import type { SectionModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
+import type { StoreModel } from '@letbuyy/tenant-core';
 import type {
     StorefrontRenderPlan,
     StorefrontRouteContext,

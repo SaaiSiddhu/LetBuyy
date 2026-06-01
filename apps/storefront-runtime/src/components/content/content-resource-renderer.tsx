@@ -1,5 +1,5 @@
 import type { StorefrontContentResource } from '@/lib/content-service';
-import type { StoreModel } from '@/types/store';
+import type { StoreModel } from '@letbuyy/tenant-core';
 import { buildSectionDataPlan } from '@/lib/theme-engine/data-binding-engine';
 import StorefrontCompositionEngine from '@/lib/theme-engine/composition-engine';
 import { createContentFallbackSection } from '@/lib/theme-engine/content-route';

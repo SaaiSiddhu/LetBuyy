@@ -1,7 +1,7 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import { ProductModel } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
 import { ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 

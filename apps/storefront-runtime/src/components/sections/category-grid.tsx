@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight } from 'lucide-react';
-import type { SectionModel } from '@/types/store';
+import type { SectionModel } from '@letbuyy/theme-engine';
 
 interface CategoryItem {
     name: string;

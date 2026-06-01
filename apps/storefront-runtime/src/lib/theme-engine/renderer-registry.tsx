@@ -24,7 +24,7 @@ import {
     type SchemaField,
     type SectionSchema,
 } from '@letbuyy/theme-engine';
-import type { FooterSettings, HeaderSettings, SectionModel } from '@/types/store';
+import type { FooterSettings, HeaderSettings, SectionModel } from '@letbuyy/theme-engine';
 import type { SectionRendererProps } from './types';
 import type { ReactNode } from 'react';
 

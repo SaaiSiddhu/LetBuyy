@@ -17,7 +17,7 @@ import {
     Zap,
     type LucideIcon,
 } from 'lucide-react';
-import type { SectionModel } from '@/types/store';
+import type { SectionModel } from '@letbuyy/theme-engine';
 
 const ICON_MAP: Record<string, LucideIcon> = {
     award: Award,

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import type { ProductModel, StoreModel } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
+import type { StoreModel } from '@letbuyy/tenant-core';
 
 const PLATFORM_DOMAIN = 'letbuyy.store';
 const DEFAULT_LOCAL_STOREFRONT_URL = 'http://localhost:3003';

@@ -2,7 +2,7 @@ import {
     normalizeAppBlockInstances,
     type AppBlockInstance,
 } from '@letbuyy/app-engine';
-import type { SectionModel, ThemeSettings } from '@/types/store';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { CSSProperties } from 'react';
 
 interface AppBlockSlotProps {

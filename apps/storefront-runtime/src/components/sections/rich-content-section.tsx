@@ -1,5 +1,5 @@
 import RichContent from '@/components/content/rich-content';
-import type { SectionModel, ThemeSettings } from '@/types/store';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 
 function asRecord(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)

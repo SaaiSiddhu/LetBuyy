@@ -1,6 +1,7 @@
 'use client';
 
-import { SectionModel, ThemeSettings, SkillItem } from '@/types/store';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
+import type { SkillItem } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
 
 interface Props {

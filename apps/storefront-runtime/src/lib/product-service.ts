@@ -1,4 +1,4 @@
-import { ProductModel } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
 import type { Product as SharedProduct } from '@letbuyy/shared-types';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {

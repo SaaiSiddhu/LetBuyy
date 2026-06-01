@@ -2,7 +2,8 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { StoreModel, FooterSettings, ThemeSettings, BlockModel } from '@/types/store';
+import type { StoreModel } from '@letbuyy/tenant-core';
+import type { FooterSettings, ThemeSettings, BlockModel } from '@letbuyy/theme-engine';
 import { resolveStoreHref } from '@/lib/store-paths';
 import { Mail, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from 'lucide-react';
 

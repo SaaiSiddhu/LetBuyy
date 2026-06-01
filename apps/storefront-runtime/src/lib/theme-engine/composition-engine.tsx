@@ -1,4 +1,4 @@
-import type { StoreModel } from '@/types/store';
+import type { StoreModel } from '@letbuyy/tenant-core';
 import type { SectionRenderData, StorefrontRenderPlan } from './types';
 import { renderRegisteredSection } from './renderer-registry';
 

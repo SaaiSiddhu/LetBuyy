@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { OrderModel, OrderStatus } from '@/types/store';
+import type { OrderModel, OrderStatus } from '@letbuyy/checkout-core';
 
 interface OrdersClientProps {
     subdomain: string;

@@ -1,5 +1,5 @@
 import type { StorefrontContentResource } from '@/lib/content-service';
-import type { SectionModel } from '@/types/store';
+import type { SectionModel } from '@letbuyy/theme-engine';
 
 export function createContentFallbackSection(resource: StorefrontContentResource): SectionModel {
     return {

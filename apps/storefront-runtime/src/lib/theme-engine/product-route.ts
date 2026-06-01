@@ -1,4 +1,4 @@
-import type { SectionModel } from '@/types/store';
+import type { SectionModel } from '@letbuyy/theme-engine';
 
 export function createProductListingFallbackSection(title: string): SectionModel {
     return {

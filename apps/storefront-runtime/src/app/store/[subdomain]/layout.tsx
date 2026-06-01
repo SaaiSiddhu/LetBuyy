@@ -7,7 +7,7 @@ import { CustomerAuthProvider } from '@/context/customer-auth-context';
 import { WishlistProvider } from '@/context/wishlist-context';
 import ComingSoonRouter from '@/components/coming-soon';
 import type { SiteType } from '@/components/coming-soon';
-import { ProductModel } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
 import { resolveStorefrontTemplate } from '@/lib/theme-engine/template-resolver';
 import { StorefrontSectionGroupRenderer } from '@/lib/theme-engine/composition-engine';
 import type { SectionRenderData } from '@/lib/theme-engine/types';

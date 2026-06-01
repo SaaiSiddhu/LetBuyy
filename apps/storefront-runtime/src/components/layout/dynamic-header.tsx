@@ -10,7 +10,9 @@ import { useCart } from '@/context/cart-context';
 import AccountBottomSheet from '@/components/account/account-bottom-sheet';
 import CartDrawer from '@/components/cart/cart-drawer';
 import { getStoreBasePath, resolveStoreHref } from '@/lib/store-paths';
-import { HeaderSettings, NavPage, StoreModel, ThemeSettings, ProductModel } from '@/types/store';
+import type { HeaderSettings, ThemeSettings } from '@letbuyy/theme-engine';
+import type { NavPage, StoreModel } from '@letbuyy/tenant-core';
+import type { ProductModel } from '@letbuyy/commerce-core';
 
 interface DynamicHeaderProps {
     store: StoreModel;

@@ -1,6 +1,7 @@
 'use client';
 
-import { SectionModel, ThemeSettings, ExperienceItem } from '@/types/store';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
+import type { ExperienceItem } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap } from 'lucide-react';
 

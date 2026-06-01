@@ -1,4 +1,6 @@
-import type { ProductModel, SectionModel, StoreModel, ThemeSettings } from '@/types/store';
+import type { ProductModel } from '@letbuyy/commerce-core';
+import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
+import type { StoreModel } from '@letbuyy/tenant-core';
 
 export type StorefrontRouteType =
     | 'index'
