@@ -60,6 +60,7 @@ export interface Env {
     CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
+    ASSET_PUBLIC_BASE_URL?: string;
     R2_BUCKET?: R2Bucket;
     RUNTIME_DB?: D1Database;
     CACHE?: KVNamespace;

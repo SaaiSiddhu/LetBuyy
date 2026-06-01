@@ -21,6 +21,14 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
     return btoa(binary);
 }
 
+function publicAssetBaseUrl(env: Env): string {
+    const configuredBaseUrl = env.ASSET_PUBLIC_BASE_URL?.trim();
+    const fallbackBaseUrl = isProductionEnv(env)
+        ? 'https://cdn.letbuyy.store'
+        : 'https://cdn-staging.letbuyy.store';
+    return (configuredBaseUrl || fallbackBaseUrl).replace(/\/+$/, '');
+}
+
 // POST /upload — Upload file to R2
 router.post('/', async (c) => {
     const auth = c.get('auth');
@@ -79,8 +87,8 @@ router.post('/', async (c) => {
             httpMetadata: { contentType: file.type },
         });
 
-        // Return public URL
-        const publicUrl = `https://cdn.letbuyy.store/${key}`;
+        // Return public URL for the environment-specific CDN in front of R2.
+        const publicUrl = `${publicAssetBaseUrl(c.env)}/${key}`;
 
         return c.json({
             data: {

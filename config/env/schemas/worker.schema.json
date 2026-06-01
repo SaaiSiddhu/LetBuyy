@@ -21,6 +21,7 @@
     "RUNTIME_NAME": { "type": "string" },
     "PRIMARY_REGION": { "type": "string" },
     "FAILOVER_REGION": { "type": "string" },
+    "ASSET_PUBLIC_BASE_URL": { "type": "string", "format": "uri" },
     "EVENT_QUEUE_NAME": { "type": "string" },
     "ANALYTICS_QUEUE_NAME": { "type": "string" },
     "SEARCH_QUEUE_NAME": { "type": "string" },
