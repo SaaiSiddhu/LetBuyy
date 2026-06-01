@@ -8,6 +8,8 @@ const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-executio
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
 const PAYMENTS_ROUTE = 'services/api-gateway/src/routes/payments.ts';
+const ONBOARDING_ROUTE = 'services/api-gateway/src/routes/onboarding.ts';
+const STORES_ROUTE = 'services/api-gateway/src/routes/stores.ts';
 const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
 const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
@@ -83,6 +85,21 @@ test('gateway validates registered event payloads before outbox writes', () => {
   assert.match(source, /parseDomainEventPayload/);
   assert.match(source, /Event .* must use aggregate type/);
   assert.match(source, /schema_version: contract\?\.schemaVersion \|\| 1/);
+});
+
+test('store creation surfaces emit registered store.created events', () => {
+  const onboardingSource = read(ONBOARDING_ROUTE);
+  const storesSource = read(STORES_ROUTE);
+
+  for (const source of [onboardingSource, storesSource]) {
+    assert.match(source, /new EventExecutionAdapter\(db\)\.emitDomainEvent/);
+    assert.match(source, /eventType: 'store\.created'/);
+    assert.match(source, /aggregateType: 'store'/);
+    assert.match(source, /site_id: input\.store\.id/);
+    assert.match(source, /store_slug: input\.store\.subdomain/);
+    assert.match(source, /owner_user_id: input\.ownerUserId/);
+    assert.match(source, /emitStoreCreatedEvent\(db/);
+  }
 });
 
 test('product gateway mutations emit registered product events', () => {

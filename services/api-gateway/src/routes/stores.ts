@@ -4,6 +4,8 @@ import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { CreateStoreSchema, PaymentConfigSchema, UpdateStoreSchema } from '../schemas/store.schema';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { getRequestId } from '../lib/tenant-context';
 import { verifyRazorpayCredentials as verifyRazorpayCredentialsWithAdapter } from '@letbuyy/infrastructure/razorpay-adapter';
 
 const router = new Hono<{ Bindings: Env }>();
@@ -20,6 +22,33 @@ type PaymentSettings = {
         updated_at?: string;
     };
 };
+
+async function emitStoreCreatedEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        store: { id?: string; subdomain?: string | null; store_name?: string | null; plan?: string | null };
+        ownerUserId: string;
+        requestId: string;
+    },
+): Promise<void> {
+    if (!input.store.id) return;
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.store.id,
+        aggregateType: 'store',
+        aggregateId: input.store.id,
+        eventType: 'store.created',
+        payload: {
+            site_id: input.store.id,
+            store_slug: input.store.subdomain || input.store.store_name || input.store.id,
+            owner_user_id: input.ownerUserId,
+            plan_code: input.store.plan || undefined,
+        },
+        idempotencyKey: `store.created:${input.store.id}`,
+        requestId: input.requestId,
+        actorId: input.ownerUserId,
+    });
+}
 
 function base64EncodeBytes(bytes: Uint8Array): string {
     let binary = '';
@@ -474,6 +503,12 @@ router.post('/', validate('json', CreateStoreSchema), async (c) => {
     if (error) {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
+
+    await emitStoreCreatedEvent(db, {
+        store: data,
+        ownerUserId: customUser.id,
+        requestId: getRequestId(c),
+    });
 
     return c.json(success(data), 201);
 });

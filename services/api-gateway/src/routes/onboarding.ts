@@ -7,6 +7,8 @@ import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { getSupabaseAdmin, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
+import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { getRequestId } from '../lib/tenant-context';
 import {
     StartOnboardingSchema,
     CheckSubdomainSchema,
@@ -14,6 +16,32 @@ import {
 } from '../schemas/onboarding.schema';
 
 const router = new Hono<{ Bindings: Env }>();
+
+async function emitStoreCreatedEvent(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        store: { id?: string; subdomain?: string | null; store_name?: string | null };
+        ownerUserId: string;
+        requestId: string;
+    },
+): Promise<void> {
+    if (!input.store.id) return;
+
+    await new EventExecutionAdapter(db).emitDomainEvent({
+        storeId: input.store.id,
+        aggregateType: 'store',
+        aggregateId: input.store.id,
+        eventType: 'store.created',
+        payload: {
+            site_id: input.store.id,
+            store_slug: input.store.subdomain || input.store.store_name || input.store.id,
+            owner_user_id: input.ownerUserId,
+        },
+        idempotencyKey: `store.created:${input.store.id}`,
+        requestId: input.requestId,
+        actorId: input.ownerUserId,
+    });
+}
 
 // POST /onboarding/start — Start a new onboarding attempt
 router.post('/start', validate('json', StartOnboardingSchema), async (c) => {
@@ -228,6 +256,12 @@ router.post('/:attemptId/complete', async (c) => {
     if (storeError) {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: storeError.message } }, 500);
     }
+
+    await emitStoreCreatedEvent(db, {
+        store,
+        ownerUserId: customUser.id,
+        requestId: getRequestId(c),
+    });
 
     // Save survey data if present
     if (attempt.survey_data && Object.keys(attempt.survey_data).length > 0) {
