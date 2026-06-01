@@ -3,7 +3,12 @@ import type { NextRequest } from 'next/server'
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core'
 
 const PROTECTED_ROUTES = ['/my-apps', '/developers/register', '/developers/dashboard', '/developers/apps']
-const PROTECTED_API_ROUTES = ['/api/apps/install', '/api/developers']
+const PROTECTED_API_ROUTES = ['/api/developers']
+const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
+
+function isProtectedApiRoute(pathname: string) {
+    return PROTECTED_API_ROUTES.some((route) => pathname.startsWith(route)) || /^\/api\/apps\/[^/]+\/install$/.test(pathname)
+}
 
 export function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl
@@ -14,12 +19,12 @@ export function proxy(request: NextRequest) {
 
     const isProtected = PROTECTED_ROUTES.some((route) => pathname.startsWith(route))
     if (isProtected && !session.accepted) {
-        const loginUrl = new URL('https://accounts.letbuyy.store/login')
-        loginUrl.searchParams.set('redirect', request.url)
+        const loginUrl = new URL('/lookup', ACCOUNTS_URL)
+        loginUrl.searchParams.set('return_to', request.url)
         return NextResponse.redirect(loginUrl)
     }
 
-    const isProtectedApi = PROTECTED_API_ROUTES.some((route) => pathname.startsWith(route))
+    const isProtectedApi = isProtectedApiRoute(pathname)
     if (isProtectedApi && !session.accepted) {
         return NextResponse.json(
             { error: 'Authentication required' },

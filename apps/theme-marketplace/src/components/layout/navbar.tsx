@@ -433,9 +433,9 @@ export default function Navbar() {
     const closeMobile = () => setMobileOpen(false);
 
     // Auth link helpers
-    const redirectParam = currentUrl ? `?redirect=${encodeURIComponent(currentUrl)}` : '';
-    const loginUrl = `${ACCOUNTS_URL}/login${redirectParam}`;
-    const signupUrl = `${ACCOUNTS_URL}/signup${redirectParam}`;
+    const returnToParam = currentUrl ? `?return_to=${encodeURIComponent(currentUrl)}` : '';
+    const loginUrl = `${ACCOUNTS_URL}/lookup${returnToParam}`;
+    const signupUrl = `${ACCOUNTS_URL}/signup${returnToParam}`;
 
     // User info for mobile drawer
     const displayName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
