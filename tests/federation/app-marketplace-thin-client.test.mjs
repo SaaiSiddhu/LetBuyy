@@ -37,7 +37,8 @@ test('app-marketplace data surfaces use the shared api client and shared types',
   assert.doesNotMatch(service, /worker-client|appStoreWorkerFetch|proxyWorkerJson/);
 
   const dashboard = read('apps/app-marketplace/src/app/(auth)/developers/dashboard/page.tsx');
-  assert.match(dashboard, /api\.appStore\.developerApps/);
+  assert.match(dashboard, /api\.appStore\.partnerDashboard\(\)/);
+  assert.doesNotMatch(dashboard, /api\.appStore\.developerApps\(\)/);
   assert.doesNotMatch(dashboard, /worker-client|appStoreWorkerFetch/);
 
   const myApps = read('apps/app-marketplace/src/app/(auth)/my-apps/page.tsx');

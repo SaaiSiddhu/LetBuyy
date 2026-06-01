@@ -32,12 +32,13 @@ test('federated apps redirect unauthenticated browser traffic to accounts lookup
   }
 });
 
-test('theme marketplace protects account and checkout routes at the edge', () => {
+test('theme marketplace protects account checkout and install routes at the edge', () => {
   const source = readFileSync('apps/theme-marketplace/src/proxy.ts', 'utf8');
 
-  assert.match(source, /const PROTECTED_ROUTES = \['\/checkout', '\/dashboard'\]/);
+  assert.match(source, /const PROTECTED_ROUTES = \['\/checkout', '\/dashboard', '\/install'\]/);
   assert.match(source, /'\/checkout\/:path\*'/);
   assert.match(source, /'\/dashboard\/:path\*'/);
+  assert.match(source, /'\/install\/:path\*'/);
 });
 
 test('identity lookup is the shared return_to entry point for federated SSO', () => {
