@@ -138,8 +138,14 @@ test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks 
   const received = [];
   const receiver = createServer(async (request, response) => {
     const body = await readRequestBody(request);
-    received.push({ headers: request.headers, body });
-    response.writeHead(204);
+    const accepted = await webhookDispatch.verifyLetBuyyWebhookHmac({
+      rawBody: body,
+      timestamp: request.headers['x-letbuyy-timestamp'],
+      signature: request.headers['x-letbuyy-hmac-sha256'],
+      signingSecret,
+    });
+    received.push({ headers: request.headers, body, accepted });
+    response.writeHead(accepted ? 204 : 401);
     response.end();
   });
 
@@ -171,7 +177,16 @@ test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks 
 
     assert.equal(subscriptions.length, 1);
     assert.equal(subscriptions[0].target_url, targetUrl);
-    assert.deepEqual(Array.from(subscriptions[0].event_types), ['app.installed']);
+    assert.deepEqual(Array.from(subscriptions[0].event_types), [
+      'app.installed',
+      'customers/data_request',
+      'customers/redact',
+      'shop/redact',
+    ]);
+    assert.deepEqual(
+      Array.from(subscriptions[0].metadata.mandatory_compliance_topics),
+      Array.from(appEngine.MANDATORY_COMPLIANCE_WEBHOOK_TOPICS),
+    );
 
     const dispatchResult = await webhookDispatch.dispatchAppLifecycleWebhook(
       {
@@ -190,6 +205,7 @@ test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks 
     assert.equal(dispatchResult.ok, true);
     assert.equal(dispatchResult.status, 204);
     assert.equal(received.length, 1);
+    assert.equal(received[0].accepted, true);
 
     const request = received[0];
     const expectedSignature = await authCore.hmacSha256Hex(
@@ -198,12 +214,25 @@ test('app lifecycle issues scoped OAuth tokens and delivers signed app webhooks 
     );
     assert.equal(request.headers['x-letbuyy-event-id'], 'evt_app_installed_001');
     assert.equal(request.headers['x-letbuyy-event-type'], 'app.installed');
+    assert.equal(request.headers['x-letbuyy-hmac-sha256'], `v1=${expectedSignature}`);
     assert.equal(request.headers['x-letbuyy-signature'], `v1=${expectedSignature}`);
 
     const parsed = JSON.parse(request.body);
     assert.equal(parsed.event_type, 'app.installed');
     assert.equal(parsed.payload.app_id, app.id);
     assert.deepEqual(Array.from(parsed.payload.scopes), ['read_products', 'write_orders']);
+
+    const invalidResponse = await fetch(targetUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-LetBuyy-Timestamp': '1780272000',
+        'X-LetBuyy-Hmac-SHA256': 'v1=bad',
+      },
+      body: JSON.stringify({ event_type: 'customers/redact', payload: { customer_id: 'customer_001' } }),
+    });
+
+    assert.equal(invalidResponse.status, 401);
   } finally {
     await close(receiver);
   }

@@ -142,6 +142,14 @@ export interface AppLifecycleEventPayload extends Record<string, unknown> {
   occurred_at: string;
 }
 
+export const MANDATORY_COMPLIANCE_WEBHOOK_TOPICS = [
+  'customers/data_request',
+  'customers/redact',
+  'shop/redact',
+] as const;
+
+export type MandatoryComplianceWebhookTopic = typeof MANDATORY_COMPLIANCE_WEBHOOK_TOPICS[number];
+
 export interface AppAdminEmbedExtensionRecord extends AppEngineJsonRecord {
   id?: string | null;
   type?: string | null;
@@ -397,11 +405,13 @@ export function planAppWebhookSubscriptions(input: {
   webhookDefinitions: AppWebhookDefinition[];
   defaultSigningSecret: string;
 }): AppWebhookSubscriptionInsert[] {
+  const mandatoryTopics = Array.from(MANDATORY_COMPLIANCE_WEBHOOK_TOPICS);
+
   return input.webhookDefinitions.map((webhook) => ({
     site_id: input.storeId,
     name: `${input.app.name} ${webhook.event}`,
     target_url: webhook.url,
-    event_types: [webhook.event],
+    event_types: Array.from(new Set([webhook.event, ...mandatoryTopics])),
     signing_secret: webhook.secret || input.defaultSigningSecret,
     status: 'active',
     metadata: {
@@ -409,6 +419,7 @@ export function planAppWebhookSubscriptions(input: {
       app_id: input.app.id,
       installation_id: input.installationId,
       app_webhook_id: webhook.id || null,
+      mandatory_compliance_topics: mandatoryTopics,
     },
     created_by: input.installedBy,
     updated_by: input.installedBy,

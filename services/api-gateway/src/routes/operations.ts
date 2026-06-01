@@ -120,14 +120,38 @@ router.post('/webhook-deliveries/dispatch', async (c) => {
         throw new ValidationError('Invalid webhook delivery dispatch request', parsed.error.flatten());
     }
 
-    const db = getSupabaseAdmin(c);
-    const service = new OutboxExecutionAdapter(db);
-    const result = await service.dispatchWebhookDeliveries(
-        dispatcherId('manual-webhooks'),
-        parsed.data.limit || 25
-    );
+    if (!c.env.WEBHOOK_SERVICE || !c.env.INTERNAL_API_SECRET) {
+        return c.json({
+            error: {
+                code: 'WEBHOOK_SERVICE_UNAVAILABLE',
+                message: 'Webhook delivery dispatch is owned by services/webhook-service and is not bound in this environment',
+            },
+        }, 503);
+    }
 
-    return c.json(success(result));
+    const response = await c.env.WEBHOOK_SERVICE.fetch('https://webhook-service/webhook-deliveries/dispatch', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-LetBuyy-Internal-Secret': c.env.INTERNAL_API_SECRET,
+        },
+        body: JSON.stringify({
+            dispatcher_id: dispatcherId('manual-webhooks'),
+            limit: parsed.data.limit || 25,
+        }),
+    });
+    const result = await response.json().catch(() => null);
+
+    if (!response.ok) {
+        return c.json(result || {
+            error: {
+                code: 'WEBHOOK_SERVICE_ERROR',
+                message: 'Webhook delivery dispatch failed',
+            },
+        }, 502);
+    }
+
+    return c.json(result);
 });
 
 router.get('/outbox', async (c) => {

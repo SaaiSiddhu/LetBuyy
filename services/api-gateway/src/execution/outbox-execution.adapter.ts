@@ -11,7 +11,6 @@ import {
     eventRetryDelaySeconds,
     queueNamesForEvent,
 } from '@letbuyy/orchestration';
-import { hmacSha256Hex } from '../lib/internal-auth';
 
 type JsonObject = Record<string, unknown>;
 
@@ -41,23 +40,6 @@ interface WebhookSubscription {
     event_types: string[];
 }
 
-interface WebhookDeliveryClaim {
-    id: string;
-    site_id: string;
-    subscription_id: string;
-    event_id: string;
-    event_type: string;
-    target_url: string;
-    payload: JsonObject;
-    signing_secret: string;
-    request_id: string | null;
-    trace_id: string | null;
-    idempotency_key: string;
-    schema_version: number;
-    attempts: number;
-    max_attempts: number;
-}
-
 export interface DispatchBatchResult {
     dispatcher_id: string;
     claimed: number;
@@ -75,32 +57,6 @@ interface DispatchOptions {
     webhookLimit?: number;
 }
 
-interface WebhookSendResult {
-    ok: boolean;
-    status: number | null;
-    preview: string | null;
-    error: string | null;
-}
-
-async function readResponsePreview(response: Response, maxCharacters = 2000): Promise<string | null> {
-    if (!response.body) return null;
-
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder();
-    let output = '';
-
-    while (output.length < maxCharacters) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        output += decoder.decode(value, { stream: true });
-    }
-
-    output += decoder.decode();
-    await reader.cancel().catch(() => undefined);
-
-    return output.slice(0, maxCharacters);
-}
-
 export class OutboxExecutionAdapter {
     static readonly applicationWorkflows = NOTIFICATION_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = NOTIFICATION_EXECUTION_PIPELINES;
@@ -108,16 +64,16 @@ export class OutboxExecutionAdapter {
         kind: 'runtime-bridge',
         adapter: 'outbox-execution.adapter',
         workflowAuthority: 'notification-application',
-        allowedResponsibilities: ['queue-claim', 'webhook-delivery', 'database-rpc'],
+        allowedResponsibilities: ['queue-claim', 'database-rpc'],
         forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
     });
 
-    constructor(private db: SupabaseClient, private fetcher: typeof fetch = fetch) {}
+    constructor(private db: SupabaseClient) {}
 
     async dispatchBatch(options: DispatchOptions): Promise<DispatchBatchResult> {
         const dispatcherId = options.dispatcherId;
         const outboxLimit = Math.min(Math.max(options.outboxLimit || 25, 1), 100);
-        const webhookLimit = Math.min(Math.max(options.webhookLimit || 25, 1), 100);
+        void options.webhookLimit;
 
         const result: DispatchBatchResult = {
             dispatcher_id: dispatcherId,
@@ -146,34 +102,7 @@ export class OutboxExecutionAdapter {
             }
         }
 
-        const webhookResult = await this.dispatchWebhookDeliveries(dispatcherId, webhookLimit);
-        result.webhook_succeeded = webhookResult.succeeded;
-        result.webhook_failed = webhookResult.failed;
-
         return result;
-    }
-
-    async dispatchWebhookDeliveries(
-        dispatcherId: string,
-        limit = 25
-    ): Promise<{ claimed: number; succeeded: number; failed: number }> {
-        const deliveries = await this.claimWebhookDeliveries(dispatcherId, Math.min(Math.max(limit, 1), 100));
-        let succeeded = 0;
-        let failed = 0;
-
-        for (const delivery of deliveries) {
-            const response = await this.sendWebhookDelivery(delivery);
-
-            if (response.ok) {
-                await this.completeWebhookDelivery(dispatcherId, delivery.id, response.status || 200, response.preview);
-                succeeded += 1;
-            } else {
-                await this.failWebhookDelivery(dispatcherId, delivery, response);
-                failed += 1;
-            }
-        }
-
-        return { claimed: deliveries.length, succeeded, failed };
     }
 
     private async claimOutboxEvents(dispatcherId: string, limit: number): Promise<OutboxEventClaim[]> {
@@ -343,105 +272,4 @@ export class OutboxExecutionAdapter {
         }
     }
 
-    private async claimWebhookDeliveries(dispatcherId: string, limit: number): Promise<WebhookDeliveryClaim[]> {
-        const { data, error } = await this.db.rpc('claim_webhook_deliveries', {
-            p_dispatcher_id: dispatcherId,
-            p_limit: limit,
-            p_lock_seconds: 120,
-        });
-
-        if (error) {
-            throw new Error(`Webhook delivery claim failed: ${error.message}`);
-        }
-
-        return Array.isArray(data) ? (data as WebhookDeliveryClaim[]) : [];
-    }
-
-    private async sendWebhookDelivery(delivery: WebhookDeliveryClaim): Promise<WebhookSendResult> {
-        if (!isValidWebhookTarget(delivery.target_url)) {
-            return {
-                ok: false,
-                status: null,
-                preview: null,
-                error: 'Webhook target URL must be HTTPS',
-            };
-        }
-
-        const body = JSON.stringify(delivery.payload);
-        const timestamp = Math.floor(Date.now() / 1000).toString();
-        const signature = await hmacSha256Hex(delivery.signing_secret, `${timestamp}.${body}`);
-
-        try {
-            const response = await this.fetcher(delivery.target_url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'LetBuyy-Webhooks/1.0',
-                    'X-LetBuyy-Event-ID': delivery.event_id,
-                    'X-LetBuyy-Event-Type': delivery.event_type,
-                    'X-LetBuyy-Request-ID': delivery.request_id || '',
-                    'X-LetBuyy-Trace-ID': delivery.trace_id || '',
-                    'X-LetBuyy-Timestamp': timestamp,
-                    'X-LetBuyy-Signature': `v1=${signature}`,
-                },
-                body,
-            });
-            const preview = await readResponsePreview(response);
-
-            if (response.ok) {
-                return { ok: true, status: response.status, preview, error: null };
-            }
-
-            return {
-                ok: false,
-                status: response.status,
-                preview,
-                error: `Webhook endpoint returned HTTP ${response.status}`,
-            };
-        } catch (error) {
-            return {
-                ok: false,
-                status: null,
-                preview: null,
-                error: error instanceof Error ? error.message : 'Webhook request failed',
-            };
-        }
-    }
-
-    private async completeWebhookDelivery(
-        dispatcherId: string,
-        deliveryId: string,
-        responseStatus: number,
-        responsePreview: string | null
-    ): Promise<void> {
-        const { error } = await this.db.rpc('complete_webhook_delivery', {
-            p_delivery_id: deliveryId,
-            p_dispatcher_id: dispatcherId,
-            p_response_status: responseStatus,
-            p_response_body_preview: responsePreview,
-        });
-
-        if (error) {
-            throw new Error(`Webhook completion failed: ${error.message}`);
-        }
-    }
-
-    private async failWebhookDelivery(
-        dispatcherId: string,
-        delivery: WebhookDeliveryClaim,
-        response: WebhookSendResult
-    ): Promise<void> {
-        const { error } = await this.db.rpc('fail_webhook_delivery', {
-            p_delivery_id: delivery.id,
-            p_dispatcher_id: dispatcherId,
-            p_error_message: response.error || 'Webhook delivery failed',
-            p_response_status: response.status,
-            p_response_body_preview: response.preview,
-            p_retry_seconds: eventRetryDelaySeconds(delivery.attempts, 120),
-        });
-
-        if (error) {
-            throw new Error(`Webhook failure recording failed: ${error.message}`);
-        }
-    }
 }

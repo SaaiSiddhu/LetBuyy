@@ -9,9 +9,10 @@ import {
     insertSupabaseRows,
     patchSupabaseRows,
     selectSupabaseRows,
+    supabaseServiceHeaders,
     upsertSupabaseRows,
 } from "@letbuyy/infrastructure/supabase-adapter";
-import { dispatchAppLifecycleWebhook } from "./app-lifecycle-dispatch";
+import { dispatchLetBuyyWebhook } from "./app-lifecycle-dispatch";
 
 // ============================================================
 // WEBHOOK HANDLER — Payment Provider Signature Verification
@@ -150,6 +151,23 @@ interface SubscriptionRow {
     external_subscription_id?: string | null;
 }
 
+interface WebhookDeliveryClaim {
+    id: string;
+    site_id: string;
+    subscription_id: string;
+    event_id: string;
+    event_type: string;
+    target_url: string;
+    payload: JsonObject;
+    signing_secret: string;
+    request_id: string | null;
+    trace_id: string | null;
+    idempotency_key: string;
+    schema_version: number;
+    attempts: number;
+    max_attempts: number;
+}
+
 function asObject(value: unknown): JsonObject {
     return value && typeof value === "object" && !Array.isArray(value)
         ? value as JsonObject
@@ -197,6 +215,30 @@ async function insertRows<T>(
     rows: Record<string, unknown> | Array<Record<string, unknown>>
 ): Promise<T[]> {
     return insertSupabaseRows<T>(env, table, rows);
+}
+
+async function callSupabaseRpc<T>(
+    env: Env,
+    functionName: string,
+    body: Record<string, unknown>,
+): Promise<T> {
+    const response = await fetch(new URL(`/rest/v1/rpc/${functionName}`, env.SUPABASE_URL), {
+        method: "POST",
+        headers: supabaseServiceHeaders(env),
+        body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+        const message = await response.text().catch(() => "");
+        throw new Error(`Supabase RPC failed for ${functionName}: ${response.status} ${message}`);
+    }
+
+    return response.json() as Promise<T>;
+}
+
+function webhookRetryDelaySeconds(attempts: number, baseSeconds = 120): number {
+    const boundedAttempts = Math.max(0, Math.min(attempts, 8));
+    return Math.min(baseSeconds * Math.pow(2, boundedAttempts), 60 * 60);
 }
 
 function requestHeaderMap(headers: Headers): Record<string, string> {
@@ -694,7 +736,7 @@ app.post("/app-lifecycle/dispatch", async (c) => {
         return c.json({ error: { code: "VALIDATION", message: "target_url, event_id, event_type, and signing_secret are required" } }, 400);
     }
 
-    const result = await dispatchAppLifecycleWebhook({
+    const result = await dispatchLetBuyyWebhook({
         target_url: targetUrl,
         event_id: eventId,
         event_type: eventType,
@@ -707,6 +749,85 @@ app.post("/app-lifecycle/dispatch", async (c) => {
     });
 
     return c.json({ data: result }, result.ok ? 200 : 502);
+});
+
+async function dispatchWebhookDeliveries(
+    env: Env,
+    input: { dispatcherId: string; limit: number },
+): Promise<{ dispatcher_id: string; claimed: number; succeeded: number; failed: number }> {
+    const deliveries = await callSupabaseRpc<WebhookDeliveryClaim[]>(env, "claim_webhook_deliveries", {
+        p_dispatcher_id: input.dispatcherId,
+        p_limit: input.limit,
+        p_lock_seconds: 120,
+    });
+    let succeeded = 0;
+    let failed = 0;
+
+    for (const delivery of deliveries) {
+        const result = await dispatchLetBuyyWebhook({
+            target_url: delivery.target_url,
+            event_id: delivery.event_id,
+            event_type: delivery.event_type,
+            payload: delivery.payload,
+            signing_secret: delivery.signing_secret,
+            request_id: delivery.request_id,
+            trace_id: delivery.trace_id,
+        }, fetch, {
+            allowLocalhost: !isProductionWebhookEnvironment(env),
+        });
+
+        if (result.ok) {
+            await callSupabaseRpc(env, "complete_webhook_delivery", {
+                p_delivery_id: delivery.id,
+                p_dispatcher_id: input.dispatcherId,
+                p_response_status: result.status || 200,
+                p_response_body_preview: result.response_preview,
+            });
+            succeeded += 1;
+        } else {
+            await callSupabaseRpc(env, "fail_webhook_delivery", {
+                p_delivery_id: delivery.id,
+                p_dispatcher_id: input.dispatcherId,
+                p_error_message: result.error || "Webhook delivery failed",
+                p_response_status: result.status,
+                p_response_body_preview: result.response_preview,
+                p_retry_seconds: webhookRetryDelaySeconds(delivery.attempts),
+            });
+            failed += 1;
+        }
+    }
+
+    return {
+        dispatcher_id: input.dispatcherId,
+        claimed: deliveries.length,
+        succeeded,
+        failed,
+    };
+}
+
+// ─── Internal Outbound Webhook Delivery ─────────────────────────────
+// Outbox fanout may create webhook delivery rows, but this service owns the
+// partner HTTPS delivery, HMAC signature, and retry completion/failure path.
+
+app.post("/webhook-deliveries/dispatch", async (c) => {
+    const secret = internalDispatchSecret(c.env);
+    if (!secret) {
+        return c.json({ error: { code: "SERVER_MISCONFIGURED", message: "Internal dispatch secret is not configured" } }, 500);
+    }
+
+    if (dispatchAuthHeader(c.req.raw.headers) !== secret) {
+        return c.json({ error: { code: "UNAUTHORIZED", message: "Invalid internal dispatch secret" } }, 401);
+    }
+
+    const body = asDispatchRecord(await c.req.json().catch(() => null));
+    const dispatcherId = typeof body.dispatcher_id === "string" && body.dispatcher_id
+        ? body.dispatcher_id
+        : `webhook-service:${crypto.randomUUID()}`;
+    const limitValue = typeof body.limit === "number" ? body.limit : Number(body.limit || 25);
+    const limit = Math.min(Math.max(Number.isFinite(limitValue) ? limitValue : 25, 1), 100);
+    const result = await dispatchWebhookDeliveries(c.env, { dispatcherId, limit });
+
+    return c.json({ data: result });
 });
 
 // ─── Razorpay Webhooks ──────────────────────────────────────────────

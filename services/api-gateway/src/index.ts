@@ -259,6 +259,21 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
             webhookLimit: 50,
         })
         .then(async (outboxResult) => {
+            let webhookResult: unknown = null;
+            if (env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET) {
+                const response = await env.WEBHOOK_SERVICE.fetch('https://webhook-service/webhook-deliveries/dispatch', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-LetBuyy-Internal-Secret': env.INTERNAL_API_SECRET,
+                    },
+                    body: JSON.stringify({
+                        dispatcher_id: `cron-webhooks:${controller.cron || 'manual'}:${crypto.randomUUID()}`,
+                        limit: 50,
+                    }),
+                });
+                webhookResult = await response.json().catch(() => ({ ok: response.ok, status: response.status }));
+            }
             const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing', 'payment-events'], 50);
             const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
             await eventQueue?.enqueue({
@@ -269,6 +284,7 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
                     dispatcher_id: dispatcherId,
                     worker_id: workerId,
                     outbox_result: outboxResult,
+                    webhook_result: webhookResult,
                     queue_result: queueResult,
                     environment: env.ENVIRONMENT,
                     deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,

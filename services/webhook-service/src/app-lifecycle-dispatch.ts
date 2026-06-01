@@ -1,4 +1,7 @@
-import { hmacSha256Hex } from "@letbuyy/auth-core";
+import { hmacSha256Hex, timingSafeEqualHex } from "@letbuyy/auth-core";
+
+export const LETBUYY_WEBHOOK_HMAC_HEADER = "X-LetBuyy-Hmac-SHA256";
+export const LETBUYY_WEBHOOK_LEGACY_SIGNATURE_HEADER = "X-LetBuyy-Signature";
 
 export interface AppLifecycleWebhookDispatchInput {
     target_url: string;
@@ -22,6 +25,13 @@ export interface AppLifecycleWebhookDispatchOptions {
     nowSeconds?: number;
 }
 
+export interface LetBuyyWebhookHmacVerificationInput {
+    rawBody: string;
+    timestamp: string | null | undefined;
+    signature: string | null | undefined;
+    signingSecret: string;
+}
+
 function isValidAppLifecycleTarget(targetUrl: string, allowLocalhost: boolean): boolean {
     try {
         const url = new URL(targetUrl);
@@ -39,7 +49,25 @@ async function readPreview(response: Response, maxCharacters = 2000): Promise<st
     return text ? text.slice(0, maxCharacters) : null;
 }
 
-export async function dispatchAppLifecycleWebhook(
+function normalizeVersionedSignature(signature: string | null | undefined): string {
+    if (!signature) return "";
+    return signature.startsWith("v1=") ? signature.slice(3) : signature;
+}
+
+export function letbuyyWebhookSigningPayload(timestamp: string, rawBody: string): string {
+    return `${timestamp}.${rawBody}`;
+}
+
+export async function verifyLetBuyyWebhookHmac(input: LetBuyyWebhookHmacVerificationInput): Promise<boolean> {
+    if (!input.timestamp || !input.signature || !input.signingSecret) return false;
+    const expected = await hmacSha256Hex(
+        input.signingSecret,
+        letbuyyWebhookSigningPayload(input.timestamp, input.rawBody),
+    );
+    return timingSafeEqualHex(expected, normalizeVersionedSignature(input.signature));
+}
+
+export async function dispatchLetBuyyWebhook(
     input: AppLifecycleWebhookDispatchInput,
     fetcher: typeof fetch = fetch,
     options: AppLifecycleWebhookDispatchOptions = {},
@@ -59,7 +87,8 @@ export async function dispatchAppLifecycleWebhook(
         payload: input.payload,
     });
     const timestamp = String(options.nowSeconds ?? Math.floor(Date.now() / 1000));
-    const signature = await hmacSha256Hex(input.signing_secret, `${timestamp}.${body}`);
+    const signature = await hmacSha256Hex(input.signing_secret, letbuyyWebhookSigningPayload(timestamp, body));
+    const versionedSignature = `v1=${signature}`;
 
     try {
         const response = await fetcher(input.target_url, {
@@ -72,7 +101,8 @@ export async function dispatchAppLifecycleWebhook(
                 "X-LetBuyy-Request-ID": input.request_id || "",
                 "X-LetBuyy-Trace-ID": input.trace_id || "",
                 "X-LetBuyy-Timestamp": timestamp,
-                "X-LetBuyy-Signature": `v1=${signature}`,
+                [LETBUYY_WEBHOOK_HMAC_HEADER]: versionedSignature,
+                [LETBUYY_WEBHOOK_LEGACY_SIGNATURE_HEADER]: versionedSignature,
             },
             body,
         });
@@ -97,3 +127,5 @@ export async function dispatchAppLifecycleWebhook(
         };
     }
 }
+
+export const dispatchAppLifecycleWebhook = dispatchLetBuyyWebhook;
