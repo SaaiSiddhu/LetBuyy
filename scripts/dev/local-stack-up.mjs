@@ -452,6 +452,34 @@ ON CONFLICT (id) DO UPDATE SET
   api_scopes = EXCLUDED.api_scopes,
   webhook_url = EXCLUDED.webhook_url,
   updated_at = NOW();
+
+INSERT INTO app_extensions (
+  id, app_id, type, target, label, config, sort_order
+)
+VALUES
+  (
+    '00000000-0000-4000-8000-000000000203',
+    '00000000-0000-4000-8000-000000000202',
+    'settings_page',
+    'http://127.0.0.1:3002/apps/demo-loyalty-rewards',
+    'Demo Loyalty Rewards',
+    '{"capabilities":["api:fetch","toast","navigation"]}'::jsonb,
+    10
+  ),
+  (
+    '00000000-0000-4000-8000-000000000204',
+    '00000000-0000-4000-8000-000000000202',
+    'storefront_block',
+    'apps.app-block-slot',
+    'Demo Loyalty Rewards Block',
+    '{"slot":"product-below-price","heading":"Rewards available","description":"Earn demo loyalty points on this order."}'::jsonb,
+    20
+  )
+ON CONFLICT (id) DO UPDATE SET
+  target = EXCLUDED.target,
+  label = EXCLUDED.label,
+  config = EXCLUDED.config,
+  sort_order = EXCLUDED.sort_order;
 `;
 }
 
