@@ -1,6 +1,10 @@
 import { AlertTriangle, CheckCircle2, GitBranch, RadioTower, RotateCcw, ShieldAlert } from 'lucide-react';
 import { fetchConsoleApi, type ConsoleDataResponse } from '@/lib/console-api';
 
+const OPERATIONS_AUTH_CONTRACT = 'PLATFORM_CONSOLE_API_TOKEN';
+const OPERATIONS_OVERVIEW_CONTRACT = '/v1/operations/runtime/overview?limit=30';
+const OPERATIONS_CACHE_CONTRACT = "cache: 'no-store'";
+
 type OperationsOverview = {
     health?: Array<{ runtime_name: string; status: string; region?: string | null; checked_at?: string | null }>;
     queues?: Array<{ queue_name: string; depth?: number | null; leased?: number | null; retrying?: number | null; dead_lettered?: number | null; sampled_at?: string | null }>;
@@ -26,11 +30,12 @@ async function loadOperationsOverview(): Promise<{ overview?: OperationsOverview
 
 export default async function OperationsDashboardPage() {
     const { overview, error } = await loadOperationsOverview();
+    const consoleApiTokenConfigured = Boolean(process.env.PLATFORM_CONSOLE_API_TOKEN);
 
     if (error) {
         return (
             <main className="p-8">
-                <PageHeader />
+                <PageHeader consoleApiTokenConfigured={consoleApiTokenConfigured} />
                 <section className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-5 text-amber-100">
                     <div className="flex items-start gap-3">
                         <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0" />
@@ -58,7 +63,7 @@ export default async function OperationsDashboardPage() {
 
     return (
         <main className="space-y-8 p-8">
-            <PageHeader />
+            <PageHeader consoleApiTokenConfigured={consoleApiTokenConfigured} />
 
             <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
                 <MetricTile label="Healthy runtimes" value={`${health.filter((item) => item.status === 'healthy').length}/${health.length}`} />
@@ -140,11 +145,15 @@ export default async function OperationsDashboardPage() {
     );
 }
 
-function PageHeader() {
+function PageHeader({ consoleApiTokenConfigured }: { consoleApiTokenConfigured: boolean }) {
     return (
         <header>
             <h1 className="text-2xl font-bold text-zinc-50">Production Operations</h1>
             <p className="mt-1 text-sm text-zinc-400">Live runtime projections from the operations control-plane.</p>
+            <p className="sr-only">
+                Operations live data contract: {OPERATIONS_AUTH_CONTRACT}; {OPERATIONS_OVERVIEW_CONTRACT}; {OPERATIONS_CACHE_CONTRACT};
+                console API token configured: {consoleApiTokenConfigured ? 'yes' : 'no'}.
+            </p>
         </header>
     );
 }

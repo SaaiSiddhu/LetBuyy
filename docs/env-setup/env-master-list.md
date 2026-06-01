@@ -16,6 +16,7 @@ Generated during environment setup Phase 0 from `config/env/templates/*`.
 | `LETBUYY_API_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
 | `LETBUYY_API_BASE_URL` | INFRA | Local/worker clients | Vercel/worker staging config | Vercel/worker production config |
 | `API_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
+| `API_BASE_URL` | INFRA | Next server worker clients | Vercel staging env -> `https://api-staging.letbuyy.store/v1` | Vercel production env -> `https://api.letbuyy.store/v1` |
 | `INTERNAL_API_SECRET` | SECRET | Next apps and Workers | GitHub/Vercel/Cloudflare staging secret | GitHub/Vercel/Cloudflare production secret |
 | `LETBUYY_INTERNAL_API_SECRET` | SECRET | Workers/internal HMAC | Cloudflare staging secret | Cloudflare production secret |
 | `AUTH_SECRET` | SECRET | Identity, console, Workers | GitHub/Vercel/Cloudflare staging secret | GitHub/Vercel/Cloudflare production secret |
@@ -54,6 +55,8 @@ Generated during environment setup Phase 0 from `config/env/templates/*`.
 | `ANALYTICS_QUEUE_NAME` | INFRA | Workers queue routing | `letbuyy-analytics-queue-staging` | `letbuyy-analytics-queue-production` |
 | `SEARCH_QUEUE_NAME` | INFRA | Workers queue routing | `letbuyy-search-queue-staging` | `letbuyy-search-queue-production` |
 | `NOTIFICATION_QUEUE_NAME` | INFRA | Workers queue routing | `letbuyy-notifications-queue-staging` | `letbuyy-notifications-queue-production` |
+| `RUNTIME_QUEUE_NAME` | INFRA | Workers runtime queue routing | `letbuyy-staging-queue` | `letbuyy-production-queue` |
+| `NEXT_PUBLIC_RAZORPAY_KEY_ID` | PUBLIC | Next payment UI | Razorpay test public key ID in Vercel staging env | Razorpay live public key ID in Vercel production env |
 | `RAZORPAY_KEY_ID` | PUBLIC | Worker/mobile payment config | Razorpay test public key ID in secret/config store | Razorpay live public key ID in secret/config store |
 | `RAZORPAY_KEY_SECRET` | SECRET | Razorpay server calls | Razorpay test secret | Razorpay live secret |
 | `RAZORPAY_WEBHOOK_SECRET` | SECRET | Razorpay webhook verification | Razorpay test webhook secret | Razorpay live webhook secret |

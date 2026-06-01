@@ -27,6 +27,8 @@
 
 ## Promotion Rules
 
+- Staging and production are the only deployment targets for release readiness. Local and development execution are developer/integration sandboxes only.
+- Local execution must stay staging-shaped: same variable names, `/v1` API shape, worker binding names, and provider-mode semantics. It must not point at staging data, staging service-role keys, production secrets, or live provider accounts by default.
 - Local, dev, staging, and production values are separate. Never reuse production secrets in local templates or the Cloudflare `env.dev` Worker environment.
 - Promote variable names through code review; promote values through provider secret stores.
 - Rotate secrets after accidental exposure and record the rotation task in `tasks/todo.md`.

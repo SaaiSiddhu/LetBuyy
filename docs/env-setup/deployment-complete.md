@@ -20,6 +20,7 @@ The repository is prepared for isolated staging and production deployment automa
 - Supabase environment configs: `config/supabase/staging.json`, `config/supabase/production.json`
 - Vercel project map: `config/vercel/projects.json`
 - Staging and production env examples: `config/env/staging.env.example`, `config/env/production.env.example`
+- Canonical staging/production secret matrix: `config/env/staging-production-secret-matrix.json`
 
 ### Cloudflare
 
@@ -58,8 +59,11 @@ The repository is prepared for isolated staging and production deployment automa
   - `apps/identity-platform/vercel.json`
   - `apps/merchant-control-plane/vercel.json`
   - `apps/storefront-runtime/vercel.json`
+  - `apps/app-marketplace/vercel.json`
+  - `apps/theme-marketplace/vercel.json`
   - `apps/marketing-site/vercel.json`
   - `apps/platform-console/vercel.json`
+  - `apps/platform-operations-portal/vercel.json`
 - Vercel CLI repaired to `54.4.1`.
 - Projects created: 0 in this run.
 - Live deployments: skipped because no LetBuyy `VERCEL_ORG_ID` or project credentials were available.

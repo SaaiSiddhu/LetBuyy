@@ -72,7 +72,7 @@ jobs:
 
       - name: Skip worker deployment
         if: ${{ env.HAS_CLOUDFLARE_CREDS != 'true' }}
-        run: echo "SKIP: staging Cloudflare Worker deployment requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."
+        run: 'echo "SKIP: staging Cloudflare Worker deployment requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."'
 
   deploy-apps:
     name: Deploy Vercel Apps (Staging)
@@ -87,7 +87,10 @@ jobs:
           - { name: merchant-control-plane, project_secret: STAGING_MERCHANT_PROJECT_ID }
           - { name: storefront-runtime, project_secret: STAGING_STOREFRONT_PROJECT_ID }
           - { name: marketing-site, project_secret: STAGING_MARKETING_PROJECT_ID }
-          - { name: platform-console, project_secret: STAGING_CONSOLE_PROJECT_ID }
+          - { name: app-marketplace, project_secret: STAGING_APP_MARKETPLACE_PROJECT_ID }
+          - { name: theme-marketplace, project_secret: STAGING_THEME_MARKETPLACE_PROJECT_ID }
+          - { name: platform-console, project_secret: STAGING_PLATFORM_CONSOLE_PROJECT_ID }
+          - { name: platform-operations-portal, project_secret: STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID }
 
     steps:
       - name: Checkout
@@ -125,7 +128,7 @@ jobs:
 
       - name: Skip app deployment
         if: ${{ env.HAS_VERCEL_CREDS != 'true' }}
-        run: echo "SKIP: staging Vercel deployment requires VERCEL_TOKEN and VERCEL_ORG_ID."
+        run: 'echo "SKIP: staging Vercel deployment requires VERCEL_TOKEN and VERCEL_ORG_ID."'
 
   smoke-test-staging:
     name: Smoke Test Staging
@@ -135,7 +138,7 @@ jobs:
     steps:
       - name: Skip smoke tests without deploy credentials
         if: ${{ env.HAS_CLOUDFLARE_CREDS != 'true' || env.HAS_VERCEL_CREDS != 'true' }}
-        run: echo "SKIP: staging smoke tests require successful worker and app deployment credentials."
+        run: 'echo "SKIP: staging smoke tests require successful worker and app deployment credentials."'
 
       - name: API health check
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
@@ -160,3 +163,19 @@ jobs:
             exit 1
           fi
           echo "Admin staging healthy"
+
+      - name: Federated app health checks
+        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
+        run: |
+          for URL in \
+            "https://apps-staging.letbuyy.store" \
+            "https://themes-staging.letbuyy.store" \
+            "https://console-staging.letbuyy.store" \
+            "https://ops-staging.letbuyy.store"; do
+            STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
+            if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
+              echo "$URL failed: $STATUS"
+              exit 1
+            fi
+            echo "$URL staging healthy"
+          done

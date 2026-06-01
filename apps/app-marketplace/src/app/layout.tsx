@@ -1,12 +1,6 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { DesignSystemRoot } from "@letbuyy/ui";
 import "./globals.css";
-
-const inter = Inter({
-    variable: "--font-inter",
-    subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
     title: "LetBuyy App Store — Apps & Integrations",
@@ -45,7 +39,7 @@ export default function RootLayout({
                     __html: `html { background: #FFFFFF; } html.dark { background: #0A0F1A; }`
                 }} />
             </head>
-            <body className={`${inter.variable} antialiased`}>
+            <body className="antialiased">
                 <DesignSystemRoot surface="marketplace" className="appstore-shell">
                     {children}
                 </DesignSystemRoot>

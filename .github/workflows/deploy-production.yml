@@ -72,7 +72,7 @@ jobs:
 
       - name: Skip worker deployment
         if: ${{ env.HAS_CLOUDFLARE_CREDS != 'true' }}
-        run: echo "SKIP: production Cloudflare Worker deployment requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."
+        run: 'echo "SKIP: production Cloudflare Worker deployment requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID."'
 
   deploy-apps:
     name: Deploy Vercel Apps (Production)
@@ -87,7 +87,10 @@ jobs:
           - { name: merchant-control-plane, project_secret: PRODUCTION_MERCHANT_PROJECT_ID }
           - { name: storefront-runtime, project_secret: PRODUCTION_STOREFRONT_PROJECT_ID }
           - { name: marketing-site, project_secret: PRODUCTION_MARKETING_PROJECT_ID }
-          - { name: platform-console, project_secret: PRODUCTION_CONSOLE_PROJECT_ID }
+          - { name: app-marketplace, project_secret: PRODUCTION_APP_MARKETPLACE_PROJECT_ID }
+          - { name: theme-marketplace, project_secret: PRODUCTION_THEME_MARKETPLACE_PROJECT_ID }
+          - { name: platform-console, project_secret: PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID }
+          - { name: platform-operations-portal, project_secret: PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID }
 
     steps:
       - name: Checkout
@@ -125,7 +128,7 @@ jobs:
 
       - name: Skip app deployment
         if: ${{ env.HAS_VERCEL_CREDS != 'true' }}
-        run: echo "SKIP: production Vercel deployment requires VERCEL_TOKEN and VERCEL_ORG_ID."
+        run: 'echo "SKIP: production Vercel deployment requires VERCEL_TOKEN and VERCEL_ORG_ID."'
 
   smoke-test-production:
     name: Smoke Test Production
@@ -135,7 +138,7 @@ jobs:
     steps:
       - name: Skip smoke tests without deploy credentials
         if: ${{ env.HAS_CLOUDFLARE_CREDS != 'true' || env.HAS_VERCEL_CREDS != 'true' }}
-        run: echo "SKIP: production smoke tests require successful worker and app deployment credentials."
+        run: 'echo "SKIP: production smoke tests require successful worker and app deployment credentials."'
 
       - name: API health check
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' && env.HAS_VERCEL_CREDS == 'true' }}
@@ -150,7 +153,11 @@ jobs:
           for URL in \
             "https://accounts.letbuyy.store" \
             "https://admin.letbuyy.store" \
-            "https://www.letbuyy.store"; do
+            "https://www.letbuyy.store" \
+            "https://apps.letbuyy.store" \
+            "https://themes.letbuyy.store" \
+            "https://console.letbuyy.store" \
+            "https://ops.letbuyy.store"; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "$URL")
             if [ "$STATUS" != "200" ] && [ "$STATUS" != "302" ]; then
               echo "$URL failed: $STATUS"

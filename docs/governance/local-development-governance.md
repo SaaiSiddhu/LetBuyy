@@ -1,6 +1,8 @@
 # Local Development Governance
 
-The local lifecycle is developer-isolated and resettable. It must not use production providers, secrets, or data.
+The local lifecycle is developer-isolated and resettable. It is not a deployment target. It must not use staging or production providers, service-role credentials, secrets, or data by default.
+
+Local execution must be staging-shaped: same env variable names, `/v1` API shape, worker binding names, and provider-mode semantics. The resources behind those names remain local or sandbox resources unless an operator explicitly runs a staging command.
 
 ## Stack
 

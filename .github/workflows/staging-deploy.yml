@@ -16,7 +16,7 @@ concurrency:
 env:
   NODE_VERSION: "20"
   PNPM_VERSION: "10.6.2"
-  HAS_SUPABASE_CREDS: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' && secrets.SUPABASE_DB_URL != '' }}
+  HAS_SUPABASE_CREDS: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' && secrets.STAGING_DB_CONNECTION_STRING != '' }}
   HAS_CLOUDFLARE_CREDS: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
   HAS_VERCEL_CREDS: ${{ secrets.VERCEL_TOKEN != '' }}
 
@@ -42,13 +42,13 @@ jobs:
 
       - name: Run migrations on staging DB
         if: ${{ env.HAS_SUPABASE_CREDS == 'true' }}
-        run: pnpm dlx supabase@latest db push --db-url "${{ secrets.SUPABASE_DB_URL }}" --include-all
+        run: pnpm dlx supabase@latest db push --db-url "${{ secrets.STAGING_DB_CONNECTION_STRING }}" --include-all
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
       - name: Skip staging migrations
         if: ${{ env.HAS_SUPABASE_CREDS != 'true' }}
-        run: echo "SKIP - staging migrations require SUPABASE_ACCESS_TOKEN and SUPABASE_DB_URL."
+        run: echo "SKIP - staging migrations require SUPABASE_ACCESS_TOKEN and STAGING_DB_CONNECTION_STRING."
 
   deploy-workers-staging:
     name: Deploy workers to staging
@@ -84,13 +84,21 @@ jobs:
       - name: Set api-gateway staging secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env staging
-          echo "${{ secrets.UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env staging
-          echo "${{ secrets.UPSTASH_REDIS_REST_TOKEN }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_TOKEN --env staging
-          echo "${{ secrets.RAZORPAY_KEY_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_KEY_SECRET --env staging
-          echo "${{ secrets.RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env staging
-          echo "${{ secrets.INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
-          echo "${{ secrets.SESSION_SECRET }}" | pnpm exec wrangler secret put SESSION_SECRET --env staging
+          echo "${{ secrets.STAGING_SUPABASE_URL }}" | pnpm exec wrangler secret put SUPABASE_URL --env staging
+          echo "${{ secrets.STAGING_SUPABASE_ANON_KEY }}" | pnpm exec wrangler secret put SUPABASE_ANON_KEY --env staging
+          echo "${{ secrets.STAGING_SUPABASE_SERVICE_ROLE_KEY }}" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env staging
+          echo "${{ secrets.STAGING_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env staging
+          echo "${{ secrets.STAGING_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env staging
+          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env staging
+          echo "${{ secrets.STAGING_PLATFORM_CONSOLE_API_TOKEN }}" | pnpm exec wrangler secret put PLATFORM_CONSOLE_API_TOKEN --env staging
+          echo "${{ secrets.STAGING_UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env staging
+          echo "${{ secrets.STAGING_UPSTASH_REDIS_REST_TOKEN }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_TOKEN --env staging
+          echo "${{ secrets.STAGING_RAZORPAY_KEY_ID }}" | pnpm exec wrangler secret put RAZORPAY_KEY_ID --env staging
+          echo "${{ secrets.STAGING_RAZORPAY_KEY_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_KEY_SECRET --env staging
+          echo "${{ secrets.STAGING_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env staging
+          echo "${{ secrets.STAGING_RESEND_API_KEY }}" | pnpm exec wrangler secret put RESEND_API_KEY --env staging
+          echo "${{ secrets.STAGING_PAYMENT_CONFIG_ENCRYPTION_KEY }}" | pnpm exec wrangler secret put PAYMENT_CONFIG_ENCRYPTION_KEY --env staging
         working-directory: services/api-gateway
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -107,8 +115,8 @@ jobs:
       - name: Set webhook-service staging secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env staging
-          echo "${{ secrets.STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env staging
+          echo "${{ secrets.STAGING_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env staging
+          echo "${{ secrets.STAGING_STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env staging
         working-directory: services/webhook-service
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -135,23 +143,29 @@ jobs:
       matrix:
         include:
           - app: marketing-site
-            project_id: VERCEL_MARKETING_PROJECT_ID
-            app_url: https://staging.letbuyy.store
+            project_id: STAGING_MARKETING_PROJECT_ID
+            app_url: https://www-staging.letbuyy.store
           - app: identity-platform
-            project_id: VERCEL_IDENTITY_PROJECT_ID
-            app_url: https://accounts.staging.letbuyy.store
+            project_id: STAGING_IDENTITY_PROJECT_ID
+            app_url: https://accounts-staging.letbuyy.store
           - app: merchant-control-plane
-            project_id: VERCEL_MERCHANT_PROJECT_ID
-            app_url: https://admin.staging.letbuyy.store
+            project_id: STAGING_MERCHANT_PROJECT_ID
+            app_url: https://admin-staging.letbuyy.store
           - app: storefront-runtime
-            project_id: VERCEL_STOREFRONT_PROJECT_ID
-            app_url: https://staging.letbuyy.store
+            project_id: STAGING_STOREFRONT_PROJECT_ID
+            app_url: https://store-staging.letbuyy.store
           - app: theme-marketplace
-            project_id: VERCEL_THEMES_PROJECT_ID
-            app_url: https://themes.staging.letbuyy.store
+            project_id: STAGING_THEME_MARKETPLACE_PROJECT_ID
+            app_url: https://themes-staging.letbuyy.store
           - app: app-marketplace
-            project_id: VERCEL_APPS_PROJECT_ID
-            app_url: https://apps.staging.letbuyy.store
+            project_id: STAGING_APP_MARKETPLACE_PROJECT_ID
+            app_url: https://apps-staging.letbuyy.store
+          - app: platform-console
+            project_id: STAGING_PLATFORM_CONSOLE_PROJECT_ID
+            app_url: https://console-staging.letbuyy.store
+          - app: platform-operations-portal
+            project_id: STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID
+            app_url: https://ops-staging.letbuyy.store
     steps:
       - uses: actions/checkout@v4
 
@@ -173,19 +187,26 @@ jobs:
         working-directory: apps/${{ matrix.app }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets[matrix.project_id] }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
-          NEXT_PUBLIC_APP_URL: https://staging.letbuyy.store
-          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.staging.letbuyy.store
-          NEXT_PUBLIC_ADMIN_URL: https://admin.staging.letbuyy.store
-          NEXT_PUBLIC_API_URL: https://api.staging.letbuyy.store
-          WORKER_API_BASE_URL: https://api.staging.letbuyy.store
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-          INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.STAGING_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.STAGING_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.STAGING_TURNSTILE_SITE_KEY }}
+          NEXT_PUBLIC_APP_URL: ${{ matrix.app_url }}
+          NEXT_PUBLIC_ACCOUNTS_URL: https://accounts-staging.letbuyy.store
+          NEXT_PUBLIC_ADMIN_URL: https://admin-staging.letbuyy.store
+          NEXT_PUBLIC_API_URL: https://api-staging.letbuyy.store/v1
+          NEXT_PUBLIC_API_BASE_URL: https://api-staging.letbuyy.store/v1
+          LETBUYY_API_URL: https://api-staging.letbuyy.store/v1
+          LETBUYY_API_BASE_URL: https://api-staging.letbuyy.store/v1
+          API_URL: https://api-staging.letbuyy.store/v1
+          API_BASE_URL: https://api-staging.letbuyy.store/v1
+          WORKER_API_BASE_URL: https://api-staging.letbuyy.store/v1
+          AUTH_SECRET: ${{ secrets.STAGING_AUTH_SECRET }}
+          CUSTOMER_SESSION_SECRET: ${{ secrets.STAGING_CUSTOMER_SESSION_SECRET }}
+          CSRF_SECRET: ${{ secrets.STAGING_CSRF_SECRET }}
+          INTERNAL_API_SECRET: ${{ secrets.STAGING_INTERNAL_API_SECRET }}
+          RESEND_API_KEY: ${{ secrets.STAGING_RESEND_API_KEY }}
           COOKIE_DOMAIN: .staging.letbuyy.store
-          NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.STAGING_RAZORPAY_KEY_ID }}
           NODE_ENV: production
 
       - name: Skip app deployment
@@ -218,10 +239,10 @@ jobs:
       - name: Run smoke tests against staging
         run: pnpm exec playwright test --project=chromium tests/e2e/smoke/
         env:
-          BASE_URL: https://staging.letbuyy.store
-          ACCOUNTS_URL: https://accounts.staging.letbuyy.store
-          ADMIN_URL: https://admin.staging.letbuyy.store
-          API_URL: https://api.staging.letbuyy.store
+          BASE_URL: https://store-staging.letbuyy.store
+          ACCOUNTS_URL: https://accounts-staging.letbuyy.store
+          ADMIN_URL: https://admin-staging.letbuyy.store
+          API_URL: https://api-staging.letbuyy.store/v1
           CI: "true"
 
       - name: Upload test results

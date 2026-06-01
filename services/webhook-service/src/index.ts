@@ -2,6 +2,8 @@ import { Hono } from "hono";
 import {
     createRazorpayPaymentProvider,
     getRazorpayOrderNotes as fetchRazorpayOrderNotes,
+    hmacSha256Hex,
+    timingSafeEqual,
 } from "@letbuyy/infrastructure/razorpay-adapter";
 import { createPayPalPaymentProvider } from "@letbuyy/infrastructure/paypal-adapter";
 import { createStripePaymentProvider } from "@letbuyy/infrastructure/stripe-adapter";
@@ -254,6 +256,16 @@ function razorpayWebhookProvider(env: Env) {
         keyId: env.RAZORPAY_KEY_ID || "webhook-service",
         keySecret: env.RAZORPAY_KEY_SECRET || env.RAZORPAY_WEBHOOK_SECRET,
     });
+}
+
+async function verifyRazorpayWebhookSignature(
+    rawBody: string,
+    signature: string | undefined,
+    secret: string
+): Promise<boolean> {
+    if (!signature || !secret) return false;
+    const expected = await hmacSha256Hex(secret, rawBody);
+    return timingSafeEqual(expected, signature);
 }
 
 function stripeWebhookProvider(env: Env) {
@@ -837,6 +849,11 @@ app.post("/webhook-deliveries/dispatch", async (c) => {
 app.post("/razorpay", async (c) => {
     const body = await c.req.text();
     const signature = c.req.header("x-razorpay-signature");
+    const timingSafeSignatureValid = await verifyRazorpayWebhookSignature(
+        body,
+        signature,
+        c.env.RAZORPAY_WEBHOOK_SECRET,
+    );
     const verification = await razorpayWebhookProvider(c.env).webhookVerify({
         provider: "razorpay",
         rawBody: body,
@@ -845,7 +862,7 @@ app.post("/razorpay", async (c) => {
         receivedAt: new Date().toISOString(),
     });
 
-    if (!verification.verified) {
+    if (!timingSafeSignatureValid || !verification.verified) {
         console.error("[Razorpay] Invalid signature", { code: verification.failureCode });
         return c.json({ error: verification.failureCode === "RAZORPAY_WEBHOOK_SIGNATURE_MISSING" ? "Missing signature" : "Invalid signature" }, 400);
     }

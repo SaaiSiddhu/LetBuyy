@@ -50,6 +50,10 @@ type RateLimitPayload = {
     }
     allowed?: boolean
     retryAfter?: number
+    error?: {
+        code?: string
+        message?: string
+    }
 }
 
 export async function checkRateLimitWithLimiters(
@@ -91,6 +95,11 @@ export async function checkRateLimit(
     const result = payload?.data || payload
 
     if (!response.ok || !result) {
+        const errorCode = payload?.error?.code
+        if (process.env.NODE_ENV === 'development' && (response.status >= 500 || errorCode === 'RATE_LIMIT_UNAVAILABLE')) {
+            return { allowed: true }
+        }
+
         return { allowed: false, retryAfter: 60 }
     }
 

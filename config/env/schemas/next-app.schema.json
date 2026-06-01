@@ -10,14 +10,28 @@
     "NEXT_PUBLIC_ADMIN_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_STOREFRONT_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_STOREFRONT_LOCAL_URL": { "type": "string" },
+    "NEXT_PUBLIC_APP_URL": { "type": "string", "format": "uri" },
+    "NEXT_PUBLIC_ENV": { "type": "string" },
     "NEXT_PUBLIC_SUPABASE_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_SUPABASE_ANON_KEY": { "type": "string" },
     "NEXT_PUBLIC_TURNSTILE_SITE_KEY": { "type": "string" },
+    "NEXT_PUBLIC_RAZORPAY_KEY_ID": { "type": "string" },
     "LETBUYY_API_URL": { "type": "string", "format": "uri" },
+    "LETBUYY_API_BASE_URL": { "type": "string", "format": "uri" },
     "API_URL": { "type": "string", "format": "uri" },
+    "API_BASE_URL": { "type": "string", "format": "uri" },
     "INTERNAL_API_SECRET": { "type": "string" },
     "AUTH_SECRET": { "type": "string" },
     "CUSTOMER_SESSION_SECRET": { "type": "string" },
+    "CSRF_SECRET": { "type": "string" },
+    "COOKIE_DOMAIN": { "type": "string" },
+    "ADMIN_ORIGIN": { "type": "string", "format": "uri" },
+    "PLATFORM_CONSOLE_ALLOWED_EMAILS": { "type": "string" },
+    "PLATFORM_CONSOLE_SESSION_SECRET": { "type": "string" },
+    "PLATFORM_CONSOLE_TOTP_SECRET": { "type": "string" },
+    "PLATFORM_CONSOLE_DEV_MFA_CODE": { "type": "string" },
+    "PLATFORM_CONSOLE_API_TOKEN": { "type": "string" },
+    "PLATFORM_CONSOLE_API_BASE_URL": { "type": "string", "format": "uri" },
     "RESEND_API_KEY": { "type": "string" },
     "RESEND_FROM_EMAIL": { "type": "string" },
     "UPSTASH_REDIS_REST_URL": { "type": "string", "format": "uri" },
@@ -28,7 +42,7 @@
     "PAYPAL_CLIENT_ID": { "type": "string" },
     "PAYPAL_CLIENT_SECRET": { "type": "string" },
     "PAYPAL_WEBHOOK_ID": { "type": "string" },
-    "PAYPAL_MODE": { "enum": ["sandbox", "live"] }
+    "PAYPAL_MODE": { "enum": ["sandbox", "live"] },
+    "SEED_SECRET": { "type": "string" }
   }
 }
-

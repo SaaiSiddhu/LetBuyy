@@ -228,6 +228,11 @@ function LookupContent() {
                 return
             }
 
+            if (!res.ok) {
+                setError(data?.error || 'Unable to look up account. Please try again.')
+                return
+            }
+
             if (!data.exists) {
                 // User doesn't exist — redirect to signup
                 window.location.href = `/signup?email=${encodeURIComponent(email.trim())}`

@@ -16,7 +16,7 @@ concurrency:
 env:
   NODE_VERSION: "20"
   PNPM_VERSION: "10.6.2"
-  HAS_SUPABASE_CREDS: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' && secrets.SUPABASE_DB_URL != '' }}
+  HAS_SUPABASE_CREDS: ${{ secrets.SUPABASE_ACCESS_TOKEN != '' && secrets.PRODUCTION_DB_CONNECTION_STRING != '' }}
   HAS_CLOUDFLARE_CREDS: ${{ secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
   HAS_VERCEL_CREDS: ${{ secrets.VERCEL_TOKEN != '' }}
 
@@ -46,10 +46,10 @@ jobs:
       - name: Run full E2E suite against staging
         run: pnpm exec playwright test --project=chromium tests/e2e/
         env:
-          BASE_URL: https://staging.letbuyy.store
-          ACCOUNTS_URL: https://accounts.staging.letbuyy.store
-          ADMIN_URL: https://admin.staging.letbuyy.store
-          API_URL: https://api.staging.letbuyy.store
+          BASE_URL: https://store-staging.letbuyy.store
+          ACCOUNTS_URL: https://accounts-staging.letbuyy.store
+          ADMIN_URL: https://admin-staging.letbuyy.store
+          API_URL: https://api-staging.letbuyy.store/v1
           CI: "true"
 
       - name: Upload E2E results
@@ -82,7 +82,7 @@ jobs:
 
       - name: Run migrations on production DB
         if: ${{ env.HAS_SUPABASE_CREDS == 'true' }}
-        run: pnpm dlx supabase@latest db push --db-url "${{ secrets.SUPABASE_DB_URL }}" --include-all
+        run: pnpm dlx supabase@latest db push --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --include-all
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
@@ -124,13 +124,21 @@ jobs:
       - name: Set api-gateway production secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env production
-          echo "${{ secrets.UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env production
-          echo "${{ secrets.UPSTASH_REDIS_REST_TOKEN }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_TOKEN --env production
-          echo "${{ secrets.RAZORPAY_KEY_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_KEY_SECRET --env production
-          echo "${{ secrets.RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production
-          echo "${{ secrets.INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
-          echo "${{ secrets.SESSION_SECRET }}" | pnpm exec wrangler secret put SESSION_SECRET --env production
+          echo "${{ secrets.PRODUCTION_SUPABASE_URL }}" | pnpm exec wrangler secret put SUPABASE_URL --env production
+          echo "${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}" | pnpm exec wrangler secret put SUPABASE_ANON_KEY --env production
+          echo "${{ secrets.PRODUCTION_SUPABASE_SERVICE_ROLE_KEY }}" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env production
+          echo "${{ secrets.PRODUCTION_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env production
+          echo "${{ secrets.PRODUCTION_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env production
+          echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
+          echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env production
+          echo "${{ secrets.PRODUCTION_PLATFORM_CONSOLE_API_TOKEN }}" | pnpm exec wrangler secret put PLATFORM_CONSOLE_API_TOKEN --env production
+          echo "${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_URL }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_URL --env production
+          echo "${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_TOKEN }}" | pnpm exec wrangler secret put UPSTASH_REDIS_REST_TOKEN --env production
+          echo "${{ secrets.PRODUCTION_RAZORPAY_KEY_ID }}" | pnpm exec wrangler secret put RAZORPAY_KEY_ID --env production
+          echo "${{ secrets.PRODUCTION_RAZORPAY_KEY_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_KEY_SECRET --env production
+          echo "${{ secrets.PRODUCTION_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production
+          echo "${{ secrets.PRODUCTION_RESEND_API_KEY }}" | pnpm exec wrangler secret put RESEND_API_KEY --env production
+          echo "${{ secrets.PRODUCTION_PAYMENT_CONFIG_ENCRYPTION_KEY }}" | pnpm exec wrangler secret put PAYMENT_CONFIG_ENCRYPTION_KEY --env production
         working-directory: services/api-gateway
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -147,8 +155,8 @@ jobs:
       - name: Set webhook-service production secrets
         if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
-          echo "${{ secrets.RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production
-          echo "${{ secrets.STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env production
+          echo "${{ secrets.PRODUCTION_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production
+          echo "${{ secrets.PRODUCTION_STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env production
         working-directory: services/webhook-service
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -175,17 +183,21 @@ jobs:
       matrix:
         include:
           - app: marketing-site
-            project_id: VERCEL_MARKETING_PROJECT_ID
+            project_id: PRODUCTION_MARKETING_PROJECT_ID
           - app: identity-platform
-            project_id: VERCEL_IDENTITY_PROJECT_ID
+            project_id: PRODUCTION_IDENTITY_PROJECT_ID
           - app: merchant-control-plane
-            project_id: VERCEL_MERCHANT_PROJECT_ID
+            project_id: PRODUCTION_MERCHANT_PROJECT_ID
           - app: storefront-runtime
-            project_id: VERCEL_STOREFRONT_PROJECT_ID
+            project_id: PRODUCTION_STOREFRONT_PROJECT_ID
           - app: theme-marketplace
-            project_id: VERCEL_THEMES_PROJECT_ID
+            project_id: PRODUCTION_THEME_MARKETPLACE_PROJECT_ID
           - app: app-marketplace
-            project_id: VERCEL_APPS_PROJECT_ID
+            project_id: PRODUCTION_APP_MARKETPLACE_PROJECT_ID
+          - app: platform-console
+            project_id: PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID
+          - app: platform-operations-portal
+            project_id: PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID
     steps:
       - uses: actions/checkout@v4
 
@@ -207,19 +219,26 @@ jobs:
         working-directory: apps/${{ matrix.app }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets[matrix.project_id] }}
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.PRODUCTION_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}
+          NEXT_PUBLIC_TURNSTILE_SITE_KEY: ${{ secrets.PRODUCTION_TURNSTILE_SITE_KEY }}
           NEXT_PUBLIC_APP_URL: https://letbuyy.store
           NEXT_PUBLIC_ACCOUNTS_URL: https://accounts.letbuyy.store
           NEXT_PUBLIC_ADMIN_URL: https://admin.letbuyy.store
-          NEXT_PUBLIC_API_URL: https://api.letbuyy.store
-          WORKER_API_BASE_URL: https://api.letbuyy.store
-          SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
-          INTERNAL_API_SECRET: ${{ secrets.INTERNAL_API_SECRET }}
-          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+          NEXT_PUBLIC_API_URL: https://api.letbuyy.store/v1
+          NEXT_PUBLIC_API_BASE_URL: https://api.letbuyy.store/v1
+          LETBUYY_API_URL: https://api.letbuyy.store/v1
+          LETBUYY_API_BASE_URL: https://api.letbuyy.store/v1
+          API_URL: https://api.letbuyy.store/v1
+          API_BASE_URL: https://api.letbuyy.store/v1
+          WORKER_API_BASE_URL: https://api.letbuyy.store/v1
+          AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET }}
+          CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}
+          CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET }}
+          INTERNAL_API_SECRET: ${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}
+          RESEND_API_KEY: ${{ secrets.PRODUCTION_RESEND_API_KEY }}
           COOKIE_DOMAIN: .letbuyy.store
-          NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.RAZORPAY_KEY_ID }}
+          NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PRODUCTION_RAZORPAY_KEY_ID }}
           NODE_ENV: production
 
       - name: Skip app deployment

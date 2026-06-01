@@ -16,10 +16,12 @@ const requiredFiles = [
   "config/env/templates/next-app.env.example",
   "config/env/templates/worker.env.example",
   "config/env/templates/mobile.dart-defines.example",
+  "config/env/staging-production-secret-matrix.json",
   "config/env/schemas/next-app.schema.json",
   "config/env/schemas/worker.schema.json",
   "config/env/schemas/mobile.schema.json",
   "config/env/schemas/runtime-env-ownership.schema.json",
+  "config/env/schemas/staging-production-secret-matrix.schema.json",
   "docs/governance/environment-governance.md",
 ];
 

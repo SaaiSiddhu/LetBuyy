@@ -28,56 +28,100 @@ let configured = 0;
 
 configured += setSecret("CLOUDFLARE_API_TOKEN", e.CLOUDFLARE_API_TOKEN);
 configured += setSecret("CLOUDFLARE_ACCOUNT_ID", e.CLOUDFLARE_ACCOUNT_ID);
+configured += setSecret("SUPABASE_ACCESS_TOKEN", e.SUPABASE_ACCESS_TOKEN);
 
 configured += setSecret("VERCEL_TOKEN", e.VERCEL_TOKEN);
 configured += setSecret("VERCEL_ORG_ID", e.VERCEL_ORG_ID);
 
-for (const name of [
-  "STAGING_IDENTITY_PROJECT_ID",
-  "STAGING_MERCHANT_PROJECT_ID",
-  "STAGING_STOREFRONT_PROJECT_ID",
-  "STAGING_MARKETING_PROJECT_ID",
-  "STAGING_CONSOLE_PROJECT_ID",
-  "PRODUCTION_IDENTITY_PROJECT_ID",
-  "PRODUCTION_MERCHANT_PROJECT_ID",
-  "PRODUCTION_STOREFRONT_PROJECT_ID",
-  "PRODUCTION_MARKETING_PROJECT_ID",
-  "PRODUCTION_CONSOLE_PROJECT_ID",
-]) {
-  configured += setSecret(name, e[name]);
+const environments = ["STAGING", "PRODUCTION"];
+const vercelProjectSuffixes = [
+  "MARKETING",
+  "IDENTITY",
+  "MERCHANT",
+  "STOREFRONT",
+  "APP_MARKETPLACE",
+  "THEME_MARKETPLACE",
+  "PLATFORM_CONSOLE",
+  "PLATFORM_OPERATIONS_PORTAL",
+];
+const legacyProjectAliases = {
+  STAGING_PLATFORM_CONSOLE_PROJECT_ID: "STAGING_CONSOLE_PROJECT_ID",
+  PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID: "PRODUCTION_CONSOLE_PROJECT_ID",
+};
+const generatedSecretSuffixes = [
+  "AUTH_SECRET",
+  "CUSTOMER_SESSION_SECRET",
+  "INTERNAL_API_SECRET",
+  "CSRF_SECRET",
+  "PLATFORM_CONSOLE_SESSION_SECRET",
+  "PLATFORM_CONSOLE_TOTP_SECRET",
+  "PLATFORM_CONSOLE_API_TOKEN",
+  "PAYMENT_CONFIG_ENCRYPTION_KEY",
+];
+const providerSecretSuffixes = [
+  "RAZORPAY_KEY_ID",
+  "RAZORPAY_KEY_SECRET",
+  "RAZORPAY_WEBHOOK_SECRET",
+  "RESEND_API_KEY",
+  "RESEND_FROM_EMAIL",
+  "UPSTASH_REDIS_REST_URL",
+  "UPSTASH_REDIS_REST_TOKEN",
+  "TURNSTILE_SITE_KEY",
+  "TURNSTILE_SECRET_KEY",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "PAYPAL_CLIENT_ID",
+  "PAYPAL_CLIENT_SECRET",
+  "PAYPAL_WEBHOOK_ID",
+  "PAYPAL_MODE",
+];
+const operatorConfigSuffixes = [
+  "PLATFORM_CONSOLE_ALLOWED_EMAILS",
+  "PLATFORM_CONSOLE_DEV_MFA_CODE",
+];
+
+function envValue(name) {
+  return e[name] || e[legacyProjectAliases[name]];
 }
 
-if (e.STAGING_SUPABASE_PROJECT_REF) {
-  configured += setSecret("STAGING_SUPABASE_URL", `https://${e.STAGING_SUPABASE_PROJECT_REF}.supabase.co`);
-}
-configured += setSecret("STAGING_SUPABASE_ANON_KEY", e.STAGING_SUPABASE_ANON_KEY);
-configured += setSecret("STAGING_SUPABASE_SERVICE_ROLE_KEY", e.STAGING_SUPABASE_SERVICE_ROLE_KEY);
-if (e.STAGING_DB_PASSWORD && e.STAGING_SUPABASE_PROJECT_REF) {
+for (const environment of environments) {
+  for (const suffix of vercelProjectSuffixes) {
+    const name = `${environment}_${suffix}_PROJECT_ID`;
+    configured += setSecret(name, envValue(name));
+  }
+
+  const projectRef = e[`${environment}_SUPABASE_PROJECT_REF`];
+  const explicitSupabaseUrl = e[`${environment}_SUPABASE_URL`];
+  configured += setSecret(`${environment}_SUPABASE_PROJECT_REF`, projectRef);
   configured += setSecret(
-    "STAGING_DB_CONNECTION_STRING",
-    `postgresql://postgres:${e.STAGING_DB_PASSWORD}@db.${e.STAGING_SUPABASE_PROJECT_REF}.supabase.co:5432/postgres`,
+    `${environment}_SUPABASE_URL`,
+    explicitSupabaseUrl || (projectRef ? `https://${projectRef}.supabase.co` : undefined),
   );
-}
+  configured += setSecret(`${environment}_SUPABASE_ANON_KEY`, e[`${environment}_SUPABASE_ANON_KEY`]);
+  configured += setSecret(`${environment}_SUPABASE_SERVICE_ROLE_KEY`, e[`${environment}_SUPABASE_SERVICE_ROLE_KEY`]);
 
-if (e.PRODUCTION_SUPABASE_PROJECT_REF) {
-  configured += setSecret("PRODUCTION_SUPABASE_URL", `https://${e.PRODUCTION_SUPABASE_PROJECT_REF}.supabase.co`);
-}
-configured += setSecret("PRODUCTION_SUPABASE_ANON_KEY", e.PRODUCTION_SUPABASE_ANON_KEY);
-configured += setSecret("PRODUCTION_SUPABASE_SERVICE_ROLE_KEY", e.PRODUCTION_SUPABASE_SERVICE_ROLE_KEY);
-if (e.PRODUCTION_DB_PASSWORD && e.PRODUCTION_SUPABASE_PROJECT_REF) {
   configured += setSecret(
-    "PRODUCTION_DB_CONNECTION_STRING",
-    `postgresql://postgres:${e.PRODUCTION_DB_PASSWORD}@db.${e.PRODUCTION_SUPABASE_PROJECT_REF}.supabase.co:5432/postgres`,
+    `${environment}_DB_CONNECTION_STRING`,
+    e[`${environment}_DB_CONNECTION_STRING`] ||
+      (e[`${environment}_DB_PASSWORD`] && projectRef
+        ? `postgresql://postgres:${e[`${environment}_DB_PASSWORD`]}@db.${projectRef}.supabase.co:5432/postgres`
+        : undefined),
   );
-}
 
-for (const name of [
-  "STAGING_AUTH_SECRET",
-  "STAGING_INTERNAL_API_SECRET",
-  "PRODUCTION_AUTH_SECRET",
-  "PRODUCTION_INTERNAL_API_SECRET",
-]) {
-  configured += setSecret(name, e[name]);
+  for (const suffix of generatedSecretSuffixes) {
+    const name = `${environment}_${suffix}`;
+    configured += setSecret(name, e[name]);
+  }
+
+  for (const suffix of operatorConfigSuffixes) {
+    const name = `${environment}_${suffix}`;
+    configured += setSecret(name, e[name]);
+  }
+
+  for (const suffix of providerSecretSuffixes) {
+    const name = `${environment}_${suffix}`;
+    configured += setSecret(name, e[name]);
+  }
 }
 
 console.log(`GitHub secret setup complete. Configured ${configured} secrets.`);

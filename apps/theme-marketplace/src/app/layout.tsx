@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import { cookies } from 'next/headers';
 import './globals.css';
 import Navbar from '@/components/layout/navbar';
@@ -8,12 +7,6 @@ import ThemeProvider from '@/components/theme-provider';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { DesignSystemRoot } from '@letbuyy/ui';
-
-const inter = Inter({
-    subsets: ['latin'],
-    variable: '--font-inter',
-    display: 'swap',
-});
 
 export const metadata: Metadata = {
     title: {
@@ -56,7 +49,7 @@ export default async function RootLayout({
     );
 
     return (
-        <html lang="en" className={`${inter.variable}`} suppressHydrationWarning>
+        <html lang="en" suppressHydrationWarning>
             <head>
                 {/* Inline script to prevent flash of wrong theme */}
                 <script

@@ -127,7 +127,7 @@ jobs:
           TF_VAR_cloudflare_account_id: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           TF_VAR_cloudflare_api_token: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID: ${{ secrets.LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID }}
-          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+          SUPABASE_DB_URL: ${{ inputs.environment == 'production' && secrets.PRODUCTION_DB_CONNECTION_STRING || inputs.environment == 'staging' && secrets.STAGING_DB_CONNECTION_STRING || secrets.DEV_DB_CONNECTION_STRING }}
           PROMETHEUS_URL: ${{ secrets.PROMETHEUS_URL }}
           GRAFANA_URL: ${{ secrets.GRAFANA_URL }}
           GRAFANA_TOKEN: ${{ secrets.GRAFANA_TOKEN }}

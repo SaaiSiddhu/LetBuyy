@@ -17,7 +17,9 @@
     "rules": [
       "No tracked .env files.",
       "NEXT_PUBLIC_* values are public and must not contain secrets.",
-      "Service-role secrets are server-only."
+      "Service-role secrets are server-only.",
+      "Staging and production are the only deployment targets.",
+      "Local execution must use the same variable names as staging with sandbox-only resources."
     ]
   },
   "worker": {
@@ -36,9 +38,10 @@
       "services/event-bus"
     ],
     "rules": [
-      ".dev.vars is local-only.",
+      ".dev.vars is local-only and must not contain staging or production credentials.",
       "Wrangler bindings are service-owned.",
-      "Provider webhook secrets are never committed."
+      "Provider webhook secrets are never committed.",
+      "Worker staging and production secrets live in Cloudflare secret stores, not tracked files."
     ]
   },
   "mobile": {

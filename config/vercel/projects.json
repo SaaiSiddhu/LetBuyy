@@ -65,13 +65,58 @@
       "directory": "apps/platform-console",
       "framework": "nextjs",
       "staging": {
-        "project_id": "STAGING_CONSOLE_PROJECT_ID",
+        "project_id": "STAGING_PLATFORM_CONSOLE_PROJECT_ID",
         "url": "https://console-staging.letbuyy.store",
         "branch": "develop"
       },
       "production": {
-        "project_id": "PRODUCTION_CONSOLE_PROJECT_ID",
+        "project_id": "PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID",
         "url": "https://console.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-app-marketplace",
+      "directory": "apps/app-marketplace",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_APP_MARKETPLACE_PROJECT_ID",
+        "url": "https://apps-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_APP_MARKETPLACE_PROJECT_ID",
+        "url": "https://apps.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-theme-marketplace",
+      "directory": "apps/theme-marketplace",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_THEME_MARKETPLACE_PROJECT_ID",
+        "url": "https://themes-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_THEME_MARKETPLACE_PROJECT_ID",
+        "url": "https://themes.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
+      "name": "letbuyy-platform-operations-portal",
+      "directory": "apps/platform-operations-portal",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID",
+        "url": "https://ops-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID",
+        "url": "https://ops.letbuyy.store",
         "branch": "main"
       }
     }
