@@ -29,15 +29,33 @@ reporter.assert(storageTerraform.includes('resource "cloudflare_d1_database" "ru
 reporter.assert(storageTerraform.includes("letbuyy_runtime_d1_database_ids"), "Terraform must output D1 database IDs for materialization");
 reporter.assert(materializer.includes("LETBUYY_RUNTIME_D1_"), "Wrangler materializer must support D1 database IDs");
 
+function envSection(text, environment) {
+  const marker = `[env.${environment}]`;
+  const start = text.indexOf(marker);
+  if (start < 0) return "";
+  const rest = text.slice(start);
+  const next = rest.slice(marker.length).search(/\n\[env\.(dev|staging|production)\]/);
+  return next >= 0 ? rest.slice(0, marker.length + next) : rest;
+}
+
+function d1DatabaseId(sectionText) {
+  const match = sectionText.match(/\[\[env\.(?:dev|staging|production)\.d1_databases\]\][\s\S]*?binding\s*=\s*"RUNTIME_DB"[\s\S]*?database_id\s*=\s*"([^"]+)"/);
+  return match?.[1] || "";
+}
+
+function isGovernedD1DatabaseId(environment, value) {
+  if (environment === "dev") return value === "__LETBUYY_RUNTIME_D1_DEV_DATABASE_ID__";
+  return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) && !value.startsWith("__");
+}
+
 for (const environment of ["dev", "staging", "production"]) {
   const env = topology.environments[environment];
-  const envSection = apiWrangler.slice(apiWrangler.indexOf(`[env.${environment}]`), apiWrangler.indexOf(environment === "dev" ? "[env.staging]" : environment === "staging" ? "[env.production]" : "\n[env.__end__"));
-  const placeholder = `__LETBUYY_RUNTIME_D1_${environment.toUpperCase()}_DATABASE_ID__`;
-  reporter.assert(envSection.includes("[[env." + environment + ".d1_databases]]"), `API Gateway missing D1 binding for ${environment}`);
-  reporter.assert(envSection.includes('binding = "RUNTIME_DB"'), `API Gateway missing RUNTIME_DB binding for ${environment}`);
-  reporter.assert(envSection.includes(`database_name = "${env.d1}"`), `API Gateway D1 database name drift for ${environment}`);
-  reporter.assert(envSection.includes(`database_id = "${placeholder}"`), `API Gateway D1 placeholder drift for ${environment}`);
-  reporter.assert(envSection.includes('migrations_dir = "../../database/cloudflare/d1/migrations"'), `API Gateway D1 migrations_dir missing for ${environment}`);
+  const section = envSection(apiWrangler, environment);
+  reporter.assert(section.includes("[[env." + environment + ".d1_databases]]"), `API Gateway missing D1 binding for ${environment}`);
+  reporter.assert(section.includes('binding = "RUNTIME_DB"'), `API Gateway missing RUNTIME_DB binding for ${environment}`);
+  reporter.assert(section.includes(`database_name = "${env.d1}"`), `API Gateway D1 database name drift for ${environment}`);
+  reporter.assert(isGovernedD1DatabaseId(environment, d1DatabaseId(section)), `API Gateway D1 database_id drift for ${environment}`);
+  reporter.assert(section.includes('migrations_dir = "../../database/cloudflare/d1/migrations"'), `API Gateway D1 migrations_dir missing for ${environment}`);
 }
 
 reporter.finish("D1 database, migration, and materialization governance checked");

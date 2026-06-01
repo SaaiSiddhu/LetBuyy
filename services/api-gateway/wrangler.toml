@@ -217,8 +217,8 @@ queue = "letbuyy-staging-queue"
 
 [[env.staging.kv_namespaces]]
 binding = "CACHE"
-id = "STAGING_CACHE_KV_ID_PLACEHOLDER"
-preview_id = "STAGING_CACHE_KV_ID_PLACEHOLDER"
+id = "90551a8f994642f989f6ee6fa984b4a0"
+preview_id = "90551a8f994642f989f6ee6fa984b4a0"
 
 [[env.staging.r2_buckets]]
 binding = "R2_BUCKET"
@@ -226,12 +226,12 @@ bucket_name = "letbuyy-media-staging"
 
 [[env.staging.hyperdrive]]
 binding = "HYPERDRIVE"
-id = "STAGING_HYPERDRIVE_ID_PLACEHOLDER"
+id = "69fdd43f334747ae90d158bbb905d5c0"
 
 [[env.staging.d1_databases]]
 binding = "RUNTIME_DB"
 database_name = "letbuyy-staging-d1"
-database_id = "__LETBUYY_RUNTIME_D1_STAGING_DATABASE_ID__"
+database_id = "d1e49c22-7345-4e3a-94d0-02ce5075566d"
 migrations_dir = "../../database/cloudflare/d1/migrations"
 
 [[env.staging.durable_objects.bindings]]
@@ -308,8 +308,8 @@ queue = "letbuyy-production-queue"
 
 [[env.production.kv_namespaces]]
 binding = "CACHE"
-id = "PRODUCTION_CACHE_KV_ID_PLACEHOLDER"
-preview_id = "PRODUCTION_CACHE_KV_ID_PLACEHOLDER"
+id = "ee82af4721b349c89e757ed8155c2b5b"
+preview_id = "ee82af4721b349c89e757ed8155c2b5b"
 
 [[env.production.r2_buckets]]
 binding = "R2_BUCKET"
@@ -317,12 +317,12 @@ bucket_name = "letbuyy-media-production"
 
 [[env.production.hyperdrive]]
 binding = "HYPERDRIVE"
-id = "PRODUCTION_HYPERDRIVE_ID_PLACEHOLDER"
+id = "9e08563f410040d9a8bd67b7938f0bb5"
 
 [[env.production.d1_databases]]
 binding = "RUNTIME_DB"
 database_name = "letbuyy-production-d1"
-database_id = "__LETBUYY_RUNTIME_D1_PRODUCTION_DATABASE_ID__"
+database_id = "76d197a5-d1cf-48a3-a363-4201ed1ca490"
 migrations_dir = "../../database/cloudflare/d1/migrations"
 
 [[env.production.durable_objects.bindings]]

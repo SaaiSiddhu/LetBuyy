@@ -85,9 +85,17 @@ const r2Buckets = {
 
 const kvPlaceholders = {
   dev: "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__",
-  staging: "STAGING_CACHE_KV_ID_PLACEHOLDER",
-  production: "PRODUCTION_CACHE_KV_ID_PLACEHOLDER",
 };
+
+function cacheKvId(envSection) {
+  const kvMatch = envSection.match(/\[\[env\.(?:dev|staging|production)\.kv_namespaces\]\][\s\S]*?binding\s*=\s*"CACHE"[\s\S]*?id\s*=\s*"([^"]+)"/);
+  return kvMatch?.[1] || "";
+}
+
+function isGovernedCacheKvId(environment, value) {
+  if (environment === "dev") return value === kvPlaceholders.dev;
+  return /^[a-f0-9]{32}$/i.test(value) && !value.includes("PLACEHOLDER") && !value.startsWith("__");
+}
 
 const foundationQueues = {
   dev: ["letbuyy-dev-queue", "letbuyy-dev-dead-letter-queue"],
@@ -186,8 +194,7 @@ for (const worker of workerConfigs) {
     }
 
     if (worker.requiresKv) {
-      const placeholder = kvPlaceholders[environment];
-      reporter.assert(envSection.includes(`id = "${placeholder}"`), `Worker ${marker} must bind environment-specific KV namespace placeholder ${placeholder}: ${worker.config}`);
+      reporter.assert(isGovernedCacheKvId(environment, cacheKvId(envSection)), `Worker ${marker} must bind governed environment-specific KV namespace id: ${worker.config}`);
     }
 
     reporter.assert(envSection.includes(`[[env.${environment}.analytics_engine_datasets]]`), `Worker ${marker} must declare isolated telemetry dataset binding: ${worker.config}`);

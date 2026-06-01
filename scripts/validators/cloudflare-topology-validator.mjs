@@ -29,11 +29,25 @@ reporter.assert(JSON.stringify(lineage?.promotionOrder) === JSON.stringify(["dev
 
 const seenResourceNames = new Map();
 const resourceKeys = ["worker", "d1", "kv", "r2", "runtimeQueue", "deadLetterQueue", "durableObjectNamespace", "telemetryDataset", "replayStorage", "walStorage"];
-const cacheKvPlaceholders = {
-  dev: "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__",
-  staging: "STAGING_CACHE_KV_ID_PLACEHOLDER",
-  production: "PRODUCTION_CACHE_KV_ID_PLACEHOLDER",
-};
+
+function envSection(text, environment) {
+  const marker = `[env.${environment}]`;
+  const start = text.indexOf(marker);
+  if (start < 0) return "";
+  const rest = text.slice(start);
+  const next = rest.slice(marker.length).search(/\n\[env\.(dev|staging|production)\]/);
+  return next >= 0 ? rest.slice(0, marker.length + next) : rest;
+}
+
+function extractCacheKvId(sectionText) {
+  const kvMatch = sectionText.match(/\[\[env\.(?:dev|staging|production)\.kv_namespaces\]\][\s\S]*?binding\s*=\s*"CACHE"[\s\S]*?id\s*=\s*"([^"]+)"/);
+  return kvMatch?.[1] || "";
+}
+
+function isGovernedCacheKvId(environment, value) {
+  if (environment === "dev") return value === "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__";
+  return /^[a-f0-9]{32}$/i.test(value) && !value.includes("PLACEHOLDER") && !value.startsWith("__");
+}
 
 for (const environment of ["dev", "staging", "production"]) {
   const env = topology.environments?.[environment];
@@ -56,7 +70,7 @@ for (const environment of ["dev", "staging", "production"]) {
   reporter.assert(webhookWrangler.includes(`name = "${env.workers.webhookService}"`), `Webhook wrangler missing Worker ${env.workers.webhookService}`);
   reporter.assert(queueWrangler.includes(`name = "${env.workers.queueWorkers}"`), `Queue wrangler missing Worker ${env.workers.queueWorkers}`);
   reporter.assert(apiWrangler.includes(env.d1), `API Gateway wrangler missing D1 ${env.d1}`);
-  reporter.assert(apiWrangler.includes(cacheKvPlaceholders[environment]), `API Gateway wrangler missing KV placeholder for ${environment}`);
+  reporter.assert(isGovernedCacheKvId(environment, extractCacheKvId(envSection(apiWrangler, environment))), `API Gateway wrangler missing governed KV namespace id for ${environment}`);
   reporter.assert(apiWrangler.includes(env.r2), `API Gateway wrangler missing R2 ${env.r2}`);
   reporter.assert(apiWrangler.includes(env.runtimeQueue), `API Gateway wrangler missing runtime queue ${env.runtimeQueue}`);
   reporter.assert(queueWrangler.includes(env.runtimeQueue), `Queue wrangler missing runtime queue ${env.runtimeQueue}`);
