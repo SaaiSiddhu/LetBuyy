@@ -1,4 +1,4 @@
-import { getDefaultStorefrontThemeTemplate } from '@letbuyy/api-types';
+import { getDefaultStorefrontThemeTemplate } from '@letbuyy/theme-engine';
 import {
     DEFAULT_THEME_SETTINGS,
     ProductModel,

@@ -26,9 +26,6 @@
       "@/*": [
         "./src/*"
       ],
-      "@letbuyy/api-types": [
-        "../../packages/typescript/api-types/src/index.ts"
-      ],
       "@letbuyy/app-engine": [
         "../../packages/app-engine/src/index.ts"
       ],

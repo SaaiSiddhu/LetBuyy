@@ -4,4 +4,4 @@ export type {
     SectionSchema,
     ThemeSettingsGroup,
     ThemeSettingsSchema,
-} from '@letbuyy/api-types'
+} from '@letbuyy/theme-engine'

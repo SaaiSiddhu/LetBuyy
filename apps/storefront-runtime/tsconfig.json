@@ -29,9 +29,6 @@
       "@letbuyy/auth-core": [
         "../../packages/auth-core/src/index.ts"
       ],
-      "@letbuyy/api-types": [
-        "../../packages/typescript/api-types/src/index.ts"
-      ],
       "@letbuyy/app-engine": [
         "../../packages/app-engine/src/index.ts"
       ],

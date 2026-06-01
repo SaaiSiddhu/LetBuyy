@@ -20,7 +20,7 @@ Actual source root: `apps/storefront-runtime`.
 - Package: @letbuyy/storefront-runtime
 - File: apps/storefront-runtime/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/utils, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
+- Runtime dependencies: @letbuyy/api-client, @letbuyy/app-engine, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/shared-types, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/utils, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -117,7 +117,7 @@ Actual source root: `apps/storefront-runtime`.
 - App-owned read aggregation and projection shaping belongs in `packages/runtime-composition`.
 - Durable checkout, payment, auth, tenant, CMS, and commerce workflows belong in application-services and backend service execution containers.
 - Keep tenant context explicit: every store/merchant operation must bind to `site_id`, `[store]`, `[subdomain]`, or an ownership-checked resource.
-- Use shared types from `@letbuyy/api-types` when interacting with worker or database-shaped data.
+- Use shared types from `@letbuyy/shared-types` and theme contracts from `@letbuyy/theme-engine` when interacting with gateway-shaped data.
 - Do not introduce secrets, provider keys, or service-role access into client components.
 - Prefer skeletons and retryable error states over spinner-only loading.
 - Use dark mode tokens and app-level CSS variables. Do not hardcode new raw color values in components.
