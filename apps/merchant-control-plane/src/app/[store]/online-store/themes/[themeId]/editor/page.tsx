@@ -3,11 +3,12 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, Button, EmptyState, FileJson, Monitor, RefreshCw, Save, SaveBar, Send, Settings, useToast } from '@letbuyy/ui'
+import { AlertTriangle, ArrowLeft, Badge, Button, EmptyState, FileJson, Monitor, RefreshCw, Save, SaveBar, Send, Settings, Smartphone, useToast } from '@letbuyy/ui'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
+type PreviewDevice = 'desktop' | 'tablet' | 'mobile'
 
 type SettingsData = {
     current: JsonRecord
@@ -46,6 +47,12 @@ const EMPTY_SETTINGS_DATA: SettingsData = {
     current: {},
     presets: {},
 }
+
+const PREVIEW_DEVICES: Array<{ value: PreviewDevice; label: string; size: string }> = [
+    { value: 'desktop', label: 'Desktop', size: '1440' },
+    { value: 'tablet', label: 'Tablet', size: '768' },
+    { value: 'mobile', label: 'Mobile', size: '390' },
+]
 
 const FIELD_TYPES = new Set([
     'text',
@@ -295,6 +302,8 @@ function ThemeSettingsEditorInner() {
     const [isPublishing, setIsPublishing] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [previewToken, setPreviewToken] = useState<string | null>(null)
+    const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop')
+    const [previewLoaded, setPreviewLoaded] = useState(false)
     const [previewUnavailable, setPreviewUnavailable] = useState(false)
     const [previewRetryNonce, setPreviewRetryNonce] = useState(0)
 
@@ -313,16 +322,34 @@ function ThemeSettingsEditorInner() {
         return url.toString()
     }, [previewToken, store])
 
+    const previewSrc = useMemo(() => {
+        if (!previewUrl) return ''
+        const url = new URL(previewUrl)
+        url.searchParams.set('editor_device', previewDevice)
+        url.searchParams.set('editor_refresh', String(previewRetryNonce))
+        return url.toString()
+    }, [previewDevice, previewRetryNonce, previewUrl])
+
     useEffect(() => {
-        if (!previewUrl) {
+        if (!previewSrc) {
+            setPreviewLoaded(false)
             setPreviewUnavailable(false)
             return undefined
         }
 
+        setPreviewLoaded(false)
         setPreviewUnavailable(false)
-        const timer = window.setTimeout(() => setPreviewUnavailable(true), 2500)
+    }, [previewSrc])
+
+    useEffect(() => {
+        if (!previewSrc || previewLoaded) {
+            if (previewLoaded) setPreviewUnavailable(false)
+            return undefined
+        }
+
+        const timer = window.setTimeout(() => setPreviewUnavailable(true), 6000)
         return () => window.clearTimeout(timer)
-    }, [previewRetryNonce, previewUrl])
+    }, [previewLoaded, previewSrc])
 
     const refreshPreview = useCallback(async (announce = false) => {
         if (!store || !themeId) return
@@ -339,6 +366,7 @@ function ThemeSettingsEditorInner() {
             }
             const token = asRecord(data.data).preview_token
             if (typeof token === 'string') setPreviewToken(token)
+            setPreviewRetryNonce((value) => value + 1)
             if (announce) {
                 notify({
                     title: 'Preview refreshed',
@@ -359,7 +387,6 @@ function ThemeSettingsEditorInner() {
 
     const handlePreviewRetry = useCallback(() => {
         setPreviewUnavailable(false)
-        setPreviewRetryNonce((value) => value + 1)
         void refreshPreview(true)
     }, [refreshPreview])
 
@@ -530,6 +557,14 @@ function ThemeSettingsEditorInner() {
         )
     }
 
+    const previewStatusLabel = isDirty
+        ? 'Save draft to update preview'
+        : previewUnavailable
+            ? 'Preview offline'
+            : 'Saved draft preview'
+    const previewStatusVariant = isDirty ? 'warning' : previewUnavailable ? 'critical' : 'success'
+    const activePreviewDevice = PREVIEW_DEVICES.find((device) => device.value === previewDevice) || PREVIEW_DEVICES[0]
+
     return (
         <main className="generic-theme-editor">
             <header className="generic-theme-editor__header">
@@ -620,36 +655,67 @@ function ThemeSettingsEditorInner() {
 
                 <aside className="generic-theme-editor__preview" aria-label="Theme preview">
                     <div className="generic-theme-editor__preview-header">
-                        <span>{store}.letbuyy.store</span>
-                        <button className="generic-theme-editor__icon-button" type="button" onClick={handlePreviewRetry} aria-label="Refresh preview">
-                            <RefreshCw size={16} aria-hidden="true" />
-                        </button>
+                        <div className="generic-theme-editor__preview-meta">
+                            <div className="generic-theme-editor__preview-title">
+                                {previewDevice === 'mobile'
+                                    ? <Smartphone size={16} aria-hidden="true" />
+                                    : <Monitor size={16} aria-hidden="true" />}
+                                <span>Live preview</span>
+                                <Badge label={previewStatusLabel} variant={previewStatusVariant} />
+                            </div>
+                            <span className="generic-theme-editor__preview-url">
+                                {store}.letbuyy.store - {activePreviewDevice.size}px
+                            </span>
+                        </div>
+                        <div className="generic-theme-editor__preview-actions">
+                            <div className="generic-theme-editor__device-toggle" role="group" aria-label="Preview device">
+                                {PREVIEW_DEVICES.map((device) => (
+                                    <button
+                                        key={device.value}
+                                        className={`generic-theme-editor__device-button ${previewDevice === device.value ? 'generic-theme-editor__device-button--active' : ''}`}
+                                        type="button"
+                                        aria-pressed={previewDevice === device.value}
+                                        onClick={() => setPreviewDevice(device.value)}
+                                    >
+                                        {device.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <button className="generic-theme-editor__icon-button" type="button" onClick={handlePreviewRetry} aria-label="Refresh preview">
+                                <RefreshCw size={16} aria-hidden="true" />
+                            </button>
+                        </div>
                     </div>
-                    {previewUrl ? (
-                        <div className="relative flex flex-1">
-                            <iframe
-                                className="generic-theme-editor__iframe"
-                                title={`${store} storefront preview`}
-                                src={previewUrl}
-                                sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
-                                onLoad={() => setPreviewUnavailable(false)}
-                            />
-                            {previewUnavailable ? (
-                                <div className="absolute inset-[var(--lb-space-4)] flex">
-                                    <EmptyState
-                                        className="min-h-[240px] flex-1 p-[var(--lb-space-6)]"
-                                        icon={<Monitor className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                                        title="Preview unavailable"
-                                        body="The storefront preview could not load. Refresh the preview to try again."
-                                        primaryAction={(
-                                            <Button type="button" variant="secondary" size="sm" onClick={handlePreviewRetry}>
-                                                <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                Retry preview
-                                            </Button>
-                                        )}
-                                    />
-                                </div>
-                            ) : null}
+                    {previewSrc ? (
+                        <div className="generic-theme-editor__preview-canvas">
+                            <div className={`generic-theme-editor__preview-frame-shell generic-theme-editor__preview-frame-shell--${previewDevice}`}>
+                                <iframe
+                                    className="generic-theme-editor__iframe"
+                                    title={`${store} storefront ${previewDevice} preview`}
+                                    src={previewSrc}
+                                    sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+                                    onLoad={() => {
+                                        setPreviewLoaded(true)
+                                        setPreviewUnavailable(false)
+                                    }}
+                                />
+                                {previewUnavailable ? (
+                                    <div className="absolute inset-[var(--lb-space-4)] flex">
+                                        <EmptyState
+                                            className="min-h-[240px] flex-1 p-[var(--lb-space-6)]"
+                                            icon={<Monitor className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                            title="Preview unavailable"
+                                            body="The storefront preview could not load. Refresh the preview to try again."
+                                            primaryAction={(
+                                                <Button type="button" variant="secondary" size="sm" onClick={handlePreviewRetry}>
+                                                    <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    Retry preview
+                                                </Button>
+                                            )}
+                                        />
+                                    </div>
+                                ) : null}
+                            </div>
                         </div>
                     ) : (
                         <EmptyState
