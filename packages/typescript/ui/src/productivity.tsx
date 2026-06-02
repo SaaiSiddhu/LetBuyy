@@ -194,6 +194,7 @@ export function IndexTable<T extends { id: string }>({
     const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
     const selectedRows = rows.filter((row) => selectedIds.has(row.id));
     const allSelected = rows.length > 0 && selectedIds.size === rows.length;
+    const sortableColumns = columns.filter((column) => column.sortable);
 
     const toggleAll = () => {
         setSelectedIds(allSelected ? new Set() : new Set(rows.map((row) => row.id)));
@@ -266,7 +267,94 @@ export function IndexTable<T extends { id: string }>({
                     </div>
                 </div>
             )}
-            <div className="overflow-auto">
+            {sortableColumns.length > 0 && onSort && (
+                <div className="flex gap-[var(--lb-space-2)] overflow-x-auto border-b border-[var(--lb-color-border)] p-[var(--lb-space-3)] md:hidden">
+                    {sortableColumns.map((column) => {
+                        const active = sortKey === column.key;
+                        return (
+                            <button
+                                key={column.key}
+                                type="button"
+                                className={cx(
+                                    'inline-flex h-[var(--lb-size-control-sm)] shrink-0 items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
+                                    active
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]'
+                                        : 'border-[var(--lb-color-border)] text-[var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                )}
+                                aria-pressed={active}
+                                onClick={() => onSort(column.key)}
+                            >
+                                Sort {column.header}
+                                {active && (
+                                    sortDirection === 'asc'
+                                        ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                )}
+                            </button>
+                        );
+                    })}
+                </div>
+            )}
+            <div className="md:hidden">
+                {loading ? (
+                    <div className="p-[var(--lb-space-4)]">
+                        <Skeleton variant="card" lines={5} />
+                    </div>
+                ) : rows.length === 0 ? (
+                    <div className="p-[var(--lb-space-4)]">
+                        {emptyState}
+                    </div>
+                ) : (
+                    <div className="divide-y divide-[var(--lb-color-border)]">
+                        <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">
+                            <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
+                            Select all visible rows
+                        </label>
+                        {rows.map((row, rowIndex) => (
+                            <article key={row.id} className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-3)]">
+                                <div className="flex items-start gap-[var(--lb-space-3)]">
+                                    <input
+                                        type="checkbox"
+                                        className="mt-[var(--lb-space-1)]"
+                                        checked={selectedIds.has(row.id)}
+                                        onChange={() => toggleRow(row.id)}
+                                        aria-label={`Select row ${rowIndex + 1}`}
+                                    />
+                                    <div className="min-w-0 flex-1">
+                                        {columns[0]?.render ? columns[0].render(row, rowIndex) : String(row[columns[0]?.key as keyof T] ?? '')}
+                                    </div>
+                                </div>
+
+                                <dl className="m-0 grid gap-[var(--lb-space-3)]">
+                                    {columns.slice(1).map((column) => (
+                                        <div key={column.key} className="grid gap-[var(--lb-space-1)]">
+                                            <dt className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {column.header}
+                                            </dt>
+                                            <dd className="m-0 min-w-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                {column.render ? column.render(row, rowIndex) : String(row[column.key as keyof T] ?? '')}
+                                            </dd>
+                                        </div>
+                                    ))}
+                                </dl>
+
+                                {onRowClick && (
+                                    <div className="flex justify-end">
+                                        <button
+                                            type="button"
+                                            className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                            onClick={() => onRowClick(row)}
+                                        >
+                                            Open
+                                        </button>
+                                    </div>
+                                )}
+                            </article>
+                        ))}
+                    </div>
+                )}
+            </div>
+            <div className="hidden overflow-auto md:block">
                 <table className="w-full border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
                     <thead className="bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]">
                         <tr>
