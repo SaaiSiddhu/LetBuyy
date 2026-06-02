@@ -1,83 +1,380 @@
 'use client'
 
-import { useState, useRef, useCallback, useEffect } from 'react'
-import Link from 'next/link'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { ChangeEvent, ReactNode } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    ArrowLeft,
+    Badge,
+    Banner,
+    Button,
+    Card,
+    Image as ImageIcon,
+    Input,
+    Package,
+    Page,
+    PageHeader,
+    Plus,
+    Save,
+    SaveBar,
+    Section,
+    Select,
+    Skeleton,
+    Textarea,
+    Trash2,
+    Upload,
+    X,
+    useToast,
+} from '@letbuyy/ui'
 
 interface VariantOption {
     name: string
     values: string[]
 }
 
+interface ProductFormSnapshot {
+    title: string
+    description: string
+    images: string[]
+    category: string
+    price: string
+    comparePrice: string
+    costPerItem: string
+    chargeTax: boolean
+    trackInventory: boolean
+    quantity: string
+    sku: string
+    barcode: string
+    sellWhenOos: boolean
+    isPhysical: boolean
+    weight: string
+    weightUnit: string
+    countryOfOrigin: string
+    hsCode: string
+    variantOptions: VariantOption[]
+    seoTitle: string
+    seoDescription: string
+    urlHandle: string
+    status: 'active' | 'draft'
+    productType: string
+    vendor: string
+    tags: string
+}
+
+const defaultProductSnapshot: ProductFormSnapshot = {
+    title: '',
+    description: '',
+    images: [],
+    category: '',
+    price: '',
+    comparePrice: '',
+    costPerItem: '',
+    chargeTax: true,
+    trackInventory: true,
+    quantity: '10',
+    sku: '',
+    barcode: '',
+    sellWhenOos: false,
+    isPhysical: true,
+    weight: '',
+    weightUnit: 'kg',
+    countryOfOrigin: '',
+    hsCode: '',
+    variantOptions: [],
+    seoTitle: '',
+    seoDescription: '',
+    urlHandle: '',
+    status: 'active',
+    productType: '',
+    vendor: '',
+    tags: '',
+}
+
+const weightUnitOptions = [
+    { label: 'kg', value: 'kg' },
+    { label: 'g', value: 'g' },
+    { label: 'lb', value: 'lb' },
+    { label: 'oz', value: 'oz' },
+]
+
+const statusOptions = [
+    { label: 'Active', value: 'active' },
+    { label: 'Draft', value: 'draft' },
+]
+
+function createFormSignature(snapshot: ProductFormSnapshot) {
+    return JSON.stringify(snapshot)
+}
+
+function generateHandle(text: string) {
+    return text
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')
+        .replace(/\s+/g, '-')
+        .replace(/-+/g, '-')
+        .trim()
+}
+
+function getPayloadError(payload: unknown, fallback: string) {
+    if (!payload || typeof payload !== 'object') return fallback
+    const errorValue = (payload as { error?: unknown }).error
+    if (typeof errorValue === 'string') return errorValue
+    if (errorValue && typeof errorValue === 'object' && typeof (errorValue as { message?: unknown }).message === 'string') {
+        return (errorValue as { message: string }).message
+    }
+    const message = (payload as { message?: unknown }).message
+    return typeof message === 'string' ? message : fallback
+}
+
+function normalizeString(value: unknown) {
+    return typeof value === 'string' ? value : ''
+}
+
+function normalizeNumberInput(value: unknown) {
+    if (value === null || value === undefined || value === '') return ''
+    const numberValue = Number(value)
+    return Number.isFinite(numberValue) ? String(numberValue) : ''
+}
+
+function normalizeProductSnapshot(product: Record<string, unknown>): ProductFormSnapshot {
+    const productOptions = Array.isArray(product.product_options)
+        ? product.product_options
+            .filter((option): option is VariantOption => {
+                if (!option || typeof option !== 'object') return false
+                const value = option as VariantOption
+                return typeof value.name === 'string' && Array.isArray(value.values)
+            })
+            .map((option) => ({
+                name: option.name,
+                values: option.values.filter((value): value is string => typeof value === 'string'),
+            }))
+        : []
+
+    return {
+        title: normalizeString(product.name),
+        description: normalizeString(product.description),
+        images: Array.isArray(product.images) ? product.images.filter((image): image is string => typeof image === 'string') : [],
+        category: normalizeString(product.category),
+        price: normalizeNumberInput(product.price),
+        comparePrice: normalizeNumberInput(product.compare_price ?? product.compare_at_price),
+        costPerItem: normalizeNumberInput(product.cost_per_item ?? product.cost_price),
+        chargeTax: product.charge_tax !== false,
+        trackInventory: product.track_inventory !== false,
+        quantity: normalizeNumberInput(product.stock ?? product.stock_quantity ?? 0),
+        sku: normalizeString(product.sku),
+        barcode: normalizeString(product.barcode),
+        sellWhenOos: Boolean(product.sell_when_oos),
+        isPhysical: product.is_physical !== false,
+        weight: normalizeNumberInput(product.weight),
+        weightUnit: normalizeString(product.weight_unit) || 'kg',
+        countryOfOrigin: normalizeString(product.country_of_origin),
+        hsCode: normalizeString(product.hs_code),
+        variantOptions: productOptions,
+        seoTitle: normalizeString(product.seo_title),
+        seoDescription: normalizeString(product.seo_description),
+        urlHandle: normalizeString(product.url_handle || product.slug),
+        status: product.is_active === false || product.status === 'draft' ? 'draft' : 'active',
+        productType: normalizeString(product.product_type),
+        vendor: normalizeString(product.vendor),
+        tags: Array.isArray(product.tags) ? product.tags.filter((tag): tag is string => typeof tag === 'string').join(', ') : '',
+    }
+}
+
+function CheckboxControl({
+    checked,
+    children,
+    disabled,
+    onChange,
+    readOnly = false,
+}: {
+    checked: boolean
+    children: ReactNode
+    disabled?: boolean
+    onChange?: (checked: boolean) => void
+    readOnly?: boolean
+}) {
+    return (
+        <label className="flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+            <input
+                type="checkbox"
+                checked={checked}
+                disabled={disabled}
+                readOnly={readOnly}
+                onChange={(event) => onChange?.(event.target.checked)}
+                className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+            />
+            {children}
+        </label>
+    )
+}
+
 export default function AddProductPage() {
     const { store, productId } = useParams<{ store: string; productId?: string }>()
     const router = useRouter()
+    const { notify } = useToast()
     const fileInputRef = useRef<HTMLInputElement>(null)
     const isEditing = Boolean(productId && productId !== 'new')
 
-    // ——— Form state ———
-    const [title, setTitle] = useState('')
-    const [description, setDescription] = useState('')
-    const [images, setImages] = useState<string[]>([])
+    const [title, setTitle] = useState(defaultProductSnapshot.title)
+    const [description, setDescription] = useState(defaultProductSnapshot.description)
+    const [images, setImages] = useState<string[]>(defaultProductSnapshot.images)
     const [uploading, setUploading] = useState(false)
-
-    // Category
-    const [category, setCategory] = useState('')
-
-    // Pricing
-    const [price, setPrice] = useState('')
-    const [comparePrice, setComparePrice] = useState('')
-    const [costPerItem, setCostPerItem] = useState('')
-    const [chargeTax, setChargeTax] = useState(true)
-
-    // Inventory
-    const [trackInventory, setTrackInventory] = useState(true)
-    const [quantity, setQuantity] = useState('10')
-    const [sku, setSku] = useState('')
-    const [barcode, setBarcode] = useState('')
-    const [sellWhenOos, setSellWhenOos] = useState(false)
-
-    // Shipping
-    const [isPhysical, setIsPhysical] = useState(true)
-    const [weight, setWeight] = useState('')
-    const [weightUnit, setWeightUnit] = useState('kg')
-    const [countryOfOrigin, setCountryOfOrigin] = useState('')
-    const [hsCode, setHsCode] = useState('')
-
-    // Variants
-    const [variantOptions, setVariantOptions] = useState<VariantOption[]>([])
+    const [category, setCategory] = useState(defaultProductSnapshot.category)
+    const [price, setPrice] = useState(defaultProductSnapshot.price)
+    const [comparePrice, setComparePrice] = useState(defaultProductSnapshot.comparePrice)
+    const [costPerItem, setCostPerItem] = useState(defaultProductSnapshot.costPerItem)
+    const [chargeTax, setChargeTax] = useState(defaultProductSnapshot.chargeTax)
+    const [trackInventory, setTrackInventory] = useState(defaultProductSnapshot.trackInventory)
+    const [quantity, setQuantity] = useState(defaultProductSnapshot.quantity)
+    const [sku, setSku] = useState(defaultProductSnapshot.sku)
+    const [barcode, setBarcode] = useState(defaultProductSnapshot.barcode)
+    const [sellWhenOos, setSellWhenOos] = useState(defaultProductSnapshot.sellWhenOos)
+    const [isPhysical, setIsPhysical] = useState(defaultProductSnapshot.isPhysical)
+    const [weight, setWeight] = useState(defaultProductSnapshot.weight)
+    const [weightUnit, setWeightUnit] = useState(defaultProductSnapshot.weightUnit)
+    const [countryOfOrigin, setCountryOfOrigin] = useState(defaultProductSnapshot.countryOfOrigin)
+    const [hsCode, setHsCode] = useState(defaultProductSnapshot.hsCode)
+    const [variantOptions, setVariantOptions] = useState<VariantOption[]>(defaultProductSnapshot.variantOptions)
     const [showVariantBuilder, setShowVariantBuilder] = useState(false)
     const [newOptionName, setNewOptionName] = useState('')
     const [newOptionValue, setNewOptionValue] = useState('')
     const [editingOptionIndex, setEditingOptionIndex] = useState<number | null>(null)
-
-    // SEO
-    const [seoTitle, setSeoTitle] = useState('')
-    const [seoDescription, setSeoDescription] = useState('')
-    const [urlHandle, setUrlHandle] = useState('')
-
-    // Sidebar
-    const [status, setStatus] = useState<'active' | 'draft'>('active')
-    const [productType, setProductType] = useState('')
-    const [vendor, setVendor] = useState('')
-    const [tags, setTags] = useState('')
-
-    // Save state
+    const [seoTitle, setSeoTitle] = useState(defaultProductSnapshot.seoTitle)
+    const [seoDescription, setSeoDescription] = useState(defaultProductSnapshot.seoDescription)
+    const [urlHandle, setUrlHandle] = useState(defaultProductSnapshot.urlHandle)
+    const [status, setStatus] = useState<'active' | 'draft'>(defaultProductSnapshot.status)
+    const [productType, setProductType] = useState(defaultProductSnapshot.productType)
+    const [vendor, setVendor] = useState(defaultProductSnapshot.vendor)
+    const [tags, setTags] = useState(defaultProductSnapshot.tags)
     const [saving, setSaving] = useState(false)
     const [loadingProduct, setLoadingProduct] = useState(isEditing)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
+    const [savedSignature, setSavedSignature] = useState<string | null>(() => (
+        isEditing ? null : createFormSignature(defaultProductSnapshot)
+    ))
 
-    // ——— Auto-generate URL handle from title ———
-    const generateHandle = (text: string) => {
-        return text
-            .toLowerCase()
-            .replace(/[^a-z0-9\s-]/g, '')
-            .replace(/\s+/g, '-')
-            .replace(/-+/g, '-')
-            .trim()
-    }
+    const currentSnapshot = useMemo<ProductFormSnapshot>(() => ({
+        title,
+        description,
+        images,
+        category,
+        price,
+        comparePrice,
+        costPerItem,
+        chargeTax,
+        trackInventory,
+        quantity,
+        sku,
+        barcode,
+        sellWhenOos,
+        isPhysical,
+        weight,
+        weightUnit,
+        countryOfOrigin,
+        hsCode,
+        variantOptions,
+        seoTitle,
+        seoDescription,
+        urlHandle,
+        status,
+        productType,
+        vendor,
+        tags,
+    }), [
+        barcode,
+        category,
+        chargeTax,
+        comparePrice,
+        costPerItem,
+        countryOfOrigin,
+        description,
+        hsCode,
+        images,
+        isPhysical,
+        price,
+        productType,
+        quantity,
+        sellWhenOos,
+        seoDescription,
+        seoTitle,
+        sku,
+        status,
+        tags,
+        title,
+        trackInventory,
+        urlHandle,
+        variantOptions,
+        vendor,
+        weight,
+        weightUnit,
+    ])
+
+    const currentSignature = useMemo(() => createFormSignature(currentSnapshot), [currentSnapshot])
+    const hasUnsavedChanges = Boolean(savedSignature && currentSignature !== savedSignature)
+    const saveState = saving ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
+
+    const applySnapshot = useCallback((snapshot: ProductFormSnapshot) => {
+        setTitle(snapshot.title)
+        setDescription(snapshot.description)
+        setImages(snapshot.images)
+        setCategory(snapshot.category)
+        setPrice(snapshot.price)
+        setComparePrice(snapshot.comparePrice)
+        setCostPerItem(snapshot.costPerItem)
+        setChargeTax(snapshot.chargeTax)
+        setTrackInventory(snapshot.trackInventory)
+        setQuantity(snapshot.quantity)
+        setSku(snapshot.sku)
+        setBarcode(snapshot.barcode)
+        setSellWhenOos(snapshot.sellWhenOos)
+        setIsPhysical(snapshot.isPhysical)
+        setWeight(snapshot.weight)
+        setWeightUnit(snapshot.weightUnit)
+        setCountryOfOrigin(snapshot.countryOfOrigin)
+        setHsCode(snapshot.hsCode)
+        setVariantOptions(snapshot.variantOptions)
+        setSeoTitle(snapshot.seoTitle)
+        setSeoDescription(snapshot.seoDescription)
+        setUrlHandle(snapshot.urlHandle)
+        setStatus(snapshot.status)
+        setProductType(snapshot.productType)
+        setVendor(snapshot.vendor)
+        setTags(snapshot.tags)
+        setSavedSignature(createFormSignature(snapshot))
+    }, [])
+
+    const loadProduct = useCallback(async () => {
+        if (!isEditing || !productId) return
+
+        setLoadingProduct(true)
+        setError(null)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`)
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok || !payload?.data) {
+                throw new Error(getPayloadError(payload, 'Unable to load product'))
+            }
+
+            applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Unable to load product'
+            setError(message)
+            notify({
+                title: 'Product could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoadingProduct(false)
+        }
+    }, [applySnapshot, isEditing, notify, productId, store])
+
+    useEffect(() => {
+        void loadProduct()
+    }, [loadProduct])
 
     const handleTitleChange = (value: string) => {
         setTitle(value)
@@ -86,162 +383,103 @@ export default function AddProductPage() {
         }
     }
 
-    const getPayloadError = (payload: unknown, fallback: string) => {
-        if (!payload || typeof payload !== 'object') return fallback
-        const errorValue = (payload as { error?: unknown }).error
-        if (typeof errorValue === 'string') return errorValue
-        if (errorValue && typeof errorValue === 'object' && typeof (errorValue as { message?: unknown }).message === 'string') {
-            return (errorValue as { message: string }).message
-        }
-        return fallback
-    }
-
-    const normalizeString = (value: unknown) => typeof value === 'string' ? value : ''
-    const normalizeNumberInput = (value: unknown) => {
-        if (value === null || value === undefined || value === '') return ''
-        const numberValue = Number(value)
-        return Number.isFinite(numberValue) ? String(numberValue) : ''
-    }
-
-    const hydrateProduct = useCallback((product: Record<string, unknown>) => {
-        setTitle(normalizeString(product.name))
-        setDescription(normalizeString(product.description))
-        setImages(Array.isArray(product.images) ? product.images.filter((image): image is string => typeof image === 'string') : [])
-        setCategory(normalizeString(product.category))
-        setPrice(normalizeNumberInput(product.price))
-        setComparePrice(normalizeNumberInput(product.compare_price ?? product.compare_at_price))
-        setCostPerItem(normalizeNumberInput(product.cost_per_item ?? product.cost_price))
-        setChargeTax(product.charge_tax !== false)
-        setTrackInventory(product.track_inventory !== false)
-        setQuantity(normalizeNumberInput(product.stock ?? product.stock_quantity ?? 0))
-        setSku(normalizeString(product.sku))
-        setBarcode(normalizeString(product.barcode))
-        setSellWhenOos(Boolean(product.sell_when_oos))
-        setIsPhysical(product.is_physical !== false)
-        setWeight(normalizeNumberInput(product.weight))
-        setWeightUnit(normalizeString(product.weight_unit) || 'kg')
-        setCountryOfOrigin(normalizeString(product.country_of_origin))
-        setHsCode(normalizeString(product.hs_code))
-        setSeoTitle(normalizeString(product.seo_title))
-        setSeoDescription(normalizeString(product.seo_description))
-        setUrlHandle(normalizeString(product.url_handle || product.slug))
-        setStatus(product.is_active === false || product.status === 'draft' ? 'draft' : 'active')
-        setProductType(normalizeString(product.product_type))
-        setVendor(normalizeString(product.vendor))
-        setTags(Array.isArray(product.tags) ? product.tags.filter((tag): tag is string => typeof tag === 'string').join(', ') : '')
-        setVariantOptions(Array.isArray(product.product_options)
-            ? product.product_options
-                .filter((option): option is VariantOption => {
-                    if (!option || typeof option !== 'object') return false
-                    const value = option as VariantOption
-                    return typeof value.name === 'string' && Array.isArray(value.values)
-                })
-                .map(option => ({
-                    name: option.name,
-                    values: option.values.filter((value): value is string => typeof value === 'string'),
-                }))
-            : []
-        )
-    }, [])
-
-    useEffect(() => {
-        if (!isEditing || !productId) return
-
-        let cancelled = false
-
-        const loadProduct = async () => {
-            setLoadingProduct(true)
-            setError(null)
-
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/${encodeURIComponent(productId)}`)
-                const payload = await response.json().catch(() => null)
-
-                if (!response.ok || !payload?.data) {
-                    throw new Error(getPayloadError(payload, 'Unable to load product'))
-                }
-
-                if (!cancelled) hydrateProduct(payload.data as Record<string, unknown>)
-            } catch (err) {
-                if (!cancelled) setError(err instanceof Error ? err.message : 'Unable to load product')
-            } finally {
-                if (!cancelled) setLoadingProduct(false)
-            }
-        }
-
-        loadProduct()
-
-        return () => {
-            cancelled = true
-        }
-    }, [hydrateProduct, isEditing, productId, store])
-
-    // ——— Image upload ———
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files
+    const handleImageUpload = async (event: ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files
         if (!files || files.length === 0) return
 
         setUploading(true)
         const newImages: string[] = []
+        const failures: string[] = []
 
         for (const file of Array.from(files)) {
             const formData = new FormData()
             formData.append('file', file)
 
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/upload`, {
-                method: 'POST',
-                body: formData,
-            })
-            const payload = await response.json().catch(() => null)
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/upload`, {
+                    method: 'POST',
+                    body: formData,
+                })
+                const payload = await response.json().catch(() => null)
 
-            if (response.ok && payload?.data?.url) {
-                newImages.push(payload.data.url)
+                if (response.ok && payload?.data?.url) {
+                    newImages.push(payload.data.url)
+                } else {
+                    failures.push(file.name)
+                }
+            } catch {
+                failures.push(file.name)
             }
         }
 
-        setImages(prev => [...prev, ...newImages])
+        if (newImages.length > 0) {
+            setImages((prev) => [...prev, ...newImages])
+            notify({
+                title: newImages.length === 1 ? 'Image uploaded' : 'Images uploaded',
+                description: 'Save the product to keep these media changes.',
+                variant: 'success',
+            })
+        }
+
+        if (failures.length > 0) {
+            notify({
+                title: 'Some images could not upload',
+                description: failures.slice(0, 3).join(', '),
+                variant: 'warning',
+            })
+        }
+
         setUploading(false)
+        event.target.value = ''
     }
 
     const removeImage = (index: number) => {
-        setImages(prev => prev.filter((_, i) => i !== index))
+        setImages((prev) => prev.filter((_, imageIndex) => imageIndex !== index))
     }
 
-    // ——— Variant management ———
     const addVariantOption = () => {
-        if (!newOptionName.trim()) return
-        setVariantOptions(prev => [...prev, { name: newOptionName.trim(), values: [] }])
+        const optionName = newOptionName.trim()
+        if (!optionName) return
+        setVariantOptions((prev) => [...prev, { name: optionName, values: [] }])
         setEditingOptionIndex(variantOptions.length)
         setNewOptionName('')
+        setShowVariantBuilder(false)
     }
 
     const addValueToOption = (optionIndex: number) => {
-        if (!newOptionValue.trim()) return
-        setVariantOptions(prev => prev.map((opt, i) =>
-            i === optionIndex
-                ? { ...opt, values: [...opt.values, newOptionValue.trim()] }
-                : opt
-        ))
+        const optionValue = newOptionValue.trim()
+        if (!optionValue) return
+        setVariantOptions((prev) => prev.map((option, index) => (
+            index === optionIndex
+                ? { ...option, values: [...option.values, optionValue] }
+                : option
+        )))
         setNewOptionValue('')
     }
 
     const removeValueFromOption = (optionIndex: number, valueIndex: number) => {
-        setVariantOptions(prev => prev.map((opt, i) =>
-            i === optionIndex
-                ? { ...opt, values: opt.values.filter((_, vi) => vi !== valueIndex) }
-                : opt
-        ))
+        setVariantOptions((prev) => prev.map((option, index) => (
+            index === optionIndex
+                ? { ...option, values: option.values.filter((_, valueIndexCurrent) => valueIndexCurrent !== valueIndex) }
+                : option
+        )))
     }
 
     const removeOption = (index: number) => {
-        setVariantOptions(prev => prev.filter((_, i) => i !== index))
+        setVariantOptions((prev) => prev.filter((_, optionIndex) => optionIndex !== index))
         if (editingOptionIndex === index) setEditingOptionIndex(null)
     }
 
-    // ——— Save product ———
     const handleSave = useCallback(async () => {
-        if (!title.trim()) {
-            setError('Product title is required')
+        const productTitle = title.trim()
+        if (!productTitle) {
+            const message = 'Add a product title before saving.'
+            setError(message)
+            notify({
+                title: 'Product title is required',
+                description: message,
+                variant: 'warning',
+            })
             return
         }
 
@@ -258,7 +496,7 @@ export default function AddProductPage() {
                 method: isEditing ? 'PATCH' : 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    name: title.trim(),
+                    name: productTitle,
                     description: description.trim(),
                     images,
                     category: category || null,
@@ -281,635 +519,563 @@ export default function AddProductPage() {
                     seo_description: seoDescription || null,
                     product_type: productType || null,
                     vendor: vendor || null,
-                    tags: tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+                    tags: tags ? tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [],
                     is_active: status === 'active',
-                    product_options: variantOptions.map((opt, i) => ({
-                        name: opt.name,
-                        position: i,
-                        values: opt.values,
+                    product_options: variantOptions.map((option, index) => ({
+                        name: option.name,
+                        position: index,
+                        values: option.values,
                     })),
                     variants: [],
                 }),
             })
 
+            const payload = await response.json().catch(() => null)
+
             if (!response.ok) {
-                const payload = await response.json().catch(() => null)
                 throw new Error(getPayloadError(payload, 'Failed to save product'))
             }
 
-            const payload = await response.json().catch(() => null)
-
             if (isEditing) {
-                if (payload?.data) hydrateProduct(payload.data as Record<string, unknown>)
+                if (payload?.data) {
+                    applySnapshot(normalizeProductSnapshot(payload.data as Record<string, unknown>))
+                } else {
+                    setSavedSignature(currentSignature)
+                }
                 setSuccess('Product saved')
+                notify({
+                    title: 'Product saved',
+                    description: `${productTitle} is up to date.`,
+                    variant: 'success',
+                })
             } else {
+                setSavedSignature(currentSignature)
+                notify({
+                    title: 'Product created',
+                    description: `${productTitle} was added to your catalog.`,
+                    variant: 'success',
+                })
                 router.push(`/${store}/products`)
             }
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : 'Failed to save product'
             setError(message)
+            notify({
+                title: 'Could not save product',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setSaving(false)
         }
     }, [
-        title, description, images, category, price, comparePrice, costPerItem,
-        chargeTax, quantity, trackInventory, sku, barcode, sellWhenOos,
-        isPhysical, weight, weightUnit, countryOfOrigin, hsCode,
-        urlHandle, seoTitle, seoDescription, productType, vendor, tags,
-        status, variantOptions, store, router, isEditing, productId, hydrateProduct
+        applySnapshot,
+        barcode,
+        category,
+        chargeTax,
+        comparePrice,
+        costPerItem,
+        countryOfOrigin,
+        currentSignature,
+        description,
+        hsCode,
+        images,
+        isEditing,
+        isPhysical,
+        notify,
+        price,
+        productId,
+        productType,
+        quantity,
+        router,
+        sellWhenOos,
+        seoDescription,
+        seoTitle,
+        sku,
+        status,
+        store,
+        tags,
+        title,
+        trackInventory,
+        urlHandle,
+        variantOptions,
+        vendor,
+        weight,
+        weightUnit,
     ])
+
+    const discardChanges = useCallback(() => {
+        router.push(`/${store}/products`)
+    }, [router, store])
 
     if (loadingProduct) {
         return (
-            <div className="product-form-wrapper">
-                <div className="product-form-header">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <Link href={`/${store}/products`} className="product-form-back">
-                            <MaterialIcon name="arrow_back" />
-                        </Link>
-                        <h1 className="product-form-title">Edit product</h1>
-                    </div>
-                </div>
-                <div className="admin-skeleton" style={{ height: 520, borderRadius: 14 }} />
-            </div>
+            <Page>
+                <PageHeader
+                    title="Edit product"
+                    description="Loading product details."
+                    breadcrumbs={[{ label: 'Products', href: `/${store}/products` }, { label: 'Edit product' }]}
+                    secondaryActions={[{
+                        label: 'Back to products',
+                        href: `/${store}/products`,
+                        icon: <ArrowLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    }]}
+                />
+                <Card>
+                    <Section>
+                        <Skeleton variant="card" />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
     return (
-        <div className="product-form-wrapper">
-            {/* Header */}
-            <div className="product-form-header">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                    <Link href={`/${store}/products`} className="product-form-back">
-                        <MaterialIcon name="arrow_back" />
-                    </Link>
-                    <h1 className="product-form-title">{isEditing ? 'Edit product' : 'Add product'}</h1>
-                </div>
-                <div className="product-form-actions">
-                    <Link href={`/${store}/products`} className="setup-plan-banner-btn" style={{
-                        background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                        border: '1px solid var(--border)', padding: '8px 16px',
-                        borderRadius: 8, fontSize: 13, fontWeight: 500, textDecoration: 'none'
-                    }}>
-                        Discard
-                    </Link>
-                    <button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="setup-plan-banner-btn"
-                        style={{
-                            background: 'var(--text-primary)', color: 'var(--bg)',
-                            padding: '8px 20px', borderRadius: 8, fontSize: 13,
-                            fontWeight: 600, cursor: saving ? 'not-allowed' : 'pointer',
-                            opacity: saving ? 0.6 : 1, border: 'none'
-                        }}
-                    >
-                        {saving ? 'Saving...' : 'Save'}
-                    </button>
-                </div>
-            </div>
+        <Page>
+            <PageHeader
+                title={isEditing ? 'Edit product' : 'Add product'}
+                description={isEditing ? 'Update product details, media, pricing, inventory, and search metadata.' : 'Create a catalog-ready product with the details shoppers need.'}
+                breadcrumbs={[{ label: 'Products', href: `/${store}/products` }, { label: isEditing ? 'Edit product' : 'Add product' }]}
+                primaryAction={{
+                    label: saving ? 'Saving' : 'Save product',
+                    onClick: () => void handleSave(),
+                    icon: <Save className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    disabled: saving,
+                }}
+                secondaryActions={[{
+                    label: 'Discard',
+                    href: `/${store}/products`,
+                    icon: <ArrowLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    disabled: saving,
+                }]}
+            />
 
             {error && (
-                <div style={{
-                    padding: '10px 16px', marginBottom: 20, borderRadius: 8,
-                    background: 'rgba(239, 68, 68, 0.1)', color: 'var(--error)',
-                    fontSize: 13, border: '1px solid rgba(239, 68, 68, 0.2)'
-                }}>
+                <Banner variant="critical" title="Product needs attention">
                     {error}
-                </div>
+                </Banner>
             )}
 
             {success && (
-                <div style={{
-                    padding: '10px 16px', marginBottom: 20, borderRadius: 8,
-                    background: 'rgba(34, 197, 94, 0.1)', color: 'var(--success)',
-                    fontSize: 13, border: '1px solid rgba(34, 197, 94, 0.2)'
-                }}>
+                <Banner variant="success" title="Saved">
                     {success}
-                </div>
+                </Banner>
             )}
 
-            {/* Two-column layout */}
-            <div className="product-form-layout">
-                {/* ——— Main Content ——— */}
-                <div className="product-form-main">
-
-                    {/* Title & Description */}
-                    <div className="product-form-card">
-                        <div className="product-field">
-                            <label className="product-label">Title</label>
-                            <input
-                                type="text"
-                                className="product-input"
+            <div className="grid gap-[var(--lb-space-5)] lg:grid-cols-[minmax(0,1fr)_minmax(260px,320px)]">
+                <div className="flex min-w-0 flex-col gap-[var(--lb-space-5)]">
+                    <Card>
+                        <Section title="Details" description="Name and describe the product as shoppers will see it.">
+                            <Input
+                                label="Title"
                                 placeholder="Short sleeve t-shirt"
                                 value={title}
-                                onChange={e => handleTitleChange(e.target.value)}
+                                onChange={(event) => handleTitleChange(event.target.value)}
                             />
-                        </div>
-                        <div className="product-field">
-                            <label className="product-label">Description</label>
-                            <textarea
-                                className="product-textarea"
-                                placeholder="Write a detailed description of your product..."
+                            <Textarea
+                                label="Description"
+                                placeholder="Write a detailed description of your product."
                                 value={description}
-                                onChange={e => setDescription(e.target.value)}
+                                onChange={(event) => setDescription(event.target.value)}
                             />
-                        </div>
-                    </div>
+                        </Section>
+                    </Card>
 
-                    {/* Media */}
-                    <div className="product-form-card">
-                        <h3>Media</h3>
-                        <input
-                            type="file"
-                            ref={fileInputRef}
-                            accept="image/*"
-                            multiple
-                            style={{ display: 'none' }}
-                            onChange={handleImageUpload}
-                        />
-
-                        {images.length > 0 && (
-                            <div className="product-media-grid">
-                                {images.map((img, i) => (
-                                    <div key={i} className="product-media-item">
-                                        <img src={img} alt={`Product ${i + 1}`} />
-                                        <button
-                                            className="product-media-remove"
-                                            onClick={() => removeImage(i)}
-                                            aria-label="Remove image"
-                                        >
-                                            <MaterialIcon name="close" size={14} aria-hidden="true" />
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        <div
-                            className="product-media-zone"
-                            onClick={() => fileInputRef.current?.click()}
-                            style={images.length > 0 ? { marginTop: 12 } : undefined}
-                        >
-                            <MaterialIcon name={uploading ? 'hourglass_top' : 'cloud_upload'} />
-                            <p>{uploading ? 'Uploading...' : 'Upload new · Select existing'}</p>
-                            <p className="hint">Accepts images, videos</p>
-                        </div>
-                    </div>
-
-                    {/* Category */}
-                    <div className="product-form-card">
-                        <h3>Category</h3>
-                        <div className="product-field">
+                    <Card>
+                        <Section title="Media" description="Upload images that help shoppers inspect the product.">
                             <input
-                                type="text"
-                                className="product-input"
-                                placeholder="e.g. Clothing, Electronics, Accessories"
-                                value={category}
-                                onChange={e => setCategory(e.target.value)}
+                                ref={fileInputRef}
+                                type="file"
+                                accept="image/*"
+                                multiple
+                                className="hidden"
+                                onChange={handleImageUpload}
                             />
-                            <p className="product-hint">Determines tax rates and adds metadata</p>
-                        </div>
-                    </div>
 
-                    {/* Pricing */}
-                    <div className="product-form-card">
-                        <h3>Pricing</h3>
-                        <div className="product-field-row">
-                            <div className="product-field">
-                                <label className="product-label">Price</label>
-                                <input
-                                    type="number"
-                                    className="product-input"
-                                    placeholder="₹ 0.00"
-                                    value={price}
-                                    onChange={e => setPrice(e.target.value)}
-                                    min="0"
-                                    step="0.01"
-                                />
-                            </div>
-                            <div className="product-field">
-                                <label className="product-label">Compare-at price</label>
-                                <input
-                                    type="number"
-                                    className="product-input"
-                                    placeholder="₹ 0.00"
-                                    value={comparePrice}
-                                    onChange={e => setComparePrice(e.target.value)}
-                                    min="0"
-                                    step="0.01"
-                                />
-                            </div>
-                        </div>
-                        <div className="product-field-row">
-                            <div className="product-field">
-                                <label className="product-checkbox">
-                                    <input
-                                        type="checkbox"
-                                        checked={chargeTax}
-                                        onChange={e => setChargeTax(e.target.checked)}
-                                    />
-                                    Charge tax on this product
-                                </label>
-                            </div>
-                        </div>
-                        <div className="product-field">
-                            <label className="product-label">Cost per item</label>
-                            <input
-                                type="number"
-                                className="product-input"
-                                placeholder="₹ 0.00"
-                                value={costPerItem}
-                                onChange={e => setCostPerItem(e.target.value)}
-                                min="0"
-                                step="0.01"
-                            />
-                            <p className="product-hint">Customers won&apos;t see this</p>
-                        </div>
-                    </div>
-
-                    {/* Inventory */}
-                    <div className="product-form-card">
-                        <h3>Inventory</h3>
-                        <div className="product-field">
-                            <label className="product-checkbox">
-                                <input
-                                    type="checkbox"
-                                    checked={trackInventory}
-                                    onChange={e => setTrackInventory(e.target.checked)}
-                                />
-                                Track quantity
-                            </label>
-                        </div>
-                        {trackInventory && (
-                            <>
-                                <div className="product-field" style={{ marginTop: 12 }}>
-                                    <label className="product-label">Quantity</label>
-                                    <input
-                                        type="number"
-                                        className="product-input"
-                                        value={quantity}
-                                        onChange={e => setQuantity(e.target.value)}
-                                        min="0"
-                                    />
-                                </div>
-                                <div className="product-field">
-                                    <label className="product-checkbox">
-                                        <input
-                                            type="checkbox"
-                                            checked={sellWhenOos}
-                                            onChange={e => setSellWhenOos(e.target.checked)}
-                                        />
-                                        Continue selling when out of stock
-                                    </label>
-                                </div>
-                            </>
-                        )}
-                        <div className="product-field-row" style={{ marginTop: 12 }}>
-                            <div className="product-field">
-                                <label className="product-label">SKU (Stock Keeping Unit)</label>
-                                <input
-                                    type="text"
-                                    className="product-input"
-                                    placeholder=""
-                                    value={sku}
-                                    onChange={e => setSku(e.target.value)}
-                                />
-                            </div>
-                            <div className="product-field">
-                                <label className="product-label">Barcode (ISBN, UPC, GTIN)</label>
-                                <input
-                                    type="text"
-                                    className="product-input"
-                                    placeholder=""
-                                    value={barcode}
-                                    onChange={e => setBarcode(e.target.value)}
-                                />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Shipping */}
-                    <div className="product-form-card">
-                        <h3>Shipping</h3>
-                        <div className="product-field">
-                            <label className="product-checkbox">
-                                <input
-                                    type="checkbox"
-                                    checked={isPhysical}
-                                    onChange={e => setIsPhysical(e.target.checked)}
-                                />
-                                This is a physical product
-                            </label>
-                        </div>
-                        {isPhysical && (
-                            <>
-                                <div className="product-field-row" style={{ marginTop: 12 }}>
-                                    <div className="product-field">
-                                        <label className="product-label">Weight</label>
-                                        <input
-                                            type="number"
-                                            className="product-input"
-                                            placeholder="0.0"
-                                            value={weight}
-                                            onChange={e => setWeight(e.target.value)}
-                                            min="0"
-                                            step="0.1"
-                                        />
-                                    </div>
-                                    <div className="product-field">
-                                        <label className="product-label">Unit</label>
-                                        <select
-                                            className="product-select"
-                                            value={weightUnit}
-                                            onChange={e => setWeightUnit(e.target.value)}
-                                        >
-                                            <option value="kg">kg</option>
-                                            <option value="g">g</option>
-                                            <option value="lb">lb</option>
-                                            <option value="oz">oz</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div className="product-field-row">
-                                    <div className="product-field">
-                                        <label className="product-label">Country/Region of origin</label>
-                                        <input
-                                            type="text"
-                                            className="product-input"
-                                            placeholder="India"
-                                            value={countryOfOrigin}
-                                            onChange={e => setCountryOfOrigin(e.target.value)}
-                                        />
-                                    </div>
-                                    <div className="product-field">
-                                        <label className="product-label">HS (Harmonized System) code</label>
-                                        <input
-                                            type="text"
-                                            className="product-input"
-                                            placeholder=""
-                                            value={hsCode}
-                                            onChange={e => setHsCode(e.target.value)}
-                                        />
-                                    </div>
-                                </div>
-                            </>
-                        )}
-                    </div>
-
-                    {/* Variants */}
-                    <div className="product-form-card">
-                        <h3>Variants</h3>
-                        {variantOptions.map((option, optIndex) => (
-                            <div key={optIndex} className="product-variant-option">
-                                <div className="product-variant-option-header">
-                                    <strong style={{ fontSize: 13, color: 'var(--text-primary)' }}>
-                                        {option.name}
-                                    </strong>
-                                    <button
-                                        onClick={() => removeOption(optIndex)}
-                                        style={{
-                                            background: 'none', border: 'none',
-                                            color: 'var(--error)', fontSize: 13,
-                                            cursor: 'pointer', fontWeight: 500
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
-                                </div>
-
-                                <div className="product-variant-values">
-                                    {option.values.map((val, vi) => (
-                                        <span key={vi} className="product-variant-tag">
-                                            {val}
-                                            <button onClick={() => removeValueFromOption(optIndex, vi)} aria-label={`Remove ${val}`}>
-                                                <MaterialIcon name="close" size={12} aria-hidden="true" />
-                                            </button>
-                                        </span>
+                            {images.length > 0 ? (
+                                <div className="grid grid-cols-2 gap-[var(--lb-space-3)] sm:grid-cols-3 md:grid-cols-4">
+                                    {images.map((imageUrl, index) => (
+                                        <div key={`${imageUrl}-${index}`} className="relative aspect-square overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]">
+                                            {/* eslint-disable-next-line @next/next/no-img-element -- Product media URLs are merchant-uploaded and not allowlisted for next/image in this app. */}
+                                            <img
+                                                src={imageUrl}
+                                                alt={`Product media ${index + 1}`}
+                                                className="h-full w-full object-cover"
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="destructive"
+                                                size="icon"
+                                                className="absolute right-[var(--lb-space-2)] top-[var(--lb-space-2)] h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-full)]"
+                                                onClick={() => removeImage(index)}
+                                                aria-label={`Remove product media ${index + 1}`}
+                                            >
+                                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            </Button>
+                                        </div>
                                     ))}
                                 </div>
+                            ) : (
+                                <div className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                    <ImageIcon className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" aria-hidden="true" />
+                                    No product media yet.
+                                </div>
+                            )}
 
-                                {editingOptionIndex === optIndex && (
-                                    <div style={{ display: 'flex', gap: 8, marginTop: 10 }}>
-                                        <input
-                                            type="text"
-                                            className="product-input"
-                                            placeholder="Add value..."
-                                            value={newOptionValue}
-                                            onChange={e => setNewOptionValue(e.target.value)}
-                                            onKeyDown={e => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault()
-                                                    addValueToOption(optIndex)
-                                                }
-                                            }}
-                                            style={{ flex: 1 }}
-                                        />
-                                        <button
-                                            onClick={() => addValueToOption(optIndex)}
-                                            style={{
-                                                padding: '8px 14px', borderRadius: 8,
-                                                background: 'var(--text-primary)', color: 'var(--bg)',
-                                                border: 'none', fontSize: 13, fontWeight: 500,
-                                                cursor: 'pointer', whiteSpace: 'nowrap'
-                                            }}
-                                        >
-                                            Add
-                                        </button>
-                                    </div>
-                                )}
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={() => fileInputRef.current?.click()}
+                                loading={uploading}
+                                disabled={uploading}
+                            >
+                                <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                {uploading ? 'Uploading' : images.length > 0 ? 'Upload more media' : 'Upload media'}
+                            </Button>
+                        </Section>
+                    </Card>
 
-                                {editingOptionIndex !== optIndex && (
-                                    <button
-                                        onClick={() => setEditingOptionIndex(optIndex)}
-                                        style={{
-                                            marginTop: 8, background: 'none', border: 'none',
-                                            color: 'var(--primary)', fontSize: 13,
-                                            fontWeight: 500, cursor: 'pointer', padding: 0
-                                        }}
-                                    >
-                                        + Add values
-                                    </button>
-                                )}
-                            </div>
-                        ))}
+                    <Card>
+                        <Section title="Category" description="Add category metadata for tax, discovery, and reporting.">
+                            <Input
+                                label="Category"
+                                placeholder="Clothing, Electronics, Accessories"
+                                helperText="Determines tax rates and adds product metadata."
+                                value={category}
+                                onChange={(event) => setCategory(event.target.value)}
+                            />
+                        </Section>
+                    </Card>
 
-                        {showVariantBuilder ? (
-                            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                                <input
-                                    type="text"
-                                    className="product-input"
-                                    placeholder="Option name (e.g. Size, Color)"
-                                    value={newOptionName}
-                                    onChange={e => setNewOptionName(e.target.value)}
-                                    onKeyDown={e => {
-                                        if (e.key === 'Enter') {
-                                            e.preventDefault()
-                                            addVariantOption()
-                                        }
-                                    }}
-                                    style={{ flex: 1 }}
+                    <Card>
+                        <Section title="Pricing" description="Set the customer-facing price and internal product cost.">
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Input
+                                    label="Price"
+                                    type="number"
+                                    placeholder="0.00"
+                                    min="0"
+                                    step="0.01"
+                                    value={price}
+                                    onChange={(event) => setPrice(event.target.value)}
                                 />
-                                <button
-                                    onClick={addVariantOption}
-                                    style={{
-                                        padding: '8px 14px', borderRadius: 8,
-                                        background: 'var(--text-primary)', color: 'var(--bg)',
-                                        border: 'none', fontSize: 13, fontWeight: 500,
-                                        cursor: 'pointer', whiteSpace: 'nowrap'
-                                    }}
-                                >
-                                    Done
-                                </button>
-                                <button
-                                    onClick={() => setShowVariantBuilder(false)}
-                                    style={{
-                                        padding: '8px 14px', borderRadius: 8,
-                                        background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                                        border: '1px solid var(--border)', fontSize: 13,
-                                        cursor: 'pointer'
-                                    }}
-                                >
-                                    Cancel
-                                </button>
+                                <Input
+                                    label="Compare-at price"
+                                    type="number"
+                                    placeholder="0.00"
+                                    min="0"
+                                    step="0.01"
+                                    value={comparePrice}
+                                    onChange={(event) => setComparePrice(event.target.value)}
+                                />
                             </div>
-                        ) : (
-                            <button
-                                onClick={() => setShowVariantBuilder(true)}
-                                style={{
-                                    background: 'none', border: 'none',
-                                    color: 'var(--primary)', fontSize: 13,
-                                    fontWeight: 500, cursor: 'pointer', padding: 0,
-                                    display: 'flex', alignItems: 'center', gap: 4,
-                                    marginTop: variantOptions.length > 0 ? 8 : 0
-                                }}
-                            >
-                                <MaterialIcon name="add" style={{ fontSize: 16 }} />
-                                Add another option
-                            </button>
-                        )}
-                    </div>
+                            <CheckboxControl checked={chargeTax} onChange={setChargeTax}>
+                                Charge tax on this product
+                            </CheckboxControl>
+                            <Input
+                                label="Cost per item"
+                                type="number"
+                                placeholder="0.00"
+                                helperText="Customers will not see this."
+                                min="0"
+                                step="0.01"
+                                value={costPerItem}
+                                onChange={(event) => setCostPerItem(event.target.value)}
+                            />
+                        </Section>
+                    </Card>
 
-                    {/* SEO */}
-                    <div className="product-form-card">
-                        <h3>Search engine listing</h3>
-                        <p className="product-hint" style={{ marginTop: -8, marginBottom: 14 }}>
-                            Add a title and description to see how this product might appear in a search engine listing
-                        </p>
+                    <Card>
+                        <Section title="Inventory" description="Track SKU, barcode, and sell-through behavior.">
+                            <CheckboxControl checked={trackInventory} onChange={setTrackInventory}>
+                                Track quantity
+                            </CheckboxControl>
+                            {trackInventory && (
+                                <>
+                                    <Input
+                                        label="Quantity"
+                                        type="number"
+                                        min="0"
+                                        value={quantity}
+                                        onChange={(event) => setQuantity(event.target.value)}
+                                    />
+                                    <CheckboxControl checked={sellWhenOos} onChange={setSellWhenOos}>
+                                        Continue selling when out of stock
+                                    </CheckboxControl>
+                                </>
+                            )}
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Input
+                                    label="SKU (Stock Keeping Unit)"
+                                    value={sku}
+                                    onChange={(event) => setSku(event.target.value)}
+                                />
+                                <Input
+                                    label="Barcode (ISBN, UPC, GTIN)"
+                                    value={barcode}
+                                    onChange={(event) => setBarcode(event.target.value)}
+                                />
+                            </div>
+                        </Section>
+                    </Card>
 
-                        {/* Preview */}
-                        <div className="product-seo-preview">
-                            <p className="product-seo-preview-url">
-                                {store}.letbuyy.store/products/{urlHandle || '...'}
-                            </p>
-                            <p className="product-seo-preview-title">
-                                {seoTitle || title || 'Page title'}
-                            </p>
-                            <p className="product-seo-preview-desc">
-                                {seoDescription || description?.substring(0, 160) || 'Meta description will show here...'}
-                            </p>
-                        </div>
+                    <Card>
+                        <Section title="Shipping" description="Collect fulfillment and customs information for physical products.">
+                            <CheckboxControl checked={isPhysical} onChange={setIsPhysical}>
+                                This is a physical product
+                            </CheckboxControl>
+                            {isPhysical && (
+                                <>
+                                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                        <Input
+                                            label="Weight"
+                                            type="number"
+                                            placeholder="0.0"
+                                            min="0"
+                                            step="0.1"
+                                            value={weight}
+                                            onChange={(event) => setWeight(event.target.value)}
+                                        />
+                                        <Select
+                                            label="Unit"
+                                            value={weightUnit}
+                                            options={weightUnitOptions}
+                                            onChange={(event) => setWeightUnit(event.target.value)}
+                                        />
+                                    </div>
+                                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                        <Input
+                                            label="Country/Region of origin"
+                                            placeholder="India"
+                                            value={countryOfOrigin}
+                                            onChange={(event) => setCountryOfOrigin(event.target.value)}
+                                        />
+                                        <Input
+                                            label="HS (Harmonized System) code"
+                                            value={hsCode}
+                                            onChange={(event) => setHsCode(event.target.value)}
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </Section>
+                    </Card>
 
-                        <div className="product-field">
-                            <label className="product-label">Page title</label>
-                            <input
-                                type="text"
-                                className="product-input"
+                    <Card>
+                        <Section title="Variants" description="Add options like size, color, or material.">
+                            {variantOptions.length > 0 && (
+                                <div className="flex flex-col gap-[var(--lb-space-3)]">
+                                    {variantOptions.map((option, optionIndex) => (
+                                        <div key={`${option.name}-${optionIndex}`} className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                            <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
+                                                <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                    {option.name}
+                                                </p>
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    onClick={() => removeOption(optionIndex)}
+                                                >
+                                                    <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    Delete
+                                                </Button>
+                                            </div>
+
+                                            {option.values.length > 0 && (
+                                                <div className="mt-[var(--lb-space-3)] flex flex-wrap gap-[var(--lb-space-2)]">
+                                                    {option.values.map((value, valueIndex) => (
+                                                        <span
+                                                            key={`${value}-${valueIndex}`}
+                                                            className="inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]"
+                                                        >
+                                                            {value}
+                                                            <button
+                                                                type="button"
+                                                                className="text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-critical)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                                onClick={() => removeValueFromOption(optionIndex, valueIndex)}
+                                                                aria-label={`Remove ${value}`}
+                                                            >
+                                                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                            </button>
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {editingOptionIndex === optionIndex ? (
+                                                <div className="mt-[var(--lb-space-3)] flex flex-col gap-[var(--lb-space-2)] sm:flex-row">
+                                                    <Input
+                                                        placeholder="Add value"
+                                                        value={newOptionValue}
+                                                        onChange={(event) => setNewOptionValue(event.target.value)}
+                                                        onKeyDown={(event) => {
+                                                            if (event.key === 'Enter') {
+                                                                event.preventDefault()
+                                                                addValueToOption(optionIndex)
+                                                            }
+                                                        }}
+                                                        className="flex-1"
+                                                    />
+                                                    <Button type="button" variant="secondary" onClick={() => addValueToOption(optionIndex)}>
+                                                        Add value
+                                                    </Button>
+                                                </div>
+                                            ) : (
+                                                <Button
+                                                    type="button"
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="mt-[var(--lb-space-3)]"
+                                                    onClick={() => setEditingOptionIndex(optionIndex)}
+                                                >
+                                                    <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    Add values
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+
+                            {showVariantBuilder ? (
+                                <div className="flex flex-col gap-[var(--lb-space-2)] sm:flex-row">
+                                    <Input
+                                        placeholder="Option name (Size, Color, Material)"
+                                        value={newOptionName}
+                                        onChange={(event) => setNewOptionName(event.target.value)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === 'Enter') {
+                                                event.preventDefault()
+                                                addVariantOption()
+                                            }
+                                        }}
+                                        className="flex-1"
+                                    />
+                                    <Button type="button" onClick={addVariantOption}>
+                                        Done
+                                    </Button>
+                                    <Button type="button" variant="secondary" onClick={() => setShowVariantBuilder(false)}>
+                                        Cancel
+                                    </Button>
+                                </div>
+                            ) : (
+                                <Button type="button" variant="secondary" onClick={() => setShowVariantBuilder(true)}>
+                                    <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Add option
+                                </Button>
+                            )}
+                        </Section>
+                    </Card>
+
+                    <Card>
+                        <Section title="Search engine listing" description="Control how this product may appear in search results.">
+                            <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-success)]">
+                                    {store}.letbuyy.store/products/{urlHandle || '...'}
+                                </p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-primary)] underline">
+                                    {seoTitle || title || 'Page title'}
+                                </p>
+                                <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                    {seoDescription || description.substring(0, 160) || 'Meta description will show here.'}
+                                </p>
+                            </div>
+                            <Input
+                                label="Page title"
                                 placeholder={title || 'Page title'}
-                                value={seoTitle}
-                                onChange={e => setSeoTitle(e.target.value)}
                                 maxLength={70}
+                                helperText={`${seoTitle.length} of 70 characters used`}
+                                value={seoTitle}
+                                onChange={(event) => setSeoTitle(event.target.value)}
                             />
-                            <p className="product-char-count">{seoTitle.length} of 70 characters used</p>
-                        </div>
-
-                        <div className="product-field">
-                            <label className="product-label">Meta description</label>
-                            <textarea
-                                className="product-textarea"
-                                placeholder="Describe this product for search engines..."
-                                value={seoDescription}
-                                onChange={e => setSeoDescription(e.target.value)}
+                            <Textarea
+                                label="Meta description"
+                                placeholder="Describe this product for search engines."
                                 maxLength={160}
-                                style={{ minHeight: 80 }}
+                                helperText={`${seoDescription.length} of 160 characters used`}
+                                value={seoDescription}
+                                onChange={(event) => setSeoDescription(event.target.value)}
+                                className="min-h-[var(--lb-size-textarea-sm)]"
                             />
-                            <p className="product-char-count">{seoDescription.length} of 160 characters used</p>
-                        </div>
-
-                        <div className="product-field">
-                            <label className="product-label">URL handle</label>
-                            <input
-                                type="text"
-                                className="product-input"
+                            <Input
+                                label="URL handle"
                                 value={urlHandle}
-                                onChange={e => setUrlHandle(e.target.value)}
+                                onChange={(event) => setUrlHandle(event.target.value)}
                             />
-                        </div>
-                    </div>
+                        </Section>
+                    </Card>
                 </div>
 
-                {/* ——— Sidebar ——— */}
-                <div className="product-form-sidebar">
-                    {/* Status */}
-                    <div className="product-form-card">
-                        <h3>Status</h3>
-                        <div className="product-field">
-                            <select
-                                className="product-select"
+                <aside className="flex min-w-0 flex-col gap-[var(--lb-space-5)]">
+                    <Card>
+                        <Section title="Status">
+                            <Select
+                                label="Product status"
                                 value={status}
-                                onChange={e => setStatus(e.target.value as 'active' | 'draft')}
-                            >
-                                <option value="active">Active</option>
-                                <option value="draft">Draft</option>
-                            </select>
-                        </div>
-                    </div>
+                                options={statusOptions}
+                                onChange={(event) => setStatus(event.target.value as 'active' | 'draft')}
+                            />
+                            <Badge
+                                label={status === 'active' ? 'Visible on storefront' : 'Draft product'}
+                                variant={status === 'active' ? 'success' : 'warning'}
+                            />
+                        </Section>
+                    </Card>
 
-                    {/* Publishing */}
-                    <div className="product-form-card">
-                        <h3>Publishing</h3>
-                        <label className="product-checkbox">
-                            <input type="checkbox" checked={true} readOnly />
-                            Online Store
-                        </label>
-                    </div>
+                    <Card>
+                        <Section title="Publishing">
+                            <CheckboxControl checked readOnly>
+                                Online Store
+                            </CheckboxControl>
+                        </Section>
+                    </Card>
 
-                    {/* Product Organization */}
-                    <div className="product-form-card">
-                        <h3>Product organization</h3>
-                        <div className="product-field">
-                            <label className="product-label">Product type</label>
-                            <input
-                                type="text"
-                                className="product-input"
-                                placeholder="e.g. T-shirt"
+                    <Card>
+                        <Section title="Product organization" description="Use consistent metadata to keep catalog management fast.">
+                            <Input
+                                label="Product type"
+                                placeholder="T-shirt"
                                 value={productType}
-                                onChange={e => setProductType(e.target.value)}
+                                onChange={(event) => setProductType(event.target.value)}
                             />
-                        </div>
-                        <div className="product-field">
-                            <label className="product-label">Vendor</label>
-                            <input
-                                type="text"
-                                className="product-input"
-                                placeholder="e.g. Nike"
+                            <Input
+                                label="Vendor"
+                                placeholder="Nike"
                                 value={vendor}
-                                onChange={e => setVendor(e.target.value)}
+                                onChange={(event) => setVendor(event.target.value)}
                             />
-                        </div>
-                        <div className="product-field">
-                            <label className="product-label">Tags</label>
-                            <input
-                                type="text"
-                                className="product-input"
-                                placeholder="Vintage, cotton, summer (comma-separated)"
+                            <Input
+                                label="Tags"
+                                placeholder="Vintage, cotton, summer"
+                                helperText="Separate tags with commas."
                                 value={tags}
-                                onChange={e => setTags(e.target.value)}
+                                onChange={(event) => setTags(event.target.value)}
                             />
-                        </div>
-                    </div>
-                </div>
+                        </Section>
+                    </Card>
+
+                    <Card>
+                        <Section title="Catalog readiness">
+                            <div className="flex items-start gap-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                <Package className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                <p className="m-0">
+                                    Save product details, media, pricing, and inventory from one guided form.
+                                </p>
+                            </div>
+                        </Section>
+                    </Card>
+                </aside>
             </div>
-        </div>
+
+            <SaveBar
+                state={saveState}
+                onSave={() => void handleSave()}
+                onDiscard={discardChanges}
+                saveLabel={isEditing ? 'Save product' : 'Create product'}
+            />
+
+            {saving && <span className="sr-only" aria-live="polite">Saving product</span>}
+        </Page>
     )
 }
