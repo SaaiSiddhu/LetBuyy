@@ -3,12 +3,34 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, Badge, Button, EmptyState, FileJson, Monitor, RefreshCw, Save, SaveBar, Send, Settings, Smartphone, useToast } from '@letbuyy/ui'
+import { AlertTriangle, ArrowDown, ArrowLeft, ArrowUp, Badge, Button, ConfirmDialog, EmptyState, FileJson, GripVertical, Monitor, Plus, RefreshCw, Save, SaveBar, Send, Settings, Smartphone, Trash2, useToast } from '@letbuyy/ui'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
 type PreviewDevice = 'desktop' | 'tablet' | 'mobile'
+
+type EditorSection = {
+    id: string
+    type: string
+    visible: boolean
+    settings: JsonRecord
+    blocks?: unknown[]
+}
+
+type EditorSections = {
+    header: EditorSection | null
+    footer: EditorSection | null
+    template: EditorSection[]
+}
+
+type AvailableSection = {
+    type: string
+    name: string
+    description: string
+    hasBlocks: boolean
+    settingsCount: number
+}
 
 type SettingsData = {
     current: JsonRecord
@@ -211,6 +233,65 @@ function normalizeTemplateConfig(value: unknown): JsonRecord {
     return asRecord(value)
 }
 
+function normalizeEditorSection(value: unknown, fallbackType: string, fallbackId: string): EditorSection | null {
+    const record = asRecord(value)
+    const id = stringValue(record.id, fallbackId)
+    const type = stringValue(record.type, fallbackType)
+
+    if (!id || !type) return null
+
+    return {
+        id,
+        type,
+        visible: record.visible === false ? false : true,
+        settings: asRecord(record.settings),
+        blocks: Array.isArray(record.blocks) ? record.blocks : undefined,
+    }
+}
+
+function getSectionRoot(templateConfig: JsonRecord): JsonRecord {
+    const rootSections = asRecord(templateConfig.sections)
+    if (Object.keys(rootSections).length > 0) return rootSections
+    return asRecord(asRecord(templateConfig.config).sections)
+}
+
+function normalizeEditorSections(templateConfig: JsonRecord): EditorSections {
+    const sections = getSectionRoot(templateConfig)
+    const templateEntries = Array.isArray(sections.template) ? sections.template : []
+
+    return {
+        header: normalizeEditorSection(sections.header, 'header', 'header'),
+        footer: normalizeEditorSection(sections.footer, 'footer', 'footer'),
+        template: templateEntries.flatMap((section, index) => {
+            const normalized = normalizeEditorSection(section, `section_${index + 1}`, `section-${index + 1}`)
+            return normalized ? [normalized] : []
+        }),
+    }
+}
+
+function withTemplateSections(templateConfig: JsonRecord, templateSections: EditorSection[]): JsonRecord {
+    const sections = getSectionRoot(templateConfig)
+    return {
+        ...templateConfig,
+        sections: {
+            ...sections,
+            template: templateSections,
+        },
+    }
+}
+
+function firstSectionId(sections: EditorSections): string | null {
+    return sections.template[0]?.id || sections.header?.id || sections.footer?.id || null
+}
+
+function sectionName(section: EditorSection, availableSections: AvailableSection[]) {
+    return availableSections.find((available) => available.type === section.type)?.name || labelFromKey(section.type)
+}
+
+function newSectionId(type: string) {
+    return `${type}-${Date.now().toString(36)}`
+}
+
 function normalizeSettingsData(templateConfig: JsonRecord, schema: ThemeSettingsSchema): SettingsData {
     const configSettingsData = asRecord(asRecord(asRecord(templateConfig.config).settings_data))
     const rootSettingsData = asRecord(templateConfig.settings_data)
@@ -296,10 +377,16 @@ function ThemeSettingsEditorInner() {
     const [version, setVersion] = useState<number | null>(null)
     const [savedAt, setSavedAt] = useState<string | null>(null)
     const [activeGroup, setActiveGroup] = useState<string | null>(null)
+    const [selectedSectionId, setSelectedSectionId] = useState<string | null>(null)
+    const [availableSections, setAvailableSections] = useState<AvailableSection[]>([])
+    const [selectedAddSectionType, setSelectedAddSectionType] = useState('')
+    const [draggingSectionId, setDraggingSectionId] = useState<string | null>(null)
+    const [removingSection, setRemovingSection] = useState<EditorSection | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [isDirty, setIsDirty] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
+    const [isSectionSaving, setIsSectionSaving] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [previewToken, setPreviewToken] = useState<string | null>(null)
     const [previewDevice, setPreviewDevice] = useState<PreviewDevice>('desktop')
@@ -308,6 +395,12 @@ function ThemeSettingsEditorInner() {
     const [previewRetryNonce, setPreviewRetryNonce] = useState(0)
 
     const groups = useMemo(() => Object.entries(schema.settings), [schema])
+    const editorSections = useMemo(() => normalizeEditorSections(baseConfig), [baseConfig])
+    const addableSections = useMemo(
+        () => availableSections.filter((section) => section.type !== 'header' && section.type !== 'footer'),
+        [availableSections],
+    )
+    const selectedAddType = selectedAddSectionType || addableSections[0]?.type || ''
     const visibleGroups = useMemo(() => {
         if (!activeGroup) return groups
         return groups.filter(([key]) => key === activeGroup)
@@ -390,6 +483,38 @@ function ThemeSettingsEditorInner() {
         void refreshPreview(true)
     }, [refreshPreview])
 
+    useEffect(() => {
+        if (!themeId) return undefined
+
+        let active = true
+
+        async function loadAvailableSections() {
+            try {
+                const res = await fetch(`/api/themes/${themeId}/sections`, { cache: 'no-store' })
+                const data = await res.json().catch(() => ({}))
+                if (!res.ok) throw new Error('Available sections could not load')
+                const sections = Array.isArray(asRecord(data).sections)
+                    ? (asRecord(data).sections as AvailableSection[])
+                    : []
+                if (active) setAvailableSections(sections)
+            } catch (err) {
+                if (active) {
+                    notify({
+                        title: 'Section catalog unavailable',
+                        description: err instanceof Error ? err.message : 'Add section options could not load.',
+                        variant: 'warning',
+                    })
+                }
+            }
+        }
+
+        void loadAvailableSections()
+
+        return () => {
+            active = false
+        }
+    }, [notify, themeId])
+
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
 
@@ -410,6 +535,7 @@ function ThemeSettingsEditorInner() {
 
             const nextSchema = normalizeSettingsSchema(data.themeSettingsSchema)
             const nextConfig = normalizeTemplateConfig(data.draftConfig || data.templateConfig)
+            const nextSections = normalizeEditorSections(nextConfig)
             setSchema(nextSchema)
             setBaseConfig(nextConfig)
             setSettingsData(normalizeSettingsData(nextConfig, nextSchema))
@@ -418,6 +544,14 @@ function ThemeSettingsEditorInner() {
             setVersion(typeof data.version === 'number' ? data.version : null)
             setSavedAt(data.draftSavedAt || null)
             setActiveGroup((current) => current || Object.keys(nextSchema.settings)[0] || null)
+            setSelectedSectionId((current) => {
+                const knownIds = new Set([
+                    ...nextSections.template.map((section) => section.id),
+                    nextSections.header?.id,
+                    nextSections.footer?.id,
+                ].filter(Boolean))
+                return current && knownIds.has(current) ? current : firstSectionId(nextSections)
+            })
             setIsDirty(false)
             await refreshPreview()
         } catch (err) {
@@ -539,6 +673,99 @@ function ThemeSettingsEditorInner() {
         })
     }, [baseConfig, notify, schema])
 
+    const persistTemplateSections = useCallback(async (nextTemplateSections: EditorSection[], message: string) => {
+        const nextConfig = withTemplateSections(baseConfig, nextTemplateSections)
+        const draftConfig = buildDraftConfig(nextConfig, settingsData)
+
+        setIsSectionSaving(true)
+        try {
+            const res = await fetch(
+                `/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}`,
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ draftConfig }),
+                }
+            )
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok) {
+                const errorRecord = asRecord(asRecord(data).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(data).error, res.statusText)))
+            }
+
+            setBaseConfig(draftConfig)
+            setVersion(typeof asRecord(data).version === 'number' ? (asRecord(data).version as number) : version)
+            setSavedAt(stringValue(asRecord(data).savedAt, new Date().toISOString()))
+            setIsDirty(false)
+            await refreshPreview()
+            notify({
+                title: message,
+                description: 'The theme draft and preview were updated.',
+                variant: 'success',
+            })
+        } catch (err) {
+            notify({
+                title: 'Section update failed',
+                description: err instanceof Error ? err.message : 'Try updating the section tree again.',
+                variant: 'critical',
+            })
+        } finally {
+            setIsSectionSaving(false)
+        }
+    }, [baseConfig, notify, refreshPreview, settingsData, store, themeId, version])
+
+    const persistSectionOrder = useCallback(async (nextTemplateSections: EditorSection[]) => {
+        await persistTemplateSections(nextTemplateSections, 'Section order saved')
+    }, [persistTemplateSections])
+
+    const moveSection = useCallback((sectionId: string, direction: -1 | 1) => {
+        const currentIndex = editorSections.template.findIndex((section) => section.id === sectionId)
+        const nextIndex = currentIndex + direction
+        if (currentIndex < 0 || nextIndex < 0 || nextIndex >= editorSections.template.length || isSectionSaving) return
+
+        const nextSections = [...editorSections.template]
+        const [section] = nextSections.splice(currentIndex, 1)
+        nextSections.splice(nextIndex, 0, section)
+        void persistSectionOrder(nextSections)
+    }, [editorSections.template, isSectionSaving, persistSectionOrder])
+
+    const dropSection = useCallback((targetSectionId: string) => {
+        if (!draggingSectionId || draggingSectionId === targetSectionId || isSectionSaving) return
+
+        const fromIndex = editorSections.template.findIndex((section) => section.id === draggingSectionId)
+        const toIndex = editorSections.template.findIndex((section) => section.id === targetSectionId)
+        if (fromIndex < 0 || toIndex < 0) return
+
+        const nextSections = [...editorSections.template]
+        const [section] = nextSections.splice(fromIndex, 1)
+        nextSections.splice(toIndex, 0, section)
+        setDraggingSectionId(null)
+        void persistSectionOrder(nextSections)
+    }, [draggingSectionId, editorSections.template, isSectionSaving, persistSectionOrder])
+
+    const addSection = useCallback(() => {
+        const type = selectedAddType
+        if (!type || isSectionSaving) return
+
+        const nextSection: EditorSection = {
+            id: newSectionId(type),
+            type,
+            visible: true,
+            settings: {},
+        }
+        const nextSections = [...editorSections.template, nextSection]
+        setSelectedSectionId(nextSection.id)
+        void persistTemplateSections(nextSections, `${sectionName(nextSection, availableSections)} section added`)
+    }, [availableSections, editorSections.template, isSectionSaving, persistTemplateSections, selectedAddType])
+
+    const removeSelectedSection = useCallback(() => {
+        if (!removingSection || isSectionSaving) return
+        const nextSections = editorSections.template.filter((section) => section.id !== removingSection.id)
+        setSelectedSectionId(nextSections[0]?.id || editorSections.header?.id || editorSections.footer?.id || null)
+        setRemovingSection(null)
+        void persistTemplateSections(nextSections, `${sectionName(removingSection, availableSections)} section removed`)
+    }, [availableSections, editorSections.footer?.id, editorSections.header?.id, editorSections.template, isSectionSaving, persistTemplateSections, removingSection])
+
     if (isLoading) return <EditorLoading />
 
     if (loadError) {
@@ -590,11 +817,169 @@ function ThemeSettingsEditorInner() {
             </header>
 
             <div className="generic-theme-editor__body">
-                <aside className="generic-theme-editor__sidebar" aria-label="Settings groups">
+                <aside className="generic-theme-editor__sidebar" aria-label="Theme editor controls">
+                    <div className="generic-theme-editor__sidebar-card generic-theme-editor__section-card">
+                        <div className="generic-theme-editor__sidebar-title">
+                            <GripVertical size={16} aria-hidden="true" />
+                            <span>Sections</span>
+                            <Badge
+                                label={isSectionSaving ? 'Saving' : `${editorSections.template.length} template`}
+                                variant={isSectionSaving ? 'warning' : 'default'}
+                            />
+                        </div>
+
+                        {editorSections.header ? (
+                            <button
+                                className={`generic-theme-editor__section-item ${selectedSectionId === editorSections.header.id ? 'generic-theme-editor__section-item--selected' : ''}`}
+                                type="button"
+                                onClick={() => setSelectedSectionId(editorSections.header?.id || null)}
+                            >
+                                <span className="generic-theme-editor__section-drag" aria-hidden="true">
+                                    <Settings size={14} />
+                                </span>
+                                <span className="generic-theme-editor__section-copy">
+                                    <span className="generic-theme-editor__section-name">{sectionName(editorSections.header, availableSections)}</span>
+                                    <span className="generic-theme-editor__section-meta">Pinned header</span>
+                                </span>
+                            </button>
+                        ) : null}
+
+                        <div className="generic-theme-editor__section-group-label">Template</div>
+                        {editorSections.template.length === 0 ? (
+                            <EmptyState
+                                className="generic-theme-editor__section-empty"
+                                icon={<Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                title="No template sections"
+                                body="Add a section to start shaping this theme draft."
+                            />
+                        ) : (
+                            <div className="generic-theme-editor__section-list" role="list" aria-label="Template sections">
+                                {editorSections.template.map((section, index) => (
+                                    <div
+                                        key={section.id}
+                                        className={`generic-theme-editor__section-item ${selectedSectionId === section.id ? 'generic-theme-editor__section-item--selected' : ''} ${draggingSectionId === section.id ? 'generic-theme-editor__section-item--dragging' : ''}`}
+                                        data-section-id={section.id}
+                                        draggable={!isSectionSaving}
+                                        role="button"
+                                        tabIndex={0}
+                                        aria-label={`Select ${sectionName(section, availableSections)} section`}
+                                        onClick={() => setSelectedSectionId(section.id)}
+                                        onKeyDown={(event) => {
+                                            if (event.key === 'Enter' || event.key === ' ') {
+                                                event.preventDefault()
+                                                setSelectedSectionId(section.id)
+                                            }
+                                        }}
+                                        onDragStart={() => setDraggingSectionId(section.id)}
+                                        onDragOver={(event) => event.preventDefault()}
+                                        onDrop={() => dropSection(section.id)}
+                                        onDragEnd={() => setDraggingSectionId(null)}
+                                    >
+                                        <span className="generic-theme-editor__section-drag" aria-hidden="true">
+                                            <GripVertical size={14} />
+                                        </span>
+                                        <span className="generic-theme-editor__section-copy">
+                                            <span className="generic-theme-editor__section-name">{sectionName(section, availableSections)}</span>
+                                            <span className="generic-theme-editor__section-meta">
+                                                {section.type} - {section.visible ? 'Visible' : 'Hidden'}
+                                            </span>
+                                        </span>
+                                        <span className="generic-theme-editor__section-actions" aria-label={`${sectionName(section, availableSections)} actions`}>
+                                            <button
+                                                className="generic-theme-editor__section-icon-button"
+                                                type="button"
+                                                aria-label={`Move ${sectionName(section, availableSections)} up`}
+                                                disabled={index === 0 || isSectionSaving}
+                                                onClick={(event) => {
+                                                    event.stopPropagation()
+                                                    moveSection(section.id, -1)
+                                                }}
+                                            >
+                                                <ArrowUp size={13} aria-hidden="true" />
+                                            </button>
+                                            <button
+                                                className="generic-theme-editor__section-icon-button"
+                                                type="button"
+                                                aria-label={`Move ${sectionName(section, availableSections)} down`}
+                                                disabled={index === editorSections.template.length - 1 || isSectionSaving}
+                                                onClick={(event) => {
+                                                    event.stopPropagation()
+                                                    moveSection(section.id, 1)
+                                                }}
+                                            >
+                                                <ArrowDown size={13} aria-hidden="true" />
+                                            </button>
+                                            <button
+                                                className="generic-theme-editor__section-icon-button generic-theme-editor__section-icon-button--critical"
+                                                type="button"
+                                                aria-label={`Remove ${sectionName(section, availableSections)}`}
+                                                disabled={isSectionSaving}
+                                                onClick={(event) => {
+                                                    event.stopPropagation()
+                                                    setRemovingSection(section)
+                                                }}
+                                            >
+                                                <Trash2 size={13} aria-hidden="true" />
+                                            </button>
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className="generic-theme-editor__section-add">
+                            <select
+                                className="generic-theme-editor__section-select"
+                                aria-label="Section type to add"
+                                value={selectedAddType}
+                                onChange={(event) => setSelectedAddSectionType(event.target.value)}
+                                disabled={addableSections.length === 0 || isSectionSaving}
+                            >
+                                {addableSections.length === 0 ? (
+                                    <option value="">No sections available</option>
+                                ) : (
+                                    addableSections.map((section) => (
+                                        <option key={section.type} value={section.type}>
+                                            {section.name}
+                                        </option>
+                                    ))
+                                )}
+                            </select>
+                            <Button
+                                type="button"
+                                size="sm"
+                                variant="secondary"
+                                onClick={addSection}
+                                disabled={!selectedAddType || isSectionSaving}
+                            >
+                                <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Add
+                            </Button>
+                        </div>
+
+                        {editorSections.footer ? (
+                            <>
+                                <div className="generic-theme-editor__section-group-label">Footer</div>
+                                <button
+                                    className={`generic-theme-editor__section-item ${selectedSectionId === editorSections.footer.id ? 'generic-theme-editor__section-item--selected' : ''}`}
+                                    type="button"
+                                    onClick={() => setSelectedSectionId(editorSections.footer?.id || null)}
+                                >
+                                    <span className="generic-theme-editor__section-drag" aria-hidden="true">
+                                        <Settings size={14} />
+                                    </span>
+                                    <span className="generic-theme-editor__section-copy">
+                                        <span className="generic-theme-editor__section-name">{sectionName(editorSections.footer, availableSections)}</span>
+                                        <span className="generic-theme-editor__section-meta">Pinned footer</span>
+                                    </span>
+                                </button>
+                            </>
+                        ) : null}
+                    </div>
                     <div className="generic-theme-editor__sidebar-card">
                         <div className="generic-theme-editor__sidebar-title">
                             <Settings size={16} aria-hidden="true" />
-                            <span>Settings groups</span>
+                            <span>Theme settings</span>
                         </div>
                         <button
                             className={`generic-theme-editor__group-button ${activeGroup === null ? 'generic-theme-editor__group-button--active' : ''}`}
@@ -740,6 +1125,18 @@ function ThemeSettingsEditorInner() {
                 discardLabel="Discard changes"
                 onSave={() => void handleSave()}
                 onDiscard={handleDiscard}
+            />
+
+            <ConfirmDialog
+                open={Boolean(removingSection)}
+                title="Remove section?"
+                description={removingSection ? `Remove ${sectionName(removingSection, availableSections)} from this draft theme.` : 'Remove the selected section from this draft theme.'}
+                confirmLabel={isSectionSaving ? 'Removing...' : 'Remove section'}
+                destructive
+                onClose={() => {
+                    if (!isSectionSaving) setRemovingSection(null)
+                }}
+                onConfirm={() => void removeSelectedSection()}
             />
         </main>
     )
