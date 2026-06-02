@@ -8,12 +8,20 @@ import {
     Banner,
     Button,
     Card,
+    ConfirmDialog,
+    Edit3,
     EmptyState,
-    MaterialIcon,
+    Eye,
+    FileJson,
     Page,
     PageHeader,
+    Palette,
+    Rocket,
     Section,
     Skeleton,
+    Upload,
+    XCircle,
+    useToast,
 } from '@letbuyy/ui'
 
 interface ThemeConfig {
@@ -71,6 +79,7 @@ export default function ThemesPage() {
     const params = useParams()
     const router = useRouter()
     const store = params.store as string
+    const { notify } = useToast()
     const [versionOpen, setVersionOpen] = useState(false)
 
     const [loading, setLoading] = useState(true)
@@ -82,6 +91,8 @@ export default function ThemesPage() {
     const [publishing, setPublishing] = useState(false)
     const [uploadingBundle, setUploadingBundle] = useState(false)
     const [uploadMessage, setUploadMessage] = useState<string | null>(null)
+    const [uploadMessageKind, setUploadMessageKind] = useState<'success' | 'warning' | null>(null)
+    const [confirmUnpublishOpen, setConfirmUnpublishOpen] = useState(false)
     const bundleInputRef = useRef<HTMLInputElement>(null)
 
     const fetchData = useCallback(async () => {
@@ -98,10 +109,15 @@ export default function ThemesPage() {
             if (data.storeId) setStoreId(data.storeId)
         } catch (err) {
             console.error('Failed to fetch themes:', err)
+            notify({
+                title: 'Theme library could not load',
+                description: err instanceof Error ? err.message : 'Refresh the page and try again.',
+                variant: 'critical',
+            })
         } finally {
             setLoading(false)
         }
-    }, [store])
+    }, [notify, store])
 
     useEffect(() => {
         void fetchData()
@@ -117,9 +133,22 @@ export default function ThemesPage() {
                 body: JSON.stringify({ storeId, themeSlug }),
             })
             const data = await res.json()
-            if (data.success) await fetchData()
+            if (!res.ok || !data.success) {
+                throw new Error(typeof data?.error?.message === 'string' ? data.error.message : 'Theme install failed')
+            }
+            await fetchData()
+            notify({
+                title: 'Theme installed',
+                description: 'The theme is now available in this store library.',
+                variant: 'success',
+            })
         } catch (err) {
             console.error('Install failed:', err)
+            notify({
+                title: 'Theme install failed',
+                description: err instanceof Error ? err.message : 'Try installing the theme again.',
+                variant: 'critical',
+            })
         } finally {
             setInstalling(null)
         }
@@ -131,12 +160,19 @@ export default function ThemesPage() {
 
         if (!storeId) {
             setUploadMessage('Store context is unavailable')
+            setUploadMessageKind('warning')
+            notify({
+                title: 'Upload unavailable',
+                description: 'Store context is unavailable.',
+                variant: 'warning',
+            })
             event.target.value = ''
             return
         }
 
         setUploadingBundle(true)
         setUploadMessage(null)
+        setUploadMessageKind(null)
 
         try {
             const bundle = JSON.parse(await file.text()) as unknown
@@ -166,16 +202,29 @@ export default function ThemesPage() {
                 : {}
             const name = typeof theme.name === 'string' ? theme.name : 'theme package'
             setUploadMessage(`Installed ${name}`)
+            setUploadMessageKind('success')
             await fetchData()
+            notify({
+                title: 'Theme package installed',
+                description: `${name} is now available in the theme library.`,
+                variant: 'success',
+            })
         } catch (err) {
-            setUploadMessage(err instanceof Error ? err.message : 'Theme package upload failed')
+            const message = err instanceof Error ? err.message : 'Theme package upload failed'
+            setUploadMessage(message)
+            setUploadMessageKind('warning')
+            notify({
+                title: 'Theme upload failed',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setUploadingBundle(false)
             if (bundleInputRef.current) bundleInputRef.current.value = ''
         }
     }
 
-    const handlePublishToggle = async () => {
+    const performPublishToggle = async () => {
         if (!storeId || publishing) return
         setPublishing(true)
         try {
@@ -186,12 +235,37 @@ export default function ThemesPage() {
                 body: JSON.stringify({ storeId, action }),
             })
             const data = await res.json()
-            if (data.success) setStoreStatus(data.status)
+            if (!res.ok || !data.success) {
+                throw new Error(typeof data?.error?.message === 'string' ? data.error.message : 'Storefront publishing failed')
+            }
+            setStoreStatus(data.status)
+            notify({
+                title: action === 'publish' ? 'Store published' : 'Store unpublished',
+                description: action === 'publish'
+                    ? 'Customers can now view this storefront.'
+                    : 'Customers can no longer view this storefront.',
+                variant: action === 'publish' ? 'success' : 'warning',
+            })
         } catch (err) {
             console.error('Publish toggle failed:', err)
+            notify({
+                title: 'Publishing update failed',
+                description: err instanceof Error ? err.message : 'Try updating the storefront status again.',
+                variant: 'critical',
+            })
         } finally {
             setPublishing(false)
+            setConfirmUnpublishOpen(false)
         }
+    }
+
+    const handlePublishToggle = () => {
+        if (storeStatus === 'published') {
+            setConfirmUnpublishOpen(true)
+            return
+        }
+
+        void performPublishToggle()
     }
 
     const openThemeEditor = () => {
@@ -207,7 +281,7 @@ export default function ThemesPage() {
 
     const isPublished = storeStatus === 'published'
     const storefrontUrl = getStorefrontUrl(store)
-    const uploadIsSuccess = Boolean(uploadMessage?.startsWith('Installed '))
+    const uploadIsSuccess = uploadMessageKind === 'success'
 
     return (
         <Page>
@@ -223,13 +297,13 @@ export default function ThemesPage() {
                     label: 'Edit theme',
                     onClick: openThemeEditor,
                     disabled: loading || (!currentTheme && themes.length === 0),
-                    icon: <MaterialIcon name="edit" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                    icon: <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
                 secondaryActions={[
                     {
                         label: 'View store',
                         href: storefrontUrl,
-                        icon: <MaterialIcon name="visibility" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                        icon: <Eye className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                     },
                 ]}
             />
@@ -319,7 +393,7 @@ export default function ThemesPage() {
                                             variant="ghost"
                                             onClick={() => setVersionOpen((current) => !current)}
                                         >
-                                            <MaterialIcon name="new_releases" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                            <FileJson className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                             Version {currentTheme.version || '1.0.0'}
                                         </Button>
                                         {versionOpen && (
@@ -337,7 +411,7 @@ export default function ThemesPage() {
 
                                 <div className="mt-auto flex flex-wrap gap-[var(--lb-space-2)]">
                                     <Button onClick={openThemeEditor} disabled={!currentTheme && themes.length === 0}>
-                                        <MaterialIcon name="edit" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                        <Edit3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                         Edit theme
                                     </Button>
                                     <Button
@@ -346,7 +420,9 @@ export default function ThemesPage() {
                                         onClick={handlePublishToggle}
                                         disabled={!storeId}
                                     >
-                                        <MaterialIcon name={isPublished ? 'pause_circle' : 'rocket_launch'} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                        {isPublished
+                                            ? <XCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            : <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                         {isPublished ? 'Unpublish' : 'Publish'}
                                     </Button>
                                 </div>
@@ -367,7 +443,7 @@ export default function ThemesPage() {
                             onClick={() => bundleInputRef.current?.click()}
                             disabled={!storeId || loading}
                         >
-                            <MaterialIcon name="upload_file" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                            <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             Upload JSON
                         </Button>
                     }
@@ -387,7 +463,7 @@ export default function ThemesPage() {
                     ) : (
                         <div className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
                             <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                <MaterialIcon name="upload_file" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" />
+                                <Upload className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" aria-hidden="true" />
                             </div>
                             <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
                                 Choose a JSON bundle to install it as a selectable store theme.
@@ -411,7 +487,7 @@ export default function ThemesPage() {
                         </div>
                     ) : themes.length === 0 ? (
                         <EmptyState
-                            icon={<MaterialIcon name="palette" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" />}
+                            icon={<Palette className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" aria-hidden="true" />}
                             title="No themes installed"
                             body="Upload a JSON-contract bundle or install a production theme to start customizing this storefront."
                             primaryAction={
@@ -436,6 +512,16 @@ export default function ThemesPage() {
                     )}
                 </Section>
             </Card>
+
+            <ConfirmDialog
+                open={confirmUnpublishOpen}
+                title="Unpublish storefront?"
+                description="Customers will no longer be able to view this storefront until it is published again."
+                confirmLabel="Unpublish"
+                destructive
+                onClose={() => setConfirmUnpublishOpen(false)}
+                onConfirm={() => void performPublishToggle()}
+            />
         </Page>
     )
 }
