@@ -1,14 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { SetupStatus, StoreInfo } from './page'
+import type {
+    DashboardActivity,
+    DashboardHomeData,
+    SetupStatus,
+    StoreInfo,
+} from './page'
 import {
     Badge,
     Banner,
     Button,
     Card,
+    EmptyState,
     MaterialIcon,
+    MetricCard,
     Page,
     PageHeader,
     Section,
@@ -22,6 +29,7 @@ interface DashboardClientProps {
     store: string
     storeInfo: StoreInfo
     setupStatus: SetupStatus
+    homeData: DashboardHomeData
 }
 
 interface SetupHeroConfig {
@@ -48,7 +56,17 @@ interface SetupConfig {
     miniCards: SetupMiniConfig[]
 }
 
-export default function DashboardClient({ store, storeInfo, setupStatus }: DashboardClientProps) {
+interface SetupChecklistItem {
+    title: string
+    description: string
+    icon: string
+    actionText: string
+    actionLink: string
+    complete: boolean
+    detail?: string
+}
+
+export default function DashboardClient({ store, storeInfo, setupStatus, homeData }: DashboardClientProps) {
     const config = SETUP_CONFIGS[storeInfo.site_type] || SETUP_CONFIGS.store
     const currentDomain = storeInfo.custom_domain || `${storeInfo.subdomain}.letbuyy.store`
 
@@ -79,12 +97,17 @@ export default function DashboardClient({ store, storeInfo, setupStatus }: Dashb
                 trialStatus={storeInfo.trial_status}
             />
 
+            <HomeMetrics homeData={homeData} />
+
             <SetupCards
                 store={store}
                 siteType={storeInfo.site_type}
                 setupStatus={setupStatus}
                 currentDomain={currentDomain}
+                storeStatus={storeInfo.status}
             />
+
+            <RecentActivity store={store} activities={homeData.recentActivity} />
 
             <PlanUpsell store={store} />
         </Page>
@@ -96,18 +119,21 @@ interface SetupCardsProps {
     siteType: SiteType
     setupStatus: SetupStatus
     currentDomain: string
+    storeStatus: string
 }
 
-function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsProps) {
+function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }: SetupCardsProps) {
     const router = useRouter()
     const [copiedDomain, setCopiedDomain] = useState(false)
     const config = SETUP_CONFIGS[siteType] || SETUP_CONFIGS.store
-    const miniCompletions = config.miniCards.map((card) => Boolean(card.checkKey && setupStatus[card.checkKey]))
-    const totalSteps = 2 + config.miniCards.length
-    const completedSteps =
-        Number(setupStatus.primaryComplete) +
-        Number(setupStatus.themeCustomized) +
-        miniCompletions.filter(Boolean).length
+    const checklist = useMemo(
+        () => buildSetupChecklist({ config, currentDomain, setupStatus, siteType, storeStatus }),
+        [config, currentDomain, setupStatus, siteType, storeStatus],
+    )
+    const totalSteps = checklist.length
+    const completedSteps = checklist.filter((item) => item.complete).length
+    const completionPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0
+    const nextStep = checklist.find((item) => !item.complete)
 
     const navigateTo = (path: string) => {
         router.push(`/${store}/${path}`)
@@ -124,7 +150,9 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
         <Card>
             <Section
                 title="Setup guide"
-                description="Finish the highest-impact steps to get this storefront ready for customers."
+                description={nextStep
+                    ? `Next: ${nextStep.title}. ${nextStep.description}`
+                    : 'All recommended launch steps are complete. Keep reviewing your storefront as orders come in.'}
                 action={
                     <Badge
                         label={`${completedSteps}/${totalSteps} complete`}
@@ -132,48 +160,57 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
                     />
                 }
             >
-                <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-2">
-                    <SetupActionPanel
-                        icon={config.primary.icon}
-                        title={config.primary.title}
-                        description={config.primary.description}
-                        actionText={config.primary.actionText}
-                        complete={setupStatus.primaryComplete}
-                        onAction={() => navigateTo(config.primary.actionLink)}
-                    />
-                    <SetupActionPanel
-                        icon={config.secondary.icon}
-                        title={config.secondary.title}
-                        description={config.secondary.description}
-                        actionText={config.secondary.actionText}
-                        complete={setupStatus.themeCustomized}
-                        onAction={() => navigateTo(config.secondary.actionLink)}
-                    />
+                <div
+                    className="grid grid-cols-5 gap-[var(--lb-space-1)]"
+                    role="progressbar"
+                    aria-label="Setup progress"
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={completionPercent}
+                >
+                    {checklist.map((item) => (
+                        <span
+                            key={item.title}
+                            className={[
+                                'h-[var(--lb-space-2)] rounded-[var(--lb-radius-full)] transition-colors duration-[var(--lb-motion-normal)]',
+                                item.complete ? 'bg-[var(--lb-color-primary)]' : 'bg-[var(--lb-color-surface-subdued)]',
+                            ].join(' ')}
+                            aria-hidden="true"
+                        />
+                    ))}
                 </div>
 
-                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                    {config.miniCards.map((card) => {
-                        const complete = Boolean(card.checkKey && setupStatus[card.checkKey])
-
-                        return (
-                            <div
-                                key={card.title}
-                                className="flex min-h-[calc(var(--lb-space-7)*3)] flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
-                            >
-                                <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
-                                    <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                                        <MaterialIcon name={card.icon} className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" />
-                                    </div>
-                                    <Badge label={complete ? 'Done' : 'Next'} variant={complete ? 'success' : 'default'} />
+                <div className="grid gap-[var(--lb-space-3)]">
+                    {checklist.map((item, index) => (
+                        <div
+                            key={item.title}
+                            className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:grid-cols-[auto_1fr_auto] md:items-center"
+                        >
+                            <div className="flex items-start gap-[var(--lb-space-3)] md:contents">
+                                <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                    {item.complete ? (
+                                        <MaterialIcon name="check" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                    ) : (
+                                        <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)]">
+                                            {index + 1}
+                                        </span>
+                                    )}
                                 </div>
-                                <div className="space-y-[var(--lb-space-1)]">
-                                    <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                        {card.title}
-                                    </h3>
-                                    {card.showDomain && (
-                                        <div className="flex items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-2)]">
+                                <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                                    <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                        <MaterialIcon name={item.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-text-subdued)]" />
+                                        <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                            {item.title}
+                                        </h3>
+                                        <Badge label={item.complete ? 'Done' : 'Next'} variant={item.complete ? 'success' : 'default'} />
+                                    </div>
+                                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                        {item.description}
+                                    </p>
+                                    {item.detail && (
+                                        <div className="flex max-w-[var(--lb-size-content-measure)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-2)]">
                                             <span className="min-w-0 flex-1 truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                {currentDomain}
+                                                {item.detail}
                                             </span>
                                             <Button
                                                 aria-label="Copy domain"
@@ -186,60 +223,244 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
                                         </div>
                                     )}
                                 </div>
-                                <div className="mt-auto">
-                                    <Button
-                                        fullWidth
-                                        variant={complete ? 'secondary' : 'outline'}
-                                        onClick={() => navigateTo(card.showDomain ? 'settings' : card.actionLink)}
-                                    >
-                                        {card.showDomain ? 'Customize' : card.actionText}
-                                    </Button>
-                                </div>
                             </div>
-                        )
-                    })}
+                            <div
+                                className="flex justify-start md:justify-end"
+                            >
+                                <Button
+                                    variant={item.complete ? 'secondary' : 'outline'}
+                                    onClick={() => navigateTo(item.actionLink)}
+                                >
+                                    {item.complete ? 'Review' : item.actionText}
+                                </Button>
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </Section>
         </Card>
     )
 }
 
-function SetupActionPanel({
-    icon,
-    title,
-    description,
-    actionText,
-    complete,
-    onAction,
-}: {
-    icon: string
-    title: string
-    description: string
-    actionText: string
-    complete: boolean
-    onAction: () => void
-}) {
+function HomeMetrics({ homeData }: { homeData: DashboardHomeData }) {
     return (
-        <div className="flex min-h-[calc(var(--lb-space-7)*4)] flex-col justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-5)] shadow-[var(--lb-shadow-sm)]">
-            <div className="flex items-start justify-between gap-[var(--lb-space-4)]">
-                <div className="flex h-[calc(var(--lb-size-control-lg)+var(--lb-space-3))] w-[calc(var(--lb-size-control-lg)+var(--lb-space-3))] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                    <MaterialIcon name={icon} className="h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)]" />
-                </div>
-                <Badge label={complete ? 'Complete' : 'Recommended'} variant={complete ? 'success' : 'info'} />
+        <>
+            {!homeData.analyticsAvailable && (
+                <Banner variant="info" title="Analytics are still warming up">
+                    Summary cards will update when the analytics endpoint returns store activity.
+                </Banner>
+            )}
+
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-4">
+                <MetricCard
+                    label="Revenue"
+                    value={formatCurrency(homeData.totalRevenue)}
+                    delta={formatPercentChange(homeData.revenueChangePct, 'last 30 days')}
+                    deltaTone={toneFromChange(homeData.revenueChangePct)}
+                />
+                <MetricCard
+                    label="Orders"
+                    value={formatNumber(homeData.totalOrders)}
+                    delta={formatPercentChange(homeData.ordersChangePct, 'last 30 days')}
+                    deltaTone={toneFromChange(homeData.ordersChangePct)}
+                />
+                <MetricCard
+                    label="Visitors"
+                    value="Not tracked"
+                    delta="Needs storefront session analytics"
+                    deltaTone="neutral"
+                />
+                <MetricCard
+                    label="Conversion"
+                    value="Not tracked"
+                    delta="Needs visitor and checkout funnel data"
+                    deltaTone="neutral"
+                />
             </div>
-            <div className="space-y-[var(--lb-space-2)]">
-                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
-                    {title}
-                </h3>
-                <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
-                    {description}
-                </p>
-            </div>
-            <Button variant={complete ? 'secondary' : 'primary'} onClick={onAction}>
-                {complete ? 'Review' : actionText}
-            </Button>
-        </div>
+        </>
     )
+}
+
+function RecentActivity({ store, activities }: { store: string; activities: DashboardActivity[] }) {
+    return (
+        <Card>
+            <Section
+                title="Recent activity"
+                description="The newest orders and catalog updates, pulled from the current merchant data surfaces."
+                action={<Badge label={`${activities.length} shown`} variant={activities.length > 0 ? 'info' : 'default'} />}
+            >
+                {activities.length > 0 ? (
+                    <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                        {activities.map((activity) => (
+                            <a
+                                key={activity.id}
+                                href={`/${store}/${activity.href}`}
+                                className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-4)] text-[var(--lb-color-text)] no-underline transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] md:grid-cols-[auto_1fr_auto] md:items-center"
+                            >
+                                <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                    <MaterialIcon name={activity.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                </span>
+                                <span className="min-w-0">
+                                    <span className="block truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]">
+                                        {activity.title}
+                                    </span>
+                                    <span className="mt-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                        {activity.description}
+                                    </span>
+                                </span>
+                                <span className="flex flex-wrap items-center gap-[var(--lb-space-2)] md:justify-end">
+                                    <Badge label={activity.badgeLabel} variant={activity.badgeVariant} />
+                                    <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                        {formatRelativeTime(activity.timestamp)}
+                                    </span>
+                                </span>
+                            </a>
+                        ))}
+                    </div>
+                ) : (
+                    <EmptyState
+                        icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
+                        title="Recent activity will appear here"
+                        body="Orders and product updates will show up as soon as this store has merchant or shopper activity."
+                        primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
+                        secondaryAction={<Button type="button" variant="secondary" onClick={() => { window.location.href = `/${store}/orders` }}>View orders</Button>}
+                    />
+                )}
+            </Section>
+        </Card>
+    )
+}
+
+function buildSetupChecklist({
+    config,
+    currentDomain,
+    setupStatus,
+    siteType,
+    storeStatus,
+}: {
+    config: SetupConfig
+    currentDomain: string
+    setupStatus: SetupStatus
+    siteType: SiteType
+    storeStatus: string
+}): SetupChecklistItem[] {
+    if (siteType === 'store') {
+        return [
+            {
+                title: 'Add product',
+                description: 'Create the first sellable item so shoppers can browse and buy.',
+                icon: 'product',
+                actionText: 'Add product',
+                actionLink: 'products/new',
+                complete: setupStatus.primaryComplete,
+            },
+            {
+                title: 'Customize theme',
+                description: 'Choose a theme and tune storefront branding before launch.',
+                icon: 'palette',
+                actionText: 'Customize',
+                actionLink: 'online-store/themes',
+                complete: setupStatus.themeCustomized,
+            },
+            {
+                title: 'Set up payments',
+                description: 'Configure payment acceptance before taking live orders.',
+                icon: 'payments',
+                actionText: 'Activate',
+                actionLink: 'settings/payments',
+                complete: Boolean(setupStatus.paymentConfigured),
+            },
+            {
+                title: 'Connect domain',
+                description: 'Use the default LetBuyy domain or connect a custom storefront domain.',
+                icon: 'language',
+                actionText: 'Connect',
+                actionLink: 'settings/domains',
+                complete: setupStatus.domainConfigured,
+                detail: currentDomain,
+            },
+            {
+                title: 'Launch store',
+                description: 'Publish the storefront when products, theme, payments, and domain are ready.',
+                icon: 'rocket_launch',
+                actionText: 'Publish',
+                actionLink: 'online-store/themes',
+                complete: storeStatus === 'published',
+            },
+        ]
+    }
+
+    return [
+        {
+            title: config.primary.title,
+            description: config.primary.description,
+            icon: config.primary.icon,
+            actionText: config.primary.actionText,
+            actionLink: config.primary.actionLink,
+            complete: setupStatus.primaryComplete,
+        },
+        {
+            title: config.secondary.title,
+            description: config.secondary.description,
+            icon: config.secondary.icon,
+            actionText: config.secondary.actionText,
+            actionLink: config.secondary.actionLink,
+            complete: setupStatus.themeCustomized,
+        },
+        ...config.miniCards.map((card) => ({
+            title: card.title,
+            description: card.showDomain
+                ? 'Review the public domain visitors will use.'
+                : 'Complete this recommended launch preparation step.',
+            icon: card.icon,
+            actionText: card.showDomain ? 'Customize' : card.actionText,
+            actionLink: card.showDomain ? 'settings/domains' : card.actionLink,
+            complete: Boolean(card.checkKey && setupStatus[card.checkKey]),
+            detail: card.showDomain ? currentDomain : undefined,
+        })),
+    ].slice(0, 5)
+}
+
+function formatCurrency(amount: number) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+    }).format(amount)
+}
+
+function formatNumber(value: number) {
+    return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value)
+}
+
+function formatPercentChange(value: number, period: string) {
+    if (!value) return `No change in ${period}`
+    const prefix = value > 0 ? '+' : ''
+    return `${prefix}${value.toFixed(1)}% in ${period}`
+}
+
+function toneFromChange(value: number) {
+    if (value > 0) return 'positive'
+    if (value < 0) return 'negative'
+    return 'neutral'
+}
+
+function formatRelativeTime(value: string | null) {
+    if (!value) return 'Recently'
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Recently'
+
+    const diffMs = date.getTime() - Date.now()
+    const diffMinutes = Math.round(diffMs / 60000)
+    const absMinutes = Math.abs(diffMinutes)
+
+    if (absMinutes < 60) return new Intl.RelativeTimeFormat('en-IN', { numeric: 'auto' }).format(diffMinutes, 'minute')
+
+    const diffHours = Math.round(diffMinutes / 60)
+    if (Math.abs(diffHours) < 24) return new Intl.RelativeTimeFormat('en-IN', { numeric: 'auto' }).format(diffHours, 'hour')
+
+    const diffDays = Math.round(diffHours / 24)
+    return new Intl.RelativeTimeFormat('en-IN', { numeric: 'auto' }).format(diffDays, 'day')
 }
 
 const SETUP_CONFIGS: Record<SiteType, SetupConfig> = {
