@@ -1,8 +1,24 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    BarChart3,
+    Button,
+    Card,
+    EmptyState,
+    IndianRupee,
+    MaterialIcon,
+    MetricCard,
+    Package,
+    Page,
+    PageHeader,
+    Section,
+    Select,
+    Skeleton,
+} from '@letbuyy/ui'
 
 interface AnalyticsData {
     totalOrders: number
@@ -13,155 +29,288 @@ interface AnalyticsData {
     revenueByMonth: Array<{ month: string; revenue: number }>
 }
 
+type AnalyticsPeriod = '7d' | '30d' | '90d'
+
+const periodOptions = [
+    { label: 'Last 7 days', value: '7d' },
+    { label: 'Last 30 days', value: '30d' },
+    { label: 'Last 90 days', value: '90d' },
+] satisfies Array<{ label: string; value: AnalyticsPeriod }>
+
+const orderStatuses = [
+    { key: 'pending', label: 'Pending', variant: 'warning' },
+    { key: 'confirmed', label: 'Confirmed', variant: 'info' },
+    { key: 'shipped', label: 'Shipped', variant: 'info' },
+    { key: 'delivered', label: 'Delivered', variant: 'success' },
+    { key: 'cancelled', label: 'Cancelled', variant: 'critical' },
+] as const
+
 export default function AnalyticsPage() {
     const { store } = useParams<{ store: string }>()
     const [data, setData] = useState<AnalyticsData | null>(null)
     const [loading, setLoading] = useState(true)
-    const [period, setPeriod] = useState<'7d' | '30d' | '90d'>('30d')
+    const [error, setError] = useState<string | null>(null)
+    const [period, setPeriod] = useState<AnalyticsPeriod>('30d')
 
-    useEffect(() => {
-        async function load() {
-            setLoading(true)
+    const loadAnalytics = useCallback(async () => {
+        setLoading(true)
+        setError(null)
+
+        try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/analytics?period=${period}`, {
                 cache: 'no-store',
             })
             const payload = await response.json()
+
+            if (!response.ok) {
+                const message = typeof payload?.error === 'string'
+                    ? payload.error
+                    : payload?.error?.message || 'Unable to load analytics'
+                throw new Error(message)
+            }
+
             setData(payload.data)
+        } catch (err) {
+            setData(null)
+            setError(err instanceof Error ? err.message : 'Unable to load analytics')
+        } finally {
             setLoading(false)
         }
-        load()
-    }, [store, period])
+    }, [period, store])
 
-    const formatCurrency = (amt: number) =>
-        new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amt)
+    useEffect(() => {
+        void loadAnalytics()
+    }, [loadAnalytics])
 
-    if (loading) {
-        return (
-            <div className="setup-dashboard" style={{ padding: '24px 32px' }}>
-                <div className="products-page-header">
-                    <h1>Analytics</h1>
-                </div>
-                <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))' }}>
-                    {[...Array(4)].map((_, i) => (
-                        <div key={i} className="admin-skeleton" style={{ height: 112, borderRadius: 14 }} />
-                    ))}
-                </div>
-            </div>
-        )
-    }
+    const formatCurrency = (amount: number) =>
+        new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount)
+
+    const totalStatusCount = useMemo(() => {
+        if (!data) return 0
+        return Object.values(data.ordersByStatus).reduce((sum, count) => sum + count, 0)
+    }, [data])
+
+    const hasBusinessActivity = Boolean(
+        data && (data.totalOrders > 0 || data.totalRevenue > 0 || data.totalProducts > 0 || totalStatusCount > 0),
+    )
 
     return (
-        <div className="setup-dashboard" style={{ padding: '24px 32px' }}>
-            {/* Header */}
-            <div className="products-page-header">
-                <div>
-                    <h1>Analytics</h1>
-                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '4px 0 0' }}>
-                        Track {store}&apos;s performance
-                    </p>
-                </div>
-                <div className="products-tabs" style={{ border: 'none', marginBottom: 0, gap: 0 }}>
-                    {(['7d', '30d', '90d'] as const).map(p => (
-                        <button
-                            key={p}
-                            onClick={() => setPeriod(p)}
-                            className={`products-tab ${period === p ? 'active' : ''}`}
-                        >
-                            {p === '7d' ? '7 days' : p === '30d' ? '30 days' : '90 days'}
-                        </button>
-                    ))}
-                </div>
-            </div>
+        <Page>
+            <PageHeader
+                title="Analytics"
+                description={`Track ${store}'s sales, orders, and catalog performance from one workspace.`}
+                breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Analytics' }]}
+                primaryAction={{
+                    label: 'Refresh',
+                    onClick: () => { void loadAnalytics() },
+                    icon: <MaterialIcon name="sync" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />,
+                    disabled: loading,
+                }}
+            />
 
-            {/* Stat Cards */}
-            <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', marginBottom: 24 }}>
-                <AnalyticsCard title="Revenue" value={formatCurrency(data!.totalRevenue)} icon="payments" />
-                <AnalyticsCard title="Orders" value={String(data!.totalOrders)} icon="receipt_long" />
-                <AnalyticsCard title="Avg. Order Value" value={formatCurrency(data!.avgOrderValue)} icon="trending_up" />
-                <AnalyticsCard title="Products" value={String(data!.totalProducts)} icon="inventory_2" />
-            </div>
-
-            {/* Orders by Status */}
-            <div style={{ marginBottom: 24 }}>
-                <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 12px' }}>
-                    Orders by Status
-                </h2>
-                <div style={{ display: 'grid', gap: 12, gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))' }}>
-                    {['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'].map(status => (
-                        <div
-                            key={status}
-                            style={{
-                                background: 'var(--bg-secondary)',
-                                border: '1px solid var(--border)',
-                                borderRadius: 14,
-                                padding: '16px 20px',
-                            }}
-                        >
-                            <p style={{ fontSize: 12, textTransform: 'capitalize', color: 'var(--text-secondary)', margin: '0 0 4px' }}>
-                                {status}
-                            </p>
-                            <p style={{ fontSize: 22, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                                {data!.ordersByStatus[status] || 0}
-                            </p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Revenue by Month */}
-            {data!.revenueByMonth.length > 0 && (
-                <div>
-                    <h2 style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 12px' }}>
-                        Monthly Revenue
-                    </h2>
-                    <div style={{
-                        background: 'var(--bg-secondary)',
-                        border: '1px solid var(--border)',
-                        borderRadius: 14,
-                        padding: 24,
-                    }}>
-                        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 200 }}>
-                            {data!.revenueByMonth.map((m) => {
-                                const maxRev = Math.max(...data!.revenueByMonth.map(x => x.revenue))
-                                const height = maxRev > 0 ? (m.revenue / maxRev) * 100 : 0
-                                return (
-                                    <div key={m.month} style={{ display: 'flex', flex: 1, flexDirection: 'column', alignItems: 'center', gap: 4 }}>
-                                        <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>
-                                            {formatCurrency(m.revenue)}
-                                        </span>
-                                        <div
-                                            style={{
-                                                width: '100%',
-                                                borderRadius: '6px 6px 0 0',
-                                                background: 'var(--primary)',
-                                                height: `${Math.max(height, 4)}%`,
-                                            }}
-                                        />
-                                        <span style={{ fontSize: 11, color: 'var(--text-hint)' }}>{m.month}</span>
-                                    </div>
-                                )
-                            })}
-                        </div>
+            <Card>
+                <Section
+                    title="Reporting period"
+                    description="Choose the range used by the summary cards and order breakdown."
+                >
+                    <div className="max-w-[var(--lb-size-content-measure)]">
+                        <Select
+                            label="Date range"
+                            value={period}
+                            onChange={(event) => setPeriod(event.target.value as AnalyticsPeriod)}
+                            options={periodOptions}
+                        />
                     </div>
-                </div>
+                </Section>
+            </Card>
+
+            {error && (
+                <Banner
+                    variant="critical"
+                    title="Analytics could not be loaded"
+                    action={<Button variant="secondary" size="sm" onClick={() => { void loadAnalytics() }}>Retry</Button>}
+                >
+                    {error}
+                </Banner>
             )}
-        </div>
+
+            {loading ? (
+                <>
+                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-4">
+                        {Array.from({ length: 4 }).map((_, index) => (
+                            <Skeleton key={index} variant="card" />
+                        ))}
+                    </div>
+                    <Card>
+                        <Section title="Orders by status">
+                            <Skeleton variant="table" lines={5} />
+                        </Section>
+                    </Card>
+                </>
+            ) : data && (
+                <>
+                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-4">
+                        <MetricCard
+                            label="Revenue"
+                            value={formatCurrency(data.totalRevenue)}
+                            delta={periodLabel(period)}
+                            deltaTone="neutral"
+                        />
+                        <MetricCard
+                            label="Orders"
+                            value={String(data.totalOrders)}
+                            delta={data.totalOrders === 1 ? '1 order placed' : `${data.totalOrders} orders placed`}
+                            deltaTone={data.totalOrders > 0 ? 'positive' : 'neutral'}
+                        />
+                        <MetricCard
+                            label="Average order value"
+                            value={formatCurrency(data.avgOrderValue)}
+                            delta="Calculated from settled order data"
+                            deltaTone="neutral"
+                        />
+                        <MetricCard
+                            label="Products"
+                            value={String(data.totalProducts)}
+                            delta={data.totalProducts > 0 ? 'Catalog ready' : 'No products yet'}
+                            deltaTone={data.totalProducts > 0 ? 'positive' : 'neutral'}
+                        />
+                    </div>
+
+                    {!hasBusinessActivity && (
+                        <EmptyState
+                            icon={<BarChart3 className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
+                            title="Analytics will appear after your first activity"
+                            body="Add products, receive orders, and LetBuyy will summarize the performance signals here."
+                            primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
+                            secondaryAction={<Button type="button" variant="secondary" onClick={() => { window.location.href = `/${store}/online-store/themes` }}>Customize storefront</Button>}
+                        />
+                    )}
+
+                    <Card>
+                        <Section
+                            title="Orders by status"
+                            description="Monitor where orders are waiting for merchant action."
+                        >
+                            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2 xl:grid-cols-5">
+                                {orderStatuses.map((status) => {
+                                    const count = data.ordersByStatus[status.key] || 0
+
+                                    return (
+                                        <div
+                                            key={status.key}
+                                            className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
+                                        >
+                                            <div className="flex items-center justify-between gap-[var(--lb-space-2)]">
+                                                <Badge label={status.label} variant={status.variant} />
+                                                <span className="text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">
+                                                    {totalStatusCount > 0 ? `${Math.round((count / totalStatusCount) * 100)}%` : '0%'}
+                                                </span>
+                                            </div>
+                                            <p className="m-0 mt-[var(--lb-space-3)] text-[var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[var(--lb-color-text)]">
+                                                {count}
+                                            </p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </Section>
+                    </Card>
+
+                    <Card>
+                        <Section
+                            title="Monthly revenue"
+                            description="Revenue trend data appears when the analytics service returns monthly buckets."
+                        >
+                            {data.revenueByMonth.length > 0 ? (
+                                <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                                    {data.revenueByMonth.map((month) => (
+                                        <div
+                                            key={month.month}
+                                            className="flex flex-col gap-[var(--lb-space-2)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between"
+                                        >
+                                            <div className="flex items-center gap-[var(--lb-space-3)]">
+                                                <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                                <span className="font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                                                    {month.month}
+                                                </span>
+                                            </div>
+                                            <span className="text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
+                                                {formatCurrency(month.revenue)}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <EmptyState
+                                    icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
+                                    title="Monthly revenue is not available yet"
+                                    body="The current analytics endpoint returns summary totals and order status counts. Monthly revenue buckets can be shown here when that field is populated."
+                                />
+                            )}
+                        </Section>
+                    </Card>
+
+                    <Card>
+                        <Section title="Next best actions" description="Move from insight to action without leaving the analytics workspace.">
+                            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                                <ActionLink
+                                    href={`/${store}/orders`}
+                                    icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />}
+                                    title="Review orders"
+                                    description="Prioritize pending and confirmed orders."
+                                />
+                                <ActionLink
+                                    href={`/${store}/products`}
+                                    icon={<Package className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                    title="Tune catalog"
+                                    description="Update low-signal products and inventory."
+                                />
+                                <ActionLink
+                                    href={`/${store}/online-store/themes`}
+                                    icon={<BarChart3 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                    title="Improve storefront"
+                                    description="Adjust theme, content, and conversion cues."
+                                />
+                            </div>
+                        </Section>
+                    </Card>
+                </>
+            )}
+        </Page>
     )
 }
 
-function AnalyticsCard({ title, value, icon }: { title: string; value: string; icon: string }) {
+function periodLabel(period: AnalyticsPeriod) {
+    if (period === '7d') return 'Last 7 days'
+    if (period === '90d') return 'Last 90 days'
+    return 'Last 30 days'
+}
+
+function ActionLink({
+    href,
+    icon,
+    title,
+    description,
+}: {
+    href: string
+    icon: ReactNode
+    title: string
+    description: string
+}) {
     return (
-        <div style={{
-            background: 'var(--bg-secondary)',
-            border: '1px solid var(--border)',
-            borderRadius: 14,
-            padding: '20px 24px',
-        }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <MaterialIcon name={icon} style={{ fontSize: 18, color: 'var(--text-hint)' }} />
-                <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>{title}</span>
-            </div>
-            <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{value}</p>
-        </div>
+        <a
+            href={href}
+            className="flex min-h-[calc(var(--lb-size-control-lg)+var(--lb-space-7))] flex-col justify-between rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+        >
+            <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                {icon}
+            </span>
+            <span className="mt-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                {title}
+            </span>
+            <span className="mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                {description}
+            </span>
+        </a>
     )
 }
