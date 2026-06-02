@@ -13,6 +13,13 @@ export type { DataTableProps, Column, BadgeProps } from './data-table';
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
 
+export {
+    letbuyyTokenCss,
+    letbuyyTokenCssVariables,
+    letbuyyTokens,
+} from './tokens';
+export type { LetbuyyTheme } from './tokens';
+
 export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
 
 export * from './icons';

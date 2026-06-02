@@ -19,6 +19,7 @@
 - Before-screenshots (real local stack): `artifacts/shopify-ux/ux0/before/dashboard.png`, `artifacts/shopify-ux/ux0/before/products.png`, `artifacts/shopify-ux/ux0/before/orders.png`, `artifacts/shopify-ux/ux0/before/customers.png`, `artifacts/shopify-ux/ux0/before/themes.png`, `artifacts/shopify-ux/ux0/before/apps.png`, `artifacts/shopify-ux/ux0/before/analytics.png`, `artifacts/shopify-ux/ux0/before/settings.png`.
 
 ## PROGRESS LOG (newest first)
+- 2026-06-02T10:02:07Z [UX1.1] Design token foundation - DONE - evidence: `pnpm --filter @letbuyy/ui typecheck` -> PASS; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful - screenshot n/a (token source and CSS-variable export; component visual proof starts in UX1.2) - commit pending.
 - 2026-06-02T09:54:56Z [GATE UX0] Baseline visual inventory and governance gate - DONE - evidence: `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing local-stack generated `.next`, nested `node_modules`, `.turbo`, `dist`, and `.wrangler` caches - screenshot `artifacts/shopify-ux/ux0/before/*.png` - commit `6a94a25`.
 - 2026-06-02T09:46:28Z [UX0.2] Before-state visual inventory - DONE - evidence: `pnpm run federation:local:up` -> real local stack booted after clearing stale listeners; `node .tmp/ux0-before-screenshots.mjs` -> 8 screenshots captured - screenshot `artifacts/shopify-ux/ux0/before/*.png` - commit `6a94a25`.
 - 2026-06-02T09:31:20Z [UX0.1] Baseline ledger and source inventory - DONE - evidence: source reads and inventory commands recorded above - screenshot n/a - commit `6a94a25`.
@@ -36,6 +37,9 @@
 - 2026-06-02T09:46:28Z Settings - before `artifacts/shopify-ux/ux0/before/settings.png` | after pending
 
 ## VALIDATOR LEDGER
+- 2026-06-02T10:02:07Z pnpm --filter @letbuyy/ui typecheck -> PASS
+- 2026-06-02T10:02:07Z pnpm lint -> PASS (pre-existing warnings only)
+- 2026-06-02T10:02:07Z pnpm turbo typecheck -> PASS (57/57 tasks successful)
 - 2026-06-02T09:54:56Z pnpm lint -> PASS (pre-existing warnings only)
 - 2026-06-02T09:54:56Z pnpm turbo typecheck -> PASS (57/57 tasks successful)
 - 2026-06-02T09:54:56Z validate:governance -> 128/128 PASS after UX0 baseline (`6a94a25`)

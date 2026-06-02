@@ -1,0 +1,237 @@
+import { letbuyyFontStacks } from './fonts';
+
+export type LetbuyyTheme = 'light' | 'dark';
+
+type CssVariableMap = Record<`--${string}`, string>;
+
+export const letbuyyTokens = {
+    color: {
+        light: {
+            bg: '#f6f6f7',
+            surface: '#ffffff',
+            surfaceRaised: '#ffffff',
+            surfaceSubdued: '#f1f2f4',
+            border: '#d7d9df',
+            borderStrong: '#b8bcc7',
+            text: '#202223',
+            textSubdued: '#5f646d',
+            textInverse: '#ffffff',
+            primary: '#2563eb',
+            primaryHover: '#1d4ed8',
+            primarySoft: '#dbeafe',
+            critical: '#dc2626',
+            criticalHover: '#b91c1c',
+            criticalSoft: '#fee2e2',
+            warning: '#b45309',
+            warningSoft: '#fef3c7',
+            success: '#15803d',
+            successSoft: '#dcfce7',
+            info: '#0369a1',
+            infoSoft: '#e0f2fe',
+            focusRing: '#2563eb',
+            overlay: 'rgb(15 23 42 / 56%)',
+        },
+        dark: {
+            bg: '#101114',
+            surface: '#181a1f',
+            surfaceRaised: '#20232a',
+            surfaceSubdued: '#14161a',
+            border: '#343842',
+            borderStrong: '#505766',
+            text: '#f3f4f6',
+            textSubdued: '#a5adba',
+            textInverse: '#101114',
+            primary: '#60a5fa',
+            primaryHover: '#93c5fd',
+            primarySoft: '#172554',
+            critical: '#f87171',
+            criticalHover: '#fca5a5',
+            criticalSoft: '#451a1a',
+            warning: '#fbbf24',
+            warningSoft: '#422006',
+            success: '#4ade80',
+            successSoft: '#052e16',
+            info: '#38bdf8',
+            infoSoft: '#082f49',
+            focusRing: '#93c5fd',
+            overlay: 'rgb(0 0 0 / 64%)',
+        },
+    },
+    typography: {
+        fontFamily: {
+            body: letbuyyFontStacks.sans,
+            display: letbuyyFontStacks.display,
+            mono: letbuyyFontStacks.mono,
+        },
+        fontSize: {
+            display: '2rem',
+            heading: '1.25rem',
+            body: '0.875rem',
+            caption: '0.75rem',
+        },
+        lineHeight: {
+            display: '2.5rem',
+            heading: '1.75rem',
+            body: '1.25rem',
+            caption: '1rem',
+        },
+        fontWeight: {
+            regular: '400',
+            medium: '500',
+            semibold: '600',
+            bold: '700',
+        },
+    },
+    space: {
+        none: '0',
+        xs: '4px',
+        sm: '8px',
+        md: '12px',
+        lg: '16px',
+        xl: '24px',
+        '2xl': '32px',
+        '3xl': '48px',
+    },
+    radius: {
+        sm: '4px',
+        md: '6px',
+        lg: '8px',
+        full: '999px',
+    },
+    shadow: {
+        sm: '0 1px 2px rgb(15 23 42 / 8%)',
+        md: '0 8px 24px rgb(15 23 42 / 10%)',
+        lg: '0 18px 48px rgb(15 23 42 / 16%)',
+    },
+    motion: {
+        duration: {
+            fast: '120ms',
+            normal: '180ms',
+            slow: '240ms',
+        },
+        easing: {
+            standard: 'cubic-bezier(0.2, 0, 0, 1)',
+            emphasized: 'cubic-bezier(0.16, 1, 0.3, 1)',
+        },
+    },
+    size: {
+        controlSm: '32px',
+        controlMd: '40px',
+        controlLg: '48px',
+        icon: '40px',
+    },
+} as const;
+
+const sharedCssVariables: CssVariableMap = {
+    '--lb-font-family-body': letbuyyTokens.typography.fontFamily.body,
+    '--lb-font-family-display': letbuyyTokens.typography.fontFamily.display,
+    '--lb-font-family-mono': letbuyyTokens.typography.fontFamily.mono,
+    '--lb-font-size-display': letbuyyTokens.typography.fontSize.display,
+    '--lb-font-size-heading': letbuyyTokens.typography.fontSize.heading,
+    '--lb-font-size-body': letbuyyTokens.typography.fontSize.body,
+    '--lb-font-size-caption': letbuyyTokens.typography.fontSize.caption,
+    '--lb-line-height-display': letbuyyTokens.typography.lineHeight.display,
+    '--lb-line-height-heading': letbuyyTokens.typography.lineHeight.heading,
+    '--lb-line-height-body': letbuyyTokens.typography.lineHeight.body,
+    '--lb-line-height-caption': letbuyyTokens.typography.lineHeight.caption,
+    '--lb-font-weight-regular': letbuyyTokens.typography.fontWeight.regular,
+    '--lb-font-weight-medium': letbuyyTokens.typography.fontWeight.medium,
+    '--lb-font-weight-semibold': letbuyyTokens.typography.fontWeight.semibold,
+    '--lb-font-weight-bold': letbuyyTokens.typography.fontWeight.bold,
+    '--lb-space-0': letbuyyTokens.space.none,
+    '--lb-space-1': letbuyyTokens.space.xs,
+    '--lb-space-2': letbuyyTokens.space.sm,
+    '--lb-space-3': letbuyyTokens.space.md,
+    '--lb-space-4': letbuyyTokens.space.lg,
+    '--lb-space-5': letbuyyTokens.space.xl,
+    '--lb-space-6': letbuyyTokens.space['2xl'],
+    '--lb-space-7': letbuyyTokens.space['3xl'],
+    '--lb-radius-sm': letbuyyTokens.radius.sm,
+    '--lb-radius-md': letbuyyTokens.radius.md,
+    '--lb-radius-lg': letbuyyTokens.radius.lg,
+    '--lb-radius-full': letbuyyTokens.radius.full,
+    '--lb-shadow-sm': letbuyyTokens.shadow.sm,
+    '--lb-shadow-md': letbuyyTokens.shadow.md,
+    '--lb-shadow-lg': letbuyyTokens.shadow.lg,
+    '--lb-motion-fast': letbuyyTokens.motion.duration.fast,
+    '--lb-motion-normal': letbuyyTokens.motion.duration.normal,
+    '--lb-motion-slow': letbuyyTokens.motion.duration.slow,
+    '--lb-ease-standard': letbuyyTokens.motion.easing.standard,
+    '--lb-ease-emphasized': letbuyyTokens.motion.easing.emphasized,
+    '--lb-size-control-sm': letbuyyTokens.size.controlSm,
+    '--lb-size-control-md': letbuyyTokens.size.controlMd,
+    '--lb-size-control-lg': letbuyyTokens.size.controlLg,
+    '--lb-size-icon': letbuyyTokens.size.icon,
+};
+
+function colorVariables(theme: LetbuyyTheme): CssVariableMap {
+    const colors = letbuyyTokens.color[theme];
+
+    return {
+        '--lb-color-bg': colors.bg,
+        '--lb-color-surface': colors.surface,
+        '--lb-color-surface-raised': colors.surfaceRaised,
+        '--lb-color-surface-subdued': colors.surfaceSubdued,
+        '--lb-color-border': colors.border,
+        '--lb-color-border-strong': colors.borderStrong,
+        '--lb-color-text': colors.text,
+        '--lb-color-text-subdued': colors.textSubdued,
+        '--lb-color-text-inverse': colors.textInverse,
+        '--lb-color-primary': colors.primary,
+        '--lb-color-primary-hover': colors.primaryHover,
+        '--lb-color-primary-soft': colors.primarySoft,
+        '--lb-color-critical': colors.critical,
+        '--lb-color-critical-hover': colors.criticalHover,
+        '--lb-color-critical-soft': colors.criticalSoft,
+        '--lb-color-warning': colors.warning,
+        '--lb-color-warning-soft': colors.warningSoft,
+        '--lb-color-success': colors.success,
+        '--lb-color-success-soft': colors.successSoft,
+        '--lb-color-info': colors.info,
+        '--lb-color-info-soft': colors.infoSoft,
+        '--lb-color-focus-ring': colors.focusRing,
+        '--lb-color-overlay': colors.overlay,
+    };
+}
+
+export const letbuyyTokenCssVariables = {
+    light: {
+        ...sharedCssVariables,
+        ...colorVariables('light'),
+    },
+    dark: {
+        ...sharedCssVariables,
+        ...colorVariables('dark'),
+    },
+} as const satisfies Record<LetbuyyTheme, CssVariableMap>;
+
+function serializeVariables(variables: CssVariableMap) {
+    return Object.entries(variables)
+        .map(([name, value]) => `  ${name}: ${value};`)
+        .join('\n');
+}
+
+export const letbuyyTokenCss = [
+    ':root, [data-letbuyy-theme="light"] {',
+    serializeVariables(letbuyyTokenCssVariables.light),
+    '}',
+    '',
+    '.dark, [data-theme="dark"], [data-letbuyy-theme="dark"] {',
+    serializeVariables(letbuyyTokenCssVariables.dark),
+    '}',
+    '',
+    '[data-letbuyy-design-system="true"] {',
+    '  color: var(--lb-color-text);',
+    '  background: var(--lb-color-bg);',
+    '  font-family: var(--lb-font-family-body);',
+    '  font-size: var(--lb-font-size-body);',
+    '  line-height: var(--lb-line-height-body);',
+    '}',
+    '',
+    '[data-letbuyy-design-system="true"] *,',
+    '[data-letbuyy-design-system="true"] *::before,',
+    '[data-letbuyy-design-system="true"] *::after {',
+    '  box-sizing: border-box;',
+    '}',
+].join('\n');
+
