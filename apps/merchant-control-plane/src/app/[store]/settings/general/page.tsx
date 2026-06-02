@@ -1,9 +1,23 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Banner,
+    Button,
+    Card,
+    ConfirmDialog,
+    Input,
+    Page,
+    PageHeader,
+    SaveBar,
+    Section,
+    Select,
+    Skeleton,
+    Textarea,
+    useToast,
+} from '@letbuyy/ui'
 
 interface GeneralData {
     id: string
@@ -17,209 +31,363 @@ interface GeneralData {
     site_type: string
 }
 
+type SaveState = 'saved' | 'unsaved' | 'saving'
+
+const currencyOptions = [
+    { value: 'INR', label: 'Indian Rupee (INR)' },
+    { value: 'USD', label: 'US Dollar (USD)' },
+    { value: 'EUR', label: 'Euro (EUR)' },
+    { value: 'GBP', label: 'British Pound (GBP)' },
+]
+
+const editableFields: Array<keyof Pick<GeneralData, 'name' | 'description' | 'currency' | 'locale'>> = [
+    'name',
+    'description',
+    'currency',
+    'locale',
+]
+
+const emptyGeneralData: GeneralData = {
+    id: '',
+    store_name: '',
+    name: '',
+    description: '',
+    subdomain: '',
+    custom_domain: '',
+    currency: 'INR',
+    locale: DEFAULT_ADMIN_LOCALE,
+    site_type: 'store',
+}
+
+function readString(record: Record<string, unknown>, key: string, fallback = '') {
+    const value = record[key]
+    return typeof value === 'string' ? value : fallback
+}
+
+function formatSiteType(value: string) {
+    if (!value) return 'Store'
+    return value
+        .split(/[-_]/)
+        .filter(Boolean)
+        .map((part) => `${part.charAt(0).toUpperCase()}${part.slice(1)}`)
+        .join(' ')
+}
+
 export default function GeneralSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [success, setSuccess] = useState(false)
-    const [data, setData] = useState<GeneralData>({
-        id: '',
-        store_name: '',
-        name: '',
-        description: '',
-        subdomain: '',
-        custom_domain: '',
-        currency: 'INR',
-        locale: DEFAULT_ADMIN_LOCALE,
-        site_type: 'store',
-    })
+    const [loadError, setLoadError] = useState<string | null>(null)
+    const [saveState, setSaveState] = useState<SaveState>('saved')
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+    const [deleting, setDeleting] = useState(false)
+    const [initialData, setInitialData] = useState<GeneralData | null>(null)
+    const [data, setData] = useState<GeneralData>(emptyGeneralData)
 
-    const localeOptions = getAdminLocaleOptions()
+    const localeOptions = useMemo(() => getAdminLocaleOptions(), [])
+    const hasUnsavedChanges = useMemo(() => {
+        if (!initialData) return false
+        return editableFields.some((field) => data[field] !== initialData[field])
+    }, [data, initialData])
 
-    // Load store data through the store-scoped worker proxy.
+    const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
+
     useEffect(() => {
+        let mounted = true
+
         async function load() {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store',
-            })
-            const payload = await response.json()
-            const storeData = payload.data
+            setLoading(true)
+            setLoadError(null)
 
-            if (storeData) {
-                setData({
-                    id: storeData.id,
-                    store_name: storeData.store_name || '',
-                    name: storeData.name || storeData.store_name || '',
-                    description: storeData.description || '',
-                    subdomain: storeData.subdomain || storeData.store_name || '',
-                    custom_domain: storeData.custom_domain || '',
-                    currency: storeData.currency || 'INR',
-                    locale: normalizeAdminLocale(storeData.locale),
-                    site_type: storeData.site_type || 'store',
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                    cache: 'no-store',
                 })
+                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+
+                if (!response.ok) {
+                    throw new Error(payload.error || 'Unable to load general settings')
+                }
+
+                const storeData = payload.data
+                if (!storeData) {
+                    throw new Error('General settings were not returned for this store')
+                }
+
+                const nextData: GeneralData = {
+                    id: readString(storeData, 'id'),
+                    store_name: readString(storeData, 'store_name'),
+                    name: readString(storeData, 'name', readString(storeData, 'store_name')),
+                    description: readString(storeData, 'description'),
+                    subdomain: readString(storeData, 'subdomain', readString(storeData, 'store_name')),
+                    custom_domain: readString(storeData, 'custom_domain'),
+                    currency: readString(storeData, 'currency', 'INR'),
+                    locale: normalizeAdminLocale(readString(storeData, 'locale', DEFAULT_ADMIN_LOCALE)),
+                    site_type: readString(storeData, 'site_type', 'store'),
+                }
+
+                if (!mounted) return
+                setData(nextData)
+                setInitialData(nextData)
+                setSaveState('saved')
+            } catch (error) {
+                if (!mounted) return
+                const message = error instanceof Error ? error.message : 'Unable to load general settings'
+                setLoadError(message)
+                notify({
+                    title: 'General settings could not load',
+                    description: message,
+                    variant: 'critical',
+                })
+            } finally {
+                if (mounted) setLoading(false)
             }
-            setLoading(false)
         }
-        load()
-    }, [store])
 
-    const handleSave = useCallback(async (e: React.FormEvent) => {
-        e.preventDefault()
-        setSaving(true)
-        setSuccess(false)
+        void load()
 
-        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-            name: data.name,
-            description: data.description,
-            currency: data.currency,
-            locale: data.locale,
-            }),
+        return () => {
+            mounted = false
+        }
+    }, [notify, store])
+
+    const updateField = useCallback(<Key extends keyof GeneralData>(field: Key, value: GeneralData[Key]) => {
+        setData((current) => ({ ...current, [field]: value }))
+    }, [])
+
+    const handleSave = useCallback(async (event?: React.FormEvent<HTMLFormElement>) => {
+        event?.preventDefault()
+        if (!hasUnsavedChanges || saveState === 'saving') return
+
+        setSaveState('saving')
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: data.name,
+                    description: data.description,
+                    currency: data.currency,
+                    locale: data.locale,
+                }),
+            })
+            const payload = await response.json() as { error?: string }
+
+            if (!response.ok) {
+                throw new Error(payload.error || 'Unable to save general settings')
+            }
+
+            setInitialData(data)
+            setSaveState('saved')
+            notify({
+                title: 'General settings saved',
+                description: 'Store details, currency, and language are up to date.',
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save general settings'
+            setSaveState('unsaved')
+            notify({
+                title: 'Could not save settings',
+                description: message,
+                variant: 'critical',
+            })
+        }
+    }, [data, hasUnsavedChanges, notify, saveState, store])
+
+    const handleDiscard = useCallback(() => {
+        if (!initialData) return
+        setData(initialData)
+        setSaveState('saved')
+        notify({
+            title: 'Changes discarded',
+            description: 'General settings were reset to the last saved version.',
+            variant: 'info',
         })
-
-        setSaving(false)
-        setSuccess(true)
-        setTimeout(() => setSuccess(false), 3000)
-    }, [data, store])
+    }, [initialData, notify])
 
     const handleDelete = useCallback(async () => {
-        if (!confirm(`Are you sure you want to delete "${data.name}"? This cannot be undone.`)) return
-        if (!confirm('This will permanently delete all products, orders, and pages. Proceed?')) return
+        if (deleting) return
+        setDeleting(true)
 
-        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-            method: 'DELETE',
-        })
-        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
-        window.location.href = accountsUrl
-    }, [data, store])
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                method: 'DELETE',
+            })
+            const payload = await response.json().catch(() => ({})) as { error?: string }
+
+            if (!response.ok) {
+                throw new Error(payload.error || 'Unable to delete store')
+            }
+
+            notify({
+                title: 'Store deletion started',
+                description: 'Redirecting to your accounts workspace.',
+                variant: 'success',
+            })
+            const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.letbuyy.store'
+            window.location.href = accountsUrl
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to delete store'
+            setDeleting(false)
+            setDeleteDialogOpen(false)
+            notify({
+                title: 'Could not delete store',
+                description: message,
+                variant: 'critical',
+            })
+        }
+    }, [deleting, notify, store])
 
     if (loading) {
         return (
-            <div className="settings-page">
-                <div className="settings-page-header">
-                    <div className="settings-skeleton" style={{ width: 120, height: 28 }} />
-                </div>
-                {[1, 2, 3].map(i => (
-                    <div key={i} className="settings-card">
-                        <div className="settings-skeleton" style={{ width: '60%', height: 20, marginBottom: 16 }} />
-                        <div className="settings-skeleton" style={{ width: '100%', height: 40 }} />
-                    </div>
-                ))}
-            </div>
+            <Page>
+                <PageHeader
+                    title="General"
+                    description="Manage the core identity, language, and market defaults for this store."
+                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'General' }]}
+                />
+                <Card>
+                    <Section title="Store details">
+                        <Skeleton variant="text" lines={4} />
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Store currency and language">
+                        <Skeleton variant="text" lines={3} />
+                    </Section>
+                </Card>
+                <Skeleton variant="card" />
+            </Page>
         )
     }
 
     return (
-        <div className="settings-page">
-            <div className="settings-page-header">
-                <h1>General</h1>
-            </div>
+        <>
+            <Page>
+                <PageHeader
+                    title="General"
+                    description="Manage the core identity, language, and market defaults for this store."
+                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'General' }]}
+                />
 
-            {success && (
-                <div className="settings-toast success">
-                    <MaterialIcon name="check_circle" />
-                    Settings saved successfully.
-                </div>
-            )}
+                {loadError && (
+                    <Banner
+                        variant="critical"
+                        title="General settings could not load"
+                        action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                    >
+                        {loadError}
+                    </Banner>
+                )}
 
-            <form onSubmit={handleSave}>
-                {/* Store details */}
-                <div className="settings-card">
-                    <h2>Store details</h2>
-                    <div className="settings-form-grid">
-                        <div className="settings-form-group">
-                            <label>Store name</label>
-                            <input
-                                type="text"
-                                value={data.name}
-                                onChange={(e) => setData(s => ({ ...s, name: e.target.value }))}
+                <form className="flex flex-col gap-[var(--lb-space-5)]" onSubmit={handleSave}>
+                    <Card>
+                        <Section
+                            title="Store details"
+                            description="These details appear in merchant workflows and storefront metadata."
+                        >
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Input
+                                    label="Store name"
+                                    value={data.name}
+                                    onChange={(event) => updateField('name', event.target.value)}
+                                    autoComplete="organization"
+                                />
+                                <Input
+                                    label="Store handle"
+                                    value={data.store_name}
+                                    helperText="This unique store identifier cannot be changed."
+                                    disabled
+                                />
+                            </div>
+                            <Textarea
+                                label="Store description"
+                                value={data.description}
+                                onChange={(event) => updateField('description', event.target.value)}
+                                rows={4}
+                                placeholder="Tell customers about your business..."
                             />
-                        </div>
-                        <div className="settings-form-group">
-                            <label>Store handle</label>
-                            <input
-                                type="text"
-                                value={data.store_name}
+                        </Section>
+                    </Card>
+
+                    <Card>
+                        <Section
+                            title="Store currency and language"
+                            description="Set the default currency and storefront locale used in customer-facing flows."
+                        >
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Select
+                                    label="Currency"
+                                    value={data.currency}
+                                    options={currencyOptions}
+                                    onChange={(event) => updateField('currency', event.target.value)}
+                                />
+                                <Select
+                                    label="Storefront language"
+                                    value={data.locale}
+                                    options={localeOptions}
+                                    onChange={(event) => updateField('locale', normalizeAdminLocale(event.target.value))}
+                                />
+                            </div>
+                        </Section>
+                    </Card>
+
+                    <Card>
+                        <Section
+                            title="Site type"
+                            description="The site type was set when this store was created."
+                        >
+                            <Input
+                                label="Type"
+                                value={formatSiteType(data.site_type)}
+                                helperText="Changing site type requires a governed migration and is not available from settings."
                                 disabled
-                                className="disabled"
                             />
-                            <p className="settings-form-hint">This is your unique store identifier and cannot be changed.</p>
-                        </div>
-                    </div>
-                    <div className="settings-form-group full">
-                        <label>Store description</label>
-                        <textarea
-                            value={data.description}
-                            onChange={(e) => setData(s => ({ ...s, description: e.target.value }))}
-                            rows={3}
-                            placeholder="Tell customers about your business..."
-                        />
-                    </div>
-                </div>
+                        </Section>
+                    </Card>
 
-                {/* Store currency and language */}
-                <div className="settings-card">
-                    <h2>Store currency and language</h2>
-                    <div className="settings-form-grid">
-                        <div className="settings-form-group">
-                            <label>Currency</label>
-                            <select
-                                value={data.currency}
-                                onChange={(e) => setData(s => ({ ...s, currency: e.target.value }))}
+                    <SaveBar
+                        state={activeSaveState}
+                        onSave={() => void handleSave()}
+                        onDiscard={handleDiscard}
+                        saveLabel="Save settings"
+                    />
+                </form>
+
+                <Card className="border-[var(--lb-color-critical)]">
+                    <Section
+                        title="Danger zone"
+                        description="Permanently delete this store and all associated data including products, orders, and pages."
+                        action={(
+                            <Button
+                                variant="destructive"
+                                onClick={() => setDeleteDialogOpen(true)}
+                                loading={deleting}
                             >
-                                <option value="INR">₹ Indian Rupee (INR)</option>
-                                <option value="USD">$ US Dollar (USD)</option>
-                                <option value="EUR">€ Euro (EUR)</option>
-                                <option value="GBP">£ British Pound (GBP)</option>
-                            </select>
-                        </div>
-                        <div className="settings-form-group">
-                            <label>Storefront language</label>
-                            <select
-                                value={data.locale}
-                                onChange={(e) => setData(s => ({ ...s, locale: normalizeAdminLocale(e.target.value) }))}
-                            >
-                                {localeOptions.map((option) => (
-                                    <option key={option.value} value={option.value}>{option.label}</option>
-                                ))}
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                                Delete store
+                            </Button>
+                        )}
+                    >
+                        <Banner variant="critical" title="This cannot be undone">
+                            Store deletion is permanent. Use this only after exporting any data you need to keep.
+                        </Banner>
+                    </Section>
+                </Card>
+            </Page>
 
-                {/* Site type */}
-                <div className="settings-card">
-                    <h2>Site type</h2>
-                    <div className="settings-form-group">
-                        <label>Type</label>
-                        <input
-                            type="text"
-                            value={data.site_type.charAt(0).toUpperCase() + data.site_type.slice(1)}
-                            disabled
-                            className="disabled"
-                        />
-                        <p className="settings-form-hint">Your site type was set during creation and cannot be changed.</p>
-                    </div>
-                </div>
-
-                {/* Save button */}
-                <div className="settings-save-bar">
-                    <button type="submit" className="settings-btn-primary" disabled={saving}>
-                        {saving ? 'Saving...' : 'Save'}
-                    </button>
-                </div>
-            </form>
-
-            {/* Danger zone */}
-            <div className="settings-card danger">
-                <h2>Danger zone</h2>
-                <p>Permanently delete this store and all associated data including products, orders, and pages.</p>
-                <button onClick={handleDelete} className="settings-btn-danger">
-                    Delete store
-                </button>
-            </div>
-        </div>
+            <ConfirmDialog
+                open={deleteDialogOpen}
+                title={`Delete ${data.name || 'this store'}?`}
+                description="This permanently deletes the store, products, orders, pages, and settings. This action cannot be undone."
+                confirmLabel={deleting ? 'Deleting' : 'Delete store'}
+                destructive
+                onClose={() => {
+                    if (!deleting) setDeleteDialogOpen(false)
+                }}
+                onConfirm={() => void handleDelete()}
+            />
+        </>
     )
 }

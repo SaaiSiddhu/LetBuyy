@@ -8,7 +8,7 @@ import TrialBanner from './TrialBanner'
 import CommandPalette from './CommandPalette'
 import AISidebar from './AISidebar'
 import type { SessionUser } from '@/lib/auth/session'
-import { MaterialIcon } from '@letbuyy/ui'
+import { MaterialIcon, ToastProvider } from '@letbuyy/ui'
 
 export interface StoreData {
     id: string
@@ -53,83 +53,85 @@ export default function AdminShell({ store, storeData, user, userStores, childre
 
     // Full-screen flows bypass the admin shell entirely
     if (isFullScreenFlow) {
-        return <>{children}</>
+        return <ToastProvider>{children}</ToastProvider>
     }
 
     return (
-        <div className="admin-shell">
-            {/* Full-width header — fixed at top, above everything */}
-            <HeaderBar
-                store={store}
-                storeData={storeData}
-                user={user}
-                userStores={userStores}
-                onMenuToggle={() => setSidebarOpen(true)}
-                onSearchOpen={() => setCmdPaletteOpen(true)}
-                onAISidebarToggle={() => setAiPanelOpen(!aiPanelOpen)}
-                isSettingsPage={!!isSettingsPage}
-            />
-
-            {/* Body: sidebar + main content + AI panel — all inline */}
-            <div className={`admin-body ${aiPanelOpen ? 'ai-open' : ''}`}>
-                {/* Sidebar overlay for mobile */}
-                <div
-                    className={`admin-sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
-                    onClick={() => setSidebarOpen(false)}
+        <ToastProvider>
+            <div className="admin-shell">
+                {/* Full-width header — fixed at top, above everything */}
+                <HeaderBar
+                    store={store}
+                    storeData={storeData}
+                    user={user}
+                    userStores={userStores}
+                    onMenuToggle={() => setSidebarOpen(true)}
+                    onSearchOpen={() => setCmdPaletteOpen(true)}
+                    onAISidebarToggle={() => setAiPanelOpen(!aiPanelOpen)}
+                    isSettingsPage={!!isSettingsPage}
                 />
 
-                {/* Sidebar — hidden on settings pages */}
-                {!isSettingsPage && (
-                    <Sidebar
-                        store={store}
-                        storeData={storeData}
-                        user={user}
-                        userStores={userStores}
-                        isOpen={sidebarOpen}
-                        onClose={() => setSidebarOpen(false)}
+                {/* Body: sidebar + main content + AI panel — all inline */}
+                <div className={`admin-body ${aiPanelOpen ? 'ai-open' : ''}`}>
+                    {/* Sidebar overlay for mobile */}
+                    <div
+                        className={`admin-sidebar-overlay ${sidebarOpen ? 'active' : ''}`}
+                        onClick={() => setSidebarOpen(false)}
                     />
-                )}
 
-                {/* Main content area */}
-                <main className={`admin-main ${isSettingsPage ? 'settings-active' : ''}`}>
-                    {/* Draft banner */}
-                    {isDraft && (
-                        <div className="admin-draft-banner">
-                            <MaterialIcon name="warning" style={{ fontSize: '16px' }} />
-                            Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
-                        </div>
-                    )}
-
-                    {/* Page content */}
-                    {children}
-
-                    {/* Trial toast — only on dashboard */}
-                    {pathname?.endsWith('/dashboard') && (
-                        <TrialBanner
-                            trialEndsAt={storeData.trial_ends_at}
-                            trialStatus={storeData.trial_status}
+                    {/* Sidebar — hidden on settings pages */}
+                    {!isSettingsPage && (
+                        <Sidebar
+                            store={store}
+                            storeData={storeData}
+                            user={user}
+                            userStores={userStores}
+                            isOpen={sidebarOpen}
+                            onClose={() => setSidebarOpen(false)}
                         />
                     )}
-                </main>
 
-                {/* AI sidebar panel — inline, pushes main content */}
-                {aiPanelOpen && (
-                    <AISidebar
+                    {/* Main content area */}
+                    <main className={`admin-main ${isSettingsPage ? 'settings-active' : ''}`}>
+                        {/* Draft banner */}
+                        {isDraft && (
+                            <div className="admin-draft-banner">
+                                <MaterialIcon name="warning" style={{ fontSize: '16px' }} />
+                                Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
+                            </div>
+                        )}
+
+                        {/* Page content */}
+                        {children}
+
+                        {/* Trial toast — only on dashboard */}
+                        {pathname?.endsWith('/dashboard') && (
+                            <TrialBanner
+                                trialEndsAt={storeData.trial_ends_at}
+                                trialStatus={storeData.trial_status}
+                            />
+                        )}
+                    </main>
+
+                    {/* AI sidebar panel — inline, pushes main content */}
+                    {aiPanelOpen && (
+                        <AISidebar
+                            store={store}
+                            storeData={storeData}
+                            onClose={() => setAiPanelOpen(false)}
+                        />
+                    )}
+                </div>
+
+                {/* Command palette */}
+                {cmdPaletteOpen && (
+                    <CommandPalette
                         store={store}
-                        storeData={storeData}
-                        onClose={() => setAiPanelOpen(false)}
+                        siteType={storeData.site_type}
+                        onClose={() => setCmdPaletteOpen(false)}
                     />
                 )}
             </div>
-
-            {/* Command palette */}
-            {cmdPaletteOpen && (
-                <CommandPalette
-                    store={store}
-                    siteType={storeData.site_type}
-                    onClose={() => setCmdPaletteOpen(false)}
-                />
-            )}
-        </div>
+        </ToastProvider>
     )
 }
