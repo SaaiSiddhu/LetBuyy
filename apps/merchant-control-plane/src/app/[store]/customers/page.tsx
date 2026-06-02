@@ -1,9 +1,25 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Avatar,
+    Badge,
+    Banner,
+    Button,
+    Card,
+    EmptyState,
+    IndexTable,
+    Input,
+    MaterialIcon,
+    Page,
+    PageHeader,
+    Search,
+    Section,
+    Skeleton,
+    type IndexTableColumn,
+} from '@letbuyy/ui'
 
 type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status' | 'created_at' | 'total_spent' | 'last_order_at'>, 'email' | 'phone' | 'last_order_at'> & {
     full_name: string
@@ -13,6 +29,15 @@ type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status'
     first_order_at: string | null
     last_order_at: string | null
     last_order_id: string | null
+}
+
+interface CustomersPayload {
+    data?: Array<Record<string, unknown>>
+    meta?: {
+        total?: number
+    }
+    error?: unknown
+    message?: unknown
 }
 
 function getErrorMessage(payload: unknown, fallback: string) {
@@ -30,14 +55,73 @@ function getErrorMessage(payload: unknown, fallback: string) {
     return fallback
 }
 
+function readString(row: Record<string, unknown>, key: string) {
+    const value = row[key]
+    return typeof value === 'string' ? value : ''
+}
+
+function readNullableString(row: Record<string, unknown>, key: string) {
+    const value = row[key]
+    return typeof value === 'string' && value.trim() ? value : null
+}
+
+function titleize(value: string | null | undefined) {
+    const normalized = (value || 'active').replace(/[_-]+/g, ' ').trim().toLowerCase()
+    return normalized
+        .split(' ')
+        .filter(Boolean)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+        .join(' ')
+}
+
 function formatDate(value: string | null) {
-    if (!value) return '—'
+    if (!value) return '-'
     const date = new Date(value)
-    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString()
+    return Number.isNaN(date.getTime()) ? '-' : date.toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+    })
+}
+
+function formatCurrency(amount: number) {
+    return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount)
+}
+
+function customerStatusVariant(status: string) {
+    const normalized = status.toLowerCase()
+    if (['active', 'enabled'].includes(normalized)) return 'success'
+    if (['blocked', 'disabled', 'suspended'].includes(normalized)) return 'critical'
+    return 'info'
+}
+
+function normalizeCustomerStatus(value: string): CustomerRow['status'] {
+    const normalized = value.toLowerCase()
+    if (normalized === 'disabled' || normalized === 'invited') return normalized
+    return 'active'
+}
+
+function mapCustomer(row: Record<string, unknown>): CustomerRow {
+    const email = readString(row, 'email') || readString(row, 'customer_email')
+
+    return {
+        id: readString(row, 'id') || email,
+        full_name: readString(row, 'full_name') || readString(row, 'customer_name'),
+        email,
+        phone: readNullableString(row, 'phone') || readNullableString(row, 'customer_phone'),
+        total_orders: Number(row.total_orders || 0),
+        total_spent: Number(row.total_spent || 0),
+        status: normalizeCustomerStatus(readString(row, 'status')),
+        created_at: readString(row, 'created_at'),
+        first_order_at: readNullableString(row, 'first_order_at'),
+        last_order_at: readNullableString(row, 'last_order_at'),
+        last_order_id: readNullableString(row, 'last_order_id'),
+    }
 }
 
 export default function CustomersPage() {
     const { store } = useParams<{ store: string }>()
+    const router = useRouter()
 
     const [customers, setCustomers] = useState<CustomerRow[]>([])
     const [totalCount, setTotalCount] = useState(0)
@@ -56,7 +140,7 @@ export default function CustomersPage() {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/customers?${query.toString()}`, {
                 cache: 'no-store',
             })
-            const payload = await response.json().catch(() => null)
+            const payload = await response.json().catch(() => null) as CustomersPayload | null
 
             if (!response.ok) {
                 setCustomers([])
@@ -65,20 +149,9 @@ export default function CustomersPage() {
                 return
             }
 
-            setCustomers((Array.isArray(payload?.data) ? payload.data : []).map((row: Record<string, unknown>) => ({
-                id: (row.id as string) || (row.customer_email as string),
-                full_name: (row.full_name as string) || (row.customer_name as string) || '',
-                email: (row.email as string) || (row.customer_email as string) || '',
-                phone: (row.phone as string) || (row.customer_phone as string) || null,
-                total_orders: Number(row.total_orders || 0),
-                total_spent: Number(row.total_spent || 0),
-                status: (row.status as string) || 'active',
-                created_at: (row.created_at as string) || '',
-                first_order_at: (row.first_order_at as string) || null,
-                last_order_at: (row.last_order_at as string) || null,
-                last_order_id: (row.last_order_id as string) || null,
-            })))
-            setTotalCount(Number(payload?.meta?.total || payload?.data?.length || 0))
+            const rows = (Array.isArray(payload?.data) ? payload.data : []).map(mapCustomer)
+            setCustomers(rows)
+            setTotalCount(Number(payload?.meta?.total || rows.length || 0))
         } catch {
             setCustomers([])
             setTotalCount(0)
@@ -90,123 +163,134 @@ export default function CustomersPage() {
 
     useEffect(() => { loadCustomers() }, [loadCustomers])
 
-    if (loading) {
-        return (
-            <div className="setup-dashboard" style={{ padding: '24px 32px' }}>
-                <div className="products-page-header"><h1>Customers</h1></div>
-                <div className="admin-skeleton" style={{ height: 300, borderRadius: 14 }} />
-            </div>
-        )
-    }
+    const activeFilters = searchQuery.trim()
+        ? [{ label: `Search: ${searchQuery.trim()}`, onRemove: () => setSearchQuery('') }]
+        : []
+
+    const columns: Array<IndexTableColumn<CustomerRow>> = [
+        {
+            key: 'name',
+            header: 'Name',
+            render: (customer) => (
+                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                    <Avatar name={customer.full_name || customer.email || 'Customer'} size="sm" />
+                    <span className="min-w-0 truncate font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
+                        {customer.full_name || 'Anonymous'}
+                    </span>
+                </div>
+            ),
+        },
+        {
+            key: 'email',
+            header: 'Email',
+            render: (customer) => customer.email || '-',
+        },
+        {
+            key: 'phone',
+            header: 'Phone',
+            render: (customer) => customer.phone || '-',
+        },
+        {
+            key: 'total_orders',
+            header: 'Orders',
+            render: (customer) => String(customer.total_orders || 0),
+        },
+        {
+            key: 'total_spent',
+            header: 'Spent',
+            render: (customer) => formatCurrency(Number(customer.total_spent || 0)),
+        },
+        {
+            key: 'last_order_at',
+            header: 'Last order',
+            render: (customer) => formatDate(customer.last_order_at),
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            render: (customer) => (
+                <Badge
+                    label={titleize(customer.status)}
+                    variant={customerStatusVariant(customer.status)}
+                />
+            ),
+        },
+    ]
+
+    const emptyState = (
+        <EmptyState
+            icon={<MaterialIcon name={error ? 'error' : 'group'} />}
+            title={error ? 'Unable to load customers' : searchQuery.trim() ? 'No matching customers' : 'No customers yet'}
+            body={error || (searchQuery.trim()
+                ? 'Clear the search to return to the full customer list.'
+                : 'When customers place orders or create accounts in your store, they will appear here.')}
+            primaryAction={error ? (
+                <Button onClick={loadCustomers}>
+                    <MaterialIcon name="refresh" />
+                    Retry
+                </Button>
+            ) : undefined}
+            secondaryAction={!error && searchQuery.trim() ? (
+                <Button variant="secondary" onClick={() => setSearchQuery('')}>
+                    Clear search
+                </Button>
+            ) : !error ? (
+                <Button variant="secondary" onClick={() => router.push(`/${store}/orders`)}>
+                    View orders
+                </Button>
+            ) : undefined}
+        />
+    )
 
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header">
-                <h1>Customers</h1>
-                <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-                    {totalCount} {totalCount === 1 ? 'customer' : 'customers'}
-                </span>
-            </div>
+        <Page>
+            <PageHeader
+                eyebrow="Relationships"
+                title="Customers"
+                description="Understand customer history, order value, contact details, and account status."
+                breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Customers' }]}
+                secondaryActions={[{ label: 'Orders', href: `/${store}/orders` }]}
+            />
 
-            {error && customers.length === 0 ? (
-                <div className="products-empty-card" style={{ textAlign: 'center', padding: '48px 16px' }}>
-                    <MaterialIcon name="error" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--error)' }} />
-                    <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px' }}>
-                        Unable to load customers
-                    </h2>
-                    <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 16px' }}>{error}</p>
-                    <button type="button" className="order-action-btn fulfill" onClick={loadCustomers}>
-                        Retry
-                    </button>
-                </div>
-            ) : customers.length === 0 ? (
-                <div className="products-empty-card">
-                    <div className="products-empty-inner">
-                        <div className="products-empty-text">
-                            <h2>No customers yet</h2>
-                            <p>When customers place orders or create accounts in your store, they will appear here.</p>
-                        </div>
-                        <div className="products-empty-images">
-                            <div className="products-empty-img"><MaterialIcon name="group" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
-                            <div className="products-empty-img"><MaterialIcon name="shopping_cart" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
-                            <div className="products-empty-img"><MaterialIcon name="trending_up" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="products-list-card">
-                    <div className="products-toolbar">
-                        <div className="products-search">
-                            <MaterialIcon name="search" />
-                            <input
-                                type="text"
-                                placeholder="Search customers..."
+            <Card>
+                <Section
+                    title="Customer list"
+                    description={`${totalCount} ${totalCount === 1 ? 'customer' : 'customers'} in the current view.`}
+                >
+                    <div className="flex flex-col gap-[var(--lb-space-4)]">
+                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+                            <Input
+                                label="Search customers"
+                                placeholder="Search by name, email, or phone"
                                 value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
+                                onChange={(event) => setSearchQuery(event.target.value)}
+                                leftIcon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             />
+                            <Button variant="secondary" onClick={loadCustomers}>
+                                <MaterialIcon name="sync" />
+                                Refresh
+                            </Button>
                         </div>
+
+                        {error && customers.length > 0 && (
+                            <Banner title="Customer refresh failed" variant="critical">
+                                {error}
+                            </Banner>
+                        )}
+
+                        {loading ? (
+                            <Skeleton variant="table" lines={6} />
+                        ) : (
+                            <IndexTable
+                                rows={customers}
+                                columns={columns}
+                                emptyState={emptyState}
+                                filterChips={activeFilters}
+                            />
+                        )}
                     </div>
-
-                    {error && (
-                        <div style={{ padding: '0 16px 12px', color: 'var(--error)', fontSize: 13 }}>
-                            {error}
-                        </div>
-                    )}
-
-                    <table className="products-table">
-                        <thead>
-                            <tr>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Phone</th>
-                                <th>Orders</th>
-                                <th>Spent</th>
-                                <th>Last order</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {customers.map(customer => (
-                                <tr key={customer.id}>
-                                    <td>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                            <div style={{
-                                                width: 32, height: 32, borderRadius: '50%',
-                                                background: 'var(--bg-tertiary)', display: 'flex',
-                                                alignItems: 'center', justifyContent: 'center',
-                                                fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)'
-                                            }}>
-                                                {(customer.full_name || '?').charAt(0).toUpperCase()}
-                                            </div>
-                                            <span style={{ fontWeight: 500 }}>{customer.full_name || 'Anonymous'}</span>
-                                        </div>
-                                    </td>
-                                    <td style={{ color: 'var(--text-secondary)' }}>{customer.email}</td>
-                                    <td style={{ color: customer.phone ? 'var(--text-secondary)' : 'var(--text-hint)' }}>
-                                        {customer.phone || '—'}
-                                    </td>
-                                    <td>{customer.total_orders || 0}</td>
-                                    <td>₹{(customer.total_spent || 0).toLocaleString('en-IN')}</td>
-                                    <td style={{ color: 'var(--text-secondary)' }}>{formatDate(customer.last_order_at)}</td>
-                                    <td>
-                                        <span className={`product-status-badge ${customer.status || 'active'}`}>
-                                            <span className="product-status-dot" />
-                                            {(customer.status || 'active').charAt(0).toUpperCase() + (customer.status || 'active').slice(1)}
-                                        </span>
-                                    </td>
-                                </tr>
-                            ))}
-                            {customers.length === 0 && (
-                                <tr>
-                                    <td colSpan={7} style={{ textAlign: 'center', padding: '40px 16px', color: 'var(--text-hint)', fontSize: 14 }}>
-                                        No customers found
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </div>
+                </Section>
+            </Card>
+        </Page>
     )
 }
