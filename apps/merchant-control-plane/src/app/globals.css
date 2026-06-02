@@ -7030,8 +7030,7 @@ body {
 
 .generic-theme-editor__header h1,
 .generic-theme-editor__group-header h2,
-.generic-theme-editor__state h1,
-.generic-theme-editor__empty h2 {
+.generic-theme-editor__state h1 {
   margin: 0;
   letter-spacing: 0;
 }
@@ -7094,8 +7093,7 @@ body {
 .generic-theme-editor__schema-card,
 .generic-theme-editor__group,
 .generic-theme-editor__preview,
-.generic-theme-editor__state,
-.generic-theme-editor__empty {
+.generic-theme-editor__state {
   border: 1px solid var(--border, #e5e5e5);
   border-radius: 8px;
   background: var(--bg, #fff);
@@ -7260,9 +7258,7 @@ body {
   background: var(--bg, #fff);
 }
 
-.generic-theme-editor__preview-empty,
-.generic-theme-editor__state,
-.generic-theme-editor__empty {
+.generic-theme-editor__state {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -7277,8 +7273,7 @@ body {
   padding: 28px;
 }
 
-.generic-theme-editor__state h1,
-.generic-theme-editor__empty h2 {
+.generic-theme-editor__state h1 {
   color: var(--text-primary, #1a1a2e);
   font-size: 16px;
 }
@@ -7286,11 +7281,6 @@ body {
 .generic-theme-editor__state p {
   margin: 0;
   line-height: 1.5;
-}
-
-.generic-theme-editor__empty {
-  min-height: 260px;
-  padding: 24px;
 }
 
 .generic-theme-editor__spin {

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, FileJson, RefreshCw, Save, SaveBar, Send, Settings, useToast } from '@letbuyy/ui'
+import { AlertTriangle, ArrowLeft, Button, EmptyState, FileJson, Monitor, RefreshCw, Save, SaveBar, Send, Settings, useToast } from '@letbuyy/ui'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
@@ -161,6 +161,13 @@ function normalizeSettingsSchema(value: unknown): ThemeSettingsSchema {
         }
     }
 
+    if (Object.prototype.hasOwnProperty.call(record, 'settings')) {
+        return {
+            schema_version: stringValue(record.schema_version, EMPTY_SETTINGS_SCHEMA.schema_version),
+            settings: {},
+        }
+    }
+
     const fields = normalizeFields(Array.isArray(value) ? value : record)
     if (Object.keys(fields).length === 0) return EMPTY_SETTINGS_SCHEMA
 
@@ -288,6 +295,8 @@ function ThemeSettingsEditorInner() {
     const [isPublishing, setIsPublishing] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
     const [previewToken, setPreviewToken] = useState<string | null>(null)
+    const [previewUnavailable, setPreviewUnavailable] = useState(false)
+    const [previewRetryNonce, setPreviewRetryNonce] = useState(0)
 
     const groups = useMemo(() => Object.entries(schema.settings), [schema])
     const visibleGroups = useMemo(() => {
@@ -303,6 +312,17 @@ function ThemeSettingsEditorInner() {
         if (previewToken) url.searchParams.set('theme_preview_token', previewToken)
         return url.toString()
     }, [previewToken, store])
+
+    useEffect(() => {
+        if (!previewUrl) {
+            setPreviewUnavailable(false)
+            return undefined
+        }
+
+        setPreviewUnavailable(false)
+        const timer = window.setTimeout(() => setPreviewUnavailable(true), 2500)
+        return () => window.clearTimeout(timer)
+    }, [previewRetryNonce, previewUrl])
 
     const refreshPreview = useCallback(async (announce = false) => {
         if (!store || !themeId) return
@@ -336,6 +356,12 @@ function ThemeSettingsEditorInner() {
             }
         }
     }, [notify, store, themeId])
+
+    const handlePreviewRetry = useCallback(() => {
+        setPreviewUnavailable(false)
+        setPreviewRetryNonce((value) => value + 1)
+        void refreshPreview(true)
+    }, [refreshPreview])
 
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
@@ -566,10 +592,12 @@ function ThemeSettingsEditorInner() {
 
                 <section className="generic-theme-editor__settings" aria-label="Generated theme settings">
                     {visibleGroups.length === 0 ? (
-                        <div className="generic-theme-editor__empty">
-                            <FileJson size={28} aria-hidden="true" />
-                            <h2>No editable fields in this schema</h2>
-                        </div>
+                        <EmptyState
+                            className="min-h-[260px]"
+                            icon={<FileJson className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No editable fields"
+                            body="This theme schema does not define editable settings yet."
+                        />
                     ) : (
                         visibleGroups.map(([groupKey, group]) => (
                             <section className="generic-theme-editor__group" key={groupKey}>
@@ -593,19 +621,49 @@ function ThemeSettingsEditorInner() {
                 <aside className="generic-theme-editor__preview" aria-label="Theme preview">
                     <div className="generic-theme-editor__preview-header">
                         <span>{store}.letbuyy.store</span>
-                        <button className="generic-theme-editor__icon-button" type="button" onClick={() => void refreshPreview(true)} aria-label="Refresh preview">
+                        <button className="generic-theme-editor__icon-button" type="button" onClick={handlePreviewRetry} aria-label="Refresh preview">
                             <RefreshCw size={16} aria-hidden="true" />
                         </button>
                     </div>
                     {previewUrl ? (
-                        <iframe
-                            className="generic-theme-editor__iframe"
-                            title={`${store} storefront preview`}
-                            src={previewUrl}
-                            sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
-                        />
+                        <div className="relative flex flex-1">
+                            <iframe
+                                className="generic-theme-editor__iframe"
+                                title={`${store} storefront preview`}
+                                src={previewUrl}
+                                sandbox="allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+                                onLoad={() => setPreviewUnavailable(false)}
+                            />
+                            {previewUnavailable ? (
+                                <div className="absolute inset-[var(--lb-space-4)] flex">
+                                    <EmptyState
+                                        className="min-h-[240px] flex-1 p-[var(--lb-space-6)]"
+                                        icon={<Monitor className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                        title="Preview unavailable"
+                                        body="The storefront preview could not load. Refresh the preview to try again."
+                                        primaryAction={(
+                                            <Button type="button" variant="secondary" size="sm" onClick={handlePreviewRetry}>
+                                                <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                Retry preview
+                                            </Button>
+                                        )}
+                                    />
+                                </div>
+                            ) : null}
+                        </div>
                     ) : (
-                        <div className="generic-theme-editor__preview-empty">Preview unavailable</div>
+                        <EmptyState
+                            className="m-[var(--lb-space-4)] min-h-[560px] flex-1 p-[var(--lb-space-6)]"
+                            icon={<Monitor className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="Preview unavailable"
+                            body="Refresh the preview after the storefront session is available."
+                            primaryAction={(
+                                <Button type="button" variant="secondary" size="sm" onClick={handlePreviewRetry}>
+                                    <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Retry preview
+                                </Button>
+                            )}
+                        />
                     )}
                 </aside>
             </div>
