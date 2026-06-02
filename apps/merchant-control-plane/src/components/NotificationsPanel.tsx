@@ -53,18 +53,7 @@ export default function NotificationsPanel() {
                 <h3>
                     Notifications
                     {unreadCount > 0 && (
-                        <span
-                            style={{
-                                fontSize: '11px',
-                                fontWeight: 600,
-                                color: 'white',
-                                background: 'var(--primary)',
-                                borderRadius: '10px',
-                                padding: '1px 6px',
-                                marginLeft: '8px',
-                                verticalAlign: 'middle',
-                            }}
-                        >
+                        <span className="ml-[var(--lb-space-2)] inline-flex min-w-[var(--lb-size-icon-inline)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] px-[var(--lb-space-2)] py-[1px] align-middle text-[11px] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-inverse)]">
                             {unreadCount}
                         </span>
                     )}

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Card, MaterialIcon } from '@letbuyy/ui'
 
 interface WelcomeScreenProps {
     store: string
@@ -45,101 +45,96 @@ export default function WelcomeScreen({ store, storeName, siteType }: WelcomeScr
     const steps = setupSteps[siteType] || setupSteps.store
 
     return (
-        <div className="admin-welcome">
-            <div className="admin-welcome-name">
-                👋 Welcome to <strong style={{ marginLeft: '4px' }}>{storeName || store}</strong>
+        <div className="grid gap-[var(--lb-space-5)]">
+            <div className="flex items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-font-size-body)] text-[var(--lb-color-text)] shadow-[var(--lb-shadow-sm)]">
+                <MaterialIcon name="storefront" size={18} className="text-[var(--lb-color-primary)]" />
+                <span>
+                    Welcome to <strong className="font-[var(--lb-font-weight-semibold)]">{storeName || store}</strong>
+                </span>
             </div>
 
             {/* Setup guide */}
-            <div style={{ marginBottom: '24px' }}>
-                <h3 style={{
-                    fontSize: '15px',
-                    fontWeight: 600,
-                    color: 'var(--text-primary)',
-                    marginBottom: '4px',
-                }}>
+            <div>
+                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
                     Get started with your {siteType}
                 </h3>
-                <p style={{
-                    fontSize: '13px',
-                    color: 'var(--text-tertiary)',
-                    marginBottom: '16px',
-                }}>
+                <p className="mt-[var(--lb-space-1)] max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
                     Complete these steps to set up your {siteType === 'store' ? 'online store' : siteType}.
                 </p>
             </div>
 
             {/* Quick start cards */}
-            <div className="admin-welcome-cards">
-                <div className="admin-welcome-card">
-                    <div className="admin-welcome-card-image">
-                        <MaterialIcon name="storefront" />
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                <Card className="grid gap-[var(--lb-space-4)] p-[var(--lb-space-5)]">
+                    <div className="flex h-[var(--lb-size-empty-state-icon)] w-[var(--lb-size-empty-state-icon)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                        <MaterialIcon name="storefront" size={24} />
                     </div>
-                    <h3>Customize your online {siteType}</h3>
-                    <p>Pick a theme, add your logo, and make it uniquely yours.</p>
-                    <div className="admin-welcome-card-actions">
-                        <Link href={`/${store}/pages`} className="admin-welcome-btn-primary">
+                    <div className="grid gap-[var(--lb-space-1)]">
+                        <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
+                            Customize your online {siteType}
+                        </h3>
+                        <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                            Pick a theme, add your logo, and make it uniquely yours.
+                        </p>
+                    </div>
+                    <div>
+                        <Link href={`/${store}/pages`} className="inline-flex h-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]">
                             Customize
                         </Link>
                     </div>
-                </div>
+                </Card>
 
-                <div className="admin-welcome-card">
-                    <div className="admin-welcome-card-image">
-                        <MaterialIcon name={siteType === 'store' ? 'shopping_bag' : 'add_circle'} />
+                <Card className="grid gap-[var(--lb-space-4)] p-[var(--lb-space-5)]">
+                    <div className="flex h-[var(--lb-size-empty-state-icon)] w-[var(--lb-size-empty-state-icon)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-success-soft)] text-[var(--lb-color-success)]">
+                        <MaterialIcon name={siteType === 'store' ? 'shopping_bag' : 'add_circle'} size={24} />
                     </div>
-                    <h3>
-                        {siteType === 'store'
-                            ? 'Add your first product'
-                            : siteType === 'blog'
-                                ? 'Write your first post'
-                                : 'Add your first content'}
-                    </h3>
-                    <p>
-                        {siteType === 'store'
-                            ? 'Add photos, pricing, and details for your items.'
-                            : 'Start creating the content that will attract visitors.'}
-                    </p>
-                    <div className="admin-welcome-card-actions">
+                    <div className="grid gap-[var(--lb-space-1)]">
+                        <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
+                            {siteType === 'store'
+                                ? 'Add your first product'
+                                : siteType === 'blog'
+                                    ? 'Write your first post'
+                                    : 'Add your first content'}
+                        </h3>
+                        <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                            {siteType === 'store'
+                                ? 'Add photos, pricing, and details for your items.'
+                                : 'Start creating the content that will attract visitors.'}
+                        </p>
+                    </div>
+                    <div>
                         <Link
                             href={`/${store}/${steps[0]?.href || 'dashboard'}`}
-                            className="admin-welcome-btn-primary"
+                            className="inline-flex h-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                         >
                             Get started
                         </Link>
                     </div>
-                </div>
+                </Card>
             </div>
 
             {/* Steps list */}
-            <div className="admin-welcome-steps">
+            <div className="grid gap-[var(--lb-space-3)] sm:grid-cols-2 xl:grid-cols-5">
                 {steps.map((step, i) => (
                     <Link
                         key={i}
                         href={`/${store}/${step.href}`}
-                        className="admin-welcome-step"
-                        style={{ textDecoration: 'none' }}
+                        className="grid gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] text-[var(--lb-color-text)] no-underline shadow-[var(--lb-shadow-sm)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                     >
-                        <div className="admin-welcome-step-icons">
-                            <MaterialIcon name={step.icon} style={{ fontSize: '20px', color: 'var(--primary)' }} />
+                        <div className="flex h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] items-center justify-center rounded-[var(--lb-radius-md)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                            <MaterialIcon name={step.icon} size={20} />
                         </div>
-                        <h4>{step.title}</h4>
-                        <p>{step.desc}</p>
+                        <h4 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">{step.title}</h4>
+                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">{step.desc}</p>
                     </Link>
                 ))}
             </div>
 
             {/* Helpful hint */}
-            <div className="admin-welcome-hint">
-                <MaterialIcon name="tips_and_updates" style={{ fontSize: '18px', color: 'var(--primary)' }} />
+            <div className="flex items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-font-size-body)] text-[var(--lb-color-text-subdued)]">
+                <MaterialIcon name="tips_and_updates" size={18} className="text-[var(--lb-color-primary)]" />
                 <span>
-                    💡 Tip: Press <kbd style={{
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        background: 'var(--bg-tertiary)',
-                        border: '1px solid var(--border)',
-                        fontSize: '11px',
-                    }}>⌘K</kbd> to quickly navigate anywhere.
+                    Tip: Press <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[1px] text-[11px] text-[var(--lb-color-text)]">⌘K</kbd> to quickly navigate anywhere.
                 </span>
             </div>
         </div>

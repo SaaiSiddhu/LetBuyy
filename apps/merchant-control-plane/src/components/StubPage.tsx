@@ -18,7 +18,7 @@ export default function StubPage({ title, description, icon }: StubPageProps) {
                 {/* Icon container with gradient */}
                 <div className="stub-page-icon-ring">
                     <div className="stub-page-icon">
-                        <MaterialIcon name={icon} style={{ fontSize: '32px' }} />
+                        <MaterialIcon name={icon} size={32} />
                     </div>
                 </div>
 
@@ -28,7 +28,7 @@ export default function StubPage({ title, description, icon }: StubPageProps) {
 
                 {/* Coming soon badge */}
                 <div className="stub-page-badge">
-                    <MaterialIcon name="schedule" style={{ fontSize: '14px' }} />
+                    <MaterialIcon name="schedule" size={14} />
                     Coming Soon
                 </div>
 

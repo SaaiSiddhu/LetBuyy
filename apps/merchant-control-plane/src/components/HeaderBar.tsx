@@ -300,7 +300,7 @@ export default function HeaderBar({
                 <div className="admin-header-left">
                     {isSettingsPage ? (
                         <Link href={`/${store}/dashboard`} className="admin-header-back">
-                            <MaterialIcon name="arrow_back" style={{ fontSize: '20px' }} />
+                            <MaterialIcon name="arrow_back" size={20} />
                             <span>Home</span>
                         </Link>
                     ) : (
@@ -310,7 +310,7 @@ export default function HeaderBar({
                                 onClick={onMenuToggle}
                                 aria-label="Open menu"
                             >
-                                <MaterialIcon name="menu" style={{ fontSize: '22px' }} />
+                                <MaterialIcon name="menu" size={22} />
                             </button>
 
                             <div className="admin-header-logo">
@@ -338,7 +338,7 @@ export default function HeaderBar({
                         onClick={onSearchOpen}
                         title="Search"
                     >
-                        <MaterialIcon name="search" style={{ fontSize: '20px' }} />
+                        <MaterialIcon name="search" size={20} />
                     </button>
 
                     {/* AI button */}
@@ -347,7 +347,7 @@ export default function HeaderBar({
                         onClick={onAISidebarToggle}
                         title="LetBuyy AI"
                     >
-                        <MaterialIcon name="auto_awesome" style={{ fontSize: '20px' }} />
+                        <MaterialIcon name="auto_awesome" size={20} />
                     </button>
 
                     {/* Notifications */}
@@ -360,7 +360,7 @@ export default function HeaderBar({
                                 setSwitcherOpen(false)
                             }}
                         >
-                            <MaterialIcon name="notifications" style={{ fontSize: '20px' }} />
+                            <MaterialIcon name="notifications" size={20} />
                         </button>
 
                         {/* Desktop: inline dropdown */}

@@ -96,7 +96,7 @@ export default function AdminShell({ store, storeData, user, userStores, childre
                         {/* Draft banner */}
                         {isDraft && (
                             <div className="admin-draft-banner">
-                                <MaterialIcon name="warning" style={{ fontSize: '16px' }} />
+                                <MaterialIcon name="warning" size={16} />
                                 Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
                             </div>
                         )}
