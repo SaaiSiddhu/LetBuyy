@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { EmptyState, MaterialIcon, Search } from '@letbuyy/ui'
-import { getMerchantCommandItems, type MerchantCommandItem } from './merchantNavigation'
+import { getMerchantCommandItems, normalizeSiteType, type MerchantCommandItem } from './merchantNavigation'
 
 interface CommandPaletteProps {
     store: string
@@ -14,6 +14,7 @@ interface CommandPaletteProps {
 export default function CommandPalette({ store, siteType, onClose }: CommandPaletteProps) {
     const [query, setQuery] = useState('')
     const [highlighted, setHighlighted] = useState(0)
+    const [entityCommands, setEntityCommands] = useState<MerchantCommandItem[]>([])
     const inputRef = useRef<HTMLInputElement>(null)
     const router = useRouter()
 
@@ -31,13 +32,17 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
         return () => document.removeEventListener('keydown', handleKey)
     }, [onClose])
 
+    const normalizedSiteType = normalizeSiteType(siteType)
     const allCommands = getMerchantCommandItems(siteType, store)
 
     // Filter
     const normalizedQuery = query.trim().toLowerCase()
-    const filtered = normalizedQuery
+    const routeCommands = normalizedQuery
         ? allCommands.filter((command) => command.keywords.some((keyword) => keyword.includes(normalizedQuery)))
         : allCommands
+    const filtered = normalizedQuery.length >= 2
+        ? [...routeCommands, ...entityCommands]
+        : routeCommands
 
     // Group by section
     const sections: Record<string, MerchantCommandItem[]> = {}
@@ -52,6 +57,25 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
         onClose()
         router.push(item.href)
     }, [onClose, router])
+
+    useEffect(() => {
+        if (normalizedSiteType !== 'store' || normalizedQuery.length < 2) {
+            return
+        }
+
+        const controller = new AbortController()
+
+        async function loadEntityCommands() {
+            const commands = await searchStoreEntities(store, normalizedQuery, controller.signal)
+            if (!controller.signal.aborted) {
+                setEntityCommands(commands)
+            }
+        }
+
+        loadEntityCommands()
+
+        return () => controller.abort()
+    }, [normalizedQuery, normalizedSiteType, store])
 
     // Keyboard navigation
     useEffect(() => {
@@ -86,8 +110,12 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
                         placeholder="Search pages, actions, settings..."
                         value={query}
                         onChange={(e) => {
-                            setQuery(e.target.value)
+                            const nextQuery = e.target.value
+                            setQuery(nextQuery)
                             setHighlighted(0)
+                            if (nextQuery.trim().length < 2) {
+                                setEntityCommands([])
+                            }
                         }}
                         autoComplete="off"
                     />
@@ -143,4 +171,117 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
             </div>
         </div>
     )
+}
+
+interface ProductSearchRow {
+    id?: unknown
+    name?: unknown
+    vendor?: unknown
+    product_type?: unknown
+    category?: unknown
+    status?: unknown
+}
+
+interface OrderSearchRow {
+    id?: unknown
+    order_number?: unknown
+    customer_name?: unknown
+    customer_email?: unknown
+    status?: unknown
+}
+
+interface CustomerSearchRow {
+    id?: unknown
+    full_name?: unknown
+    customer_name?: unknown
+    email?: unknown
+    customer_email?: unknown
+}
+
+async function searchStoreEntities(store: string, query: string, signal: AbortSignal): Promise<MerchantCommandItem[]> {
+    const encodedStore = encodeURIComponent(store)
+    const [products, orders, customers] = await Promise.all([
+        fetchJsonRows<ProductSearchRow>(`/api/stores/${encodedStore}/products?status=all&limit=12&sort=created_at&order=desc`, signal),
+        fetchJsonRows<OrderSearchRow>(`/api/stores/${encodedStore}/orders?status=all&payment_status=all&limit=6&search=${encodeURIComponent(query)}`, signal),
+        fetchJsonRows<CustomerSearchRow>(`/api/stores/${encodedStore}/customers?limit=6&search=${encodeURIComponent(query)}`, signal),
+    ])
+
+    return [
+        ...products
+            .filter((product) => productMatches(product, query))
+            .slice(0, 6)
+            .map((product) => productCommand(store, product)),
+        ...orders.slice(0, 6).map((order) => orderCommand(store, order)),
+        ...customers.slice(0, 6).map((customer) => customerCommand(store, customer)),
+    ]
+}
+
+async function fetchJsonRows<T>(url: string, signal: AbortSignal): Promise<T[]> {
+    try {
+        const response = await fetch(url, { signal, cache: 'no-store' })
+        const payload = await response.json().catch(() => null) as { data?: unknown } | null
+        return response.ok && Array.isArray(payload?.data) ? payload.data as T[] : []
+    } catch {
+        return []
+    }
+}
+
+function productMatches(product: ProductSearchRow, query: string) {
+    const haystack = [
+        readString(product.name),
+        readString(product.vendor),
+        readString(product.product_type),
+        readString(product.category),
+        readString(product.status),
+    ].join(' ').toLowerCase()
+
+    return haystack.includes(query)
+}
+
+function productCommand(store: string, product: ProductSearchRow): MerchantCommandItem {
+    const id = readString(product.id)
+    const label = readString(product.name) || 'Untitled product'
+    const descriptor = readString(product.product_type) || readString(product.category) || 'Product'
+
+    return {
+        label,
+        icon: 'products',
+        href: id ? `/${store}/products/${encodeURIComponent(id)}` : `/${store}/products`,
+        section: 'Products',
+        pathHint: descriptor,
+        keywords: [label, descriptor, readString(product.vendor), readString(product.status), id].filter(Boolean).map((value) => value.toLowerCase()),
+    }
+}
+
+function orderCommand(store: string, order: OrderSearchRow): MerchantCommandItem {
+    const orderNumber = readString(order.order_number) || readString(order.id)
+    const customer = readString(order.customer_name) || readString(order.customer_email)
+    const label = orderNumber ? `Order ${orderNumber}` : 'Order'
+
+    return {
+        label,
+        icon: 'shopping_cart',
+        href: `/${store}/orders`,
+        section: 'Orders',
+        pathHint: customer || '/orders',
+        keywords: [label, orderNumber, customer, readString(order.status)].filter(Boolean).map((value) => value.toLowerCase()),
+    }
+}
+
+function customerCommand(store: string, customer: CustomerSearchRow): MerchantCommandItem {
+    const name = readString(customer.full_name) || readString(customer.customer_name)
+    const email = readString(customer.email) || readString(customer.customer_email)
+
+    return {
+        label: name || email || 'Customer',
+        icon: 'customers',
+        href: `/${store}/customers`,
+        section: 'Customers',
+        pathHint: email || '/customers',
+        keywords: [name, email, readString(customer.id)].filter(Boolean).map((value) => value.toLowerCase()),
+    }
+}
+
+function readString(value: unknown): string {
+    return typeof value === 'string' ? value : ''
 }
