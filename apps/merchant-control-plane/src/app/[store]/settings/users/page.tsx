@@ -1,8 +1,30 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Avatar,
+    Badge,
+    Banner,
+    Button,
+    Card,
+    ConfirmDialog,
+    EmptyState,
+    Input,
+    Mail,
+    Page,
+    PageHeader,
+    Plus,
+    SaveBar,
+    Section,
+    Select,
+    ShieldCheck,
+    Skeleton,
+    Trash2,
+    User,
+    Users,
+    useToast,
+} from '@letbuyy/ui'
 
 interface Employee {
     id: string
@@ -12,6 +34,13 @@ interface Employee {
     created_at: string
 }
 
+type StaffPayload = {
+    data?: Employee[] | Employee
+    error?: string | { message?: string }
+}
+
+type SaveState = 'saved' | 'unsaved' | 'saving'
+
 const ROLES = [
     { value: 'manager', label: 'Manager', desc: 'Full access to store management' },
     { value: 'editor', label: 'Editor', desc: 'Can manage products, pages, and blog' },
@@ -19,165 +48,441 @@ const ROLES = [
     { value: 'fulfillment', label: 'Fulfillment', desc: 'Can manage orders and shipping' },
 ]
 
+const ROLE_OPTIONS = ROLES.map((role) => ({
+    value: role.value,
+    label: `${role.label} - ${role.desc}`,
+}))
+
+function getPayloadError(payload: StaffPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function getRoleLabel(role: string) {
+    return ROLES.find((item) => item.value === role)?.label || role
+}
+
+function formatStatus(status: string) {
+    return status ? status.charAt(0).toUpperCase() + status.slice(1) : 'Invited'
+}
+
+function formatDate(value: string) {
+    if (!value) return 'Recently'
+    return new Date(value).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    })
+}
+
 export default function UsersSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [employees, setEmployees] = useState<Employee[]>([])
     const [showAdd, setShowAdd] = useState(false)
     const [newEmail, setNewEmail] = useState('')
     const [newRole, setNewRole] = useState('editor')
-    const [saving, setSaving] = useState(false)
-    const loadData = useCallback(async () => {
-        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, {
-            cache: 'no-store',
-        })
-        const payload = await response.json()
-        setEmployees(Array.isArray(payload.data) ? payload.data : [])
-        setLoading(false)
-    }, [store])
+    const [formError, setFormError] = useState<string | null>(null)
+    const [saveState, setSaveState] = useState<SaveState>('saved')
+    const [updatingRoleId, setUpdatingRoleId] = useState<string | null>(null)
+    const [employeeToRemove, setEmployeeToRemove] = useState<Employee | null>(null)
+    const [removingId, setRemovingId] = useState<string | null>(null)
 
-    useEffect(() => { loadData() }, [loadData])
+    const activeSaveState: SaveState = showAdd ? (saveState === 'saving' ? 'saving' : 'unsaved') : 'saved'
+    const activeStaff = useMemo(() => employees.filter((employee) => employee.status === 'active').length, [employees])
+    const invitedStaff = useMemo(() => employees.filter((employee) => employee.status !== 'active').length, [employees])
 
-    const handleAdd = async () => {
-        if (!newEmail.trim() || !newEmail.includes('@')) return
-        setSaving(true)
-        await fetch(`/api/stores/${encodeURIComponent(store)}/users`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-            email: newEmail.trim().toLowerCase(),
-            role: newRole,
-            status: 'invited',
-            }),
-        })
+    const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        if (!options?.quiet) setLoading(true)
+        setLoadError(null)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, {
+                cache: 'no-store',
+            })
+            const payload = (await response.json().catch(() => null)) as StaffPayload | null
+
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to load staff members'))
+            }
+
+            setEmployees(Array.isArray(payload?.data) ? payload.data : [])
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load staff members'
+            setLoadError(message)
+            notify({
+                title: 'Staff could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoading(false)
+        }
+    }, [notify, store])
+
+    useEffect(() => {
+        void loadData()
+    }, [loadData])
+
+    const resetInviteForm = useCallback(() => {
         setShowAdd(false)
         setNewEmail('')
         setNewRole('editor')
-        setSaving(false)
-        await loadData()
-    }
+        setFormError(null)
+        setSaveState('saved')
+    }, [])
 
-    const handleRemove = async (id: string) => {
-        if (!confirm('Remove this staff member?')) return
-        await fetch(`/api/stores/${encodeURIComponent(store)}/users/${encodeURIComponent(id)}`, {
-            method: 'DELETE',
-        })
-        setEmployees(prev => prev.filter(e => e.id !== id))
-    }
+    const startAdd = useCallback(() => {
+        setShowAdd(true)
+        setFormError(null)
+        setSaveState('unsaved')
+    }, [])
 
-    const handleRoleChange = async (id: string, role: string) => {
-        await fetch(`/api/stores/${encodeURIComponent(store)}/users/${encodeURIComponent(id)}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ role }),
-        })
-        setEmployees(prev => prev.map(e => e.id === id ? { ...e, role } : e))
-    }
+    const handleAdd = useCallback(async () => {
+        if (saveState === 'saving') return
+
+        const email = newEmail.trim().toLowerCase()
+        if (!email || !email.includes('@')) {
+            const message = 'Enter a valid staff email address.'
+            setFormError(message)
+            notify({
+                title: 'Staff invite needs an email',
+                description: message,
+                variant: 'warning',
+            })
+            return
+        }
+
+        setSaveState('saving')
+        setFormError(null)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    role: newRole,
+                    status: 'invited',
+                }),
+            })
+            const payload = (await response.json().catch(() => null)) as StaffPayload | null
+
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to send staff invite'))
+            }
+
+            resetInviteForm()
+            await loadData({ quiet: true })
+            notify({
+                title: 'Staff invite sent',
+                description: `${email} was invited as ${getRoleLabel(newRole).toLowerCase()}.`,
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to send staff invite'
+            setFormError(message)
+            setSaveState('unsaved')
+            notify({
+                title: 'Could not send staff invite',
+                description: message,
+                variant: 'critical',
+            })
+        }
+    }, [loadData, newEmail, newRole, notify, resetInviteForm, saveState, store])
+
+    const handleRoleChange = useCallback(async (employee: Employee, role: string) => {
+        if (employee.role === role || updatingRoleId) return
+
+        setUpdatingRoleId(employee.id)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users/${encodeURIComponent(employee.id)}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ role }),
+            })
+            const payload = (await response.json().catch(() => null)) as StaffPayload | null
+
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to update staff role'))
+            }
+
+            setEmployees((current) => current.map((item) => item.id === employee.id ? { ...item, role } : item))
+            notify({
+                title: 'Staff role updated',
+                description: `${employee.email} is now ${getRoleLabel(role).toLowerCase()}.`,
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to update staff role'
+            notify({
+                title: 'Could not update staff role',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setUpdatingRoleId(null)
+        }
+    }, [notify, store, updatingRoleId])
+
+    const handleConfirmRemove = useCallback(async () => {
+        if (!employeeToRemove || removingId) return
+
+        setRemovingId(employeeToRemove.id)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/users/${encodeURIComponent(employeeToRemove.id)}`, {
+                method: 'DELETE',
+            })
+            const payload = (await response.json().catch(() => null)) as StaffPayload | null
+
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to remove staff member'))
+            }
+
+            setEmployees((current) => current.filter((employee) => employee.id !== employeeToRemove.id))
+            notify({
+                title: 'Staff member removed',
+                description: `${employeeToRemove.email} no longer has access to this store.`,
+                variant: 'success',
+            })
+            setEmployeeToRemove(null)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to remove staff member'
+            notify({
+                title: 'Could not remove staff member',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setRemovingId(null)
+        }
+    }, [employeeToRemove, notify, removingId, store])
 
     if (loading) {
         return (
-            <div className="settings-page">
-                <div className="settings-page-header"><div className="settings-skeleton" style={{ width: 80, height: 28 }} /></div>
-                <div className="settings-card"><div className="settings-skeleton" style={{ width: '100%', height: 100 }} /></div>
-            </div>
+            <Page>
+                <PageHeader
+                    title="Users and permissions"
+                    description="Invite staff and control access to this store."
+                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Users and permissions' }]}
+                />
+                <Card>
+                    <Section title="Staff">
+                        <Skeleton variant="table" lines={4} />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
     return (
-        <div className="settings-page">
-            <div className="settings-page-header">
-                <h1>Users and permissions</h1>
+        <Page>
+            <PageHeader
+                title="Users and permissions"
+                description="Invite staff and control access to this store."
+                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Users and permissions' }]}
+                primaryAction={{
+                    label: 'Add staff',
+                    onClick: startAdd,
+                    disabled: showAdd,
+                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }}
+            />
+
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Staff could not load"
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
+            )}
+
+            {formError && (
+                <Banner variant="critical" title="Staff invite needs attention">
+                    {formError}
+                </Banner>
+            )}
+
+            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                <Card className="p-[var(--lb-space-4)]">
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <Users className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                        <div>
+                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Staff members</p>
+                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{employees.length}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-[var(--lb-space-4)]">
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <ShieldCheck className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-success)]" aria-hidden="true" />
+                        <div>
+                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Active access</p>
+                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{activeStaff}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-[var(--lb-space-4)]">
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <Mail className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-warning)]" aria-hidden="true" />
+                        <div>
+                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Pending invites</p>
+                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{invitedStaff}</p>
+                        </div>
+                    </div>
+                </Card>
             </div>
 
-            <div className="settings-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <h2 style={{ margin: 0 }}>Store owner</h2>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0' }}>
-                    <div style={{ width: 32, height: 32, borderRadius: '50%', background: 'var(--primary)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600 }}>
-                        O
+            <Card>
+                <Section
+                    title="Store owner"
+                    description="The store owner has full access to every setting, workflow, and billing action."
+                >
+                    <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                        <div className="flex items-center gap-[var(--lb-space-3)]">
+                            <Avatar name="Owner" />
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">Owner</p>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Full access to all settings</p>
+                            </div>
+                        </div>
+                        <Badge label="Primary owner" variant="success" />
                     </div>
-                    <div>
-                        <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>Owner</div>
-                        <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>Full access to all settings</div>
-                    </div>
-                </div>
-            </div>
+                </Section>
+            </Card>
 
-            <div className="settings-card">
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                    <h2 style={{ margin: 0 }}>Staff</h2>
-                    {!showAdd && (
-                        <button className="settings-btn-primary" style={{ padding: '7px 14px', fontSize: 12 }} onClick={() => setShowAdd(true)}>
-                            <MaterialIcon name="add" style={{ fontSize: 16 }} />
+            {showAdd && (
+                <Card>
+                    <Section
+                        title="Invite staff"
+                        description="Send an invite with the right level of access for day-to-day store operations."
+                    >
+                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                            <Input
+                                label="Email address"
+                                type="email"
+                                value={newEmail}
+                                onChange={(event) => {
+                                    setNewEmail(event.target.value)
+                                    setSaveState('unsaved')
+                                }}
+                                placeholder="staff@example.com"
+                                helperText="The invite is sent to this email address."
+                            />
+                            <Select
+                                label="Role"
+                                value={newRole}
+                                onChange={(event) => {
+                                    setNewRole(event.target.value)
+                                    setSaveState('unsaved')
+                                }}
+                                options={ROLE_OPTIONS}
+                                helperText={ROLES.find((role) => role.value === newRole)?.desc}
+                            />
+                        </div>
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                            <Button type="button" onClick={() => void handleAdd()} loading={saveState === 'saving'}>
+                                Send invite
+                            </Button>
+                            <Button type="button" variant="secondary" onClick={resetInviteForm} disabled={saveState === 'saving'}>
+                                Cancel
+                            </Button>
+                        </div>
+                    </Section>
+                </Card>
+            )}
+
+            <Card>
+                <Section
+                    title="Staff"
+                    description="Staff can help manage store operations based on their assigned role."
+                    action={!showAdd && (
+                        <Button type="button" variant="secondary" onClick={startAdd}>
+                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             Add staff
-                        </button>
+                        </Button>
                     )}
-                </div>
-
-                {showAdd && (
-                    <div style={{ padding: 16, background: 'var(--bg-secondary)', borderRadius: 8, marginBottom: 16 }}>
-                        <div className="settings-form-group" style={{ marginBottom: 12 }}>
-                            <label>Email address</label>
-                            <input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} placeholder="staff@example.com" />
-                        </div>
-                        <div className="settings-form-group" style={{ marginBottom: 12 }}>
-                            <label>Role</label>
-                            <select value={newRole} onChange={(e) => setNewRole(e.target.value)}>
-                                {ROLES.map(r => (
-                                    <option key={r.value} value={r.value}>{r.label} — {r.desc}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div style={{ display: 'flex', gap: 8 }}>
-                            <button className="settings-btn-primary" onClick={handleAdd} disabled={saving || !newEmail.includes('@')} style={{ padding: '7px 14px', fontSize: 12 }}>
-                                {saving ? 'Sending invite...' : 'Send invite'}
-                            </button>
-                            <button className="settings-btn-secondary" onClick={() => { setShowAdd(false); setNewEmail(''); setNewRole('editor') }} style={{ padding: '7px 14px', fontSize: 12 }}>Cancel</button>
-                        </div>
-                    </div>
-                )}
-
-                {employees.length === 0 && !showAdd ? (
-                    <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <MaterialIcon name="group_add" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
-                        <p>No staff members added yet.</p>
-                    </div>
-                ) : (
-                    employees.map(emp => (
-                        <div key={emp.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderTop: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--bg-tertiary, #e2e8f0)', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600 }}>
-                                    {emp.email.charAt(0).toUpperCase()}
-                                </div>
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{emp.email}</div>
-                                    <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>
-                                        Added {new Date(emp.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                >
+                    {employees.length === 0 ? (
+                        <EmptyState
+                            icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No staff members yet"
+                            body="Invite team members when you are ready to share product, order, or fulfillment work."
+                            primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
+                        />
+                    ) : (
+                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                            {employees.map((employee) => (
+                                <div key={employee.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] lg:flex-row lg:items-center lg:justify-between">
+                                    <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                                        <Avatar name={employee.email} />
+                                        <div className="min-w-0">
+                                            <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">{employee.email}</p>
+                                            <p className="m-0 flex flex-wrap items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                <User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                <span>{getRoleLabel(employee.role)}</span>
+                                                <span>Added {formatDate(employee.created_at)}</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="grid gap-[var(--lb-space-2)] sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
+                                        <Select
+                                            aria-label={`Role for ${employee.email}`}
+                                            value={employee.role}
+                                            onChange={(event) => void handleRoleChange(employee, event.target.value)}
+                                            options={ROLES.map((role) => ({ value: role.value, label: role.label }))}
+                                            disabled={updatingRoleId === employee.id || Boolean(removingId)}
+                                        />
+                                        <Badge
+                                            label={formatStatus(employee.status)}
+                                            variant={employee.status === 'active' ? 'success' : 'warning'}
+                                        />
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onClick={() => setEmployeeToRemove(employee)}
+                                            disabled={removingId === employee.id || Boolean(updatingRoleId)}
+                                        >
+                                            <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            Remove
+                                        </Button>
                                     </div>
                                 </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                                <select
-                                    value={emp.role}
-                                    onChange={(e) => handleRoleChange(emp.id, e.target.value)}
-                                    style={{ fontSize: 12, padding: '4px 8px', borderRadius: 6, border: '1px solid var(--border)', background: 'var(--bg-primary)', color: 'var(--text-primary)' }}
-                                >
-                                    {ROLES.map(r => (
-                                        <option key={r.value} value={r.value}>{r.label}</option>
-                                    ))}
-                                </select>
-                                <span className={`settings-badge ${emp.status === 'active' ? 'connected' : 'pending'}`}>
-                                    {emp.status}
-                                </span>
-                                <button className="settings-btn-secondary" style={{ padding: '5px 10px', fontSize: 12, color: 'var(--danger, #e53e3e)' }} onClick={() => handleRemove(emp.id)}>
-                                    Remove
-                                </button>
-                            </div>
+                            ))}
                         </div>
-                    ))
-                )}
-            </div>
-        </div>
+                    )}
+                </Section>
+            </Card>
+
+            <Banner variant="info" title="Access guidance">
+                Use manager access for trusted operators, editor access for catalog and content teammates, and fulfillment access for order handling.
+            </Banner>
+
+            <SaveBar
+                state={activeSaveState}
+                onSave={() => void handleAdd()}
+                onDiscard={resetInviteForm}
+                saveLabel="Send invite"
+            />
+
+            <ConfirmDialog
+                open={Boolean(employeeToRemove)}
+                title="Remove staff member?"
+                description={employeeToRemove ? `Remove ${employeeToRemove.email} from this store.` : 'Remove this staff member from the store.'}
+                confirmLabel={removingId ? 'Removing' : 'Remove staff'}
+                destructive
+                onConfirm={() => void handleConfirmRemove()}
+                onClose={() => {
+                    if (!removingId) setEmployeeToRemove(null)
+                }}
+            />
+        </Page>
     )
 }
