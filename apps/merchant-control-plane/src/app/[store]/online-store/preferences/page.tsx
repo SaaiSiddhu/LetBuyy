@@ -1,208 +1,335 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    BarChart3,
+    Button,
+    Card,
+    Image as ImageIcon,
+    Input,
+    Lock,
+    Page,
+    PageHeader,
+    RefreshCw,
+    Save,
+    SaveBar,
+    Section,
+    Skeleton,
+    Star,
+    Textarea,
+    useToast,
+} from '@letbuyy/ui'
+
+interface PreferencesFormState {
+    seoTitle: string
+    seoDescription: string
+}
+
+const emptyForm: PreferencesFormState = {
+    seoTitle: '',
+    seoDescription: '',
+}
+
+const advancedPreferences = [
+    {
+        title: 'Social sharing image',
+        description: 'Default image for social previews when a store link is shared.',
+        icon: ImageIcon,
+        value: 'No image connected',
+    },
+    {
+        title: 'Password protection',
+        description: 'Restrict storefront access while preparing a launch.',
+        icon: Lock,
+        value: 'Locked for now',
+    },
+    {
+        title: 'Google Analytics',
+        description: 'Measurement ID for storefront analytics.',
+        icon: BarChart3,
+        value: 'No measurement ID connected',
+    },
+    {
+        title: 'Favicon',
+        description: 'Browser tab and bookmark icon for the storefront.',
+        icon: Star,
+        value: 'No favicon connected',
+    },
+]
+
+function getErrorMessage(payload: unknown, fallback: string) {
+    if (payload && typeof payload === 'object') {
+        const error = (payload as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+            const message = (error as { message?: unknown }).message
+            if (typeof message === 'string') return message
+        }
+        const message = (payload as { message?: unknown }).message
+        if (typeof message === 'string') return message
+    }
+
+    return fallback
+}
+
+function formsEqual(a: PreferencesFormState, b: PreferencesFormState) {
+    return a.seoTitle === b.seoTitle && a.seoDescription === b.seoDescription
+}
+
+function formFromSettings(settings: Record<string, unknown>): PreferencesFormState {
+    return {
+        seoTitle: String(settings.seo_title || settings.store_name || settings.name || ''),
+        seoDescription: String(settings.seo_description || ''),
+    }
+}
 
 export default function PreferencesPage() {
-    const params = useParams()
-    const store = params.store as string
+    const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
+    const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
-    const [saved, setSaved] = useState(false)
+    const [loadError, setLoadError] = useState<string | null>(null)
+    const [form, setForm] = useState<PreferencesFormState>(emptyForm)
+    const [initialForm, setInitialForm] = useState<PreferencesFormState>(emptyForm)
 
-    // SEO fields
-    const [seoTitle, setSeoTitle] = useState('')
-    const [seoDescription, setSeoDescription] = useState('')
+    const loadPreferences = useCallback(async () => {
+        setLoading(true)
+        setLoadError(null)
 
-    // Social sharing
-    const [ogImage, setOgImage] = useState('')
-
-    // Password protection
-    const [passwordEnabled, setPasswordEnabled] = useState(false)
-    const [storePassword, setStorePassword] = useState('')
-    const [passwordMessage, setPasswordMessage] = useState("We're coming soon! Stay tuned.")
-
-    // Google Analytics
-    const [gaId, setGaId] = useState('')
-
-    // Favicon
-    const [favicon, setFavicon] = useState('')
-
-    useEffect(() => {
-        const loadPrefs = async () => {
+        try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 cache: 'no-store',
             })
-            const payload = await response.json()
-            const storeData = payload.data
+            const payload = await response.json().catch(() => null)
 
-            if (storeData) {
-                setSeoTitle(storeData.seo_title || storeData.store_name || storeData.name || '')
-                setSeoDescription(storeData.seo_description || '')
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to load storefront preferences'))
             }
-        }
-        loadPrefs()
-    }, [store])
 
-    const handleSave = async () => {
+            const nextForm = formFromSettings((payload?.data || {}) as Record<string, unknown>)
+            setForm(nextForm)
+            setInitialForm(nextForm)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load storefront preferences'
+            setForm(emptyForm)
+            setInitialForm(emptyForm)
+            setLoadError(message)
+            notify({
+                title: 'Preferences could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoading(false)
+        }
+    }, [notify, store])
+
+    useEffect(() => {
+        void loadPreferences()
+    }, [loadPreferences])
+
+    const hasUnsavedChanges = !formsEqual(form, initialForm)
+    const saveState = saving ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
+    const seoTitleCount = form.seoTitle.length
+    const seoDescriptionCount = form.seoDescription.length
+    const previewTitle = useMemo(() => form.seoTitle.trim() || 'Your Store Title', [form.seoTitle])
+    const previewDescription = useMemo(
+        () => form.seoDescription.trim() || 'Your store description will appear here.',
+        [form.seoDescription],
+    )
+
+    const updateForm = useCallback(<Key extends keyof PreferencesFormState>(key: Key, value: PreferencesFormState[Key]) => {
+        setForm((current) => ({ ...current, [key]: value }))
+    }, [])
+
+    const discardChanges = useCallback(() => {
+        setForm(initialForm)
+    }, [initialForm])
+
+    const handleSave = useCallback(async () => {
+        if (saving || !hasUnsavedChanges) return
         setSaving(true)
+
         try {
-            await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    seo_title: seoTitle,
-                    seo_description: seoDescription,
+                    seo_title: form.seoTitle,
+                    seo_description: form.seoDescription,
                 }),
             })
+            const payload = await response.json().catch(() => null)
 
-            setSaved(true)
-            setTimeout(() => setSaved(false), 3000)
-        } catch (e) {
-            console.error('Save error:', e)
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to save storefront preferences'))
+            }
+
+            setInitialForm(form)
+            notify({
+                title: 'Preferences saved',
+                description: 'Search listing details were updated for this storefront.',
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save storefront preferences'
+            notify({
+                title: 'Could not save preferences',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setSaving(false)
         }
+    }, [form, hasUnsavedChanges, notify, saving, store])
+
+    if (loading) {
+        return (
+            <Page>
+                <PageHeader
+                    title="Preferences"
+                    description="Control search previews and storefront preference fields."
+                    breadcrumbs={[{ label: 'Online Store' }, { label: 'Preferences' }]}
+                />
+                <Card>
+                    <Section title="Search engine listing">
+                        <Skeleton variant="card" lines={7} />
+                    </Section>
+                </Card>
+            </Page>
+        )
     }
 
     return (
-        <div className="online-store-page">
-            <div className="os-page-header">
-                <h1 className="os-page-title">Preferences</h1>
-                <button className="os-btn os-btn-primary" onClick={handleSave} disabled={saving}>
-                    {saving ? 'Saving...' : saved ? (
-                        <>
-                            <MaterialIcon name="check" size={14} aria-hidden="true" /> Saved
-                        </>
-                    ) : 'Save'}
-                </button>
-            </div>
+        <Page>
+            <PageHeader
+                title="Preferences"
+                description="Control search previews and storefront preference fields."
+                breadcrumbs={[{ label: 'Online Store' }, { label: 'Preferences' }]}
+                primaryAction={{
+                    label: saving ? 'Saving...' : 'Save changes',
+                    onClick: () => void handleSave(),
+                    disabled: saving || !hasUnsavedChanges,
+                    icon: <Save className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }}
+                secondaryActions={[
+                    {
+                        label: 'Refresh',
+                        onClick: () => void loadPreferences(),
+                        disabled: saving,
+                        icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    },
+                ]}
+            />
 
-            {/* Title & Meta Description */}
-            <div className="os-pref-card">
-                <h3 className="os-pref-card-title">Title and meta description</h3>
-                <p className="os-pref-card-desc">
-                    The title and meta description help define how your store shows up on search engines.
-                </p>
-                <div className="os-pref-field">
-                    <label>Homepage title</label>
-                    <input
-                        type="text"
-                        className="os-input"
-                        value={seoTitle}
-                        onChange={(e) => setSeoTitle(e.target.value)}
-                        placeholder="My Store — Modern Fashion"
-                    />
-                    <span className="os-pref-char-count">{seoTitle.length} of 70 characters used</span>
-                </div>
-                <div className="os-pref-field">
-                    <label>Meta description</label>
-                    <textarea
-                        className="os-textarea"
-                        value={seoDescription}
-                        onChange={(e) => setSeoDescription(e.target.value)}
-                        placeholder="Describe your store for search engines..."
-                        rows={3}
-                    />
-                    <span className="os-pref-char-count">{seoDescription.length} of 320 characters used</span>
-                </div>
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Preferences could not load"
+                    action={<Button variant="secondary" onClick={() => void loadPreferences()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
+            )}
 
-                {/* Search Preview */}
-                <div className="os-seo-preview">
-                    <div className="os-seo-preview-label">Search engine listing preview</div>
-                    <div className="os-seo-preview-title">{seoTitle || 'Your Store Title'}</div>
-                    <div className="os-seo-preview-url">{store}.letbuyy.store</div>
-                    <div className="os-seo-preview-desc">{seoDescription || 'Your store description will appear here...'}</div>
-                </div>
-            </div>
-
-            {/* Social Sharing */}
-            <div className="os-pref-card">
-                <h3 className="os-pref-card-title">Social sharing image</h3>
-                <p className="os-pref-card-desc">
-                    When you share a link to your store on social media, this image shows up.
-                </p>
-                <div className="os-pref-upload-area">
-                    <MaterialIcon name="image" style={{ fontSize: 32, opacity: 0.3 }} />
-                    <p>Drag and drop or click to upload</p>
-                    <span className="os-pref-upload-hint">Recommended: 1200 × 628 pixels, PNG or JPG</span>
-                </div>
-            </div>
-
-            {/* Password Protection */}
-            {/* TODO: Password protection, Google Analytics, and Favicon fields
-                are UI-only for now. Persistence will be added when the sites table
-                schema is extended with these columns. */}
-            <div className="os-pref-card">
-                <h3 className="os-pref-card-title">Password protection</h3>
-                <p className="os-pref-card-desc">
-                    Restrict access to your store by enabling a password.
-                </p>
-                <div className="os-pref-toggle-row">
-                    <label className="os-toggle">
-                        <input
-                            type="checkbox"
-                            checked={passwordEnabled}
-                            onChange={(e) => setPasswordEnabled(e.target.checked)}
-                        />
-                        <span className="os-toggle-slider" />
-                    </label>
-                    <span>Enable password</span>
-                </div>
-                {passwordEnabled && (
-                    <>
-                        <div className="os-pref-field">
-                            <label>Password</label>
-                            <input
-                                type="password"
-                                className="os-input"
-                                value={storePassword}
-                                onChange={(e) => setStorePassword(e.target.value)}
-                                placeholder="Store password"
+            <Card>
+                <Section
+                    title="Search engine listing"
+                    description="Set the title and description used by search engines and link previews."
+                    action={<Badge label="Store SEO" variant="info" />}
+                >
+                    <div className="grid gap-[var(--lb-space-5)] xl:grid-cols-[minmax(0,1fr)_360px]">
+                        <div className="flex flex-col gap-[var(--lb-space-4)]">
+                            <Input
+                                label="Homepage title"
+                                value={form.seoTitle}
+                                onChange={(event) => updateForm('seoTitle', event.target.value)}
+                                placeholder="My Store - Modern Fashion"
+                                maxLength={70}
+                                helperText={`${seoTitleCount} of 70 characters used`}
+                            />
+                            <Textarea
+                                label="Meta description"
+                                value={form.seoDescription}
+                                onChange={(event) => updateForm('seoDescription', event.target.value)}
+                                placeholder="Describe your store for search engines."
+                                rows={4}
+                                maxLength={320}
+                                helperText={`${seoDescriptionCount} of 320 characters used`}
                             />
                         </div>
-                        <div className="os-pref-field">
-                            <label>Message for visitors</label>
-                            <textarea
-                                className="os-textarea"
-                                value={passwordMessage}
-                                onChange={(e) => setPasswordMessage(e.target.value)}
-                                rows={2}
-                            />
+
+                        <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                            <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                Search engine listing preview
+                            </p>
+                            <div className="mt-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] shadow-[var(--lb-shadow-sm)]">
+                                <p className="m-0 truncate text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-primary)]">
+                                    {previewTitle}
+                                </p>
+                                <p className="m-0 mt-[var(--lb-space-1)] truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-success)]">
+                                    {store}.letbuyy.store
+                                </p>
+                                <p className="m-0 mt-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                    {previewDescription}
+                                </p>
+                            </div>
                         </div>
-                    </>
-                )}
-            </div>
+                    </div>
+                </Section>
+            </Card>
 
-            {/* Google Analytics */}
-            <div className="os-pref-card">
-                <h3 className="os-pref-card-title">Google Analytics</h3>
-                <p className="os-pref-card-desc">
-                    Track visitors and analyze traffic with Google Analytics.
-                </p>
-                <div className="os-pref-field">
-                    <label>Measurement ID</label>
-                    <input
-                        type="text"
-                        className="os-input"
-                        value={gaId}
-                        onChange={(e) => setGaId(e.target.value)}
-                        placeholder="G-XXXXXXXXXX"
-                    />
-                </div>
-            </div>
+            <Card>
+                <Section
+                    title="Advanced preferences"
+                    description="Additional storefront preferences are read-only until safe editing is available."
+                    action={<Badge label="Read-only" variant="warning" />}
+                >
+                    <Banner variant="warning" title="Advanced fields are read-only">
+                        Social image, password protection, analytics ID, and favicon controls are locked for now.
+                    </Banner>
 
-            {/* Favicon */}
-            <div className="os-pref-card">
-                <h3 className="os-pref-card-title">Favicon</h3>
-                <p className="os-pref-card-desc">
-                    The small icon shown in browser tabs and bookmarks.
-                </p>
-                <div className="os-pref-upload-area os-pref-favicon-upload">
-                    <MaterialIcon name="star" style={{ fontSize: 24, opacity: 0.3 }} />
-                    <p>Upload favicon (32×32px, .ico or .png)</p>
-                </div>
-            </div>
-        </div>
+                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                        {advancedPreferences.map((preference) => {
+                            const Icon = preference.icon
+                            return (
+                                <div
+                                    key={preference.title}
+                                    className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] opacity-80"
+                                    aria-disabled="true"
+                                >
+                                    <div className="flex items-start gap-[var(--lb-space-3)]">
+                                        <span className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                            <Icon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        </span>
+                                        <div className="min-w-0">
+                                            <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                                {preference.title}
+                                            </h3>
+                                            <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {preference.description}
+                                            </p>
+                                            <p className="m-0 mt-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                {preference.value}
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </Section>
+            </Card>
+
+            <SaveBar
+                state={saveState}
+                onSave={() => void handleSave()}
+                onDiscard={discardChanges}
+                saveLabel="Save preferences"
+            />
+        </Page>
     )
 }
