@@ -1,8 +1,19 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Banner,
+    Button,
+    Card,
+    Page,
+    PageHeader,
+    SaveBar,
+    Section,
+    Select,
+    Skeleton,
+    useToast,
+} from '@letbuyy/ui'
 
 interface CheckoutSettings {
     contact_method: 'email' | 'phone' | 'both'
@@ -13,6 +24,8 @@ interface CheckoutSettings {
     tip_option: boolean
 }
 
+type SaveState = 'saved' | 'unsaved' | 'saving'
+
 const DEFAULTS: CheckoutSettings = {
     contact_method: 'email',
     customer_accounts: 'optional',
@@ -22,172 +35,335 @@ const DEFAULTS: CheckoutSettings = {
     tip_option: false,
 }
 
+const contactMethodOptions = [
+    { value: 'email', label: 'Email' },
+    { value: 'phone', label: 'Phone number' },
+    { value: 'both', label: 'Email or phone number' },
+]
+
+const accountOptions = [
+    { value: 'disabled', label: 'Accounts are disabled' },
+    { value: 'optional', label: 'Accounts are optional' },
+    { value: 'required', label: 'Accounts are required' },
+]
+
+const fullNameOptions = [
+    { value: 'required_both', label: 'Require first and last name' },
+    { value: 'required_last', label: 'Only require last name' },
+    { value: 'optional', label: 'Optional' },
+]
+
+const companyNameOptions = [
+    { value: 'hidden', label: 'Hidden' },
+    { value: 'optional', label: 'Optional' },
+    { value: 'required', label: 'Required' },
+]
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function readEnum<Value extends string>(record: Record<string, unknown>, key: string, allowed: readonly Value[], fallback: Value) {
+    const value = record[key]
+    return typeof value === 'string' && allowed.includes(value as Value) ? value as Value : fallback
+}
+
+function readCheckoutSettings(siteSettings: Record<string, unknown>) {
+    const checkout = isRecord(siteSettings.checkout) ? siteSettings.checkout : {}
+    return {
+        contact_method: readEnum(checkout, 'contact_method', ['email', 'phone', 'both'], DEFAULTS.contact_method),
+        customer_accounts: readEnum(checkout, 'customer_accounts', ['disabled', 'optional', 'required'], DEFAULTS.customer_accounts),
+        full_name: readEnum(checkout, 'full_name', ['required_both', 'required_last', 'optional'], DEFAULTS.full_name),
+        company_name: readEnum(checkout, 'company_name', ['hidden', 'optional', 'required'], DEFAULTS.company_name),
+        order_notes: typeof checkout.order_notes === 'boolean' ? checkout.order_notes : DEFAULTS.order_notes,
+        tip_option: typeof checkout.tip_option === 'boolean' ? checkout.tip_option : DEFAULTS.tip_option,
+    }
+}
+
+function settingsEqual(left: CheckoutSettings, right: CheckoutSettings) {
+    return (
+        left.contact_method === right.contact_method &&
+        left.customer_accounts === right.customer_accounts &&
+        left.full_name === right.full_name &&
+        left.company_name === right.company_name &&
+        left.order_notes === right.order_notes &&
+        left.tip_option === right.tip_option
+    )
+}
+
+interface ToggleRowProps {
+    id: string
+    label: string
+    description: string
+    checked: boolean
+    onChange: (checked: boolean) => void
+}
+
+function ToggleRow({ id, label, description, checked, onChange }: ToggleRowProps) {
+    return (
+        <label
+            htmlFor={id}
+            className="flex cursor-pointer items-start justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] transition-colors hover:bg-[var(--lb-color-surface-subdued)]"
+        >
+            <span className="min-w-0 space-y-[var(--lb-space-1)]">
+                <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                    {label}
+                </span>
+                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                    {description}
+                </span>
+            </span>
+            <input
+                id={id}
+                type="checkbox"
+                checked={checked}
+                onChange={(event) => onChange(event.target.checked)}
+                className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+            />
+        </label>
+    )
+}
+
 export default function CheckoutSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [success, setSuccess] = useState(false)
+    const [loadError, setLoadError] = useState<string | null>(null)
+    const [saveState, setSaveState] = useState<SaveState>('saved')
     const [siteSettings, setSiteSettings] = useState<Record<string, unknown>>({})
+    const [initialSettings, setInitialSettings] = useState<CheckoutSettings>(DEFAULTS)
     const [settings, setSettings] = useState<CheckoutSettings>(DEFAULTS)
 
-    useEffect(() => {
-        async function load() {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store',
-            })
-            const payload = await response.json()
-            const data = payload.data
+    const hasUnsavedChanges = useMemo(() => !settingsEqual(settings, initialSettings), [settings, initialSettings])
+    const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
-            if (data) {
-                const siteSettings = (data.site_settings as Record<string, unknown>) || {}
-                setSiteSettings(siteSettings)
-                const checkout = (siteSettings.checkout as Partial<CheckoutSettings>) || {}
-                setSettings({ ...DEFAULTS, ...checkout })
+    useEffect(() => {
+        let mounted = true
+
+        async function load() {
+            setLoading(true)
+            setLoadError(null)
+
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                    cache: 'no-store',
+                })
+                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+
+                if (!response.ok) {
+                    throw new Error(payload.error || 'Unable to load checkout settings')
+                }
+
+                const data = payload.data
+                if (!data) {
+                    throw new Error('Checkout settings were not returned for this store')
+                }
+
+                const nextSiteSettings = isRecord(data.site_settings) ? data.site_settings : {}
+                const nextSettings = readCheckoutSettings(nextSiteSettings)
+
+                if (!mounted) return
+                setSiteSettings(nextSiteSettings)
+                setSettings(nextSettings)
+                setInitialSettings(nextSettings)
+                setSaveState('saved')
+            } catch (error) {
+                if (!mounted) return
+                const message = error instanceof Error ? error.message : 'Unable to load checkout settings'
+                setLoadError(message)
+                notify({
+                    title: 'Checkout settings could not load',
+                    description: message,
+                    variant: 'critical',
+                })
+            } finally {
+                if (mounted) setLoading(false)
             }
-            setLoading(false)
         }
-        load()
-    }, [store])
+
+        void load()
+
+        return () => {
+            mounted = false
+        }
+    }, [notify, store])
+
+    const updateField = useCallback(<Key extends keyof CheckoutSettings>(key: Key, value: CheckoutSettings[Key]) => {
+        setSettings((current) => ({ ...current, [key]: value }))
+    }, [])
 
     const handleSave = useCallback(async () => {
-        setSaving(true)
-        setSuccess(false)
+        if (!hasUnsavedChanges || saveState === 'saving') return
 
-        const nextSettings = { ...siteSettings, checkout: settings }
-        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ site_settings: nextSettings }),
+        setSaveState('saving')
+        const nextSiteSettings = { ...siteSettings, checkout: settings }
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ site_settings: nextSiteSettings }),
+            })
+            const payload = await response.json() as { error?: string }
+
+            if (!response.ok) {
+                throw new Error(payload.error || 'Unable to save checkout settings')
+            }
+
+            setSiteSettings(nextSiteSettings)
+            setInitialSettings(settings)
+            setSaveState('saved')
+            notify({
+                title: 'Checkout settings saved',
+                description: 'Customer account, contact, and form preferences are up to date.',
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save checkout settings'
+            setSaveState('unsaved')
+            notify({
+                title: 'Could not save checkout settings',
+                description: message,
+                variant: 'critical',
+            })
+        }
+    }, [hasUnsavedChanges, notify, saveState, settings, siteSettings, store])
+
+    const handleDiscard = useCallback(() => {
+        setSettings(initialSettings)
+        setSaveState('saved')
+        notify({
+            title: 'Changes discarded',
+            description: 'Checkout settings were reset to the last saved version.',
+            variant: 'info',
         })
-        setSiteSettings(nextSettings)
-
-        setSaving(false)
-        setSuccess(true)
-        setTimeout(() => setSuccess(false), 3000)
-    }, [store, settings, siteSettings])
-
-    const updateField = <K extends keyof CheckoutSettings>(key: K, value: CheckoutSettings[K]) => {
-        setSettings(prev => ({ ...prev, [key]: value }))
-    }
+    }, [initialSettings, notify])
 
     if (loading) {
         return (
-            <div className="settings-page">
-                <div className="settings-page-header"><div className="settings-skeleton" style={{ width: 120, height: 28 }} /></div>
-                {[1, 2, 3].map(i => <div key={i} className="settings-card"><div className="settings-skeleton" style={{ width: '100%', height: 80 }} /></div>)}
-            </div>
+            <Page>
+                <PageHeader
+                    title="Checkout"
+                    description="Control how customers identify themselves and complete checkout."
+                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Checkout' }]}
+                />
+                <Card>
+                    <Section title="Customer contact method">
+                        <Skeleton variant="text" lines={3} />
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Customer accounts">
+                        <Skeleton variant="text" lines={3} />
+                    </Section>
+                </Card>
+                <Skeleton variant="card" />
+            </Page>
         )
     }
 
     return (
-        <div className="settings-page">
-            <div className="settings-page-header">
-                <h1>Checkout</h1>
-            </div>
+        <Page>
+            <PageHeader
+                title="Checkout"
+                description="Control how customers identify themselves and complete checkout."
+                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Checkout' }]}
+            />
 
-            {success && (
-                <div className="settings-toast success">
-                    <MaterialIcon name="check_circle" />
-                    Checkout settings saved successfully.
-                </div>
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Checkout settings could not load"
+                    action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
             )}
 
-            <div className="settings-card">
-                <h2>Customer contact method</h2>
-                <div className="settings-form-group">
-                    <label>Customers can check out using</label>
-                    <select
+            <Card>
+                <Section
+                    title="Customer contact method"
+                    description="Choose the contact detail customers can use to receive order updates."
+                >
+                    <Select
+                        label="Customers can check out using"
                         value={settings.contact_method}
-                        onChange={(e) => updateField('contact_method', e.target.value as CheckoutSettings['contact_method'])}
-                    >
-                        <option value="email">Email</option>
-                        <option value="phone">Phone number</option>
-                        <option value="both">Email or phone number</option>
-                    </select>
-                </div>
-            </div>
+                        options={contactMethodOptions}
+                        onChange={(event) => updateField('contact_method', event.target.value as CheckoutSettings['contact_method'])}
+                    />
+                </Section>
+            </Card>
 
-            <div className="settings-card">
-                <h2>Customer accounts</h2>
-                <div className="settings-form-group">
-                    <label>Account creation</label>
-                    <select
+            <Card>
+                <Section
+                    title="Customer accounts"
+                    description="Decide whether accounts are required, optional, or unavailable during checkout."
+                >
+                    <Select
+                        label="Account creation"
                         value={settings.customer_accounts}
-                        onChange={(e) => updateField('customer_accounts', e.target.value as CheckoutSettings['customer_accounts'])}
-                    >
-                        <option value="disabled">Accounts are disabled</option>
-                        <option value="optional">Accounts are optional</option>
-                        <option value="required">Accounts are required</option>
-                    </select>
-                </div>
-            </div>
+                        options={accountOptions}
+                        onChange={(event) => updateField('customer_accounts', event.target.value as CheckoutSettings['customer_accounts'])}
+                    />
+                </Section>
+            </Card>
 
-            <div className="settings-card">
-                <h2>Form options</h2>
-                <div className="settings-form-group">
-                    <label>Full name</label>
-                    <select
-                        value={settings.full_name}
-                        onChange={(e) => updateField('full_name', e.target.value as CheckoutSettings['full_name'])}
-                    >
-                        <option value="required_both">Require first and last name</option>
-                        <option value="required_last">Only require last name</option>
-                        <option value="optional">Optional</option>
-                    </select>
-                </div>
-                <div className="settings-form-group" style={{ marginTop: 12 }}>
-                    <label>Company name</label>
-                    <select
-                        value={settings.company_name}
-                        onChange={(e) => updateField('company_name', e.target.value as CheckoutSettings['company_name'])}
-                    >
-                        <option value="hidden">Hidden</option>
-                        <option value="optional">Optional</option>
-                        <option value="required">Required</option>
-                    </select>
-                </div>
-            </div>
+            <Card>
+                <Section
+                    title="Form options"
+                    description="Set which extra customer fields appear in checkout."
+                >
+                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                        <Select
+                            label="Full name"
+                            value={settings.full_name}
+                            options={fullNameOptions}
+                            onChange={(event) => updateField('full_name', event.target.value as CheckoutSettings['full_name'])}
+                        />
+                        <Select
+                            label="Company name"
+                            value={settings.company_name}
+                            options={companyNameOptions}
+                            onChange={(event) => updateField('company_name', event.target.value as CheckoutSettings['company_name'])}
+                        />
+                    </div>
+                </Section>
+            </Card>
 
-            <div className="settings-card">
-                <h2>Additional options</h2>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <input
-                            type="checkbox"
+            <Card>
+                <Section
+                    title="Additional options"
+                    description="Enable optional checkout affordances that help customers communicate order details."
+                >
+                    <div className="grid gap-[var(--lb-space-3)]">
+                        <ToggleRow
                             id="order-notes"
+                            label="Order notes"
+                            description="Allow customers to add notes for fulfilment or delivery."
                             checked={settings.order_notes}
-                            onChange={(e) => updateField('order_notes', e.target.checked)}
-                            style={{ accentColor: 'var(--primary)' }}
+                            onChange={(checked) => updateField('order_notes', checked)}
                         />
-                        <label htmlFor="order-notes" style={{ fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                            Allow customers to add order notes
-                        </label>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <input
-                            type="checkbox"
+                        <ToggleRow
                             id="tip-option"
+                            label="Tipping option"
+                            description="Show a tip option during checkout."
                             checked={settings.tip_option}
-                            onChange={(e) => updateField('tip_option', e.target.checked)}
-                            style={{ accentColor: 'var(--primary)' }}
+                            onChange={(checked) => updateField('tip_option', checked)}
                         />
-                        <label htmlFor="tip-option" style={{ fontSize: 13, color: 'var(--text-secondary)', cursor: 'pointer' }}>
-                            Show tipping option at checkout
-                        </label>
                     </div>
-                </div>
-            </div>
+                </Section>
+            </Card>
 
-            <div className="settings-info-banner">
-                <MaterialIcon name="info" />
-                <span>These settings control how customers interact with your checkout process.</span>
-            </div>
+            <Banner variant="info" title="Checkout impact">
+                These settings control how customers interact with your checkout process.
+            </Banner>
 
-            <div className="settings-save-bar">
-                <button onClick={handleSave} className="settings-btn-primary" disabled={saving}>
-                    {saving ? 'Saving...' : 'Save'}
-                </button>
-            </div>
-        </div>
+            <SaveBar
+                state={activeSaveState}
+                onSave={() => void handleSave()}
+                onDiscard={handleDiscard}
+                saveLabel="Save checkout"
+            />
+        </Page>
     )
 }
