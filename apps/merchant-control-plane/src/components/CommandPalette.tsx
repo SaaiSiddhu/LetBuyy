@@ -166,7 +166,7 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
                     <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
                     <span><kbd>↵</kbd> Select</span>
                     <span><kbd>Esc</kbd> Close</span>
-                    <span><kbd>g</kbd> then <kbd>p</kbd> Jump</span>
+                    <span><kbd>g</kbd> then <kbd>p/o/c/i</kbd> Jump</span>
                 </div>
             </div>
         </div>

@@ -69,7 +69,7 @@ const storeNavigation: MerchantNavItem[] = [
         children: [
             { path: 'products/new', label: 'Add product', icon: 'add_circle', shortcut: 'n p' },
             { path: 'products/collections', label: 'Collections', icon: 'folder_special' },
-            { path: 'products/inventory', label: 'Inventory', icon: 'inventory' },
+            { path: 'products/inventory', label: 'Inventory', icon: 'inventory', shortcut: 'g i' },
             { path: 'products/purchase-orders', label: 'Purchase orders', icon: 'request_quote' },
             { path: 'products/transfers', label: 'Transfers', icon: 'swap_horiz' },
             { path: 'products/gift-cards', label: 'Gift cards', icon: 'card_giftcard' },
@@ -82,8 +82,8 @@ const storeNavigation: MerchantNavItem[] = [
         icon: 'marketing',
         shortcut: 'g m',
         children: [
-            { path: 'coupons', label: 'Discounts', icon: 'sell' },
-            { path: 'reviews', label: 'Reviews', icon: 'rate_review' },
+            { path: 'coupons', label: 'Discounts', icon: 'sell', shortcut: 'g d' },
+            { path: 'reviews', label: 'Reviews', icon: 'rate_review', shortcut: 'g r' },
         ],
     },
     {
@@ -204,8 +204,11 @@ const shortcutDestinations: Record<MerchantSiteType, Record<string, string>> = {
         'g h': 'dashboard',
         'g o': 'orders',
         'g p': 'products',
+        'g i': 'products/inventory',
         'g c': 'customers',
         'g m': 'coupons',
+        'g d': 'coupons',
+        'g r': 'reviews',
         'g t': 'online-store/themes',
         'g a': 'analytics',
         'g x': 'apps',
@@ -260,7 +263,7 @@ export function getMerchantNavigation(siteType: string | null | undefined): Merc
 }
 
 export function getMerchantCommandItems(siteType: string | null | undefined, store: string): MerchantCommandItem[] {
-    const commands: MerchantCommandItem[] = []
+    const commands: MerchantCommandItem[] = getQuickActionCommands(siteType, store)
 
     for (const item of getMerchantNavigation(siteType)) {
         commands.push(toCommand(item, item.label, store))
@@ -275,6 +278,75 @@ export function getMerchantCommandItems(siteType: string | null | undefined, sto
 
 export function resolveKeyboardShortcut(siteType: string | null | undefined, sequence: string): string | null {
     return shortcutDestinations[normalizeSiteType(siteType)][sequence.toLowerCase()] ?? null
+}
+
+function getQuickActionCommands(siteType: string | null | undefined, store: string): MerchantCommandItem[] {
+    if (normalizeSiteType(siteType) !== 'store') return []
+
+    return [
+        quickAction('Create product', 'add_circle', 'products/new', store, 'n p', [
+            'create product',
+            'new product',
+            'add product',
+            'product create',
+        ]),
+        quickAction('Find order', 'shopping_cart', 'orders', store, 'g o', [
+            'find order',
+            'search order',
+            'lookup order',
+            'order search',
+            'order number',
+        ]),
+        quickAction('Find customer', 'group', 'customers', store, 'g c', [
+            'find customer',
+            'search customer',
+            'lookup customer',
+            'customer email',
+        ]),
+        quickAction('Update inventory', 'inventory', 'products/inventory', store, 'g i', [
+            'update inventory',
+            'edit inventory',
+            'stock',
+            'stock count',
+        ]),
+        quickAction('Customize theme', 'palette', 'online-store/themes', store, 'g t', [
+            'customize theme',
+            'theme editor',
+            'edit theme',
+            'online store theme',
+        ]),
+        quickAction('Install app', 'extension', 'apps', store, 'g x', [
+            'install app',
+            'app marketplace',
+            'find app',
+            'embedded app',
+        ]),
+        quickAction('Review discounts', 'sell', 'coupons', store, 'g d', [
+            'discount',
+            'coupon',
+            'promo code',
+            'marketing offer',
+        ]),
+    ]
+}
+
+function quickAction(
+    label: string,
+    icon: string,
+    path: string,
+    store: string,
+    shortcut: string,
+    keywords: string[]
+): MerchantCommandItem {
+    return {
+        label,
+        icon,
+        href: `/${store}/${path}`,
+        section: 'Quick actions',
+        pathHint: `/${path}`,
+        shortcut,
+        keywords: [label, path, shortcut, ...keywords].map((keyword) => keyword.toLowerCase()),
+    }
 }
 
 function toCommand(item: MerchantNavChild & { icon: string }, section: string, store: string): MerchantCommandItem {
