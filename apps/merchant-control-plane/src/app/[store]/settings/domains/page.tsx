@@ -1,129 +1,248 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    Button,
+    Card,
+    Globe,
+    Input,
+    Page,
+    PageHeader,
+    SaveBar,
+    Section,
+    Skeleton,
+    useToast,
+} from '@letbuyy/ui'
+
+interface DomainStoreData {
+    id: string
+    subdomain: string
+    custom_domain: string
+}
+
+type SaveState = 'saved' | 'unsaved' | 'saving'
+
+function readString(record: Record<string, unknown>, key: string, fallback = '') {
+    const value = record[key]
+    return typeof value === 'string' ? value : fallback
+}
 
 export default function DomainSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [loading, setLoading] = useState(true)
-    const [storeData, setStoreData] = useState({
+    const [loadError, setLoadError] = useState<string | null>(null)
+    const [saveState, setSaveState] = useState<SaveState>('saved')
+    const [storeData, setStoreData] = useState<DomainStoreData>({
         id: '',
         subdomain: '',
         custom_domain: '',
     })
+    const [initialDomain, setInitialDomain] = useState('')
     const [customDomain, setCustomDomain] = useState('')
-    const [saving, setSaving] = useState(false)
-    const [success, setSuccess] = useState(false)
+
+    const normalizedDomain = customDomain.trim()
+    const hasUnsavedChanges = useMemo(() => normalizedDomain !== initialDomain, [initialDomain, normalizedDomain])
+    const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
     useEffect(() => {
+        let mounted = true
+
         async function load() {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                cache: 'no-store',
-            })
-            const payload = await response.json()
-            const data = payload.data
+            setLoading(true)
+            setLoadError(null)
 
-            if (data) {
-                setStoreData({
-                    id: data.id,
-                    subdomain: data.subdomain || data.store_name || '',
-                    custom_domain: data.custom_domain || '',
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                    cache: 'no-store',
                 })
-                setCustomDomain(data.custom_domain || '')
+                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+
+                if (!response.ok) {
+                    throw new Error(payload.error || 'Unable to load domain settings')
+                }
+
+                const data = payload.data
+                if (!data) {
+                    throw new Error('Domain settings were not returned for this store')
+                }
+
+                const nextDomain = readString(data, 'custom_domain')
+                const nextStoreData: DomainStoreData = {
+                    id: readString(data, 'id'),
+                    subdomain: readString(data, 'subdomain', readString(data, 'store_name')),
+                    custom_domain: nextDomain,
+                }
+
+                if (!mounted) return
+                setStoreData(nextStoreData)
+                setCustomDomain(nextDomain)
+                setInitialDomain(nextDomain)
+                setSaveState('saved')
+            } catch (error) {
+                if (!mounted) return
+                const message = error instanceof Error ? error.message : 'Unable to load domain settings'
+                setLoadError(message)
+                notify({
+                    title: 'Domain settings could not load',
+                    description: message,
+                    variant: 'critical',
+                })
+            } finally {
+                if (mounted) setLoading(false)
             }
-            setLoading(false)
         }
-        load()
-    }, [store])
 
-    const handleSave = async (e: React.FormEvent) => {
-        e.preventDefault()
-        setSaving(true)
-        setSuccess(false)
+        void load()
 
-        await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ custom_domain: customDomain || null }),
+        return () => {
+            mounted = false
+        }
+    }, [notify, store])
+
+    const handleSave = useCallback(async () => {
+        if (!hasUnsavedChanges || saveState === 'saving') return
+
+        setSaveState('saving')
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ custom_domain: normalizedDomain || null }),
+            })
+            const payload = await response.json() as { error?: string }
+
+            if (!response.ok) {
+                throw new Error(payload.error || 'Unable to save domain settings')
+            }
+
+            setStoreData((current) => ({ ...current, custom_domain: normalizedDomain }))
+            setInitialDomain(normalizedDomain)
+            setCustomDomain(normalizedDomain)
+            setSaveState('saved')
+            notify({
+                title: 'Domain settings saved',
+                description: normalizedDomain
+                    ? `${normalizedDomain} is saved as your custom domain.`
+                    : 'Custom domain was cleared.',
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save domain settings'
+            setSaveState('unsaved')
+            notify({
+                title: 'Could not save domain settings',
+                description: message,
+                variant: 'critical',
+            })
+        }
+    }, [hasUnsavedChanges, normalizedDomain, notify, saveState, store])
+
+    const handleDiscard = useCallback(() => {
+        setCustomDomain(initialDomain)
+        setSaveState('saved')
+        notify({
+            title: 'Changes discarded',
+            description: 'Domain settings were reset to the last saved version.',
+            variant: 'info',
         })
-
-        setSaving(false)
-        setSuccess(true)
-        setStoreData(s => ({ ...s, custom_domain: customDomain }))
-        setTimeout(() => setSuccess(false), 3000)
-    }
+    }, [initialDomain, notify])
 
     if (loading) {
         return (
-            <div className="settings-page">
-                <div className="settings-page-header">
-                    <div className="settings-skeleton" style={{ width: 120, height: 28 }} />
-                </div>
-                <div className="settings-card">
-                    <div className="settings-skeleton" style={{ width: '100%', height: 120 }} />
-                </div>
-            </div>
+            <Page>
+                <PageHeader
+                    title="Domains"
+                    description="Manage LetBuyy and custom domains for this store."
+                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Domains' }]}
+                />
+                <Card>
+                    <Section title="Primary domain">
+                        <Skeleton variant="text" lines={3} />
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Custom domain">
+                        <Skeleton variant="text" lines={4} />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
     return (
-        <div className="settings-page">
-            <div className="settings-page-header">
-                <h1>Domains</h1>
-            </div>
+        <Page>
+            <PageHeader
+                title="Domains"
+                description="Manage LetBuyy and custom domains for this store."
+                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Domains' }]}
+            />
 
-            {success && (
-                <div className="settings-toast success">
-                    <MaterialIcon name="check_circle" />
-                    Domain settings saved successfully.
-                </div>
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Domain settings could not load"
+                    action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
             )}
 
-            <div className="settings-info-banner">
-                <MaterialIcon name="info" />
-                <span>Connect a custom domain to give your store a professional web address.</span>
-            </div>
+            <Banner variant="info" title="Custom domains need DNS setup">
+                Connect a custom domain to give your store a professional web address. Update DNS before switching traffic.
+            </Banner>
 
-            {/* Primary domain */}
-            <div className="settings-card">
-                <h2>Primary domain</h2>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <MaterialIcon name="language" style={{ fontSize: 18, color: 'var(--text-hint)' }} />
-                        <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{storeData.subdomain}.letbuyy.store</span>
+            <Card>
+                <Section
+                    title="Primary domain"
+                    description="The LetBuyy-hosted domain remains available even when a custom domain is connected."
+                >
+                    <div className="flex flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                        <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <span className="truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                {storeData.subdomain}.letbuyy.store
+                            </span>
+                        </div>
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                            <Badge label="Primary" variant="success" />
+                            <Badge label="Connected" variant="success" />
+                        </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                        <span className="settings-badge connected">Primary</span>
-                        <span className="settings-badge connected">Connected</span>
-                    </div>
-                </div>
-            </div>
+                </Section>
+            </Card>
 
-            {/* Custom domain */}
-            <form onSubmit={handleSave}>
-                <div className="settings-card">
-                    <h2>Custom domain</h2>
-                    <p style={{ marginBottom: 16 }}>
-                        Point a CNAME record from your domain to <code style={{ background: 'var(--bg-secondary)', padding: '2px 6px', borderRadius: 4, fontSize: 12 }}>stores.letbuyy.store</code>
-                    </p>
-                    <div className="settings-form-group">
-                        <label>Domain</label>
-                        <input
-                            type="text"
-                            value={customDomain}
-                            onChange={(e) => setCustomDomain(e.target.value)}
-                            placeholder="e.g. shop.yourdomain.com"
-                        />
+            <Card>
+                <Section
+                    title="Custom domain"
+                    description="Point a CNAME record from your domain to the LetBuyy storefront host."
+                >
+                    <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                        CNAME target: <code className="rounded-[var(--lb-radius-sm)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]">stores.letbuyy.store</code>
                     </div>
-                </div>
+                    <Input
+                        label="Domain"
+                        value={customDomain}
+                        onChange={(event) => setCustomDomain(event.target.value)}
+                        placeholder="e.g. shop.yourdomain.com"
+                        helperText={storeData.custom_domain ? `Current custom domain: ${storeData.custom_domain}` : 'Leave blank to use only the LetBuyy-hosted domain.'}
+                        autoComplete="url"
+                    />
+                </Section>
+            </Card>
 
-                <div className="settings-save-bar">
-                    <button type="submit" className="settings-btn-primary" disabled={saving}>
-                        {saving ? 'Saving...' : 'Save'}
-                    </button>
-                </div>
-            </form>
-        </div>
+            <SaveBar
+                state={activeSaveState}
+                onSave={() => void handleSave()}
+                onDiscard={handleDiscard}
+                saveLabel="Save domain"
+            />
+        </Page>
     )
 }
