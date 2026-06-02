@@ -19,6 +19,7 @@
 - Before-screenshots (real local stack): `artifacts/shopify-ux/ux0/before/dashboard.png`, `artifacts/shopify-ux/ux0/before/products.png`, `artifacts/shopify-ux/ux0/before/orders.png`, `artifacts/shopify-ux/ux0/before/customers.png`, `artifacts/shopify-ux/ux0/before/themes.png`, `artifacts/shopify-ux/ux0/before/apps.png`, `artifacts/shopify-ux/ux0/before/analytics.png`, `artifacts/shopify-ux/ux0/before/settings.png`.
 
 ## PROGRESS LOG (newest first)
+- 2026-06-02T11:30:21Z [UX2.2] Themes page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/themes-after.png` - commit `2a0f106`.
 - 2026-06-02T11:22:37Z [UX2.2] Dashboard page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/dashboard-after.png` - commit `d3b4257`.
 - 2026-06-02T11:13:21Z [UX2.2] Customers page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/customers-after.png` - commit `fb4baa4`.
 - 2026-06-02T11:07:36Z [UX2.2] Orders page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/orders-after.png` - commit `cf6af8c`.
@@ -45,12 +46,17 @@
 - 2026-06-02T10:56:33Z Products - before `artifacts/shopify-ux/ux0/before/products.png` | after `artifacts/shopify-ux/ux2/products-after.png`
 - 2026-06-02T11:07:36Z Orders - before `artifacts/shopify-ux/ux0/before/orders.png` | after `artifacts/shopify-ux/ux2/orders-after.png`
 - 2026-06-02T11:13:21Z Customers - before `artifacts/shopify-ux/ux0/before/customers.png` | after `artifacts/shopify-ux/ux2/customers-after.png`
-- 2026-06-02T09:46:28Z Themes - before `artifacts/shopify-ux/ux0/before/themes.png` | after pending
+- 2026-06-02T11:30:21Z Themes - before `artifacts/shopify-ux/ux0/before/themes.png` | after `artifacts/shopify-ux/ux2/themes-after.png`
 - 2026-06-02T09:46:28Z Apps - before `artifacts/shopify-ux/ux0/before/apps.png` | after pending
 - 2026-06-02T09:46:28Z Analytics - before `artifacts/shopify-ux/ux0/before/analytics.png` | after pending
 - 2026-06-02T09:46:28Z Settings - before `artifacts/shopify-ux/ux0/before/settings.png` | after pending
 
 ## VALIDATOR LEDGER
+- 2026-06-02T11:30:21Z pnpm --filter @letbuyy/merchant-control-plane typecheck -> PASS
+- 2026-06-02T11:30:21Z pnpm --filter @letbuyy/merchant-control-plane lint -> PASS (47 pre-existing warnings)
+- 2026-06-02T11:30:21Z pnpm lint -> PASS (pre-existing warnings only)
+- 2026-06-02T11:30:21Z pnpm turbo typecheck -> PASS (57/57 tasks successful)
+- 2026-06-02T11:30:21Z validate:governance -> 128/128 PASS after Themes migration (`2a0f106`)
 - 2026-06-02T11:22:37Z pnpm --filter @letbuyy/merchant-control-plane typecheck -> PASS
 - 2026-06-02T11:22:37Z pnpm --filter @letbuyy/merchant-control-plane lint -> PASS (47 pre-existing warnings)
 - 2026-06-02T11:22:37Z pnpm lint -> PASS (pre-existing warnings only)
