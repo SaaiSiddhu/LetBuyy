@@ -1,8 +1,22 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useParams, useRouter } from 'next/navigation'
+import {
+    Badge,
+    Banner,
+    Button,
+    Card,
+    CreditCard,
+    EmptyState,
+    FileText,
+    IndianRupee,
+    Page,
+    PageHeader,
+    Section,
+    Skeleton,
+    useToast,
+} from '@letbuyy/ui'
 
 interface Invoice {
     id: string
@@ -20,191 +34,323 @@ interface PaymentMethodInfo {
     is_default: boolean
 }
 
-type PaymentConfigPayload = {
+type BillingPayload = {
     data?: {
-        cod_enabled: boolean
-        payment_settings: {
-            razorpay: {
-                key_id: string | null
-                verified: boolean
-                secret_configured: boolean
-            } | null
+        subscription?: {
+            plan: string
+            status: string
+            current_period_end: string
+        }
+        invoices?: Array<Record<string, unknown>>
+        payment?: {
+            cod_enabled: boolean
+            payment_settings: {
+                razorpay: {
+                    key_id: string | null
+                    verified: boolean
+                    secret_configured: boolean
+                } | null
+            }
         }
     }
+    error?: string | { message?: string }
+}
+
+function getPayloadError(payload: BillingPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function formatMoney(amount: number, currency: string) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: currency || 'INR',
+        minimumFractionDigits: 2,
+    }).format(amount / 100)
+}
+
+function formatDate(value: string) {
+    if (!value) return 'Not scheduled'
+    return new Date(value).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+    })
+}
+
+function formatShortDate(value: string) {
+    if (!value) return 'Recently'
+    return new Date(value).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+    })
+}
+
+function statusVariant(status: string) {
+    return status === 'active' || status === 'paid' || status === 'succeeded' ? 'success' : 'warning'
 }
 
 export default function BillingSettingsPage() {
     const { store } = useParams<{ store: string }>()
+    const router = useRouter()
+    const { notify } = useToast()
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [invoices, setInvoices] = useState<Invoice[]>([])
     const [paymentMethods, setPaymentMethods] = useState<PaymentMethodInfo[]>([])
     const [subscription, setSubscription] = useState<{ plan: string; status: string; current_period_end: string } | null>(null)
 
-    useEffect(() => {
-        async function load() {
+    const totalPaid = useMemo(() => invoices.reduce((total, invoice) => total + invoice.amount_paid, 0), [invoices])
+
+    const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        if (!options?.quiet) setLoading(true)
+        setLoadError(null)
+
+        try {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/billing`, {
                 cache: 'no-store',
             })
-            const payload = await response.json()
-            const data = payload.data
+            const payload = (await response.json().catch(() => null)) as BillingPayload | null
 
-            const sub = data?.subscription
-            if (sub) setSubscription(sub)
-
-            const invoiceData = data?.invoices || []
-
-            if (invoiceData) {
-                setInvoices(invoiceData.map((inv: Record<string, unknown>) => ({
-                    id: inv.id as string,
-                    amount_paid: (inv.amount_paid as number) || 0,
-                    currency: 'INR',
-                    status: inv.status as string,
-                    billing_period: inv.billing_period as string,
-                    created_at: inv.created_at as string,
-                })))
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to load billing settings'))
             }
 
-            const paymentPayload = { data: data?.payment } as PaymentConfigPayload
-            if (paymentPayload.data) {
-                const configuredMethods: PaymentMethodInfo[] = []
-                const razorpay = paymentPayload.data.payment_settings.razorpay
+            const data = payload?.data
+            setSubscription(data?.subscription || null)
 
-                if (razorpay?.secret_configured) {
-                    configuredMethods.push({
-                        id: 'razorpay',
-                        provider: 'Razorpay',
-                        detail: razorpay.key_id || 'Configured',
-                        is_default: razorpay.verified,
-                    })
-                }
+            const invoiceData = Array.isArray(data?.invoices) ? data.invoices : []
+            setInvoices(invoiceData.map((invoice) => ({
+                id: invoice.id as string,
+                amount_paid: (invoice.amount_paid as number) || 0,
+                currency: (invoice.currency as string) || 'INR',
+                status: (invoice.status as string) || 'pending',
+                billing_period: (invoice.billing_period as string) || '',
+                created_at: (invoice.created_at as string) || '',
+            })))
 
-                if (paymentPayload.data.cod_enabled) {
-                    configuredMethods.push({
-                        id: 'cod',
-                        provider: 'Cash on Delivery',
-                        detail: 'Available at checkout',
-                        is_default: !razorpay?.secret_configured,
-                    })
-                }
+            const payment = data?.payment
+            const configuredMethods: PaymentMethodInfo[] = []
+            const razorpay = payment?.payment_settings.razorpay
 
-                setPaymentMethods(configuredMethods)
+            if (razorpay?.secret_configured) {
+                configuredMethods.push({
+                    id: 'razorpay',
+                    provider: 'Razorpay',
+                    detail: razorpay.key_id || 'Configured',
+                    is_default: razorpay.verified,
+                })
             }
 
+            if (payment?.cod_enabled) {
+                configuredMethods.push({
+                    id: 'cod',
+                    provider: 'Cash on Delivery',
+                    detail: 'Available at checkout',
+                    is_default: !razorpay?.secret_configured,
+                })
+            }
+
+            setPaymentMethods(configuredMethods)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load billing settings'
+            setLoadError(message)
+            notify({
+                title: 'Billing could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
             setLoading(false)
         }
-        load()
-    }, [store])
+    }, [notify, store])
+
+    useEffect(() => {
+        void loadData()
+    }, [loadData])
 
     if (loading) {
         return (
-            <div className="settings-page">
-                <div className="settings-page-header"><div className="settings-skeleton" style={{ width: 80, height: 28 }} /></div>
-                <div className="settings-card"><div className="settings-skeleton" style={{ width: '100%', height: 100 }} /></div>
-                <div className="settings-card"><div className="settings-skeleton" style={{ width: '100%', height: 120 }} /></div>
-            </div>
+            <Page>
+                <PageHeader
+                    title="Billing"
+                    description="Review subscription charges, payment methods, and invoice history."
+                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Billing' }]}
+                />
+                <Card>
+                    <Section title="Current subscription">
+                        <Skeleton variant="card" />
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Billing history">
+                        <Skeleton variant="table" lines={4} />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
     return (
-        <div className="settings-page">
-            <div className="settings-page-header">
-                <h1>Billing</h1>
-            </div>
+        <Page>
+            <PageHeader
+                title="Billing"
+                description="Review subscription charges, payment methods, and invoice history."
+                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Billing' }]}
+                primaryAction={{
+                    label: 'Manage plan',
+                    onClick: () => router.push(`/${store}/settings/plan`),
+                }}
+                secondaryActions={[{
+                    label: 'Payment settings',
+                    onClick: () => router.push(`/${store}/settings/payments`),
+                }]}
+            />
 
-            {/* Subscription summary */}
-            {subscription ? (
-                <div className="settings-card">
-                    <h2>Current subscription</h2>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0' }}>
-                        <div>
-                            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{subscription.plan} Plan</div>
-                            {subscription.current_period_end && (
-                                <div style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 2 }}>
-                                    Next billing: {new Date(subscription.current_period_end).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
-                                </div>
-                            )}
-                        </div>
-                        <span className="settings-badge connected">{subscription.status}</span>
-                    </div>
-                </div>
-            ) : (
-                <div className="settings-info-banner">
-                    <MaterialIcon name="info" />
-                    <span>Billing management will be available once you upgrade from the free trial.</span>
-                </div>
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Billing could not load"
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
             )}
 
-            {/* Payment method */}
-            <div className="settings-card">
-                <h2>Payment method</h2>
-                {paymentMethods.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <MaterialIcon name="credit_card" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
-                        <p style={{ marginBottom: 12 }}>No payment method on file.</p>
-                        <button className="settings-btn-secondary">Add payment method</button>
-                    </div>
-                ) : (
-                    paymentMethods.map(pm => (
-                        <div key={pm.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <MaterialIcon name="credit_card" style={{ fontSize: 20, color: 'var(--text-hint)' }} />
-                                <div>
-                                    <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{pm.provider}</div>
-                                    <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>{pm.detail}</div>
-                                </div>
-                            </div>
-                            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                                {pm.is_default && <span className="settings-badge connected">Default</span>}
-                                <button className="settings-btn-secondary" style={{ padding: '5px 10px', fontSize: 12 }}>Remove</button>
-                            </div>
+            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                <Card className="p-[var(--lb-space-4)]">
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <IndianRupee className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                        <div>
+                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Paid invoices</p>
+                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{formatMoney(totalPaid, 'INR')}</p>
                         </div>
-                    ))
-                )}
+                    </div>
+                </Card>
+                <Card className="p-[var(--lb-space-4)]">
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <FileText className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-info)]" aria-hidden="true" />
+                        <div>
+                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Invoices</p>
+                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{invoices.length}</p>
+                        </div>
+                    </div>
+                </Card>
+                <Card className="p-[var(--lb-space-4)]">
+                    <div className="flex items-center gap-[var(--lb-space-3)]">
+                        <CreditCard className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-success)]" aria-hidden="true" />
+                        <div>
+                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Payment methods</p>
+                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{paymentMethods.length}</p>
+                        </div>
+                    </div>
+                </Card>
             </div>
 
-            {/* Billing history */}
-            <div className="settings-card">
-                <h2>Billing history</h2>
-                {invoices.length === 0 ? (
-                    <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <MaterialIcon name="receipt_long" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
-                        <p>No invoices yet.</p>
-                    </div>
-                ) : (
-                    <div style={{ overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                            <thead>
-                                <tr style={{ borderBottom: '1px solid var(--border)' }}>
-                                    <th style={{ textAlign: 'left', padding: '8px 0', color: 'var(--text-hint)', fontWeight: 500 }}>Date</th>
-                                    <th style={{ textAlign: 'left', padding: '8px 0', color: 'var(--text-hint)', fontWeight: 500 }}>Period</th>
-                                    <th style={{ textAlign: 'right', padding: '8px 0', color: 'var(--text-hint)', fontWeight: 500 }}>Amount</th>
-                                    <th style={{ textAlign: 'right', padding: '8px 0', color: 'var(--text-hint)', fontWeight: 500 }}>Status</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {invoices.map(inv => (
-                                    <tr key={inv.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                                        <td style={{ padding: '10px 0', color: 'var(--text-primary)' }}>
-                                            {new Date(inv.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                        </td>
-                                        <td style={{ padding: '10px 0', color: 'var(--text-secondary)', textTransform: 'capitalize' }}>
-                                            {inv.billing_period || '—'}
-                                        </td>
-                                        <td style={{ padding: '10px 0', color: 'var(--text-primary)', textAlign: 'right', fontWeight: 500 }}>
-                                            ₹{(inv.amount_paid / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                                        </td>
-                                        <td style={{ padding: '10px 0', textAlign: 'right' }}>
-                                            <span className={`settings-badge ${inv.status === 'active' || inv.status === 'paid' ? 'connected' : 'pending'}`}>
-                                                {inv.status}
-                                            </span>
-                                        </td>
+            {subscription ? (
+                <Card>
+                    <Section
+                        title="Current subscription"
+                        description="Subscription status and renewal information for this store."
+                    >
+                        <div className="flex flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                            <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                    {subscription.plan} plan
+                                </h3>
+                                <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                    Next billing: {formatDate(subscription.current_period_end)}
+                                </p>
+                            </div>
+                            <Badge label={subscription.status || 'Active'} variant={statusVariant(subscription.status)} />
+                        </div>
+                    </Section>
+                </Card>
+            ) : (
+                <Banner variant="info" title="Trial billing">
+                    Billing management will be available once you upgrade from the free trial.
+                </Banner>
+            )}
+
+            <Card>
+                <Section
+                    title="Payment method"
+                    description="Payment settings are managed from the Payments page so checkout configuration stays in one place."
+                    action={<Button type="button" variant="secondary" onClick={() => router.push(`/${store}/settings/payments`)}>Open payment settings</Button>}
+                >
+                    {paymentMethods.length === 0 ? (
+                        <EmptyState
+                            icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No payment method on file"
+                            body="Configure Razorpay credentials or Cash on Delivery from Payments settings to make checkout available."
+                            primaryAction={<Button type="button" onClick={() => router.push(`/${store}/settings/payments`)}>Open payment settings</Button>}
+                        />
+                    ) : (
+                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                            {paymentMethods.map((method) => (
+                                <div key={method.id} className="flex flex-col gap-[var(--lb-space-3)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                                    <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                                        <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                            <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        </span>
+                                        <div className="min-w-0">
+                                            <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">{method.provider}</p>
+                                            <p className="m-0 truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">{method.detail}</p>
+                                        </div>
+                                    </div>
+                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                        {method.is_default && <Badge label="Default" variant="success" />}
+                                        <Button type="button" variant="secondary" size="sm" onClick={() => router.push(`/${store}/settings/payments`)}>
+                                            Manage
+                                        </Button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="Billing history"
+                    description="Invoices and subscription charge records for this store."
+                >
+                    {invoices.length === 0 ? (
+                        <EmptyState
+                            icon={<FileText className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No invoices yet"
+                            body="Invoices will appear here after your first paid subscription cycle."
+                        />
+                    ) : (
+                        <div className="overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                            <table className="w-full border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                                <thead className="bg-[var(--lb-color-surface-subdued)]">
+                                    <tr>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Date</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Period</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Amount</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Status</th>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </div>
-        </div>
+                                </thead>
+                                <tbody className="divide-y divide-[var(--lb-color-border)] bg-[var(--lb-color-surface)]">
+                                    {invoices.map((invoice) => (
+                                        <tr key={invoice.id}>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">{formatShortDate(invoice.created_at)}</td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] capitalize text-[var(--lb-color-text-subdued)]">{invoice.billing_period || 'Not set'}</td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">{formatMoney(invoice.amount_paid, invoice.currency)}</td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right">
+                                                <Badge label={invoice.status || 'Pending'} variant={statusVariant(invoice.status)} />
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </Section>
+            </Card>
+        </Page>
     )
 }
