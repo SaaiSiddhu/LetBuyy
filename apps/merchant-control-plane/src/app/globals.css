@@ -1548,11 +1548,8 @@ body {
   color: var(--error);
 }
 
-.all-stores-empty {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-hint);
-  font-size: 14px;
+.all-stores-empty-state {
+  width: 100%;
 }
 
 /* ======================================

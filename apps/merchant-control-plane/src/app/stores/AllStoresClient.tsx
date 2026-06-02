@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, EmptyState, MaterialIcon, Plus, Store } from '@letbuyy/ui'
 
 interface UserStore {
     id: string
@@ -69,6 +69,10 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
     const activeStores = stores.filter((s) => s.status === 'active')
     const inactiveStores = stores.filter((s) => s.status !== 'active')
     const filtered = tab === 'active' ? activeStores : inactiveStores
+    const emptyTitle = tab === 'active' ? 'No active stores yet' : 'No inactive stores'
+    const emptyBody = tab === 'active'
+        ? 'Create a store to start managing products, storefront design, orders, and customers.'
+        : 'Paused, archived, or pending stores will appear here when they need your attention.'
 
     const userInitial = (user.fullName || user.email).charAt(0).toUpperCase()
     const firstName = user.fullName ? user.fullName.split(' ')[0] : 'there'
@@ -125,12 +129,18 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                 {/* Store list */}
                 <div className="all-stores-list">
                     {filtered.length === 0 ? (
-                        <div className="all-stores-empty">
-                            {tab === 'active'
-                                ? 'No active stores. Create your first one!'
-                                : 'No inactive stores.'
-                            }
-                        </div>
+                        <EmptyState
+                            className="all-stores-empty-state"
+                            icon={<Store className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title={emptyTitle}
+                            body={emptyBody}
+                            primaryAction={tab === 'active' ? (
+                                <Button type="button" variant="primary" onClick={handleCreateStore}>
+                                    <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Create store
+                                </Button>
+                            ) : undefined}
+                        />
                     ) : (
                         filtered.map((store) => (
                             <button
