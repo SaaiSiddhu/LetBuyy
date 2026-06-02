@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 /* ======================================
    LETBUYY ADMIN — DESIGN SYSTEM
