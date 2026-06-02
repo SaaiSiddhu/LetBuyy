@@ -1,99 +1,353 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Activity,
+    Badge,
+    Banner,
+    Button,
+    Card,
+    DataTable,
+    Edit3,
+    EmptyState,
+    FileText,
+    Image as ImageIcon,
+    Mail,
+    MetricCard,
+    Page,
+    PageHeader,
+    RefreshCw,
+    Search,
+    Section,
+    Share2,
+    Skeleton,
+    Sparkles,
+    type Column,
+    useToast,
+} from '@letbuyy/ui'
 
-interface AiUsage { id: string; feature: string; input_tokens: number; output_tokens: number; credits_used: number; created_at: string }
+interface AiUsage {
+    id: string
+    feature: string
+    input_tokens: number
+    output_tokens: number
+    credits_used: number
+    created_at: string
+}
 
-const AI_FEATURES = [
-    { key: 'product_description', icon: 'description', label: 'Product Descriptions', desc: 'Auto-generate compelling product descriptions' },
-    { key: 'seo_content', icon: 'search', label: 'SEO Content', desc: 'Generate meta titles, descriptions, and keywords' },
-    { key: 'blog_draft', icon: 'edit_note', label: 'Blog Drafts', desc: 'Create blog post outlines and first drafts' },
-    { key: 'social_media', icon: 'share', label: 'Social Posts', desc: 'Write social media captions and posts' },
-    { key: 'email_copy', icon: 'mail', label: 'Email Copy', desc: 'Draft marketing emails and newsletters' },
-    { key: 'image_alt', icon: 'image', label: 'Image Alt Text', desc: 'Generate accessible alt text for images' },
+interface Credits {
+    total: number
+    used: number
+    remaining: number
+}
+
+const aiFeatures = [
+    {
+        key: 'product_description',
+        icon: FileText,
+        label: 'Product descriptions',
+        description: 'Auto-generate compelling product descriptions.',
+    },
+    {
+        key: 'seo_content',
+        icon: Search,
+        label: 'SEO content',
+        description: 'Generate meta titles, descriptions, and keywords.',
+    },
+    {
+        key: 'blog_draft',
+        icon: Edit3,
+        label: 'Blog drafts',
+        description: 'Create blog post outlines and first drafts.',
+    },
+    {
+        key: 'social_media',
+        icon: Share2,
+        label: 'Social posts',
+        description: 'Write social media captions and posts.',
+    },
+    {
+        key: 'email_copy',
+        icon: Mail,
+        label: 'Email copy',
+        description: 'Draft marketing emails and newsletters.',
+    },
+    {
+        key: 'image_alt',
+        icon: ImageIcon,
+        label: 'Image alt text',
+        description: 'Generate accessible alt text for product images.',
+    },
 ]
+
+function getErrorMessage(payload: unknown, fallback: string) {
+    if (payload && typeof payload === 'object') {
+        const error = (payload as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+            const message = (error as { message?: unknown }).message
+            if (typeof message === 'string') return message
+        }
+        const message = (payload as { message?: unknown }).message
+        if (typeof message === 'string') return message
+    }
+
+    return fallback
+}
+
+function formatDate(value: string) {
+    return new Date(value).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+    })
+}
+
+function formatFeature(value: string) {
+    return value.replace(/_/g, ' ')
+}
 
 export default function AiStudioPage() {
     const { store } = useParams<{ store: string }>()
-    const [credits, setCredits] = useState<{ total: number; used: number; remaining: number }>({ total: 0, used: 0, remaining: 0 })
+    const { notify } = useToast()
+    const [credits, setCredits] = useState<Credits>({ total: 0, used: 0, remaining: 0 })
     const [usage, setUsage] = useState<AiUsage[]>([])
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
 
-    const load = useCallback(async () => {
-        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store' })
-        const payload = await response.json()
-        const creditData = payload.data?.credits
-        if (creditData) {
-            const total = Number(creditData.total_credits ?? creditData.plan_credits ?? creditData.balance ?? 0)
-            const used = Number(creditData.used_credits ?? creditData.total_used ?? 0)
-            setCredits({ total, used, remaining: Math.max(0, total - used) })
+    const loadAiStudio = useCallback(async () => {
+        setLoading(true)
+        setLoadError(null)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/ai`, { cache: 'no-store' })
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to load AI Studio'))
+            }
+
+            const creditData = payload?.data?.credits
+            if (creditData) {
+                const total = Number(creditData.total_credits ?? creditData.plan_credits ?? creditData.balance ?? 0)
+                const used = Number(creditData.used_credits ?? creditData.total_used ?? 0)
+                setCredits({ total, used, remaining: Math.max(0, total - used) })
+            } else {
+                setCredits({ total: 0, used: 0, remaining: 0 })
+            }
+            setUsage(Array.isArray(payload?.data?.usage) ? payload.data.usage : [])
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load AI Studio'
+            setCredits({ total: 0, used: 0, remaining: 0 })
+            setUsage([])
+            setLoadError(message)
+            notify({
+                title: 'AI Studio could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoading(false)
         }
-        setUsage(payload.data?.usage || [])
-        setLoading(false)
-    }, [store])
+    }, [notify, store])
 
-    useEffect(() => { load() }, [load])
+    useEffect(() => {
+        void loadAiStudio()
+    }, [loadAiStudio])
 
-    const fD = (d: string) => new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
-    const pct = credits.total > 0 ? Math.round((credits.used / credits.total) * 100) : 0
+    const percentUsed = credits.total > 0 ? Math.round((credits.used / credits.total) * 100) : 0
+    const usageRows = useMemo<Record<string, unknown>[]>(
+        () => usage.map((item) => ({
+            id: item.id,
+            feature: item.feature,
+            tokens: item.input_tokens + item.output_tokens,
+            credits_used: item.credits_used,
+            created_at: item.created_at,
+        })),
+        [usage],
+    )
+    const usageColumns = useMemo<Column<Record<string, unknown>>[]>(() => [
+        {
+            key: 'feature',
+            header: 'Feature',
+            render: (value) => (
+                <span className="capitalize text-[var(--lb-color-text)]">
+                    {formatFeature(String(value || 'unknown'))}
+                </span>
+            ),
+        },
+        {
+            key: 'tokens',
+            header: 'Tokens',
+            render: (value) => (
+                <span className="text-[var(--lb-color-text-subdued)]">
+                    {Number(value || 0).toLocaleString('en-IN')}
+                </span>
+            ),
+        },
+        {
+            key: 'credits_used',
+            header: 'Credits',
+            render: (value) => <Badge label={Number(value || 0).toLocaleString('en-IN')} variant="default" />,
+        },
+        {
+            key: 'created_at',
+            header: 'Date',
+            render: (value) => (
+                <span className="text-[var(--lb-color-text-subdued)]">
+                    {formatDate(String(value || new Date().toISOString()))}
+                </span>
+            ),
+        },
+    ], [])
 
-    if (loading) return <div className="setup-dashboard" style={{ padding: '24px 32px' }}><div className="products-page-header"><h1>AI Studio</h1></div><div className="admin-skeleton" style={{ height: 400, borderRadius: 14 }} /></div>
+    if (loading) {
+        return (
+            <Page>
+                <PageHeader
+                    title="AI Studio"
+                    description="Monitor AI credits and the tools available to speed up merchant content work."
+                    breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
+                />
+                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-3">
+                    <Skeleton variant="card" lines={3} />
+                    <Skeleton variant="card" lines={3} />
+                    <Skeleton variant="card" lines={3} />
+                </div>
+                <Card>
+                    <Section title="AI tools">
+                        <Skeleton variant="card" lines={8} />
+                    </Section>
+                </Card>
+            </Page>
+        )
+    }
 
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header"><h1>AI Studio</h1></div>
+        <Page>
+            <PageHeader
+                title="AI Studio"
+                description="Monitor AI credits and the tools available to speed up merchant content work."
+                breadcrumbs={[{ label: 'Store' }, { label: 'AI Studio' }]}
+                secondaryActions={[
+                    {
+                        label: 'Refresh',
+                        onClick: () => void loadAiStudio(),
+                        icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    },
+                ]}
+            />
 
-            {/* Credits Overview */}
-            <div className="products-list-card" style={{ padding: 24, marginBottom: 20 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                    <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>AI Credits</h3>
-                    <span style={{ fontSize: 24, fontWeight: 700 }}>{credits.remaining.toLocaleString()}<span style={{ fontSize: 13, fontWeight: 400, color: 'var(--text-hint)' }}> / {credits.total.toLocaleString()}</span></span>
-                </div>
-                <div style={{ height: 8, borderRadius: 4, background: 'var(--bg-tertiary)', overflow: 'hidden' }}>
-                    <div style={{ width: `${pct}%`, height: '100%', borderRadius: 4, background: pct > 80 ? '#ef4444' : pct > 50 ? '#f59e0b' : '#22c55e' }} />
-                </div>
-                <div style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 6 }}>{pct}% used • {credits.used.toLocaleString()} credits consumed</div>
-            </div>
-
-            {/* Feature Cards */}
-            <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>AI Tools</h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12, marginBottom: 24 }}>
-                {AI_FEATURES.map(f => (
-                    <div key={f.key} className="products-list-card" style={{ padding: 16, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-                        <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <MaterialIcon name={f.icon} style={{ fontSize: 20, color: 'var(--text-secondary)' }} />
-                        </div>
-                        <div>
-                            <div style={{ fontWeight: 600, fontSize: 14 }}>{f.label}</div>
-                            <div style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 2 }}>{f.desc}</div>
-                        </div>
-                    </div>
-                ))}
-            </div>
-
-            {/* Usage History */}
-            {usage.length > 0 && (
-                <>
-                    <h3 style={{ fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Recent Usage</h3>
-                    <div className="products-list-card">
-                        <table className="products-table">
-                            <thead><tr><th>Feature</th><th>Tokens</th><th>Credits</th><th>Date</th></tr></thead>
-                            <tbody>
-                                {usage.map(u => (
-                                    <tr key={u.id}>
-                                        <td style={{ fontWeight: 500, textTransform: 'capitalize' }}>{u.feature.replace(/_/g, ' ')}</td>
-                                        <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{u.input_tokens + u.output_tokens}</td>
-                                        <td>{u.credits_used}</td>
-                                        <td style={{ fontSize: 13, color: 'var(--text-hint)' }}>{fD(u.created_at)}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </>
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="AI Studio could not load"
+                    action={<Button variant="secondary" onClick={() => void loadAiStudio()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
             )}
-        </div>
+
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-3">
+                <MetricCard
+                    label="Credits remaining"
+                    value={credits.remaining.toLocaleString('en-IN')}
+                    delta={credits.total > 0 ? `${percentUsed}% used` : 'No plan credit data'}
+                    deltaTone={percentUsed > 80 ? 'negative' : percentUsed > 50 ? 'neutral' : 'positive'}
+                />
+                <MetricCard
+                    label="Credits used"
+                    value={credits.used.toLocaleString('en-IN')}
+                    delta={`${credits.total.toLocaleString('en-IN')} total credits`}
+                    deltaTone="neutral"
+                />
+                <MetricCard
+                    label="Recent generations"
+                    value={usage.length.toLocaleString('en-IN')}
+                    delta="Last 100 AI usage events"
+                    deltaTone="neutral"
+                />
+            </div>
+
+            <Card>
+                <Section
+                    title="AI credits"
+                    description="Track consumption before merchants start generating product, SEO, and campaign copy."
+                >
+                    <progress
+                        value={credits.used}
+                        max={credits.total || 1}
+                        className="h-[var(--lb-space-3)] w-full overflow-hidden rounded-[var(--lb-radius-full)] accent-[var(--lb-color-primary)]"
+                        aria-label="AI credit usage"
+                    />
+                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        {percentUsed}% used - {credits.used.toLocaleString('en-IN')} credits consumed.
+                    </p>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="AI tools"
+                    description="Content helpers available to this store through the existing AI Studio surface."
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2 xl:grid-cols-3">
+                        {aiFeatures.map((feature) => {
+                            const Icon = feature.icon
+                            return (
+                                <div
+                                    key={feature.key}
+                                    className="flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
+                                >
+                                    <span className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                        <Icon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    </span>
+                                    <div className="min-w-0">
+                                        <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                            <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                {feature.label}
+                                            </h3>
+                                            <Badge label="Available" variant="success" />
+                                        </div>
+                                        <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                            {feature.description}
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="Recent usage"
+                    description="A record of the latest AI generations and credit consumption."
+                >
+                    {usageRows.length > 0 ? (
+                        <DataTable
+                            columns={usageColumns}
+                            data={usageRows}
+                            emptyMessage="No AI usage yet"
+                        />
+                    ) : (
+                        <EmptyState
+                            icon={<Activity className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No AI usage yet"
+                            body="AI generations will appear here after merchants use product copy, SEO, blog, social, email, or image alt text tools."
+                            secondaryAction={(
+                                <span className="inline-flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                    <Sparkles className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Ready for first generation
+                                </span>
+                            )}
+                        />
+                    )}
+                </Section>
+            </Card>
+        </Page>
     )
 }
