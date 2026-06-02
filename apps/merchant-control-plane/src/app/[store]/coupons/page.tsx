@@ -1,11 +1,32 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    Button,
+    Card,
+    ConfirmDialog,
+    EmptyState,
+    IndianRupee,
+    Input,
+    Page,
+    PageHeader,
+    Pencil,
+    Plus,
+    SaveBar,
+    Section,
+    Select,
+    Skeleton,
+    Tag,
+    Trash2,
+    useToast,
+} from '@letbuyy/ui'
 
 type CouponDiscountKind = SharedCoupon['type'] | 'fixed_amount'
+type SaveState = 'saved' | 'unsaved' | 'saving'
 
 type CouponRow = Omit<
     Pick<SharedCoupon, 'id' | 'code' | 'value' | 'used_count' | 'starts_at' | 'expires_at' | 'is_active' | 'created_at'>,
@@ -16,6 +37,28 @@ type CouponRow = Omit<
     max_uses: number | null
     starts_at: string | null
     expires_at: string | null
+}
+
+interface CouponFormData {
+    code: string
+    type: CouponRow['type']
+    value: string
+    min_purchase: string
+    max_uses: string
+    starts_at: string
+    expires_at: string
+    is_active: boolean
+}
+
+const blankForm: CouponFormData = {
+    code: '',
+    type: 'percentage',
+    value: '',
+    min_purchase: '',
+    max_uses: '',
+    starts_at: '',
+    expires_at: '',
+    is_active: true,
 }
 
 function getErrorMessage(payload: unknown, fallback: string) {
@@ -33,35 +76,132 @@ function getErrorMessage(payload: unknown, fallback: string) {
     return fallback
 }
 
+function formatDate(date: string | null) {
+    return date
+        ? new Date(date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+        : 'No expiry'
+}
+
+function formatDiscount(coupon: CouponRow) {
+    if (coupon.type === 'percentage') return `${coupon.value}%`
+    if (coupon.type === 'fixed_amount') return `Rs. ${coupon.value}`
+    return 'Free shipping'
+}
+
+function isExpired(coupon: CouponRow) {
+    return Boolean(coupon.expires_at && new Date(coupon.expires_at) < new Date())
+}
+
+function statusLabel(coupon: CouponRow) {
+    if (isExpired(coupon)) return 'Expired'
+    return coupon.is_active ? 'Active' : 'Inactive'
+}
+
+function statusVariant(coupon: CouponRow) {
+    if (isExpired(coupon)) return 'critical'
+    return coupon.is_active ? 'success' : 'default'
+}
+
 export default function CouponsPage() {
     const { store } = useParams<{ store: string }>()
-
+    const { notify } = useToast()
     const [coupons, setCoupons] = useState<CouponRow[]>([])
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
     const [formError, setFormError] = useState<string | null>(null)
-    const [formData, setFormData] = useState({
-        code: '', type: 'percentage' as CouponRow['type'], value: '', min_purchase: '', max_uses: '',
-        starts_at: '', expires_at: '', is_active: true
-    })
+    const [formSaveState, setFormSaveState] = useState<SaveState>('saved')
+    const [couponToDelete, setCouponToDelete] = useState<CouponRow | null>(null)
+    const [deleting, setDeleting] = useState(false)
+    const [togglingId, setTogglingId] = useState<string | null>(null)
+    const [formData, setFormData] = useState<CouponFormData>(blankForm)
 
-    const loadCoupons = useCallback(async () => {
-        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/coupons?status=all&limit=100`, {
-            cache: 'no-store',
+    const activeCoupons = useMemo(() => coupons.filter((coupon) => coupon.is_active && !isExpired(coupon)).length, [coupons])
+    const expiredCoupons = useMemo(() => coupons.filter((coupon) => isExpired(coupon)).length, [coupons])
+    const totalUses = useMemo(() => coupons.reduce((total, coupon) => total + (coupon.used_count || 0), 0), [coupons])
+
+    const loadCoupons = useCallback(async (options?: { quiet?: boolean }) => {
+        if (!options?.quiet) setLoading(true)
+        setLoadError(null)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/coupons?status=all&limit=100`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to load coupons'))
+            }
+
+            setCoupons(Array.isArray(payload?.data) ? payload.data : [])
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load coupons'
+            setLoadError(message)
+            notify({
+                title: 'Coupons could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoading(false)
+        }
+    }, [notify, store])
+
+    useEffect(() => {
+        void loadCoupons()
+    }, [loadCoupons])
+
+    const updateForm = useCallback(<Key extends keyof CouponFormData>(key: Key, value: CouponFormData[Key]) => {
+        setFormData((current) => ({ ...current, [key]: value }))
+        setFormSaveState('unsaved')
+        setFormError(null)
+    }, [])
+
+    const closeForm = useCallback(() => {
+        setShowForm(false)
+        setEditingId(null)
+        setFormError(null)
+        setFormData(blankForm)
+        setFormSaveState('saved')
+    }, [])
+
+    const startCreate = useCallback(() => {
+        setShowForm(true)
+        setEditingId(null)
+        setFormError(null)
+        setFormData(blankForm)
+        setFormSaveState('unsaved')
+    }, [])
+
+    const startEdit = useCallback((coupon: CouponRow) => {
+        setEditingId(coupon.id)
+        setFormError(null)
+        setFormData({
+            code: coupon.code,
+            type: coupon.type,
+            value: String(coupon.value),
+            min_purchase: coupon.min_purchase ? String(coupon.min_purchase) : '',
+            max_uses: coupon.max_uses ? String(coupon.max_uses) : '',
+            starts_at: coupon.starts_at ? coupon.starts_at.split('T')[0] : '',
+            expires_at: coupon.expires_at ? coupon.expires_at.split('T')[0] : '',
+            is_active: coupon.is_active,
         })
-        const payload = await response.json()
+        setFormSaveState('saved')
+        setShowForm(true)
+    }, [])
 
-        setCoupons(Array.isArray(payload.data) ? payload.data : [])
-        setLoading(false)
-    }, [store])
+    const handleSave = useCallback(async () => {
+        if (!formData.code || (formData.type !== 'free_shipping' && !formData.value)) {
+            setFormError('Enter a coupon code and discount value before saving.')
+            setFormSaveState('unsaved')
+            return
+        }
 
-    useEffect(() => { loadCoupons() }, [loadCoupons])
-
-    const handleSave = async () => {
-        if (!formData.code || (formData.type !== 'free_shipping' && !formData.value)) return
         setSaving(true)
+        setFormSaveState('saving')
         setFormError(null)
 
         const payload = {
@@ -69,7 +209,7 @@ export default function CouponsPage() {
             type: formData.type,
             value: formData.type === 'free_shipping' ? 0 : parseFloat(formData.value),
             min_purchase: formData.min_purchase ? parseFloat(formData.min_purchase) : null,
-            max_uses: formData.max_uses ? parseInt(formData.max_uses) : null,
+            max_uses: formData.max_uses ? parseInt(formData.max_uses, 10) : null,
             starts_at: formData.starts_at || null,
             expires_at: formData.expires_at || null,
             is_active: formData.is_active,
@@ -84,235 +224,375 @@ export default function CouponsPage() {
                     method: editingId ? 'PATCH' : 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload),
-                }
+                },
             )
             const result = await response.json().catch(() => null)
 
             if (!response.ok) {
-                setFormError(getErrorMessage(result, 'Unable to save coupon'))
-                return
+                throw new Error(getErrorMessage(result, 'Unable to save coupon'))
             }
 
-            setShowForm(false)
-            setEditingId(null)
-            resetForm()
-            await loadCoupons()
-        } catch {
-            setFormError('Unable to save coupon')
+            notify({
+                title: editingId ? 'Coupon updated' : 'Coupon created',
+                description: `${payload.code} is ready for checkout promotions.`,
+                variant: 'success',
+            })
+            closeForm()
+            await loadCoupons({ quiet: true })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save coupon'
+            setFormError(message)
+            setFormSaveState('unsaved')
+            notify({
+                title: 'Could not save coupon',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setSaving(false)
         }
-    }
+    }, [closeForm, editingId, formData, loadCoupons, notify, store])
 
-    const resetForm = () => setFormData({
-        code: '', type: 'percentage', value: '', min_purchase: '', max_uses: '',
-        starts_at: '', expires_at: '', is_active: true
-    })
+    const handleDelete = useCallback(async () => {
+        if (!couponToDelete || deleting) return
+        setDeleting(true)
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Delete this coupon?')) return
-        await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(id)}`, {
-            method: 'DELETE',
-        })
-        loadCoupons()
-    }
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(couponToDelete.id)}`, {
+                method: 'DELETE',
+            })
+            const payload = await response.json().catch(() => null)
 
-    const toggleActive = async (coupon: CouponRow) => {
-        await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(coupon.id)}`, {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ is_active: !coupon.is_active }),
-        })
-        loadCoupons()
-    }
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to delete coupon'))
+            }
 
-    const startEdit = (c: CouponRow) => {
-        setEditingId(c.id)
-        setFormError(null)
-        setFormData({
-            code: c.code, type: c.type, value: String(c.value),
-            min_purchase: c.min_purchase ? String(c.min_purchase) : '',
-            max_uses: c.max_uses ? String(c.max_uses) : '',
-            starts_at: c.starts_at ? c.starts_at.split('T')[0] : '',
-            expires_at: c.expires_at ? c.expires_at.split('T')[0] : '',
-            is_active: c.is_active,
-        })
-        setShowForm(true)
-    }
+            notify({
+                title: 'Coupon deleted',
+                description: `${couponToDelete.code} was removed from promotions.`,
+                variant: 'success',
+            })
+            setCouponToDelete(null)
+            await loadCoupons({ quiet: true })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to delete coupon'
+            notify({
+                title: 'Could not delete coupon',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setDeleting(false)
+        }
+    }, [couponToDelete, deleting, loadCoupons, notify, store])
 
-    const isExpired = (c: CouponRow) => c.expires_at && new Date(c.expires_at) < new Date()
-    const formatDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
+    const toggleActive = useCallback(async (coupon: CouponRow) => {
+        setTogglingId(coupon.id)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/coupons/${encodeURIComponent(coupon.id)}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ is_active: !coupon.is_active }),
+            })
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to update coupon status'))
+            }
+
+            notify({
+                title: coupon.is_active ? 'Coupon deactivated' : 'Coupon activated',
+                description: `${coupon.code} is now ${coupon.is_active ? 'inactive' : 'active'}.`,
+                variant: 'success',
+            })
+            await loadCoupons({ quiet: true })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to update coupon status'
+            notify({
+                title: 'Could not update coupon',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setTogglingId(null)
+        }
+    }, [loadCoupons, notify, store])
 
     if (loading) {
         return (
-            <div className="setup-dashboard" style={{ padding: '24px 32px' }}>
-                <div className="products-page-header"><h1>Coupons</h1></div>
-                <div className="admin-skeleton" style={{ height: 300, borderRadius: 14 }} />
-            </div>
+            <Page>
+                <PageHeader
+                    title="Coupons"
+                    description="Create and manage discount codes for checkout promotions."
+                    breadcrumbs={[{ label: 'Marketing' }, { label: 'Coupons' }]}
+                />
+                <Card>
+                    <Section title="Coupon list">
+                        <Skeleton variant="table" lines={5} />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
-    const inputStyle: React.CSSProperties = {
-        padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)',
-        background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%'
-    }
-
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header">
-                <h1>Coupons</h1>
-                <button onClick={() => { setShowForm(true); setEditingId(null); setFormError(null); resetForm() }}
-                    className="setup-plan-banner-btn" style={{
-                        background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px',
-                        borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
-                        display: 'inline-flex', alignItems: 'center', gap: 6
-                    }}>
-                    <MaterialIcon name="add" style={{ fontSize: 16 }} />
-                    Create coupon
-                </button>
+        <Page>
+            <PageHeader
+                title="Coupons"
+                description="Create and manage discount codes for checkout promotions."
+                breadcrumbs={[{ label: 'Marketing' }, { label: 'Coupons' }]}
+                primaryAction={{
+                    label: 'Create coupon',
+                    onClick: startCreate,
+                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }}
+            />
+
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Coupons could not load"
+                    action={<Button variant="secondary" onClick={() => void loadCoupons()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
+            )}
+
+            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Active coupons</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{activeCoupons}</p>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Total uses</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{totalUses}</p>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Expired coupons</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{expiredCoupons}</p>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
             </div>
 
             {showForm && (
-                <div className="products-list-card" style={{ padding: 20, marginBottom: 20 }}>
-                    <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600 }}>
-                        {editingId ? 'Edit Coupon' : 'New Coupon'}
-                    </h3>
-                    {formError && (
-                        <div style={{ marginBottom: 12, color: 'var(--danger)', fontSize: 13 }}>
-                            {formError}
-                        </div>
-                    )}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <div style={{ gridColumn: '1 / -1' }}>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Code</label>
-                            <input type="text" placeholder="SUMMER20" value={formData.code}
-                                onChange={e => setFormData(f => ({ ...f, code: e.target.value }))}
-                                style={{ ...inputStyle, textTransform: 'uppercase', fontFamily: 'monospace' }} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Type</label>
-                            <select value={formData.type}
-                                onChange={e => setFormData(f => ({ ...f, type: e.target.value as CouponRow['type'] }))}
-                                style={inputStyle}>
-                                <option value="percentage">Percentage (%)</option>
-                                <option value="fixed_amount">Fixed Amount (₹)</option>
-                                <option value="free_shipping">Free Shipping</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>
-                                {formData.type === 'percentage' ? 'Discount %' : formData.type === 'free_shipping' ? 'Discount' : 'Discount ₹'}
-                            </label>
-                            <input type="number" placeholder="20" value={formData.value}
-                                onChange={e => setFormData(f => ({ ...f, value: e.target.value }))}
+                <Card>
+                    <Section
+                        title={editingId ? 'Edit coupon' : 'New coupon'}
+                        description="Configure the code, discount type, eligibility, and availability window."
+                    >
+                        {formError && (
+                            <Banner variant="critical" title="Coupon could not be saved">
+                                {formError}
+                            </Banner>
+                        )}
+
+                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                            <div className="md:col-span-2">
+                                <Input
+                                    label="Code"
+                                    placeholder="SUMMER20"
+                                    value={formData.code}
+                                    onChange={(event) => updateForm('code', event.target.value)}
+                                    className="font-mono uppercase"
+                                />
+                            </div>
+                            <Select
+                                label="Type"
+                                value={formData.type}
+                                onChange={(event) => updateForm('type', event.target.value as CouponRow['type'])}
+                                options={[
+                                    { label: 'Percentage (%)', value: 'percentage' },
+                                    { label: 'Fixed amount (Rs.)', value: 'fixed_amount' },
+                                    { label: 'Free shipping', value: 'free_shipping' },
+                                ]}
+                            />
+                            <Input
+                                label={formData.type === 'percentage' ? 'Discount %' : formData.type === 'free_shipping' ? 'Discount' : 'Discount Rs.'}
+                                type="number"
+                                placeholder="20"
+                                value={formData.value}
+                                onChange={(event) => updateForm('value', event.target.value)}
                                 disabled={formData.type === 'free_shipping'}
-                                style={{ ...inputStyle, opacity: formData.type === 'free_shipping' ? 0.6 : 1 }} />
+                                helperText={formData.type === 'free_shipping' ? 'Free shipping coupons do not need a discount value.' : undefined}
+                            />
+                            <Input
+                                label="Min purchase (Rs.)"
+                                type="number"
+                                placeholder="Optional"
+                                value={formData.min_purchase}
+                                onChange={(event) => updateForm('min_purchase', event.target.value)}
+                            />
+                            <Input
+                                label="Max uses"
+                                type="number"
+                                placeholder="Unlimited"
+                                value={formData.max_uses}
+                                onChange={(event) => updateForm('max_uses', event.target.value)}
+                            />
+                            <Input
+                                label="Start date"
+                                type="date"
+                                value={formData.starts_at}
+                                onChange={(event) => updateForm('starts_at', event.target.value)}
+                            />
+                            <Input
+                                label="Expiry date"
+                                type="date"
+                                value={formData.expires_at}
+                                onChange={(event) => updateForm('expires_at', event.target.value)}
+                            />
+                            <label className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] md:col-span-2">
+                                <input
+                                    type="checkbox"
+                                    checked={formData.is_active}
+                                    onChange={(event) => updateForm('is_active', event.target.checked)}
+                                    className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] accent-[var(--lb-color-primary)]"
+                                />
+                                <span className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">Active at checkout</span>
+                            </label>
                         </div>
-                        <div>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Min Purchase (₹)</label>
-                            <input type="number" placeholder="Optional" value={formData.min_purchase}
-                                onChange={e => setFormData(f => ({ ...f, min_purchase: e.target.value }))}
-                                style={inputStyle} />
+
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                            <Button
+                                loading={saving}
+                                disabled={!formData.code || (formData.type !== 'free_shipping' && !formData.value)}
+                                onClick={() => void handleSave()}
+                            >
+                                {editingId ? 'Update coupon' : 'Create coupon'}
+                            </Button>
+                            <Button variant="secondary" onClick={closeForm} disabled={saving}>
+                                Cancel
+                            </Button>
                         </div>
-                        <div>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Max Uses</label>
-                            <input type="number" placeholder="Unlimited" value={formData.max_uses}
-                                onChange={e => setFormData(f => ({ ...f, max_uses: e.target.value }))}
-                                style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Start Date</label>
-                            <input type="date" value={formData.starts_at}
-                                onChange={e => setFormData(f => ({ ...f, starts_at: e.target.value }))}
-                                style={inputStyle} />
-                        </div>
-                        <div>
-                            <label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Expiry Date</label>
-                            <input type="date" value={formData.expires_at}
-                                onChange={e => setFormData(f => ({ ...f, expires_at: e.target.value }))}
-                                style={inputStyle} />
-                        </div>
-                        <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <input type="checkbox" id="coupon-active" checked={formData.is_active}
-                                onChange={e => setFormData(f => ({ ...f, is_active: e.target.checked }))} />
-                            <label htmlFor="coupon-active" style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Active</label>
-                        </div>
-                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 10 }}>
-                            <button onClick={handleSave} disabled={saving || !formData.code || (formData.type !== 'free_shipping' && !formData.value)} style={{
-                                background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 20px',
-                                borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
-                                opacity: (saving || !formData.code || (formData.type !== 'free_shipping' && !formData.value)) ? 0.5 : 1
-                            }}>
-                                {saving ? 'Saving...' : (editingId ? 'Update' : 'Create')}
-                            </button>
-                            <button onClick={() => { setShowForm(false); setEditingId(null); setFormError(null) }} style={{
-                                background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                                border: '1px solid var(--border)', padding: '8px 20px',
-                                borderRadius: 8, fontSize: 13, cursor: 'pointer'
-                            }}>Cancel</button>
-                        </div>
-                    </div>
-                </div>
+                    </Section>
+                </Card>
             )}
 
-            {coupons.length === 0 && !showForm ? (
-                <div className="products-empty-card">
-                    <div className="products-empty-inner">
-                        <div className="products-empty-text">
-                            <h2>No coupons yet</h2>
-                            <p>Create discount codes to offer promotions to your customers.</p>
+            <Card>
+                <Section
+                    title="Coupon list"
+                    description="Toggle status, edit eligibility, or remove expired discounts."
+                >
+                    {coupons.length === 0 && !showForm ? (
+                        <EmptyState
+                            icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No coupons yet"
+                            body="Create discount codes to offer promotions to your customers."
+                            primaryAction={<Button onClick={startCreate}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Create coupon</Button>}
+                        />
+                    ) : coupons.length > 0 ? (
+                        <div className="overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                            <table className="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                                <thead className="bg-[var(--lb-color-surface-subdued)]">
+                                    <tr>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Code</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Discount</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Uses</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Expires</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Status</th>
+                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-[var(--lb-color-border)]">
+                                    {coupons.map((coupon) => (
+                                        <tr key={coupon.id} className="hover:bg-[var(--lb-color-surface-subdued)]">
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                                                <code className="rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">
+                                                    {coupon.code}
+                                                </code>
+                                            </td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">{formatDiscount(coupon)}</td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">
+                                                {coupon.used_count || 0}{coupon.max_uses ? `/${coupon.max_uses}` : ''}
+                                            </td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text-subdued)]">{formatDate(coupon.expires_at)}</td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    loading={togglingId === coupon.id}
+                                                    onClick={() => void toggleActive(coupon)}
+                                                >
+                                                    <Badge label={statusLabel(coupon)} variant={statusVariant(coupon)} />
+                                                </Button>
+                                            </td>
+                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                                                <div className="flex justify-end gap-[var(--lb-space-2)]">
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => startEdit(coupon)}
+                                                        aria-label={`Edit coupon ${coupon.code}`}
+                                                    >
+                                                        <Pencil className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    </Button>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => setCouponToDelete(coupon)}
+                                                        aria-label={`Delete coupon ${coupon.code}`}
+                                                        className="text-[var(--lb-color-critical)]"
+                                                    >
+                                                        <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    </Button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
-                    </div>
-                </div>
-            ) : coupons.length > 0 && (
-                <div className="products-list-card">
-                    <table className="products-table">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Discount</th>
-                                <th>Uses</th>
-                                <th>Expires</th>
-                                <th>Status</th>
-                                <th style={{ width: 100 }}>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {coupons.map(c => (
-                                <tr key={c.id}>
-                                    <td><code style={{ fontWeight: 600, fontSize: 13, background: 'var(--bg-tertiary)', padding: '2px 8px', borderRadius: 4 }}>{c.code}</code></td>
-                                    <td>
-                                        {c.type === 'percentage' ? `${c.value}%` :
-                                            c.type === 'fixed_amount' ? `₹${c.value}` : 'Free Shipping'}
-                                    </td>
-                                    <td>{c.used_count || 0}{c.max_uses ? `/${c.max_uses}` : ''}</td>
-                                    <td style={{ color: isExpired(c) ? 'var(--danger)' : 'var(--text-secondary)', fontSize: 13 }}>
-                                        {formatDate(c.expires_at)}
-                                    </td>
-                                    <td>
-                                        <button onClick={() => toggleActive(c)}
-                                            className={`product-status-badge ${isExpired(c) ? 'archived' : c.is_active ? 'active' : 'draft'}`}
-                                            style={{ cursor: 'pointer', border: 'none', background: 'none' }}>
-                                            <span className="product-status-dot" />
-                                            {isExpired(c) ? 'Expired' : c.is_active ? 'Active' : 'Inactive'}
-                                        </button>
-                                    </td>
-                                    <td>
-                                        <div style={{ display: 'flex', gap: 4 }}>
-                                            <button onClick={() => startEdit(c)} title="Edit" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}>
-                                                <MaterialIcon name="edit" style={{ fontSize: 18 }} />
-                                            </button>
-                                            <button onClick={() => handleDelete(c.id)} title="Delete" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}>
-                                                <MaterialIcon name="delete" style={{ fontSize: 18 }} />
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </div>
+                    ) : null}
+                </Section>
+            </Card>
+
+            <SaveBar
+                state={formSaveState}
+                onSave={() => void handleSave()}
+                onDiscard={closeForm}
+                saveLabel={editingId ? 'Update coupon' : 'Create coupon'}
+                discardLabel="Discard"
+            />
+
+            <ConfirmDialog
+                open={Boolean(couponToDelete)}
+                title="Delete coupon?"
+                description={couponToDelete ? `Delete ${couponToDelete.code}? This removes the discount from checkout promotions.` : 'Delete this coupon?'}
+                confirmLabel={deleting ? 'Deleting...' : 'Delete coupon'}
+                cancelLabel="Keep coupon"
+                destructive
+                onConfirm={() => void handleDelete()}
+                onClose={() => {
+                    if (!deleting) setCouponToDelete(null)
+                }}
+            />
+        </Page>
     )
 }
