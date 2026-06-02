@@ -2,7 +2,7 @@
 
 import { useCallback, useState, type ChangeEvent } from 'react'
 import type { SchemaField } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+import { MaterialIcon, useToast } from '@letbuyy/ui'
 
 interface SchemaFormRendererProps {
     schema: Record<string, SchemaField>
@@ -43,6 +43,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
         (v: unknown) => onChange(fieldKey, v),
         [fieldKey, onChange]
     )
+    const helpText = field.info || field.description
 
     switch (field.type) {
         case 'text':
@@ -51,6 +52,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     label={field.label}
                     value={String(value ?? '')}
                     maxLength={field.maxLength}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -61,6 +63,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     label={field.label}
                     value={String(value ?? '')}
                     maxLength={field.maxLength}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -70,6 +73,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     label={field.label}
                     value={String(value ?? '')}
                     options={field.options || []}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -78,6 +82,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                 <ColorInput
                     label={field.label}
                     value={String(value ?? '#000000')}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -88,6 +93,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     value={String(value ?? '')}
                     onChange={handleChange}
                     storeName={storeName}
+                    helpText={helpText}
                 />
             )
         case 'select':
@@ -96,6 +102,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     label={field.label}
                     value={String(value ?? '')}
                     options={field.options || []}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -104,6 +111,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                 <ToggleInput
                     label={field.label}
                     value={Boolean(value)}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -116,6 +124,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                     max={field.max ?? 100}
                     step={field.step ?? 1}
                     unit={field.unit}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -124,6 +133,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                 <UrlInput
                     label={field.label}
                     value={String(value ?? '')}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -132,6 +142,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                 <NumberInput
                     label={field.label}
                     value={Number(value ?? 0)}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -140,6 +151,7 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
                 <TextInput
                     label={field.label}
                     value={String(value ?? '')}
+                    helpText={helpText}
                     onChange={handleChange}
                 />
             )
@@ -148,7 +160,11 @@ function FieldRenderer({ fieldKey, field, value, onChange, storeName }: FieldRen
 
 // ========== Field Components ==========
 
-function TextInput({ label, value, maxLength, onChange }: { label: string; value: string; maxLength?: number; onChange: (v: string) => void }) {
+function FieldHelp({ helpText }: { helpText?: string }) {
+    return helpText ? <span className="generic-theme-editor__field-help">{helpText}</span> : null
+}
+
+function TextInput({ label, value, maxLength, helpText, onChange }: { label: string; value: string; maxLength?: number; helpText?: string; onChange: (v: string) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -159,11 +175,12 @@ function TextInput({ label, value, maxLength, onChange }: { label: string; value
                 maxLength={maxLength}
                 onChange={(e) => onChange(e.target.value)}
             />
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
 
-function TextareaInput({ label, value, maxLength, onChange }: { label: string; value: string; maxLength?: number; onChange: (v: string) => void }) {
+function TextareaInput({ label, value, maxLength, helpText, onChange }: { label: string; value: string; maxLength?: number; helpText?: string; onChange: (v: string) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -174,11 +191,12 @@ function TextareaInput({ label, value, maxLength, onChange }: { label: string; v
                 rows={3}
                 onChange={(e) => onChange(e.target.value)}
             />
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
 
-function ColorInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function ColorInput({ label, value, helpText, onChange }: { label: string; value: string; helpText?: string; onChange: (v: string) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -197,6 +215,7 @@ function ColorInput({ label, value, onChange }: { label: string; value: string; 
                     maxLength={9}
                 />
             </div>
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
@@ -215,7 +234,8 @@ function uploadedImageUrl(payload: unknown): string | null {
     return typeof url === 'string' && url.length > 0 ? url : null
 }
 
-function ImageInput({ label, value, onChange, storeName }: { label: string; value: string; onChange: (v: string) => void; storeName?: string }) {
+function ImageInput({ label, value, onChange, storeName, helpText }: { label: string; value: string; onChange: (v: string) => void; storeName?: string; helpText?: string }) {
+    const { notify } = useToast()
     const [isUploading, setIsUploading] = useState(false)
     const [uploadError, setUploadError] = useState<string | null>(null)
 
@@ -228,7 +248,13 @@ function ImageInput({ label, value, onChange, storeName }: { label: string; valu
         }
 
         if (!storeName) {
-            setUploadError('Store context is unavailable for uploads.')
+            const message = 'Store context is unavailable for uploads.'
+            setUploadError(message)
+            notify({
+                title: 'Image upload unavailable',
+                description: message,
+                variant: 'warning',
+            })
             return
         }
 
@@ -254,8 +280,19 @@ function ImageInput({ label, value, onChange, storeName }: { label: string; valu
             }
 
             onChange(url)
+            notify({
+                title: 'Image uploaded',
+                description: `${label} is ready to save with this draft.`,
+                variant: 'success',
+            })
         } catch (err) {
-            setUploadError(err instanceof Error ? err.message : 'Image upload failed.')
+            const message = err instanceof Error ? err.message : 'Image upload failed.'
+            setUploadError(message)
+            notify({
+                title: 'Image upload failed',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setIsUploading(false)
         }
@@ -297,12 +334,13 @@ function ImageInput({ label, value, onChange, storeName }: { label: string; valu
                     />
                 </label>
                 {uploadError ? <p className="te-field-error">{uploadError}</p> : null}
+                <FieldHelp helpText={helpText} />
             </div>
         </div>
     )
 }
 
-function SelectInput({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+function SelectInput({ label, value, options, helpText, onChange }: { label: string; value: string; options: string[]; helpText?: string; onChange: (v: string) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -317,11 +355,12 @@ function SelectInput({ label, value, options, onChange }: { label: string; value
                     </option>
                 ))}
             </select>
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
 
-function RadioInput({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (v: string) => void }) {
+function RadioInput({ label, value, options, helpText, onChange }: { label: string; value: string; options: string[]; helpText?: string; onChange: (v: string) => void }) {
     return (
         <div className="te-field">
             <span className="te-field-label">{label}</span>
@@ -337,11 +376,12 @@ function RadioInput({ label, value, options, onChange }: { label: string; value:
                     </button>
                 ))}
             </div>
+            <FieldHelp helpText={helpText} />
         </div>
     )
 }
 
-function ToggleInput({ label, value, onChange }: { label: string; value: boolean; onChange: (v: boolean) => void }) {
+function ToggleInput({ label, value, helpText, onChange }: { label: string; value: boolean; helpText?: string; onChange: (v: boolean) => void }) {
     return (
         <label className="te-field te-field--toggle">
             <span className="te-field-label">{label}</span>
@@ -354,11 +394,12 @@ function ToggleInput({ label, value, onChange }: { label: string; value: boolean
             >
                 <span className="te-toggle-thumb" />
             </button>
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
 
-function RangeInput({ label, value, min, max, step, unit, onChange }: { label: string; value: number; min: number; max: number; step: number; unit?: string; onChange: (v: number) => void }) {
+function RangeInput({ label, value, min, max, step, unit, helpText, onChange }: { label: string; value: number; min: number; max: number; step: number; unit?: string; helpText?: string; onChange: (v: number) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -376,11 +417,12 @@ function RangeInput({ label, value, min, max, step, unit, onChange }: { label: s
                     {step < 1 ? value.toFixed(1) : value}{unit || ''}
                 </span>
             </div>
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
 
-function UrlInput({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+function UrlInput({ label, value, helpText, onChange }: { label: string; value: string; helpText?: string; onChange: (v: string) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -391,11 +433,12 @@ function UrlInput({ label, value, onChange }: { label: string; value: string; on
                 placeholder="https://…"
                 onChange={(e) => onChange(e.target.value)}
             />
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }
 
-function NumberInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
+function NumberInput({ label, value, helpText, onChange }: { label: string; value: number; helpText?: string; onChange: (v: number) => void }) {
     return (
         <label className="te-field">
             <span className="te-field-label">{label}</span>
@@ -405,6 +448,7 @@ function NumberInput({ label, value, onChange }: { label: string; value: number;
                 value={value}
                 onChange={(e) => onChange(Number(e.target.value))}
             />
+            <FieldHelp helpText={helpText} />
         </label>
     )
 }

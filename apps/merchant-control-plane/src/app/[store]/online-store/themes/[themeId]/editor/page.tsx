@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
 import { AlertTriangle, ArrowLeft, FileJson, RefreshCw, Save, SaveBar, Send, Settings, useToast } from '@letbuyy/ui'
+import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
 import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
@@ -34,11 +35,6 @@ type ApiEditorResponse = {
     } | null
     themeSettingsSchema?: unknown
     version?: number
-}
-
-type FieldOption = {
-    label: string
-    value: string
 }
 
 const EMPTY_SETTINGS_SCHEMA: ThemeSettingsSchema = {
@@ -582,15 +578,12 @@ function ThemeSettingsEditorInner() {
                                     {group.description ? <p>{group.description}</p> : null}
                                 </div>
                                 <div className="generic-theme-editor__fields">
-                                    {Object.entries(group.fields).map(([fieldKey, field]) => (
-                                        <GeneratedField
-                                            key={fieldKey}
-                                            fieldKey={fieldKey}
-                                            field={field}
-                                            value={settingsData.current[fieldKey] ?? defaultValueForField(field)}
-                                            onChange={updateSetting}
-                                        />
-                                    ))}
+                                    <SchemaFormRenderer
+                                        schema={group.fields}
+                                        values={settingsData.current}
+                                        onChange={updateSetting}
+                                        storeName={store}
+                                    />
                                 </div>
                             </section>
                         ))
@@ -626,110 +619,6 @@ function ThemeSettingsEditorInner() {
             />
         </main>
     )
-}
-
-function GeneratedField({
-    fieldKey,
-    field,
-    value,
-    onChange,
-}: {
-    fieldKey: string
-    field: SchemaField
-    value: unknown
-    onChange: (key: string, value: unknown) => void
-}) {
-    const label = field.label || labelFromKey(fieldKey)
-    const helpText = field.info || field.description
-    const options = fieldOptions(field)
-
-    return (
-        <label className={`generic-theme-editor__field generic-theme-editor__field--${field.type}`}>
-            <span className="generic-theme-editor__field-label">{label}</span>
-            {field.type === 'textarea' || field.type === 'richtext' ? (
-                <textarea
-                    className="te-field-textarea"
-                    maxLength={field.maxLength}
-                    rows={4}
-                    value={String(value ?? '')}
-                    onChange={(event) => onChange(fieldKey, event.target.value)}
-                />
-            ) : field.type === 'color' ? (
-                <div className="te-field-color-wrapper">
-                    <input
-                        className="te-field-color"
-                        type="color"
-                        value={String(value || '#000000')}
-                        onChange={(event) => onChange(fieldKey, event.target.value)}
-                    />
-                    <input
-                        className="te-field-input te-field-color-text"
-                        value={String(value || '')}
-                        maxLength={9}
-                        onChange={(event) => onChange(fieldKey, event.target.value)}
-                    />
-                </div>
-            ) : field.type === 'select' || field.type === 'radio' ? (
-                <select
-                    className="te-field-select"
-                    value={String(value ?? '')}
-                    onChange={(event) => onChange(fieldKey, event.target.value)}
-                >
-                    {options.map((option) => (
-                        <option key={option.value} value={option.value}>
-                            {option.label}
-                        </option>
-                    ))}
-                </select>
-            ) : field.type === 'toggle' ? (
-                <button
-                    type="button"
-                    className={`te-toggle ${Boolean(value) ? 'te-toggle--on' : ''}`}
-                    role="switch"
-                    aria-checked={Boolean(value)}
-                    onClick={(event) => {
-                        event.preventDefault()
-                        onChange(fieldKey, !Boolean(value))
-                    }}
-                >
-                    <span className="te-toggle-thumb" />
-                </button>
-            ) : field.type === 'range' ? (
-                <div className="te-field-range-wrapper">
-                    <input
-                        className="te-field-range"
-                        type="range"
-                        min={field.min ?? 0}
-                        max={field.max ?? 100}
-                        step={field.step ?? 1}
-                        value={Number(value ?? field.min ?? 0)}
-                        onChange={(event) => onChange(fieldKey, Number(event.target.value))}
-                    />
-                    <span className="te-field-range-value">
-                        {Number(value ?? 0)}
-                        {field.unit || ''}
-                    </span>
-                </div>
-            ) : (
-                <input
-                    className="te-field-input"
-                    type={field.type === 'number' ? 'number' : field.type === 'url' || field.type === 'image' ? 'url' : 'text'}
-                    maxLength={field.maxLength}
-                    value={String(value ?? '')}
-                    onChange={(event) => onChange(fieldKey, field.type === 'number' ? Number(event.target.value) : event.target.value)}
-                />
-            )}
-            {helpText ? <span className="generic-theme-editor__field-help">{helpText}</span> : null}
-        </label>
-    )
-}
-
-function fieldOptions(field: SchemaField): FieldOption[] {
-    const options = Array.isArray(field.options) ? field.options : []
-    return options.map((option) => ({
-        label: labelFromKey(option),
-        value: option,
-    }))
 }
 
 export default function ThemeEditorPage() {
