@@ -1,8 +1,30 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    BookOpen,
+    Button,
+    Calendar,
+    Card,
+    ConfirmDialog,
+    EmptyState,
+    GraduationCap,
+    Input,
+    Page,
+    PageHeader,
+    Pencil,
+    Plus,
+    RefreshCw,
+    SaveBar,
+    Section,
+    Skeleton,
+    Textarea,
+    Trash2,
+    useToast,
+} from '@letbuyy/ui'
 
 interface Education {
     id: string
@@ -17,114 +39,461 @@ interface Education {
     created_at: string
 }
 
+interface EducationFormState {
+    institution: string
+    degree: string
+    field_of_study: string
+    start_date: string
+    end_date: string
+    grade: string
+    description: string
+}
+
+const emptyForm: EducationFormState = {
+    institution: '',
+    degree: '',
+    field_of_study: '',
+    start_date: '',
+    end_date: '',
+    grade: '',
+    description: '',
+}
+
+function getErrorMessage(payload: unknown, fallback: string) {
+    if (payload && typeof payload === 'object') {
+        const error = (payload as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+            const message = (error as { message?: unknown }).message
+            if (typeof message === 'string') return message
+        }
+        const message = (payload as { message?: unknown }).message
+        if (typeof message === 'string') return message
+    }
+
+    return fallback
+}
+
+function formatMonth(value: string | null) {
+    if (!value) return ''
+    return new Date(value).toLocaleDateString('en-IN', {
+        month: 'short',
+        year: 'numeric',
+    })
+}
+
+function formFromEducation(education: Education): EducationFormState {
+    return {
+        institution: education.institution,
+        degree: education.degree,
+        field_of_study: education.field_of_study || '',
+        start_date: education.start_date || '',
+        end_date: education.end_date || '',
+        grade: education.grade || '',
+        description: education.description || '',
+    }
+}
+
+function formsEqual(a: EducationFormState, b: EducationFormState) {
+    return a.institution === b.institution
+        && a.degree === b.degree
+        && a.field_of_study === b.field_of_study
+        && a.start_date === b.start_date
+        && a.end_date === b.end_date
+        && a.grade === b.grade
+        && a.description === b.description
+}
+
+function periodLabel(education: Education) {
+    const start = formatMonth(education.start_date)
+    const end = formatMonth(education.end_date)
+    if (!start && !end) return 'Dates not set'
+    return [start, end || 'Present'].filter(Boolean).join(' - ')
+}
+
 export default function EducationPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [items, setItems] = useState<Education[]>([])
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [showForm, setShowForm] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
     const [saving, setSaving] = useState(false)
-    const [formData, setFormData] = useState({ institution: '', degree: '', field_of_study: '', start_date: '', end_date: '', grade: '', description: '' })
+    const [formData, setFormData] = useState<EducationFormState>(emptyForm)
+    const [initialFormData, setInitialFormData] = useState<EducationFormState>(emptyForm)
+    const [educationToDelete, setEducationToDelete] = useState<Education | null>(null)
+    const [deleting, setDeleting] = useState(false)
 
-    const load = useCallback(async () => {
-        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/education`, {
-            cache: 'no-store',
-        })
-        const payload = await response.json()
-        setItems(Array.isArray(payload.data) ? payload.data : [])
-        setLoading(false)
-    }, [store])
+    const loadEducation = useCallback(async (options?: { quiet?: boolean }) => {
+        if (!options?.quiet) setLoading(true)
+        setLoadError(null)
 
-    useEffect(() => { load() }, [load])
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/education`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json().catch(() => null)
 
-    const handleSave = async () => {
-        if (!formData.institution || !formData.degree) return
-        setSaving(true)
-        const payload = {
-            institution: formData.institution, degree: formData.degree,
-            field_of_study: formData.field_of_study || null,
-            start_date: formData.start_date || null, end_date: formData.end_date || null,
-            grade: formData.grade || null, description: formData.description || null,
-        }
-        await fetch(
-            editingId
-                ? `/api/stores/${encodeURIComponent(store)}/content/education/${encodeURIComponent(editingId)}`
-                : `/api/stores/${encodeURIComponent(store)}/content/education`,
-            {
-                method: editingId ? 'PATCH' : 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to load education'))
             }
+
+            setItems(Array.isArray(payload?.data) ? payload.data : [])
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load education'
+            setItems([])
+            setLoadError(message)
+            notify({
+                title: 'Education could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoading(false)
+        }
+    }, [notify, store])
+
+    useEffect(() => {
+        void loadEducation()
+    }, [loadEducation])
+
+    const stats = useMemo(() => ({
+        total: items.length,
+        withField: items.filter((item) => Boolean(item.field_of_study)).length,
+        withGrade: items.filter((item) => Boolean(item.grade)).length,
+    }), [items])
+
+    const hasUnsavedChanges = showForm && !formsEqual(formData, initialFormData)
+    const saveState = saving ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
+
+    const resetForm = useCallback((nextForm: EducationFormState = emptyForm) => {
+        setFormData(nextForm)
+        setInitialFormData(nextForm)
+    }, [])
+
+    const openCreateForm = useCallback(() => {
+        setEditingId(null)
+        resetForm(emptyForm)
+        setShowForm(true)
+    }, [resetForm])
+
+    const startEdit = useCallback((education: Education) => {
+        const nextForm = formFromEducation(education)
+        setEditingId(education.id)
+        resetForm(nextForm)
+        setShowForm(true)
+    }, [resetForm])
+
+    const closeForm = useCallback(() => {
+        setShowForm(false)
+        setEditingId(null)
+        resetForm(emptyForm)
+    }, [resetForm])
+
+    const handleSave = useCallback(async () => {
+        if (saving || !formData.institution.trim() || !formData.degree.trim()) return
+        setSaving(true)
+
+        const payload = {
+            institution: formData.institution.trim(),
+            degree: formData.degree.trim(),
+            field_of_study: formData.field_of_study.trim() || null,
+            start_date: formData.start_date || null,
+            end_date: formData.end_date || null,
+            grade: formData.grade.trim() || null,
+            description: formData.description.trim() || null,
+        }
+
+        try {
+            const response = await fetch(
+                editingId
+                    ? `/api/stores/${encodeURIComponent(store)}/content/education/${encodeURIComponent(editingId)}`
+                    : `/api/stores/${encodeURIComponent(store)}/content/education`,
+                {
+                    method: editingId ? 'PATCH' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload),
+                }
+            )
+            const responsePayload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(responsePayload, 'Unable to save education'))
+            }
+
+            notify({
+                title: editingId ? 'Education updated' : 'Education created',
+                description: `${payload.degree} at ${payload.institution} is ready for your resume.`,
+                variant: 'success',
+            })
+            closeForm()
+            await loadEducation({ quiet: true })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to save education'
+            notify({
+                title: 'Could not save education',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setSaving(false)
+        }
+    }, [closeForm, editingId, formData, loadEducation, notify, saving, store])
+
+    const handleDelete = useCallback(async () => {
+        if (!educationToDelete || deleting) return
+        setDeleting(true)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/content/education/${encodeURIComponent(educationToDelete.id)}`, {
+                method: 'DELETE',
+            })
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to delete education'))
+            }
+
+            notify({
+                title: 'Education deleted',
+                description: `${educationToDelete.degree} at ${educationToDelete.institution} was removed.`,
+                variant: 'success',
+            })
+            if (editingId === educationToDelete.id) closeForm()
+            setEducationToDelete(null)
+            await loadEducation({ quiet: true })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to delete education'
+            notify({
+                title: 'Could not delete education',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setDeleting(false)
+        }
+    }, [closeForm, deleting, editingId, educationToDelete, loadEducation, notify, store])
+
+    if (loading) {
+        return (
+            <Page>
+                <PageHeader
+                    title="Education"
+                    description="Add academic history and credentials to strengthen your resume."
+                    breadcrumbs={[{ label: 'Resume' }, { label: 'Education' }]}
+                />
+                <Card>
+                    <Section title="Education">
+                        <Skeleton variant="table" lines={5} />
+                    </Section>
+                </Card>
+            </Page>
         )
-        setSaving(false); setShowForm(false); setEditingId(null)
-        setFormData({ institution: '', degree: '', field_of_study: '', start_date: '', end_date: '', grade: '', description: '' })
-        load()
     }
-
-    const handleDelete = async (id: string) => {
-        if (!confirm('Delete?')) return
-        await fetch(`/api/stores/${encodeURIComponent(store)}/content/education/${encodeURIComponent(id)}`, {
-            method: 'DELETE',
-        })
-        load()
-    }
-    const startEdit = (e: Education) => { setEditingId(e.id); setFormData({ institution: e.institution, degree: e.degree, field_of_study: e.field_of_study || '', start_date: e.start_date || '', end_date: e.end_date || '', grade: e.grade || '', description: e.description || '' }); setShowForm(true) }
-    const inputStyle: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
-    const fmtDate = (d: string | null) => d ? new Date(d).toLocaleDateString('en-IN', { month: 'short', year: 'numeric' }) : ''
-
-    if (loading) return <div className="setup-dashboard" style={{ padding: '24px 32px' }}><div className="products-page-header"><h1>Education</h1></div><div className="admin-skeleton" style={{ height: 300, borderRadius: 14 }} /></div>
 
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header">
-                <h1>Education</h1>
-                <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ institution: '', degree: '', field_of_study: '', start_date: '', end_date: '', grade: '', description: '' }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <MaterialIcon name="add" style={{ fontSize: 16 }} />Add education
-                </button>
+        <Page>
+            <PageHeader
+                title="Education"
+                description="Add academic history and credentials to strengthen your resume."
+                breadcrumbs={[{ label: 'Resume' }, { label: 'Education' }]}
+                primaryAction={{
+                    label: 'Add education',
+                    onClick: openCreateForm,
+                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }}
+                secondaryActions={[
+                    {
+                        label: 'Refresh',
+                        onClick: () => void loadEducation(),
+                        icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    },
+                ]}
+            />
+
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Education could not load"
+                    action={<Button variant="secondary" onClick={() => void loadEducation()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
+            )}
+
+            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                <Card>
+                    <Section>
+                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Total entries</p>
+                        <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{stats.total}</p>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">With field</p>
+                        <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{stats.withField}</p>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">With grade</p>
+                        <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{stats.withGrade}</p>
+                    </Section>
+                </Card>
             </div>
 
             {showForm && (
-                <div className="products-list-card" style={{ padding: 20, marginBottom: 20 }}>
-                    <h3 style={{ margin: '0 0 16px', fontSize: 15, fontWeight: 600 }}>{editingId ? 'Edit Education' : 'New Education'}</h3>
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-                        <input type="text" placeholder="Institution" value={formData.institution} onChange={e => setFormData(f => ({ ...f, institution: e.target.value }))} style={{ ...inputStyle, gridColumn: '1 / -1' }} />
-                        <input type="text" placeholder="Degree (e.g. B.Tech)" value={formData.degree} onChange={e => setFormData(f => ({ ...f, degree: e.target.value }))} style={inputStyle} />
-                        <input type="text" placeholder="Field of Study" value={formData.field_of_study} onChange={e => setFormData(f => ({ ...f, field_of_study: e.target.value }))} style={inputStyle} />
-                        <div><label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>Start</label><input type="month" value={formData.start_date} onChange={e => setFormData(f => ({ ...f, start_date: e.target.value }))} style={inputStyle} /></div>
-                        <div><label style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', marginBottom: 4, display: 'block' }}>End</label><input type="month" value={formData.end_date} onChange={e => setFormData(f => ({ ...f, end_date: e.target.value }))} style={inputStyle} /></div>
-                        <input type="text" placeholder="Grade / GPA" value={formData.grade} onChange={e => setFormData(f => ({ ...f, grade: e.target.value }))} style={inputStyle} />
-                        <textarea placeholder="Description" value={formData.description} onChange={e => setFormData(f => ({ ...f, description: e.target.value }))} rows={3} style={{ ...inputStyle, gridColumn: '1 / -1', resize: 'vertical' }} />
-                        <div style={{ gridColumn: '1 / -1', display: 'flex', gap: 10 }}>
-                            <button onClick={handleSave} disabled={saving || !formData.institution || !formData.degree} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 20px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', opacity: (saving || !formData.institution) ? 0.5 : 1 }}>{saving ? 'Saving...' : editingId ? 'Update' : 'Create'}</button>
-                            <button onClick={() => { setShowForm(false); setEditingId(null) }} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', padding: '8px 20px', borderRadius: 8, fontSize: 13, cursor: 'pointer' }}>Cancel</button>
+                <Card>
+                    <Section
+                        title={editingId ? 'Edit education' : 'New education'}
+                        description="Add degrees, institutions, and highlights exactly as you want them shown publicly."
+                    >
+                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                            <div className="md:col-span-2">
+                                <Input
+                                    label="Institution"
+                                    value={formData.institution}
+                                    onChange={(event) => setFormData((current) => ({ ...current, institution: event.target.value }))}
+                                    error={!formData.institution.trim() && hasUnsavedChanges ? 'Institution is required' : undefined}
+                                />
+                            </div>
+                            <Input
+                                label="Degree"
+                                value={formData.degree}
+                                onChange={(event) => setFormData((current) => ({ ...current, degree: event.target.value }))}
+                                error={!formData.degree.trim() && hasUnsavedChanges ? 'Degree is required' : undefined}
+                            />
+                            <Input
+                                label="Field of study"
+                                value={formData.field_of_study}
+                                onChange={(event) => setFormData((current) => ({ ...current, field_of_study: event.target.value }))}
+                            />
+                            <Input
+                                label="Start date"
+                                type="month"
+                                value={formData.start_date}
+                                onChange={(event) => setFormData((current) => ({ ...current, start_date: event.target.value }))}
+                            />
+                            <Input
+                                label="End date"
+                                type="month"
+                                value={formData.end_date}
+                                onChange={(event) => setFormData((current) => ({ ...current, end_date: event.target.value }))}
+                            />
+                            <Input
+                                label="Grade or GPA"
+                                value={formData.grade}
+                                onChange={(event) => setFormData((current) => ({ ...current, grade: event.target.value }))}
+                            />
+                            <div className="md:col-span-2">
+                                <Textarea
+                                    label="Description"
+                                    rows={4}
+                                    value={formData.description}
+                                    onChange={(event) => setFormData((current) => ({ ...current, description: event.target.value }))}
+                                />
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    </Section>
+                </Card>
             )}
 
             {items.length === 0 && !showForm ? (
-                <div className="products-empty-card"><div className="products-empty-inner"><div className="products-empty-text"><h2>No education yet</h2><p>Add your academic qualifications, degrees, and certifications.</p></div></div></div>
+                <Card>
+                    <Section title="Education">
+                        <EmptyState
+                            icon={<GraduationCap className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No education yet"
+                            body="Add degrees, institutions, dates, grades, and achievements to complete your professional profile."
+                            primaryAction={<Button onClick={openCreateForm}><Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Add education</Button>}
+                        />
+                    </Section>
+                </Card>
             ) : items.length > 0 && (
-                <div className="products-list-card">
-                    {items.map((e, i) => (
-                        <div key={e.id} style={{ padding: '16px 20px', borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none', display: 'flex', gap: 16 }}>
-                            <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <MaterialIcon name="school" style={{ fontSize: 20, color: 'var(--text-hint)' }} />
-                            </div>
-                            <div style={{ flex: 1, minWidth: 0 }}>
-                                <div style={{ fontWeight: 600, fontSize: 14 }}>{e.degree}{e.field_of_study ? ` in ${e.field_of_study}` : ''}</div>
-                                <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>{e.institution}{e.grade ? ` • ${e.grade}` : ''}</div>
-                                <div style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>{fmtDate(e.start_date)} — {fmtDate(e.end_date) || 'Present'}</div>
-                                {e.description && <p style={{ margin: '8px 0 0', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{e.description}</p>}
-                            </div>
-                            <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                                <button onClick={() => startEdit(e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><MaterialIcon name="edit" style={{ fontSize: 18 }} /></button>
-                                <button onClick={() => handleDelete(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button>
-                            </div>
+                <Card>
+                    <Section title="Education" description="Keep this section concise so visitors can scan credentials quickly.">
+                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]">
+                            {items.map((education) => (
+                                <article key={education.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] md:flex-row md:items-start">
+                                    <span className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                        <GraduationCap className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                            <h2 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                                {education.degree}{education.field_of_study ? ` in ${education.field_of_study}` : ''}
+                                            </h2>
+                                            {education.grade && <Badge label={education.grade} variant="info" />}
+                                        </div>
+                                        <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                            {education.institution}
+                                        </p>
+                                        <div className="mt-[var(--lb-space-2)] flex flex-wrap gap-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                            <span className="inline-flex items-center gap-[var(--lb-space-1)]">
+                                                <Calendar className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                {periodLabel(education)}
+                                            </span>
+                                            {education.field_of_study && (
+                                                <span className="inline-flex items-center gap-[var(--lb-space-1)]">
+                                                    <BookOpen className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    {education.field_of_study}
+                                                </span>
+                                            )}
+                                        </div>
+                                        {education.description && (
+                                            <p className="m-0 mt-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                {education.description}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div className="flex shrink-0 gap-[var(--lb-space-1)]">
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            aria-label={`Edit ${education.degree} at ${education.institution}`}
+                                            onClick={() => startEdit(education)}
+                                        >
+                                            <Pencil className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            aria-label={`Delete ${education.degree} at ${education.institution}`}
+                                            onClick={() => setEducationToDelete(education)}
+                                        >
+                                            <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        </Button>
+                                    </div>
+                                </article>
+                            ))}
                         </div>
-                    ))}
-                </div>
+                    </Section>
+                </Card>
             )}
-        </div>
+
+            {showForm && (
+                <SaveBar
+                    state={saveState}
+                    onSave={() => void handleSave()}
+                    onDiscard={closeForm}
+                    saveLabel={editingId ? 'Update education' : 'Create education'}
+                    discardLabel="Discard"
+                />
+            )}
+
+            <ConfirmDialog
+                open={Boolean(educationToDelete)}
+                title="Delete education?"
+                description={educationToDelete ? `Delete ${educationToDelete.degree} at ${educationToDelete.institution}? This cannot be undone.` : 'Delete this education?'}
+                confirmLabel={deleting ? 'Deleting...' : 'Delete education'}
+                cancelLabel="Keep education"
+                destructive
+                onConfirm={() => void handleDelete()}
+                onClose={() => {
+                    if (!deleting) setEducationToDelete(null)
+                }}
+            />
+        </Page>
     )
 }
