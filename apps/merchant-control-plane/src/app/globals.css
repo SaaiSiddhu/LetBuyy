@@ -2989,11 +2989,9 @@ body {
   flex-shrink: 0;
 }
 
-.admin-cmd-empty {
-  padding: 20px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--text-hint);
+.admin-cmd-empty-state {
+  margin: var(--lb-space-4);
+  min-height: 180px;
 }
 
 .admin-cmd-footer {

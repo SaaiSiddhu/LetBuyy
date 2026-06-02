@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import { EmptyState, MaterialIcon, Search } from '@letbuyy/ui'
 
 interface CommandPaletteProps {
     store: string
@@ -153,7 +153,12 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
                 {/* Results */}
                 <div className="admin-cmd-results">
                     {flatItems.length === 0 ? (
-                        <div className="admin-cmd-empty">No results found</div>
+                        <EmptyState
+                            className="admin-cmd-empty-state"
+                            icon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No results found"
+                            body="Try searching for a page, setting, or action."
+                        />
                     ) : (
                         Object.entries(sections).map(([section, items]) => (
                             <div key={section}>
