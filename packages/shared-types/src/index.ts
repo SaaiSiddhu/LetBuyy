@@ -165,6 +165,7 @@ export const CustomerStatusSchema = z.enum(['active', 'disabled', 'invited']);
 export const CartStatusSchema = z.enum(['active', 'converted', 'abandoned', 'expired']);
 export const OrderStatusSchema = z.enum([
   'pending',
+  'pending_cod',
   'confirmed',
   'processing',
   'shipped',

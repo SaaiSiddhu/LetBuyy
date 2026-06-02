@@ -688,7 +688,7 @@ export type StorefrontCreateOrderInput = {
     variantId?: string | null;
     quantity: number;
   }>;
-  paymentMethod?: 'razorpay' | 'stripe' | 'paypal' | 'cod';
+  paymentMethod?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
   deliveryOption?: 'standard' | 'express';
   notes?: string;
   couponCode?: string;

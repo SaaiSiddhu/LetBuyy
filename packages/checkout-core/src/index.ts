@@ -15,7 +15,7 @@ import type { ProductModel } from '@letbuyy/commerce-core';
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 export type FulfillmentStatus = 'unfulfilled' | 'partial' | 'fulfilled' | 'returned';
-export type OrderStatus = 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
+export type OrderStatus = 'pending' | 'pending_cod' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded';
 
 export const OrderItemInput = z.object({
   product_id: UuidSchema,
@@ -32,7 +32,7 @@ export const CreateOrderSchema = z.object({
   customer_gstin: GstinSchema.optional(),
   shipping_address: AddressSchema.optional(),
   items: z.array(OrderItemInput).min(1).max(50),
-  payment_method: z.enum(['razorpay', 'stripe', 'cod']).default('cod'),
+  payment_method: z.enum(['razorpay', 'stripe', 'cashfree', 'cod']).default('cod'),
   shipping_method: z.enum(['standard', 'express']).default('standard'),
   notes: z.string().max(1000).optional(),
   coupon_code: z.string().max(50).optional(),
@@ -58,7 +58,7 @@ export const StorefrontCreateOrderSchema = z.object({
     variantId: UuidSchema.optional().nullable(),
     quantity: z.number().int().min(1).max(999),
   })).min(1).max(50),
-  paymentMethod: z.enum(['razorpay', 'stripe', 'paypal', 'cod']).default('cod'),
+  paymentMethod: z.enum(['razorpay', 'stripe', 'paypal', 'cashfree', 'cod']).default('cod'),
   deliveryOption: z.enum(['standard', 'express']).default('standard'),
   notes: z.string().max(1000).optional(),
   couponCode: z.string().max(50).optional(),
@@ -99,6 +99,26 @@ export const StorefrontPayPalOrderSchema = z.object({
 export const StorefrontPayPalCaptureSchema = z.object({
   orderId: UuidSchema,
   paypalOrderId: z.string().min(1).max(200),
+  idempotencyKey: z.string().min(8).max(200),
+});
+
+export const StorefrontCashfreeOrderSchema = z.object({
+  orderId: UuidSchema,
+  returnUrl: z.string().url(),
+  notifyUrl: z.string().url().optional(),
+  customerEmail: EmailSchema.optional(),
+  customerPhone: z.string().max(20).optional(),
+  customerName: z.string().max(200).optional(),
+  paymentMethods: z.string().max(200).optional(),
+  idempotencyKey: z.string().min(8).max(200),
+  amount: MoneySchema.optional(),
+  amountMinorUnits: z.number().int().positive().optional(),
+});
+
+export const StorefrontCashfreeVerifySchema = z.object({
+  orderId: UuidSchema,
+  cashfree_order_id: z.string().min(1).max(200),
+  cf_payment_id: z.string().min(1).max(200).optional(),
   idempotencyKey: z.string().min(8).max(200),
 });
 
@@ -464,7 +484,7 @@ export function generateGstInvoice(input: GenerateGstInvoiceInput): GeneratedGst
 export const ListOrdersQuery = z.object({
   store_id: UuidSchema.optional(),
   status: z
-    .enum(['pending', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded', 'all'])
+    .enum(['pending', 'pending_cod', 'confirmed', 'processing', 'shipped', 'delivered', 'cancelled', 'refunded', 'all'])
     .default('all'),
   payment_status: z.enum(['pending', 'paid', 'failed', 'refunded', 'all']).default('all'),
   search: z.string().max(200).optional(),
@@ -810,6 +830,7 @@ export function storefrontCouponValidationError(
 
 export const VALID_TRANSITIONS: Record<string, string[]> = {
   pending: ['confirmed', 'cancelled'],
+  pending_cod: ['confirmed', 'cancelled'],
   confirmed: ['processing', 'cancelled'],
   processing: ['shipped', 'cancelled'],
   shipped: ['delivered', 'cancelled'],
@@ -1087,12 +1108,14 @@ export interface OrderPricing {
 }
 
 export interface OrderPayment {
-  method: 'razorpay' | 'stripe' | 'paypal' | 'cod';
+  method: 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
   status: PaymentStatus;
   razorpayOrderId?: string;
   razorpayPaymentId?: string;
   stripeSessionId?: string;
   paypalOrderId?: string;
+  cashfreeOrderId?: string;
+  cashfreePaymentId?: string;
 }
 
 export interface OrderTracking {
@@ -1109,6 +1132,8 @@ export type StorefrontRazorpayVerifyInput = z.infer<typeof StorefrontRazorpayVer
 export type StorefrontStripeCheckoutInput = z.infer<typeof StorefrontStripeCheckoutSchema>;
 export type StorefrontPayPalOrderInput = z.infer<typeof StorefrontPayPalOrderSchema>;
 export type StorefrontPayPalCaptureInput = z.infer<typeof StorefrontPayPalCaptureSchema>;
+export type StorefrontCashfreeOrderInput = z.infer<typeof StorefrontCashfreeOrderSchema>;
+export type StorefrontCashfreeVerifyInput = z.infer<typeof StorefrontCashfreeVerifySchema>;
 export type UpdateOrderStatusInput = z.infer<typeof UpdateOrderStatusSchema>;
 export type LogisticsProviderName = z.infer<typeof LogisticsProviderNameSchema>;
 export type FulfillOrderInput = z.infer<typeof FulfillOrderSchema>;

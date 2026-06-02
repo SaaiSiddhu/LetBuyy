@@ -433,7 +433,8 @@ ON CONFLICT (id) DO UPDATE SET
 
 INSERT INTO sites (
   id, user_id, name, store_name, tagline, site_type, subdomain, theme_id,
-  theme_settings, template_config, sections, status, published_at
+  theme_settings, template_config, sections, status, published_at,
+  gstin, gst_state_code, invoice_prefix
 )
 VALUES (
   '00000000-0000-4000-8000-000000000010',
@@ -448,7 +449,10 @@ VALUES (
   '{}'::jsonb,
   '[]'::jsonb,
   'published',
-  NOW()
+  NOW(),
+  '29ABCDE1234F1Z5',
+  '29',
+  'UKD'
 )
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -458,6 +462,9 @@ ON CONFLICT (id) DO UPDATE SET
   theme_id = EXCLUDED.theme_id,
   status = EXCLUDED.status,
   published_at = EXCLUDED.published_at,
+  gstin = EXCLUDED.gstin,
+  gst_state_code = EXCLUDED.gst_state_code,
+  invoice_prefix = EXCLUDED.invoice_prefix,
   updated_at = NOW();
 
 INSERT INTO store_themes (id, store_id, theme_id, is_active, config_overrides)
@@ -472,6 +479,30 @@ ON CONFLICT (store_id, theme_id) DO UPDATE SET
   is_active = EXCLUDED.is_active,
   config_overrides = EXCLUDED.config_overrides,
   updated_at = NOW();
+
+INSERT INTO tax_rates (id, store_id, name, rate, country, state, is_compound, is_shipping, priority, is_active)
+VALUES (
+  '00000000-0000-4000-8000-000000000120',
+  '00000000-0000-4000-8000-000000000010',
+  'GST 18%',
+  0.1800,
+  'IN',
+  NULL,
+  FALSE,
+  FALSE,
+  100,
+  TRUE
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  rate = EXCLUDED.rate,
+  country = EXCLUDED.country,
+  state = EXCLUDED.state,
+  is_compound = EXCLUDED.is_compound,
+  is_shipping = EXCLUDED.is_shipping,
+  priority = EXCLUDED.priority,
+  is_active = EXCLUDED.is_active,
+  version = tax_rates.version + 1;
 
 INSERT INTO products (
   id, store_id, name, slug, description, price, category, tags, stock,

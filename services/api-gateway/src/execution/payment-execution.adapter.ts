@@ -62,7 +62,7 @@ export class PaymentExecutionAdapter {
 
     async attachPaymentReference(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal';
+        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
         providerOrderId: string;
         requestId?: string | null;
         idempotencyKey?: string | null;
@@ -84,7 +84,7 @@ export class PaymentExecutionAdapter {
 
     async confirmPayment(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal';
+        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
         providerPaymentId: string;
         providerOrderId?: string | null;
         providerEventId?: string | null;
@@ -110,7 +110,7 @@ export class PaymentExecutionAdapter {
 
     async recordPaymentFailure(params: {
         orderId: string;
-        provider: 'razorpay' | 'stripe' | 'paypal';
+        provider: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
         providerEventId: string;
         paymentStatus: 'failed' | 'refunded';
         orderStatus: 'cancelled' | 'refunded';

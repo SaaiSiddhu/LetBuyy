@@ -5,6 +5,7 @@ import {
     hmacSha256Hex,
     timingSafeEqual,
 } from "@letbuyy/infrastructure/razorpay-adapter";
+import { createCashfreePaymentProvider } from "@letbuyy/infrastructure/cashfree-adapter";
 import { createPayPalPaymentProvider } from "@letbuyy/infrastructure/paypal-adapter";
 import { createStripePaymentProvider } from "@letbuyy/infrastructure/stripe-adapter";
 import {
@@ -31,6 +32,10 @@ interface Env {
     PAYPAL_CLIENT_SECRET?: string;
     PAYPAL_WEBHOOK_ID?: string;
     PAYPAL_MODE?: "sandbox" | "live";
+    CASHFREE_APP_ID?: string;
+    CASHFREE_SECRET_KEY?: string;
+    CASHFREE_ENVIRONMENT?: "sandbox" | "production";
+    CASHFREE_API_VERSION?: string;
     STRIPE_WEBHOOK_SECRET: string;
     STRIPE_SECRET_KEY?: string;
     INTERNAL_API_SECRET?: string;
@@ -100,7 +105,7 @@ function razorpayProviderEventId(
     return String(paymentId || refundId || orderId || `${event.event}:${event.created_at || "unknown"}:${signature.slice(0, 24)}`);
 }
 
-type PaymentProvider = "razorpay" | "stripe" | "paypal";
+type PaymentProvider = "razorpay" | "stripe" | "paypal" | "cashfree";
 type JsonObject = Record<string, unknown>;
 
 interface WebhookOrderRow {
@@ -284,6 +289,19 @@ function paypalWebhookProvider(env: Env) {
         clientSecret: env.PAYPAL_CLIENT_SECRET,
         webhookId: env.PAYPAL_WEBHOOK_ID,
         mode: env.PAYPAL_MODE === "live" ? "live" : "sandbox",
+    });
+}
+
+function cashfreeWebhookProvider(env: Env) {
+    if (!env.CASHFREE_APP_ID || !env.CASHFREE_SECRET_KEY) {
+        throw new Error("Cashfree webhook credentials are not configured");
+    }
+
+    return createCashfreePaymentProvider({
+        appId: env.CASHFREE_APP_ID,
+        secretKey: env.CASHFREE_SECRET_KEY,
+        environment: env.CASHFREE_ENVIRONMENT === "production" ? "production" : "sandbox",
+        apiVersion: env.CASHFREE_API_VERSION || "2025-01-01",
     });
 }
 
@@ -1370,6 +1388,120 @@ app.post("/paypal", async (c) => {
         await markWebhookEvent(c.env, "paypal", providerEventId, "processed");
     } catch (err) {
         await markWebhookEvent(c.env, "paypal", providerEventId, "failed", err instanceof Error ? err.message : "Unknown error");
+        throw err;
+    }
+
+    return c.json({ received: true, event: eventType });
+});
+
+// ─── Cashfree Webhooks ──────────────────────────────────────────────
+// Cashfree sends x-webhook-signature = base64(HMAC-SHA256(timestamp + rawBody, secret)).
+
+app.post("/cashfree", async (c) => {
+    if (!c.env.CASHFREE_APP_ID || !c.env.CASHFREE_SECRET_KEY) {
+        return c.json({ error: "Cashfree is not configured" }, 503);
+    }
+
+    const body = await c.req.text();
+    const receivedAt = new Date().toISOString();
+    const verification = await cashfreeWebhookProvider(c.env).webhookVerify({
+        provider: "cashfree",
+        rawBody: body,
+        headers: requestHeaderMap(c.req.raw.headers),
+        secret: c.env.CASHFREE_SECRET_KEY,
+        receivedAt,
+    });
+
+    if (!verification.verified) {
+        console.error("[Cashfree] Invalid signature", { code: verification.failureCode });
+        return c.json({ error: verification.failureCode === "CASHFREE_WEBHOOK_SIGNATURE_MISSING" ? "Missing signature" : "Invalid signature" }, 400);
+    }
+
+    let event: {
+        type?: string;
+        event?: string;
+        event_time?: string;
+        data?: Record<string, unknown>;
+    };
+
+    try {
+        event = JSON.parse(body);
+    } catch {
+        console.error("[Cashfree] Invalid JSON body");
+        return c.json({ error: "Invalid payload" }, 400);
+    }
+
+    const eventType = event.type || event.event || verification.event?.type || "unknown";
+    const providerEventId = verification.event?.id || `cashfree:${receivedAt}`;
+    const data = asObject(event.data);
+    const orderRecord = asObject(data.order);
+    const paymentRecord = asObject(data.payment);
+    const refundRecord = asObject(data.refund);
+    const paymentId = textValue(paymentRecord.cf_payment_id) || textValue(refundRecord.cf_payment_id) || verification.event?.references.providerPaymentId;
+    const providerOrderId = textValue(orderRecord.order_id) || textValue(paymentRecord.order_id) || textValue(refundRecord.order_id) || verification.event?.references.providerOrderId;
+
+    const recorded = await writeWebhookEvent(c.env, {
+        provider: "cashfree",
+        provider_event_id: providerEventId,
+        event_type: eventType,
+        signature_valid: true,
+        raw_payload: event,
+    });
+
+    if (recorded.duplicate) {
+        return c.json({ received: true, duplicate: true, event: eventType });
+    }
+
+    console.info(`[Cashfree] Verified event: ${eventType} (${providerEventId})`);
+
+    try {
+        const order = await findOrderByPaymentCandidates(c.env, [
+            providerOrderId,
+            paymentId,
+            verification.event?.references.providerOrderId,
+            verification.event?.references.providerPaymentId,
+        ]);
+        const paymentStatus = textValue(paymentRecord.payment_status);
+        const refundStatus = textValue(refundRecord.refund_status);
+        const normalizedType = eventType.toUpperCase();
+
+        if (normalizedType.includes("REFUND") && refundStatus === "SUCCESS") {
+            if (order) {
+                await markOrderRefunded(c.env, order, providerEventId, "cashfree", eventType);
+            } else {
+                await markWebhookEvent(c.env, "cashfree", providerEventId, "ignored", "No matching order context");
+                return c.json({ received: true, event: eventType, ignored: true });
+            }
+        } else if (paymentStatus === "SUCCESS" || normalizedType.includes("SUCCESS")) {
+            if (order) {
+                await markOrderPaid(c.env, order, {
+                    provider: "cashfree",
+                    paymentId: paymentId || providerEventId,
+                    providerEventId,
+                    eventType,
+                });
+            } else {
+                await markWebhookEvent(c.env, "cashfree", providerEventId, "ignored", "No matching order context");
+                return c.json({ received: true, event: eventType, ignored: true });
+            }
+        } else if (paymentStatus === "FAILED" || normalizedType.includes("FAILED")) {
+            if (order) {
+                await markOrderFailed(c.env, order, {
+                    provider: "cashfree",
+                    paymentId,
+                    reason: textValue(paymentRecord.payment_message) || textValue(asObject(paymentRecord.error_details).error_description),
+                    providerEventId,
+                    eventType,
+                });
+            }
+        } else {
+            await markWebhookEvent(c.env, "cashfree", providerEventId, "ignored");
+            return c.json({ received: true, event: eventType, ignored: true });
+        }
+
+        await markWebhookEvent(c.env, "cashfree", providerEventId, "processed");
+    } catch (err) {
+        await markWebhookEvent(c.env, "cashfree", providerEventId, "failed", err instanceof Error ? err.message : "Unknown error");
         throw err;
     }
 

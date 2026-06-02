@@ -86,18 +86,23 @@ test('provider webhooks are centralized in webhook-service', () => {
     const webhookSource = repositorySource('services/webhook-service/src/index.ts');
     const stripeAdapter = repositorySource('packages/infrastructure/stripe-adapter/index.ts');
     const paypalAdapter = repositorySource('packages/infrastructure/paypal-adapter/index.ts');
+    const cashfreeAdapter = repositorySource('packages/infrastructure/cashfree-adapter/index.ts');
     const runtimeComposition = repositorySource('packages/runtime-composition/checkout-runtime-adapter/index.ts');
 
     assert.match(webhookSource, /app\.post\("\/razorpay"/);
     assert.match(webhookSource, /app\.post\("\/stripe"/);
     assert.match(webhookSource, /app\.post\("\/paypal"/);
+    assert.match(webhookSource, /app\.post\("\/cashfree"/);
     assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"stripe"/);
     assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"paypal"/);
+    assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"cashfree"/);
     assert.match(webhookSource, /emitPaymentDomainEvent/);
     assert.match(webhookSource, /outbox_events/);
 
     assert.doesNotMatch(stripeAdapter, /constructWebhookEvent/);
     assert.doesNotMatch(paypalAdapter, /export async function verifyWebhookSignature/);
+    assert.match(cashfreeAdapter, /x-webhook-timestamp/);
+    assert.match(cashfreeAdapter, /x-webhook-signature/);
     assert.doesNotMatch(runtimeComposition, /constructWebhookEvent|verifyWebhookSignature/);
 });
 
@@ -118,6 +123,10 @@ test('payment provider adapters implement the unified payments contract', () => 
 
     assert.match(stripeAdapter, /createStripePaymentProvider/);
     assert.match(paypalAdapter, /createPayPalPaymentProvider/);
+    assert.match(cashfreeAdapter, /createCashfreePaymentProvider/);
+    assert.match(cashfreeAdapter, /x-client-id/);
+    assert.match(cashfreeAdapter, /payment_session_id/);
+    assert.doesNotMatch(cashfreeAdapter, /scaffolded|cashfreeUnavailable/);
 
     for (const adapter of [stripeAdapter, paypalAdapter, cashfreeAdapter, phonePeAdapter, upiAdapter, codAdapter]) {
         assert.match(adapter, /PaymentProvider/);

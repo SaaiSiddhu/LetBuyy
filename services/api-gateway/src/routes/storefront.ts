@@ -9,6 +9,8 @@ import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supa
 import { validate } from '../middleware/validation';
 import {
     StorefrontCreateOrderSchema,
+    StorefrontCashfreeOrderSchema,
+    StorefrontCashfreeVerifySchema,
     StorefrontPayPalCaptureSchema,
     StorefrontPayPalOrderSchema,
     StorefrontRazorpayOrderSchema,
@@ -28,6 +30,7 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
+import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
 import {
@@ -61,6 +64,7 @@ import { normalizeAppBlockInstance, type AppBlockInstance } from '@letbuyy/app-e
 
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
+type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
 
 type StorefrontCreateOrderBody = {
     customer: {
@@ -81,7 +85,7 @@ type StorefrontCreateOrderBody = {
         variantId?: string | null;
         quantity: number;
     }>;
-    paymentMethod: 'razorpay' | 'stripe' | 'paypal' | 'cod';
+    paymentMethod: 'razorpay' | 'stripe' | 'paypal' | 'cashfree' | 'cod';
     deliveryOption: 'standard' | 'express';
     notes?: string;
     couponCode?: string;
@@ -94,6 +98,9 @@ type OrderRpcResult = {
     order_number?: string;
     status?: string;
     total?: number | string;
+    gst_invoice_number?: string | null;
+    gst_invoice?: StorefrontJsonValue | null;
+    place_of_supply_state?: string | null;
 };
 
 type StorefrontPaidOrderSnapshot = {
@@ -139,6 +146,26 @@ type StorefrontPayPalOrderBody = {
 type StorefrontPayPalCaptureBody = {
     orderId: string;
     paypalOrderId: string;
+    idempotencyKey: string;
+};
+
+type StorefrontCashfreeOrderBody = {
+    orderId: string;
+    returnUrl: string;
+    notifyUrl?: string;
+    customerEmail?: string;
+    customerPhone?: string;
+    customerName?: string;
+    paymentMethods?: string;
+    idempotencyKey: string;
+    amount?: number;
+    amountMinorUnits?: number;
+};
+
+type StorefrontCashfreeVerifyBody = {
+    orderId: string;
+    cashfree_order_id: string;
+    cf_payment_id?: string;
     idempotencyKey: string;
 };
 
@@ -242,14 +269,14 @@ type StorefrontReviewBody = CreateStorefrontProductReviewInput;
 type InternalPaymentReferenceBody = {
     orderId?: string;
     storeId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal';
+    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
     paymentReference?: string;
     idempotencyKey?: string | null;
 };
 
 type InternalPaymentConfirmBody = {
     orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal';
+    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
     paymentId?: string;
     providerOrderId?: string | null;
     providerEventId?: string | null;
@@ -258,7 +285,7 @@ type InternalPaymentConfirmBody = {
 
 type InternalPaymentFailureBody = {
     orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal';
+    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
     providerEventId?: string;
     paymentStatus?: 'failed' | 'refunded';
     orderStatus?: 'cancelled' | 'refunded';
@@ -462,6 +489,19 @@ function getPayPalCredentials(c: AppContext) {
         clientSecret: c.env.PAYPAL_CLIENT_SECRET,
         mode: c.env.PAYPAL_MODE === 'live' ? 'live' as const : 'sandbox' as const,
         webhookId: c.env.PAYPAL_WEBHOOK_ID,
+    };
+}
+
+function getCashfreeCredentials(c: AppContext) {
+    if (!c.env.CASHFREE_APP_ID || !c.env.CASHFREE_SECRET_KEY) {
+        return null;
+    }
+
+    return {
+        appId: c.env.CASHFREE_APP_ID,
+        secretKey: c.env.CASHFREE_SECRET_KEY,
+        environment: c.env.CASHFREE_ENVIRONMENT === 'production' ? 'production' as const : 'sandbox' as const,
+        apiVersion: c.env.CASHFREE_API_VERSION || '2025-01-01',
     };
 }
 
@@ -1020,8 +1060,8 @@ function isInternalRequest(c: AppContext): boolean {
     return c.req.header('X-Internal-API-Secret') === configuredSecret;
 }
 
-function assertProvider(value: unknown): value is 'razorpay' | 'stripe' | 'paypal' {
-    return value === 'razorpay' || value === 'stripe' || value === 'paypal';
+function assertProvider(value: unknown): value is 'razorpay' | 'stripe' | 'paypal' | 'cashfree' {
+    return value === 'razorpay' || value === 'stripe' || value === 'paypal' || value === 'cashfree';
 }
 
 async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?: string) {
@@ -1596,6 +1636,12 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
                 orderNumber: order.order_number || '',
                 status: order.status || 'pending',
                 total: Number(order.total || 0),
+                gstInvoiceNumber: order.gst_invoice_number || null,
+                gst_invoice_number: order.gst_invoice_number || null,
+                gstInvoice: order.gst_invoice || null,
+                gst_invoice: order.gst_invoice || null,
+                placeOfSupplyState: order.place_of_supply_state || null,
+                place_of_supply_state: order.place_of_supply_state || null,
             },
         });
 
@@ -1836,6 +1882,250 @@ router.post(
             });
 
             const responseBody = success({ verified: true, order: confirmedOrder });
+            await idempotency.complete({
+                id: claim.id,
+                responseBody,
+                statusCode: 200,
+                resourceType: 'order',
+                resourceId: body.orderId,
+            });
+
+            return c.json(responseBody);
+        } catch (error) {
+            await idempotency.fail(claim.id);
+            throw error;
+        }
+    }
+);
+
+// POST /storefront/:subdomain/payments/cashfree/order — Public Cashfree order creation.
+router.post(
+    '/:subdomain/payments/cashfree/order',
+    validate('json', StorefrontCashfreeOrderSchema),
+    async (c) => {
+        const subdomain = c.req.param('subdomain');
+        const body = c.get('validatedBody') as StorefrontCashfreeOrderBody;
+        const store = await loadPublishedStore(c, subdomain);
+
+        if (!store) {
+            return c.json(
+                { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                404
+            );
+        }
+
+        const credentials = getCashfreeCredentials(c);
+        if (!credentials) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Cashfree is not configured' } },
+                503
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const paymentService = new PaymentExecutionAdapter(db);
+        const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
+
+        const requestedMinorUnits = requestedAmountMinorUnits(body);
+        if (requestedMinorUnits !== null && requestedMinorUnits !== amount.amountMinor) {
+            return c.json(
+                { success: false, error: { code: 'AMOUNT_MISMATCH', message: 'Order amount changed. Please refresh checkout and try again.' } },
+                400
+            );
+        }
+
+        const idempotency = new IdempotencyExecutionAdapter(db);
+        const claim = await idempotency.begin({
+            siteId: store.id,
+            key: body.idempotencyKey,
+            scope: `storefront.payment.cashfree.order:${body.orderId}`,
+            requestBody: body,
+            requestId: getRequestId(c),
+        });
+
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+
+        try {
+            const provider = createCashfreePaymentProvider(credentials);
+            const intent = await provider.createIntent({
+                storeId: store.id,
+                orderId: body.orderId,
+                amount,
+                idempotencyKey: body.idempotencyKey,
+                description: `LetBuyy order ${body.orderId}`,
+                customer: {
+                    email: body.customerEmail,
+                    phone: body.customerPhone,
+                    name: body.customerName,
+                },
+                metadata: {
+                    return_url: body.returnUrl,
+                    notify_url: body.notifyUrl,
+                    payment_methods: body.paymentMethods,
+                    request_id: getRequestId(c),
+                    source: 'storefront',
+                },
+            });
+            const providerOrderId = intent.references.providerOrderId;
+            if (!providerOrderId || !intent.clientSecret) {
+                await idempotency.fail(claim.id);
+                return c.json(
+                    { success: false, error: { code: 'PAYMENT_PROVIDER_ERROR', message: 'Failed to create Cashfree order' } },
+                    502
+                );
+            }
+
+            await paymentService.attachPaymentReference({
+                orderId: body.orderId,
+                provider: 'cashfree',
+                providerOrderId,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+
+            const responseBody = success({
+                cashfreeOrderId: providerOrderId,
+                cashfree_order_id: providerOrderId,
+                paymentSessionId: intent.clientSecret,
+                payment_session_id: intent.clientSecret,
+                amount: intent.amount.amountMinor,
+                currency: intent.amount.currency,
+                environment: credentials.environment,
+            });
+
+            await idempotency.complete({
+                id: claim.id,
+                responseBody,
+                statusCode: 200,
+                resourceType: 'order',
+                resourceId: body.orderId,
+            });
+
+            return c.json(responseBody);
+        } catch (error) {
+            await idempotency.fail(claim.id);
+            throw error;
+        }
+    }
+);
+
+// POST /storefront/:subdomain/payments/cashfree/verify — Public Cashfree payment verification.
+router.post(
+    '/:subdomain/payments/cashfree/verify',
+    validate('json', StorefrontCashfreeVerifySchema),
+    async (c) => {
+        const subdomain = c.req.param('subdomain');
+        const body = c.get('validatedBody') as StorefrontCashfreeVerifyBody;
+        const store = await loadPublishedStore(c, subdomain);
+
+        if (!store) {
+            return c.json(
+                { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+                404
+            );
+        }
+
+        const credentials = getCashfreeCredentials(c);
+        if (!credentials) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_UNAVAILABLE', message: 'Cashfree is not configured' } },
+                503
+            );
+        }
+
+        const db = getSupabaseAdmin(c);
+        const paymentService = new PaymentExecutionAdapter(db);
+        const order = await paymentService.loadStorefrontPayableOrder(body.orderId, store.id);
+        const amount = orderAmountMinorUnits(order);
+        if (!amount) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_CURRENCY_UNSUPPORTED', message: 'Only INR storefront payments are supported' } },
+                400
+            );
+        }
+
+        if (order.payment_id && order.payment_id !== body.cashfree_order_id && order.payment_id !== body.cf_payment_id) {
+            return c.json(
+                { success: false, error: { code: 'PAYMENT_REFERENCE_MISMATCH', message: 'Cashfree order does not match this checkout order' } },
+                409
+            );
+        }
+
+        const idempotency = new IdempotencyExecutionAdapter(db);
+        const claim = await idempotency.begin({
+            siteId: store.id,
+            key: body.idempotencyKey,
+            scope: `storefront.payment.cashfree.verify:${body.orderId}`,
+            requestBody: body,
+            requestId: getRequestId(c),
+        });
+
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+
+        const provider = createCashfreePaymentProvider(credentials);
+        const verification = await provider.verify({
+            storeId: store.id,
+            orderId: body.orderId,
+            amount,
+            idempotencyKey: body.idempotencyKey,
+            providerOrderId: body.cashfree_order_id,
+            providerPaymentId: body.cf_payment_id,
+            metadata: {
+                request_id: getRequestId(c),
+                source: 'storefront',
+            },
+        });
+
+        if (!verification.verified || !verification.references.providerPaymentId) {
+            await idempotency.fail(claim.id);
+            return c.json(
+                {
+                    success: false,
+                    error: {
+                        code: verification.failureCode || 'CASHFREE_PAYMENT_NOT_PAID',
+                        message: verification.failureMessage || 'Cashfree payment is not paid',
+                    },
+                },
+                400
+            );
+        }
+
+        try {
+            const confirmedOrder = await paymentService.confirmPayment({
+                orderId: body.orderId,
+                provider: 'cashfree',
+                providerPaymentId: verification.references.providerPaymentId,
+                providerOrderId: verification.references.providerOrderId || body.cashfree_order_id,
+                providerEventId: `cashfree:checkout:${verification.references.providerPaymentId}`,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+            await emitStorefrontOrderPaidEvent(db, {
+                storeId: store.id,
+                orderId: body.orderId,
+                order: confirmedOrder as StorefrontPaidOrderSnapshot,
+                fallbackOrder: order,
+                requestId: getRequestId(c),
+                idempotencyKey: body.idempotencyKey,
+            });
+
+            const responseBody = success({
+                verified: true,
+                paymentId: verification.references.providerPaymentId,
+                payment_id: verification.references.providerPaymentId,
+                order: confirmedOrder,
+            });
             await idempotency.complete({
                 id: claim.id,
                 responseBody,

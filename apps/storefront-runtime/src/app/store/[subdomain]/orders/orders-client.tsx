@@ -16,6 +16,7 @@ interface OrdersClientProps {
 
 const statusConfig: Record<OrderStatus, { color: string; icon: typeof Package; label: string }> = {
     pending: { color: '#f59e0b', icon: Clock, label: 'Pending' },
+    pending_cod: { color: '#f59e0b', icon: Clock, label: 'COD pending' },
     confirmed: { color: '#3b82f6', icon: CheckCircle, label: 'Confirmed' },
     processing: { color: '#0ea5e9', icon: Package, label: 'Processing' },
     shipped: { color: '#8b5cf6', icon: Truck, label: 'Shipped' },
@@ -26,6 +27,10 @@ const statusConfig: Record<OrderStatus, { color: string; icon: typeof Package; l
 
 const timelineStatuses: OrderStatus[] = ['pending', 'confirmed', 'processing', 'shipped', 'delivered'];
 const productImageFallback = '/images/banners/new-arrivals-1.png';
+
+function timelineIndex(status: OrderStatus): number {
+    return status === 'pending_cod' ? 0 : timelineStatuses.indexOf(status);
+}
 
 export default function OrdersClient({ subdomain }: OrdersClientProps) {
     const basePath = `/store/${subdomain}`;
@@ -115,7 +120,6 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
 
     // Order Details Modal
     if (selectedOrder) {
-        const StatusIcon = statusConfig[selectedOrder.status].icon;
         return (
             <div className="min-h-screen pt-20 pb-8" style={{ backgroundColor: 'var(--background, #f9fafb)' }}>
                 <div className="container mx-auto px-4 max-w-2xl">
@@ -149,7 +153,7 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                         <div className="p-6 border-b border-card">
                             <div className="flex items-center justify-between">
                                 {timelineStatuses.map((status, i) => {
-                                    const isActive = timelineStatuses.indexOf(selectedOrder.status) >= i;
+                                    const isActive = timelineIndex(selectedOrder.status) >= i;
                                     const Icon = statusConfig[status].icon;
                                     return (
                                         <div key={status} className="flex flex-col items-center gap-2">

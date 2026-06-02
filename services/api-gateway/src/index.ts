@@ -56,6 +56,10 @@ export interface Env {
     PAYPAL_CLIENT_SECRET?: string;
     PAYPAL_MODE?: 'sandbox' | 'live';
     PAYPAL_WEBHOOK_ID?: string;
+    CASHFREE_APP_ID?: string;
+    CASHFREE_SECRET_KEY?: string;
+    CASHFREE_ENVIRONMENT?: 'sandbox' | 'production';
+    CASHFREE_API_VERSION?: string;
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
     INTERNAL_API_SECRET?: string;
