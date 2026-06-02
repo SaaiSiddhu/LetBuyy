@@ -306,6 +306,23 @@ ON CONFLICT (id) DO UPDATE SET
   email_verified = EXCLUDED.email_verified,
   updated_at = NOW();
 
+INSERT INTO super_admin_allowlist (id, user_id, email, full_name, is_active, two_factor_enabled)
+VALUES (
+  '00000000-0000-4000-8000-000000000004',
+  NULL,
+  'ops@letbuyy.local',
+  'Demo Ops Reviewer',
+  TRUE,
+  FALSE
+)
+ON CONFLICT (id) DO UPDATE SET
+  user_id = EXCLUDED.user_id,
+  email = EXCLUDED.email,
+  full_name = EXCLUDED.full_name,
+  is_active = EXCLUDED.is_active,
+  two_factor_enabled = EXCLUDED.two_factor_enabled,
+  updated_at = NOW();
+
 INSERT INTO app_categories (id, name, slug, description, icon, sort_order, is_active)
 VALUES
   (
@@ -502,6 +519,67 @@ ON CONFLICT (id) DO UPDATE SET
   stock = EXCLUDED.stock,
   is_active = EXCLUDED.is_active,
   status = EXCLUDED.status,
+  updated_at = NOW();
+
+INSERT INTO inventory_locations (id, store_id, name, address, is_default, status)
+VALUES (
+  '00000000-0000-4000-8000-000000000110',
+  '00000000-0000-4000-8000-000000000010',
+  'Urban Kicks Bengaluru Warehouse',
+  '{"address":"42 Commerce Street","city":"Bengaluru","state":"Karnataka","state_code":"29","pincode":"560001","country":"IN"}'::jsonb,
+  TRUE,
+  'active'
+)
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  address = EXCLUDED.address,
+  is_default = EXCLUDED.is_default,
+  status = EXCLUDED.status;
+
+INSERT INTO inventory_levels (
+  id, product_id, location_id, available, reserved, incoming,
+  on_hand_quantity, available_quantity, committed_quantity,
+  unavailable_quantity, incoming_quantity, reserved_quantity
+)
+VALUES
+  (
+    '00000000-0000-4000-8000-000000000111',
+    '00000000-0000-4000-8000-000000000101',
+    '00000000-0000-4000-8000-000000000110',
+    25,
+    0,
+    0,
+    25,
+    25,
+    0,
+    0,
+    0,
+    0
+  ),
+  (
+    '00000000-0000-4000-8000-000000000112',
+    '00000000-0000-4000-8000-000000000102',
+    '00000000-0000-4000-8000-000000000110',
+    18,
+    0,
+    0,
+    18,
+    18,
+    0,
+    0,
+    0,
+    0
+  )
+ON CONFLICT (id) DO UPDATE SET
+  available = EXCLUDED.available,
+  reserved = EXCLUDED.reserved,
+  incoming = EXCLUDED.incoming,
+  on_hand_quantity = EXCLUDED.on_hand_quantity,
+  available_quantity = EXCLUDED.available_quantity,
+  committed_quantity = EXCLUDED.committed_quantity,
+  unavailable_quantity = EXCLUDED.unavailable_quantity,
+  incoming_quantity = EXCLUDED.incoming_quantity,
+  reserved_quantity = EXCLUDED.reserved_quantity,
   updated_at = NOW();
 
 INSERT INTO app_developers (

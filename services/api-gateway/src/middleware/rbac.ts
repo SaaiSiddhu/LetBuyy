@@ -27,15 +27,29 @@ function getAuthRoleAssignments(authUser: AuthUserWithRoles): LetbuyyRoleAssignm
     return normalizeLetbuyyRoleAssignments(authUser.role);
 }
 
-async function hasOpsAllowlistEntry(db: ReturnType<typeof getSupabaseAdmin>, userId: string): Promise<boolean> {
-    const { data } = await db
+async function hasOpsAllowlistEntry(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    userId: string,
+    email?: string,
+): Promise<boolean> {
+    const { data: userEntry } = await db
         .from('super_admin_allowlist')
         .select('id')
         .eq('user_id', userId)
         .eq('is_active', true)
         .maybeSingle();
 
-    return Boolean(data);
+    if (userEntry) return true;
+    if (!email) return false;
+
+    const { data: emailEntry } = await db
+        .from('super_admin_allowlist')
+        .select('id')
+        .eq('email', email)
+        .eq('is_active', true)
+        .maybeSingle();
+
+    return Boolean(emailEntry);
 }
 
 async function hasPartnerDeveloperEntry(db: ReturnType<typeof getSupabaseAdmin>, userId: string): Promise<boolean> {
@@ -105,7 +119,7 @@ export function requireRoleCategory(...categories: RbacRoleCategory[]) {
 
         const db = getSupabaseAdmin(c);
         const allowedByPersistence = await Promise.all(categories.map(async (category) => {
-            if (category === 'ops') return hasOpsAllowlistEntry(db, auth.user.id);
+            if (category === 'ops') return hasOpsAllowlistEntry(db, auth.user.id, auth.user.email);
             if (category === 'partner') return hasPartnerDeveloperEntry(db, auth.user.id);
             return false;
         }));
@@ -182,13 +196,7 @@ export const requireSuperAdmin = createMiddleware<{ Bindings: Env }>(
         const auth = c.get('auth');
         const db = getSupabaseAdmin(c);
 
-        const { data } = await db
-            .from('super_admin_allowlist')
-            .select('id')
-            .eq('user_id', auth.user.id)
-            .single();
-
-        if (!data) {
+        if (!(await hasOpsAllowlistEntry(db, auth.user.id, auth.user.email))) {
             return c.json(
                 { error: { code: 'FORBIDDEN', message: 'Super admin access required' } },
                 403

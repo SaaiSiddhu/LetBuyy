@@ -39,7 +39,7 @@ test.describe('J4 Commerce and event spine federation', () => {
             address: '42 Commerce Street',
             city: 'Bengaluru',
             state: 'Karnataka',
-            stateCode: 'KA',
+            stateCode: '29',
             pincode: '560001',
           },
         },

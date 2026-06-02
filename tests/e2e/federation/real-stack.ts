@@ -169,7 +169,6 @@ export async function installMerchantSessionCookie(page: Page): Promise<void> {
     name: LETBUYY_MERCHANT_SESSION_COOKIE,
     value: sessionValue,
     url,
-    path: '/',
     sameSite: 'Lax' as const,
   })));
 }
@@ -189,7 +188,6 @@ export async function installCustomerSessionCookie(page: Page): Promise<void> {
     name: LETBUYY_CUSTOMER_SESSION_COOKIE,
     value: token,
     url,
-    path: '/',
     sameSite: 'Lax' as const,
   })));
 }

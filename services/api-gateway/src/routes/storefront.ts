@@ -469,6 +469,10 @@ const STOREFRONT_SITE_SELECT: string =
     'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at,seo_title,seo_description';
 const STOREFRONT_SITE_RELEASE_SELECT: string =
     `${STOREFRONT_SITE_SELECT},current_theme_release_id,storefront_release_version`;
+const STOREFRONT_SITE_COMPAT_SELECT: string =
+    'id,user_id,custom_user_id,name,store_name,subdomain,site_type,tagline,logo_url,brand_color,custom_domain,currency,locale,theme_id,template_config,status,published_at,created_at,updated_at';
+const STOREFRONT_SITE_RELEASE_COMPAT_SELECT: string =
+    `${STOREFRONT_SITE_COMPAT_SELECT},current_theme_release_id,storefront_release_version`;
 const PRODUCT_SELECT_FULL: string =
     'id,store_id,name,slug,description,images,price,compare_price,compare_at_price,currency,stock,quantity,stock_quantity,is_active,is_featured,status,category,tags,variants,avg_rating,review_count,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_COMPAT: string =
@@ -554,10 +558,10 @@ async function loadSiteByHandle(
     if (!normalized) return null;
 
     const db = getSupabaseAdmin(c);
-    const selectSite = (includeReleaseColumns: boolean, includeDeletedAtFilter: boolean) => {
+    const selectSite = (selectFields: string, includeDeletedAtFilter: boolean) => {
         let query = db
             .from('sites')
-            .select(includeReleaseColumns ? STOREFRONT_SITE_RELEASE_SELECT : STOREFRONT_SITE_SELECT)
+            .select(selectFields)
             .or(`subdomain.eq.${normalized},store_name.eq.${normalized}`)
             .limit(1);
 
@@ -567,14 +571,22 @@ async function loadSiteByHandle(
         return query;
     };
 
-    let { data, error } = await selectSite(true, true).single();
+    let { data, error } = await selectSite(STOREFRONT_SITE_RELEASE_SELECT, true).single();
 
     if (error || !data) {
-        ({ data, error } = await selectSite(false, true).single());
+        ({ data, error } = await selectSite(STOREFRONT_SITE_RELEASE_COMPAT_SELECT, true).single());
     }
 
     if (error || !data) {
-        ({ data } = await selectSite(false, false).single());
+        ({ data, error } = await selectSite(STOREFRONT_SITE_SELECT, true).single());
+    }
+
+    if (error || !data) {
+        ({ data, error } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, true).single());
+    }
+
+    if (error || !data) {
+        ({ data } = await selectSite(STOREFRONT_SITE_COMPAT_SELECT, false).single());
     }
 
     return (data as StorefrontSiteRecord | null) || null;
@@ -1251,10 +1263,10 @@ router.get('/store/:storeId', async (c) => {
     }
 
     const db = getSupabaseAdmin(c);
-    const selectStore = (includeReleaseColumns: boolean, includeDeletedAtFilter: boolean) => {
+    const selectStore = (selectFields: string, includeDeletedAtFilter: boolean) => {
         let query = db
             .from('sites')
-            .select(includeReleaseColumns ? STOREFRONT_SITE_RELEASE_SELECT : STOREFRONT_SITE_SELECT)
+            .select(selectFields)
             .eq('id', storeId)
             .eq('status', 'published');
 
@@ -1263,14 +1275,22 @@ router.get('/store/:storeId', async (c) => {
         return query;
     };
 
-    let { data, error } = await selectStore(true, true).single();
+    let { data, error } = await selectStore(STOREFRONT_SITE_RELEASE_SELECT, true).single();
 
     if (error || !data) {
-        ({ data, error } = await selectStore(false, true).single());
+        ({ data, error } = await selectStore(STOREFRONT_SITE_RELEASE_COMPAT_SELECT, true).single());
     }
 
     if (error || !data) {
-        ({ data } = await selectStore(false, false).single());
+        ({ data, error } = await selectStore(STOREFRONT_SITE_SELECT, true).single());
+    }
+
+    if (error || !data) {
+        ({ data, error } = await selectStore(STOREFRONT_SITE_COMPAT_SELECT, true).single());
+    }
+
+    if (error || !data) {
+        ({ data } = await selectStore(STOREFRONT_SITE_COMPAT_SELECT, false).single());
     }
 
     if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);

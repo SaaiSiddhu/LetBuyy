@@ -4,9 +4,9 @@ Generated during Phase 2.1 static validation.
 
 ## Summary
 
-- Active migration files scanned: 1 (`database/supabase/migrations/000_baseline.sql`)
+- Active migration files scanned: 2 (`database/supabase/migrations/000_baseline.sql`, `database/supabase/migrations/073_order_item_required_field_compatibility.sql`)
 - Archived historical migrations: 72 (`docs/archive/migrations-history/001_*.sql` through `072_*.sql`)
-- Live database apply: PASS for the baseline-only disposable Supabase Postgres replay during the 2026-06-02 production-readiness P0 baseline mission.
+- Live database apply: PASS for the baseline-plus-073 disposable Supabase Postgres replay during the 2026-06-02 production-readiness P1 real-stack mission.
 - Static forward-reference issues: 0 in active replay authority.
 - Migration health status: BASELINED
 
@@ -15,8 +15,10 @@ Generated during Phase 2.1 static validation.
 The old `001` through `072` migration chain is no longer active replay
 authority. It is preserved under `docs/archive/migrations-history/` for audit
 and rollback investigation only. Fresh environments must apply
-`database/supabase/migrations/000_baseline.sql`; new forward migrations resume
-at `073_*.sql`.
+`database/supabase/migrations/000_baseline.sql`; additive forward migration
+`073_order_item_required_field_compatibility.sql` repairs the checkout
+order-items compatibility contract discovered by real-stack COD checkout, and
+new forward migrations now resume at `074_*.sql`.
 
 ## Issues Found
 

@@ -11,7 +11,8 @@ import {
   versionHeaders,
 } from './real-stack';
 
-type CategoryList = { categories?: Array<{ id: string; slug?: string; name?: string }> };
+type Category = { id: string; slug?: string; name?: string };
+type CategoryList = Category[] | { categories?: Category[] };
 type AppSubmitResult = { app: { id: string; name: string; status: string }; review_record?: { id: string } | null };
 type ReviewDecisionResult = { review_record: { id: string; status: string }; resource: unknown; event_type: string | null };
 type OAuthAuthorizeResult = {
@@ -41,8 +42,9 @@ test.describe('J2 App Store lifecycle federation', () => {
       headers: versionHeaders(),
     });
     const categories = await expectApiSuccess<CategoryList>(categoriesResponse, 'app categories');
-    const categoryId = categories.categories?.find((category) => category.slug === 'marketing')?.id
-      ?? categories.categories?.[0]?.id;
+    const categoryRows = Array.isArray(categories) ? categories : categories.categories ?? [];
+    const categoryId = categoryRows.find((category) => category.slug === 'marketing')?.id
+      ?? categoryRows[0]?.id;
     test.skip(!categoryId, 'No app category exists in the real local stack seed.');
 
     const appSlug = uniqueSlug('f8-federated-app');
@@ -143,6 +145,7 @@ test.describe('J2 App Store lifecycle federation', () => {
       headers: await internalHeaders('merchant'),
       data: {
         store_id: demo.storeId,
+        idempotency_key: uniqueSlug('f8-app-charge-approval'),
         provider_mode: 'test',
       },
     });

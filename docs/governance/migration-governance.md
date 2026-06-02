@@ -34,12 +34,14 @@ Replayable Supabase migrations must not use `DROP TABLE`, `DROP SCHEMA`, `DROP C
 ## Fresh Replay Baseline
 
 As of 2026-06-02, active Supabase replay authority is the verified baseline at
-`database/supabase/migrations/000_baseline.sql`.
+`database/supabase/migrations/000_baseline.sql` plus additive forward
+migrations `073_*.sql` and newer.
 
 - Historical migrations `001_initial_schema.sql` through
   `072_marketplace_review_records.sql` are archived under
   `docs/archive/migrations-history/` for auditability only.
-- New forward migrations must start at `073_*.sql` and remain additive,
+- New forward migrations after the checkout order-item compatibility fix must
+  start at `074_*.sql` and remain additive,
   replay-safe, and compatible with the baseline.
 - The baseline was generated from a throwaway clean replay of the historical
   chain and proved equivalent by comparing schema-only `public` dumps from the
