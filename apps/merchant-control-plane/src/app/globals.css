@@ -2803,33 +2803,6 @@ body {
   background: var(--bg-secondary);
 }
 
-/* ── Toast notification ───────────────────── */
-.settings-toast {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  margin-bottom: 16px;
-}
-
-.settings-toast.success {
-  background: rgba(16, 185, 129, 0.08);
-  color: #059669;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.dark .settings-toast.success {
-  background: rgba(16, 185, 129, 0.1);
-  color: #34d399;
-  border-color: rgba(16, 185, 129, 0.15);
-}
-
-.settings-toast .letbuyy-icon {
-  font-size: 18px;
-}
-
 /* ── Skeleton loader ──────────────────────── */
 .settings-skeleton {
   background: linear-gradient(90deg, var(--bg-secondary) 25%, var(--bg-tertiary) 50%, var(--bg-secondary) 75%);
@@ -7074,8 +7047,7 @@ body {
 .generic-theme-editor__header-actions,
 .generic-theme-editor__sidebar-title,
 .generic-theme-editor__schema-card,
-.generic-theme-editor__preview-header,
-.generic-theme-editor__save-message {
+.generic-theme-editor__preview-header {
   display: flex;
   align-items: center;
 }
@@ -7130,25 +7102,6 @@ body {
 .generic-theme-editor__icon-button:hover {
   color: var(--text-primary, #1a1a2e);
   border-color: var(--primary, #8b5cf6);
-}
-
-.generic-theme-editor__save-message {
-  gap: 6px;
-  min-height: 36px;
-  margin: 0;
-  padding: 0 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border, #e5e5e5);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.generic-theme-editor__save-message--success {
-  color: var(--success, #16a34a);
-}
-
-.generic-theme-editor__save-message--error {
-  color: var(--error, #ef4444);
 }
 
 .generic-theme-editor__body {
