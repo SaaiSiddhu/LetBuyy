@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef, useState } from 'react'
 import type { ChangeEvent } from 'react'
 import { useParams } from 'next/navigation'
 import {
@@ -13,6 +13,7 @@ import {
     Package,
     Page,
     PageHeader,
+    SaveBar,
     Section,
     Select,
     Upload,
@@ -136,6 +137,7 @@ export default function ExportPage() {
     const fileInputRef = useRef<HTMLInputElement | null>(null)
     const [exporting, setExporting] = useState<ExportType | null>(null)
     const [importing, setImporting] = useState(false)
+    const [selectedImportFile, setSelectedImportFile] = useState<File | null>(null)
     const [importResult, setImportResult] = useState<ImportResult | null>(null)
     const [statusFilter, setStatusFilter] = useState('')
 
@@ -271,19 +273,34 @@ export default function ExportPage() {
         }
     }
 
-    const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
+    const clearImportFile = useCallback(() => {
+        setSelectedImportFile(null)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+        }
+    }, [])
+
+    const handleImportFile = (event: ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0]
         if (!file || importing) return
+        setSelectedImportFile(file)
+        setImportResult(null)
+        event.target.value = ''
+    }
+
+    const handleImportSelectedFile = async () => {
+        if (!selectedImportFile || importing) return
         setImporting(true)
         setImportResult(null)
 
         try {
-            const text = await file.text()
+            const text = await selectedImportFile.text()
             const lines = text.split(/\r?\n/).filter((line) => line.trim())
             if (lines.length < 2) {
                 const message = 'CSV must have headers and at least one product row.'
                 setImportResult({ tone: 'critical', message })
                 notify({ title: 'Import file is incomplete', description: message, variant: 'critical' })
+                clearImportFile()
                 return
             }
 
@@ -292,6 +309,7 @@ export default function ExportPage() {
                 const message = 'CSV must include a name column.'
                 setImportResult({ tone: 'critical', message })
                 notify({ title: 'Import file needs a name column', description: message, variant: 'critical' })
+                clearImportFile()
                 return
             }
 
@@ -308,6 +326,7 @@ export default function ExportPage() {
 
             const imported = Number(payload?.data?.imported || 0)
             const message = `Successfully imported ${imported.toLocaleString('en-IN')} products.`
+            clearImportFile()
             setImportResult({ tone: 'success', message })
             notify({
                 title: 'Products imported',
@@ -316,6 +335,7 @@ export default function ExportPage() {
             })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Failed to parse CSV file.'
+            clearImportFile()
             setImportResult({ tone: 'critical', message })
             notify({
                 title: 'Import failed',
@@ -324,9 +344,10 @@ export default function ExportPage() {
             })
         } finally {
             setImporting(false)
-            event.target.value = ''
         }
     }
+
+    const importSaveState = importing ? 'saving' : selectedImportFile ? 'unsaved' : 'saved'
 
     return (
         <Page>
@@ -402,6 +423,14 @@ export default function ExportPage() {
                             {importResult.message}
                         </Banner>
                     )}
+                    {selectedImportFile && (
+                        <Banner
+                            variant="info"
+                            title="CSV selected"
+                        >
+                            {`${selectedImportFile.name} is ready to import. Review the filename, then use the sticky import bar to continue.`}
+                        </Banner>
+                    )}
                     <div className="rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-5)]">
                         <div className="flex flex-col gap-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
                             <div className="flex items-start gap-[var(--lb-space-3)]">
@@ -413,7 +442,7 @@ export default function ExportPage() {
                                         Product CSV
                                     </h3>
                                     <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
-                                        Choose a CSV file and the imported row count appears as soon as processing finishes.
+                                        Choose a CSV file, confirm it in the save bar, and the imported row count appears as soon as processing finishes.
                                     </p>
                                 </div>
                             </div>
@@ -425,7 +454,7 @@ export default function ExportPage() {
                                 disabled={importing}
                             >
                                 <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                {importing ? 'Importing...' : 'Choose CSV file'}
+                                {importing ? 'Importing...' : selectedImportFile ? 'Change CSV file' : 'Choose CSV file'}
                             </Button>
                         </div>
                         <input
@@ -438,6 +467,13 @@ export default function ExportPage() {
                     </div>
                 </Section>
             </Card>
+            <SaveBar
+                state={importSaveState}
+                onSave={() => void handleImportSelectedFile()}
+                onDiscard={clearImportFile}
+                saveLabel="Import CSV"
+                discardLabel="Clear file"
+            />
         </Page>
     )
 }
