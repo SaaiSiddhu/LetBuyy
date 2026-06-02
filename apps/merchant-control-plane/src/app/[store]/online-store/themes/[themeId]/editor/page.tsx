@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, CheckCircle2, FileJson, RefreshCw, Save, Send, Settings } from '@letbuyy/ui'
+import { AlertTriangle, ArrowLeft, FileJson, RefreshCw, Save, SaveBar, Send, Settings, useToast } from '@letbuyy/ui'
 import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
@@ -35,11 +35,6 @@ type ApiEditorResponse = {
     themeSettingsSchema?: unknown
     version?: number
 }
-
-type SaveMessage = {
-    kind: 'success' | 'error'
-    text: string
-} | null
 
 type FieldOption = {
     label: string
@@ -281,6 +276,7 @@ function ThemeSettingsEditorInner() {
     const params = useParams()
     const store = params?.store as string
     const themeId = params?.themeId as string
+    const { notify } = useToast()
 
     const [schema, setSchema] = useState<ThemeSettingsSchema>(EMPTY_SETTINGS_SCHEMA)
     const [baseConfig, setBaseConfig] = useState<JsonRecord>({})
@@ -295,7 +291,6 @@ function ThemeSettingsEditorInner() {
     const [isSaving, setIsSaving] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [loadError, setLoadError] = useState<string | null>(null)
-    const [saveMessage, setSaveMessage] = useState<SaveMessage>(null)
     const [previewToken, setPreviewToken] = useState<string | null>(null)
 
     const groups = useMemo(() => Object.entries(schema.settings), [schema])
@@ -313,25 +308,44 @@ function ThemeSettingsEditorInner() {
         return url.toString()
     }, [previewToken, store])
 
-    const refreshPreview = useCallback(async () => {
+    const refreshPreview = useCallback(async (announce = false) => {
         if (!store || !themeId) return
-        const res = await fetch(`/api/themes/${themeId}/preview-session?store_name=${encodeURIComponent(store)}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ store_name: store, ttl_seconds: 900 }),
-        })
-        const data = await res.json().catch(() => ({}))
-        if (!res.ok) return
-        const token = asRecord(data.data).preview_token
-        if (typeof token === 'string') setPreviewToken(token)
-    }, [store, themeId])
+        try {
+            const res = await fetch(`/api/themes/${themeId}/preview-session?store_name=${encodeURIComponent(store)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ store_name: store, ttl_seconds: 900 }),
+            })
+            const data = await res.json().catch(() => ({}))
+            if (!res.ok) {
+                const errorRecord = asRecord(asRecord(data).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(data).error, 'Preview session failed')))
+            }
+            const token = asRecord(data.data).preview_token
+            if (typeof token === 'string') setPreviewToken(token)
+            if (announce) {
+                notify({
+                    title: 'Preview refreshed',
+                    description: 'The storefront preview has a fresh editor session.',
+                    variant: 'success',
+                })
+            }
+        } catch (err) {
+            if (announce) {
+                notify({
+                    title: 'Preview refresh failed',
+                    description: err instanceof Error ? err.message : 'Try refreshing the preview again.',
+                    variant: 'critical',
+                })
+            }
+        }
+    }, [notify, store, themeId])
 
     const loadEditor = useCallback(async () => {
         if (!store || !themeId) return
 
         setIsLoading(true)
         setLoadError(null)
-        setSaveMessage(null)
 
         try {
             const res = await fetch(
@@ -358,11 +372,17 @@ function ThemeSettingsEditorInner() {
             setIsDirty(false)
             await refreshPreview()
         } catch (err) {
-            setLoadError(err instanceof Error ? err.message : 'Failed to load theme editor')
+            const message = err instanceof Error ? err.message : 'Failed to load theme editor'
+            setLoadError(message)
+            notify({
+                title: 'Theme editor could not load',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setIsLoading(false)
         }
-    }, [refreshPreview, store, themeId])
+    }, [notify, refreshPreview, store, themeId])
 
     useEffect(() => {
         void loadEditor()
@@ -377,7 +397,6 @@ function ThemeSettingsEditorInner() {
             },
         }))
         setIsDirty(true)
-        setSaveMessage(null)
     }, [schema])
 
     const saveDraft = useCallback(async () => {
@@ -406,20 +425,26 @@ function ThemeSettingsEditorInner() {
 
     const handleSave = useCallback(async () => {
         setIsSaving(true)
-        setSaveMessage(null)
         try {
             await saveDraft()
-            setSaveMessage({ kind: 'success', text: 'Settings data saved' })
+            notify({
+                title: 'Theme draft saved',
+                description: 'Settings data has been saved to the current draft.',
+                variant: 'success',
+            })
         } catch (err) {
-            setSaveMessage({ kind: 'error', text: err instanceof Error ? err.message : 'Failed to save settings data' })
+            notify({
+                title: 'Theme draft save failed',
+                description: err instanceof Error ? err.message : 'Failed to save settings data.',
+                variant: 'critical',
+            })
         } finally {
             setIsSaving(false)
         }
-    }, [saveDraft])
+    }, [notify, saveDraft])
 
     const handlePublish = useCallback(async () => {
         setIsPublishing(true)
-        setSaveMessage(null)
         try {
             const templateConfig = buildDraftConfig(baseConfig, settingsData)
             const res = await fetch(
@@ -438,14 +463,32 @@ function ThemeSettingsEditorInner() {
             setBaseConfig(templateConfig)
             setIsDirty(false)
             setSavedAt(new Date().toISOString())
-            setSaveMessage({ kind: 'success', text: 'Theme published' })
             await refreshPreview()
+            notify({
+                title: 'Theme published',
+                description: 'The current theme settings are now live on the storefront.',
+                variant: 'success',
+            })
         } catch (err) {
-            setSaveMessage({ kind: 'error', text: err instanceof Error ? err.message : 'Failed to publish theme' })
+            notify({
+                title: 'Theme publish failed',
+                description: err instanceof Error ? err.message : 'Failed to publish theme.',
+                variant: 'critical',
+            })
         } finally {
             setIsPublishing(false)
         }
-    }, [baseConfig, refreshPreview, settingsData, store, themeId])
+    }, [baseConfig, notify, refreshPreview, settingsData, store, themeId])
+
+    const handleDiscard = useCallback(() => {
+        setSettingsData(normalizeSettingsData(baseConfig, schema))
+        setIsDirty(false)
+        notify({
+            title: 'Theme changes discarded',
+            description: 'Unsaved settings have been reset to the saved draft.',
+            variant: 'info',
+        })
+    }, [baseConfig, notify, schema])
 
     if (isLoading) return <EditorLoading />
 
@@ -478,12 +521,6 @@ function ThemeSettingsEditorInner() {
                     </div>
                 </div>
                 <div className="generic-theme-editor__header-actions">
-                    {saveMessage ? (
-                        <p className={`generic-theme-editor__save-message generic-theme-editor__save-message--${saveMessage.kind}`}>
-                            {saveMessage.kind === 'success' ? <CheckCircle2 size={16} aria-hidden="true" /> : <AlertTriangle size={16} aria-hidden="true" />}
-                            {saveMessage.text}
-                        </p>
-                    ) : null}
                     <button className="os-btn os-btn-outline" type="button" onClick={handleSave} disabled={isSaving || isPublishing || !isDirty}>
                         {isSaving ? <RefreshCw className="generic-theme-editor__spin" size={16} aria-hidden="true" /> : <Save size={16} aria-hidden="true" />}
                         Save
@@ -563,7 +600,7 @@ function ThemeSettingsEditorInner() {
                 <aside className="generic-theme-editor__preview" aria-label="Theme preview">
                     <div className="generic-theme-editor__preview-header">
                         <span>{store}.letbuyy.store</span>
-                        <button className="generic-theme-editor__icon-button" type="button" onClick={() => void refreshPreview()} aria-label="Refresh preview">
+                        <button className="generic-theme-editor__icon-button" type="button" onClick={() => void refreshPreview(true)} aria-label="Refresh preview">
                             <RefreshCw size={16} aria-hidden="true" />
                         </button>
                     </div>
@@ -579,6 +616,14 @@ function ThemeSettingsEditorInner() {
                     )}
                 </aside>
             </div>
+
+            <SaveBar
+                state={isSaving ? 'saving' : isDirty ? 'unsaved' : 'saved'}
+                saveLabel="Save draft"
+                discardLabel="Discard changes"
+                onSave={() => void handleSave()}
+                onDiscard={handleDiscard}
+            />
         </main>
     )
 }

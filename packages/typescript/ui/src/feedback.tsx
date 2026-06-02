@@ -151,7 +151,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
         <ToastContext.Provider value={value}>
             {children}
             <div
-                className="fixed bottom-[var(--lb-space-5)] right-[var(--lb-space-5)] z-50 flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]"
+                className="fixed right-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))] z-50 flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]"
                 aria-live="polite"
                 aria-relevant="additions removals"
             >
