@@ -9,6 +9,7 @@ import {
     Button,
     Card,
     ConfirmDialog,
+    Copy,
     Edit3,
     EmptyState,
     Eye,
@@ -19,6 +20,7 @@ import {
     Rocket,
     Section,
     Skeleton,
+    Tooltip,
     Upload,
     XCircle,
     useToast,
@@ -275,9 +277,13 @@ export default function ThemesPage() {
     }
 
     const themeColors = currentTheme?.config?.colors
-    const displayColors = themeColors
+    const themePalette = themeColors
         ? [themeColors.primary, themeColors.secondary, themeColors.accent, themeColors.text].filter(Boolean) as string[]
+        : []
+    const displayColors = themePalette.length > 0
+        ? themePalette
         : ['var(--lb-color-primary)', 'var(--lb-color-info)', 'var(--lb-color-warning)', 'var(--lb-color-text)']
+    const draftThemes = themes.filter((theme) => !isThemeCurrent(theme, currentTheme?.slug))
 
     const isPublished = storeStatus === 'published'
     const storefrontUrl = getStorefrontUrl(store)
@@ -343,12 +349,42 @@ export default function ThemesPage() {
                                         Open
                                     </a>
                                 </div>
-                                <iframe
-                                    className="h-[calc(var(--lb-space-7)*8)] w-full bg-[var(--lb-color-surface)]"
-                                    src={storefrontUrl}
-                                    title={`${store} storefront preview`}
-                                    loading="lazy"
-                                />
+                                <div
+                                    className="grid min-h-[calc(var(--lb-space-7)*8)] gap-[var(--lb-space-4)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] md:grid-cols-[minmax(0,1.1fr)_minmax(260px,0.9fr)]"
+                                    aria-label={`${currentTheme?.name || 'Current theme'} storefront preview mock`}
+                                >
+                                    <div
+                                        className="flex min-h-[calc(var(--lb-space-7)*5)] flex-col justify-between rounded-[var(--lb-radius-lg)] p-[var(--lb-space-5)] text-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)]"
+                                        style={{ backgroundColor: displayColors[0] }}
+                                    >
+                                        <div className="space-y-[var(--lb-space-3)]">
+                                            <div className="h-[var(--lb-space-3)] w-[var(--lb-space-7)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] opacity-80" />
+                                            <div className="h-[var(--lb-space-5)] max-w-[360px] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] opacity-95" />
+                                            <div className="h-[var(--lb-space-3)] max-w-[280px] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] opacity-70" />
+                                        </div>
+                                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                            <span className="h-[var(--lb-space-5)] w-[var(--lb-space-7)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] opacity-95" />
+                                            <span className="h-[var(--lb-space-5)] w-[var(--lb-space-7)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-surface)] opacity-80" />
+                                        </div>
+                                    </div>
+                                    <div className="grid gap-[var(--lb-space-3)] sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
+                                        {[0, 1, 2, 3].map((item) => (
+                                            <div
+                                                key={item}
+                                                className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-sm)]"
+                                            >
+                                                <div
+                                                    className="mb-[var(--lb-space-3)] h-[var(--lb-space-7)] rounded-[var(--lb-radius-md)]"
+                                                    style={{ backgroundColor: displayColors[(item + 1) % displayColors.length] }}
+                                                />
+                                                <div className="space-y-[var(--lb-space-2)]">
+                                                    <div className="h-[var(--lb-space-2)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-border-strong)]" />
+                                                    <div className="h-[var(--lb-space-2)] w-2/3 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-border)]" />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
                             </div>
 
                             <div className="flex flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
@@ -415,6 +451,21 @@ export default function ThemesPage() {
                                         Edit theme
                                     </Button>
                                     <Button
+                                        variant="outline"
+                                        onClick={() => window.open(storefrontUrl, '_blank', 'noopener,noreferrer')}
+                                    >
+                                        <Eye className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        Preview
+                                    </Button>
+                                    <Tooltip content="Duplicate needs a backend draft-copy endpoint before it can create a new theme draft.">
+                                        <span>
+                                            <Button variant="outline" disabled>
+                                                <Copy className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                Duplicate
+                                            </Button>
+                                        </span>
+                                    </Tooltip>
+                                    <Button
                                         variant={isPublished ? 'outline' : 'primary'}
                                         loading={publishing}
                                         onClick={handlePublishToggle}
@@ -475,9 +526,9 @@ export default function ThemesPage() {
 
             <Card>
                 <Section
-                    title="Theme library"
-                    description="Installed and production-ready themes for this store."
-                    action={<Badge label={`${themes.length} theme${themes.length === 1 ? '' : 's'}`} variant="default" />}
+                    title="Draft themes"
+                    description="Preview, publish, or prepare alternate themes without losing sight of the current live theme."
+                    action={<Badge label={`${draftThemes.length} draft${draftThemes.length === 1 ? '' : 's'}`} variant="default" />}
                 >
                     {loading ? (
                         <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-3">
@@ -485,11 +536,11 @@ export default function ThemesPage() {
                             <Skeleton variant="card" />
                             <Skeleton variant="card" />
                         </div>
-                    ) : themes.length === 0 ? (
+                    ) : draftThemes.length === 0 ? (
                         <EmptyState
                             icon={<Palette className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" aria-hidden="true" />}
-                            title="No themes installed"
-                            body="Upload a JSON-contract bundle or install a production theme to start customizing this storefront."
+                            title="No draft themes yet"
+                            body="Alternate themes will appear here after a package is uploaded or a marketplace theme is added as a draft."
                             primaryAction={
                                 <Button onClick={() => bundleInputRef.current?.click()}>
                                     Upload theme
@@ -498,14 +549,13 @@ export default function ThemesPage() {
                         />
                     ) : (
                         <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-3">
-                            {themes.map((theme) => (
+                            {draftThemes.map((theme) => (
                                 <ThemeLibraryCard
                                     key={theme.slug}
                                     theme={theme}
-                                    currentSlug={currentTheme?.slug}
                                     installing={installing === theme.slug}
-                                    onInstall={() => void handleInstall(theme.slug)}
-                                    onEdit={() => router.push(`/${store}/online-store/themes/${theme.slug}/editor`)}
+                                    onPublish={() => void handleInstall(theme.slug)}
+                                    onPreview={() => router.push(`/${store}/online-store/themes/${theme.slug}/editor`)}
                                 />
                             ))}
                         </div>
@@ -528,16 +578,14 @@ export default function ThemesPage() {
 
 function ThemeLibraryCard({
     theme,
-    currentSlug,
     installing,
-    onInstall,
-    onEdit,
+    onPublish,
+    onPreview,
 }: {
     theme: ThemeRecord
-    currentSlug?: string
     installing: boolean
-    onInstall: () => void
-    onEdit: () => void
+    onPublish: () => void
+    onPreview: () => void
 }) {
     const colors = theme.config?.colors || {}
     const palette = [
@@ -545,7 +593,7 @@ function ThemeLibraryCard({
         colors.secondary || 'var(--lb-color-info)',
         colors.accent || 'var(--lb-color-warning)',
     ]
-    const isCurrentTheme = theme.active === true || theme.slug === currentSlug
+    const themeState = theme.installed ? 'Draft' : 'Available draft'
 
     return (
         <article className="overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]">
@@ -578,7 +626,7 @@ function ThemeLibraryCard({
                                 by {theme.author || 'LetBuyy'}
                             </p>
                         </div>
-                        <Badge label={isCurrentTheme ? 'Current' : formatThemePrice(theme)} variant={isCurrentTheme ? 'success' : 'default'} />
+                        <Badge label={themeState} variant={theme.installed ? 'info' : 'default'} />
                     </div>
 
                     <p className="m-0 min-h-[calc(var(--lb-line-height-body)*2em)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
@@ -604,16 +652,25 @@ function ThemeLibraryCard({
                 </div>
 
                 <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                    <Button variant="outline" onClick={onEdit}>
+                    <Button variant="outline" onClick={onPreview}>
+                        <Eye className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                         Preview
                     </Button>
+                    <Tooltip content="Duplicate needs a backend draft-copy endpoint before it can create a new theme draft.">
+                        <span>
+                            <Button variant="outline" disabled>
+                                <Copy className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Duplicate
+                            </Button>
+                        </span>
+                    </Tooltip>
                     <Button
                         loading={installing}
-                        disabled={isCurrentTheme}
-                        variant={isCurrentTheme ? 'secondary' : 'primary'}
-                        onClick={onInstall}
+                        variant="primary"
+                        onClick={onPublish}
                     >
-                        {isCurrentTheme ? 'Current' : 'Add theme'}
+                        <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        Publish
                     </Button>
                 </div>
             </div>
@@ -621,9 +678,6 @@ function ThemeLibraryCard({
     )
 }
 
-function formatThemePrice(theme: ThemeRecord) {
-    if (theme.letbuyy_price_inr > 0) return `₹${theme.letbuyy_price_inr}`
-    if (theme.price > 0) return `₹${theme.price}`
-    if (theme.letbuyy_price_usd > 0) return `$${theme.letbuyy_price_usd}`
-    return theme.is_premium ? 'Premium' : 'Free'
+function isThemeCurrent(theme: ThemeRecord, currentSlug?: string) {
+    return theme.active === true || (currentSlug ? theme.slug === currentSlug : false)
 }
