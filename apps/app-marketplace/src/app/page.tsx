@@ -25,7 +25,7 @@ export default async function MarketplacePage() {
                 {featured && <HeroSection app={featured} />}
 
                 {/* Staff Picks */}
-                <section className="appstore-section" style={{ animationDelay: '0.1s' }}>
+                <section className="appstore-section appstore-section--delay-1">
                     <div className="appstore-section-header">
                         <h2 className="appstore-section-title">
                             <Star size={20} aria-hidden="true" /> Staff Picks
@@ -42,7 +42,7 @@ export default async function MarketplacePage() {
                 </section>
 
                 {/* Trending This Week */}
-                <section className="appstore-section" style={{ animationDelay: '0.2s' }}>
+                <section className="appstore-section appstore-section--delay-2">
                     <div className="appstore-section-header">
                         <h2 className="appstore-section-title">
                             <Flame size={20} aria-hidden="true" /> Trending This Week
@@ -59,7 +59,7 @@ export default async function MarketplacePage() {
                 </section>
 
                 {/* Browse by Category */}
-                <section className="appstore-section" style={{ animationDelay: '0.3s' }}>
+                <section className="appstore-section appstore-section--delay-3">
                     <div className="appstore-section-header">
                         <h2 className="appstore-section-title">
                             <LayoutGrid size={20} aria-hidden="true" /> Browse by Category
@@ -72,7 +72,7 @@ export default async function MarketplacePage() {
                 </section>
 
                 {/* Recently Added */}
-                <section className="appstore-section" style={{ animationDelay: '0.4s' }}>
+                <section className="appstore-section appstore-section--delay-4">
                     <div className="appstore-section-header">
                         <h2 className="appstore-section-title">
                             <Clock size={20} aria-hidden="true" /> Recently Added

@@ -1,62 +1,79 @@
 import Link from 'next/link';
-import { Star, Download } from '@letbuyy/ui';
+import { BadgeCheck, Download, ShieldCheck, Star } from '@letbuyy/ui';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
+import {
+    getAppPriceDisplay,
+    getAppRating,
+    getDeveloperName,
+    getIconTone,
+    getInstallCount,
+    getReviewCount,
+    isVerifiedDeveloper,
+} from '@/lib/marketplace-display';
 
 interface HeroSectionProps {
     app: MarketplaceApp;
 }
 
-function getRating(app: MarketplaceApp): number {
-    const rating = Number(app.rating_avg ?? app.avg_rating ?? 0);
-    return Number.isFinite(rating) ? rating : 0;
-}
-
 export function HeroSection({ app }: HeroSectionProps) {
-    const price = Number(app.price_monthly ?? app.price_inr ?? 0);
+    const rating = getAppRating(app);
+    const reviewCount = getReviewCount(app);
+    const installCount = getInstallCount(app);
+    const price = getAppPriceDisplay(app);
+    const verified = isVerifiedDeveloper(app);
+    const iconTone = getIconTone(app.name);
 
     return (
         <div className="hero-section">
             <div className="hero-content">
                 <div className="hero-icon">
-                    <div
-                        style={{
-                            width: '100%',
-                            height: '100%',
-                            background: 'rgba(255,255,255,0.15)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            color: 'white',
-                            fontSize: 40,
-                            fontWeight: 800,
-                        }}
-                    >
-                        {app.name.charAt(0)}
-                    </div>
+                    {app.icon_url ? (
+                        <img src={app.icon_url} alt={app.name} />
+                    ) : (
+                        <div className={`hero-icon-placeholder app-icon-tone-${iconTone}`}>
+                            {app.name.charAt(0)}
+                        </div>
+                    )}
                 </div>
 
                 <div className="hero-info">
-                    <div className="hero-badge">
-                        <Star size={12} fill="white" stroke="white" /> Featured App
+                    <div className="hero-badge-row">
+                        <span className="marketplace-badge marketplace-badge--info">
+                            <Star size={12} aria-hidden="true" />
+                            Staff pick
+                        </span>
+                        <span className="marketplace-badge marketplace-badge--success">
+                            <ShieldCheck size={12} aria-hidden="true" />
+                            Built for LetBuyy
+                        </span>
+                        {verified && (
+                            <span className="marketplace-badge marketplace-badge--info">
+                                <BadgeCheck size={12} aria-hidden="true" />
+                                Verified partner
+                            </span>
+                        )}
                     </div>
                     <h1 className="hero-title">{app.name}</h1>
                     <p className="hero-tagline">{app.tagline}</p>
 
                     <div className="hero-meta">
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <Star size={14} fill="white" stroke="white" />
-                            {getRating(app).toFixed(1)} ({Number(app.review_count ?? 0).toLocaleString()} reviews)
-                        </span>
-                        <span className="hero-meta-divider" />
-                        <span style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                            <Download size={14} />
-                            {Number(app.install_count ?? 0).toLocaleString()} installs
+                        <span>
+                            <Star size={14} fill="currentColor" stroke="currentColor" />
+                            {rating.toFixed(1)} ({reviewCount.toLocaleString()} reviews)
                         </span>
                         <span className="hero-meta-divider" />
                         <span>
-                            {app.pricing_model === 'free' ? 'Free' :
-                                app.pricing_model === 'freemium' ? 'Free plan available' :
-                                    `₹${price.toLocaleString('en-IN')}/mo`}
+                            <Download size={14} />
+                            {installCount.toLocaleString()} installs
+                        </span>
+                        <span className="hero-meta-divider" />
+                        <span>
+                            {price.label}
+                        </span>
+                        <span className="hero-meta-divider" />
+                        <span>
+                            {verified ? <ShieldCheck size={14} /> : <BadgeCheck size={14} />}
+                            {getDeveloperName(app)}
                         </span>
                     </div>
 

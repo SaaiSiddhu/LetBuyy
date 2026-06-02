@@ -14,16 +14,16 @@ export function StarRating({ rating, size = 14, showValue = true }: StarRatingPr
     return (
         <span className="star-rating">
             {Array.from({ length: fullStars }).map((_, i) => (
-                <Star key={`full-${i}`} size={size} fill="#F59E0B" stroke="#F59E0B" />
+                <Star key={`full-${i}`} className="star-rating__star star-rating__star--filled" size={size} fill="currentColor" stroke="currentColor" />
             ))}
             {hasHalf && (
-                <Star key="half" size={size} fill="#F59E0B" stroke="#F59E0B" style={{ clipPath: 'inset(0 50% 0 0)' }} />
+                <Star key="half" className="star-rating__star star-rating__star--half" size={size} fill="currentColor" stroke="currentColor" />
             )}
             {Array.from({ length: emptyStars }).map((_, i) => (
-                <Star key={`empty-${i}`} size={size} fill="none" stroke="#CBD5E1" />
+                <Star key={`empty-${i}`} className="star-rating__star star-rating__star--empty" size={size} fill="none" stroke="currentColor" />
             ))}
             {showValue && (
-                <span style={{ marginLeft: 4, fontSize: size - 1 }}>{rating.toFixed(1)}</span>
+                <span className="star-rating__value">{rating.toFixed(1)}</span>
             )}
         </span>
     );
