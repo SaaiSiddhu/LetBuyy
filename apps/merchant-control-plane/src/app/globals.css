@@ -1676,24 +1676,8 @@ body {
   margin-top: 2px;
 }
 
-.admin-notifications-empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 32px 16px;
-  gap: 8px;
-}
-
-.admin-notifications-empty .letbuyy-icon {
-  font-size: 32px;
-  color: var(--text-hint);
-}
-
-.admin-notifications-empty p {
-  font-size: 13px;
-  color: var(--text-tertiary);
-  margin: 0;
+.admin-notifications-loading {
+  padding: var(--lb-space-5);
 }
 
 .admin-notifications-footer {

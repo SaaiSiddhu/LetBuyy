@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Bell, EmptyState, MaterialIcon, Skeleton } from '@letbuyy/ui'
 
 interface Notification {
     id: string
@@ -39,8 +39,8 @@ export default function NotificationsPanel() {
                 <div className="admin-notifications-header">
                     <h3>Notifications</h3>
                 </div>
-                <div style={{ padding: 20, textAlign: 'center', color: 'var(--text-hint)', fontSize: 13 }}>
-                    Loading...
+                <div className="admin-notifications-loading" aria-label="Loading notifications">
+                    <Skeleton variant="text" lines={2} />
                 </div>
             </div>
         )
@@ -102,10 +102,11 @@ export default function NotificationsPanel() {
                     </div>
                 </>
             ) : (
-                <div className="admin-notifications-empty">
-                    <MaterialIcon name="notifications_none" />
-                    <p>All caught up!</p>
-                </div>
+                <EmptyState
+                    icon={<Bell className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                    title="All caught up"
+                    body="New orders, customer activity, and store alerts will appear here."
+                />
             )}
         </div>
     )
