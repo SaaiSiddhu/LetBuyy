@@ -2,18 +2,11 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AdminAppBridgeSession } from '@letbuyy/shared-types'
-import { MaterialIcon } from '@letbuyy/ui'
+import { MaterialIcon, useToast } from '@letbuyy/ui'
 
 interface EmbeddedAppBridgeClientProps {
     session: AdminAppBridgeSession
     store: string
-}
-
-type ToastTone = 'info' | 'success' | 'warning' | 'error'
-
-interface BridgeToast {
-    message: string
-    tone: ToastTone
 }
 
 type BridgeApiRequest = {
@@ -63,11 +56,17 @@ function normalizeBridgePath(rawPath: string | undefined) {
     return null
 }
 
+function toastVariant(tone: unknown) {
+    if (tone === 'success' || tone === 'warning') return tone
+    if (tone === 'error') return 'critical'
+    return 'info'
+}
+
 export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppBridgeClientProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
+    const { notify } = useToast()
     const [height, setHeight] = useState(720)
     const [isReady, setReady] = useState(false)
-    const [toast, setToast] = useState<BridgeToast | null>(null)
     const context = useMemo(() => ({
         store,
         store_id: session.bridge.store_id,
@@ -76,12 +75,6 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
         api_base_url: session.bridge.api_base_url,
         capabilities: session.bridge.capabilities,
     }), [session.bridge.api_base_url, session.bridge.app_id, session.bridge.capabilities, session.bridge.installation_id, session.bridge.store_id, store])
-
-    useEffect(() => {
-        if (!toast) return undefined
-        const timeout = window.setTimeout(() => setToast(null), 3200)
-        return () => window.clearTimeout(timeout)
-    }, [toast])
 
     useEffect(() => {
         function postToApp(message: Record<string, unknown>) {
@@ -171,9 +164,10 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
 
             if (message.type === 'letbuyy:bridge.toast') {
                 const payload = isRecord(message.payload) ? message.payload : {}
-                setToast({
-                    message: typeof payload.message === 'string' ? payload.message : 'App notification',
-                    tone: payload.tone === 'success' || payload.tone === 'warning' || payload.tone === 'error' ? payload.tone : 'info',
+                notify({
+                    title: typeof payload.title === 'string' ? payload.title : 'App notification',
+                    description: typeof payload.message === 'string' ? payload.message : undefined,
+                    variant: toastVariant(payload.tone),
                 })
                 return
             }
@@ -185,7 +179,7 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
 
         window.addEventListener('message', onMessage)
         return () => window.removeEventListener('message', onMessage)
-    }, [context, session.bridge.access_token, session.bridge.api_base_url, session.bridge.store_id, session.bridge.token_type, session.embed.origin, store])
+    }, [context, notify, session.bridge.access_token, session.bridge.api_base_url, session.bridge.store_id, session.bridge.token_type, session.embed.origin, store])
 
     return (
         <section className="admin-app-embed" aria-label={session.embed.title}>
@@ -210,12 +204,6 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
                     height={height}
                 />
             </div>
-
-            {toast && (
-                <div className={`admin-app-embed__toast ${toast.tone}`} role="status">
-                    {toast.message}
-                </div>
-            )}
         </section>
     )
 }

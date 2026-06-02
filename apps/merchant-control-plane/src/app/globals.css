@@ -8324,32 +8324,6 @@ body {
   background: #ffffff;
 }
 
-.admin-app-embed__toast {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 80;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--bg);
-  color: var(--text-primary);
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.16);
-  padding: 12px 14px;
-  font-size: 14px;
-}
-
-.admin-app-embed__toast.success {
-  border-color: var(--success);
-}
-
-.admin-app-embed__toast.warning {
-  border-color: var(--warning);
-}
-
-.admin-app-embed__toast.error {
-  border-color: var(--error);
-}
-
 @media (max-width: 768px) {
   .admin-app-embed__header {
     align-items: stretch;
