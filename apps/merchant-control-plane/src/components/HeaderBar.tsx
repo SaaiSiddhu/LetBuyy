@@ -7,6 +7,7 @@ import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
 import { MaterialIcon } from '@letbuyy/ui'
+import { resolveKeyboardShortcut } from './merchantNavigation'
 
 interface HeaderBarProps {
     store: string
@@ -57,6 +58,8 @@ export default function HeaderBar({
     const [isMobile, setIsMobile] = useState(false)
     const switcherRef = useRef<HTMLDivElement>(null)
     const notificationsRef = useRef<HTMLDivElement>(null)
+    const shortcutPrefixRef = useRef<string | null>(null)
+    const shortcutTimerRef = useRef<number | null>(null)
 
     // Detect mobile viewport
     useEffect(() => {
@@ -108,17 +111,54 @@ export default function HeaderBar({
         }
     }, [notificationsOpen, isMobile])
 
-    // Global ⌘K handler
+    const clearShortcutPrefix = useCallback(() => {
+        shortcutPrefixRef.current = null
+        if (shortcutTimerRef.current) {
+            window.clearTimeout(shortcutTimerRef.current)
+            shortcutTimerRef.current = null
+        }
+    }, [])
+
+    // Global command palette and route shortcut handler
     useEffect(() => {
         function handleKey(e: KeyboardEvent) {
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+            if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
                 e.preventDefault()
                 onSearchOpen()
+                return
+            }
+
+            if (e.metaKey || e.ctrlKey || e.altKey || isEditableTarget(e.target)) {
+                return
+            }
+
+            const key = e.key.toLowerCase()
+            const currentPrefix = shortcutPrefixRef.current
+
+            if (currentPrefix) {
+                const destination = resolveKeyboardShortcut(storeData.site_type, `${currentPrefix} ${key}`)
+                clearShortcutPrefix()
+
+                if (destination) {
+                    e.preventDefault()
+                    router.push(`/${store}/${destination}`)
+                }
+
+                return
+            }
+
+            if (key === 'g' || key === 'n') {
+                e.preventDefault()
+                shortcutPrefixRef.current = key
+                shortcutTimerRef.current = window.setTimeout(clearShortcutPrefix, 1200)
             }
         }
         document.addEventListener('keydown', handleKey)
-        return () => document.removeEventListener('keydown', handleKey)
-    }, [onSearchOpen])
+        return () => {
+            document.removeEventListener('keydown', handleKey)
+            clearShortcutPrefix()
+        }
+    }, [clearShortcutPrefix, onSearchOpen, router, store, storeData.site_type])
 
     const toggleTheme = () => {
         const newDark = !isDark
@@ -381,4 +421,13 @@ export default function HeaderBar({
             )}
         </>
     )
+}
+
+function isEditableTarget(target: EventTarget | null): boolean {
+    if (!(target instanceof HTMLElement)) {
+        return false
+    }
+
+    const tagName = target.tagName.toLowerCase()
+    return tagName === 'input' || tagName === 'textarea' || tagName === 'select' || target.isContentEditable
 }
