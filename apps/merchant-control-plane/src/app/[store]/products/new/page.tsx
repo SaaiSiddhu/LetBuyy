@@ -9,6 +9,7 @@ import {
     Banner,
     Button,
     Card,
+    EmptyState,
     Image as ImageIcon,
     Input,
     Package,
@@ -716,22 +717,37 @@ export default function AddProductPage() {
                                     ))}
                                 </div>
                             ) : (
-                                <div className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
-                                    <ImageIcon className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)]" aria-hidden="true" />
-                                    No product media yet.
-                                </div>
+                                <EmptyState
+                                    icon={<ImageIcon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                    title="No product media yet"
+                                    body="Upload product images so shoppers can inspect materials, colors, and details before buying."
+                                    primaryAction={(
+                                        <Button
+                                            type="button"
+                                            variant="primary"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            loading={uploading}
+                                            disabled={uploading}
+                                        >
+                                            <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            {uploading ? 'Uploading' : 'Upload media'}
+                                        </Button>
+                                    )}
+                                />
                             )}
 
-                            <Button
-                                type="button"
-                                variant="secondary"
-                                onClick={() => fileInputRef.current?.click()}
-                                loading={uploading}
-                                disabled={uploading}
-                            >
-                                <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                {uploading ? 'Uploading' : images.length > 0 ? 'Upload more media' : 'Upload media'}
-                            </Button>
+                            {images.length > 0 && (
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    onClick={() => fileInputRef.current?.click()}
+                                    loading={uploading}
+                                    disabled={uploading}
+                                >
+                                    <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    {uploading ? 'Uploading' : 'Upload more media'}
+                                </Button>
+                            )}
                         </Section>
                     </Card>
 
