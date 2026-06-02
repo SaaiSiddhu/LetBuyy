@@ -1,36 +1,46 @@
 'use client'
 
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Banner,
+    Button,
+    Card,
+    EmptyState,
+    Page,
+    PageHeader,
+    RefreshCw,
+    Section,
+    Truck,
+} from '@letbuyy/ui'
 
 export default function TransfersPage() {
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header">
-                <h1>Transfers</h1>
-            </div>
+        <Page>
+            <PageHeader
+                title="Transfers"
+                description="Move stock between locations and keep inventory balanced."
+                breadcrumbs={[{ label: 'Products' }, { label: 'Transfers' }]}
+            />
 
-            <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                <MaterialIcon name="swap_horiz" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
-                <h2 style={{
-                    fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
-                }}>Move inventory between locations</h2>
-                <p style={{
-                    fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 20px',
-                    maxWidth: 440, marginInline: 'auto', lineHeight: 1.6
-                }}>
-                    Transfer inventory between your locations to keep stock levels balanced.
-                    You need at least two locations to create a transfer.
-                </p>
-                <button
-                    style={{
-                        background: 'var(--text-primary)', color: 'var(--bg)',
-                        padding: '9px 20px', borderRadius: 8, fontSize: 13,
-                        fontWeight: 600, border: 'none', cursor: 'pointer'
-                    }}
-                >
-                    Create transfer
-                </button>
-            </div>
-        </div>
+            <Banner variant="info" title="Transfers are not available yet">
+                You can still adjust stock from Inventory while location transfers are prepared for this store.
+            </Banner>
+
+            <Card>
+                <Section title="Location transfers" description="Reserve, ship, and receive stock between locations.">
+                    <EmptyState
+                        icon={<RefreshCw className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                        title="Move inventory between locations"
+                        body="Transfers will help balance stock across warehouses, stores, and fulfillment locations."
+                        primaryAction={<Button type="button" disabled>Create transfer</Button>}
+                        secondaryAction={(
+                            <Button type="button" variant="secondary" disabled>
+                                <Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Receive transfer
+                            </Button>
+                        )}
+                    />
+                </Section>
+            </Card>
+        </Page>
     )
 }

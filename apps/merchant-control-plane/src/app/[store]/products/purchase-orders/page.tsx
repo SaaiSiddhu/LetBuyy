@@ -1,36 +1,46 @@
 'use client'
 
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Banner,
+    Button,
+    Card,
+    ClipboardList,
+    EmptyState,
+    Page,
+    PageHeader,
+    Section,
+    Truck,
+} from '@letbuyy/ui'
 
 export default function PurchaseOrdersPage() {
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header">
-                <h1>Purchase orders</h1>
-            </div>
+        <Page>
+            <PageHeader
+                title="Purchase orders"
+                description="Plan inbound stock and keep supplier orders visible."
+                breadcrumbs={[{ label: 'Products' }, { label: 'Purchase orders' }]}
+            />
 
-            <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                <MaterialIcon name="receipt_long" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
-                <h2 style={{
-                    fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
-                }}>Manage your purchase orders</h2>
-                <p style={{
-                    fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 20px',
-                    maxWidth: 440, marginInline: 'auto', lineHeight: 1.6
-                }}>
-                    Track and receive inventory ordered from suppliers. Create purchase orders
-                    to keep your stock levels accurate and your suppliers organized.
-                </p>
-                <button
-                    style={{
-                        background: 'var(--text-primary)', color: 'var(--bg)',
-                        padding: '9px 20px', borderRadius: 8, fontSize: 13,
-                        fontWeight: 600, border: 'none', cursor: 'pointer'
-                    }}
-                >
-                    Create purchase order
-                </button>
-            </div>
-        </div>
+            <Banner variant="info" title="Purchase orders are not available yet">
+                You can still adjust stock from Inventory while supplier ordering is prepared for this store.
+            </Banner>
+
+            <Card>
+                <Section title="Inbound inventory" description="Track stock ordered from suppliers and receive it into inventory.">
+                    <EmptyState
+                        icon={<ClipboardList className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                        title="Manage your purchase orders"
+                        body="Purchase orders will help you track supplier commitments, expected arrivals, and inventory receiving."
+                        primaryAction={<Button type="button" disabled>Create purchase order</Button>}
+                        secondaryAction={(
+                            <Button type="button" variant="secondary" disabled>
+                                <Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Receive stock
+                            </Button>
+                        )}
+                    />
+                </Section>
+            </Card>
+        </Page>
     )
 }
