@@ -4,7 +4,7 @@ import { useState } from 'react'
 import SectionItem from './SectionItem'
 import type { SectionEntry } from '@/hooks/useEditorHistory'
 import type { SectionSchema } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, EmptyState, MaterialIcon, Search } from '@letbuyy/ui'
 
 interface LeftSidebarProps {
     headerSection: SectionEntry
@@ -73,7 +73,17 @@ export default function LeftSidebar({
                 <span className="te-left-sidebar-group-label">Template</span>
 
                 {filteredSections.length === 0 && searchTerm ? (
-                    <div className="te-left-sidebar-empty">No sections matching &ldquo;{searchTerm}&rdquo;</div>
+                    <EmptyState
+                        className="my-[var(--lb-space-2)] min-h-[160px] p-[var(--lb-space-4)]"
+                        icon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                        title="No matching sections"
+                        body={`No sections match "${searchTerm.trim()}".`}
+                        primaryAction={(
+                            <Button type="button" variant="secondary" size="sm" onClick={() => setSearchTerm('')}>
+                                Clear filter
+                            </Button>
+                        )}
+                    />
                 ) : (
                     filteredSections.map((section) => (
                         <SectionItem

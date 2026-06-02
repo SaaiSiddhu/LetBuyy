@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import type { SectionSchema } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+import { Button, EmptyState, LayoutGrid, MaterialIcon } from '@letbuyy/ui'
 
 interface AddSectionModalProps {
     open: boolean
@@ -48,7 +48,17 @@ export default function AddSectionModal({ open, sectionSchemas, existingSectionT
 
                 <div className="te-modal-body">
                     {availableSections.length === 0 ? (
-                        <div className="te-modal-empty">No sections found</div>
+                        <EmptyState
+                            className="min-h-[160px]"
+                            icon={<LayoutGrid className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No sections found"
+                            body={search.trim() ? `No available sections match "${search.trim()}".` : 'There are no additional sections available for this template.'}
+                            primaryAction={search.trim() ? (
+                                <Button type="button" variant="secondary" size="sm" onClick={() => setSearch('')}>
+                                    Clear search
+                                </Button>
+                            ) : undefined}
+                        />
                     ) : (
                         <div className="te-modal-grid">
                             {availableSections.map(([type, schema]) => {

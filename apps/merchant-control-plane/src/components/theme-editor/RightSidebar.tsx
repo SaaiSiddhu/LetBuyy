@@ -3,7 +3,7 @@
 import SchemaFormRenderer from './SchemaFormRenderer'
 import type { BlockEntry, SectionEntry } from '@/hooks/useEditorHistory'
 import type { BlockSchema, SectionSchema } from '@/lib/theme-schemas'
-import { MaterialIcon } from '@letbuyy/ui'
+import { EmptyState, FileJson, LayoutGrid, MaterialIcon, MousePointerClick } from '@letbuyy/ui'
 
 interface RightSidebarProps {
     section: SectionEntry | null
@@ -29,10 +29,12 @@ export default function RightSidebar({
     if (!section) {
         return (
             <aside className="te-right-sidebar te-right-sidebar--empty">
-                <div className="te-right-sidebar-placeholder">
-                    <MaterialIcon name="touch_app" style={{ fontSize: '40px', color: 'var(--clr-text-tertiary)' }} />
-                    <p>Select a section to edit&nbsp;its settings</p>
-                </div>
+                <EmptyState
+                    className="mx-[var(--lb-space-4)] min-h-[220px] p-[var(--lb-space-4)]"
+                    icon={<MousePointerClick className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                    title="Select a section"
+                    body="Choose a section in the canvas or section tree to edit its settings."
+                />
             </aside>
         )
     }
@@ -48,9 +50,12 @@ export default function RightSidebar({
                     </button>
                     <h3 className="te-right-sidebar-title">{section.type}</h3>
                 </div>
-                <div className="te-right-sidebar-placeholder">
-                    <p>No schema available for this section type.</p>
-                </div>
+                <EmptyState
+                    className="m-[var(--lb-space-4)] min-h-[220px] p-[var(--lb-space-4)]"
+                    icon={<FileJson className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                    title="Schema unavailable"
+                    body={`No schema is available for the "${section.type}" section type.`}
+                />
             </aside>
         )
     }
@@ -115,7 +120,12 @@ function BlockEditor({
             </div>
 
             {blocks.length === 0 ? (
-                <p className="te-block-editor-empty">No blocks added.</p>
+                <EmptyState
+                    className="mb-[var(--lb-space-3)] min-h-[150px] p-[var(--lb-space-4)]"
+                    icon={<LayoutGrid className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                    title="No blocks added"
+                    body="Add a content block to build out this section."
+                />
             ) : (
                 <div className="te-block-editor-list">
                     {blocks.map((block) => (
@@ -179,7 +189,12 @@ function BlockCard({
                         <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
                     </button>
                 </div>
-                <p className="te-block-editor-empty">Schema missing for this block type.</p>
+                <EmptyState
+                    className="min-h-[140px] p-[var(--lb-space-4)]"
+                    icon={<FileJson className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                    title="Block schema missing"
+                    body="This block type does not have editable settings."
+                />
             </div>
         )
     }

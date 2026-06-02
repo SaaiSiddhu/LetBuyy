@@ -6577,13 +6577,6 @@ body {
   display: block;
 }
 
-.te-left-sidebar-empty {
-  padding: 12px;
-  font-size: 12px;
-  color: var(--text-tertiary);
-  text-align: center;
-}
-
 /* --- Section Item --- */
 .te-section-item {
   display: flex;
@@ -6755,13 +6748,6 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-}
-
-.te-right-sidebar-placeholder {
-  text-align: center;
-  color: var(--text-tertiary);
-  font-size: 13px;
-  padding: 40px 20px;
 }
 
 /* --- Form Fields --- */
@@ -7356,12 +7342,6 @@ body {
   color: var(--text-primary, #1a1a2e);
   font-size: 13px;
   font-weight: 700;
-}
-
-.te-block-editor-empty {
-  margin: 0 0 12px;
-  color: var(--text-tertiary, #999);
-  font-size: 12px;
 }
 
 .te-block-editor-list {
@@ -8107,13 +8087,6 @@ body {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
-}
-
-.te-modal-empty {
-  text-align: center;
-  padding: 40px;
-  color: var(--text-tertiary);
-  font-size: 13px;
 }
 
 .te-modal-grid {
