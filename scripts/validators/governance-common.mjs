@@ -283,6 +283,24 @@ export function readFile(relPath) {
   }
 }
 
+export const activeSupabaseSchemaMigrationPath = "database/supabase/migrations/000_baseline.sql";
+
+export function readActiveSupabaseSchemaMigration() {
+  return readFile(activeSupabaseSchemaMigrationPath);
+}
+
+export function hasSqlTable(sql, tableName) {
+  return new RegExp(`CREATE\\s+TABLE(?:\\s+IF\\s+NOT\\s+EXISTS)?\\s+(?:public\\.)?${tableName}\\b`, "i").test(sql);
+}
+
+export function hasSqlRls(sql, tableName) {
+  return new RegExp(`ALTER\\s+TABLE(?:\\s+ONLY)?\\s+(?:public\\.)?${tableName}\\s+ENABLE\\s+ROW\\s+LEVEL\\s+SECURITY`, "i").test(sql);
+}
+
+export function hasSqlFunction(sql, functionName) {
+  return new RegExp(`CREATE(?:\\s+OR\\s+REPLACE)?\\s+FUNCTION\\s+(?:public\\.)?${functionName}\\b`, "i").test(sql);
+}
+
 export function readJson(relPath) {
   try {
     return JSON.parse(readFile(relPath));

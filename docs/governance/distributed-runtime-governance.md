@@ -10,7 +10,7 @@ Status: Phase 3 final durable execution foundation.
 
 ## Persistence
 
-Supabase migration `059_distributed_runtime_operations_foundation.sql` creates the interim durable persistence layer:
+Active baseline migration `database/supabase/migrations/000_baseline.sql` creates the interim durable persistence layer. The historical source migration `059_distributed_runtime_operations_foundation.sql` is archived under `docs/archive/migrations-history/` for audit only:
 
 - `distributed_event_streams`
 - `distributed_event_store`
@@ -25,7 +25,7 @@ Supabase migration `059_distributed_runtime_operations_foundation.sql` creates t
 
 These tables are not Kafka or EventStoreDB. They are the canonical persistence contract until dedicated infrastructure is introduced behind the package boundary.
 
-Supabase migration `060_operational_runtime_finalization.sql` completes the Phase 3 operational layer with durable command journals, event stream snapshots, projection checkpoints, query snapshots, workflow lifecycle and heartbeat tables, queue heartbeat storage, runtime telemetry spans/metrics/logs, health projections, provider outage records, and runtime control commands.
+The active baseline also includes the historical `060_operational_runtime_finalization.sql` content for durable command journals, event stream snapshots, projection checkpoints, query snapshots, workflow lifecycle and heartbeat tables, queue heartbeat storage, runtime telemetry spans/metrics/logs, health projections, provider outage records, and runtime control commands.
 
 ## Execution Helpers
 

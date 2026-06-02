@@ -4,16 +4,28 @@ Generated during Phase 2.1 static validation.
 
 ## Summary
 
-- Migration files scanned: 65
-- Live database apply: SKIPPED because Phase 0 local infrastructure could not start; Docker is installed but Docker Compose is unavailable.
-- Static forward-reference issues: 0
-- Migration health status: CLEAN
+- Active migration files scanned: 1 (`database/supabase/migrations/000_baseline.sql`)
+- Archived historical migrations: 72 (`docs/archive/migrations-history/001_*.sql` through `072_*.sql`)
+- Live database apply: PASS for the baseline-only disposable Supabase Postgres replay during the 2026-06-02 production-readiness P0 baseline mission.
+- Static forward-reference issues: 0 in active replay authority.
+- Migration health status: BASELINED
+
+## 2026-06-02 Baseline Update
+
+The old `001` through `072` migration chain is no longer active replay
+authority. It is preserved under `docs/archive/migrations-history/` for audit
+and rollback investigation only. Fresh environments must apply
+`database/supabase/migrations/000_baseline.sql`; new forward migrations resume
+at `073_*.sql`.
 
 ## Issues Found
 
 - None found by comment-stripped static ordering analysis.
 
 ## Migration Inventory
+
+The inventory below is the archived historical chain that was squashed into the
+verified baseline.
 
 | # | Migration | Table targets |
 |---:|---|---|

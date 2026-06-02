@@ -31,6 +31,22 @@ After each phase:
 
 Replayable Supabase migrations must not use `DROP TABLE`, `DROP SCHEMA`, `DROP COLUMN`, `TRUNCATE`, physical table renames, physical column renames, physical `sites`/`stores` rename cycles, or `CREATE TABLE stores`. `stores` is compatibility/API language only; canonical tenant storage remains `sites`.
 
+## Fresh Replay Baseline
+
+As of 2026-06-02, active Supabase replay authority is the verified baseline at
+`database/supabase/migrations/000_baseline.sql`.
+
+- Historical migrations `001_initial_schema.sql` through
+  `072_marketplace_review_records.sql` are archived under
+  `docs/archive/migrations-history/` for auditability only.
+- New forward migrations must start at `073_*.sql` and remain additive,
+  replay-safe, and compatible with the baseline.
+- The baseline was generated from a throwaway clean replay of the historical
+  chain and proved equivalent by comparing schema-only `public` dumps from the
+  clean-chain database and the baseline-only database.
+- Applying `000_baseline.sql` to an already-provisioned staging or production
+  database is human-gated and out of scope for automated local agents.
+
 ## Move Rules
 
 - Prefer `git mv` for tracked runtime moves.

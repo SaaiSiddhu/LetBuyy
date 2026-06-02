@@ -15,12 +15,12 @@ LetBuyy production runtime authority is split across Vercel web apps, Cloudflare
 - Runtime manifests: `**/runtime.manifest.json`
 - Production topology: `config/runtime/production-topology.json`
 - Deployment topology: `config/runtime/deployment-topology.json`
-- Operational persistence: `database/supabase/migrations/059_*` through `063_*`
+- Operational persistence: active baseline `database/supabase/migrations/000_baseline.sql`; archived historical source migrations `059_*` through `063_*` remain under `docs/archive/migrations-history/` for audit only.
 - Production validator: `scripts/validators/production-readiness-validator.mjs`
 
 ## Phase 4.Final Completion
 
 - Deployment execution is owned by `.github/workflows/production-rollout.yml` and `infrastructure/scripts/deploy/production-deploy.mjs`.
-- Production operational projections are persisted in migrations `062` and `063` and exposed through `/v1/operations/runtime/*`.
+- Production operational projections are persisted in the active baseline and exposed through `/v1/operations/runtime/*`.
 - Platform Console and Grafana dashboards may only render live operations API or telemetry projection data.
 - Security evidence, SRE budgets, deployment health gates, event-store integrity checks, and regional overrides are mandatory production evidence.

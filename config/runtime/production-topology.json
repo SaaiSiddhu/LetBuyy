@@ -21,13 +21,7 @@
   "eventStoreProvider": {
     "provider": "supabase-postgres-append-only",
     "migrations": [
-      "database/supabase/migrations/059_distributed_runtime_operations_foundation.sql",
-      "database/supabase/migrations/060_operational_runtime_finalization.sql",
-      "database/supabase/migrations/061_operational_readiness_runtime.sql",
-      "database/supabase/migrations/062_production_rollout_operations.sql",
-      "database/supabase/migrations/063_absolute_production_operationalization.sql",
-      "database/supabase/migrations/064_live_production_certification.sql",
-      "database/supabase/migrations/065_enterprise_sdlc_lifecycle.sql"
+      "database/supabase/migrations/000_baseline.sql"
     ],
     "verificationSql": "database/supabase/verification/063_absolute_production_operationalization.sql",
     "verificationScript": "infrastructure/scripts/database/verify-supabase-operations.mjs",
@@ -103,7 +97,7 @@
       "environment": "production",
       "deploymentManifests": [
         "infrastructure/deployment/migration-orchestration.yaml",
-        "database/supabase/migrations/062_production_rollout_operations.sql"
+        "database/supabase/migrations/000_baseline.sql"
       ],
       "observability": "OpenTelemetry collector plus runtime telemetry tables",
       "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",

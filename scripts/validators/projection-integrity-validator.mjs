@@ -1,6 +1,8 @@
 import {
   createReporter,
+  hasSqlTable,
   readFile,
+  readActiveSupabaseSchemaMigration,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Projection integrity validator");
@@ -8,7 +10,8 @@ const reporter = createReporter("Projection integrity validator");
 const projectionStore = readFile("packages/projection-runtime/src/projection-store.ts");
 const projectionReplay = readFile("packages/projection-runtime/src/projection-replay-runtime.ts");
 const projectionConsistency = readFile("packages/projection-runtime/src/projection-consistency-runtime.ts");
-const runtimeMigration = readFile("database/supabase/migrations/059_distributed_runtime_operations_foundation.sql");
+const runtimeMigration = readActiveSupabaseSchemaMigration();
+const normalizedRuntimeMigration = runtimeMigration.toLowerCase();
 
 for (const fragment of [
   "sourceEventId?: string | null",
@@ -41,15 +44,15 @@ for (const fragment of [
   reporter.assert(projectionConsistency.includes(fragment), `Projection consistency validator missing fragment: ${fragment}`);
 }
 
+reporter.assert(hasSqlTable(runtimeMigration, "projection_store"), "Projection persistence migration missing table: projection_store");
+reporter.assert(hasSqlTable(runtimeMigration, "projection_rebuilds"), "Projection persistence migration missing table: projection_rebuilds");
 for (const fragment of [
-  "CREATE TABLE IF NOT EXISTS projection_store",
-  "source_event_id UUID",
-  "source_global_position BIGINT",
-  "source_stream_position BIGINT",
-  "UNIQUE(projection_name, projection_version, site_id, object_type, object_id)",
-  "CREATE TABLE IF NOT EXISTS projection_rebuilds",
+  "source_event_id uuid",
+  "source_global_position bigint",
+  "source_stream_position bigint",
+  "unique (projection_name, projection_version, site_id, object_type, object_id)",
 ]) {
-  reporter.assert(runtimeMigration.includes(fragment), `Projection persistence migration missing fragment: ${fragment}`);
+  reporter.assert(normalizedRuntimeMigration.includes(fragment), `Projection persistence migration missing fragment: ${fragment}`);
 }
 
 reporter.finish("Projection replay source metadata, consistency, and persistence gates checked");

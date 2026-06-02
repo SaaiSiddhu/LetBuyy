@@ -20,12 +20,18 @@
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
-    "declaration": true,
-    "declarationMap": true,
+    "declaration": false,
+    "declarationMap": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "hono/cors": [
+        "../../node_modules/.pnpm/node_modules/hono/dist/types/middleware/cors/index.d.ts"
+      ],
+      "hono/factory": [
+        "../../node_modules/.pnpm/node_modules/hono/dist/types/helper/factory/index.d.ts"
       ],
       "@letbuyy/api-types": [
         "../../packages/typescript/api-types/src/index.ts"
@@ -83,6 +89,9 @@
       ],
       "@letbuyy/theme-engine": [
         "../../packages/theme-engine/src/index.ts"
+      ],
+      "*": [
+        "../../node_modules/.pnpm/node_modules/*"
       ]
     }
   },

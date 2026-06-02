@@ -1,12 +1,17 @@
 import path from "node:path";
 import {
   canonicalRuntimeRoots,
+  activeSupabaseSchemaMigrationPath,
   createReporter,
   exists,
   extractSpecifiers,
   getTrackedFiles,
+  hasSqlFunction,
+  hasSqlRls,
+  hasSqlTable,
   listWorkspaceFiles,
   readFile,
+  readActiveSupabaseSchemaMigration,
   readJson,
   rootForFile,
   sourceExtensions,
@@ -66,9 +71,7 @@ const requiredFiles = [
   "packages/infrastructure/provider-resilience-adapter/index.ts",
   "config/runtime/deployment-topology.schema.json",
   "config/runtime/deployment-topology.json",
-  "database/supabase/migrations/059_distributed_runtime_operations_foundation.sql",
-  "database/supabase/migrations/060_operational_runtime_finalization.sql",
-  "database/supabase/migrations/061_operational_readiness_runtime.sql",
+  activeSupabaseSchemaMigrationPath,
 ];
 
 for (const file of requiredFiles) {
@@ -120,7 +123,7 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
   }
 }
 
-const migration = readFile("database/supabase/migrations/059_distributed_runtime_operations_foundation.sql");
+const migration = readActiveSupabaseSchemaMigration();
 for (const tableName of [
   "distributed_event_store",
   "distributed_queue_messages",
@@ -133,16 +136,16 @@ for (const tableName of [
   "execution_audit_trail",
 ]) {
   reporter.assert(
-    migration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    hasSqlTable(migration, tableName),
     `Phase 3 migration must create ${tableName}`,
   );
   reporter.assert(
-    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(migration),
+    hasSqlRls(migration, tableName),
     `Phase 3 table must enable RLS: ${tableName}`,
   );
 }
 
-const finalMigration = readFile("database/supabase/migrations/060_operational_runtime_finalization.sql");
+const finalMigration = migration;
 for (const tableName of [
   "runtime_command_journal",
   "event_stream_snapshots",
@@ -159,11 +162,11 @@ for (const tableName of [
   "runtime_control_commands",
 ]) {
   reporter.assert(
-    finalMigration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    hasSqlTable(finalMigration, tableName),
     `Phase 3 finalization migration must create ${tableName}`,
   );
   reporter.assert(
-    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(finalMigration),
+    hasSqlRls(finalMigration, tableName),
     `Phase 3 finalization table must enable RLS: ${tableName}`,
   );
 }
@@ -177,12 +180,12 @@ for (const functionName of [
   "claim_runtime_lease",
 ]) {
   reporter.assert(
-    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(finalMigration),
+    hasSqlFunction(finalMigration, functionName),
     `Phase 3 finalization migration must create durable helper function ${functionName}`,
   );
 }
 
-const operationalMigration = readFile("database/supabase/migrations/061_operational_readiness_runtime.sql");
+const operationalMigration = migration;
 for (const tableName of [
   "runtime_deployment_topology_records",
   "runtime_diagnostics",
@@ -200,11 +203,11 @@ for (const tableName of [
   "provider_recovery_plans",
 ]) {
   reporter.assert(
-    operationalMigration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    hasSqlTable(operationalMigration, tableName),
     `Phase 3 operations migration must create ${tableName}`,
   );
   reporter.assert(
-    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(operationalMigration),
+    hasSqlRls(operationalMigration, tableName),
     `Phase 3 operations table must enable RLS: ${tableName}`,
   );
 }
@@ -222,7 +225,7 @@ for (const functionName of [
   "claim_operational_control_command",
 ]) {
   reporter.assert(
-    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(operationalMigration),
+    hasSqlFunction(operationalMigration, functionName),
     `Phase 3 operations migration must create operational helper function ${functionName}`,
   );
 }

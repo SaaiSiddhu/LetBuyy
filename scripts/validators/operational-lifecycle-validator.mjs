@@ -1,8 +1,13 @@
 import {
+  activeSupabaseSchemaMigrationPath,
   canonicalRuntimeRoots,
   createReporter,
   exists,
+  hasSqlFunction,
+  hasSqlRls,
+  hasSqlTable,
   readFile,
+  readActiveSupabaseSchemaMigration,
   readJson,
 } from "./governance-common.mjs";
 
@@ -35,7 +40,7 @@ const requiredFiles = [
   "infrastructure/scripts/local/seed-local-data.mjs",
   "infrastructure/scripts/load/locust-checkout-concurrency.py",
   "infrastructure/scripts/load/gatling/CheckoutConcurrencySimulation.scala",
-  "database/supabase/migrations/065_enterprise_sdlc_lifecycle.sql",
+  activeSupabaseSchemaMigrationPath,
   "database/supabase/verification/065_enterprise_sdlc_lifecycle.sql",
   ".github/workflows/environment-lifecycle.yml",
   "docs/governance/enterprise-engineering-model.md",
@@ -252,7 +257,7 @@ for (const sdkFragment of [
   reporter.assert(sharedTypes.includes(sdkFragment), `Feature flag SDK must include ${sdkFragment}`);
 }
 
-const migration = readFile("database/supabase/migrations/065_enterprise_sdlc_lifecycle.sql");
+const migration = readActiveSupabaseSchemaMigration();
 for (const tableName of [
   "operational_feature_flags",
   "operational_feature_flag_audit_events",
@@ -262,11 +267,11 @@ for (const tableName of [
   "sandbox_provider_contracts",
 ]) {
   reporter.assert(
-    migration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    hasSqlTable(migration, tableName),
     `Enterprise SDLC migration must create ${tableName}`,
   );
   reporter.assert(
-    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(migration),
+    hasSqlRls(migration, tableName),
     `Enterprise SDLC migration must enable RLS for ${tableName}`,
   );
   reporter.assert(
@@ -277,15 +282,15 @@ for (const tableName of [
 
 for (const functionName of ["record_operational_feature_flag_exposure", "record_rollout_stage_evidence"]) {
   reporter.assert(
-    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(migration),
+    hasSqlFunction(migration, functionName),
     `Enterprise SDLC migration must create ${functionName}`,
   );
 }
 
 const productionTopology = readJson("config/runtime/production-topology.json");
 reporter.assert(
-  productionTopology?.eventStoreProvider?.migrations?.includes("database/supabase/migrations/065_enterprise_sdlc_lifecycle.sql"),
-  "Production topology must include the enterprise SDLC lifecycle migration",
+  productionTopology?.eventStoreProvider?.migrations?.includes(activeSupabaseSchemaMigrationPath),
+  "Production topology must include the active Supabase baseline migration",
 );
 
 const loadSuite = readFile("infrastructure/scripts/load/run-load-suite.mjs");

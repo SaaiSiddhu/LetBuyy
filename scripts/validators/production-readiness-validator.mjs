@@ -1,8 +1,13 @@
 import {
+  activeSupabaseSchemaMigrationPath,
   canonicalRuntimeRoots,
   createReporter,
   exists,
+  hasSqlFunction,
+  hasSqlRls,
+  hasSqlTable,
   readFile,
+  readActiveSupabaseSchemaMigration,
   readJson,
 } from "./governance-common.mjs";
 
@@ -64,9 +69,7 @@ const requiredFiles = [
   "services/queue-workers/package.json",
   "services/queue-workers/wrangler.toml",
   "services/queue-workers/src/index.ts",
-  "database/supabase/migrations/062_production_rollout_operations.sql",
-  "database/supabase/migrations/063_absolute_production_operationalization.sql",
-  "database/supabase/migrations/064_live_production_certification.sql",
+  activeSupabaseSchemaMigrationPath,
   "database/supabase/verification/063_absolute_production_operationalization.sql",
   "database/supabase/verification/064_live_production_certification.sql",
   "apps/platform-console/src/app/(dashboard)/operations/page.tsx",
@@ -504,7 +507,7 @@ reporter.assert(
   "Cloudflare queue Terraform must create queues and worker consumers",
 );
 
-const migration = readFile("database/supabase/migrations/062_production_rollout_operations.sql");
+const migration = readActiveSupabaseSchemaMigration();
 for (const tableName of [
   "production_db_rollout_plans",
   "database_operation_snapshots",
@@ -518,18 +521,18 @@ for (const tableName of [
   "runtime_slo_definitions",
 ]) {
   reporter.assert(
-    migration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    hasSqlTable(migration, tableName),
     `Phase 4 migration must create ${tableName}`,
   );
   reporter.assert(
-    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(migration),
+    hasSqlRls(migration, tableName),
     `Phase 4 table must enable RLS: ${tableName}`,
   );
 }
 
-const finalMigration = readFile("database/supabase/migrations/063_absolute_production_operationalization.sql");
+const finalMigration = migration;
 const finalVerification = readFile("database/supabase/verification/063_absolute_production_operationalization.sql");
-const certificationMigration = readFile("database/supabase/migrations/064_live_production_certification.sql");
+const certificationMigration = migration;
 const certificationVerification = readFile("database/supabase/verification/064_live_production_certification.sql");
 for (const tableName of [
   "production_readiness_gate_runs",
@@ -542,25 +545,18 @@ for (const tableName of [
   "regional_routing_overrides",
 ]) {
   reporter.assert(
-    finalMigration.includes(`CREATE TABLE IF NOT EXISTS ${tableName}`),
+    hasSqlTable(finalMigration, tableName),
     `Phase 4.final migration must create ${tableName}`,
   );
   reporter.assert(
-    new RegExp(`ALTER TABLE ${tableName} ENABLE ROW LEVEL SECURITY`).test(finalMigration),
+    hasSqlRls(finalMigration, tableName),
     `Phase 4.final table must enable RLS: ${tableName}`,
   );
 }
 
-for (const certificationFragment of [
-  "CREATE TABLE IF NOT EXISTS operational_certification_reports",
-  "ALTER TABLE operational_certification_reports ENABLE ROW LEVEL SECURITY",
-  "CREATE OR REPLACE FUNCTION record_operational_certification_report",
-]) {
-  reporter.assert(
-    certificationMigration.includes(certificationFragment),
-    `Phase 4 live certification migration must include ${certificationFragment}`,
-  );
-}
+reporter.assert(hasSqlTable(certificationMigration, "operational_certification_reports"), "Phase 4 live certification migration must create operational_certification_reports");
+reporter.assert(hasSqlRls(certificationMigration, "operational_certification_reports"), "Phase 4 live certification migration must enable RLS for operational_certification_reports");
+reporter.assert(hasSqlFunction(certificationMigration, "record_operational_certification_report"), "Phase 4 live certification migration must create record_operational_certification_report");
 
 for (const certificationVerificationFragment of [
   "operational_certification_reports",
@@ -584,7 +580,7 @@ for (const functionName of [
   "record_regional_routing_override",
 ]) {
   reporter.assert(
-    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(finalMigration),
+    hasSqlFunction(finalMigration, functionName),
     `Phase 4.final migration must create operational helper function ${functionName}`,
   );
 }
@@ -610,7 +606,7 @@ for (const functionName of [
   "record_deployment_promotion_run",
 ]) {
   reporter.assert(
-    new RegExp(`CREATE OR REPLACE FUNCTION ${functionName}\\b`).test(migration),
+    hasSqlFunction(migration, functionName),
     `Phase 4 migration must create operational helper function ${functionName}`,
   );
 }

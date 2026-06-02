@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, cpSync, openSync, closeSync } from "node:fs";
+import { existsSync, mkdirSync, rmSync, writeFileSync, cpSync, openSync, closeSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -9,9 +9,16 @@ const repoRoot = resolve(__dirname, "../..");
 const runRoot = join(repoRoot, ".tmp", "federation-stack");
 const supabaseProjectRoot = runRoot;
 const supabaseConfigDir = join(runRoot, "supabase");
+const supabaseHome = join(runRoot, "home");
+const seedSqlPath = join(runRoot, "seed.sql");
 const logsDir = join(runRoot, "logs");
 const pidsFile = join(runRoot, "pids.json");
 const projectId = "letbuyy-federation-local";
+const supabaseCliEnv = {
+  ...process.env,
+  HOME: supabaseHome,
+  XDG_CONFIG_HOME: join(supabaseHome, ".config"),
+};
 
 const ports = {
   supabaseApi: 15421,
@@ -69,6 +76,45 @@ const localSecrets = {
   UPSTASH_REDIS_REST_TOKEN: localValue("upstash-rest"),
 };
 
+function parseNodeMajor(version) {
+  const match = /^v?(\d+)\./.exec(version.trim());
+  return match ? Number.parseInt(match[1], 10) : 0;
+}
+
+function nodeMajorFor(binary, env = process.env) {
+  const result = spawnSync(binary, ["--version"], {
+    cwd: repoRoot,
+    env,
+    encoding: "utf8",
+    stdio: "pipe",
+  });
+  return result.status === 0 ? parseNodeMajor(result.stdout) : 0;
+}
+
+function detectModernNodeBin() {
+  const currentMajor = nodeMajorFor("node");
+  if (currentMajor >= 22) return dirname(process.execPath);
+
+  const home = process.env.HOME || "";
+  const candidates = [
+    process.env.LETBUYY_LOCAL_NODE_BIN,
+    join(home, ".cache", "codex-runtimes", "codex-primary-runtime", "dependencies", "node", "bin"),
+    "/opt/homebrew/opt/node@24/bin",
+    "/opt/homebrew/opt/node@22/bin",
+    "/usr/local/opt/node@24/bin",
+    "/usr/local/opt/node@22/bin",
+  ].filter(Boolean);
+
+  for (const candidate of candidates) {
+    const nodePath = join(candidate, "node");
+    if (existsSync(nodePath) && nodeMajorFor(nodePath) >= 22) {
+      return candidate;
+    }
+  }
+
+  return undefined;
+}
+
 function run(command, args, options = {}) {
   const printable = [command, ...args].join(" ");
   console.log(`[federation-stack] ${printable}`);
@@ -84,12 +130,53 @@ function run(command, args, options = {}) {
   return result;
 }
 
+function runOptional(command, args, options = {}) {
+  const printable = [command, ...args].join(" ");
+  console.log(`[federation-stack] ${printable}`);
+  const result = spawnSync(command, args, {
+    cwd: options.cwd || repoRoot,
+    env: options.env || process.env,
+    stdio: options.stdio || "inherit",
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    console.warn(`[federation-stack] ${printable} exited with status ${result.status}; continuing`);
+  }
+  return result;
+}
+
+function runWithInput(command, args, input, options = {}) {
+  const printable = [command, ...args].join(" ");
+  console.log(`[federation-stack] ${printable}`);
+  const result = spawnSync(command, args, {
+    cwd: options.cwd || repoRoot,
+    env: options.env || process.env,
+    input,
+    stdio: ["pipe", "inherit", "inherit"],
+    encoding: "utf8",
+  });
+  if (result.status !== 0) {
+    throw new Error(`${printable} failed with status ${result.status}`);
+  }
+  return result;
+}
+
 function commandExists(command) {
   const result = spawnSync("command", ["-v", command], {
     shell: true,
     stdio: "ignore",
   });
   return result.status === 0;
+}
+
+function detectDockerHost() {
+  const result = spawnSync("docker", ["context", "inspect", "--format", "{{.Endpoints.docker.Host}}"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+    stdio: "pipe",
+  });
+  const host = result.stdout?.trim();
+  return result.status === 0 && host ? host : process.env.DOCKER_HOST;
 }
 
 function ensureDocker() {
@@ -112,124 +199,14 @@ function ensureDocker() {
 function prepareSupabaseProject() {
   rmSync(supabaseConfigDir, { recursive: true, force: true });
   mkdirSync(join(supabaseConfigDir, "migrations"), { recursive: true });
+  mkdirSync(supabaseHome, { recursive: true });
   mkdirSync(logsDir, { recursive: true });
 
   const migrationsSource = join(repoRoot, "database", "supabase", "migrations");
   cpSync(migrationsSource, join(supabaseConfigDir, "migrations"), { recursive: true });
-  writeFileSync(
-    join(supabaseConfigDir, "migrations", "011000_local_stack_schema_compatibility.sql"),
-    localStackSchemaCompatibilityMigration(),
-    "utf8",
-  );
 
   writeFileSync(join(supabaseConfigDir, "config.toml"), supabaseConfig(), "utf8");
-  writeFileSync(join(supabaseConfigDir, "seed.sql"), seedSql(), "utf8");
-}
-
-function localStackSchemaCompatibilityMigration() {
-  return `-- Local federation stack compatibility migration.
--- The historical 004 migration is intentionally no-op because canonical storage
--- remains public.sites. Some later historical migrations still assume the old
--- 004 aliases. This temp-only migration keeps fresh local replay possible
--- without changing production migration history.
-CREATE TABLE IF NOT EXISTS public.super_admin_allowlist (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-    email TEXT UNIQUE NOT NULL,
-    full_name TEXT NOT NULL,
-    two_factor_enabled BOOLEAN DEFAULT FALSE,
-    two_factor_secret TEXT,
-    allowed_ips TEXT[] DEFAULT '{}',
-    is_active BOOLEAN DEFAULT TRUE,
-    last_login_at TIMESTAMPTZ,
-    created_by UUID REFERENCES auth.users(id),
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE public.super_admin_allowlist ENABLE ROW LEVEL SECURITY;
-
-DO $$
-DECLARE
-    target_table TEXT;
-    tables_with_site_alias TEXT[] := ARRAY[
-        'products',
-        'orders',
-        'coupons',
-        'skills',
-        'education',
-        'testimonials',
-        'work_experience',
-        'certifications',
-        'resume_versions',
-        'leads',
-        'lead_forms',
-        'contacts',
-        'pages',
-        'shipping_zones',
-        'analytics_events',
-        'projects'
-    ];
-BEGIN
-    FOREACH target_table IN ARRAY tables_with_site_alias
-    LOOP
-        IF to_regclass('public.' || target_table) IS NOT NULL THEN
-            IF NOT EXISTS (
-                SELECT 1
-                  FROM information_schema.columns AS c
-                 WHERE table_schema = 'public'
-                   AND c.table_name = target_table
-                   AND column_name = 'store_id'
-            ) THEN
-                EXECUTE format('ALTER TABLE public.%I ADD COLUMN store_id UUID REFERENCES public.sites(id) ON DELETE CASCADE', target_table);
-            END IF;
-
-            IF EXISTS (
-                SELECT 1
-                  FROM information_schema.columns AS c
-                 WHERE table_schema = 'public'
-                   AND c.table_name = target_table
-                   AND column_name = 'site_id'
-            ) THEN
-                EXECUTE format('UPDATE public.%I SET store_id = site_id WHERE store_id IS NULL', target_table);
-            END IF;
-        END IF;
-    END LOOP;
-END $$;
-
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS slug TEXT;
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS cost_price DECIMAL(10,2);
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS sku TEXT;
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS barcode TEXT;
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seo_title TEXT;
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seo_description TEXT;
-ALTER TABLE public.products ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'draft';
-UPDATE public.products
-   SET slug = COALESCE(slug, lower(regexp_replace(name, '[^a-zA-Z0-9]+', '-', 'g'))),
-       store_id = COALESCE(store_id, site_id)
- WHERE slug IS NULL OR store_id IS NULL;
-CREATE INDEX IF NOT EXISTS idx_products_store ON public.products(store_id);
-CREATE INDEX IF NOT EXISTS idx_orders_store ON public.orders(store_id);
-
-CREATE TABLE IF NOT EXISTS public.portfolio_projects (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    site_id UUID REFERENCES public.sites(id) ON DELETE CASCADE,
-    store_id UUID REFERENCES public.sites(id) ON DELETE CASCADE,
-    title TEXT NOT NULL DEFAULT 'Untitled Project',
-    description TEXT,
-    live_url TEXT,
-    project_url TEXT,
-    thumbnail_url TEXT,
-    cover_image TEXT,
-    categories TEXT[] DEFAULT '{}',
-    tags TEXT[] DEFAULT '{}',
-    status TEXT DEFAULT 'draft',
-    display_order INT DEFAULT 0,
-    deleted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-CREATE INDEX IF NOT EXISTS idx_portfolio_projects_store ON public.portfolio_projects(store_id);
-`;
+  writeFileSync(seedSqlPath, seedSql(), "utf8");
 }
 
 function supabaseConfig() {
@@ -299,7 +276,7 @@ enabled = false
 enabled = false
 
 [analytics]
-enabled = true
+enabled = false
 port = ${ports.supabaseAnalytics}
 backend = "postgres"
 `;
@@ -329,6 +306,114 @@ ON CONFLICT (id) DO UPDATE SET
   email_verified = EXCLUDED.email_verified,
   updated_at = NOW();
 
+INSERT INTO app_categories (id, name, slug, description, icon, sort_order, is_active)
+VALUES
+  (
+    '00000000-0000-4000-8000-000000000200',
+    'Marketing',
+    'marketing',
+    'Customer engagement and growth apps for local federation testing.',
+    'megaphone',
+    10,
+    TRUE
+  )
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  slug = EXCLUDED.slug,
+  description = EXCLUDED.description,
+  icon = EXCLUDED.icon,
+  sort_order = EXCLUDED.sort_order,
+  is_active = EXCLUDED.is_active;
+
+INSERT INTO themes (
+  id, name, slug, site_type, category, description, preview_url, thumbnail_url,
+  is_premium, price, config, author, version, is_active, sort_order,
+  long_description, industry, letbuyy_pricing_type, letbuyy_price_inr,
+  screenshots, demo_url, features, supported_site_types, tags, rating_avg,
+  review_count, default_template, section_schemas, block_schemas,
+  settings_schema, renderer_manifest
+)
+VALUES
+  (
+    '00000000-0000-4000-8000-000000000300',
+    'Urban Kicks',
+    'urban-kicks',
+    'store',
+    'commerce',
+    'Premium storefront theme for India-first sneaker and fashion stores.',
+    'http://127.0.0.1:3003',
+    '/themes/urban-kicks/thumbnail.png',
+    FALSE,
+    0,
+    '{"colors":{"primary":"#111827","accent":"#f97316","background":"#ffffff","text":"#111827"},"fonts":{"body":"LetBuyy Sans","heading":"LetBuyy Display"}}'::jsonb,
+    'LetBuyy',
+    '1.0.0',
+    TRUE,
+    1,
+    'A dense, polished commerce theme tuned for product discovery and checkout conversion.',
+    ARRAY['fashion','footwear','lifestyle'],
+    'free',
+    0,
+    ARRAY['/themes/urban-kicks/screenshot-1.png'],
+    'http://127.0.0.1:3003',
+    ARRAY['Product grid','Cart ready','GST-ready checkout'],
+    ARRAY['store'],
+    ARRAY['commerce','india','premium'],
+    4.80,
+    24,
+    '{"template":"storefront"}'::jsonb,
+    '{}'::jsonb,
+    '{}'::jsonb,
+    '{}'::jsonb,
+    '{"renderer":"storefront-runtime","version":"1.0.0"}'::jsonb
+  ),
+  (
+    '00000000-0000-4000-8000-000000000301',
+    'Minimal Commerce',
+    'minimal-commerce',
+    'store',
+    'commerce',
+    'Clean catalog-first commerce theme for small Indian merchants.',
+    'http://127.0.0.1:3003?theme=minimal-commerce',
+    '/themes/minimal-commerce/thumbnail.png',
+    FALSE,
+    0,
+    '{"colors":{"primary":"#0f766e","accent":"#ca8a04","background":"#fafafa","text":"#111827"},"fonts":{"body":"LetBuyy Sans","heading":"LetBuyy Display"}}'::jsonb,
+    'LetBuyy',
+    '1.0.0',
+    TRUE,
+    2,
+    'A restrained storefront theme for fast browsing, clear pricing, and repeat operations.',
+    ARRAY['general','retail','grocery'],
+    'free',
+    0,
+    ARRAY['/themes/minimal-commerce/screenshot-1.png'],
+    'http://127.0.0.1:3003?theme=minimal-commerce',
+    ARRAY['Responsive catalog','Fast checkout','Theme marketplace ready'],
+    ARRAY['store'],
+    ARRAY['commerce','minimal','india'],
+    4.60,
+    18,
+    '{"template":"storefront"}'::jsonb,
+    '{}'::jsonb,
+    '{}'::jsonb,
+    '{}'::jsonb,
+    '{"renderer":"storefront-runtime","version":"1.0.0"}'::jsonb
+  )
+ON CONFLICT (id) DO UPDATE SET
+  name = EXCLUDED.name,
+  slug = EXCLUDED.slug,
+  site_type = EXCLUDED.site_type,
+  category = EXCLUDED.category,
+  description = EXCLUDED.description,
+  is_active = EXCLUDED.is_active,
+  sort_order = EXCLUDED.sort_order,
+  letbuyy_pricing_type = EXCLUDED.letbuyy_pricing_type,
+  letbuyy_price_inr = EXCLUDED.letbuyy_price_inr,
+  supported_site_types = EXCLUDED.supported_site_types,
+  tags = EXCLUDED.tags,
+  updated_at = NOW();
+
 INSERT INTO sites (
   id, user_id, name, store_name, tagline, site_type, subdomain, theme_id,
   theme_settings, template_config, sections, status, published_at
@@ -339,7 +424,7 @@ VALUES (
   'Urban Kicks Demo',
   'urban-kicks-demo',
   'India-first sneaker storefront',
-  'ecommerce',
+  'store',
   'urban-kicks-demo',
   'urban-kicks',
   '{"colorScheme":"urban"}'::jsonb,
@@ -351,9 +436,24 @@ VALUES (
 ON CONFLICT (id) DO UPDATE SET
   name = EXCLUDED.name,
   store_name = EXCLUDED.store_name,
+  site_type = EXCLUDED.site_type,
   subdomain = EXCLUDED.subdomain,
+  theme_id = EXCLUDED.theme_id,
   status = EXCLUDED.status,
   published_at = EXCLUDED.published_at,
+  updated_at = NOW();
+
+INSERT INTO store_themes (id, store_id, theme_id, is_active, config_overrides)
+VALUES (
+  '00000000-0000-4000-8000-000000000302',
+  '00000000-0000-4000-8000-000000000010',
+  '00000000-0000-4000-8000-000000000300',
+  TRUE,
+  '{"colorScheme":"urban"}'::jsonb
+)
+ON CONFLICT (store_id, theme_id) DO UPDATE SET
+  is_active = EXCLUDED.is_active,
+  config_overrides = EXCLUDED.config_overrides,
   updated_at = NOW();
 
 INSERT INTO products (
@@ -445,7 +545,7 @@ SELECT
   'demo-loyalty-rewards-client',
   ARRAY['http://127.0.0.1:3004/oauth/callback'],
   'http://127.0.0.1:8787/local-webhook-receiver',
-  ARRAY['ecommerce'],
+  ARRAY['store'],
   '1.0.0'
 ON CONFLICT (id) DO UPDATE SET
   status = EXCLUDED.status,
@@ -485,6 +585,7 @@ ON CONFLICT (id) DO UPDATE SET
 
 function parseSupabaseStatus() {
   const status = run("supabase", ["status", "--workdir", supabaseProjectRoot, "-o", "json"], {
+    env: supabaseCliEnv,
     stdio: "pipe",
   });
   const parsed = JSON.parse(status.stdout);
@@ -507,9 +608,11 @@ function writeGatewayVars(keys) {
 }
 
 function processEnv(keys) {
+  const modernNodeBin = detectModernNodeBin();
   return {
     ...process.env,
     ...localSecrets,
+    ...(modernNodeBin ? { PATH: `${modernNodeBin}:${process.env.PATH || ""}` } : {}),
     NODE_ENV: "development",
     NEXT_PUBLIC_SUPABASE_URL: keys.apiUrl,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: keys.anonKey,
@@ -569,12 +672,21 @@ async function main() {
   if (!commandExists("pnpm")) throw new Error("pnpm is required.");
 
   ensureDocker();
+  const dockerHost = detectDockerHost();
+  if (dockerHost) {
+    supabaseCliEnv.DOCKER_HOST = dockerHost;
+  }
   prepareSupabaseProject();
 
-  run("supabase", ["stop", "--project-id", projectId, "--no-backup"], { stdio: "ignore" });
-  run("supabase", ["start", "--workdir", supabaseProjectRoot]);
-  run("supabase", ["db", "reset", "--workdir", supabaseProjectRoot, "--local", "--no-seed"]);
-  run("supabase", ["db", "query", "--workdir", supabaseProjectRoot, "--local", "--file", join(supabaseConfigDir, "seed.sql")]);
+  runOptional("supabase", ["stop", "--project-id", projectId, "--no-backup"], { env: supabaseCliEnv, stdio: "ignore" });
+  run("supabase", ["start", "--workdir", supabaseProjectRoot], { env: supabaseCliEnv });
+  run("supabase", ["db", "reset", "--workdir", supabaseProjectRoot, "--local", "--no-seed"], { env: supabaseCliEnv });
+  runWithInput(
+    "docker",
+    ["exec", "-i", `supabase_db_${projectId}`, "psql", "-U", "postgres", "-v", "ON_ERROR_STOP=1", "-f", "-"],
+    seedSql(),
+    { env: supabaseCliEnv },
+  );
 
   const keys = parseSupabaseStatus();
   if (!keys.anonKey || !keys.serviceRoleKey) {

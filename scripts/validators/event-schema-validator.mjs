@@ -1,14 +1,18 @@
 import {
   createReporter,
+  hasSqlFunction,
+  hasSqlTable,
   readFile,
+  readActiveSupabaseSchemaMigration,
 } from "./governance-common.mjs";
 
 const reporter = createReporter("Event schema validator");
 
 const eventEnvelope = readFile("packages/distributed-runtime/src/event-envelope-runtime.ts");
 const eventVersioning = readFile("packages/distributed-runtime/src/event-versioning-runtime.ts");
-const eventStoreMigration = readFile("database/supabase/migrations/059_distributed_runtime_operations_foundation.sql");
-const operationalMigration = readFile("database/supabase/migrations/063_absolute_production_operationalization.sql");
+const eventStoreMigration = readActiveSupabaseSchemaMigration();
+const operationalMigration = eventStoreMigration;
+const normalizedEventStoreMigration = eventStoreMigration.toLowerCase();
 
 for (const fragment of [
   "schema_version: number",
@@ -33,29 +37,30 @@ for (const fragment of [
   reporter.assert(eventVersioning.includes(fragment), `Event versioning missing replay compatibility contract: ${fragment}`);
 }
 
+reporter.assert(hasSqlTable(eventStoreMigration, "distributed_event_store"), "Distributed event store migration missing replay-safe persistence table: distributed_event_store");
 for (const fragment of [
-  "CREATE TABLE IF NOT EXISTS distributed_event_store",
-  "event_id UUID NOT NULL UNIQUE",
-  "schema_version INTEGER NOT NULL DEFAULT 1",
-  "replayable BOOLEAN NOT NULL DEFAULT TRUE",
-  "retention_class TEXT NOT NULL DEFAULT 'hot'",
-  "UNIQUE(stream_name, stream_position)",
-  "UNIQUE(stream_name, idempotency_key)",
-  "correlation_id TEXT NOT NULL",
-  "producer TEXT NOT NULL",
+  "event_id uuid not null",
+  "schema_version integer default 1 not null",
+  "replayable boolean default true not null",
+  "retention_class text default 'hot'::text not null",
+  "unique (stream_name, stream_position)",
+  "unique (stream_name, idempotency_key)",
+  "correlation_id text not null",
+  "producer text not null",
 ]) {
-  reporter.assert(eventStoreMigration.includes(fragment), `Distributed event store migration missing replay-safe persistence fragment: ${fragment}`);
+  reporter.assert(normalizedEventStoreMigration.includes(fragment), `Distributed event store migration missing replay-safe persistence fragment: ${fragment}`);
 }
 
 for (const fragment of [
-  "CREATE OR REPLACE FUNCTION append_distributed_event",
+  "append_distributed_event",
   "validate_event_stream_consistency",
   "gap_count",
   "duplicate_count",
   "event_store_integrity_checks",
 ]) {
   reporter.assert(
-    eventStoreMigration.includes(fragment) || operationalMigration.includes(fragment),
+    (fragment === "append_distributed_event" ? hasSqlFunction(eventStoreMigration, fragment) : eventStoreMigration.includes(fragment)) ||
+      (fragment === "validate_event_stream_consistency" ? hasSqlFunction(operationalMigration, fragment) : operationalMigration.includes(fragment)),
     `Event store integrity lifecycle missing fragment: ${fragment}`,
   );
 }

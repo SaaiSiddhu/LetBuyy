@@ -11,7 +11,7 @@ Feature flags are operational controls, not hidden deployment shortcuts.
 
 ## Persistence Contract
 
-Migration `database/supabase/migrations/065_enterprise_sdlc_lifecycle.sql` owns:
+Active baseline migration `database/supabase/migrations/000_baseline.sql` owns:
 
 - `operational_feature_flags`
 - `operational_feature_flag_audit_events`
