@@ -119,6 +119,20 @@ export const letbuyyTokens = {
         controlMd: '40px',
         controlLg: '48px',
         icon: '40px',
+        iconInline: '1em',
+        pageMax: '1440px',
+        contentMeasure: '720px',
+        emptyStateMeasure: '520px',
+        saveBarWidth: '920px',
+        skeletonCardHeight: '160px',
+        emptyStateMinHeight: '220px',
+        comboboxMenuMaxHeight: '280px',
+        tooltipMaxWidth: '240px',
+        metricSparklineWidth: '120px',
+        metricSparklineHeight: '48px',
+        commandPaletteWidth: '720px',
+        commandPaletteListMaxHeight: '420px',
+        commandPaletteOffset: '12vh',
     },
 } as const;
 
@@ -162,6 +176,20 @@ const sharedCssVariables: CssVariableMap = {
     '--lb-size-control-md': letbuyyTokens.size.controlMd,
     '--lb-size-control-lg': letbuyyTokens.size.controlLg,
     '--lb-size-icon': letbuyyTokens.size.icon,
+    '--lb-size-icon-inline': letbuyyTokens.size.iconInline,
+    '--lb-size-page-max': letbuyyTokens.size.pageMax,
+    '--lb-size-content-measure': letbuyyTokens.size.contentMeasure,
+    '--lb-size-empty-state-measure': letbuyyTokens.size.emptyStateMeasure,
+    '--lb-size-save-bar-width': letbuyyTokens.size.saveBarWidth,
+    '--lb-size-skeleton-card-height': letbuyyTokens.size.skeletonCardHeight,
+    '--lb-size-empty-state-min-height': letbuyyTokens.size.emptyStateMinHeight,
+    '--lb-size-combobox-menu-max-height': letbuyyTokens.size.comboboxMenuMaxHeight,
+    '--lb-size-tooltip-max-width': letbuyyTokens.size.tooltipMaxWidth,
+    '--lb-size-metric-sparkline-width': letbuyyTokens.size.metricSparklineWidth,
+    '--lb-size-metric-sparkline-height': letbuyyTokens.size.metricSparklineHeight,
+    '--lb-size-command-palette-width': letbuyyTokens.size.commandPaletteWidth,
+    '--lb-size-command-palette-list-max-height': letbuyyTokens.size.commandPaletteListMaxHeight,
+    '--lb-size-command-palette-offset': letbuyyTokens.size.commandPaletteOffset,
 };
 
 function colorVariables(theme: LetbuyyTheme): CssVariableMap {
@@ -234,4 +262,3 @@ export const letbuyyTokenCss = [
     '  box-sizing: border-box;',
     '}',
 ].join('\n');
-

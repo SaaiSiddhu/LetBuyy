@@ -109,7 +109,7 @@ export function Select({ label, helperText, error, options, className = '', id, 
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-[var(--lb-space-3)] top-1/2 h-[1em] w-[1em] -translate-y-1/2 text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
+                <ChevronDown className="pointer-events-none absolute right-[var(--lb-space-3)] top-1/2 h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] -translate-y-1/2 text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
             </div>
             {error && <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-critical)]">{error}</p>}
             {helperText && !error && <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">{helperText}</p>}
@@ -178,7 +178,7 @@ export function Combobox({
                 <div
                     id={`${generatedId}-listbox`}
                     role="listbox"
-                    className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[280px] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
+                    className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
                 >
                     {filteredOptions.length === 0 ? (
                         <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-body)] text-[var(--lb-color-text-subdued)]">
@@ -196,7 +196,7 @@ export function Combobox({
                                 onClick={() => selectOption(option)}
                             >
                                 {option.label}
-                                {option.value === value && <Check className="h-[1em] w-[1em]" aria-hidden="true" />}
+                                {option.value === value && <Check className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             </button>
                         ))
                     )}
@@ -205,4 +205,3 @@ export function Combobox({
         </div>
     );
 }
-

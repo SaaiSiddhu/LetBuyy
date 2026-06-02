@@ -137,6 +137,63 @@ export default {
     title: 'Merchant Experience/Design System',
 };
 
+export function UsageGuidelines() {
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Design system guardrails"
+                title="Merchant UI grammar"
+                description="Compose merchant screens from shared primitives, semantic tokens, explicit feedback, and keyboard-safe interactions."
+            />
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                <Card>
+                    <Section title="Page structure" description="Start every admin screen with Page, PageHeader, Card, then Section.">
+                        <div className="space-y-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                            <p className="m-0">Use the same skeleton for dashboards, settings, lists, editors, and workflow steps.</p>
+                            <Badge label="Page -> PageHeader -> Card -> Section" variant="info" />
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Tokens only" description="Use semantic CSS variables for color, spacing, type, radius, shadow, motion, and component sizing.">
+                        <div className="grid gap-[var(--lb-space-2)]">
+                            {['--lb-color-surface', '--lb-color-text', '--lb-space-4', '--lb-radius-lg', '--lb-shadow-sm'].map((token) => (
+                                <code
+                                    key={token}
+                                    className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] text-[var(--lb-color-text)]"
+                                >
+                                    {token}
+                                </code>
+                            ))}
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Feedback by default" description="Loading, empty, mutation, saved, and destructive states need explicit UI.">
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                            <Badge label="Skeleton" variant="default" />
+                            <Badge label="EmptyState" variant="info" />
+                            <Badge label="Toast" variant="success" />
+                            <Badge label="SaveBar" variant="warning" />
+                            <Badge label="ConfirmDialog" variant="critical" />
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Accessibility baseline" description="Controls must be keyboard reachable, labelled, focus-visible, and contrast-safe.">
+                        <div className="space-y-[var(--lb-space-3)]">
+                            <Button variant="secondary">Focusable control</Button>
+                            <Banner title="Accessible status" variant="success">
+                                Status content uses semantic roles and tokenized contrast.
+                            </Banner>
+                        </div>
+                    </Section>
+                </Card>
+            </div>
+        </Page>
+    );
+}
+
 export function PageGrammar() {
     return (
         <Page>
@@ -216,7 +273,7 @@ export function EmptyAndLoadingStates() {
             <PageHeader title="Empty states" description="Designed blanks, skeletons, and next actions." />
             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                 <EmptyState
-                    icon={<AppWindow className="h-[1em] w-[1em]" aria-hidden="true" />}
+                    icon={<AppWindow className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                     title="No apps installed"
                     body="Browse vetted apps to add marketing, analytics, and fulfillment tools."
                     primaryAction={<Button>Browse apps</Button>}

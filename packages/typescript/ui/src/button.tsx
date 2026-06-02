@@ -51,7 +51,7 @@ export function Button({
             {...props}
         >
             {loading && (
-                <Loader2 className="h-[1em] w-[1em] animate-spin" aria-hidden="true" />
+                <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" />
             )}
             {children}
         </button>

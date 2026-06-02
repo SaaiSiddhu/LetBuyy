@@ -58,8 +58,8 @@ export function DataTable<T extends Record<string, unknown>>({
                                     {col.header}
                                     {col.sortable && sortKey === col.key && (
                                         sortDirection === 'asc'
-                                            ? <ArrowUp className="h-[1em] w-[1em]" aria-hidden="true" />
-                                            : <ArrowDown className="h-[1em] w-[1em]" aria-hidden="true" />
+                                            ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     )}
                                 </div>
                             </th>
@@ -71,7 +71,7 @@ export function DataTable<T extends Record<string, unknown>>({
                         <tr>
                             <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center">
                                 <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[var(--lb-color-text-subdued)]">
-                                    <Loader2 className="h-[1em] w-[1em] animate-spin" aria-hidden="true" />
+                                    <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" />
                                     Loading...
                                 </div>
                             </td>

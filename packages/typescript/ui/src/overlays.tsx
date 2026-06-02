@@ -67,7 +67,7 @@ export function Modal({ open, title, description, children, onClose, footer, cla
                         onClick={onClose}
                         aria-label="Close"
                     >
-                        <X className="h-[1em] w-[1em]" aria-hidden="true" />
+                        <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                     </button>
                 </header>
                 <div className="overflow-auto p-[var(--lb-space-5)]">{children}</div>
@@ -139,7 +139,7 @@ export function Tooltip({ content, children, side = 'top' }: TooltipProps) {
             <span
                 role="tooltip"
                 className={cx(
-                    'pointer-events-none absolute left-1/2 z-50 w-max max-w-[240px] -translate-x-1/2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-text)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-inverse)] opacity-0 shadow-[var(--lb-shadow-md)] transition-opacity duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] group-focus-within:opacity-100 group-hover:opacity-100',
+                    'pointer-events-none absolute left-1/2 z-50 w-max max-w-[var(--lb-size-tooltip-max-width)] -translate-x-1/2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-text)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-inverse)] opacity-0 shadow-[var(--lb-shadow-md)] transition-opacity duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] group-focus-within:opacity-100 group-hover:opacity-100',
                     side === 'top' ? 'bottom-[calc(100%+var(--lb-space-2))]' : 'top-[calc(100%+var(--lb-space-2))]',
                 )}
             >
@@ -148,4 +148,3 @@ export function Tooltip({ content, children, side = 'top' }: TooltipProps) {
         </span>
     );
 }
-

@@ -66,7 +66,7 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
                     )}
                 </div>
                 {points && (
-                    <svg viewBox="0 0 100 48" className="h-[48px] w-[120px] text-[var(--lb-color-primary)]" aria-hidden="true">
+                    <svg viewBox="0 0 100 48" className="h-[var(--lb-size-metric-sparkline-height)] w-[var(--lb-size-metric-sparkline-width)] text-[var(--lb-color-primary)]" aria-hidden="true">
                         <polyline points={points} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 )}
@@ -126,7 +126,7 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
                 onClick={() => onPageChange(Math.max(page - 1, 1))}
                 disabled={page <= 1}
             >
-                <ChevronLeft className="h-[1em] w-[1em]" aria-hidden="true" />
+                <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                 Previous
             </button>
             <span className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
@@ -139,7 +139,7 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
                 disabled={page >= totalPages}
             >
                 Next
-                <ChevronRight className="h-[1em] w-[1em]" aria-hidden="true" />
+                <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
             </button>
         </nav>
     );
@@ -286,8 +286,8 @@ export function IndexTable<T extends { id: string }>({
                                         {column.header}
                                         {column.sortable && sortKey === column.key && (
                                             sortDirection === 'asc'
-                                                ? <ArrowUp className="h-[1em] w-[1em]" aria-hidden="true" />
-                                                : <ArrowDown className="h-[1em] w-[1em]" aria-hidden="true" />
+                                                ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                         )}
                                     </button>
                                 </th>
@@ -373,10 +373,10 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-4)] pt-[12vh]">
-            <div role="dialog" aria-modal="true" aria-label="Command palette" className="w-[min(720px,100%)] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]">
+        <div className="fixed inset-0 z-50 flex items-start justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-4)] pt-[var(--lb-size-command-palette-offset)]">
+            <div role="dialog" aria-modal="true" aria-label="Command palette" className="w-[min(var(--lb-size-command-palette-width),100%)] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]">
                 <div className="flex items-center gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)]">
-                    <Search className="h-[1em] w-[1em] text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
+                    <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
                     <input
                         className="h-[var(--lb-size-control-lg)] flex-1 bg-transparent text-[var(--lb-font-size-body)] text-[var(--lb-color-text)] outline-none placeholder:text-[var(--lb-color-text-subdued)]"
                         value={query}
@@ -384,9 +384,9 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
                         placeholder={placeholder}
                         autoFocus
                     />
-                    <Command className="h-[1em] w-[1em] text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
+                    <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
                 </div>
-                <div className="max-h-[420px] overflow-auto p-[var(--lb-space-2)]">
+                <div className="max-h-[var(--lb-size-command-palette-list-max-height)] overflow-auto p-[var(--lb-space-2)]">
                     {filteredActions.length === 0 ? (
                         <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-5)] text-center text-[var(--lb-font-size-body)] text-[var(--lb-color-text-subdued)]">
                             No commands found
@@ -416,4 +416,3 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
         </div>
     );
 }
-

@@ -18,31 +18,31 @@ const statusStyles: Record<StatusVariant, { surface: string; text: string; borde
         surface: 'bg-[var(--lb-color-surface-subdued)]',
         text: 'text-[var(--lb-color-text)]',
         border: 'border-[var(--lb-color-border)]',
-        icon: <Info className="h-[1em] w-[1em]" aria-hidden="true" />,
+        icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     info: {
         surface: 'bg-[var(--lb-color-info-soft)]',
         text: 'text-[var(--lb-color-info)]',
         border: 'border-[var(--lb-color-info)]',
-        icon: <Info className="h-[1em] w-[1em]" aria-hidden="true" />,
+        icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     success: {
         surface: 'bg-[var(--lb-color-success-soft)]',
         text: 'text-[var(--lb-color-success)]',
         border: 'border-[var(--lb-color-success)]',
-        icon: <CheckCircle2 className="h-[1em] w-[1em]" aria-hidden="true" />,
+        icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     warning: {
         surface: 'bg-[var(--lb-color-warning-soft)]',
         text: 'text-[var(--lb-color-warning)]',
         border: 'border-[var(--lb-color-warning)]',
-        icon: <AlertTriangle className="h-[1em] w-[1em]" aria-hidden="true" />,
+        icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     critical: {
         surface: 'bg-[var(--lb-color-critical-soft)]',
         text: 'text-[var(--lb-color-critical)]',
         border: 'border-[var(--lb-color-critical)]',
-        icon: <AlertCircle className="h-[1em] w-[1em]" aria-hidden="true" />,
+        icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
 };
 
@@ -186,7 +186,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
                                 onClick={() => dismiss(toast.id)}
                                 aria-label="Dismiss notification"
                             >
-                                <X className="h-[1em] w-[1em]" aria-hidden="true" />
+                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             </button>
                         </div>
                     );
@@ -223,7 +223,7 @@ export function Skeleton({ variant = 'text', lines = 3, className = '', ...props
     if (variant === 'card') {
         return (
             <div
-                className={cx('h-[160px] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]', className)}
+                className={cx('h-[var(--lb-size-skeleton-card-height)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]', className)}
                 aria-hidden="true"
                 {...props}
             />
@@ -257,7 +257,7 @@ export function EmptyState({ icon, title, body, primaryAction, secondaryAction, 
     return (
         <div
             className={cx(
-                'flex min-h-[220px] flex-col items-center justify-center gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-6)] text-center',
+                'flex min-h-[var(--lb-size-empty-state-min-height)] flex-col items-center justify-center gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-6)] text-center',
                 className,
             )}
             {...props}
@@ -267,7 +267,7 @@ export function EmptyState({ icon, title, body, primaryAction, secondaryAction, 
                     {icon}
                 </div>
             )}
-            <div className="max-w-[520px] space-y-[var(--lb-space-2)]">
+            <div className="max-w-[var(--lb-size-empty-state-measure)] space-y-[var(--lb-space-2)]">
                 <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
                     {title}
                 </h3>
@@ -309,7 +309,7 @@ export function SaveBar({
     return (
         <div
             className={cx(
-                'sticky bottom-[var(--lb-space-4)] z-40 mx-auto flex w-[min(920px,calc(100vw-var(--lb-space-6)))] items-center justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)]',
+                'sticky bottom-[var(--lb-space-4)] z-40 mx-auto flex w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] items-center justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)]',
                 isSaved ? 'opacity-0 pointer-events-none' : 'opacity-100',
                 className,
             )}
@@ -317,7 +317,7 @@ export function SaveBar({
             {...props}
         >
             <div className="flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                {state === 'saving' ? <Loader2 className="h-[1em] w-[1em] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[1em] w-[1em]" aria-hidden="true" />}
+                {state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
             </div>
             <div className="flex items-center gap-[var(--lb-space-2)]">

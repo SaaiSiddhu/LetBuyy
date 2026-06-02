@@ -9,7 +9,7 @@ export function Page({ children, className = '', ...props }: PageProps) {
     return (
         <main
             className={cx(
-                'mx-auto flex w-full max-w-[1440px] flex-col gap-[var(--lb-space-5)] px-[var(--lb-space-5)] py-[var(--lb-space-5)] text-[var(--lb-color-text)]',
+                'mx-auto flex w-full max-w-[var(--lb-size-page-max)] flex-col gap-[var(--lb-space-5)] px-[var(--lb-space-5)] py-[var(--lb-space-5)] text-[var(--lb-color-text)]',
                 className,
             )}
             {...props}
@@ -108,7 +108,7 @@ export function PageHeader({
                         {title}
                     </h1>
                     {description && (
-                        <p className="m-0 max-w-[720px] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
                             {description}
                         </p>
                     )}
@@ -173,4 +173,3 @@ export function Section({ title, description, action, children, className = '', 
         </section>
     );
 }
-
