@@ -1,6 +1,7 @@
 'use client'
 
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface StubPageProps {
     title: string
@@ -17,9 +18,7 @@ export default function StubPage({ title, description, icon }: StubPageProps) {
                 {/* Icon container with gradient */}
                 <div className="stub-page-icon-ring">
                     <div className="stub-page-icon">
-                        <span className="material-symbols-outlined" style={{ fontSize: '32px' }}>
-                            {icon}
-                        </span>
+                        <MaterialIcon name={icon} style={{ fontSize: '32px' }} />
                     </div>
                 </div>
 
@@ -29,7 +28,7 @@ export default function StubPage({ title, description, icon }: StubPageProps) {
 
                 {/* Coming soon badge */}
                 <div className="stub-page-badge">
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>schedule</span>
+                    <MaterialIcon name="schedule" style={{ fontSize: '14px' }} />
                     Coming Soon
                 </div>
 

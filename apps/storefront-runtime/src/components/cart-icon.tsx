@@ -1,7 +1,7 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from '@letbuyy/ui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 

@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { CreditCard, Shield, ArrowLeft, Lock, Tag, ChevronRight } from 'lucide-react';
+import { CreditCard, Shield, ArrowLeft, Lock, Tag, ChevronRight } from '@letbuyy/ui';
 import { formatPrice, cn } from '@/lib/utils';
 
 function CheckoutContent() {

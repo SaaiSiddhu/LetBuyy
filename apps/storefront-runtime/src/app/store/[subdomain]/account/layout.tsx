@@ -11,7 +11,7 @@ import { useCustomerAuth } from '@/context/customer-auth-context';
 import {
     Package, Heart, MapPin, Settings, ChevronRight,
     Loader2, User as UserIcon,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 
 const navItems = [
     { href: 'orders', icon: Package, label: 'Orders' },

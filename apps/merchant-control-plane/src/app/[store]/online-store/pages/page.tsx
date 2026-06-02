@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type PageStatus = 'draft' | 'published' | 'archived'
 type ActiveTab = 'pages' | 'policies' | 'navigation'
@@ -265,7 +266,7 @@ export default function PagesPage() {
 
             {loading ? (
                 <div className="os-loading">
-                    <span className="material-symbols-outlined os-spin">progress_activity</span>
+                    <MaterialIcon name="progress_activity" className="os-spin" />
                     Loading storefront content...
                 </div>
             ) : (
@@ -506,7 +507,7 @@ function ContentTable<T extends PageItem | PolicyItem>({
     if (items.length === 0) {
         return (
             <div className="os-empty-state">
-                <span className="material-symbols-outlined os-empty-icon">article</span>
+                <MaterialIcon name="article" className="os-empty-icon" />
                 <h3>{emptyLabel}</h3>
                 <p>Create content and publish it to expose it through the storefront renderer.</p>
             </div>
@@ -530,7 +531,7 @@ function ContentTable<T extends PageItem | PolicyItem>({
                         <tr key={item.id}>
                             <td>
                                 <div className="os-table-page-title">
-                                    <span className="material-symbols-outlined os-table-icon">article</span>
+                                    <MaterialIcon name="article" className="os-table-icon" />
                                     {item.title}
                                 </div>
                             </td>

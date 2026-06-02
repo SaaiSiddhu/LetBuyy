@@ -1,4 +1,4 @@
-import { KeyRound, ShieldAlert } from 'lucide-react';
+import { KeyRound, ShieldAlert } from '@letbuyy/ui';
 import { requireConsoleSession } from '@/lib/console-auth-server';
 
 type MfaSearchParams = Promise<Record<string, string | string[] | undefined>>;

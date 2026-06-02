@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { SectionModel, TestimonialsSettings, ThemeSettings } from '@letbuyy/theme-engine';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, MessageSquare, Tag } from '@letbuyy/ui';
 
 interface Props {
     section: SectionModel;
@@ -150,9 +150,7 @@ export default function TestimonialsSection({ section, theme }: Props) {
                                 <div className="md:col-span-8">
                                     <div className="bg-black/[0.03] rounded-2xl p-6 md:p-8 border border-black/[0.06] h-full flex flex-col justify-between">
                                         <div>
-                                            <svg className="w-8 h-8 mb-4 text-black/15" viewBox="0 0 24 24" fill="currentColor">
-                                                <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                                            </svg>
+                                            <MessageSquare className="w-8 h-8 mb-4 text-black/15" aria-hidden="true" />
                                             <p className="text-lg md:text-xl leading-relaxed font-light">
                                                 {active.text}
                                             </p>
@@ -186,7 +184,7 @@ export default function TestimonialsSection({ section, theme }: Props) {
                                     </div>
                                     {active.product && (
                                         <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-black/[0.04] border border-black/[0.06] text-xs text-black/50 w-fit">
-                                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" /><line x1="7" y1="7" x2="7.01" y2="7" /></svg>
+                                            <Tag width={12} height={12} aria-hidden="true" />
                                             {active.product}
                                         </div>
                                     )}

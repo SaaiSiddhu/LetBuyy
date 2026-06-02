@@ -4,7 +4,7 @@
 
 'use client';
 
-import { Heart } from 'lucide-react';
+import { Heart } from '@letbuyy/ui';
 import { useWishlist } from '@/context/wishlist-context';
 import { motion } from 'framer-motion';
 

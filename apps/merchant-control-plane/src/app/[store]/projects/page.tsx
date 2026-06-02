@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Project {
     id: string
@@ -84,7 +85,7 @@ export default function ProjectsPage() {
             <div className="products-page-header">
                 <h1>Projects</h1>
                 <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ title: '', description: '', url: '', technologies: '' }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>Add project
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />Add project
                 </button>
             </div>
 
@@ -119,9 +120,9 @@ export default function ProjectsPage() {
                                 </div>
                             )}
                             <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
-                                {p.url && <a href={p.url} target="_blank" rel="noopener" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4, display: 'flex' }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>open_in_new</span></a>}
-                                <button onClick={() => startEdit(p)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span></button>
-                                <button onClick={() => handleDelete(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span></button>
+                                {p.url && <a href={p.url} target="_blank" rel="noopener" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4, display: 'flex' }}><MaterialIcon name="open_in_new" style={{ fontSize: 18 }} /></a>}
+                                <button onClick={() => startEdit(p)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><MaterialIcon name="edit" style={{ fontSize: 18 }} /></button>
+                                <button onClick={() => handleDelete(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button>
                             </div>
                         </div>
                     ))}

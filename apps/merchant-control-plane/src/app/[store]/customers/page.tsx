@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import type { Customer as SharedCustomer } from '@letbuyy/shared-types'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type CustomerRow = Omit<Pick<SharedCustomer, 'id' | 'email' | 'phone' | 'status' | 'created_at' | 'total_spent' | 'last_order_at'>, 'email' | 'phone' | 'last_order_at'> & {
     full_name: string
@@ -109,9 +110,7 @@ export default function CustomersPage() {
 
             {error && customers.length === 0 ? (
                 <div className="products-empty-card" style={{ textAlign: 'center', padding: '48px 16px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--error)' }}>
-                        error
-                    </span>
+                    <MaterialIcon name="error" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--error)' }} />
                     <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px' }}>
                         Unable to load customers
                     </h2>
@@ -128,9 +127,9 @@ export default function CustomersPage() {
                             <p>When customers place orders or create accounts in your store, they will appear here.</p>
                         </div>
                         <div className="products-empty-images">
-                            <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>group</span></div>
-                            <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>shopping_cart</span></div>
-                            <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>trending_up</span></div>
+                            <div className="products-empty-img"><MaterialIcon name="group" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
+                            <div className="products-empty-img"><MaterialIcon name="shopping_cart" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
+                            <div className="products-empty-img"><MaterialIcon name="trending_up" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
                         </div>
                     </div>
                 </div>
@@ -138,7 +137,7 @@ export default function CustomersPage() {
                 <div className="products-list-card">
                     <div className="products-toolbar">
                         <div className="products-search">
-                            <span className="material-symbols-outlined">search</span>
+                            <MaterialIcon name="search" />
                             <input
                                 type="text"
                                 placeholder="Search customers..."

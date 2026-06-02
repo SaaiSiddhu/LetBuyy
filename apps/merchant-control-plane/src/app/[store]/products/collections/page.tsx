@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import type { Collection as SharedCollection } from '@letbuyy/shared-types'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type CollectionRow = Pick<SharedCollection, 'id' | 'title' | 'description' | 'image_url' | 'created_at'> & {
     is_active: boolean
@@ -131,9 +132,7 @@ export default function CollectionsPage() {
 
             {collections.length === 0 && !showCreate ? (
                 <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                    <span className="material-symbols-outlined" style={{
-                        fontSize: 48, color: 'var(--text-hint)', marginBottom: 16
-                    }}>folder_special</span>
+                    <MaterialIcon name="folder_special" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
                     <h2 style={{
                         fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
                     }}>No collections yet</h2>
@@ -174,9 +173,7 @@ export default function CollectionsPage() {
                                                 <div className="products-table-img" style={{
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                 }}>
-                                                    <span className="material-symbols-outlined" style={{
-                                                        fontSize: 18, color: 'var(--text-hint)'
-                                                    }}>folder</span>
+                                                    <MaterialIcon name="folder" style={{ fontSize: 18, color: 'var(--text-hint)' }} />
                                                 </div>
                                             )}
                                             <span>{c.title}</span>

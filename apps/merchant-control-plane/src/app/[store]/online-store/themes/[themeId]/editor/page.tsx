@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
-import { AlertTriangle, ArrowLeft, CheckCircle2, FileJson, RefreshCw, Save, Send, Settings } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, CheckCircle2, FileJson, RefreshCw, Save, Send, Settings } from '@letbuyy/ui'
 import type { SchemaField, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>

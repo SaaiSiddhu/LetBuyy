@@ -6,7 +6,7 @@
 
 import { useEffect, useState } from 'react';
 import type { LineItem, Order as SharedOrder } from '@letbuyy/shared-types';
-import { Package, ChevronRight, Loader2, ShoppingBag } from 'lucide-react';
+import { Package, ChevronRight, Loader2, ShoppingBag } from '@letbuyy/ui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 

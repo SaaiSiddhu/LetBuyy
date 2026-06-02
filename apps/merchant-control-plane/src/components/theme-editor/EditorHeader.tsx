@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface EditorHeaderProps {
     storeName: string
@@ -39,11 +40,11 @@ export default function EditorHeader({
                     className="te-header-back"
                     title="Back to themes"
                 >
-                    <span className="material-symbols-outlined">arrow_back</span>
+                    <MaterialIcon name="arrow_back" />
                 </Link>
 
                 <div className="te-header-theme-info">
-                    <span className="material-symbols-outlined te-header-theme-icon">palette</span>
+                    <MaterialIcon name="palette" className="te-header-theme-icon" />
                     <div className="te-header-theme-text">
                         <span className="te-header-theme-name">{themeName}</span>
                         <span className="te-header-theme-subtitle">Editing theme</span>
@@ -54,9 +55,9 @@ export default function EditorHeader({
             {/* Center: Page selector */}
             <div className="te-header-center">
                 <div className="te-header-page-selector">
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>description</span>
+                    <MaterialIcon name="description" style={{ fontSize: '18px' }} />
                     <span>Home page</span>
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>expand_more</span>
+                    <MaterialIcon name="expand_more" style={{ fontSize: '16px' }} />
                 </div>
             </div>
 
@@ -68,7 +69,7 @@ export default function EditorHeader({
                     disabled={!canUndo}
                     title="Undo (Ctrl+Z)"
                 >
-                    <span className="material-symbols-outlined">undo</span>
+                    <MaterialIcon name="undo" />
                 </button>
                 <button
                     className="te-header-btn"
@@ -76,7 +77,7 @@ export default function EditorHeader({
                     disabled={!canRedo}
                     title="Redo (Ctrl+Shift+Z)"
                 >
-                    <span className="material-symbols-outlined">redo</span>
+                    <MaterialIcon name="redo" />
                 </button>
 
                 <button

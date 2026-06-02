@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Skill {
     id: string; name: string; category: string | null; proficiency: number; display_order: number
@@ -63,7 +64,7 @@ export default function SkillsPage() {
             <div className="products-page-header">
                 <h1>Skills</h1>
                 <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ name: '', category: '', proficiency: '80' }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>Add skill
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />Add skill
                 </button>
             </div>
 
@@ -100,8 +101,8 @@ export default function SkillsPage() {
                                             <div style={{ width: `${s.proficiency}%`, height: '100%', borderRadius: 4, background: pC(s.proficiency) }} />
                                         </div>
                                         <span style={{ fontSize: 12, color: 'var(--text-hint)', minWidth: 36, textAlign: 'right' }}>{s.proficiency}%</span>
-                                        <button onClick={() => startEdit(s)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 2 }}><span className="material-symbols-outlined" style={{ fontSize: 16 }}>edit</span></button>
-                                        <button onClick={() => handleDelete(s.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 2 }}><span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span></button>
+                                        <button onClick={() => startEdit(s)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 2 }}><MaterialIcon name="edit" style={{ fontSize: 16 }} /></button>
+                                        <button onClick={() => handleDelete(s.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 2 }}><MaterialIcon name="delete" style={{ fontSize: 16 }} /></button>
                                     </div>
                                 ))}
                             </div>

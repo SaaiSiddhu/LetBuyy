@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react';
+import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';

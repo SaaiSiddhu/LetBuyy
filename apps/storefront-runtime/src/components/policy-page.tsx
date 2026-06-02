@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { ArrowLeft, Printer, Calendar, Shield, FileText, Truck, RefreshCcw } from 'lucide-react';
+import { ArrowLeft, Printer, Calendar, Shield, FileText, Truck, RefreshCcw } from '@letbuyy/ui';
 import type { StoreModel } from '@letbuyy/tenant-core';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 

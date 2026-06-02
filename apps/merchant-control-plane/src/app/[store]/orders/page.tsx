@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type OrderItemRow = Pick<
     SharedLineItem,
@@ -253,7 +254,7 @@ export default function OrdersPage() {
 
                 <div className="products-toolbar">
                     <div className="products-search">
-                        <span className="material-symbols-outlined">search</span>
+                        <MaterialIcon name="search" />
                         <input
                             type="text"
                             placeholder="Search order, customer email, or name..."
@@ -283,9 +284,7 @@ export default function OrdersPage() {
 
                 {error && orders.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '48px 16px', color: 'var(--text-secondary)' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--error)' }}>
-                            error
-                        </span>
+                        <MaterialIcon name="error" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--error)' }} />
                         <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 6px' }}>
                             Unable to load orders
                         </p>
@@ -300,9 +299,7 @@ export default function OrdersPage() {
                         padding: '48px 16px',
                         color: 'var(--text-hint)',
                     }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--text-hint)' }}>
-                            receipt_long
-                        </span>
+                        <MaterialIcon name="receipt_long" style={{ fontSize: 40, marginBottom: 12, display: 'block', color: 'var(--text-hint)' }} />
                         <p style={{ fontSize: 15, fontWeight: 500, color: 'var(--text-primary)', margin: '0 0 6px' }}>
                             No orders
                         </p>

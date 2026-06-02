@@ -280,6 +280,6 @@ result = re.sub(r'\n{4,}', '\n\n\n', result)
 with open(FILE_PATH, 'w', encoding='utf-8') as f:
     f.write(result)
 
-print(f"✅ Fixed markdown formatting in: {os.path.basename(FILE_PATH)}")
+print(f"Fixed markdown formatting in: {os.path.basename(FILE_PATH)}")
 print(f"   Original lines: {len(lines)}")
 print(f"   New lines: {len(new_lines)}")

@@ -4,7 +4,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { useState } from 'react';
-import { Upload, Globe, Image, Loader2 } from 'lucide-react';
+import { Upload, Globe, Image, Loader2 } from '@letbuyy/ui';
 import { useRouter } from 'next/navigation';
 
 export default function NewAppPage() {

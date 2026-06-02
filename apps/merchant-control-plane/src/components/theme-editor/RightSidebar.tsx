@@ -3,6 +3,7 @@
 import SchemaFormRenderer from './SchemaFormRenderer'
 import type { BlockEntry, SectionEntry } from '@/hooks/useEditorHistory'
 import type { BlockSchema, SectionSchema } from '@/lib/theme-schemas'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface RightSidebarProps {
     section: SectionEntry | null
@@ -29,7 +30,7 @@ export default function RightSidebar({
         return (
             <aside className="te-right-sidebar te-right-sidebar--empty">
                 <div className="te-right-sidebar-placeholder">
-                    <span className="material-symbols-outlined" style={{ fontSize: '40px', color: 'var(--clr-text-tertiary)' }}>touch_app</span>
+                    <MaterialIcon name="touch_app" style={{ fontSize: '40px', color: 'var(--clr-text-tertiary)' }} />
                     <p>Select a section to edit&nbsp;its settings</p>
                 </div>
             </aside>
@@ -43,7 +44,7 @@ export default function RightSidebar({
             <aside className="te-right-sidebar">
                 <div className="te-right-sidebar-header">
                     <button className="te-right-sidebar-back" onClick={onClose}>
-                        <span className="material-symbols-outlined">arrow_back</span>
+                        <MaterialIcon name="arrow_back" />
                     </button>
                     <h3 className="te-right-sidebar-title">{section.type}</h3>
                 </div>
@@ -58,7 +59,7 @@ export default function RightSidebar({
         <aside className="te-right-sidebar">
             <div className="te-right-sidebar-header">
                 <button className="te-right-sidebar-back" onClick={onClose}>
-                    <span className="material-symbols-outlined">arrow_back</span>
+                    <MaterialIcon name="arrow_back" />
                 </button>
                 <div>
                     <h3 className="te-right-sidebar-title">{schema.name}</h3>
@@ -139,7 +140,7 @@ function BlockEditor({
                         className="te-block-editor-add"
                         onClick={() => onAddBlock(section.id, blockType)}
                     >
-                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>add</span>
+                        <MaterialIcon name="add" style={{ fontSize: '16px' }} />
                         Add {blockSchema.name}
                     </button>
                 ))}
@@ -175,7 +176,7 @@ function BlockCard({
                         className="te-block-card-delete"
                         onClick={() => onDeleteBlock(sectionId, block.id)}
                     >
-                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                        <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
                     </button>
                 </div>
                 <p className="te-block-editor-empty">Schema missing for this block type.</p>
@@ -193,7 +194,7 @@ function BlockCard({
                     onClick={() => onDeleteBlock(sectionId, block.id)}
                     title="Remove block"
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                    <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
                 </button>
             </div>
             <SchemaFormRenderer

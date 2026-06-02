@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import type { Product as SharedProduct } from '@letbuyy/shared-types'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type ProductRow = Pick<
     SharedProduct,
@@ -94,7 +95,7 @@ export default function ProductsPage() {
                                         borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none',
                                         display: 'inline-flex', alignItems: 'center', gap: 6
                                     }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                                        <MaterialIcon name="add" style={{ fontSize: 16 }} />
                                         Add product
                                     </Link>
                                     <button className="setup-plan-banner-btn" style={{
@@ -103,16 +104,16 @@ export default function ProductsPage() {
                                         borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer',
                                         display: 'inline-flex', alignItems: 'center', gap: 6
                                     }}>
-                                        <span className="material-symbols-outlined" style={{ fontSize: 16 }}>download</span>
+                                        <MaterialIcon name="download" style={{ fontSize: 16 }} />
                                         Import
                                     </button>
                                 </div>
                             </div>
                             <div className="products-empty-images">
-                                <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>edit</span></div>
-                                <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>deployed_code</span></div>
-                                <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>checkroom</span></div>
-                                <div className="products-empty-img"><span className="material-symbols-outlined" style={{ fontSize: 28, color: 'var(--text-hint)' }}>steps</span></div>
+                                <div className="products-empty-img"><MaterialIcon name="edit" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
+                                <div className="products-empty-img"><MaterialIcon name="deployed_code" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
+                                <div className="products-empty-img"><MaterialIcon name="checkroom" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
+                                <div className="products-empty-img"><MaterialIcon name="steps" style={{ fontSize: 28, color: 'var(--text-hint)' }} /></div>
                             </div>
                         </div>
                     </div>
@@ -151,7 +152,7 @@ export default function ProductsPage() {
                     {/* Search + filters */}
                     <div className="products-toolbar">
                         <div className="products-search">
-                            <span className="material-symbols-outlined">search</span>
+                            <MaterialIcon name="search" />
                             <input
                                 type="text"
                                 placeholder="Search products..."
@@ -191,9 +192,7 @@ export default function ProductsPage() {
                                                     <div className="products-table-img" style={{
                                                         display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                     }}>
-                                                        <span className="material-symbols-outlined" style={{
-                                                            fontSize: 18, color: 'var(--text-hint)'
-                                                        }}>image</span>
+                                                        <MaterialIcon name="image" style={{ fontSize: 18, color: 'var(--text-hint)' }} />
                                                     </div>
                                                 )}
                                                 <span>{product.name}</span>

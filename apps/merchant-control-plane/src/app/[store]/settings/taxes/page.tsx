@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface TaxRate {
     id: string
@@ -152,7 +153,7 @@ export default function TaxesSettingsPage() {
 
             {success && (
                 <div className="settings-toast success">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     Tax settings saved.
                 </div>
             )}
@@ -181,7 +182,7 @@ export default function TaxesSettingsPage() {
                     <h2 style={{ margin: 0 }}>Tax rates</h2>
                     {!showForm && (
                         <button className="settings-btn-primary" style={{ padding: '7px 14px', fontSize: 12 }} onClick={() => { resetForm(); setShowForm(true) }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                            <MaterialIcon name="add" style={{ fontSize: 16 }} />
                             Add tax rate
                         </button>
                     )}
@@ -232,7 +233,7 @@ export default function TaxesSettingsPage() {
 
                 {taxRates.length === 0 && !showForm ? (
                     <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }}>receipt_long</span>
+                        <MaterialIcon name="receipt_long" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
                         <p style={{ marginBottom: 12 }}>No tax rates configured yet.</p>
                         <p style={{ fontSize: 12, color: 'var(--text-hint)' }}>Add GST or other tax rates to apply to your products.</p>
                     </div>
@@ -263,7 +264,7 @@ export default function TaxesSettingsPage() {
             </div>
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">info</span>
+                <MaterialIcon name="info" />
                 <span>Tax rates are applied during checkout. Compound taxes are calculated on top of other taxes. Enable "Apply to shipping" to tax shipping costs.</span>
             </div>
 

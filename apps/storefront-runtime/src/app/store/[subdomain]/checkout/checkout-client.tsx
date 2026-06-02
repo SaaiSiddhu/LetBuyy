@@ -6,7 +6,7 @@ import Image, { type ImageLoaderProps } from 'next/image';
 import {
     ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
     ShieldCheck, MapPin, Truck, Clock, Package, User, Phone, Mail, Home
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import Script from 'next/script';

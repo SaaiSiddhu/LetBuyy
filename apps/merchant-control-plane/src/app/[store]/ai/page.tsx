@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface AiUsage { id: string; feature: string; input_tokens: number; output_tokens: number; credits_used: number; created_at: string }
 
@@ -62,7 +63,7 @@ export default function AiStudioPage() {
                 {AI_FEATURES.map(f => (
                     <div key={f.key} className="products-list-card" style={{ padding: 16, display: 'flex', gap: 14, alignItems: 'flex-start' }}>
                         <div style={{ width: 40, height: 40, borderRadius: 10, background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-secondary)' }}>{f.icon}</span>
+                            <MaterialIcon name={f.icon} style={{ fontSize: 20, color: 'var(--text-secondary)' }} />
                         </div>
                         <div>
                             <div style={{ fontWeight: 600, fontSize: 14 }}>{f.label}</div>

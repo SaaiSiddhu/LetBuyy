@@ -2,7 +2,7 @@
 
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import { motion } from 'framer-motion';
-import { Send, Loader2, CheckCircle, Mail, Phone, MapPin } from 'lucide-react';
+import { Send, Loader2, CheckCircle, Mail, Phone, MapPin } from '@letbuyy/ui';
 import { useState } from 'react';
 
 interface Props {

@@ -5,7 +5,7 @@ import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, User } from 'lucide-react';
+import { ShoppingBag, Menu, Search, X, ChevronRight, Home, Store, FileText, Shield, Truck, User } from '@letbuyy/ui';
 import { useCart } from '@/context/cart-context';
 import AccountBottomSheet from '@/components/account/account-bottom-sheet';
 import CartDrawer from '@/components/cart/cart-drawer';

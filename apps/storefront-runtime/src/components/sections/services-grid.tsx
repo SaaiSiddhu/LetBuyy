@@ -3,7 +3,7 @@
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ServiceItem } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
-import { Palette, Code, Globe, Smartphone, Camera, PenTool, BarChart3, Megaphone } from 'lucide-react';
+import { Palette, Code, Globe, Smartphone, Camera, PenTool, BarChart3, Megaphone } from '@letbuyy/ui';
 
 interface Props {
     section: SectionModel;

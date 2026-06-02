@@ -5,7 +5,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { Star, ThumbsUp, CheckCircle, Send, Loader2, ChevronDown } from 'lucide-react';
+import { Star, ThumbsUp, CheckCircle, Send, Loader2, ChevronDown } from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 
 interface Review {

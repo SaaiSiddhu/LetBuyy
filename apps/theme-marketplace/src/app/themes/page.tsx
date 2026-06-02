@@ -3,16 +3,16 @@
 import { useState, useEffect, useCallback, Suspense } from 'react';
 import type { ChangeEvent } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Search, Upload, X } from 'lucide-react';
+import { Search, Upload, X } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import { cn } from '@/lib/utils';
 
 const CATEGORY_PILLS = [
     { value: 'all', label: 'All Themes' },
-    { value: 'store', label: '🛒 Store' },
-    { value: 'portfolio', label: '🎨 Portfolio' },
-    { value: 'resume', label: '📄 Resume' },
-    { value: 'landing', label: '🚀 Landing' },
+    { value: 'store', label: 'Store' },
+    { value: 'portfolio', label: 'Portfolio' },
+    { value: 'resume', label: 'Resume' },
+    { value: 'landing', label: 'Landing' },
 ];
 
 const PRICING_OPTIONS = [

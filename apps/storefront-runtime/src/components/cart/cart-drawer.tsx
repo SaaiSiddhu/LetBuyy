@@ -2,7 +2,7 @@
 
 import { useCart } from '@/context/cart-context';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowRight, Minus, Plus, ShoppingBag, X } from 'lucide-react';
+import { ArrowRight, Minus, Plus, ShoppingBag, X } from '@letbuyy/ui';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useEffect } from 'react';

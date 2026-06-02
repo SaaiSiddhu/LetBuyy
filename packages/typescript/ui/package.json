@@ -11,6 +11,9 @@
     "build": "tsc -b",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "lucide-react": "^0.562.0"
+  },
   "peerDependencies": {
     "react": "^18 || ^19",
     "react-dom": "^18 || ^19"

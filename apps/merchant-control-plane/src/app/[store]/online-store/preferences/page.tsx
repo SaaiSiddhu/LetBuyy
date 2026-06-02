@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 export default function PreferencesPage() {
     const params = useParams()
@@ -69,7 +70,11 @@ export default function PreferencesPage() {
             <div className="os-page-header">
                 <h1 className="os-page-title">Preferences</h1>
                 <button className="os-btn os-btn-primary" onClick={handleSave} disabled={saving}>
-                    {saving ? 'Saving...' : saved ? '✓ Saved' : 'Save'}
+                    {saving ? 'Saving...' : saved ? (
+                        <>
+                            <MaterialIcon name="check" size={14} aria-hidden="true" /> Saved
+                        </>
+                    ) : 'Save'}
                 </button>
             </div>
 
@@ -118,7 +123,7 @@ export default function PreferencesPage() {
                     When you share a link to your store on social media, this image shows up.
                 </p>
                 <div className="os-pref-upload-area">
-                    <span className="material-symbols-outlined" style={{ fontSize: 32, opacity: 0.3 }}>image</span>
+                    <MaterialIcon name="image" style={{ fontSize: 32, opacity: 0.3 }} />
                     <p>Drag and drop or click to upload</p>
                     <span className="os-pref-upload-hint">Recommended: 1200 × 628 pixels, PNG or JPG</span>
                 </div>
@@ -194,7 +199,7 @@ export default function PreferencesPage() {
                     The small icon shown in browser tabs and bookmarks.
                 </p>
                 <div className="os-pref-upload-area os-pref-favicon-upload">
-                    <span className="material-symbols-outlined" style={{ fontSize: 24, opacity: 0.3 }}>star</span>
+                    <MaterialIcon name="star" style={{ fontSize: 24, opacity: 0.3 }} />
                     <p>Upload favicon (32×32px, .ico or .png)</p>
                 </div>
             </div>

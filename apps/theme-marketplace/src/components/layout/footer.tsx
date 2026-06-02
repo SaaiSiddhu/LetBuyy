@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Palette, Github, Twitter, Mail } from 'lucide-react';
+import { Heart, Palette, Github, Twitter, Mail } from '@letbuyy/ui';
 
 const FOOTER_LINKS = {
     Product: [
@@ -83,8 +83,8 @@ export default function Footer() {
                     <p className="text-xs text-text-subtle">
                         © {new Date().getFullYear()} LetBuyy. All rights reserved.
                     </p>
-                    <p className="text-xs text-text-subtle">
-                        Built with ❤️ in India
+                    <p className="inline-flex items-center gap-1 text-xs text-text-subtle">
+                        Built with <Heart className="h-3.5 w-3.5" aria-hidden="true" /> in India
                     </p>
                 </div>
             </div>

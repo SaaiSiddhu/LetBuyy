@@ -1,7 +1,7 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import Link from 'next/link';
-import { Code2, DollarSign, Users, Zap, BookOpen, Shield } from 'lucide-react';
+import { Code2, DollarSign, Users, Zap, BookOpen, Shield } from '@letbuyy/ui';
 
 export const metadata = {
     title: 'Developer Portal — LetBuyy App Store',

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Full-Screen Layout for Plan Selection
@@ -43,7 +44,7 @@ export default async function SelectPlanLayout({ children, params }: LayoutProps
                         textDecoration: 'none',
                     }}
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
+                    <MaterialIcon name="arrow_back" style={{ fontSize: 20 }} />
                     Settings
                 </Link>
                 <Link
@@ -59,7 +60,7 @@ export default async function SelectPlanLayout({ children, params }: LayoutProps
                         textDecoration: 'none',
                     }}
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>home</span>
+                    <MaterialIcon name="home" style={{ fontSize: 20 }} />
                 </Link>
             </header>
 

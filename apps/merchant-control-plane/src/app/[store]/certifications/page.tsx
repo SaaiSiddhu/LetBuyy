@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Cert {
     id: string; name: string; issuer: string; credential_id: string | null
@@ -69,7 +70,7 @@ export default function CertificationsPage() {
             <div className="products-page-header">
                 <h1>Certifications</h1>
                 <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ name: '', issuer: '', credential_id: '', credential_url: '', issue_date: '', expiry_date: '' }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>Add certification
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />Add certification
                 </button>
             </div>
 
@@ -98,7 +99,7 @@ export default function CertificationsPage() {
                     {items.map((c, i) => (
                         <div key={c.id} style={{ padding: '16px 20px', borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none', display: 'flex', gap: 16 }}>
                             <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-hint)' }}>verified</span>
+                                <MaterialIcon name="verified" style={{ fontSize: 20, color: 'var(--text-hint)' }} />
                             </div>
                             <div style={{ flex: 1 }}>
                                 <div style={{ fontWeight: 600, fontSize: 14 }}>{c.name}</div>
@@ -106,9 +107,9 @@ export default function CertificationsPage() {
                                 <div style={{ fontSize: 12, color: 'var(--text-hint)', marginTop: 4 }}>Issued {fD(c.issue_date)}{c.expiry_date ? ` • Expires ${fD(c.expiry_date)}` : ''}</div>
                             </div>
                             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                                {c.credential_url && <a href={c.credential_url} target="_blank" rel="noopener" style={{ padding: 4, color: 'var(--text-secondary)', display: 'flex' }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>open_in_new</span></a>}
-                                <button onClick={() => startEdit(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span></button>
-                                <button onClick={() => handleDelete(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span></button>
+                                {c.credential_url && <a href={c.credential_url} target="_blank" rel="noopener" style={{ padding: 4, color: 'var(--text-secondary)', display: 'flex' }}><MaterialIcon name="open_in_new" style={{ fontSize: 18 }} /></a>}
+                                <button onClick={() => startEdit(c)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><MaterialIcon name="edit" style={{ fontSize: 18 }} /></button>
+                                <button onClick={() => handleDelete(c.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button>
                             </div>
                         </div>
                     ))}

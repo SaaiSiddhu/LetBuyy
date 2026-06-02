@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface VariantOption {
     name: string
@@ -324,7 +325,7 @@ export default function AddProductPage() {
                 <div className="product-form-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                         <Link href={`/${store}/products`} className="product-form-back">
-                            <span className="material-symbols-outlined">arrow_back</span>
+                            <MaterialIcon name="arrow_back" />
                         </Link>
                         <h1 className="product-form-title">Edit product</h1>
                     </div>
@@ -340,7 +341,7 @@ export default function AddProductPage() {
             <div className="product-form-header">
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                     <Link href={`/${store}/products`} className="product-form-back">
-                        <span className="material-symbols-outlined">arrow_back</span>
+                        <MaterialIcon name="arrow_back" />
                     </Link>
                     <h1 className="product-form-title">{isEditing ? 'Edit product' : 'Add product'}</h1>
                 </div>
@@ -436,8 +437,9 @@ export default function AddProductPage() {
                                         <button
                                             className="product-media-remove"
                                             onClick={() => removeImage(i)}
+                                            aria-label="Remove image"
                                         >
-                                            ✕
+                                            <MaterialIcon name="close" size={14} aria-hidden="true" />
                                         </button>
                                     </div>
                                 ))}
@@ -449,9 +451,7 @@ export default function AddProductPage() {
                             onClick={() => fileInputRef.current?.click()}
                             style={images.length > 0 ? { marginTop: 12 } : undefined}
                         >
-                            <span className="material-symbols-outlined">
-                                {uploading ? 'hourglass_top' : 'cloud_upload'}
-                            </span>
+                            <MaterialIcon name={uploading ? 'hourglass_top' : 'cloud_upload'} />
                             <p>{uploading ? 'Uploading...' : 'Upload new · Select existing'}</p>
                             <p className="hint">Accepts images, videos</p>
                         </div>
@@ -682,7 +682,9 @@ export default function AddProductPage() {
                                     {option.values.map((val, vi) => (
                                         <span key={vi} className="product-variant-tag">
                                             {val}
-                                            <button onClick={() => removeValueFromOption(optIndex, vi)}>✕</button>
+                                            <button onClick={() => removeValueFromOption(optIndex, vi)} aria-label={`Remove ${val}`}>
+                                                <MaterialIcon name="close" size={12} aria-hidden="true" />
+                                            </button>
                                         </span>
                                     ))}
                                 </div>
@@ -782,7 +784,7 @@ export default function AddProductPage() {
                                     marginTop: variantOptions.length > 0 ? 8 : 0
                                 }}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                                <MaterialIcon name="add" style={{ fontSize: 16 }} />
                                 Add another option
                             </button>
                         )}

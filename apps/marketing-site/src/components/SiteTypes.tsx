@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { CheckCircle2 } from '@letbuyy/ui'
 
 // Feature data with benefits (max 3)
 const features = [
@@ -183,10 +184,7 @@ export default function SiteTypes() {
                                 <ul className="feature-benefits">
                                     {feature.benefits.map((benefit) => (
                                         <li key={benefit}>
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                                                <circle cx="10" cy="10" r="10" fill="rgba(167, 139, 250, 0.15)" />
-                                                <path d="M14 7L8.5 12.5L6 10" stroke="#a78bfa" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                                            </svg>
+                                            <CheckCircle2 width={20} height={20} aria-hidden="true" />
                                             {benefit}
                                         </li>
                                     ))}

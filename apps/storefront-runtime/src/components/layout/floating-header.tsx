@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ShoppingBag, Menu, Search, User } from 'lucide-react';
+import { ShoppingBag, Menu, Search, User } from '@letbuyy/ui';
 import { useCart } from '@/context/cart-context';
 
 export default function FloatingHeader() {

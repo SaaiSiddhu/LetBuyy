@@ -1,25 +1,26 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { FileText, Palette, Rocket, Store, type LucideIcon } from '@letbuyy/ui'
 
-const capabilities = [
+const capabilities: Array<{ icon: LucideIcon; title: string; desc: string }> = [
     {
-        icon: '🏪',
+        icon: Store,
         title: 'E-commerce Store',
         desc: 'Sell products online with payments, inventory tracking & automated shipping.',
     },
     {
-        icon: '🎨',
+        icon: Palette,
         title: 'Portfolio',
         desc: 'Showcase your creative work with stunning galleries and project displays.',
     },
     {
-        icon: '📄',
+        icon: FileText,
         title: 'Resume',
         desc: 'Create professional CVs with PDF export and ATS-optimized templates.',
     },
     {
-        icon: '🚀',
+        icon: Rocket,
         title: 'Landing Page',
         desc: 'Build high-converting marketing pages for products and campaigns.',
     },
@@ -71,18 +72,24 @@ export default function Capabilities() {
                     whileInView="visible"
                     viewport={{ once: true, margin: '-50px' }}
                 >
-                    {capabilities.map((item, index) => (
-                        <motion.div
-                            key={index}
-                            className="capability-card"
-                            variants={cardVariants}
-                            whileHover={{ y: -8 }}
-                        >
-                            <div className="capability-icon">{item.icon}</div>
-                            <h3 className="capability-title">{item.title}</h3>
-                            <p className="capability-desc">{item.desc}</p>
-                        </motion.div>
-                    ))}
+                    {capabilities.map((item, index) => {
+                        const Icon = item.icon
+
+                        return (
+                            <motion.div
+                                key={index}
+                                className="capability-card"
+                                variants={cardVariants}
+                                whileHover={{ y: -8 }}
+                            >
+                                <div className="capability-icon">
+                                    <Icon aria-hidden="true" />
+                                </div>
+                                <h3 className="capability-title">{item.title}</h3>
+                                <p className="capability-desc">{item.desc}</p>
+                            </motion.div>
+                        )
+                    })}
                 </motion.div>
             </div>
         </section>

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Heart } from '@letbuyy/ui';
 
 export function Footer() {
     return (
@@ -39,7 +40,9 @@ export function Footer() {
 
             <div className="appstore-footer-bottom">
                 <span>© {new Date().getFullYear()} LetBuyy. All rights reserved.</span>
-                <span>Made with ❤️ in India</span>
+                <span className="inline-flex items-center gap-1">
+                    Made with <Heart className="h-4 w-4" aria-hidden="true" /> in India
+                </span>
             </div>
         </footer>
     );

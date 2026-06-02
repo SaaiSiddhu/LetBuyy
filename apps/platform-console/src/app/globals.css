@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --font-system: Arial, Helvetica, sans-serif;
+  --font-system: var(--font-letbuyy-sans), Arial, Helvetica, sans-serif;
+  --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -10,7 +11,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-system);
-  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  --font-mono: var(--font-mono-premium);
 }
 
 @media (prefers-color-scheme: dark) {

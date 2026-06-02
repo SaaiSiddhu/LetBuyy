@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { BadgeCheck, MaterialIcon, Star } from '@letbuyy/ui'
 
 interface Review {
     id: string
@@ -122,7 +123,13 @@ export default function ReviewsPage() {
 
     const renderStars = (rating: number) => {
         return Array.from({ length: 5 }, (_, i) => (
-            <span key={i} style={{ color: i < rating ? '#f59e0b' : 'var(--border)', fontSize: 14 }}>★</span>
+            <Star
+                key={i}
+                size={14}
+                fill={i < rating ? '#f59e0b' : 'none'}
+                stroke={i < rating ? '#f59e0b' : 'var(--border)'}
+                strokeWidth={i < rating ? 0 : 2}
+            />
         ))
     }
 
@@ -181,7 +188,7 @@ export default function ReviewsPage() {
             {/* Reviews list */}
             {error && reviews.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--danger, #e53e3e)', display: 'block', marginBottom: 12 }}>error</span>
+                    <MaterialIcon name="error" style={{ fontSize: 48, color: 'var(--danger, #e53e3e)', display: 'block', marginBottom: 12 }} />
                     <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: '0 0 8px' }}>Unable to load reviews</p>
                     <p style={{ fontSize: 13, color: 'var(--text-hint)', margin: '0 0 16px' }}>{error}</p>
                     <button
@@ -194,7 +201,7 @@ export default function ReviewsPage() {
                 </div>
             ) : reviews.length === 0 ? (
                 <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 48, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }}>rate_review</span>
+                    <MaterialIcon name="rate_review" style={{ fontSize: 48, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }} />
                     <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>No {filter !== 'all' ? filter : ''} reviews yet</p>
                 </div>
             ) : (
@@ -231,7 +238,9 @@ export default function ReviewsPage() {
                                 <span>
                                     <strong style={{ color: 'var(--text-primary)' }}>{review.customer_name}</strong>
                                     {review.is_verified && (
-                                        <span style={{ color: '#38a169', marginLeft: 4, fontSize: 11 }}>✓ Verified</span>
+                                        <span style={{ color: '#38a169', marginLeft: 4, fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
+                                            <BadgeCheck size={12} aria-hidden="true" /> Verified
+                                        </span>
                                     )}
                                 </span>
                                 <span>·</span>

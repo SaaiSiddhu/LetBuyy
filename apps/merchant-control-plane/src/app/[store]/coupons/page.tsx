@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import type { Coupon as SharedCoupon } from '@letbuyy/shared-types'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type CouponDiscountKind = SharedCoupon['type'] | 'fixed_amount'
 
@@ -166,7 +167,7 @@ export default function CouponsPage() {
                         borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer',
                         display: 'inline-flex', alignItems: 'center', gap: 6
                     }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />
                     Create coupon
                 </button>
             </div>
@@ -299,10 +300,10 @@ export default function CouponsPage() {
                                     <td>
                                         <div style={{ display: 'flex', gap: 4 }}>
                                             <button onClick={() => startEdit(c)} title="Edit" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}>
-                                                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span>
+                                                <MaterialIcon name="edit" style={{ fontSize: 18 }} />
                                             </button>
                                             <button onClick={() => handleDelete(c.id)} title="Delete" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}>
-                                                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span>
+                                                <MaterialIcon name="delete" style={{ fontSize: 18 }} />
                                             </button>
                                         </div>
                                     </td>

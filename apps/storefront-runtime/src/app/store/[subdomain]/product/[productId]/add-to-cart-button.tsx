@@ -2,7 +2,7 @@
 
 import { useCart } from '@/context/cart-context';
 import type { ProductModel } from '@letbuyy/commerce-core';
-import { ShoppingBag } from 'lucide-react';
+import { ShoppingBag } from '@letbuyy/ui';
 import { useState } from 'react';
 
 export default function AddToCartButton({ product }: { product: ProductModel }) {

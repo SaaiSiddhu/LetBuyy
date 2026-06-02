@@ -11,8 +11,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import {
     ArrowLeft, Minus, Plus, ShoppingBag, Heart, Share2,
-    Zap, Truck, ShieldCheck, RefreshCcw, Package, ChevronDown, ChevronUp, Check, Star
-} from 'lucide-react';
+    Zap, Truck, ShieldCheck, RefreshCcw, Package, ChevronDown, ChevronUp, Check, Star, Flame
+} from '@letbuyy/ui';
 
 interface Props {
     product: ProductModel;
@@ -184,8 +184,8 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     </span>
                                 )}
                                 {product.isTrending && (
-                                    <span className="bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow">
-                                        🔥 HOT
+                                    <span className="inline-flex items-center gap-1 bg-orange-500 text-white text-xs font-bold px-2.5 py-1 rounded-md shadow">
+                                        <Flame size={12} aria-hidden="true" /> HOT
                                     </span>
                                 )}
                             </div>

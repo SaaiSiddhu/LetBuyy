@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ShoppingBag, ExternalLink, Download, Star, Calendar, CreditCard } from 'lucide-react';
+import { ShoppingBag, ExternalLink, Download, Star, Calendar, CreditCard } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import { formatPrice } from '@/lib/utils';
 import type { Metadata } from 'next';

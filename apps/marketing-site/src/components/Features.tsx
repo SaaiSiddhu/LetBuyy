@@ -1,46 +1,56 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import {
+    BarChart3,
+    CreditCard,
+    Link2,
+    MousePointerClick,
+    Package,
+    ShieldCheck,
+    Smartphone,
+    type LucideIcon,
+} from '@letbuyy/ui'
 
-const features = [
+const features: Array<{ icon: LucideIcon; title: string; desc: string; span: string }> = [
     {
-        icon: '🎯',
+        icon: MousePointerClick,
         title: 'Drag & Drop Builder',
         desc: 'No coding required. Build beautiful pages with our intuitive visual editor.',
         span: 'span-3',
     },
     {
-        icon: '📱',
+        icon: Smartphone,
         title: 'Mobile-First',
         desc: 'Your site looks stunning on every device, automatically optimized.',
         span: 'span-3',
     },
     {
-        icon: '💳',
+        icon: CreditCard,
         title: 'Indian Payments',
         desc: 'Accept UPI, cards, and wallets via Razorpay & Stripe.',
         span: 'span-2',
     },
     {
-        icon: '📦',
+        icon: Package,
         title: 'Inventory',
         desc: 'Real-time stock tracking with low-stock alerts.',
         span: 'span-2',
     },
     {
-        icon: '📊',
+        icon: BarChart3,
         title: 'Analytics',
         desc: 'Track sales and visitors in real-time.',
         span: 'span-2',
     },
     {
-        icon: '🔗',
+        icon: Link2,
         title: 'Custom Domains',
         desc: 'Use your own domain or get a free *.letbuyy.store subdomain.',
         span: 'span-3',
     },
     {
-        icon: '🔐',
+        icon: ShieldCheck,
         title: 'Enterprise Security',
         desc: 'SSL certificates, secure payments, and data protection built-in.',
         span: 'span-3',
@@ -93,18 +103,24 @@ export default function Features() {
                     whileInView="visible"
                     viewport={{ once: true }}
                 >
-                    {features.map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            className={`feature-card ${feature.span}`}
-                            variants={cardVariants}
-                            whileHover={{ y: -4 }}
-                        >
-                            <div className="feature-icon">{feature.icon}</div>
-                            <h3 className="feature-title">{feature.title}</h3>
-                            <p className="feature-desc">{feature.desc}</p>
-                        </motion.div>
-                    ))}
+                    {features.map((feature) => {
+                        const Icon = feature.icon
+
+                        return (
+                            <motion.div
+                                key={feature.title}
+                                className={`feature-card ${feature.span}`}
+                                variants={cardVariants}
+                                whileHover={{ y: -4 }}
+                            >
+                                <div className="feature-icon">
+                                    <Icon aria-hidden="true" />
+                                </div>
+                                <h3 className="feature-title">{feature.title}</h3>
+                                <p className="feature-desc">{feature.desc}</p>
+                            </motion.div>
+                        )
+                    })}
                 </motion.div>
             </div>
         </section>

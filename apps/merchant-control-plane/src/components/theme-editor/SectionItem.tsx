@@ -1,6 +1,7 @@
 'use client'
 
 import type { SectionEntry } from '@/hooks/useEditorHistory'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface SectionItemProps {
     section: SectionEntry
@@ -31,7 +32,7 @@ export default function SectionItem({
         >
             {/* Drag handle */}
             <span className={`te-section-item-drag ${isPinned ? 'te-section-item-drag--disabled' : ''}`}>
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>drag_indicator</span>
+                <MaterialIcon name="drag_indicator" style={{ fontSize: '16px' }} />
             </span>
 
             {/* Section name */}
@@ -40,7 +41,7 @@ export default function SectionItem({
             {/* Selected indicator */}
             {isSelected && (
                 <span className="te-section-item-indicator">
-                    <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>chevron_left</span>
+                    <MaterialIcon name="chevron_left" style={{ fontSize: '14px' }} />
                 </span>
             )}
 
@@ -51,9 +52,7 @@ export default function SectionItem({
                     onClick={onToggleVisibility}
                     title={section.visible ? 'Hide section' : 'Show section'}
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                        {section.visible ? 'visibility' : 'visibility_off'}
-                    </span>
+                    <MaterialIcon name={section.visible ? 'visibility' : 'visibility_off'} style={{ fontSize: '16px' }} />
                 </button>
 
                 {onDelete && !isPinned && (
@@ -62,7 +61,7 @@ export default function SectionItem({
                         onClick={onDelete}
                         title="Remove section"
                     >
-                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>delete</span>
+                        <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
                     </button>
                 )}
             </div>

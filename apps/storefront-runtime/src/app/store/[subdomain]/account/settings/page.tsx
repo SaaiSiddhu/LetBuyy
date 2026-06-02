@@ -8,7 +8,7 @@ import { useState } from 'react';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import {
     User as UserIcon, Lock, Loader2, Check, Eye, EyeOff, Save,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 
 export default function SettingsPage() {
     const { customer } = useCustomerAuth();

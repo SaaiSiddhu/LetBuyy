@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Lead {
     id: string; full_name: string; email: string; phone: string | null
@@ -79,7 +80,7 @@ export default function LeadsPage() {
                                                 <option value="converted">Converted</option>
                                             </select>
                                         </td>
-                                        <td><button onClick={() => handleDelete(l.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span></button></td>
+                                        <td><button onClick={() => handleDelete(l.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button></td>
                                     </tr>
                                 ))}
                             </tbody>

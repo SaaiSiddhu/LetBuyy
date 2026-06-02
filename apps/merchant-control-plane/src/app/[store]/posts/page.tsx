@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Post {
     id: string; title: string; slug: string; status: 'draft' | 'published' | 'archived'
@@ -74,7 +75,7 @@ export default function PostsPage() {
             <div className="products-page-header">
                 <h1>Blog Posts</h1>
                 <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ title: '', slug: '', excerpt: '', content: '', status: 'draft' }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>New post
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />New post
                 </button>
             </div>
 
@@ -120,8 +121,8 @@ export default function PostsPage() {
                                         <td><span className={`product-status-badge ${p.status === 'published' ? 'active' : p.status}`}><span className="product-status-dot" />{p.status.charAt(0).toUpperCase() + p.status.slice(1)}</span></td>
                                         <td style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{fD(p.published_at || p.created_at)}</td>
                                         <td><div style={{ display: 'flex', gap: 4 }}>
-                                            <button onClick={() => startEdit(p)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span></button>
-                                            <button onClick={() => handleDelete(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span></button>
+                                            <button onClick={() => startEdit(p)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><MaterialIcon name="edit" style={{ fontSize: 18 }} /></button>
+                                            <button onClick={() => handleDelete(p.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button>
                                         </div></td>
                                     </tr>
                                 ))}

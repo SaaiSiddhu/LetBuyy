@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Settings > Plan Page
@@ -132,7 +133,7 @@ export default function PlanSettingsPage() {
                 {/* Trial ends info */}
                 {!hasSubscription && trialEnds && (
                     <div className="plan-settings-info-box">
-                        <span className="material-symbols-outlined">{isTrialExpired ? 'warning' : 'schedule'}</span>
+                        <MaterialIcon name={isTrialExpired ? 'warning' : 'schedule'} />
                         <span>
                             Trial {isTrialExpired ? 'ended' : 'ends'} on{' '}
                             <strong>{trialEnds.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</strong>
@@ -143,7 +144,7 @@ export default function PlanSettingsPage() {
                 {/* Subscription renewal info */}
                 {hasSubscription && subscription.current_period_end && (
                     <div className="plan-settings-info-box">
-                        <span className="material-symbols-outlined">autorenew</span>
+                        <MaterialIcon name="autorenew" />
                         <span>
                             Renews on{' '}
                             <strong>
@@ -156,7 +157,7 @@ export default function PlanSettingsPage() {
                 {/* Promo period info */}
                 {subscription?.promo_ends_at && (
                     <div className="plan-settings-info-box plan-settings-info-box--promo">
-                        <span className="material-symbols-outlined">local_offer</span>
+                        <MaterialIcon name="local_offer" />
                         <span>
                             Promotional pricing active until{' '}
                             <strong>
@@ -174,7 +175,7 @@ export default function PlanSettingsPage() {
                     <ul className="plan-settings-features">
                         {planInfo.features.map((feature, i) => (
                             <li key={i} className="plan-settings-feature">
-                                <span className="material-symbols-outlined">{feature.icon}</span>
+                                <MaterialIcon name={feature.icon} />
                                 <span>{feature.label}</span>
                             </li>
                         ))}
@@ -236,9 +237,9 @@ export default function PlanSettingsPage() {
             {/* Quick link to billing */}
             <div className="plan-settings-links">
                 <Link href={`/${store}/settings/billing`} className="plan-settings-link">
-                    <span className="material-symbols-outlined">receipt_long</span>
+                    <MaterialIcon name="receipt_long" />
                     View billing history
-                    <span className="material-symbols-outlined">arrow_forward</span>
+                    <MaterialIcon name="arrow_forward" />
                 </Link>
             </div>
         </div>

@@ -2,7 +2,7 @@
 
 import { useCart } from '@/context/cart-context';
 import Link from 'next/link';
-import { Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Package } from 'lucide-react';
+import { Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Package } from '@letbuyy/ui';
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';

@@ -8,6 +8,7 @@ import TrialBanner from './TrialBanner'
 import CommandPalette from './CommandPalette'
 import AISidebar from './AISidebar'
 import type { SessionUser } from '@/lib/auth/session'
+import { MaterialIcon } from '@letbuyy/ui'
 
 export interface StoreData {
     id: string
@@ -94,7 +95,7 @@ export default function AdminShell({ store, storeData, user, userStores, childre
                     {/* Draft banner */}
                     {isDraft && (
                         <div className="admin-draft-banner">
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>warning</span>
+                            <MaterialIcon name="warning" style={{ fontSize: '16px' }} />
                             Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
                         </div>
                     )}

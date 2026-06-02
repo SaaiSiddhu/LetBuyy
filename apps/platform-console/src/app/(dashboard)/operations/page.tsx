@@ -1,4 +1,4 @@
-import { AlertTriangle, CheckCircle2, GitBranch, RadioTower, RotateCcw, ShieldAlert } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, GitBranch, RadioTower, RotateCcw, ShieldAlert } from '@letbuyy/ui';
 import { fetchConsoleApi, type ConsoleDataResponse } from '@/lib/console-api';
 
 const OPERATIONS_AUTH_CONTRACT = 'PLATFORM_CONSOLE_API_TOKEN';

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { SectionSchema } from '@/lib/theme-schemas'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface AddSectionModalProps {
     open: boolean
@@ -29,12 +30,12 @@ export default function AddSectionModal({ open, sectionSchemas, existingSectionT
                 <div className="te-modal-header">
                     <h3 className="te-modal-title">Add section</h3>
                     <button className="te-modal-close" onClick={onClose}>
-                        <span className="material-symbols-outlined">close</span>
+                        <MaterialIcon name="close" />
                     </button>
                 </div>
 
                 <div className="te-modal-search">
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--clr-text-secondary)' }}>search</span>
+                    <MaterialIcon name="search" style={{ fontSize: '16px', color: 'var(--clr-text-secondary)' }} />
                     <input
                         type="text"
                         placeholder="Search sections…"
@@ -59,9 +60,7 @@ export default function AddSectionModal({ open, sectionSchemas, existingSectionT
                                         onClick={() => { onAdd(type); onClose() }}
                                     >
                                         <div className="te-modal-section-icon">
-                                            <span className="material-symbols-outlined">
-                                                {getIconForType(type)}
-                                            </span>
+                                            <MaterialIcon name={getIconForType(type)} />
                                         </div>
                                         <div className="te-modal-section-info">
                                             <span className="te-modal-section-name">{schema.name}</span>

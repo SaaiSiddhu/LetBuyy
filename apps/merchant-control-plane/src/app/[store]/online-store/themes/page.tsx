@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import type { ChangeEvent } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Types
@@ -228,7 +229,7 @@ export default function ThemesPage() {
             {/* Page Header */}
             <div className="os-page-header">
                 <h1 className="os-page-title">
-                    <span className="material-symbols-outlined">storefront</span>
+                    <MaterialIcon name="storefront" />
                     Online Store
                 </h1>
                 <div className="os-section-actions">
@@ -238,7 +239,7 @@ export default function ThemesPage() {
                         rel="noopener noreferrer"
                         className="os-btn os-btn-outline"
                     >
-                        <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>visibility</span>
+                        <MaterialIcon name="visibility" style={{ fontSize: '16px' }} />
                         View your store
                     </a>
                 </div>
@@ -247,7 +248,7 @@ export default function ThemesPage() {
             {/* Themes Section Header */}
             <div className="os-section-header">
                 <h2 className="os-section-title">
-                    <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>palette</span>
+                    <MaterialIcon name="palette" style={{ fontSize: '20px' }} />
                     Themes
                 </h2>
             </div>
@@ -288,9 +289,7 @@ export default function ThemesPage() {
 
                         {/* Publish Status Banner */}
                         <div className={`theme-password-banner ${isPublished ? 'theme-status-published' : 'theme-status-draft'}`}>
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                                {isPublished ? 'check_circle' : 'visibility_off'}
-                            </span>
+                            <MaterialIcon name={isPublished ? 'check_circle' : 'visibility_off'} style={{ fontSize: '16px' }} />
                             <span>
                                 {isPublished
                                     ? 'Your store is live and visible to customers'
@@ -309,9 +308,7 @@ export default function ThemesPage() {
                                         </>
                                     ) : (
                                         <>
-                                            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>
-                                                {isPublished ? 'pause_circle' : 'rocket_launch'}
-                                            </span>
+                                            <MaterialIcon name={isPublished ? 'pause_circle' : 'rocket_launch'} style={{ fontSize: '14px' }} />
                                             {isPublished ? 'Unpublish' : 'Publish'}
                                         </>
                                     )}
@@ -347,7 +344,7 @@ export default function ThemesPage() {
                                                 }}
                                             >
                                                 Version {currentTheme.version || '1.0.0'}
-                                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>expand_more</span>
+                                                <MaterialIcon name="expand_more" style={{ fontSize: '14px' }} />
                                             </button>
                                             {versionOpen && (
                                                 <div className="os-dropdown-menu os-dropdown-version">
@@ -377,12 +374,12 @@ export default function ThemesPage() {
                                             setThemeActionsOpen(!themeActionsOpen)
                                         }}
                                     >
-                                        <span className="material-symbols-outlined">more_horiz</span>
+                                        <MaterialIcon name="more_horiz" />
                                     </button>
                                     {themeActionsOpen && (
                                         <div className="os-dropdown-menu theme-actions-menu" onClick={(e) => e.stopPropagation()}>
                                             <button className="os-dropdown-item" type="button" onClick={openThemeEditor}>
-                                                <span className="material-symbols-outlined">edit</span>
+                                                <MaterialIcon name="edit" />
                                                 Edit theme
                                             </button>
                                             <a
@@ -391,7 +388,7 @@ export default function ThemesPage() {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >
-                                                <span className="material-symbols-outlined">visibility</span>
+                                                <MaterialIcon name="visibility" />
                                                 Preview store
                                             </a>
                                             <button
@@ -402,14 +399,14 @@ export default function ThemesPage() {
                                                     setThemeActionsOpen(false)
                                                 }}
                                             >
-                                                <span className="material-symbols-outlined">new_releases</span>
+                                                <MaterialIcon name="new_releases" />
                                                 Version details
                                             </button>
                                         </div>
                                     )}
                                 </div>
                                 <button className="os-btn os-btn-primary theme-edit-button" type="button" onClick={openThemeEditor}>
-                                    <span className="material-symbols-outlined">edit</span>
+                                    <MaterialIcon name="edit" />
                                     Edit theme
                                 </button>
                             </div>
@@ -422,7 +419,7 @@ export default function ThemesPage() {
                 <div className="theme-upload-section">
                     <div className="theme-upload-copy">
                         <div className="theme-upload-icon">
-                            <span className="material-symbols-outlined">upload_file</span>
+                            <MaterialIcon name="upload_file" />
                         </div>
                         <div>
                             <h3 className="theme-upload-title">Upload theme package</h3>
@@ -440,7 +437,7 @@ export default function ThemesPage() {
                             </>
                         ) : (
                             <>
-                                <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>add</span>
+                                <MaterialIcon name="add" style={{ fontSize: '14px' }} />
                                 Upload JSON
                             </>
                         )}
@@ -461,7 +458,7 @@ export default function ThemesPage() {
                 <div className="theme-popular-section">
                     <div className="theme-popular-header">
                         <div className="theme-popular-icon">
-                            <span className="material-symbols-outlined">diamond</span>
+                            <MaterialIcon name="diamond" />
                         </div>
                         <div>
                             <h3 className="theme-popular-title">

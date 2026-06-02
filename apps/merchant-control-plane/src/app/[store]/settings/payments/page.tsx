@@ -2,6 +2,7 @@
 
 import { FormEvent, useCallback, useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type SanitizedPaymentSettings = {
     mode: 'shared' | 'ownAccount'
@@ -137,14 +138,14 @@ export default function PaymentsSettingsPage() {
 
             {error && (
                 <div className="settings-info-banner" style={{ borderColor: 'var(--danger, #e53e3e)' }}>
-                    <span className="material-symbols-outlined">error</span>
+                    <MaterialIcon name="error" />
                     <span>{error}</span>
                 </div>
             )}
 
             {success && (
                 <div className="settings-info-banner">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     <span>{success}</span>
                 </div>
             )}
@@ -164,15 +165,15 @@ export default function PaymentsSettingsPage() {
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: 12, marginBottom: 20 }}>
                     <div className="settings-info-banner" style={{ margin: 0 }}>
-                        <span className="material-symbols-outlined">key</span>
+                        <MaterialIcon name="key" />
                         <span>{razorpay?.key_id || 'No key configured'}</span>
                     </div>
                     <div className="settings-info-banner" style={{ margin: 0 }}>
-                        <span className="material-symbols-outlined">payments</span>
+                        <MaterialIcon name="payments" />
                         <span>{config?.online_payment_enabled ? 'Online payments enabled' : 'Online payments disabled'}</span>
                     </div>
                     <div className="settings-info-banner" style={{ margin: 0 }}>
-                        <span className="material-symbols-outlined">local_shipping</span>
+                        <MaterialIcon name="local_shipping" />
                         <span>{config?.cod_enabled ? 'COD available' : 'COD disabled'}</span>
                     </div>
                 </div>
@@ -215,7 +216,7 @@ export default function PaymentsSettingsPage() {
             </div>
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">shield_lock</span>
+                <MaterialIcon name="shield_lock" />
                 <span>Secrets are sent to the LetBuyy API worker and stored encrypted. The admin UI only receives masked payment settings.</span>
             </div>
         </div>

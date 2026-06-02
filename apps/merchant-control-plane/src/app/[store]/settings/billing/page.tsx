@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Invoice {
     id: string
@@ -128,7 +129,7 @@ export default function BillingSettingsPage() {
                 </div>
             ) : (
                 <div className="settings-info-banner">
-                    <span className="material-symbols-outlined">info</span>
+                    <MaterialIcon name="info" />
                     <span>Billing management will be available once you upgrade from the free trial.</span>
                 </div>
             )}
@@ -138,7 +139,7 @@ export default function BillingSettingsPage() {
                 <h2>Payment method</h2>
                 {paymentMethods.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }}>credit_card</span>
+                        <MaterialIcon name="credit_card" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
                         <p style={{ marginBottom: 12 }}>No payment method on file.</p>
                         <button className="settings-btn-secondary">Add payment method</button>
                     </div>
@@ -146,7 +147,7 @@ export default function BillingSettingsPage() {
                     paymentMethods.map(pm => (
                         <div key={pm.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid var(--border)' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-hint)' }}>credit_card</span>
+                                <MaterialIcon name="credit_card" style={{ fontSize: 20, color: 'var(--text-hint)' }} />
                                 <div>
                                     <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)', textTransform: 'capitalize' }}>{pm.provider}</div>
                                     <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>{pm.detail}</div>
@@ -166,7 +167,7 @@ export default function BillingSettingsPage() {
                 <h2>Billing history</h2>
                 {invoices.length === 0 ? (
                     <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }}>receipt_long</span>
+                        <MaterialIcon name="receipt_long" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
                         <p>No invoices yet.</p>
                     </div>
                 ) : (

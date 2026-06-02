@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle, Loader2, ArrowLeft, XCircle } from 'lucide-react';
+import { CheckCircle, Loader2, ArrowLeft, XCircle } from '@letbuyy/ui';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { CheckCircle, Download, Palette, LayoutDashboard, ArrowRight, Copy, Key } from 'lucide-react';
+import { CheckCircle, Download, Palette, LayoutDashboard, ArrowRight, Copy, Key } from '@letbuyy/ui';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Purchase Complete' };

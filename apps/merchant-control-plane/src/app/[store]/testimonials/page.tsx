@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon, Star } from '@letbuyy/ui'
 
 interface Testimonial {
     id: string
@@ -70,7 +71,18 @@ export default function TestimonialsPage() {
     }
     const startEdit = (t: Testimonial) => { setEditingId(t.id); setFormData({ author_name: t.author_name, author_title: t.author_title || '', author_company: t.author_company || '', content: t.content, rating: t.rating ? String(t.rating) : '5' }); setShowForm(true) }
     const inputStyle: React.CSSProperties = { padding: '10px 14px', borderRadius: 8, border: '1px solid var(--border)', background: 'var(--bg)', color: 'var(--text-primary)', fontSize: 14, width: '100%' }
-    const renderStars = (rating: number | null) => '★'.repeat(rating || 0) + '☆'.repeat(5 - (rating || 0))
+    const renderStars = (rating: number | null) => {
+        const safeRating = rating || 0
+        return Array.from({ length: 5 }, (_, index) => (
+            <Star
+                key={index}
+                size={16}
+                fill={index < safeRating ? '#f59e0b' : 'none'}
+                stroke={index < safeRating ? '#f59e0b' : 'var(--border)'}
+                strokeWidth={index < safeRating ? 0 : 2}
+            />
+        ))
+    }
 
     if (loading) return <div className="setup-dashboard" style={{ padding: '24px 32px' }}><div className="products-page-header"><h1>Testimonials</h1></div><div className="admin-skeleton" style={{ height: 300, borderRadius: 14 }} /></div>
 
@@ -79,7 +91,7 @@ export default function TestimonialsPage() {
             <div className="products-page-header">
                 <h1>Testimonials</h1>
                 <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ author_name: '', author_title: '', author_company: '', content: '', rating: '5' }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>Add testimonial
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />Add testimonial
                 </button>
             </div>
 
@@ -108,7 +120,7 @@ export default function TestimonialsPage() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 16 }}>
                     {items.map(t => (
                         <div key={t.id} className="products-list-card" style={{ padding: 20 }}>
-                            <div style={{ color: '#f59e0b', fontSize: 16, marginBottom: 8, letterSpacing: 2 }}>{renderStars(t.rating)}</div>
+                            <div style={{ display: 'flex', gap: 2, marginBottom: 8 }}>{renderStars(t.rating)}</div>
                             <p style={{ margin: '0 0 14px', fontSize: 14, lineHeight: 1.6, color: 'var(--text-secondary)', fontStyle: 'italic' }}>"{t.content}"</p>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                                 <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>{t.author_name.charAt(0)}</div>
@@ -117,8 +129,8 @@ export default function TestimonialsPage() {
                                     <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>{[t.author_title, t.author_company].filter(Boolean).join(' • ')}</div>
                                 </div>
                                 <div style={{ marginLeft: 'auto', display: 'flex', gap: 4 }}>
-                                    <button onClick={() => startEdit(t)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span></button>
-                                    <button onClick={() => handleDelete(t.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span></button>
+                                    <button onClick={() => startEdit(t)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><MaterialIcon name="edit" style={{ fontSize: 18 }} /></button>
+                                    <button onClick={() => handleDelete(t.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button>
                                 </div>
                             </div>
                         </div>

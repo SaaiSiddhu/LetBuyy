@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Check } from '@letbuyy/ui'
 
 export default function PricingPage() {
     return (
@@ -93,7 +94,7 @@ function PricingCard({
             <ul className="mt-6 space-y-3">
                 {features.map((feature) => (
                     <li key={feature} className="flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                        <span className="text-emerald-500">✓</span>
+                        <Check className="h-4 w-4 text-emerald-500" aria-hidden="true" />
                         {feature}
                     </li>
                 ))}

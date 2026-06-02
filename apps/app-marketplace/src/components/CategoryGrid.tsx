@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { MaterialIcon, type MaterialIconName } from '@letbuyy/ui';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 
 export function CategoryGrid() {
@@ -10,7 +11,7 @@ export function CategoryGrid() {
                     href={`/categories/${cat.slug}`}
                     className="category-card"
                 >
-                    <span className="category-card__icon">{cat.icon}</span>
+                    <MaterialIcon name={(cat.icon ?? 'category') as MaterialIconName} className="category-card__icon" />
                     <span className="category-card__name">{cat.name}</span>
                 </Link>
             ))}
@@ -20,16 +21,16 @@ export function CategoryGrid() {
 
 // Compact version showing only group headers
 export function CategoryGroupGrid() {
-    const groupIcons: Record<string, string> = {
-        Products: '📦',
-        Selling: '💳',
-        Orders: '🚚',
-        Marketing: '📧',
-        Conversion: '⭐',
-        Design: '🏗️',
-        Support: '💬',
-        Analytics: '📊',
-        Finance: '🧾',
+    const groupIcons: Record<string, MaterialIconName> = {
+        Products: 'inventory_2',
+        Selling: 'payments',
+        Orders: 'local_shipping',
+        Marketing: 'mail',
+        Conversion: 'star',
+        Design: 'web_asset',
+        Support: 'chat',
+        Analytics: 'analytics',
+        Finance: 'receipt_long',
     };
 
     const groups = Array.from(new Set(APP_CATEGORIES.map(c => c.group).filter((group): group is string => Boolean(group))));
@@ -42,7 +43,7 @@ export function CategoryGroupGrid() {
                     href={`/categories/${APP_CATEGORIES.find(c => c.group === group)!.slug}`}
                     className="category-card"
                 >
-                    <span className="category-card__icon">{groupIcons[group] || '📁'}</span>
+                    <MaterialIcon name={groupIcons[group] || 'folder'} className="category-card__icon" />
                     <span className="category-card__name">{group}</span>
                     <span className="category-card__count">
                         {APP_CATEGORIES.filter(c => c.group === group).length} categories

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { Sparkles } from '@letbuyy/ui'
 
 export default function HeroSection() {
     return (
@@ -6,7 +7,8 @@ export default function HeroSection() {
             <div className="container hero-content">
                 {/* Badge */}
                 <div className="hero-badge">
-                    ✨ 14-day free trial • No credit card required
+                    <Sparkles aria-hidden="true" />
+                    14-day free trial • No credit card required
                 </div>
 
                 {/* Title */}

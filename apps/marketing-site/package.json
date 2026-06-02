@@ -13,6 +13,7 @@
   "dependencies": {
     "@gsap/react": "^2.1.2",
     "@letbuyy/api-types": "workspace:*",
+    "@letbuyy/ui": "workspace:*",
     "@letbuyy/utils": "workspace:*",
     "framer-motion": "^12.33.0",
     "gsap": "^3.14.2",

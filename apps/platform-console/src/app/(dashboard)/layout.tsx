@@ -9,7 +9,7 @@ import {
     Shield,
     Store,
     Users,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import { requireConsoleSession } from '@/lib/console-auth-server';
 
 export default async function DashboardLayout({

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface AnalyticsData {
     totalOrders: number
@@ -157,9 +158,7 @@ function AnalyticsCard({ title, value, icon }: { title: string; value: string; i
             padding: '20px 24px',
         }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--text-hint)' }}>
-                    {icon}
-                </span>
+                <MaterialIcon name={icon} style={{ fontSize: 18, color: 'var(--text-hint)' }} />
                 <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>{title}</span>
             </div>
             <p style={{ fontSize: 24, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>{value}</p>

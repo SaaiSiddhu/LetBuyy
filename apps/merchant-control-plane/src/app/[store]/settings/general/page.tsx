@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
 import { DEFAULT_ADMIN_LOCALE, getAdminLocaleOptions, normalizeAdminLocale } from '@/lib/i18n/admin-locales'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface GeneralData {
     id: string
@@ -118,7 +119,7 @@ export default function GeneralSettingsPage() {
 
             {success && (
                 <div className="settings-toast success">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     Settings saved successfully.
                 </div>
             )}

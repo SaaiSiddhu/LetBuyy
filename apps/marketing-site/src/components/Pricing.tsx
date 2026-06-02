@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { Check } from '@letbuyy/ui'
 
 const plans = [
     {
@@ -133,7 +134,7 @@ export default function Pricing() {
                             <ul className="pricing-features">
                                 {plan.features.map((feature, i) => (
                                     <li key={i}>
-                                        <span className="pricing-check">✓</span>
+                                        <Check className="pricing-check" aria-hidden="true" />
                                         {feature}
                                     </li>
                                 ))}

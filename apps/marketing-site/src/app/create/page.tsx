@@ -2,12 +2,13 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import { Check, FileText, MaterialIcon, Palette, Rocket, Store, X } from '@letbuyy/ui'
 
 const siteTypes = [
-    { id: 'store', title: 'E-commerce Store', description: 'Sell products with cart, checkout, and payments', icon: '🛍️' },
-    { id: 'portfolio', title: 'Portfolio', description: 'Showcase your projects and skills', icon: '🎨' },
-    { id: 'resume', title: 'Resume / CV', description: 'Professional resume with PDF export', icon: '📄' },
-    { id: 'landing', title: 'Landing Page', description: 'Marketing page with forms and analytics', icon: '🚀' },
+    { id: 'store', title: 'E-commerce Store', description: 'Sell products with cart, checkout, and payments', icon: Store },
+    { id: 'portfolio', title: 'Portfolio', description: 'Showcase your projects and skills', icon: Palette },
+    { id: 'resume', title: 'Resume / CV', description: 'Professional resume with PDF export', icon: FileText },
+    { id: 'landing', title: 'Landing Page', description: 'Marketing page with forms and analytics', icon: Rocket },
 ]
 
 function getApiBaseUrl(): string {
@@ -111,24 +112,28 @@ export default function CreateStorePage() {
                             What are you building?
                         </h2>
                         <div className="grid gap-4 sm:grid-cols-2">
-                            {siteTypes.map((type) => (
-                                <button
-                                    key={type.id}
-                                    onClick={() => {
-                                        setSiteType(type.id)
-                                        setStep(2)
-                                    }}
-                                    className={`flex flex-col items-center gap-2 rounded-xl border p-6 text-center transition-all
-                                        ${siteType === type.id
-                                            ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                                            : 'border-zinc-200 bg-zinc-50 hover:border-blue-300 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-zinc-600'
-                                        }`}
-                                >
-                                    <span className="text-3xl">{type.icon}</span>
-                                    <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{type.title}</h3>
-                                    <p className="text-xs text-zinc-600 dark:text-zinc-400">{type.description}</p>
-                                </button>
-                            ))}
+                            {siteTypes.map((type) => {
+                                const Icon = type.icon
+
+                                return (
+                                    <button
+                                        key={type.id}
+                                        onClick={() => {
+                                            setSiteType(type.id)
+                                            setStep(2)
+                                        }}
+                                        className={`flex flex-col items-center gap-2 rounded-xl border p-6 text-center transition-all
+                                            ${siteType === type.id
+                                                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                                                : 'border-zinc-200 bg-zinc-50 hover:border-blue-300 dark:border-zinc-700 dark:bg-zinc-800 dark:hover:border-zinc-600'
+                                            }`}
+                                    >
+                                        <Icon className="h-8 w-8" aria-hidden="true" />
+                                        <h3 className="font-semibold text-zinc-900 dark:text-zinc-50">{type.title}</h3>
+                                        <p className="text-xs text-zinc-600 dark:text-zinc-400">{type.description}</p>
+                                    </button>
+                                )
+                            })}
                         </div>
                     </>
                 )}
@@ -175,10 +180,16 @@ export default function CreateStorePage() {
                                     </span>
                                 </div>
                                 {subdomainAvailable === true && (
-                                    <p className="mt-1 text-xs text-emerald-600">✓ Available</p>
+                                    <p className="mt-1 inline-flex items-center gap-1 text-xs text-emerald-600">
+                                        <Check className="h-3 w-3" aria-hidden="true" />
+                                        Available
+                                    </p>
                                 )}
                                 {subdomainAvailable === false && (
-                                    <p className="mt-1 text-xs text-red-600">✗ Already taken</p>
+                                    <p className="mt-1 inline-flex items-center gap-1 text-xs text-red-600">
+                                        <X className="h-3 w-3" aria-hidden="true" />
+                                        Already taken
+                                    </p>
                                 )}
                             </div>
                         </div>
@@ -195,7 +206,12 @@ export default function CreateStorePage() {
                                 disabled={!storeName || !subdomain || subdomainAvailable === false || loading}
                                 className="flex-1 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700 disabled:opacity-50"
                             >
-                                {loading ? 'Creating...' : 'Create Site →'}
+                                {loading ? 'Creating...' : (
+                                    <span className="inline-flex items-center justify-center gap-1">
+                                        Create Site
+                                        <MaterialIcon name="arrow_forward" />
+                                    </span>
+                                )}
                             </button>
                         </div>
                     </>

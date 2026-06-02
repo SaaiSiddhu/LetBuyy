@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Notification {
     id: string
@@ -83,9 +84,7 @@ export default function NotificationsPanel() {
                                 className={`admin-notification-item ${notif.unread ? 'unread' : ''}`}
                             >
                                 <div className="admin-notification-icon">
-                                    <span className="material-symbols-outlined">
-                                        {notif.icon}
-                                    </span>
+                                    <MaterialIcon name={notif.icon} />
                                 </div>
                                 <div className="admin-notification-content">
                                     <div className="admin-notification-title">
@@ -104,9 +103,7 @@ export default function NotificationsPanel() {
                 </>
             ) : (
                 <div className="admin-notifications-empty">
-                    <span className="material-symbols-outlined">
-                        notifications_none
-                    </span>
+                    <MaterialIcon name="notifications_none" />
                     <p>All caught up!</p>
                 </div>
             )}

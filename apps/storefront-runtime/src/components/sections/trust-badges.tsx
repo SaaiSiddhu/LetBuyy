@@ -16,7 +16,7 @@ import {
     Truck,
     Zap,
     type LucideIcon,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import type { SectionModel } from '@letbuyy/theme-engine';
 
 const ICON_MAP: Record<string, LucideIcon> = {

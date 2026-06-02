@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Search, Moon, Sun, Package } from 'lucide-react';
+import { Search, Moon, Sun, Package } from '@letbuyy/ui';
 import { useEffect, useState } from 'react';
 
 export function Header() {

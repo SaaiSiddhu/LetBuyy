@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface TrialBannerProps {
     trialEndsAt: string | null
@@ -33,23 +34,21 @@ export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerPro
                 <span className="admin-trial-toast-title">
                     🎉 {daysLeft} day{daysLeft !== 1 ? 's' : ''} left in your trial
                 </span>
-                <span className="material-symbols-outlined" style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
-                    <span
+                <span style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                    <MaterialIcon
+                        name="expand_less"
                         className={`admin-trial-toast-chevron ${collapsed ? 'collapsed' : ''}`}
                         style={{ fontSize: '20px', color: 'var(--text-hint)' }}
-                    >
-                        expand_less
-                    </span>
-                    <span
+                    />
+                    <MaterialIcon
+                        name="close"
                         onClick={(e) => {
                             e.stopPropagation()
                             setDismissed(true)
                         }}
                         style={{ fontSize: '18px', color: 'var(--text-hint)', cursor: 'pointer' }}
-                        title="Dismiss"
-                    >
-                        close
-                    </span>
+                        aria-label="Dismiss"
+                    />
                 </span>
             </div>
 

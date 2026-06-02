@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface MediaItem {
     id: string
@@ -70,16 +71,14 @@ export default function GalleryPage() {
                                     {fileUrl && isImage(fileType) ? (
                                         <img src={fileUrl} alt={m.alt_text || fileName} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     ) : (
-                                        <span className="material-symbols-outlined" style={{ fontSize: 36, color: 'var(--text-hint)' }}>
-                                            {fileType.includes('video') ? 'movie' : fileType.includes('pdf') ? 'picture_as_pdf' : 'insert_drive_file'}
-                                        </span>
+                                        <MaterialIcon name={fileType.includes('video') ? 'movie' : fileType.includes('pdf') ? 'picture_as_pdf' : 'insert_drive_file'} style={{ fontSize: 36, color: 'var(--text-hint)' }} />
                                     )}
                                 </div>
                                 <div style={{ padding: '10px 12px' }}>
                                     <div style={{ fontSize: 13, fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }} title={fileName}>{fileName}</div>
                                     <div style={{ fontSize: 11, color: 'var(--text-hint)', marginTop: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                         <span>{fmtSize(fileSize)}</span>
-                                        <button onClick={() => handleDelete(m.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 2 }}><span className="material-symbols-outlined" style={{ fontSize: 16 }}>delete</span></button>
+                                        <button onClick={() => handleDelete(m.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 2 }}><MaterialIcon name="delete" style={{ fontSize: 16 }} /></button>
                                     </div>
                                 </div>
                             </div>

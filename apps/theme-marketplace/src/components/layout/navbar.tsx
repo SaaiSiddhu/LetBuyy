@@ -7,7 +7,7 @@ import {
     LayoutDashboard, LayoutGrid, Tag, Sparkles, ArrowRight, Bell, Settings,
     Download, Star, LogOut, User as UserIcon, CreditCard, Package,
     BookOpen, MessageCircle, Flame, ChevronDown, Command,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import { useTheme } from '@/components/theme-provider';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';

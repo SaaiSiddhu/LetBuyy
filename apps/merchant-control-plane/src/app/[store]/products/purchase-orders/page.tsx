@@ -1,5 +1,7 @@
 'use client'
 
+import { MaterialIcon } from '@letbuyy/ui'
+
 export default function PurchaseOrdersPage() {
     return (
         <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
@@ -8,9 +10,7 @@ export default function PurchaseOrdersPage() {
             </div>
 
             <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                <span className="material-symbols-outlined" style={{
-                    fontSize: 48, color: 'var(--text-hint)', marginBottom: 16
-                }}>receipt_long</span>
+                <MaterialIcon name="receipt_long" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
                 <h2 style={{
                     fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
                 }}>Manage your purchase orders</h2>

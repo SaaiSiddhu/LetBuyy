@@ -6,7 +6,7 @@ import { AppCard } from '@/components/AppCard';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
-import { Search } from 'lucide-react';
+import { Search } from '@letbuyy/ui';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 function getRating(app: MarketplaceApp): number {
@@ -157,7 +157,9 @@ function SearchContent() {
 
                         {!loading && results.length === 0 && (
                             <div className="empty-state">
-                                <div className="empty-state-icon">🔍</div>
+                                <div className="empty-state-icon">
+                                    <Search size={32} aria-hidden="true" />
+                                </div>
                                 <h3>No apps found</h3>
                                 <p>Try different keywords or browse our categories.</p>
                             </div>

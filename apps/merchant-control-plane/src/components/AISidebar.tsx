@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import type { StoreData } from './AdminShell'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface AISidebarProps {
     store: string
@@ -175,7 +176,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                 {
                     role: 'assistant',
                     content:
-                        "AI-powered responses are coming soon! We're building an intelligent assistant that will help you manage your store, write product descriptions, and optimize your setup. Stay tuned! 🚀",
+                        "AI-powered responses are coming soon. We're building an intelligent assistant that will help you manage your store, write product descriptions, and optimize your setup. Stay tuned.",
                 },
             ])
         }, 500)
@@ -188,14 +189,12 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
             {/* Header */}
             <div className="admin-ai-panel-header">
                 <div className="admin-ai-panel-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>
-                        auto_awesome
-                    </span>
+                    <MaterialIcon name="auto_awesome" style={{ fontSize: '18px', color: 'var(--primary)' }} />
                     LetBuyy AI
                 </div>
                 <div className="admin-ai-panel-actions">
                     <button onClick={onClose} title="Close">
-                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>close</span>
+                        <MaterialIcon name="close" style={{ fontSize: '18px' }} />
                     </button>
                 </div>
             </div>
@@ -371,9 +370,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                             onClick={handleSend}
                             disabled={!input.trim()}
                         >
-                            <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>
-                                arrow_upward
-                            </span>
+                            <MaterialIcon name="arrow_upward" style={{ fontSize: '16px' }} />
                         </button>
                     </div>
                 </div>

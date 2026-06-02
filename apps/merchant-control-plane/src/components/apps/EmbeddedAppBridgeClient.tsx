@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { AdminAppBridgeSession } from '@letbuyy/shared-types'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface EmbeddedAppBridgeClientProps {
     session: AdminAppBridgeSession
@@ -194,7 +195,7 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
                     <h1>{session.embed.title}</h1>
                 </div>
                 <div className={`admin-app-embed__status ${isReady ? 'ready' : ''}`}>
-                    <span className="material-symbols-outlined">{isReady ? 'verified' : 'sync'}</span>
+                    <MaterialIcon name={isReady ? 'verified' : 'sync'} />
                     {isReady ? 'Bridge connected' : 'Connecting'}
                 </div>
             </header>

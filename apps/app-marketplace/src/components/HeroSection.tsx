@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Star, Download } from 'lucide-react';
+import { Star, Download } from '@letbuyy/ui';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 interface HeroSectionProps {

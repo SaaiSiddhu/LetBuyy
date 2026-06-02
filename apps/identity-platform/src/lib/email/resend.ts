@@ -193,7 +193,7 @@ export async function sendStoreCreatedEmail(
         </div>
 
         <div style="text-align: center; margin-bottom: 24px;">
-          <div style="width: 56px; height: 56px; background: #f0fdf4; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px;">✓</div>
+          <div style="width: 56px; height: 56px; background: #f0fdf4; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px;">OK</div>
         </div>
 
         <h2 style="font-size: 20px; font-weight: 600; color: #111; margin: 0 0 8px; text-align: center;">Your ${typeLabel} is Ready! 🎉</h2>
@@ -273,7 +273,7 @@ export async function sendStoreCreationFailedEmail(
         </div>
 
         <div style="text-align: center; margin-bottom: 24px;">
-          <div style="width: 56px; height: 56px; background: #fef2f2; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; color: #ef4444;">✕</div>
+          <div style="width: 56px; height: 56px; background: #fef2f2; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 24px; color: #ef4444;">X</div>
         </div>
 
         <h2 style="font-size: 20px; font-weight: 600; color: #111; margin: 0 0 8px; text-align: center;">Store Creation Failed</h2>
@@ -314,7 +314,7 @@ export async function sendNewDeviceLoginEmail(
 
   return sendEmail({
     to: email,
-    subject: '🔐 New sign-in to your LetBuyy account',
+    subject: 'New sign-in to your LetBuyy account',
     html: `
       <div style="max-width: 480px; margin: 0 auto; font-family: -apple-system, system-ui, 'Segoe UI', sans-serif; padding: 40px 20px;">
         <div style="text-align: center; margin-bottom: 32px;">

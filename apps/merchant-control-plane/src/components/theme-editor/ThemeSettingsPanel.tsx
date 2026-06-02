@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import SchemaFormRenderer from './SchemaFormRenderer'
 import type { ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface ThemeSettingsPanelProps {
     themeSettings: Record<string, unknown>
@@ -30,13 +31,9 @@ export default function ThemeSettingsPanel({ themeSettings, settingsSchema, onSe
                                 className={`te-theme-group-toggle ${isExpanded ? 'te-theme-group-toggle--open' : ''}`}
                                 onClick={() => setExpandedGroup(isExpanded ? null : groupKey)}
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>
-                                    {groupKey === 'colors' ? 'palette' : groupKey === 'typography' ? 'text_fields' : groupKey === 'layout' ? 'dashboard' : groupKey === 'header' ? 'web_asset' : 'view_stream'}
-                                </span>
+                                <MaterialIcon name={groupKey === 'colors' ? 'palette' : groupKey === 'typography' ? 'text_fields' : groupKey === 'layout' ? 'dashboard' : groupKey === 'header' ? 'web_asset' : 'view_stream'} style={{ fontSize: '18px' }} />
                                 <span className="te-theme-group-label">{group.label}</span>
-                                <span className="material-symbols-outlined te-theme-group-arrow" style={{ fontSize: '16px' }}>
-                                    {isExpanded ? 'expand_less' : 'expand_more'}
-                                </span>
+                                <MaterialIcon name={isExpanded ? 'expand_less' : 'expand_more'} className="te-theme-group-arrow" style={{ fontSize: '16px' }} />
                             </button>
 
                             {isExpanded && (

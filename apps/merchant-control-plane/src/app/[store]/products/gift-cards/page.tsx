@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface GiftCard {
     id: string
@@ -125,9 +126,7 @@ export default function GiftCardsPage() {
 
             {giftCards.length === 0 && !showCreate ? (
                 <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                    <span className="material-symbols-outlined" style={{
-                        fontSize: 48, color: 'var(--text-hint)', marginBottom: 16
-                    }}>card_giftcard</span>
+                    <MaterialIcon name="card_giftcard" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
                     <h2 style={{
                         fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
                     }}>Sell or issue gift cards</h2>

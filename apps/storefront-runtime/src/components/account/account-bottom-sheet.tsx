@@ -12,7 +12,7 @@ import {
     X, User, Mail, Lock, Eye, EyeOff,
     Package, Heart, MapPin, Settings, LogOut,
     ArrowLeft, Loader2, ShoppingBag,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import Link from 'next/link';
 

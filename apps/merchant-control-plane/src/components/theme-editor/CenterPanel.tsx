@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef } from 'react'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface CenterPanelProps {
     storeName: string
@@ -73,7 +74,7 @@ export default function CenterPanel({
                         <span className="te-preview-dot te-preview-dot--green" />
                     </div>
                     <div className="te-preview-url-bar">
-                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>lock</span>
+                        <MaterialIcon name="lock" style={{ fontSize: '14px' }} />
                         <span className="te-preview-url">{storeName}.letbuyy.store</span>
                     </div>
                 </div>

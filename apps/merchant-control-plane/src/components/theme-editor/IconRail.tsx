@@ -1,5 +1,7 @@
 'use client'
 
+import { MaterialIcon } from '@letbuyy/ui'
+
 interface IconRailProps {
     activePanel: 'sections' | 'themeSettings'
     viewport: 'desktop' | 'tablet' | 'mobile'
@@ -23,7 +25,7 @@ export default function IconRail({ activePanel, viewport, onPanelChange, onViewp
                 onClick={() => onPanelChange('sections')}
                 title="Sections"
             >
-                <span className="material-symbols-outlined">view_agenda</span>
+                <MaterialIcon name="view_agenda" />
                 <span className="te-icon-rail-label">Sections</span>
             </button>
 
@@ -32,7 +34,7 @@ export default function IconRail({ activePanel, viewport, onPanelChange, onViewp
                 onClick={() => onPanelChange('themeSettings')}
                 title="Theme settings"
             >
-                <span className="material-symbols-outlined">palette</span>
+                <MaterialIcon name="palette" />
                 <span className="te-icon-rail-label">Theme</span>
             </button>
 
@@ -43,7 +45,7 @@ export default function IconRail({ activePanel, viewport, onPanelChange, onViewp
                 onClick={viewportCycle}
                 title={`Switch viewport (${viewport})`}
             >
-                <span className="material-symbols-outlined">{viewportIcon}</span>
+                <MaterialIcon name={viewportIcon} />
                 <span className="te-icon-rail-label">{viewport.charAt(0).toUpperCase() + viewport.slice(1)}</span>
             </button>
         </nav>

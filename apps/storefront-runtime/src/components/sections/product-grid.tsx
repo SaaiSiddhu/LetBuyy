@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { SectionModel, ProductGridSettings, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ProductModel } from '@letbuyy/commerce-core';
-import { ArrowRight, ShoppingBag, Heart } from 'lucide-react';
+import { ArrowRight, ShoppingBag, Heart } from '@letbuyy/ui';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';

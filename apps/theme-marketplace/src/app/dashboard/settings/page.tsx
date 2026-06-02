@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { User, Bell, Shield, CreditCard, Mail, Globe, Moon, Sun, Save, Check } from 'lucide-react';
+import { User, Bell, Shield, CreditCard, Mail, Globe, Moon, Sun, Save, Check } from '@letbuyy/ui';
 import { cn } from '@/lib/utils';
 
 export default function SettingsPage() {

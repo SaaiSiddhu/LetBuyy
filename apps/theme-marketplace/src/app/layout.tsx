@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { cookies } from 'next/headers';
+import localFont from 'next/font/local';
 import './globals.css';
 import Navbar from '@/components/layout/navbar';
 import Footer from '@/components/layout/footer';
@@ -7,6 +8,29 @@ import ThemeProvider from '@/components/theme-provider';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
 import { DesignSystemRoot } from '@letbuyy/ui';
+
+const letbuyySans = localFont({
+    src: '../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2',
+    variable: '--font-letbuyy-sans',
+    display: 'swap',
+    weight: '100 900',
+});
+
+const letbuyyDisplay = localFont({
+    src: '../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2',
+    variable: '--font-letbuyy-display',
+    display: 'swap',
+    weight: '100 900',
+});
+
+const letbuyyMono = localFont({
+    src: '../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2',
+    variable: '--font-letbuyy-mono',
+    display: 'swap',
+    weight: '100 900',
+});
+
+const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
 
 export const metadata: Metadata = {
     title: {
@@ -49,7 +73,7 @@ export default async function RootLayout({
     );
 
     return (
-        <html lang="en" suppressHydrationWarning>
+        <html lang="en" className={fontVariables} suppressHydrationWarning>
             <head>
                 {/* Inline script to prevent flash of wrong theme */}
                 <script

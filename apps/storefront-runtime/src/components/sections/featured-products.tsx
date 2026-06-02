@@ -7,7 +7,7 @@ import type { ProductModel } from '@letbuyy/commerce-core';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, ShoppingBag, Heart, Star } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ShoppingBag, Heart, Star } from '@letbuyy/ui';
 import { useState, useRef } from 'react';
 import { useCart } from '@/context/cart-context';
 

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface CheckoutSettings {
     contact_method: 'email' | 'phone' | 'both'
@@ -86,7 +87,7 @@ export default function CheckoutSettingsPage() {
 
             {success && (
                 <div className="settings-toast success">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     Checkout settings saved successfully.
                 </div>
             )}
@@ -178,7 +179,7 @@ export default function CheckoutSettingsPage() {
             </div>
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">info</span>
+                <MaterialIcon name="info" />
                 <span>These settings control how customers interact with your checkout process.</span>
             </div>
 

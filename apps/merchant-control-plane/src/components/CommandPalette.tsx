@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface CommandPaletteProps {
     store: string
@@ -133,7 +134,7 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
             <div className="admin-cmd-modal" onClick={(e) => e.stopPropagation()}>
                 {/* Search input */}
                 <div className="admin-cmd-input-wrapper">
-                    <span className="material-symbols-outlined">search</span>
+                    <MaterialIcon name="search" />
                     <input
                         ref={inputRef}
                         className="admin-cmd-input"
@@ -145,7 +146,7 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
                     />
                     {/* Mobile close button */}
                     <button className="admin-cmd-close-mobile" onClick={onClose}>
-                        <span className="material-symbols-outlined">close</span>
+                        <MaterialIcon name="close" />
                     </button>
                 </div>
 
@@ -166,7 +167,7 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
                                             onMouseEnter={() => setHighlighted(idx)}
                                             onClick={() => handleSelect(item)}
                                         >
-                                            <span className="material-symbols-outlined">{item.icon}</span>
+                                            <MaterialIcon name={item.icon} />
                                             <span className="admin-cmd-item-label">{item.label}</span>
                                             {item.shortcut && (
                                                 <span className="admin-cmd-item-path">{item.shortcut}</span>

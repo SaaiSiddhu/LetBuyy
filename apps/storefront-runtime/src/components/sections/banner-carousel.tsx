@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import Link from 'next/link';
-import { ChevronLeft, ChevronRight, ArrowRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ArrowRight } from '@letbuyy/ui';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { ThemeSettings } from '@letbuyy/theme-engine';
 

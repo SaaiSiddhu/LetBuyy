@@ -1,6 +1,30 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { DesignSystemRoot } from "@letbuyy/ui";
 import "./globals.css";
+
+const letbuyySans = localFont({
+  src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2",
+  variable: "--font-letbuyy-sans",
+  display: "swap",
+  weight: "100 900",
+});
+
+const letbuyyDisplay = localFont({
+  src: "../../../../packages/typescript/ui/assets/fonts/geist-sans-latin-ext.woff2",
+  variable: "--font-letbuyy-display",
+  display: "swap",
+  weight: "100 900",
+});
+
+const letbuyyMono = localFont({
+  src: "../../../../packages/typescript/ui/assets/fonts/geist-mono-latin.woff2",
+  variable: "--font-letbuyy-mono",
+  display: "swap",
+  weight: "100 900",
+});
+
+const fontVariables = `${letbuyySans.variable} ${letbuyyDisplay.variable} ${letbuyyMono.variable}`;
 
 export const metadata: Metadata = {
   title: "LetBuyy Admin",
@@ -14,7 +38,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={fontVariables} suppressHydrationWarning>
       <head>
         {/* Theme flash prevention — synced with accounts app */}
         <script
@@ -38,10 +62,6 @@ export default function RootLayout({
         <style suppressHydrationWarning dangerouslySetInnerHTML={{
           __html: `html { background: #FFFFFF; } html.dark { background: #0A0F1A; }`
         }} />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap"
-        />
       </head>
       <body className="antialiased">
         <DesignSystemRoot surface="admin">

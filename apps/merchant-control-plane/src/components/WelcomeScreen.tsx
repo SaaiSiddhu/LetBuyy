@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface WelcomeScreenProps {
     store: string
@@ -72,7 +73,7 @@ export default function WelcomeScreen({ store, storeName, siteType }: WelcomeScr
             <div className="admin-welcome-cards">
                 <div className="admin-welcome-card">
                     <div className="admin-welcome-card-image">
-                        <span className="material-symbols-outlined">storefront</span>
+                        <MaterialIcon name="storefront" />
                     </div>
                     <h3>Customize your online {siteType}</h3>
                     <p>Pick a theme, add your logo, and make it uniquely yours.</p>
@@ -85,9 +86,7 @@ export default function WelcomeScreen({ store, storeName, siteType }: WelcomeScr
 
                 <div className="admin-welcome-card">
                     <div className="admin-welcome-card-image">
-                        <span className="material-symbols-outlined">
-                            {siteType === 'store' ? 'shopping_bag' : 'add_circle'}
-                        </span>
+                        <MaterialIcon name={siteType === 'store' ? 'shopping_bag' : 'add_circle'} />
                     </div>
                     <h3>
                         {siteType === 'store'
@@ -122,12 +121,7 @@ export default function WelcomeScreen({ store, storeName, siteType }: WelcomeScr
                         style={{ textDecoration: 'none' }}
                     >
                         <div className="admin-welcome-step-icons">
-                            <span
-                                className="material-symbols-outlined"
-                                style={{ fontSize: '20px', color: 'var(--primary)' }}
-                            >
-                                {step.icon}
-                            </span>
+                            <MaterialIcon name={step.icon} style={{ fontSize: '20px', color: 'var(--primary)' }} />
                         </div>
                         <h4>{step.title}</h4>
                         <p>{step.desc}</p>
@@ -137,9 +131,7 @@ export default function WelcomeScreen({ store, storeName, siteType }: WelcomeScr
 
             {/* Helpful hint */}
             <div className="admin-welcome-hint">
-                <span className="material-symbols-outlined" style={{ fontSize: '18px', color: 'var(--primary)' }}>
-                    tips_and_updates
-                </span>
+                <MaterialIcon name="tips_and_updates" style={{ fontSize: '18px', color: 'var(--primary)' }} />
                 <span>
                     💡 Tip: Press <kbd style={{
                         padding: '2px 6px',

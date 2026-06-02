@@ -4,6 +4,7 @@ import { useState } from 'react'
 import SectionItem from './SectionItem'
 import type { SectionEntry } from '@/hooks/useEditorHistory'
 import type { SectionSchema } from '@/lib/theme-schemas'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface LeftSidebarProps {
     headerSection: SectionEntry
@@ -44,7 +45,7 @@ export default function LeftSidebar({
 
             {/* Search */}
             <div className="te-left-sidebar-search">
-                <span className="material-symbols-outlined" style={{ fontSize: '16px', color: 'var(--clr-text-secondary)' }}>search</span>
+                <MaterialIcon name="search" style={{ fontSize: '16px', color: 'var(--clr-text-secondary)' }} />
                 <input
                     type="text"
                     placeholder="Filter sections…"
@@ -89,7 +90,7 @@ export default function LeftSidebar({
                 )}
 
                 <button className="te-add-section-btn" onClick={onAddSection}>
-                    <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>add</span>
+                    <MaterialIcon name="add" style={{ fontSize: '18px' }} />
                     Add section
                 </button>
             </div>

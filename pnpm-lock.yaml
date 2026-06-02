@@ -167,6 +167,9 @@ importers:
       '@letbuyy/api-types':
         specifier: workspace:*
         version: link:../../packages/typescript/api-types
+      '@letbuyy/ui':
+        specifier: workspace:*
+        version: link:../../packages/typescript/ui
       '@letbuyy/utils':
         specifier: workspace:*
         version: link:../../packages/typescript/utils
@@ -940,6 +943,10 @@ importers:
         version: 5.9.3
 
   packages/typescript/ui:
+    dependencies:
+      lucide-react:
+        specifier: ^0.562.0
+        version: 0.562.0(react@19.2.3)
     devDependencies:
       '@types/react':
         specifier: ^19

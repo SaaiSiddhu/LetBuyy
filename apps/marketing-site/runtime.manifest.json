@@ -33,6 +33,7 @@
   "allowedDependencies": {
     "workspacePackages": [
       "@letbuyy/api-types",
+      "@letbuyy/ui",
       "@letbuyy/utils"
     ],
     "runtimeImports": []

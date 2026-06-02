@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Nav Config — dynamic by site type
@@ -196,7 +197,7 @@ export default function Sidebar({ store, storeData, user, userStores, isOpen, on
                         {group.label && (
                             <div className="admin-nav-section-label">
                                 {group.label}
-                                <span className="material-symbols-outlined">chevron_right</span>
+                                <MaterialIcon name="chevron_right" />
                             </div>
                         )}
                         {group.items.map((item) => {
@@ -214,7 +215,7 @@ export default function Sidebar({ store, storeData, user, userStores, isOpen, on
                                             className={`admin-nav-item ${isActive ? 'active' : ''} ${hasChildren ? 'has-children' : ''}`}
                                             onClick={onClose}
                                         >
-                                            <span className="material-symbols-outlined">{item.icon}</span>
+                                            <MaterialIcon name={item.icon} />
                                             {item.label}
                                         </Link>
                                         {hasChildren && (
@@ -226,9 +227,7 @@ export default function Sidebar({ store, storeData, user, userStores, isOpen, on
                                                 }}
                                                 aria-label={isExpanded ? 'Collapse' : 'Expand'}
                                             >
-                                                <span className={`material-symbols-outlined ${isExpanded ? 'expanded' : ''}`}>
-                                                    expand_more
-                                                </span>
+                                                <MaterialIcon name="expand_more" className={`${isExpanded ? 'expanded' : ''}`} />
                                             </button>
                                         )}
                                     </div>
@@ -264,7 +263,7 @@ export default function Sidebar({ store, storeData, user, userStores, isOpen, on
                 {/* AI Credits Widget — hidden until connected to real data
                 <div className="admin-ai-credits">
                     <div className="admin-ai-credits-header">
-                        <span className="material-symbols-outlined">auto_awesome</span>
+                        <MaterialIcon name="auto_awesome" />
                         AI Credits
                     </div>
                     <div className="admin-ai-credits-bar">
@@ -280,7 +279,7 @@ export default function Sidebar({ store, storeData, user, userStores, isOpen, on
                     className={`admin-nav-item ${pathname?.startsWith(`/${store}/settings`) ? 'active' : ''}`}
                     onClick={onClose}
                 >
-                    <span className="material-symbols-outlined">settings</span>
+                    <MaterialIcon name="settings" />
                     Settings
                 </Link>
             </div>

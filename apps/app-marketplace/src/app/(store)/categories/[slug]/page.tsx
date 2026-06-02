@@ -3,6 +3,7 @@ import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { AppService } from '@/lib/app-service';
+import { Package } from '@letbuyy/ui';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -72,7 +73,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
 
                     {displayApps.length === 0 && (
                         <div className="empty-state">
-                            <div className="empty-state-icon">📦</div>
+                            <div className="empty-state-icon">
+                                <Package size={32} aria-hidden="true" />
+                            </div>
                             <h3>No apps yet</h3>
                             <p>There are no apps in this category yet. Check back soon!</p>
                         </div>

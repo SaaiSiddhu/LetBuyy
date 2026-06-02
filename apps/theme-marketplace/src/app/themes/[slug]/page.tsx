@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Star, Download, Heart, ExternalLink, ArrowLeft, Check, ShoppingCart, Globe, Tag, Calendar, User, Package } from 'lucide-react';
+import { Star, Download, Heart, ExternalLink, ArrowLeft, Check, ShoppingCart, Globe, Tag, Calendar, User, Package } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import { formatPrice, formatCount, CATEGORY_LABELS } from '@/lib/utils';
 import ThemeCard from '@/components/theme-card';

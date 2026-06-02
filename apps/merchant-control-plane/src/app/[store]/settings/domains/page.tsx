@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 export default function DomainSettingsPage() {
     const { store } = useParams<{ store: string }>()
@@ -74,13 +75,13 @@ export default function DomainSettingsPage() {
 
             {success && (
                 <div className="settings-toast success">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     Domain settings saved successfully.
                 </div>
             )}
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">info</span>
+                <MaterialIcon name="info" />
                 <span>Connect a custom domain to give your store a professional web address.</span>
             </div>
 
@@ -89,7 +90,7 @@ export default function DomainSettingsPage() {
                 <h2>Primary domain</h2>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '8px 0' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 18, color: 'var(--text-hint)' }}>language</span>
+                        <MaterialIcon name="language" style={{ fontSize: 18, color: 'var(--text-hint)' }} />
                         <span style={{ fontSize: 13, color: 'var(--text-primary)' }}>{storeData.subdomain}.letbuyy.store</span>
                     </div>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
-import { Mail, Send, CheckCircle } from 'lucide-react';
+import { Mail, Send, CheckCircle } from '@letbuyy/ui';
 
 interface Props {
     section: SectionModel;

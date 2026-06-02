@@ -4,7 +4,7 @@ import { useState, type FormEvent } from 'react';
 import {
     Package, Truck, CheckCircle, Clock, AlertCircle,
     Mail, Lock, Eye, EyeOff, Search, ArrowLeft, MapPin
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { OrderModel, OrderStatus } from '@letbuyy/checkout-core';

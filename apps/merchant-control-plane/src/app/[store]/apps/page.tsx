@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import type { InstalledApp } from '@letbuyy/shared-types'
 import { createMerchantApiClient } from '@/lib/api/client'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface AppsPageProps {
     params: Promise<{ store: string }>
@@ -48,19 +49,19 @@ export default async function AppsPage({ params }: AppsPageProps) {
                             className="admin-apps-list__item"
                         >
                             <div className="admin-apps-list__icon">
-                                <span className="material-symbols-outlined">extension</span>
+                                <MaterialIcon name="extension" />
                             </div>
                             <div>
                                 <h2>{appName(installation)}</h2>
                                 <p>{appTagline(installation)}</p>
                             </div>
-                            <span className="material-symbols-outlined">chevron_right</span>
+                            <MaterialIcon name="chevron_right" />
                         </Link>
                     ))}
                 </div>
             ) : (
                 <div className="admin-empty-state">
-                    <span className="material-symbols-outlined">extension_off</span>
+                    <MaterialIcon name="extension_off" />
                     <h2>No apps installed</h2>
                     <p>Install apps from the marketplace to add embedded workflows to this admin.</p>
                     <Link href="https://apps.letbuyy.store" className="admin-primary-button">

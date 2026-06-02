@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Star, Download, Eye, Heart } from 'lucide-react';
+import { Star, Download, Eye, Heart } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
 import { formatPrice, formatCount, cn } from '@/lib/utils';
 

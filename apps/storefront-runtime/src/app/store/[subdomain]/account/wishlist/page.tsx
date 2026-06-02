@@ -5,7 +5,7 @@
 'use client';
 
 import { useWishlist } from '@/context/wishlist-context';
-import { Heart, ShoppingBag } from 'lucide-react';
+import { Heart, ShoppingBag } from '@letbuyy/ui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 

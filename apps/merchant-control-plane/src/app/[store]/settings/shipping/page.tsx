@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface ShippingZone {
     id: string
@@ -137,7 +138,7 @@ export default function ShippingSettingsPage() {
                     <h2 style={{ margin: 0 }}>Shipping zones</h2>
                     {!showAdd && !editingId && (
                         <button className="settings-btn-primary" style={{ padding: '7px 14px', fontSize: 12 }} onClick={() => setShowAdd(true)}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                            <MaterialIcon name="add" style={{ fontSize: 16 }} />
                             Add zone
                         </button>
                     )}
@@ -147,7 +148,7 @@ export default function ShippingSettingsPage() {
 
                 {zones.length === 0 && !showAdd ? (
                     <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }}>local_shipping</span>
+                        <MaterialIcon name="local_shipping" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
                         <p style={{ marginBottom: 12 }}>No shipping zones configured yet.</p>
                     </div>
                 ) : (
@@ -188,7 +189,7 @@ export default function ShippingSettingsPage() {
             </div>
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">info</span>
+                <MaterialIcon name="info" />
                 <span>Shipping zones let you define rates for different regions. Customers see rates based on their delivery address.</span>
             </div>
         </div>

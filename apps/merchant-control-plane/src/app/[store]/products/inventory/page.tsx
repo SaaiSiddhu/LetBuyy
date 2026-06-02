@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface InventoryItem {
     id: string
@@ -146,9 +147,7 @@ export default function InventoryPage() {
 
             {error && products.length === 0 ? (
                 <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                    <span className="material-symbols-outlined" style={{
-                        fontSize: 48, color: 'var(--danger)', marginBottom: 16
-                    }}>error</span>
+                    <MaterialIcon name="error" style={{ fontSize: 48, color: 'var(--danger)', marginBottom: 16 }} />
                     <h2 style={{
                         fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
                     }}>Unable to load inventory</h2>
@@ -168,9 +167,7 @@ export default function InventoryPage() {
                 </div>
             ) : products.length === 0 ? (
                 <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                    <span className="material-symbols-outlined" style={{
-                        fontSize: 48, color: 'var(--text-hint)', marginBottom: 16
-                    }}>inventory</span>
+                    <MaterialIcon name="inventory" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
                     <h2 style={{
                         fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
                     }}>No inventory to track</h2>
@@ -184,7 +181,7 @@ export default function InventoryPage() {
                 <div className="products-list-card">
                     <div className="products-toolbar">
                         <div className="products-search">
-                            <span className="material-symbols-outlined">search</span>
+                            <MaterialIcon name="search" />
                             <input
                                 type="text"
                                 placeholder="Search inventory..."
@@ -221,9 +218,7 @@ export default function InventoryPage() {
                                                 <div className="products-table-img" style={{
                                                     display: 'flex', alignItems: 'center', justifyContent: 'center'
                                                 }}>
-                                                    <span className="material-symbols-outlined" style={{
-                                                        fontSize: 18, color: 'var(--text-hint)'
-                                                    }}>image</span>
+                                                    <MaterialIcon name="image" style={{ fontSize: 18, color: 'var(--text-hint)' }} />
                                                 </div>
                                             )}
                                             <span>
@@ -307,7 +302,7 @@ export default function InventoryPage() {
                                                     fontSize: 13,
                                                 }}
                                             >
-                                                <span className="material-symbols-outlined" style={{ fontSize: 17 }}>edit</span>
+                                                <MaterialIcon name="edit" style={{ fontSize: 17 }} />
                                                 Adjust
                                             </button>
                                         )}

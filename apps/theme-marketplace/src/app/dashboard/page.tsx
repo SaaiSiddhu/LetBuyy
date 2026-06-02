@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Palette, ShoppingBag, Package, Star, ArrowRight, Clock } from 'lucide-react';
+import { Palette, ShoppingBag, Package, Star, ArrowRight, Clock } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import type { Metadata } from 'next';
 

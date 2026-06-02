@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Compare Plans Component
@@ -68,7 +69,7 @@ export default function ComparePlans({
     const visibleCategories = showAll ? displayCategories : displayCategories.slice(0, 3)
 
     const renderValue = (val: string | boolean) => {
-        if (val === true) return <span className="material-symbols-outlined compare-check">check</span>
+        if (val === true) return <MaterialIcon name="check" className="compare-check" />
         if (val === false) return <span className="compare-dash">—</span>
         return <span>{val}</span>
     }
@@ -138,9 +139,7 @@ export default function ComparePlans({
                                             <td className="compare-plans__feature-label">
                                                 <div className="compare-plans__feature-label-inner">
                                                     {hasDescription && (
-                                                        <span className="material-symbols-outlined compare-plans__expand-icon">
-                                                            {isExpanded ? 'expand_more' : 'chevron_right'}
-                                                        </span>
+                                                        <MaterialIcon name={isExpanded ? 'expand_more' : 'chevron_right'} className="compare-plans__expand-icon" />
                                                     )}
                                                     <div>
                                                         <span>{item.label}</span>
@@ -170,9 +169,7 @@ export default function ComparePlans({
                     className="compare-plans__show-more"
                     onClick={() => setShowAll(!showAll)}
                 >
-                    <span className="material-symbols-outlined">
-                        {showAll ? 'expand_less' : 'expand_more'}
-                    </span>
+                    <MaterialIcon name={showAll ? 'expand_less' : 'expand_more'} />
                     {showAll ? 'Show less' : `See all ${displayCategories.length} categories`}
                 </button>
             )}

@@ -6,7 +6,7 @@ import { AppService } from '@/lib/app-service';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Download, Shield, Star } from 'lucide-react';
+import { Download, Shield, Star } from '@letbuyy/ui';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 interface AppDetailPageProps {

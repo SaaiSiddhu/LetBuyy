@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { StoreModel } from '@letbuyy/tenant-core';
 import type { FooterSettings, ThemeSettings, BlockModel } from '@letbuyy/theme-engine';
 import { resolveStoreHref } from '@/lib/store-paths';
-import { Mail, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from 'lucide-react';
+import { Mail, Instagram, Facebook, Twitter, Youtube, Heart, MessageCircle, Send } from '@letbuyy/ui';
 
 interface DynamicFooterProps {
     store: StoreModel;

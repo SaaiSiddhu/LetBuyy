@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useParams } from 'next/navigation'
 import { useState } from 'react'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Settings Navigation Config
@@ -69,7 +70,7 @@ export default function SettingsSidebar({ storeName, subdomain, userName, userEm
 
             {/* Search */}
             <div className="settings-sidebar-search">
-                <span className="material-symbols-outlined">search</span>
+                <MaterialIcon name="search" />
                 <input
                     type="text"
                     placeholder="Search"
@@ -89,7 +90,7 @@ export default function SettingsSidebar({ storeName, subdomain, userName, userEm
                             href={href}
                             className={`settings-nav-item ${isActive ? 'active' : ''}`}
                         >
-                            <span className="material-symbols-outlined">{item.icon}</span>
+                            <MaterialIcon name={item.icon} />
                             {item.label}
                         </Link>
                     )

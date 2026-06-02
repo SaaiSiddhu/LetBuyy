@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, ShoppingBag, Package, Palette, Download, Settings, Crown, ChevronLeft } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Package, Palette, Download, Settings, Crown, ChevronLeft } from '@letbuyy/ui';
 import { cn } from '@/lib/utils';
 
 const SIDEBAR_ITEMS = [

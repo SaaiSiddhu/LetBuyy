@@ -1,3 +1,5 @@
+import { MaterialIcon, type MaterialIconName } from '@letbuyy/ui';
+
 export default function TeamDashboardLayout({
     children,
 }: {
@@ -15,12 +17,12 @@ export default function TeamDashboardLayout({
                 </div>
                 <nav className="space-y-1 p-4">
                     {/* Items shown based on employee role — TODO: role-based filtering */}
-                    <TeamNavLink href="/" label="Dashboard" icon="🏠" />
-                    <TeamNavLink href="/support" label="Support" icon="🎫" />
-                    <TeamNavLink href="/users" label="Users" icon="👤" />
-                    <TeamNavLink href="/stores" label="Stores" icon="🏪" />
-                    <TeamNavLink href="/marketing" label="Marketing" icon="📢" />
-                    <TeamNavLink href="/operations" label="Operations" icon="📊" />
+                    <TeamNavLink href="/" label="Dashboard" icon="dashboard" />
+                    <TeamNavLink href="/support" label="Support" icon="support" />
+                    <TeamNavLink href="/users" label="Users" icon="users" />
+                    <TeamNavLink href="/stores" label="Stores" icon="store" />
+                    <TeamNavLink href="/marketing" label="Marketing" icon="marketing" />
+                    <TeamNavLink href="/operations" label="Operations" icon="analytics" />
                 </nav>
             </aside>
 
@@ -32,13 +34,13 @@ export default function TeamDashboardLayout({
     );
 }
 
-function TeamNavLink({ href, label, icon }: { href: string; label: string; icon: string }) {
+function TeamNavLink({ href, label, icon }: { href: string; label: string; icon: MaterialIconName }) {
     return (
         <a
             href={href}
             className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
-            <span>{icon}</span>
+            <MaterialIcon name={icon} size={16} aria-hidden="true" />
             {label}
         </a>
     );

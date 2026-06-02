@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface PolicyField {
     key: string
@@ -77,13 +78,13 @@ export default function PoliciesSettingsPage() {
 
             {success && (
                 <div className="settings-toast success">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     Policies saved successfully.
                 </div>
             )}
 
             <div className="settings-info-banner">
-                <span className="material-symbols-outlined">info</span>
+                <MaterialIcon name="info" />
                 <span>These policies will appear on your storefront and during checkout. Clear policies build customer trust.</span>
             </div>
 

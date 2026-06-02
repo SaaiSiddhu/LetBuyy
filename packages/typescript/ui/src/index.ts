@@ -12,3 +12,7 @@ export type { DataTableProps, Column, BadgeProps } from './data-table';
 
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
+
+export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
+
+export * from './icons';

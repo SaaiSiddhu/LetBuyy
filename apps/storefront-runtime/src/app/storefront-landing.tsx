@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { MaterialIcon } from '@letbuyy/ui';
 import './storefront-landing.css';
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -41,11 +42,11 @@ interface FinderResult {
 
 // ─── Site Type Registry ────────────────────────────────────────
 const SITE_TYPE_META: Record<string, { label: string; icon: string; color: string }> = {
-    store: { label: 'Store', icon: '🛍️', color: '#6366f1' },
-    blog: { label: 'Blog', icon: '📝', color: '#f97316' },
-    portfolio: { label: 'Portfolio', icon: '🎨', color: '#ec4899' },
-    resume: { label: 'Resume', icon: '📄', color: '#14b8a6' },
-    landing: { label: 'Landing', icon: '🚀', color: '#eab308' },
+    store: { label: 'Store', icon: 'shopping_bag', color: '#6366f1' },
+    blog: { label: 'Blog', icon: 'article', color: '#f97316' },
+    portfolio: { label: 'Portfolio', icon: 'palette', color: '#ec4899' },
+    resume: { label: 'Resume', icon: 'description', color: '#14b8a6' },
+    landing: { label: 'Landing', icon: 'rocket_launch', color: '#eab308' },
 };
 
 function getSiteTypeLabel(siteType: string): string {
@@ -223,7 +224,7 @@ function StoreFinder() {
     return (
         <div className="store-finder">
             <div className="store-finder-input-row">
-                <span className="store-finder-icon">🔍</span>
+                <MaterialIcon className="store-finder-icon" name="search" />
                 <input
                     className="store-finder-input"
                     type="search"
@@ -251,11 +252,12 @@ function StoreFinder() {
 
             {status === 'found' && store && (
                 <div className="finder-status status-found">
-                    <span>✅</span>
+                    <MaterialIcon name="check_circle" />
                     <span className="finder-status-text">
                         <strong>&quot;{store.name}&quot;</strong>
                         <span className="finder-type-badge" style={{ backgroundColor: SITE_TYPE_META[store.siteType]?.color + '25', color: SITE_TYPE_META[store.siteType]?.color }}>
-                            {SITE_TYPE_META[store.siteType]?.icon} {getSiteTypeLabel(store.siteType)}
+                            <MaterialIcon name={SITE_TYPE_META[store.siteType]?.icon || 'web'} />
+                            {getSiteTypeLabel(store.siteType)}
                         </span>
                         is live! Redirecting in {countdown}s...
                     </span>
@@ -267,11 +269,12 @@ function StoreFinder() {
 
             {status === 'draft' && store && (
                 <div className="finder-status status-draft">
-                    <span>🚧</span>
+                    <MaterialIcon name="progress_activity" />
                     <span className="finder-status-text">
                         <strong>&quot;{store.name}&quot;</strong>
                         <span className="finder-type-badge" style={{ backgroundColor: SITE_TYPE_META[store.siteType]?.color + '25', color: SITE_TYPE_META[store.siteType]?.color }}>
-                            {SITE_TYPE_META[store.siteType]?.icon} {getSiteTypeLabel(store.siteType)}
+                            <MaterialIcon name={SITE_TYPE_META[store.siteType]?.icon || 'web'} />
+                            {getSiteTypeLabel(store.siteType)}
                         </span>
                         is coming soon! Still being set up.
                     </span>
@@ -283,7 +286,7 @@ function StoreFinder() {
 
             {status === 'not_found' && (
                 <div className="finder-status status-not-found">
-                    <span>❌</span>
+                    <MaterialIcon name="error" />
                     <span className="finder-status-text">
                         <strong>&quot;{query}&quot;</strong> was not found.
                     </span>
@@ -298,7 +301,7 @@ function StoreFinder() {
 
             {status === 'invalid' && query.trim().length > 0 && (
                 <div className="finder-status status-invalid">
-                    <span>⚠️</span>
+                    <MaterialIcon name="warning" />
                     <span className="finder-status-text">
                         {query.trim().length < 3
                             ? 'Enter at least 3 characters'
@@ -367,9 +370,10 @@ function StoreCard({ store }: { store: StoreShowcase }) {
                                     backgroundColor: siteTypeMeta.color + '18',
                                     color: siteTypeMeta.color,
                                     borderColor: siteTypeMeta.color + '30',
-                                }}
-                            >
-                                {siteTypeMeta.icon} {siteTypeMeta.label}
+                            }}
+                        >
+                                <MaterialIcon name={siteTypeMeta.icon} />
+                                {siteTypeMeta.label}
                             </span>
                         );
                     })()}
@@ -383,11 +387,13 @@ function StoreCard({ store }: { store: StoreShowcase }) {
                                 borderColor: theme.color + '30',
                             }}
                         >
-                            🎨 {theme.label}
+                            <MaterialIcon name="palette" />
+                            {theme.label}
                         </span>
                     )}
                     <span className={`store-card-status-badge ${isLive ? 'status-live' : 'status-draft'}`}>
-                        {isLive ? '● LIVE' : '○ DRAFT'}
+                        <MaterialIcon name={isLive ? 'check_circle' : 'schedule'} />
+                        {isLive ? 'LIVE' : 'DRAFT'}
                     </span>
                 </div>
 
@@ -466,7 +472,9 @@ export default function StorefrontLanding({ stores, stats }: StorefrontLandingPr
                             ))
                         ) : (
                             <div className="landing-empty">
-                                <div className="landing-empty-icon">🚀</div>
+                                <div className="landing-empty-icon">
+                                    <MaterialIcon name="rocket_launch" />
+                                </div>
                                 <p>No sites launched yet. Be the first to create one!</p>
                                 <a href="https://accounts.letbuyy.store" className="landing-empty-cta">
                                     Create Your Site →

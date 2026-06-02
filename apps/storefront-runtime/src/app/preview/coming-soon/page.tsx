@@ -5,11 +5,11 @@ import ComingSoonRouter from '@/components/coming-soon';
 import type { SiteType } from '@/components/coming-soon';
 
 const SITE_TYPES: { type: SiteType; label: string; color: string }[] = [
-    { type: 'store', label: '🛍️ Store', color: '#6366f1' },
-    { type: 'portfolio', label: '🎨 Portfolio', color: '#111111' },
-    { type: 'resume', label: '📄 Resume', color: '#3b82f6' },
-    { type: 'landing', label: '🚀 Landing', color: '#8b5cf6' },
-    { type: 'blog', label: '✍️ Blog', color: '#f97316' },
+    { type: 'store', label: 'Store', color: '#6366f1' },
+    { type: 'portfolio', label: 'Portfolio', color: '#111111' },
+    { type: 'resume', label: 'Resume', color: '#3b82f6' },
+    { type: 'landing', label: 'Landing', color: '#8b5cf6' },
+    { type: 'blog', label: 'Blog', color: '#f97316' },
 ];
 
 export default function ComingSoonPreview() {

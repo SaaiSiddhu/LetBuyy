@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Experience {
     id: string
@@ -78,7 +79,7 @@ export default function ExperiencePage() {
             <div className="products-page-header">
                 <h1>Experience</h1>
                 <button onClick={() => { setShowForm(true); setEditingId(null); setFormData({ company: '', role: '', description: '', location: '', start_date: '', end_date: '', is_current: false }) }} style={{ background: 'var(--text-primary)', color: 'var(--bg)', padding: '8px 18px', borderRadius: 8, fontSize: 13, fontWeight: 600, border: 'none', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>Add experience
+                    <MaterialIcon name="add" style={{ fontSize: 16 }} />Add experience
                 </button>
             </div>
 
@@ -111,7 +112,7 @@ export default function ExperiencePage() {
                     {items.map((e, i) => (
                         <div key={e.id} style={{ padding: '16px 20px', borderBottom: i < items.length - 1 ? '1px solid var(--border)' : 'none', display: 'flex', gap: 16 }}>
                             <div style={{ width: 44, height: 44, borderRadius: 10, background: 'var(--bg-tertiary)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-hint)' }}>work</span>
+                                <MaterialIcon name="work" style={{ fontSize: 20, color: 'var(--text-hint)' }} />
                             </div>
                             <div style={{ flex: 1, minWidth: 0 }}>
                                 <div style={{ fontWeight: 600, fontSize: 14 }}>{e.role}</div>
@@ -120,8 +121,8 @@ export default function ExperiencePage() {
                                 {e.description && <p style={{ margin: '8px 0 0', fontSize: 13, color: 'var(--text-secondary)', lineHeight: 1.5 }}>{e.description}</p>}
                             </div>
                             <div style={{ display: 'flex', gap: 4, flexShrink: 0 }}>
-                                <button onClick={() => startEdit(e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>edit</span></button>
-                                <button onClick={() => handleDelete(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><span className="material-symbols-outlined" style={{ fontSize: 18 }}>delete</span></button>
+                                <button onClick={() => startEdit(e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: 4 }}><MaterialIcon name="edit" style={{ fontSize: 18 }} /></button>
+                                <button onClick={() => handleDelete(e.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--danger)', padding: 4 }}><MaterialIcon name="delete" style={{ fontSize: 18 }} /></button>
                             </div>
                         </div>
                     ))}

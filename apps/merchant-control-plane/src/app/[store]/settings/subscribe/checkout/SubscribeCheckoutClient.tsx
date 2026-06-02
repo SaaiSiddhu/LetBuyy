@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Subscribe Checkout Client (Inline Styles)
@@ -271,9 +272,9 @@ export default function SubscribeCheckoutClient({
                 color: 'var(--text-secondary, #94A3B8)',
                 marginBottom: 32,
             }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 16 }}>storefront</span>
+                <MaterialIcon name="storefront" style={{ fontSize: 16 }} />
                 <span>{storeName}</span>
-                <span className="material-symbols-outlined" style={{ fontSize: 14, opacity: 0.5 }}>chevron_right</span>
+                <MaterialIcon name="chevron_right" style={{ fontSize: 14, opacity: 0.5 }} />
                 <span>Subscribe</span>
             </div>
 
@@ -475,7 +476,7 @@ export default function SubscribeCheckoutClient({
                         marginBottom: 4,
                     }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 20, color: '#22C55E' }}>check_circle</span>
+                            <MaterialIcon name="check_circle" style={{ fontSize: 20, color: '#22C55E' }} />
                             <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary, #F1F5F9)' }}>{plan.name} plan</span>
                         </div>
                         <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--text-primary, #F1F5F9)' }}>
@@ -574,7 +575,7 @@ export default function SubscribeCheckoutClient({
                             fontSize: 13,
                             marginBottom: 12,
                         }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>error</span>
+                            <MaterialIcon name="error" style={{ fontSize: 16 }} />
                             {error}
                         </div>
                     )}
@@ -597,16 +598,16 @@ export default function SubscribeCheckoutClient({
                             border: '1px solid rgba(139, 92, 246, 0.15)',
                         }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
-                                <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--primary, #8B5CF6)' }}>local_offer</span>
+                                <MaterialIcon name="local_offer" style={{ fontSize: 16, color: 'var(--primary, #8B5CF6)' }} />
                                 <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-primary, #F1F5F9)' }}>Included benefits</span>
                             </div>
                             <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: 13, color: 'var(--text-secondary, #94A3B8)' }}>
                                 <li style={{ padding: '3px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#22C55E' }}>check</span>
+                                    <MaterialIcon name="check" style={{ fontSize: 14, color: '#22C55E' }} />
                                     Transaction fee: only {plan.gmv_percentage}% of GMV
                                 </li>
                                 <li style={{ padding: '3px 0', display: 'flex', alignItems: 'center', gap: 6 }}>
-                                    <span className="material-symbols-outlined" style={{ fontSize: 14, color: '#22C55E' }}>check</span>
+                                    <MaterialIcon name="check" style={{ fontSize: 14, color: '#22C55E' }} />
                                     7-day free trial included
                                 </li>
                             </ul>
@@ -623,7 +624,7 @@ export default function SubscribeCheckoutClient({
                         fontSize: 11,
                         color: 'var(--text-hint, #64748B)',
                     }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 12 }}>lock</span>
+                        <MaterialIcon name="lock" style={{ fontSize: 12 }} />
                         {isFreePlan ? 'LetBuyy billing' : 'Secured by Razorpay'}
                     </div>
                 </div>

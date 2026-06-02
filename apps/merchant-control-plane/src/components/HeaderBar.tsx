@@ -6,6 +6,7 @@ import Link from 'next/link'
 import type { SessionUser } from '@/lib/auth/session'
 import type { StoreData, UserStore } from './AdminShell'
 import NotificationsPanel from './NotificationsPanel'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface HeaderBarProps {
     store: string
@@ -181,7 +182,7 @@ export default function HeaderBar({
                                 </span>
                             </div>
                             {isCurrent && (
-                                <span className="material-symbols-outlined store-switcher-check">check</span>
+                                <MaterialIcon name="check" className="store-switcher-check" />
                             )}
                         </button>
                     )
@@ -199,7 +200,7 @@ export default function HeaderBar({
                         window.location.href = '/stores'
                     }}
                 >
-                    <span className="material-symbols-outlined">apps</span>
+                    <MaterialIcon name="apps" />
                     All stores
                 </button>
             </div>
@@ -210,9 +211,7 @@ export default function HeaderBar({
             <div className="store-switcher-section">
                 <div className="store-switcher-theme">
                     <div className="store-switcher-theme-label">
-                        <span className="material-symbols-outlined">
-                            {isDark ? 'dark_mode' : 'light_mode'}
-                        </span>
+                        <MaterialIcon name={isDark ? 'dark_mode' : 'light_mode'} />
                         {isDark ? 'Dark mode' : 'Light mode'}
                     </div>
                     <button
@@ -247,7 +246,7 @@ export default function HeaderBar({
                     className="store-switcher-link logout"
                     onClick={handleSignOut}
                 >
-                    <span className="material-symbols-outlined">logout</span>
+                    <MaterialIcon name="logout" />
                     Log out
                 </button>
             </div>
@@ -261,7 +260,7 @@ export default function HeaderBar({
                 <div className="admin-header-left">
                     {isSettingsPage ? (
                         <Link href={`/${store}/dashboard`} className="admin-header-back">
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>arrow_back</span>
+                            <MaterialIcon name="arrow_back" style={{ fontSize: '20px' }} />
                             <span>Home</span>
                         </Link>
                     ) : (
@@ -271,32 +270,11 @@ export default function HeaderBar({
                                 onClick={onMenuToggle}
                                 aria-label="Open menu"
                             >
-                                <span className="material-symbols-outlined" style={{ fontSize: '22px' }}>menu</span>
+                                <MaterialIcon name="menu" style={{ fontSize: '22px' }} />
                             </button>
 
                             <div className="admin-header-logo">
-                                <svg
-                                    width="28"
-                                    height="28"
-                                    viewBox="0 0 40 40"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="admin-header-logo-icon"
-                                >
-                                    <rect width="40" height="40" rx="10" fill="var(--primary)" />
-                                    <text
-                                        x="50%"
-                                        y="54%"
-                                        dominantBaseline="middle"
-                                        textAnchor="middle"
-                                        fill="white"
-                                        fontSize="20"
-                                        fontWeight="700"
-                                        fontFamily="Inter, sans-serif"
-                                    >
-                                        L
-                                    </text>
-                                </svg>
+                                <span className="admin-header-logo-icon" aria-hidden="true">L</span>
                                 <span className="admin-header-brand">LetBuyy</span>
                             </div>
                         </>
@@ -306,7 +284,7 @@ export default function HeaderBar({
                 {/* Center: search bar (desktop) */}
                 <div className="admin-header-center">
                     <button className="admin-header-search" onClick={onSearchOpen}>
-                        <span className="material-symbols-outlined">search</span>
+                        <MaterialIcon name="search" />
                         <span className="search-text">Search...</span>
                         <kbd>⌘K</kbd>
                     </button>
@@ -320,7 +298,7 @@ export default function HeaderBar({
                         onClick={onSearchOpen}
                         title="Search"
                     >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>search</span>
+                        <MaterialIcon name="search" style={{ fontSize: '20px' }} />
                     </button>
 
                     {/* AI button */}
@@ -329,7 +307,7 @@ export default function HeaderBar({
                         onClick={onAISidebarToggle}
                         title="LetBuyy AI"
                     >
-                        <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>auto_awesome</span>
+                        <MaterialIcon name="auto_awesome" style={{ fontSize: '20px' }} />
                     </button>
 
                     {/* Notifications */}
@@ -342,7 +320,7 @@ export default function HeaderBar({
                                 setSwitcherOpen(false)
                             }}
                         >
-                            <span className="material-symbols-outlined" style={{ fontSize: '20px' }}>notifications</span>
+                            <MaterialIcon name="notifications" style={{ fontSize: '20px' }} />
                         </button>
 
                         {/* Desktop: inline dropdown */}
@@ -364,9 +342,7 @@ export default function HeaderBar({
                             <span className="store-switcher-pill-name">
                                 {storeData.name || storeData.store_name}
                             </span>
-                            <span className="material-symbols-outlined store-switcher-pill-chevron">
-                                expand_more
-                            </span>
+                            <MaterialIcon name="expand_more" className="store-switcher-pill-chevron" />
                         </button>
 
                         {/* Desktop: inline dropdown */}

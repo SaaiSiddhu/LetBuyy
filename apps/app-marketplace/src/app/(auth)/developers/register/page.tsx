@@ -3,7 +3,7 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { useState } from 'react';
-import { CheckCircle, Circle, User, Globe, FileText, Loader2 } from 'lucide-react';
+import { CheckCircle, Circle, User, Globe, FileText, Loader2 } from '@letbuyy/ui';
 import { useRouter } from 'next/navigation';
 
 type Step = 1 | 2 | 3;
@@ -177,7 +177,7 @@ export default function DeveloperRegisterPage() {
                                         value={formData.country}
                                         onChange={(e) => updateField('country', e.target.value)}
                                     >
-                                        <option value="IN">India 🇮🇳</option>
+                                        <option value="IN">India</option>
                                         <option value="US">United States 🇺🇸</option>
                                         <option value="GB">United Kingdom 🇬🇧</option>
                                         <option value="OTHER">Other</option>

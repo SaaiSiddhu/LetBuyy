@@ -26,16 +26,14 @@ export function formatCount(count: number) {
 
 /** Render star rating as string */
 export function renderStars(rating: number) {
-    const full = Math.floor(rating);
-    const half = rating % 1 >= 0.5;
-    return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(5 - full - (half ? 1 : 0));
+    return `${rating.toFixed(1)} / 5`;
 }
 
 /** Category labels */
 export const CATEGORY_LABELS: Record<string, { label: string; icon: string }> = {
-    store: { label: 'Store', icon: '🛒' },
-    portfolio: { label: 'Portfolio', icon: '🎨' },
-    resume: { label: 'Resume', icon: '📄' },
-    landing: { label: 'Landing', icon: '🚀' },
-    saas: { label: 'SaaS', icon: '⚡' },
+    store: { label: 'Store', icon: 'shopping_bag' },
+    portfolio: { label: 'Portfolio', icon: 'palette' },
+    resume: { label: 'Resume', icon: 'description' },
+    landing: { label: 'Landing', icon: 'rocket_launch' },
+    saas: { label: 'SaaS', icon: 'auto_awesome' },
 };

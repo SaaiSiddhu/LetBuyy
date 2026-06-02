@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Checkout Layout (Full-Screen)
@@ -42,7 +43,7 @@ export default async function SubscribeCheckoutLayout({ children, params }: Layo
                         textDecoration: 'none',
                     }}
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>arrow_back</span>
+                    <MaterialIcon name="arrow_back" style={{ fontSize: 20 }} />
                     Plans
                 </Link>
                 <Link
@@ -58,7 +59,7 @@ export default async function SubscribeCheckoutLayout({ children, params }: Layo
                         textDecoration: 'none',
                     }}
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: 20 }}>home</span>
+                    <MaterialIcon name="home" style={{ fontSize: 20 }} />
                 </Link>
             </header>
             <main>

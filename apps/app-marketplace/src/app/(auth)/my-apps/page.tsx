@@ -2,7 +2,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
-import { Settings, Trash2 } from 'lucide-react';
+import { Package, Settings, Trash2 } from '@letbuyy/ui';
 import Link from 'next/link';
 
 export const metadata = {
@@ -82,7 +82,9 @@ export default async function MyAppsPage() {
                         </div>
                     ) : (
                         <div className="empty-state">
-                            <div className="empty-state-icon">📦</div>
+                            <div className="empty-state-icon">
+                                <Package size={32} aria-hidden="true" />
+                            </div>
                             <h3>No apps installed</h3>
                             <p>Browse our marketplace to find apps that can help grow your store.</p>
                             <Link href="/" className="dev-portal-cta" style={{ display: 'inline-flex' }}>

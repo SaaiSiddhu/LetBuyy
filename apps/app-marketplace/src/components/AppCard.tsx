@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Star } from 'lucide-react';
+import { Star } from '@letbuyy/ui';
 import type { MarketplaceApp } from '@letbuyy/shared-types';
 
 interface AppCardProps {

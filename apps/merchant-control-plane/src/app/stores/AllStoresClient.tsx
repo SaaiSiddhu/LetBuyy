@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface UserStore {
     id: string
@@ -85,28 +86,8 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
             {/* Top bar: Logo + Avatar */}
             <div className="all-stores-topbar">
                 <div className="all-stores-topbar-logo">
-                    <svg
-                        width="28"
-                        height="28"
-                        viewBox="0 0 40 40"
-                        fill="none"
-                        xmlns="http://www.w3.org/2000/svg"
-                    >
-                        <rect width="40" height="40" rx="10" fill="var(--primary)" />
-                        <text
-                            x="50%"
-                            y="54%"
-                            dominantBaseline="middle"
-                            textAnchor="middle"
-                            fill="white"
-                            fontSize="20"
-                            fontWeight="700"
-                            fontFamily="Inter, sans-serif"
-                        >
-                            L
-                        </text>
-                    </svg>
-                    <span>LetBuyy</span>
+                    <span className="all-stores-topbar-logo-icon" aria-hidden="true">L</span>
+                    <span className="all-stores-topbar-logo-text">LetBuyy</span>
                 </div>
 
                 <div className="all-stores-topbar-avatar">
@@ -120,7 +101,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                 <div className="all-stores-header">
                     <h1 className="all-stores-greeting">Welcome back, {firstName}</h1>
                     <button className="all-stores-create-btn" onClick={handleCreateStore}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 18 }}>add</span>
+                        <MaterialIcon name="add" style={{ fontSize: 18 }} />
                         Create store
                     </button>
                 </div>
@@ -164,7 +145,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                                     <div className="all-stores-card-name">{store.name || store.store_name}</div>
                                     <div className="all-stores-card-meta">
                                         <span className="type-badge">
-                                            <span className="material-symbols-outlined">{getSiteTypeIcon(store.site_type)}</span>
+                                            <MaterialIcon name={getSiteTypeIcon(store.site_type)} />
                                             {getSiteTypeLabel(store.site_type)}
                                         </span>
                                         {store.subdomain}.letbuyy.store

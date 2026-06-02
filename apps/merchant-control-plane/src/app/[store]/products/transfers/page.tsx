@@ -1,5 +1,7 @@
 'use client'
 
+import { MaterialIcon } from '@letbuyy/ui'
+
 export default function TransfersPage() {
     return (
         <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
@@ -8,9 +10,7 @@ export default function TransfersPage() {
             </div>
 
             <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                <span className="material-symbols-outlined" style={{
-                    fontSize: 48, color: 'var(--text-hint)', marginBottom: 16
-                }}>swap_horiz</span>
+                <MaterialIcon name="swap_horiz" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
                 <h2 style={{
                     fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
                 }}>Move inventory between locations</h2>

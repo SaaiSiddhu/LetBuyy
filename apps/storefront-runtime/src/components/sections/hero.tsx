@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight } from '@letbuyy/ui';
 import BannerCarousel from './banner-carousel';
 import Image from 'next/image';
 

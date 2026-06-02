@@ -2,26 +2,27 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { AppService } from '@/lib/app-service';
+import { Flame, MapPin, Star, type LucideIcon } from '@letbuyy/ui';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-const COLLECTIONS: Record<string, { name: string; description: string; icon: string; sort?: 'popular' | 'rating' | 'recent' }> = {
+const COLLECTIONS: Record<string, { name: string; description: string; icon: LucideIcon; sort?: 'popular' | 'rating' | 'recent' }> = {
     'staff-picks': {
         name: 'Staff Picks',
         description: 'Hand-picked by the LetBuyy team for quality and reliability.',
-        icon: '⭐',
+        icon: Star,
         sort: 'rating',
     },
     'trending': {
         name: 'Trending This Week',
         description: 'The most installed and talked-about apps right now.',
-        icon: '🔥',
+        icon: Flame,
         sort: 'popular',
     },
     'made-in-india': {
         name: 'Made in India',
         description: 'Apps built by Indian developers, optimized for Indian merchants.',
-        icon: '🇮🇳',
+        icon: MapPin,
         sort: 'recent',
     },
 };
@@ -44,6 +45,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     const { slug } = await params;
     const collection = COLLECTIONS[slug];
     if (!collection) notFound();
+    const CollectionIcon = collection.icon;
 
     const { apps: displayApps } = await AppService.listApps({
         sort: collection.sort || 'popular',
@@ -62,7 +64,7 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                        <span style={{ fontSize: 32 }}>{collection.icon}</span>
+                        <CollectionIcon size={32} aria-hidden="true" />
                         <h1 style={{ fontSize: 26, fontWeight: 800, color: 'var(--text-primary)' }}>
                             {collection.name}
                         </h1>

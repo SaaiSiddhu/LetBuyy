@@ -1,4 +1,4 @@
-import { Mail, ShieldCheck } from 'lucide-react';
+import { Mail, ShieldCheck } from '@letbuyy/ui';
 
 type LoginSearchParams = Promise<Record<string, string | string[] | undefined>>;
 

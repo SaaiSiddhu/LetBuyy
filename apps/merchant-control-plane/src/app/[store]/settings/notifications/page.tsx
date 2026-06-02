@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface NotificationPref {
     key: string
@@ -95,7 +96,7 @@ export default function NotificationsSettingsPage() {
 
             {success && (
                 <div className="settings-toast success">
-                    <span className="material-symbols-outlined">check_circle</span>
+                    <MaterialIcon name="check_circle" />
                     Notification preferences saved.
                 </div>
             )}
@@ -107,7 +108,7 @@ export default function NotificationsSettingsPage() {
                 {prefs.map(item => (
                     <div key={item.key} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 0', borderBottom: '1px solid var(--border)' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 20, color: 'var(--text-hint)' }}>{item.icon}</span>
+                            <MaterialIcon name={item.icon} style={{ fontSize: 20, color: 'var(--text-hint)' }} />
                             <div>
                                 <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-primary)' }}>{item.label}</div>
                                 <div style={{ fontSize: 12, color: 'var(--text-hint)' }}>{item.description}</div>

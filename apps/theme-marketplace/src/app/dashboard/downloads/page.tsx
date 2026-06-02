@@ -1,4 +1,4 @@
-import { Download, Globe, Code, ShoppingBag, Monitor } from 'lucide-react';
+import { Download, Globe, Code, ShoppingBag, Monitor } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 type ExportType = 'products' | 'orders' | 'customers'
 
@@ -142,7 +143,7 @@ export default function ExportPage() {
 
             {/* Export section */}
             <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>download</span>
+                <MaterialIcon name="download" style={{ fontSize: 18 }} />
                 Export data
             </h2>
 
@@ -150,7 +151,7 @@ export default function ExportPage() {
                 {exportCards.map(card => (
                     <div key={card.type} style={{ background: 'var(--bg-card, #fff)', border: '1px solid var(--border)', borderRadius: 10, padding: 20 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 24, color: 'var(--primary)' }}>{card.icon}</span>
+                            <MaterialIcon name={card.icon} style={{ fontSize: 24, color: 'var(--primary)' }} />
                             <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{card.title}</h3>
                         </div>
                         <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16, lineHeight: 1.5 }}>{card.desc}</p>
@@ -179,7 +180,7 @@ export default function ExportPage() {
                                 opacity: exporting === card.type ? 0.6 : 1,
                             }}
                         >
-                            <span className="material-symbols-outlined" style={{ fontSize: 14, verticalAlign: -2, marginRight: 4 }}>download</span>
+                            <MaterialIcon name="download" style={{ fontSize: 14, verticalAlign: -2, marginRight: 4 }} />
                             {exporting === card.type ? 'Exporting...' : 'Export CSV'}
                         </button>
                     </div>
@@ -188,13 +189,13 @@ export default function ExportPage() {
 
             {/* Import section */}
             <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span className="material-symbols-outlined" style={{ fontSize: 18 }}>upload</span>
+                <MaterialIcon name="upload" style={{ fontSize: 18 }} />
                 Import data
             </h2>
 
             <div style={{ background: 'var(--bg-card, #fff)', border: '1px solid var(--border)', borderRadius: 10, padding: 20 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 24, color: 'var(--primary)' }}>inventory_2</span>
+                    <MaterialIcon name="inventory_2" style={{ fontSize: 24, color: 'var(--primary)' }} />
                     <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Import products</h3>
                 </div>
                 <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 8, lineHeight: 1.5 }}>
@@ -215,7 +216,7 @@ export default function ExportPage() {
                         opacity: importing ? 0.6 : 1,
                     }}
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: 14, verticalAlign: -2, marginRight: 4 }}>upload_file</span>
+                    <MaterialIcon name="upload_file" style={{ fontSize: 14, verticalAlign: -2, marginRight: 4 }} />
                     {importing ? 'Importing...' : 'Choose CSV file'}
                 </button>
             </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Check } from '@letbuyy/ui';
 
 interface EmailSignupProps {
     /** Placeholder text */
@@ -52,9 +53,7 @@ export default function EmailSignup({
                     fontSize: '0.9rem',
                     fontWeight: 500,
                 }}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="20 6 9 17 4 12" />
-                    </svg>
+                    <Check width={18} height={18} strokeWidth={2.5} aria-hidden="true" />
                     You&apos;ll be the first to know!
                 </div>
             </div>

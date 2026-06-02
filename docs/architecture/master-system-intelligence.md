@@ -40,7 +40,7 @@ flowchart LR
 - Package: @letbuyy/app-marketplace
 - File: apps/app-marketplace/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, jose, lucide-react, next, react, react-dom
+- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, jose, @letbuyy/ui, next, react, react-dom
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -67,7 +67,7 @@ flowchart LR
 - Package: @letbuyy/merchant-control-plane
 - File: apps/merchant-control-plane/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, lucide-react, next, react, react-dom
+- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, @letbuyy/ui, next, react, react-dom
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -76,7 +76,7 @@ flowchart LR
 - Package: @letbuyy/platform-console
 - File: apps/platform-console/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, lucide-react, next, react, react-dom
+- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, @letbuyy/ui, next, react, react-dom
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -85,7 +85,7 @@ flowchart LR
 - Package: @letbuyy/platform-operations-portal
 - File: apps/platform-operations-portal/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, lucide-react, next, react, react-dom
+- Runtime dependencies: @letbuyy/api-types, @letbuyy/ui, @letbuyy/utils, @letbuyy/ui, next, react, react-dom
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -94,7 +94,7 @@ flowchart LR
 - Package: @letbuyy/storefront-runtime
 - File: apps/storefront-runtime/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/utils, @vercel/speed-insights, clsx, framer-motion, jose, lucide-react, next, react, react-dom, server-only, tailwind-merge
+- Runtime dependencies: @letbuyy/api-types, @letbuyy/auth-core, @letbuyy/checkout-core, @letbuyy/cms-core, @letbuyy/commerce-core, @letbuyy/runtime-composition, @letbuyy/tenant-core, @letbuyy/theme-engine, @letbuyy/utils, @vercel/speed-insights, clsx, framer-motion, jose, @letbuyy/ui, next, react, react-dom, server-only, tailwind-merge
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -103,7 +103,7 @@ flowchart LR
 - Package: @letbuyy/theme-marketplace
 - File: apps/theme-marketplace/package.json
 - Scripts: dev, build, start, lint
-- Runtime dependencies: @letbuyy/api-types, @letbuyy/runtime-composition, @letbuyy/theme-engine, @letbuyy/utils, clsx, framer-motion, lucide-react, next, react, react-dom, server-only, tailwind-merge
+- Runtime dependencies: @letbuyy/api-types, @letbuyy/runtime-composition, @letbuyy/theme-engine, @letbuyy/utils, clsx, framer-motion, @letbuyy/ui, next, react, react-dom, server-only, tailwind-merge
 - Dev dependencies: @tailwindcss/postcss, @types/node, @types/react, @types/react-dom, eslint, eslint-config-next, tailwindcss, typescript
 - Peer dependencies: none declared
 
@@ -3993,7 +3993,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 6
-- Import sample: @/components/Footer, @/components/Header, @/lib/constants/categories, lucide-react, next/navigation, react
+- Import sample: @/components/Footer, @/components/Header, @/lib/constants/categories, @letbuyy/ui, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer';
@@ -4061,10 +4061,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 6
-- Import sample: @/components/Footer, @/components/Header, @/lib/api/worker-client, lucide-react, next/link, next/navigation
+- Import sample: @/components/Footer, @/components/Header, @/lib/api/worker-client, @letbuyy/ui, next/link, next/navigation
 - Env names referenced: none detected
 - Flags: inline React style
-- Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import Link from 'next/link'; | import { Plus, Download, Star, Eye, ExternalLink, Pencil, BarChart3 } from 'lucide-react';
+- Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import Link from 'next/link'; | import { Plus, Download, Star, Eye, ExternalLink, Pencil, BarChart3 } from '@letbuyy/ui';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -4129,10 +4129,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/components/Footer, @/components/Header, lucide-react, next/link
+- Import sample: @/components/Footer, @/components/Header, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: inline React style, webhook reference
-- Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import Link from 'next/link'; | import { Code2, DollarSign, Users, Zap, BookOpen, Shield } from 'lucide-react';
+- Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import Link from 'next/link'; | import { Code2, DollarSign, Users, Zap, BookOpen, Shield } from '@letbuyy/ui';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -4197,7 +4197,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/components/Footer, @/components/Header, lucide-react, next/navigation, react
+- Import sample: @/components/Footer, @/components/Header, @letbuyy/ui, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer';
@@ -4265,10 +4265,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/components/Footer, @/components/Header, @/lib/api/worker-client, lucide-react, next/link
+- Import sample: @/components/Footer, @/components/Header, @/lib/api/worker-client, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: inline React style
-- Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import { appStoreWorkerFetch } from '@/lib/api/worker-client'; | import { Settings, Trash2 } from 'lucide-react';
+- Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import { appStoreWorkerFetch } from '@/lib/api/worker-client'; | import { Settings, Trash2 } from '@letbuyy/ui';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -4333,7 +4333,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 9
-- Import sample: @/components/AppCard, @/components/Footer, @/components/Header, @/components/StarRating, @/lib/app-service, @/lib/constants/categories, lucide-react, next/link
+- Import sample: @/components/AppCard, @/components/Footer, @/components/Header, @/components/StarRating, @/lib/app-service, @/lib/constants/categories, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: TypeScript any, inline React style
 - Leading source signals: import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer'; | import { StarRating } from '@/components/StarRating'; | import { AppCard } from '@/components/AppCard';
@@ -4605,7 +4605,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 7
-- Import sample: @/components/AppCard, @/components/Footer, @/components/Header, @/lib/constants/categories, lucide-react, next/navigation, react
+- Import sample: @/components/AppCard, @/components/Footer, @/components/Header, @/lib/constants/categories, @letbuyy/ui, next/navigation, react
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, console.error, inline React style
 - Leading source signals: 'use client'; | import { Header } from '@/components/Header'; | import { Footer } from '@/components/Footer';
@@ -5285,10 +5285,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: ./globals.css, next, next/font/google
+- Import sample: ./globals.css, next, next/font/local
 - Env names referenced: none detected
 - Flags: uses localStorage
-- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/google"; | import "./globals.css";
+- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/local"; | import "./globals.css";
 - Contains client component directive: no
 - Contains localStorage usage: yes
 - Contains inline React styles: no
@@ -5421,10 +5421,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/lib/types/apps, lucide-react, next/link
+- Import sample: @/lib/types/apps, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: inline React style
-- Leading source signals: import Link from 'next/link'; | import { Star } from 'lucide-react'; | import type { LBApp } from '@/lib/types/apps';
+- Leading source signals: import Link from 'next/link'; | import { Star } from '@letbuyy/ui'; | import type { LBApp } from '@/lib/types/apps';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -5625,10 +5625,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: lucide-react, next/link, react
+- Import sample: @letbuyy/ui, next/link, react
 - Env names referenced: none detected
 - Flags: client component, uses localStorage
-- Leading source signals: 'use client'; | import Link from 'next/link'; | import { Search, Moon, Sun, Package } from 'lucide-react';
+- Leading source signals: 'use client'; | import Link from 'next/link'; | import { Search, Moon, Sun, Package } from '@letbuyy/ui';
 - Contains client component directive: yes
 - Contains localStorage usage: yes
 - Contains inline React styles: no
@@ -5693,10 +5693,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/lib/types/apps, lucide-react, next/link
+- Import sample: @/lib/types/apps, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: inline React style
-- Leading source signals: import Link from 'next/link'; | import { Star, Download } from 'lucide-react'; | import type { LBApp } from '@/lib/types/apps';
+- Leading source signals: import Link from 'next/link'; | import { Star, Download } from '@letbuyy/ui'; | import type { LBApp } from '@/lib/types/apps';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -5761,10 +5761,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 1
-- Import sample: lucide-react
+- Import sample: @letbuyy/ui
 - Env names referenced: none detected
 - Flags: inline React style
-- Leading source signals: import { Star } from 'lucide-react'; | interface StarRatingProps { | rating: number;
+- Leading source signals: import { Star } from '@letbuyy/ui'; | interface StarRatingProps { | rating: number;
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -10793,10 +10793,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: ./globals.css, @/components/ThemeProvider, next, next/font/google
+- Import sample: ./globals.css, @/components/ThemeProvider, next, next/font/local
 - Env names referenced: none detected
 - Flags: uses localStorage
-- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/google"; | import "./globals.css"; | import { ThemeProvider } from "@/components/ThemeProvider";
+- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/local"; | import "./globals.css"; | import { ThemeProvider } from "@/components/ThemeProvider";
 - Contains client component directive: no
 - Contains localStorage usage: yes
 - Contains inline React styles: no
@@ -36089,7 +36089,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 1
-- Import sample: lucide-react
+- Import sample: @letbuyy/ui
 - Env names referenced: none detected
 - Flags: none detected
 - Leading source signals: import { | Activity, | BarChart3, | ClipboardList,
@@ -36157,10 +36157,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 1
-- Import sample: lucide-react
+- Import sample: @letbuyy/ui
 - Env names referenced: NEXT_PUBLIC_API_URL, PLATFORM_CONSOLE_API_BASE_URL, PLATFORM_CONSOLE_API_TOKEN
 - Flags: none detected
-- Leading source signals: import { AlertTriangle, CheckCircle2, GitBranch, RadioTower, RotateCcw, ShieldAlert } from 'lucide-react'; | type OperationsOverview = { | health?: Array<{ runtime_name: string; status: string; region?: string | null; checked_at?: string | null }>;
+- Leading source signals: import { AlertTriangle, CheckCircle2, GitBranch, RadioTower, RotateCcw, ShieldAlert } from '@letbuyy/ui'; | type OperationsOverview = { | health?: Array<{ runtime_name: string; status: string; region?: string | null; checked_at?: string | null }>;
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: no
@@ -36633,10 +36633,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: ./globals.css, next, next/font/google
+- Import sample: ./globals.css, next, next/font/local
 - Env names referenced: none detected
 - Flags: none detected
-- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/google"; | import "./globals.css";
+- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/local"; | import "./globals.css";
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: no
@@ -37993,10 +37993,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: ./globals.css, next, next/font/google
+- Import sample: ./globals.css, next, next/font/local
 - Env names referenced: none detected
 - Flags: none detected
-- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/google"; | import "./globals.css";
+- Leading source signals: import type { Metadata } from "next"; | import { Inter } from "next/font/local"; | import "./globals.css";
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: no
@@ -40985,7 +40985,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 2
-- Import sample: lucide-react, react
+- Import sample: @letbuyy/ui, react
 - Env names referenced: LABEL_ICONS
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // ADDRESSES PAGE — Full CRUD for customer saved addresses | // ============================================================
@@ -41053,7 +41053,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/context/customer-auth-context, lucide-react, next/link, next/navigation, react
+- Import sample: @/context/customer-auth-context, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // ACCOUNT LAYOUT — Auth-gated wrapper for customer account pages | // ============================================================
@@ -41121,7 +41121,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: lucide-react, next/link, next/navigation, react
+- Import sample: @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // MY ORDERS PAGE — Displays customer's order history | // ============================================================
@@ -41189,7 +41189,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/context/customer-auth-context, lucide-react, react
+- Import sample: @/context/customer-auth-context, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // SETTINGS PAGE — Account settings with profile editing + password change | // ============================================================
@@ -41257,7 +41257,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/context/wishlist-context, lucide-react, next/link, next/navigation
+- Import sample: @/context/wishlist-context, @letbuyy/ui, next/link, next/navigation
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // WISHLIST PAGE — Displays customer's wishlisted products | // ============================================================
@@ -41393,7 +41393,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/context/cart-context, framer-motion, lucide-react, next/link, next/navigation
+- Import sample: @/context/cart-context, framer-motion, @letbuyy/ui, next/link, next/navigation
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { useCart } from '@/context/cart-context'; | import Link from 'next/link';
@@ -41461,7 +41461,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 7
-- Import sample: @/context/cart-context, framer-motion, lucide-react, next/image, next/link, next/script, react
+- Import sample: @/context/cart-context, framer-motion, @letbuyy/ui, next/image, next/link, next/script, react
 - Env names referenced: none detected
 - Flags: client component, inline React style, payment provider reference
 - Leading source signals: 'use client'; | import { useCart } from '@/context/cart-context'; | import { useRef, useState } from 'react';
@@ -41597,7 +41597,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: framer-motion, lucide-react, next/link, next/navigation, react
+- Import sample: framer-motion, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, console.error, inline React style, payment provider reference
 - Leading source signals: 'use client'; | import { useEffect, useState } from 'react'; | import { useSearchParams } from 'next/navigation';
@@ -41665,7 +41665,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: framer-motion, lucide-react, next/link, next/navigation, react
+- Import sample: framer-motion, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style, payment provider reference
 - Leading source signals: 'use client'; | import { useEffect, useState } from 'react'; | import { useSearchParams } from 'next/navigation';
@@ -41801,7 +41801,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/types/store, framer-motion, lucide-react, next/link, react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, next/link, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { useState, type FormEvent } from 'react'; | import {
@@ -42073,7 +42073,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/context/cart-context, @/types/store, lucide-react, react
+- Import sample: @/context/cart-context, @/types/store, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: client component
 - Leading source signals: 'use client'; | import { useCart } from '@/context/cart-context'; | import { ProductModel } from '@/types/store';
@@ -42209,7 +42209,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 7
-- Import sample: @/context/cart-context, @/types/store, framer-motion, lucide-react, next/link, next/navigation, react
+- Import sample: @/context/cart-context, @/types/store, framer-motion, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { motion, AnimatePresence } from 'framer-motion'; | import { ProductModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
@@ -42753,7 +42753,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/context/customer-auth-context, framer-motion, lucide-react, next/link, react
+- Import sample: @/context/customer-auth-context, framer-motion, @letbuyy/ui, next/link, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // ACCOUNT BOTTOM SHEET — 5-state auth & account sheet | // States: email_entry → password_login | set_password | not_found | logged_in | // Theme-agnostic: uses CSS variables from the store theme
@@ -42821,10 +42821,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/context/cart-context, lucide-react, next/link, next/navigation
+- Import sample: @/context/cart-context, @letbuyy/ui, next/link, next/navigation
 - Env names referenced: none detected
 - Flags: client component
-- Leading source signals: 'use client'; | import { useCart } from '@/context/cart-context'; | import { ShoppingBag } from 'lucide-react';
+- Leading source signals: 'use client'; | import { useCart } from '@/context/cart-context'; | import { ShoppingBag } from '@letbuyy/ui';
 - Contains client component directive: yes
 - Contains localStorage usage: no
 - Contains inline React styles: no
@@ -43773,7 +43773,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/lib/store-paths, @/types/store, framer-motion, lucide-react, next/link
+- Import sample: @/lib/store-paths, @/types/store, framer-motion, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { motion } from 'framer-motion'; | import Link from 'next/link';
@@ -43841,7 +43841,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 10
-- Import sample: @/components/account/account-bottom-sheet, @/context/cart-context, @/lib/store-paths, @/types/store, framer-motion, lucide-react, next/image, next/link
+- Import sample: @/components/account/account-bottom-sheet, @/context/cart-context, @/lib/store-paths, @/types/store, framer-motion, @letbuyy/ui, next/image, next/link
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { useState, useEffect, useRef } from 'react'; | import { motion, useScroll, useMotionValueEvent, AnimatePresence } from 'framer-motion';
@@ -43909,7 +43909,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 6
-- Import sample: @/context/cart-context, framer-motion, lucide-react, next/link, next/navigation, react
+- Import sample: @/context/cart-context, framer-motion, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component
 - Leading source signals: 'use client'; | import { useState, useEffect } from 'react'; | import { motion, useScroll, useMotionValueEvent } from 'framer-motion';
@@ -43977,7 +43977,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/types/store, framer-motion, lucide-react, next/link
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, inline React style
 - Leading source signals: 'use client'; | import { motion } from 'framer-motion'; | import Link from 'next/link';
@@ -44045,7 +44045,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/context/customer-auth-context, lucide-react, react
+- Import sample: @/context/customer-auth-context, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: // ============================================================ | // PRODUCT REVIEWS — Display & submit reviews for a product | // ============================================================
@@ -44181,7 +44181,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/types/store, framer-motion, lucide-react, next/link, react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, next/link, react
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, inline React style
 - Leading source signals: 'use client'; | import { useState, useEffect, useCallback } from 'react'; | import { motion, AnimatePresence, PanInfo } from 'framer-motion';
@@ -44317,10 +44317,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/types/store, lucide-react, next/link
+- Import sample: @/types/store, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: client component, inline React style
-- Leading source signals: 'use client'; | import Link from 'next/link'; | import { ArrowRight } from 'lucide-react';
+- Leading source signals: 'use client'; | import Link from 'next/link'; | import { ArrowRight } from '@letbuyy/ui';
 - Contains client component directive: yes
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -44385,7 +44385,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/types/store, framer-motion, lucide-react, react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { SectionModel, ThemeSettings } from '@/types/store'; | import { motion } from 'framer-motion';
@@ -44453,7 +44453,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/types/store, framer-motion, lucide-react, next/link
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { SectionModel, ThemeSettings } from '@/types/store'; | import { motion } from 'framer-motion';
@@ -44521,7 +44521,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/types/store, framer-motion, lucide-react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { SectionModel, ThemeSettings, ExperienceItem } from '@/types/store'; | import { motion } from 'framer-motion';
@@ -44589,7 +44589,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 7
-- Import sample: @/context/cart-context, @/types/store, framer-motion, lucide-react, next/link, next/navigation, react
+- Import sample: @/context/cart-context, @/types/store, framer-motion, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, inline React style
 - Leading source signals: 'use client'; | import { motion } from 'framer-motion'; | import { SectionModel, ProductModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
@@ -44657,7 +44657,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: ./banner-carousel, @/types/store, framer-motion, lucide-react
+- Import sample: ./banner-carousel, @/types/store, framer-motion, @letbuyy/ui
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, inline React style
 - Leading source signals: 'use client'; | import { motion } from 'framer-motion'; | import { SectionModel, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
@@ -44793,7 +44793,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/types/store, framer-motion, lucide-react, react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: TODO/FIXME/HACK, TypeScript any, client component, inline React style
 - Leading source signals: 'use client'; | import { useState } from 'react'; | import { motion } from 'framer-motion';
@@ -44861,7 +44861,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/types/store, framer-motion, lucide-react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { SectionModel, ThemeSettings, PortfolioProject } from '@/types/store'; | import { motion } from 'framer-motion';
@@ -44997,7 +44997,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 8
-- Import sample: @/context/cart-context, @/context/wishlist-context, @/types/store, framer-motion, lucide-react, next/link, next/navigation, react
+- Import sample: @/context/cart-context, @/context/wishlist-context, @/types/store, framer-motion, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { motion } from 'framer-motion'; | import { SectionModel, ProductModel, ProductGridSettings, ThemeSettings, DEFAULT_THEME_SETTINGS } from '@/types/store';
@@ -45133,7 +45133,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/types/store, framer-motion, lucide-react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui
 - Env names referenced: none detected
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import { SectionModel, ThemeSettings, ServiceItem } from '@/types/store'; | import { motion } from 'framer-motion';
@@ -45269,7 +45269,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/types/store, framer-motion, lucide-react, react
+- Import sample: @/types/store, framer-motion, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: client component
 - Leading source signals: 'use client'; | import { useState, useEffect, useCallback, useRef } from 'react'; | import { motion, AnimatePresence } from 'framer-motion';
@@ -45337,7 +45337,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 2
-- Import sample: @/types/store, lucide-react
+- Import sample: @/types/store, @letbuyy/ui
 - Env names referenced: ICON_MAP
 - Flags: client component
 - Leading source signals: 'use client'; | import { | Award,
@@ -45541,7 +45541,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/context/wishlist-context, framer-motion, lucide-react
+- Import sample: @/context/wishlist-context, framer-motion, @letbuyy/ui
 - Env names referenced: none detected
 - Flags: client component
 - Leading source signals: // ============================================================ | // WISHLIST BUTTON — Heart toggle for products | // ============================================================
@@ -48057,7 +48057,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/lib/utils, lucide-react, next/link, next/navigation, react
+- Import sample: @/lib/utils, @letbuyy/ui, next/link, next/navigation, react
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, inline React style, payment provider reference
 - Leading source signals: 'use client'; | import { useState, useEffect, Suspense } from 'react'; | import { useSearchParams } from 'next/navigation';
@@ -48125,10 +48125,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: lucide-react, next, next/link
+- Import sample: @letbuyy/ui, next, next/link
 - Env names referenced: none detected
 - Flags: inline React style, payment provider reference
-- Leading source signals: import Link from 'next/link'; | import { CheckCircle, Download, Palette, LayoutDashboard, ArrowRight, Copy, Key } from 'lucide-react'; | import type { Metadata } from 'next';
+- Leading source signals: import Link from 'next/link'; | import { CheckCircle, Download, Palette, LayoutDashboard, ArrowRight, Copy, Key } from '@letbuyy/ui'; | import type { Metadata } from 'next';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48193,10 +48193,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/lib/theme-service, @/lib/utils, lucide-react, next
+- Import sample: @/lib/theme-service, @/lib/utils, @letbuyy/ui, next
 - Env names referenced: PLATFORM_ICONS
 - Flags: TypeScript any, inline React style
-- Leading source signals: import { Download, Globe, Code, ShoppingBag, Monitor } from 'lucide-react'; | import { ThemeService } from '@/lib/theme-service'; | import { cn } from '@/lib/utils'; | import type { Metadata } from 'next';
+- Leading source signals: import { Download, Globe, Code, ShoppingBag, Monitor } from '@letbuyy/ui'; | import { ThemeService } from '@/lib/theme-service'; | import { cn } from '@/lib/utils'; | import type { Metadata } from 'next';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48261,10 +48261,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/lib/theme-service, @/lib/utils, lucide-react, next, next/link
+- Import sample: @/lib/theme-service, @/lib/utils, @letbuyy/ui, next, next/link
 - Env names referenced: STATUS_CONFIG
 - Flags: inline React style
-- Leading source signals: import Link from 'next/link'; | import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from 'lucide-react'; | import { ThemeService } from '@/lib/theme-service'; | import { cn } from '@/lib/utils';
+- Leading source signals: import Link from 'next/link'; | import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from '@letbuyy/ui'; | import { ThemeService } from '@/lib/theme-service'; | import { cn } from '@/lib/utils';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48329,7 +48329,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/lib/utils, lucide-react, next/link, next/navigation
+- Import sample: @/lib/utils, @letbuyy/ui, next/link, next/navigation
 - Env names referenced: none detected
 - Flags: client component
 - Leading source signals: 'use client'; | import Link from 'next/link'; | import { usePathname } from 'next/navigation';
@@ -48397,10 +48397,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/lib/theme-service, lucide-react, next, next/link
+- Import sample: @/lib/theme-service, @letbuyy/ui, next, next/link
 - Env names referenced: none detected
 - Flags: TypeScript any, inline React style
-- Leading source signals: import Link from 'next/link'; | import { Palette, ShoppingBag, Package, Star, ArrowRight, Clock } from 'lucide-react'; | import { ThemeService } from '@/lib/theme-service'; | import type { Metadata } from 'next';
+- Leading source signals: import Link from 'next/link'; | import { Palette, ShoppingBag, Package, Star, ArrowRight, Clock } from '@letbuyy/ui'; | import { ThemeService } from '@/lib/theme-service'; | import type { Metadata } from 'next';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48465,10 +48465,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/lib/theme-service, @/lib/utils, lucide-react, next, next/link
+- Import sample: @/lib/theme-service, @/lib/utils, @letbuyy/ui, next, next/link
 - Env names referenced: none detected
 - Flags: TypeScript any, inline React style
-- Leading source signals: import Link from 'next/link'; | import { ShoppingBag, ExternalLink, Download, Star, Calendar, CreditCard } from 'lucide-react'; | import { ThemeService } from '@/lib/theme-service'; | import { formatPrice } from '@/lib/utils';
+- Leading source signals: import Link from 'next/link'; | import { ShoppingBag, ExternalLink, Download, Star, Calendar, CreditCard } from '@letbuyy/ui'; | import { ThemeService } from '@/lib/theme-service'; | import { formatPrice } from '@/lib/utils';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48533,10 +48533,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 3
-- Import sample: @/lib/utils, lucide-react, react
+- Import sample: @/lib/utils, @letbuyy/ui, react
 - Env names referenced: none detected
 - Flags: client component, inline React style
-- Leading source signals: 'use client'; | import { useState } from 'react'; | import { User, Bell, Shield, CreditCard, Mail, Globe, Moon, Sun, Save, Check } from 'lucide-react';
+- Leading source signals: 'use client'; | import { useState } from 'react'; | import { User, Bell, Shield, CreditCard, Mail, Globe, Moon, Sun, Save, Check } from '@letbuyy/ui';
 - Contains client component directive: yes
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48669,10 +48669,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 7
-- Import sample: ./globals.css, @/components/auth-provider, @/components/layout/footer, @/components/layout/navbar, @/components/theme-provider, next, next/font/google
+- Import sample: ./globals.css, @/components/auth-provider, @/components/layout/footer, @/components/layout/navbar, @/components/theme-provider, next, next/font/local
 - Env names referenced: none detected
 - Flags: uses localStorage
-- Leading source signals: import type { Metadata } from 'next'; | import { Inter } from 'next/font/google'; | import './globals.css'; | import Navbar from '@/components/layout/navbar';
+- Leading source signals: import type { Metadata } from 'next'; | import { Inter } from 'next/font/local'; | import './globals.css'; | import Navbar from '@/components/layout/navbar';
 - Contains client component directive: no
 - Contains localStorage usage: yes
 - Contains inline React styles: no
@@ -48737,10 +48737,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/components/theme-card, @/lib/theme-service, lucide-react, next/link
+- Import sample: @/components/theme-card, @/lib/theme-service, @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: TypeScript any, inline React style, payment provider reference
-- Leading source signals: import Link from 'next/link'; | import { ArrowRight, Sparkles, Zap, Smartphone, Lock, Globe, Code, ShoppingBag, Palette, FileText, Rocket, Star, Check, ChevronRight } from 'lucide-react'; | import ThemeCard from '@/components/theme-card'; | import { ThemeService } from '@/lib/theme-service';
+- Leading source signals: import Link from 'next/link'; | import { ArrowRight, Sparkles, Zap, Smartphone, Lock, Globe, Code, ShoppingBag, Palette, FileText, Rocket, Star, Check, ChevronRight } from '@letbuyy/ui'; | import ThemeCard from '@/components/theme-card'; | import { ThemeService } from '@/lib/theme-service';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48805,7 +48805,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 4
-- Import sample: @/lib/utils, lucide-react, next/link, react
+- Import sample: @/lib/utils, @letbuyy/ui, next/link, react
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, inline React style
 - Leading source signals: 'use client'; | import { useState } from 'react'; | import Link from 'next/link';
@@ -48873,10 +48873,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 8
-- Import sample: @/components/theme-card, @/lib/theme-service, @/lib/utils, lucide-react, next, next/image, next/link, next/navigation
+- Import sample: @/components/theme-card, @/lib/theme-service, @/lib/utils, @letbuyy/ui, next, next/image, next/link, next/navigation
 - Env names referenced: none detected
 - Flags: TypeScript any, inline React style
-- Leading source signals: import Image from 'next/image'; | import Link from 'next/link'; | import { notFound } from 'next/navigation'; | import { Star, Download, Heart, ExternalLink, ArrowLeft, Check, ShoppingCart, Globe, Tag, Calendar, User, Package } from 'lucide-react';
+- Leading source signals: import Image from 'next/image'; | import Link from 'next/link'; | import { notFound } from 'next/navigation'; | import { Star, Download, Heart, ExternalLink, ArrowLeft, Check, ShoppingCart, Globe, Tag, Calendar, User, Package } from '@letbuyy/ui';
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: yes
@@ -48941,7 +48941,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/components/theme-card, @/lib/utils, lucide-react, next/navigation, react
+- Import sample: @/components/theme-card, @/lib/utils, @letbuyy/ui, next/navigation, react
 - Env names referenced: none detected
 - Flags: TypeScript any, client component, console.error, inline React style
 - Leading source signals: 'use client'; | import { useState, useEffect, useCallback, Suspense } from 'react'; | import { useSearchParams } from 'next/navigation';
@@ -49077,10 +49077,10 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 2
-- Import sample: lucide-react, next/link
+- Import sample: @letbuyy/ui, next/link
 - Env names referenced: none detected
 - Flags: none detected
-- Leading source signals: import Link from 'next/link'; | import { Palette, Github, Twitter, Mail } from 'lucide-react'; | const FOOTER_LINKS = {
+- Leading source signals: import Link from 'next/link'; | import { Palette, Github, Twitter, Mail } from '@letbuyy/ui'; | const FOOTER_LINKS = {
 - Contains client component directive: no
 - Contains localStorage usage: no
 - Contains inline React styles: no
@@ -49145,7 +49145,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 6
-- Import sample: @/components/theme-provider, @/hooks/useAuth, @/lib/utils, lucide-react, next/link, react
+- Import sample: @/components/theme-provider, @/hooks/useAuth, @/lib/utils, @letbuyy/ui, next/link, react
 - Env names referenced: NEXT_PUBLIC_ACCOUNTS_URL
 - Flags: client component, inline React style
 - Leading source signals: 'use client'; | import Link from 'next/link'; | import { useState, useEffect, useRef } from 'react';
@@ -49213,7 +49213,7 @@ The following catalog is intentionally verbose to satisfy autonomous execution n
 - Next handlers: none detected
 - Hono routes detected: none detected
 - Import count: 5
-- Import sample: @/lib/utils, @/types, lucide-react, next/image, next/link
+- Import sample: @/lib/utils, @/types, @letbuyy/ui, next/image, next/link
 - Env names referenced: none detected
 - Flags: client component
 - Leading source signals: 'use client'; | import Image from 'next/image'; | import Link from 'next/link';

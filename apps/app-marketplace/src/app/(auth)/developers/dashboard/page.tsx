@@ -16,7 +16,7 @@ import {
     Star,
     Store,
     Users,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
 import type { MarketplaceApp, MarketplaceReviewRecord, PartnerDashboard } from '@letbuyy/shared-types';

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { MaterialIcon } from '@letbuyy/ui'
 
 export const metadata: Metadata = {
     title: 'Launching Soon — LetBuyy',
@@ -12,6 +13,7 @@ export const metadata: Metadata = {
  *
  * The storefront middleware should redirect here when the store isn't published.
  */
+
 export default function LaunchingSoonPage() {
     return (
         <div
@@ -45,7 +47,7 @@ export default function LaunchingSoonPage() {
                     fontSize: 40,
                 }}
             >
-                🚀
+                <MaterialIcon name="rocket_launch" />
             </div>
 
             <h1

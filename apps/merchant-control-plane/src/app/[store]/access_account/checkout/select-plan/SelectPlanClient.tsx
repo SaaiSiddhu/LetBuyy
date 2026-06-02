@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Select Plan Client – Shopify-level
@@ -80,9 +81,9 @@ export default function SelectPlanClient({
                     color: 'var(--text-secondary, #94A3B8)',
                     marginBottom: 16,
                 }}>
-                    <span className="material-symbols-outlined" style={{ fontSize: 16 }}>storefront</span>
+                    <MaterialIcon name="storefront" style={{ fontSize: 16 }} />
                     <span>{storeName}</span>
-                    <span className="material-symbols-outlined" style={{ fontSize: 14, opacity: 0.5 }}>chevron_right</span>
+                    <MaterialIcon name="chevron_right" style={{ fontSize: 14, opacity: 0.5 }} />
                     <span>Select a plan</span>
                 </div>
 
@@ -122,7 +123,7 @@ export default function SelectPlanClient({
                             fontSize: 13,
                             color: 'var(--text-secondary, #94A3B8)',
                         }}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 16, color: 'var(--primary, #8B5CF6)' }}>{h.icon}</span>
+                            <MaterialIcon name={h.icon} style={{ fontSize: 16, color: 'var(--primary, #8B5CF6)' }} />
                             <span>{h.text}</span>
                         </div>
                     ))}
@@ -379,11 +380,7 @@ export default function SelectPlanClient({
                                                 fontSize: 13,
                                                 color: 'var(--text-secondary, #94A3B8)',
                                             }}>
-                                                <span className="material-symbols-outlined" style={{
-                                                    fontSize: 16,
-                                                    color: 'var(--primary-light, #A78BFA)',
-                                                    flexShrink: 0,
-                                                }}>{f.icon}</span>
+                                                <MaterialIcon name={f.icon} style={{ fontSize: 16, color: 'var(--primary-light, #A78BFA)', flexShrink: 0, }} />
                                                 {f.label}
                                             </li>
                                         ))}
@@ -403,12 +400,7 @@ export default function SelectPlanClient({
                     border: '1px solid var(--border, #334155)',
                     marginBottom: 48,
                 }}>
-                    <span className="material-symbols-outlined" style={{
-                        fontSize: 48,
-                        color: 'var(--text-hint, #64748B)',
-                        marginBottom: 16,
-                        display: 'block',
-                    }}>credit_card</span>
+                    <MaterialIcon name="credit_card" style={{ fontSize: 48, color: 'var(--text-hint, #64748B)', marginBottom: 16, display: 'block', }} />
                     <p style={{
                         fontSize: 16,
                         fontWeight: 600,
@@ -445,9 +437,7 @@ export default function SelectPlanClient({
                                 transition: 'all 0.2s',
                             }}
                         >
-                            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>
-                                {showCompare ? 'expand_less' : 'compare'}
-                            </span>
+                            <MaterialIcon name={showCompare ? 'expand_less' : 'compare'} style={{ fontSize: 18 }} />
                             {showCompare ? 'Hide comparison' : 'Compare all features'}
                         </button>
                     </div>
@@ -540,9 +530,9 @@ export default function SelectPlanClient({
                                                         justifyContent: 'center',
                                                     }}>
                                                         {val === true ? (
-                                                            <span className="material-symbols-outlined" style={{ fontSize: 18, color: '#22C55E' }}>check_circle</span>
+                                                            <MaterialIcon name="check_circle" style={{ fontSize: 18, color: '#22C55E' }} />
                                                         ) : val === false ? (
-                                                            <span className="material-symbols-outlined" style={{ fontSize: 18, opacity: 0.3 }}>remove</span>
+                                                            <MaterialIcon name="remove" style={{ fontSize: 18, opacity: 0.3 }} />
                                                         ) : (
                                                             <span>{String(val)}</span>
                                                         )}

@@ -1,33 +1,48 @@
+import {
+    BarChart3,
+    CreditCard,
+    Link2,
+    MousePointerClick,
+    Package,
+    Smartphone,
+    type LucideIcon,
+} from '@letbuyy/ui'
+
 export default function FeaturesSection() {
-    const features = [
+    const features: Array<{
+        icon: LucideIcon
+        title: string
+        desc: string
+        large?: boolean
+    }> = [
         {
-            icon: '🎯',
+            icon: MousePointerClick,
             title: 'Drag & Drop Builder',
             desc: 'No coding required. Build beautiful pages with our intuitive editor.',
             large: true
         },
         {
-            icon: '📱',
+            icon: Smartphone,
             title: 'Mobile-First Design',
             desc: 'Your site looks amazing on every device, automatically.'
         },
         {
-            icon: '💳',
+            icon: CreditCard,
             title: 'Indian Payments',
             desc: 'Accept UPI, cards, wallets via Razorpay & Stripe.'
         },
         {
-            icon: '📦',
+            icon: Package,
             title: 'Inventory Tracking',
             desc: 'Real-time stock monitoring with low-stock alerts.'
         },
         {
-            icon: '📊',
+            icon: BarChart3,
             title: 'Analytics Dashboard',
             desc: 'Track sales, visitors, and conversions in real-time.'
         },
         {
-            icon: '🔗',
+            icon: Link2,
             title: 'Custom Domains',
             desc: 'Use your own domain or get a free *.letbuyy.store subdomain.'
         }
@@ -45,13 +60,19 @@ export default function FeaturesSection() {
                 </div>
 
                 <div className="features-grid">
-                    {features.map((feature, index) => (
-                        <div key={index} className={`feature-card ${feature.large ? 'large' : ''}`}>
-                            <div className="feature-icon">{feature.icon}</div>
-                            <h3 className="feature-title">{feature.title}</h3>
-                            <p className="feature-desc">{feature.desc}</p>
-                        </div>
-                    ))}
+                    {features.map((feature) => {
+                        const Icon = feature.icon
+
+                        return (
+                            <div key={feature.title} className={`feature-card ${feature.large ? 'large' : ''}`}>
+                                <div className="feature-icon">
+                                    <Icon aria-hidden="true" />
+                                </div>
+                                <h3 className="feature-title">{feature.title}</h3>
+                                <p className="feature-desc">{feature.desc}</p>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
         </section>

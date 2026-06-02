@@ -1,5 +1,7 @@
 'use client'
 
+import { MaterialIcon } from '@letbuyy/ui'
+
 /* ——————————————————————————————————————
    Plan Card Component
    Displays a single plan with pricing, 
@@ -111,9 +113,7 @@ export default function PlanCard({ plan, billingPeriod, isCurrentPlan, onSelect 
             <ul className="plan-card__features">
                 {(plan.features as PlanFeature[]).map((feature, i) => (
                     <li key={i} className="plan-card__feature">
-                        <span className="material-symbols-outlined plan-card__feature-icon">
-                            {feature.icon}
-                        </span>
+                        <MaterialIcon name={feature.icon} className="plan-card__feature-icon" />
                         <span>{feature.label}</span>
                     </li>
                 ))}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Check, X, Sparkles, ArrowRight, ChevronDown } from 'lucide-react';
+import { Check, X, Sparkles, ArrowRight, ChevronDown } from '@letbuyy/ui';
 import { cn } from '@/lib/utils';
 
 const PLANS = [

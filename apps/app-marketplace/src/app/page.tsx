@@ -4,6 +4,7 @@ import { HeroSection } from '@/components/HeroSection';
 import { AppCard } from '@/components/AppCard';
 import { CategoryGroupGrid } from '@/components/CategoryGrid';
 import { AppService } from '@/lib/app-service';
+import { Clock, Flame, LayoutGrid, Star } from '@letbuyy/ui';
 import Link from 'next/link';
 
 export default async function MarketplacePage() {
@@ -26,7 +27,9 @@ export default async function MarketplacePage() {
                 {/* Staff Picks */}
                 <section className="appstore-section" style={{ animationDelay: '0.1s' }}>
                     <div className="appstore-section-header">
-                        <h2 className="appstore-section-title">⭐ Staff Picks</h2>
+                        <h2 className="appstore-section-title">
+                            <Star size={20} aria-hidden="true" /> Staff Picks
+                        </h2>
                         <Link href="/collections/staff-picks" className="appstore-section-link">
                             View all →
                         </Link>
@@ -41,7 +44,9 @@ export default async function MarketplacePage() {
                 {/* Trending This Week */}
                 <section className="appstore-section" style={{ animationDelay: '0.2s' }}>
                     <div className="appstore-section-header">
-                        <h2 className="appstore-section-title">🔥 Trending This Week</h2>
+                        <h2 className="appstore-section-title">
+                            <Flame size={20} aria-hidden="true" /> Trending This Week
+                        </h2>
                         <Link href="/search?sort=trending" className="appstore-section-link">
                             View all →
                         </Link>
@@ -56,7 +61,9 @@ export default async function MarketplacePage() {
                 {/* Browse by Category */}
                 <section className="appstore-section" style={{ animationDelay: '0.3s' }}>
                     <div className="appstore-section-header">
-                        <h2 className="appstore-section-title">📂 Browse by Category</h2>
+                        <h2 className="appstore-section-title">
+                            <LayoutGrid size={20} aria-hidden="true" /> Browse by Category
+                        </h2>
                         <Link href="/categories" className="appstore-section-link">
                             View all →
                         </Link>
@@ -67,7 +74,9 @@ export default async function MarketplacePage() {
                 {/* Recently Added */}
                 <section className="appstore-section" style={{ animationDelay: '0.4s' }}>
                     <div className="appstore-section-header">
-                        <h2 className="appstore-section-title">🆕 Recently Added</h2>
+                        <h2 className="appstore-section-title">
+                            <Clock size={20} aria-hidden="true" /> Recently Added
+                        </h2>
                         <Link href="/search?sort=recent" className="appstore-section-link">
                             View all →
                         </Link>

@@ -8,7 +8,7 @@ import { useEffect, useState, useCallback } from 'react';
 import type { CustomerAddress } from '@letbuyy/shared-types';
 import {
     MapPin, Plus, Trash2, Edit3, Star, Loader2, X, Home, Briefcase, Check,
-} from 'lucide-react';
+} from '@letbuyy/ui';
 
 type AddressRow = Pick<CustomerAddress, 'id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code' | 'country' | 'is_default'> &
     Partial<Pick<CustomerAddress, 'label' | 'address_line2' | 'landmark'>> & {

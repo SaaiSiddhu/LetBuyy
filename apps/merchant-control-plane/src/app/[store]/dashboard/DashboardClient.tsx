@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { SetupStatus, StoreInfo } from './page'
+import { MaterialIcon } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Types
@@ -41,7 +42,7 @@ export default function DashboardClient({ store, storeInfo, setupStatus }: Dashb
                 <div className="setup-store-name">
                     <h1>{storeInfo.name || store}</h1>
                     <Link href={`/${store}/settings`} className="setup-edit-icon" title="Edit store name">
-                        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>edit</span>
+                        <MaterialIcon name="edit" style={{ fontSize: '18px' }} />
                     </Link>
                 </div>
 
@@ -85,9 +86,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
                             <div className="setup-thumb-img-stack">
                                 <div className="setup-thumb-img-back" />
                                 <div className="setup-thumb-img-front">
-                                    <span className="material-symbols-outlined" style={{ fontSize: '32px', color: 'var(--text-hint)' }}>
-                                        {config.primary.icon}
-                                    </span>
+                                    <MaterialIcon name={config.primary.icon} style={{ fontSize: '32px', color: 'var(--text-hint)' }} />
                                 </div>
                             </div>
                         </div>
@@ -108,9 +107,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
                             <div className="setup-thumb-theme-stack">
                                 <div className="setup-thumb-theme-back" />
                                 <div className="setup-thumb-theme-front">
-                                    <span className="material-symbols-outlined" style={{ fontSize: '28px', color: 'var(--text-hint)' }}>
-                                        format_size
-                                    </span>
+                                    <MaterialIcon name="format_size" style={{ fontSize: '28px', color: 'var(--text-hint)' }} />
                                 </div>
                             </div>
                         </div>
@@ -132,7 +129,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
                         <h4>{card.title}</h4>
                         <div className="setup-mini-icons">
                             <div className="setup-shipping-icon">
-                                <span className="material-symbols-outlined" style={{ fontSize: '24px' }}>{card.icon}</span>
+                                <MaterialIcon name={card.icon} style={{ fontSize: '24px' }} />
                             </div>
                         </div>
                         {card.showDomain ? (
@@ -145,7 +142,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain }: SetupCardsP
                                         title="Copy domain"
                                         type="button"
                                     >
-                                        <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>content_copy</span>
+                                        <MaterialIcon name="content_copy" style={{ fontSize: '14px' }} />
                                     </button>
                                 </div>
                                 <Link href={`/${store}/settings`} className="setup-btn-outline">
@@ -245,7 +242,7 @@ function PlanBanner({
     return (
         <div className="setup-plan-banner">
             <div className="setup-plan-banner-text">
-                <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>settings</span>
+                <MaterialIcon name="settings" style={{ fontSize: '16px' }} />
                 <span>{bannerText}</span>
             </div>
             <div className="setup-plan-banner-right">
@@ -257,7 +254,7 @@ function PlanBanner({
                     onClick={() => setDismissed(true)}
                     type="button"
                 >
-                    <span className="material-symbols-outlined" style={{ fontSize: '16px' }}>close</span>
+                    <MaterialIcon name="close" style={{ fontSize: '16px' }} />
                 </button>
             </div>
         </div>
@@ -282,9 +279,7 @@ function PlanUpsell({ store }: { store: string }) {
                 </Link>
             </div>
             <div className="setup-upsell-visual">
-                <span className="material-symbols-outlined" style={{ fontSize: '56px', color: '#d4a853' }}>
-                    monetization_on
-                </span>
+                <MaterialIcon name="monetization_on" style={{ fontSize: '56px', color: '#d4a853' }} />
             </div>
         </div>
     )

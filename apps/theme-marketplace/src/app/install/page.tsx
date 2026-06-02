@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { ArrowLeft, CheckCircle, ExternalLink, Package, Store } from 'lucide-react';
+import { ArrowLeft, CheckCircle, ExternalLink, Package, Store } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import type { Metadata } from 'next';
 

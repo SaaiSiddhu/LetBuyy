@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Submission {
     id: string; full_name: string; email: string; phone: string | null
@@ -74,7 +75,7 @@ export default function ContactPage() {
                         <div className="products-list-card" style={{ padding: 24 }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
                                 <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{selected.subject || 'No subject'}</h3>
-                                <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)' }}><span className="material-symbols-outlined" style={{ fontSize: 20 }}>close</span></button>
+                                <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-hint)' }}><MaterialIcon name="close" style={{ fontSize: 20 }} /></button>
                             </div>
                             <div style={{ fontSize: 13, color: 'var(--text-secondary)', marginBottom: 4 }}><strong>{selected.full_name}</strong> • {selected.email}{selected.phone ? ` • ${selected.phone}` : ''}</div>
                             <div style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16 }}>{fD(selected.created_at)}</div>

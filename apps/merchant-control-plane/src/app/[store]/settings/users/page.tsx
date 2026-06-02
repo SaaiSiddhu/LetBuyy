@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import { useParams } from 'next/navigation'
+import { MaterialIcon } from '@letbuyy/ui'
 
 interface Employee {
     id: string
@@ -108,7 +109,7 @@ export default function UsersSettingsPage() {
                     <h2 style={{ margin: 0 }}>Staff</h2>
                     {!showAdd && (
                         <button className="settings-btn-primary" style={{ padding: '7px 14px', fontSize: 12 }} onClick={() => setShowAdd(true)}>
-                            <span className="material-symbols-outlined" style={{ fontSize: 16 }}>add</span>
+                            <MaterialIcon name="add" style={{ fontSize: 16 }} />
                             Add staff
                         </button>
                     )}
@@ -139,7 +140,7 @@ export default function UsersSettingsPage() {
 
                 {employees.length === 0 && !showAdd ? (
                     <div style={{ textAlign: 'center', padding: '24px 0' }}>
-                        <span className="material-symbols-outlined" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }}>group_add</span>
+                        <MaterialIcon name="group_add" style={{ fontSize: 40, color: 'var(--text-hint)', display: 'block', marginBottom: 8 }} />
                         <p>No staff members added yet.</p>
                     </div>
                 ) : (
