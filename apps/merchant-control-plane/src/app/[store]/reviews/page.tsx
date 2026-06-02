@@ -1,8 +1,29 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { BadgeCheck, MaterialIcon, Star } from '@letbuyy/ui'
+import {
+    Badge,
+    BadgeCheck,
+    Banner,
+    Button,
+    Card,
+    CheckCircle2,
+    ConfirmDialog,
+    EmptyState,
+    MessageSquare,
+    Page,
+    PageHeader,
+    RefreshCw,
+    Section,
+    ShieldCheck,
+    Skeleton,
+    Star,
+    Tabs,
+    Trash2,
+    XCircle,
+    useToast,
+} from '@letbuyy/ui'
 
 interface Review {
     id: string
@@ -17,6 +38,8 @@ interface Review {
     is_verified: boolean
     created_at: string
 }
+
+type ReviewFilter = 'all' | 'pending' | 'approved' | 'rejected'
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -33,45 +56,88 @@ function getErrorMessage(payload: unknown, fallback: string) {
     return fallback
 }
 
+function formatDate(value: string) {
+    return new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })
+}
+
+function reviewStatusVariant(status: Review['status']) {
+    if (status === 'approved') return 'success' as const
+    if (status === 'pending') return 'warning' as const
+    return 'critical' as const
+}
+
+function reviewStatusLabel(status: Review['status']) {
+    return status.charAt(0).toUpperCase() + status.slice(1)
+}
+
+function ReviewStars({ rating }: { rating: number }) {
+    return (
+        <div className="flex items-center gap-[var(--lb-space-1)]" aria-label={`${rating} out of 5 stars`}>
+            {Array.from({ length: 5 }, (_, index) => {
+                const filled = index < rating
+                return (
+                    <Star
+                        key={index}
+                        className={
+                            filled
+                                ? 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] fill-[var(--lb-color-warning)] text-[var(--lb-color-warning)]'
+                                : 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-border-strong)]'
+                        }
+                        aria-hidden="true"
+                    />
+                )
+            })}
+        </div>
+    )
+}
+
 export default function ReviewsPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [loading, setLoading] = useState(true)
     const [reviews, setReviews] = useState<Review[]>([])
-    const [filter, setFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all')
+    const [filter, setFilter] = useState<ReviewFilter>('all')
     const [updating, setUpdating] = useState<string | null>(null)
-    const [error, setError] = useState<string | null>(null)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [actionError, setActionError] = useState<string | null>(null)
+    const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null)
 
-    const loadData = useCallback(async () => {
-        setLoading(true)
-        setError(null)
+    const loadData = useCallback(async (options?: { quiet?: boolean }) => {
+        if (!options?.quiet) setLoading(true)
+        setLoadError(null)
         setActionError(null)
 
         try {
             const response = await fetch(
                 `/api/stores/${encodeURIComponent(store)}/reviews?status=${encodeURIComponent(filter)}&limit=100`,
-                { cache: 'no-store' }
+                { cache: 'no-store' },
             )
             const payload = await response.json().catch(() => null)
 
             if (!response.ok) {
-                setReviews([])
-                setError(getErrorMessage(payload, 'Unable to load reviews'))
-                return
+                throw new Error(getErrorMessage(payload, 'Unable to load reviews'))
             }
 
             setReviews(Array.isArray(payload?.data) ? payload.data : [])
-        } catch {
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load reviews'
             setReviews([])
-            setError('Unable to load reviews')
+            setLoadError(message)
+            notify({
+                title: 'Reviews could not load',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setLoading(false)
         }
-    }, [store, filter])
+    }, [filter, notify, store])
 
-    useEffect(() => { loadData() }, [loadData])
+    useEffect(() => {
+        void loadData()
+    }, [loadData])
 
-    const updateStatus = async (id: string, status: 'approved' | 'rejected') => {
+    const updateStatus = useCallback(async (id: string, status: 'approved' | 'rejected') => {
         setUpdating(id)
         setActionError(null)
 
@@ -84,200 +150,304 @@ export default function ReviewsPage() {
             const payload = await response.json().catch(() => null)
 
             if (!response.ok) {
-                setActionError(getErrorMessage(payload, 'Unable to update review'))
-                return
+                throw new Error(getErrorMessage(payload, 'Unable to update review'))
             }
 
             const updatedReview = payload?.data as Partial<Review> | undefined
-            setReviews(prev => prev.map(r => r.id === id ? { ...r, ...updatedReview, status } : r))
-        } catch {
-            setActionError('Unable to update review')
+            setReviews((current) => current.map((review) => (review.id === id ? { ...review, ...updatedReview, status } : review)))
+            notify({
+                title: status === 'approved' ? 'Review approved' : 'Review rejected',
+                description: 'The storefront review status was updated.',
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to update review'
+            setActionError(message)
+            notify({
+                title: 'Could not update review',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setUpdating(null)
         }
-    }
+    }, [notify, store])
 
-    const deleteReview = async (id: string) => {
-        if (!confirm('Permanently delete this review?')) return
-        setUpdating(id)
+    const deleteReview = useCallback(async () => {
+        if (!reviewToDelete || updating === reviewToDelete.id) return
+        setUpdating(reviewToDelete.id)
         setActionError(null)
 
         try {
-            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/reviews/${encodeURIComponent(id)}`, {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/reviews/${encodeURIComponent(reviewToDelete.id)}`, {
                 method: 'DELETE',
             })
             const payload = await response.json().catch(() => null)
 
             if (!response.ok) {
-                setActionError(getErrorMessage(payload, 'Unable to delete review'))
-                return
+                throw new Error(getErrorMessage(payload, 'Unable to delete review'))
             }
 
-            setReviews(prev => prev.filter(r => r.id !== id))
-        } catch {
-            setActionError('Unable to delete review')
+            notify({
+                title: 'Review deleted',
+                description: `The review from ${reviewToDelete.customer_name} was removed.`,
+                variant: 'success',
+            })
+            setReviews((current) => current.filter((review) => review.id !== reviewToDelete.id))
+            setReviewToDelete(null)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to delete review'
+            setActionError(message)
+            notify({
+                title: 'Could not delete review',
+                description: message,
+                variant: 'critical',
+            })
         } finally {
             setUpdating(null)
         }
-    }
+    }, [notify, reviewToDelete, store, updating])
 
-    const renderStars = (rating: number) => {
-        return Array.from({ length: 5 }, (_, i) => (
-            <Star
-                key={i}
-                size={14}
-                fill={i < rating ? '#f59e0b' : 'none'}
-                stroke={i < rating ? '#f59e0b' : 'var(--border)'}
-                strokeWidth={i < rating ? 0 : 2}
-            />
-        ))
-    }
+    const visibleCounts = useMemo(() => ({
+        approved: reviews.filter((review) => review.status === 'approved').length,
+        pending: reviews.filter((review) => review.status === 'pending').length,
+        rejected: reviews.filter((review) => review.status === 'rejected').length,
+        verified: reviews.filter((review) => review.is_verified).length,
+    }), [reviews])
 
-    const pendingCount = reviews.filter(r => r.status === 'pending').length
+    const averageRating = useMemo(() => {
+        if (reviews.length === 0) return '0.0'
+        const total = reviews.reduce((sum, review) => sum + review.rating, 0)
+        return (total / reviews.length).toFixed(1)
+    }, [reviews])
+
+    const tabItems = useMemo(() => ([
+        { value: 'all', label: 'All', badge: filter === 'all' ? String(reviews.length) : undefined, content: null },
+        { value: 'pending', label: 'Pending', badge: filter === 'pending' ? String(reviews.length) : undefined, content: null },
+        { value: 'approved', label: 'Approved', badge: filter === 'approved' ? String(reviews.length) : undefined, content: null },
+        { value: 'rejected', label: 'Rejected', badge: filter === 'rejected' ? String(reviews.length) : undefined, content: null },
+    ]), [filter, reviews.length])
 
     if (loading) {
         return (
-            <div style={{ padding: 32 }}>
-                <div className="settings-skeleton" style={{ width: 200, height: 28, marginBottom: 24 }} />
-                {[1, 2, 3].map(i => (
-                    <div key={i} className="settings-skeleton" style={{ width: '100%', height: 100, marginBottom: 12 }} />
-                ))}
-            </div>
+            <Page>
+                <PageHeader
+                    title="Product reviews"
+                    description="Moderate customer feedback before it appears on product pages."
+                    breadcrumbs={[{ label: 'Store' }, { label: 'Reviews' }]}
+                />
+                <Card>
+                    <Section title="Review moderation queue">
+                        <Skeleton variant="table" lines={5} />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
     return (
-        <div style={{ padding: 32, maxWidth: 960 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
-                <div>
-                    <h1 style={{ fontSize: 20, fontWeight: 600, margin: 0 }}>Product reviews</h1>
-                    <p style={{ fontSize: 13, color: 'var(--text-hint)', margin: '4px 0 0' }}>
-                        {pendingCount > 0 ? `${pendingCount} review${pendingCount > 1 ? 's' : ''} awaiting moderation` : 'All reviews moderated'}
-                    </p>
-                </div>
-            </div>
+        <Page>
+            <PageHeader
+                title="Product reviews"
+                description={visibleCounts.pending > 0 ? `${visibleCounts.pending} review${visibleCounts.pending > 1 ? 's' : ''} awaiting moderation.` : 'All visible reviews are moderated.'}
+                breadcrumbs={[{ label: 'Store' }, { label: 'Reviews' }]}
+                secondaryActions={[
+                    {
+                        label: 'Refresh',
+                        onClick: () => void loadData(),
+                        icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    },
+                ]}
+            />
 
-            {/* Filter tabs */}
-            <div style={{ display: 'flex', gap: 4, marginBottom: 20, borderBottom: '1px solid var(--border)', paddingBottom: 0 }}>
-                {(['all', 'pending', 'approved', 'rejected'] as const).map(f => (
-                    <button
-                        key={f}
-                        onClick={() => { setFilter(f); setLoading(true) }}
-                        style={{
-                            padding: '8px 16px', fontSize: 13, fontWeight: filter === f ? 600 : 400,
-                            background: 'none', border: 'none', cursor: 'pointer',
-                            borderBottom: filter === f ? '2px solid var(--primary)' : '2px solid transparent',
-                            color: filter === f ? 'var(--text-primary)' : 'var(--text-hint)',
-                            textTransform: 'capitalize',
-                        }}
-                    >
-                        {f}
-                        {f === 'pending' && pendingCount > 0 && (
-                            <span style={{ marginLeft: 6, background: 'var(--danger, #e53e3e)', color: '#fff', borderRadius: 10, padding: '1px 7px', fontSize: 11, fontWeight: 600 }}>{pendingCount}</span>
-                        )}
-                    </button>
-                ))}
-            </div>
-
-            {(error || actionError) && reviews.length > 0 && (
-                <div style={{ marginBottom: 16, padding: 12, border: '1px solid var(--danger, #e53e3e)', borderRadius: 8, color: 'var(--danger, #e53e3e)', fontSize: 13 }}>
-                    {actionError || error}
-                </div>
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Reviews could not load"
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                >
+                    {loadError}
+                </Banner>
             )}
 
-            {/* Reviews list */}
-            {error && reviews.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                    <MaterialIcon name="error" style={{ fontSize: 48, color: 'var(--danger, #e53e3e)', display: 'block', marginBottom: 12 }} />
-                    <p style={{ fontSize: 14, color: 'var(--text-primary)', margin: '0 0 8px' }}>Unable to load reviews</p>
-                    <p style={{ fontSize: 13, color: 'var(--text-hint)', margin: '0 0 16px' }}>{error}</p>
-                    <button
-                        type="button"
-                        onClick={loadData}
-                        style={{ padding: '7px 14px', fontSize: 13, fontWeight: 600, background: 'var(--primary)', color: '#fff', border: 0, borderRadius: 6, cursor: 'pointer' }}
-                    >
-                        Retry
-                    </button>
-                </div>
-            ) : reviews.length === 0 ? (
-                <div style={{ textAlign: 'center', padding: '48px 0' }}>
-                    <MaterialIcon name="rate_review" style={{ fontSize: 48, color: 'var(--text-hint)', display: 'block', marginBottom: 12 }} />
-                    <p style={{ fontSize: 14, color: 'var(--text-hint)' }}>No {filter !== 'all' ? filter : ''} reviews yet</p>
-                </div>
-            ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {reviews.map(review => (
-                        <div key={review.id} style={{ background: 'var(--bg-card, #fff)', border: '1px solid var(--border)', borderRadius: 10, padding: 16, position: 'relative' }}>
-                            {/* Status badge */}
-                            <div style={{ position: 'absolute', top: 12, right: 12 }}>
-                                <span style={{
-                                    fontSize: 11, fontWeight: 600, padding: '3px 8px', borderRadius: 4,
-                                    background: review.status === 'approved' ? 'rgba(72,187,120,0.1)' : review.status === 'pending' ? 'rgba(236,201,75,0.15)' : 'rgba(229,62,62,0.1)',
-                                    color: review.status === 'approved' ? '#38a169' : review.status === 'pending' ? '#d69e2e' : '#e53e3e',
-                                }}>
-                                    {review.status}
-                                </span>
-                            </div>
+            {actionError && !loadError && (
+                <Banner variant="critical" title="Review action failed">
+                    {actionError}
+                </Banner>
+            )}
 
-                            {/* Header */}
-                            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                                <div>{renderStars(review.rating)}</div>
-                                <span style={{ fontSize: 12, color: 'var(--text-hint)' }}>
-                                    {new Date(review.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-                                </span>
-                            </div>
-
-                            {/* Title */}
-                            {review.title && <h3 style={{ fontSize: 14, fontWeight: 600, margin: '0 0 4px' }}>{review.title}</h3>}
-
-                            {/* Body */}
-                            <p style={{ fontSize: 13, color: 'var(--text-secondary)', margin: '0 0 8px', lineHeight: 1.5 }}>{review.body}</p>
-
-                            {/* Meta */}
-                            <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--text-hint)', marginBottom: 12 }}>
-                                <span>
-                                    <strong style={{ color: 'var(--text-primary)' }}>{review.customer_name}</strong>
-                                    {review.is_verified && (
-                                        <span style={{ color: '#38a169', marginLeft: 4, fontSize: 11, display: 'inline-flex', alignItems: 'center', gap: 3 }}>
-                                            <BadgeCheck size={12} aria-hidden="true" /> Verified
-                                        </span>
-                                    )}
-                                </span>
-                                <span>·</span>
-                                <span>{review.product_name}</span>
-                            </div>
-
-                            {/* Actions */}
-                            <div style={{ display: 'flex', gap: 6 }}>
-                                {review.status !== 'approved' && (
-                                    <button
-                                        onClick={() => updateStatus(review.id, 'approved')}
-                                        disabled={updating === review.id}
-                                        style={{ padding: '5px 12px', fontSize: 12, fontWeight: 500, background: '#38a169', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer' }}
-                                    >
-                                        {updating === review.id ? '...' : 'Approve'}
-                                    </button>
-                                )}
-                                {review.status !== 'rejected' && (
-                                    <button
-                                        onClick={() => updateStatus(review.id, 'rejected')}
-                                        disabled={updating === review.id}
-                                        style={{ padding: '5px 12px', fontSize: 12, fontWeight: 500, background: 'transparent', color: 'var(--danger, #e53e3e)', border: '1px solid var(--danger, #e53e3e)', borderRadius: 6, cursor: 'pointer' }}
-                                    >
-                                        Reject
-                                    </button>
-                                )}
-                                <button
-                                    onClick={() => deleteReview(review.id)}
-                                    style={{ padding: '5px 12px', fontSize: 12, fontWeight: 500, background: 'transparent', color: 'var(--text-hint)', border: '1px solid var(--border)', borderRadius: 6, cursor: 'pointer', marginLeft: 'auto' }}
-                                >
-                                    Delete
-                                </button>
+            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-4">
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <Star className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Average rating</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{averageRating}</p>
                             </div>
                         </div>
-                    ))}
-                </div>
-            )}
-        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-warning-soft)] text-[var(--lb-color-warning)]">
+                                <ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Pending</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{visibleCounts.pending}</p>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-success-soft)] text-[var(--lb-color-success)]">
+                                <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Approved</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{visibleCounts.approved}</p>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section>
+                        <div className="flex items-start gap-[var(--lb-space-3)]">
+                            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-info-soft)] text-[var(--lb-color-info)]">
+                                <BadgeCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </span>
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Verified buyers</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{visibleCounts.verified}</p>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+            </div>
+
+            <Card>
+                <Section
+                    title="Review moderation queue"
+                    description="Approve helpful customer reviews, reject content that should not appear publicly, or remove records when required."
+                >
+                    <Tabs
+                        items={tabItems}
+                        value={filter}
+                        onValueChange={(value) => setFilter(value as ReviewFilter)}
+                    />
+
+                    {reviews.length === 0 ? (
+                        <EmptyState
+                            icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title={filter === 'all' ? 'No reviews yet' : `No ${filter} reviews`}
+                            body={filter === 'all'
+                                ? 'Customer product reviews will appear here when shoppers submit feedback.'
+                                : 'Switch filters or wait for more customer feedback to moderate.'}
+                            primaryAction={<Button variant="secondary" onClick={() => void loadData()}><RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />Refresh</Button>}
+                        />
+                    ) : (
+                        <div className="flex flex-col gap-[var(--lb-space-3)]">
+                            {reviews.map((review) => (
+                                <article
+                                    key={review.id}
+                                    className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]"
+                                >
+                                    <div className="flex flex-col gap-[var(--lb-space-4)] lg:flex-row lg:items-start lg:justify-between">
+                                        <div className="min-w-0 flex-1 space-y-[var(--lb-space-3)]">
+                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                                <ReviewStars rating={review.rating} />
+                                                <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                    {formatDate(review.created_at)}
+                                                </span>
+                                                <Badge label={reviewStatusLabel(review.status)} variant={reviewStatusVariant(review.status)} />
+                                            </div>
+
+                                            {review.title && (
+                                                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                                    {review.title}
+                                                </h3>
+                                            )}
+
+                                            <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                {review.body}
+                                            </p>
+
+                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                <span className="font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">{review.customer_name}</span>
+                                                <span aria-hidden="true">/</span>
+                                                <span>{review.customer_email}</span>
+                                                {review.product_name && (
+                                                    <>
+                                                        <span aria-hidden="true">/</span>
+                                                        <span>{review.product_name}</span>
+                                                    </>
+                                                )}
+                                                {review.is_verified && (
+                                                    <span className="inline-flex items-center gap-[var(--lb-space-1)] text-[var(--lb-color-success)]">
+                                                        <BadgeCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                        Verified purchase
+                                                    </span>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        <div className="flex shrink-0 flex-wrap items-center gap-[var(--lb-space-2)]">
+                                            {review.status !== 'approved' && (
+                                                <Button
+                                                    size="sm"
+                                                    onClick={() => void updateStatus(review.id, 'approved')}
+                                                    loading={updating === review.id}
+                                                >
+                                                    <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    Approve
+                                                </Button>
+                                            )}
+                                            {review.status !== 'rejected' && (
+                                                <Button
+                                                    variant="secondary"
+                                                    size="sm"
+                                                    onClick={() => void updateStatus(review.id, 'rejected')}
+                                                    disabled={updating === review.id}
+                                                >
+                                                    <XCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    Reject
+                                                </Button>
+                                            )}
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => setReviewToDelete(review)}
+                                                disabled={updating === review.id}
+                                            >
+                                                <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </article>
+                            ))}
+                        </div>
+                    )}
+                </Section>
+            </Card>
+
+            <ConfirmDialog
+                open={Boolean(reviewToDelete)}
+                title="Delete review?"
+                description={reviewToDelete ? `This permanently removes the review from ${reviewToDelete.customer_name}.` : 'This permanently removes the selected review.'}
+                confirmLabel={updating === reviewToDelete?.id ? 'Deleting...' : 'Delete review'}
+                destructive
+                onClose={() => {
+                    if (updating !== reviewToDelete?.id) setReviewToDelete(null)
+                }}
+                onConfirm={() => void deleteReview()}
+            />
+        </Page>
     )
 }
