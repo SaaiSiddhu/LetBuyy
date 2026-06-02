@@ -8,6 +8,7 @@ import {
     Banner,
     Button,
     Card,
+    ConfirmDialog,
     EmptyState,
     IndexTable,
     Input,
@@ -19,6 +20,7 @@ import {
     Select,
     Skeleton,
     Tabs,
+    useToast,
     type IndexTableColumn,
 } from '@letbuyy/ui'
 
@@ -161,6 +163,7 @@ function PaymentStatusBadge({ status, method }: { status: string; method: string
 
 export default function OrdersPage() {
     const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
     const [orders, setOrders] = useState<OrderRow[]>([])
     const [totalCount, setTotalCount] = useState(0)
     const [loading, setLoading] = useState(true)
@@ -268,14 +271,32 @@ export default function OrdersPage() {
             const payload = await response.json().catch(() => null) as OrdersPayload | null
 
             if (!response.ok) {
-                setActionError(getErrorMessage(payload, 'Unable to update order'))
+                const message = getErrorMessage(payload, 'Unable to update order')
+                setActionError(message)
+                notify({
+                    title: 'Order update failed',
+                    description: message,
+                    variant: 'critical',
+                })
                 return false
             }
 
             await loadOrders()
+            const order = orders.find(item => item.id === orderId)
+            notify({
+                title: `Order marked ${titleize(status)}`,
+                description: `${order?.order_number || orderId.slice(0, 8)} was updated successfully.`,
+                variant: 'success',
+            })
             return true
         } catch {
-            setActionError('Unable to update order')
+            const message = 'Unable to update order'
+            setActionError(message)
+            notify({
+                title: 'Order update failed',
+                description: message,
+                variant: 'critical',
+            })
             return false
         } finally {
             setUpdatingId(null)
@@ -300,6 +321,7 @@ export default function OrdersPage() {
     }
 
     const activeOrder = orders.find(order => order.id === expandedOrderId) || null
+    const orderToCancel = orders.find(order => order.id === cancellingId) || null
     const activeFilters = [
         filter !== 'all' ? { label: `Status: ${titleize(filter)}`, onRemove: () => setFilter('all') } : null,
         paymentFilter !== 'all' ? { label: `Payment: ${titleize(paymentFilter)}`, onRemove: () => setPaymentFilter('all') } : null,
@@ -400,7 +422,6 @@ export default function OrdersPage() {
                     order={order}
                     updating={updatingId === order.id}
                     fulfilling={fulfillingId === order.id}
-                    cancelling={cancellingId === order.id}
                     trackingNumber={trackingNumber}
                     onTrackingChange={setTrackingNumber}
                     onStatusChange={updateOrderStatus}
@@ -417,8 +438,6 @@ export default function OrdersPage() {
                         setCancellingId(order.id)
                         setFulfillingId(null)
                     }}
-                    onCancelDismiss={() => setCancellingId(null)}
-                    onCancelConfirm={() => handleCancel(order.id)}
                 />
             ),
         },
@@ -506,6 +525,20 @@ export default function OrdersPage() {
                     </Section>
                 </Card>
             )}
+
+            <ConfirmDialog
+                open={Boolean(orderToCancel)}
+                title="Cancel order?"
+                description={`Cancel ${orderToCancel?.order_number || 'this order'} and stop fulfillment from continuing.`}
+                confirmLabel="Cancel order"
+                destructive
+                onClose={() => setCancellingId(null)}
+                onConfirm={() => {
+                    if (orderToCancel) {
+                        void handleCancel(orderToCancel.id)
+                    }
+                }}
+            />
         </Page>
     )
 }
@@ -514,7 +547,6 @@ function OrderActions({
     order,
     updating,
     fulfilling,
-    cancelling,
     trackingNumber,
     onTrackingChange,
     onStatusChange,
@@ -522,13 +554,10 @@ function OrderActions({
     onCancelFulfill,
     onFulfill,
     onStartCancel,
-    onCancelDismiss,
-    onCancelConfirm,
 }: {
     order: OrderRow
     updating: boolean
     fulfilling: boolean
-    cancelling: boolean
     trackingNumber: string
     onTrackingChange: (value: string) => void
     onStatusChange: (orderId: string, status: string) => void
@@ -536,8 +565,6 @@ function OrderActions({
     onCancelFulfill: () => void
     onFulfill: () => void
     onStartCancel: () => void
-    onCancelDismiss: () => void
-    onCancelConfirm: () => void
 }) {
     const stop = (event: SyntheticEvent) => event.stopPropagation()
 
@@ -564,7 +591,7 @@ function OrderActions({
                         Deliver
                     </Button>
                 )}
-                {['pending', 'confirmed', 'processing'].includes(order.status) && !cancelling && (
+                {['pending', 'confirmed', 'processing'].includes(order.status) && (
                     <Button size="sm" variant="destructive" loading={updating} onClick={onStartCancel}>
                         Cancel
                     </Button>
@@ -586,17 +613,6 @@ function OrderActions({
                 </div>
             )}
 
-            {cancelling && (
-                <div className="grid w-full gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-critical)] bg-[var(--lb-color-critical-soft)] p-[var(--lb-space-3)]">
-                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-critical)]">
-                        Cancel this order?
-                    </p>
-                    <div className="flex justify-end gap-[var(--lb-space-2)]">
-                        <Button size="sm" variant="destructive" loading={updating} onClick={onCancelConfirm}>Yes</Button>
-                        <Button size="sm" variant="ghost" onClick={onCancelDismiss}>No</Button>
-                    </div>
-                </div>
-            )}
         </div>
     )
 }
