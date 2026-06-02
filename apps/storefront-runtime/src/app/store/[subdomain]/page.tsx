@@ -56,6 +56,7 @@ export default async function StorePage({
         loadTemplate: async (store) => (store as never as { templateConfig: never }).templateConfig,
     });
     const store = projection?.data.store as never as Awaited<ReturnType<typeof StoreService.getStoreBySubdomain>>;
+    const isEditorPreview = query?.editor === '1';
 
     if (!store) return notFound();
 
@@ -75,6 +76,7 @@ export default async function StorePage({
             store={store}
             plan={renderPlan}
             sectionData={sectionData}
+            editorMode={isEditorPreview}
         />
     );
 }

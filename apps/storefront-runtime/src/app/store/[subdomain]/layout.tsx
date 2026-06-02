@@ -67,6 +67,7 @@ export default async function StoreLayout({ children, params }: Props) {
         ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
         : null;
     const store = previewStore || await StoreService.getStoreBySubdomainAnyStatus(subdomain);
+    const isEditorPreview = Boolean(previewToken);
 
     if (!store) {
         return notFound();
@@ -213,6 +214,7 @@ export default async function StoreLayout({ children, params }: Props) {
                                     plan={renderPlan}
                                     groupKey="header"
                                     sectionData={sectionGroupData}
+                                    editorMode={isEditorPreview}
                                 />
                                 <main className="flex-grow">
                                     {children}
@@ -222,6 +224,7 @@ export default async function StoreLayout({ children, params }: Props) {
                                     plan={renderPlan}
                                     groupKey="footer"
                                     sectionData={sectionGroupData}
+                                    editorMode={isEditorPreview}
                                 />
                             </div>
                         </WishlistProvider>
@@ -234,6 +237,7 @@ export default async function StoreLayout({ children, params }: Props) {
                         plan={renderPlan}
                         groupKey="header"
                         sectionData={sectionGroupData}
+                        editorMode={isEditorPreview}
                     />
                     <main className="flex-grow">
                         {children}
@@ -243,6 +247,7 @@ export default async function StoreLayout({ children, params }: Props) {
                         plan={renderPlan}
                         groupKey="footer"
                         sectionData={sectionGroupData}
+                        editorMode={isEditorPreview}
                     />
                 </div>
             )}

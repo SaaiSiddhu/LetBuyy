@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState, Suspense } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, Suspense } from 'react'
 import { useParams } from 'next/navigation'
 import { AlertTriangle, ArrowDown, ArrowLeft, ArrowUp, Badge, Button, ConfirmDialog, EmptyState, FileJson, GripVertical, Monitor, Plus, RefreshCw, Save, SaveBar, Send, Settings, Smartphone, Trash2, useToast } from '@letbuyy/ui'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
@@ -89,6 +89,9 @@ const FIELD_TYPES = new Set([
     'url',
     'radio',
 ])
+
+const PREVIEW_SECTION_SELECT_MESSAGE = 'letbuyy:theme-editor:section-select'
+const PREVIEW_SECTION_SELECTED_MESSAGE = 'letbuyy:theme-editor:section-selected'
 
 function asRecord(value: unknown): JsonRecord {
     return value && typeof value === 'object' && !Array.isArray(value)
@@ -363,11 +366,22 @@ function previewBaseUrl() {
         : window.location.origin
 }
 
+function previewTargetOrigin(previewSrc: string) {
+    if (!previewSrc) return '*'
+
+    try {
+        return new URL(previewSrc).origin
+    } catch {
+        return '*'
+    }
+}
+
 function ThemeSettingsEditorInner() {
     const params = useParams()
     const store = params?.store as string
     const themeId = params?.themeId as string
     const { notify } = useToast()
+    const previewFrameRef = useRef<HTMLIFrameElement | null>(null)
 
     const [schema, setSchema] = useState<ThemeSettingsSchema>(EMPTY_SETTINGS_SCHEMA)
     const [baseConfig, setBaseConfig] = useState<JsonRecord>({})
@@ -393,6 +407,7 @@ function ThemeSettingsEditorInner() {
     const [previewLoaded, setPreviewLoaded] = useState(false)
     const [previewUnavailable, setPreviewUnavailable] = useState(false)
     const [previewRetryNonce, setPreviewRetryNonce] = useState(0)
+    const [previewCookiePrimedFor, setPreviewCookiePrimedFor] = useState<string | null>(null)
 
     const groups = useMemo(() => Object.entries(schema.settings), [schema])
     const editorSections = useMemo(() => normalizeEditorSections(baseConfig), [baseConfig])
@@ -400,6 +415,14 @@ function ThemeSettingsEditorInner() {
         () => availableSections.filter((section) => section.type !== 'header' && section.type !== 'footer'),
         [availableSections],
     )
+    const selectedSection = useMemo(() => {
+        if (!selectedSectionId) return null
+        return [
+            editorSections.header,
+            ...editorSections.template,
+            editorSections.footer,
+        ].find((section) => section?.id === selectedSectionId) || null
+    }, [editorSections, selectedSectionId])
     const selectedAddType = selectedAddSectionType || addableSections[0]?.type || ''
     const visibleGroups = useMemo(() => {
         if (!activeGroup) return groups
@@ -427,6 +450,7 @@ function ThemeSettingsEditorInner() {
         if (!previewSrc) {
             setPreviewLoaded(false)
             setPreviewUnavailable(false)
+            setPreviewCookiePrimedFor(null)
             return undefined
         }
 
@@ -443,6 +467,43 @@ function ThemeSettingsEditorInner() {
         const timer = window.setTimeout(() => setPreviewUnavailable(true), 6000)
         return () => window.clearTimeout(timer)
     }, [previewLoaded, previewSrc])
+
+    useEffect(() => {
+        function handlePreviewMessage(event: MessageEvent) {
+            const data = asRecord(event.data)
+            if (data.type !== PREVIEW_SECTION_SELECT_MESSAGE) return
+
+            const sectionId = stringValue(data.sectionId)
+            if (!sectionId) return
+
+            const knownSectionIds = new Set([
+                editorSections.header?.id,
+                ...editorSections.template.map((section) => section.id),
+                editorSections.footer?.id,
+            ].filter(Boolean))
+
+            if (!knownSectionIds.has(sectionId)) return
+
+            setSelectedSectionId(sectionId)
+            previewFrameRef.current?.contentWindow?.postMessage({
+                type: PREVIEW_SECTION_SELECTED_MESSAGE,
+                sectionId,
+            }, previewTargetOrigin(previewSrc))
+        }
+
+        window.addEventListener('message', handlePreviewMessage)
+        return () => window.removeEventListener('message', handlePreviewMessage)
+    }, [editorSections.footer?.id, editorSections.header?.id, editorSections.template, previewSrc])
+
+    useEffect(() => {
+        const frameWindow = previewFrameRef.current?.contentWindow
+        if (!frameWindow || !previewLoaded || !selectedSectionId) return
+
+        frameWindow.postMessage({
+            type: PREVIEW_SECTION_SELECTED_MESSAGE,
+            sectionId: selectedSectionId,
+        }, previewTargetOrigin(previewSrc))
+    }, [previewLoaded, previewSrc, selectedSectionId])
 
     const refreshPreview = useCallback(async (announce = false) => {
         if (!store || !themeId) return
@@ -831,6 +892,8 @@ function ThemeSettingsEditorInner() {
                         {editorSections.header ? (
                             <button
                                 className={`generic-theme-editor__section-item ${selectedSectionId === editorSections.header.id ? 'generic-theme-editor__section-item--selected' : ''}`}
+                                data-editor-section-id={editorSections.header.id}
+                                data-section-selected={selectedSectionId === editorSections.header.id ? 'true' : undefined}
                                 type="button"
                                 onClick={() => setSelectedSectionId(editorSections.header?.id || null)}
                             >
@@ -859,6 +922,8 @@ function ThemeSettingsEditorInner() {
                                         key={section.id}
                                         className={`generic-theme-editor__section-item ${selectedSectionId === section.id ? 'generic-theme-editor__section-item--selected' : ''} ${draggingSectionId === section.id ? 'generic-theme-editor__section-item--dragging' : ''}`}
                                         data-section-id={section.id}
+                                        data-editor-section-id={section.id}
+                                        data-section-selected={selectedSectionId === section.id ? 'true' : undefined}
                                         draggable={!isSectionSaving}
                                         role="button"
                                         tabIndex={0}
@@ -962,6 +1027,8 @@ function ThemeSettingsEditorInner() {
                                 <div className="generic-theme-editor__section-group-label">Footer</div>
                                 <button
                                     className={`generic-theme-editor__section-item ${selectedSectionId === editorSections.footer.id ? 'generic-theme-editor__section-item--selected' : ''}`}
+                                    data-editor-section-id={editorSections.footer.id}
+                                    data-section-selected={selectedSectionId === editorSections.footer.id ? 'true' : undefined}
                                     type="button"
                                     onClick={() => setSelectedSectionId(editorSections.footer?.id || null)}
                                 >
@@ -1011,6 +1078,14 @@ function ThemeSettingsEditorInner() {
                 </aside>
 
                 <section className="generic-theme-editor__settings" aria-label="Generated theme settings">
+                    {selectedSection ? (
+                        <section className="generic-theme-editor__selected-section-panel" data-selected-section-panel>
+                            <p>Selected section</p>
+                            <h2>{sectionName(selectedSection, availableSections)}</h2>
+                            <span>{selectedSection.type} - {selectedSection.visible ? 'Visible' : 'Hidden'}</span>
+                            <small>{selectedSection.id}</small>
+                        </section>
+                    ) : null}
                     {visibleGroups.length === 0 ? (
                         <EmptyState
                             className="min-h-[260px]"
@@ -1075,6 +1150,7 @@ function ThemeSettingsEditorInner() {
                         <div className="generic-theme-editor__preview-canvas">
                             <div className={`generic-theme-editor__preview-frame-shell generic-theme-editor__preview-frame-shell--${previewDevice}`}>
                                 <iframe
+                                    ref={previewFrameRef}
                                     className="generic-theme-editor__iframe"
                                     title={`${store} storefront ${previewDevice} preview`}
                                     src={previewSrc}
@@ -1082,6 +1158,10 @@ function ThemeSettingsEditorInner() {
                                     onLoad={() => {
                                         setPreviewLoaded(true)
                                         setPreviewUnavailable(false)
+                                        if (previewToken && previewCookiePrimedFor !== previewToken) {
+                                            setPreviewCookiePrimedFor(previewToken)
+                                            window.setTimeout(() => setPreviewRetryNonce((value) => value + 1), 0)
+                                        }
                                     }}
                                 />
                                 {previewUnavailable ? (
