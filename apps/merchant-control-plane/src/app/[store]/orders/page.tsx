@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback, type SyntheticEvent } from 'react'
+import { useEffect, useState, useCallback, useMemo, type SyntheticEvent } from 'react'
 import { useParams } from 'next/navigation'
 import type { LineItem as SharedLineItem, Order as SharedOrder } from '@letbuyy/shared-types'
 import {
@@ -19,9 +19,9 @@ import {
     Section,
     Select,
     Skeleton,
-    Tabs,
     useToast,
     type IndexTableColumn,
+    type IndexTableBulkAction,
 } from '@letbuyy/ui'
 
 type OrderItemRow = Pick<
@@ -71,16 +71,18 @@ interface OrdersPayload {
 }
 
 type OrderStatus = 'all' | 'pending' | 'confirmed' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'refunded'
+type OrderSortKey = 'order' | 'customer' | 'item_count' | 'payment_status' | 'status' | 'total' | 'created_at'
+type SortDirection = 'asc' | 'desc'
 
-const statuses: Array<{ label: string; value: OrderStatus; content: null }> = [
-    { label: 'All', value: 'all', content: null },
-    { label: 'Pending', value: 'pending', content: null },
-    { label: 'Confirmed', value: 'confirmed', content: null },
-    { label: 'Processing', value: 'processing', content: null },
-    { label: 'Shipped', value: 'shipped', content: null },
-    { label: 'Delivered', value: 'delivered', content: null },
-    { label: 'Cancelled', value: 'cancelled', content: null },
-    { label: 'Refunded', value: 'refunded', content: null },
+const statuses: Array<{ label: string; value: OrderStatus }> = [
+    { label: 'All', value: 'all' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Confirmed', value: 'confirmed' },
+    { label: 'Processing', value: 'processing' },
+    { label: 'Shipped', value: 'shipped' },
+    { label: 'Delivered', value: 'delivered' },
+    { label: 'Cancelled', value: 'cancelled' },
+    { label: 'Refunded', value: 'refunded' },
 ]
 
 const paymentStatusOptions = [
@@ -126,6 +128,36 @@ function formatDate(value: string) {
 
 function currency(amount: number) {
     return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount)
+}
+
+function orderSortValue(order: OrderRow, key: OrderSortKey): string | number {
+    switch (key) {
+        case 'order':
+            return order.order_number || order.id
+        case 'customer':
+            return order.customer_name || order.customer_email || ''
+        case 'item_count':
+            return Number(order.item_count || order.items?.length || 0)
+        case 'payment_status':
+            return order.payment_status || ''
+        case 'status':
+            return order.status || ''
+        case 'total':
+            return Number(order.total || 0)
+        case 'created_at':
+            return new Date(order.created_at || '').getTime() || 0
+        default:
+            return ''
+    }
+}
+
+function compareOrderRows(a: OrderRow, b: OrderRow, key: OrderSortKey, direction: SortDirection) {
+    const aValue = orderSortValue(a, key)
+    const bValue = orderSortValue(b, key)
+    const result = typeof aValue === 'number' && typeof bValue === 'number'
+        ? aValue - bValue
+        : String(aValue).localeCompare(String(bValue), undefined, { sensitivity: 'base' })
+    return direction === 'asc' ? result : -result
 }
 
 function addressPart(value: unknown) {
@@ -178,6 +210,8 @@ export default function OrdersPage() {
     const [cancellingId, setCancellingId] = useState<string | null>(null)
     const [error, setError] = useState<string | null>(null)
     const [actionError, setActionError] = useState<string | null>(null)
+    const [sortKey, setSortKey] = useState<OrderSortKey>('created_at')
+    const [sortDirection, setSortDirection] = useState<SortDirection>('desc')
 
     const loadOrders = useCallback(async () => {
         setLoading(true)
@@ -320,6 +354,61 @@ export default function OrdersPage() {
         if (ok) setCancellingId(null)
     }
 
+    const bulkUpdateOrderStatus = useCallback(async (
+        rows: OrderRow[],
+        nextStatus: Exclude<OrderStatus, 'all'>,
+        eligibleStatuses: string[],
+        label: string
+    ) => {
+        const eligibleRows = rows.filter(order => eligibleStatuses.includes(order.status))
+        if (eligibleRows.length === 0) {
+            notify({
+                title: 'No eligible orders selected',
+                description: `${label} only applies to ${eligibleStatuses.map(titleize).join(', ')} orders.`,
+                variant: 'warning',
+            })
+            return
+        }
+
+        setUpdatingId(`bulk-${nextStatus}`)
+        setActionError(null)
+        let failures = 0
+
+        for (const order of eligibleRows) {
+            try {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/orders/${encodeURIComponent(order.id)}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        idempotency_key: `admin-order-bulk-${order.id}-${nextStatus}-${crypto.randomUUID()}`,
+                        status: nextStatus,
+                    }),
+                })
+                if (!response.ok) failures += 1
+            } catch {
+                failures += 1
+            }
+        }
+
+        await loadOrders()
+        setUpdatingId(null)
+
+        if (failures > 0) {
+            notify({
+                title: 'Some orders were not updated',
+                description: `${eligibleRows.length - failures} of ${eligibleRows.length} eligible orders were updated.`,
+                variant: 'warning',
+            })
+            return
+        }
+
+        notify({
+            title: 'Orders updated',
+            description: `${eligibleRows.length} ${eligibleRows.length === 1 ? 'order' : 'orders'} ${label.toLowerCase()}.`,
+            variant: 'success',
+        })
+    }, [loadOrders, notify, store])
+
     const activeOrder = orders.find(order => order.id === expandedOrderId) || null
     const orderToCancel = orders.find(order => order.id === cancellingId) || null
     const activeFilters = [
@@ -327,6 +416,35 @@ export default function OrdersPage() {
         paymentFilter !== 'all' ? { label: `Payment: ${titleize(paymentFilter)}`, onRemove: () => setPaymentFilter('all') } : null,
         searchQuery.trim() ? { label: `Search: ${searchQuery.trim()}`, onRemove: () => setSearchQuery('') } : null,
     ].filter(Boolean) as Array<{ label: string; onRemove: () => void }>
+
+    const sortedOrders = useMemo(() => {
+        return [...orders].sort((a, b) => compareOrderRows(a, b, sortKey, sortDirection))
+    }, [orders, sortDirection, sortKey])
+
+    const handleSort = useCallback((key: string) => {
+        const nextKey = key as OrderSortKey
+        if (nextKey === sortKey) {
+            setSortDirection(current => current === 'asc' ? 'desc' : 'asc')
+            return
+        }
+        setSortKey(nextKey)
+        setSortDirection(nextKey === 'created_at' ? 'desc' : 'asc')
+    }, [sortKey])
+
+    const bulkActions = useMemo<Array<IndexTableBulkAction<OrderRow>>>(() => [
+        {
+            label: 'Confirm selected',
+            onAction: rows => { void bulkUpdateOrderStatus(rows, 'confirmed', ['pending'], 'confirmed') },
+        },
+        {
+            label: 'Mark processing',
+            onAction: rows => { void bulkUpdateOrderStatus(rows, 'processing', ['confirmed'], 'marked processing') },
+        },
+        {
+            label: 'Mark delivered',
+            onAction: rows => { void bulkUpdateOrderStatus(rows, 'delivered', ['shipped'], 'marked delivered') },
+        },
+    ], [bulkUpdateOrderStatus])
 
     const emptyState = (
         <EmptyState
@@ -355,6 +473,7 @@ export default function OrdersPage() {
         {
             key: 'order',
             header: 'Order',
+            sortable: true,
             render: (order) => (
                 <div className="space-y-[var(--lb-space-1)]">
                     <button
@@ -378,6 +497,7 @@ export default function OrdersPage() {
         {
             key: 'customer',
             header: 'Customer',
+            sortable: true,
             render: (order) => (
                 <div className="space-y-[var(--lb-space-1)]">
                     <p className="m-0 font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)]">
@@ -392,26 +512,31 @@ export default function OrdersPage() {
         {
             key: 'item_count',
             header: 'Items',
+            sortable: true,
             render: (order) => String(order.item_count || order.items?.length || 0),
         },
         {
             key: 'payment_status',
             header: 'Payment',
+            sortable: true,
             render: (order) => <PaymentStatusBadge status={order.payment_status} method={order.payment_method} />,
         },
         {
             key: 'status',
             header: 'Status',
+            sortable: true,
             render: (order) => <OrderStatusBadge status={order.status} />,
         },
         {
             key: 'total',
             header: 'Total',
+            sortable: true,
             render: (order) => currency(Number(order.total || 0)),
         },
         {
             key: 'created_at',
             header: 'Date',
+            sortable: true,
             render: (order) => formatDate(order.created_at),
         },
         {
@@ -456,15 +581,9 @@ export default function OrdersPage() {
             <Card>
                 <Section
                     title="Order queue"
-                    description={`${totalCount} ${totalCount === 1 ? 'order' : 'orders'} in the current view.`}
+                        description={`${totalCount} ${totalCount === 1 ? 'order' : 'orders'} in the current view.`}
                 >
                     <div className="flex flex-col gap-[var(--lb-space-4)]">
-                        <Tabs
-                            items={statuses}
-                            value={filter}
-                            onValueChange={(value) => setFilter(value as OrderStatus)}
-                        />
-
                         <div className="grid gap-[var(--lb-space-3)] md:grid-cols-[minmax(0,1fr)_minmax(180px,240px)_auto] md:items-end">
                             <Input
                                 label="Search orders"
@@ -495,10 +614,17 @@ export default function OrdersPage() {
                             <Skeleton variant="table" lines={6} />
                         ) : (
                             <IndexTable
-                                rows={orders}
+                                rows={sortedOrders}
                                 columns={columns}
                                 emptyState={emptyState}
+                                savedViews={statuses}
+                                activeView={filter}
+                                onViewChange={(value) => setFilter(value as OrderStatus)}
                                 filterChips={activeFilters}
+                                bulkActions={bulkActions}
+                                sortKey={sortKey}
+                                sortDirection={sortDirection}
+                                onSort={handleSort}
                                 onRowClick={loadOrderDetail}
                             />
                         )}
