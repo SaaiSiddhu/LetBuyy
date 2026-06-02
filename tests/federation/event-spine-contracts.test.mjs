@@ -16,7 +16,7 @@ const STOREFRONT_ROUTE = 'services/api-gateway/src/routes/storefront.ts';
 const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
 const THEME_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/theme-execution.adapter.ts';
-const PAYOUT_LEDGER_MIGRATION = 'database/supabase/migrations/070_partner_payout_ledger.sql';
+const BASELINE_SCHEMA = 'database/supabase/migrations/000_baseline.sql';
 
 function read(path) {
   return readFileSync(path, 'utf8');
@@ -88,7 +88,7 @@ test('orchestration queue fanout uses event-core contracts before legacy prefix 
 test('queue consumers drive analytics, search, notifications, and payout ledger side effects', () => {
   const queueSource = read(QUEUE_EXECUTION_ADAPTER);
   const notificationSource = read(NOTIFICATION_CORE);
-  const payoutMigration = read(PAYOUT_LEDGER_MIGRATION);
+  const baselineSchema = read(BASELINE_SCHEMA);
 
   assert.match(queueSource, /type ConsumableQueueName = 'analytics-events' \| 'search-indexing' \| 'payment-events'/);
   assert.match(queueSource, /processAnalyticsJob/);
@@ -108,10 +108,10 @@ test('queue consumers drive analytics, search, notifications, and payout ledger 
   assert.match(notificationSource, /case 'theme\.installed'/);
   assert.match(notificationSource, /case 'theme\.rejected'/);
 
-  assert.match(payoutMigration, /CREATE TABLE IF NOT EXISTS partner_payout_ledger_entries/);
-  assert.match(payoutMigration, /amount_minor INTEGER NOT NULL/);
-  assert.match(payoutMigration, /currency TEXT NOT NULL DEFAULT 'INR'/);
-  assert.match(payoutMigration, /EXECUTE FUNCTION update_updated_at\(\)/);
+  assert.match(baselineSchema, /CREATE TABLE public\.partner_payout_ledger_entries/);
+  assert.match(baselineSchema, /amount_minor integer NOT NULL/);
+  assert.match(baselineSchema, /currency text DEFAULT 'INR'::text NOT NULL/);
+  assert.match(baselineSchema, /update_partner_payout_ledger_entries_updated_at[\s\S]*EXECUTE FUNCTION public\.update_updated_at\(\)/);
 });
 
 test('gateway validates registered event payloads before outbox writes', () => {

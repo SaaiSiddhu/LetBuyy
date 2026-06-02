@@ -8,7 +8,7 @@ const API_CLIENT_SOURCE = readFileSync('packages/typescript/api-client/src/index
 const APP_STORE_ROUTE_SOURCE = readFileSync('services/api-gateway/src/routes/app-store.ts', 'utf8');
 const EVENT_CORE_SOURCE = readFileSync('packages/event-core/src/index.ts', 'utf8');
 const QUEUE_EXECUTION_SOURCE = readFileSync('services/api-gateway/src/execution/queue-execution.adapter.ts', 'utf8');
-const APP_BILLING_MIGRATION = readFileSync('database/supabase/migrations/071_app_billing_charges.sql', 'utf8');
+const BASELINE_SCHEMA = readFileSync('database/supabase/migrations/000_baseline.sql', 'utf8');
 
 test('app billing contracts are owned by billing-core, shared-types, and api-client', () => {
   assert.match(BILLING_CORE_SOURCE, /CreateAppBillingChargeSchema/);
@@ -48,11 +48,11 @@ test('event spine activates payout ledger only after merchant-approved app charg
 });
 
 test('app billing migration records INR charges and India payout rails', () => {
-  assert.match(APP_BILLING_MIGRATION, /CREATE TABLE IF NOT EXISTS app_billing_charges/);
-  assert.match(APP_BILLING_MIGRATION, /billing_mode TEXT NOT NULL CHECK \(billing_mode IN \('recurring', 'usage'\)\)/);
-  assert.match(APP_BILLING_MIGRATION, /currency TEXT NOT NULL DEFAULT 'INR'/);
-  assert.match(APP_BILLING_MIGRATION, /partner_gst_minor INTEGER NOT NULL DEFAULT 0/);
-  assert.match(APP_BILLING_MIGRATION, /payout_rail TEXT NOT NULL DEFAULT 'razorpay_route'/);
-  assert.match(APP_BILLING_MIGRATION, /UNIQUE\(site_id, idempotency_key\)/);
-  assert.match(APP_BILLING_MIGRATION, /EXECUTE FUNCTION update_updated_at\(\)/);
+  assert.match(BASELINE_SCHEMA, /CREATE TABLE public\.app_billing_charges/);
+  assert.match(BASELINE_SCHEMA, /app_billing_charges_billing_mode_check[\s\S]*'recurring'::text, 'usage'::text/);
+  assert.match(BASELINE_SCHEMA, /currency text DEFAULT 'INR'::text NOT NULL/);
+  assert.match(BASELINE_SCHEMA, /partner_gst_minor integer DEFAULT 0 NOT NULL/);
+  assert.match(BASELINE_SCHEMA, /payout_rail text DEFAULT 'razorpay_route'::text NOT NULL/);
+  assert.match(BASELINE_SCHEMA, /app_billing_charges_site_id_idempotency_key_key UNIQUE \(site_id, idempotency_key\)/);
+  assert.match(BASELINE_SCHEMA, /update_app_billing_charges_updated_at[\s\S]*EXECUTE FUNCTION public\.update_updated_at\(\)/);
 });

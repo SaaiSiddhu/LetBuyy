@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
-const MIGRATION = 'database/supabase/migrations/072_marketplace_review_records.sql';
+const BASELINE_SCHEMA = 'database/supabase/migrations/000_baseline.sql';
 const REVIEW_HELPER = 'services/api-gateway/src/lib/marketplace-review-records.ts';
 const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const THEMES_ROUTE = 'services/api-gateway/src/routes/themes.ts';
@@ -15,17 +15,18 @@ function read(path) {
 }
 
 test('marketplace review records are a governed app/theme submission queue', () => {
-  const source = read(MIGRATION);
+  const source = read(BASELINE_SCHEMA);
 
-  assert.match(source, /CREATE TABLE IF NOT EXISTS marketplace_review_records/);
-  assert.match(source, /submission_type TEXT NOT NULL CHECK \(submission_type IN \('app', 'theme'\)\)/);
-  assert.match(source, /status TEXT NOT NULL DEFAULT 'pending'/);
-  assert.match(source, /automated_checks JSONB NOT NULL DEFAULT '\{\}'/);
-  assert.match(source, /UNIQUE\(submission_type, resource_id\)/);
-  assert.match(source, /ALTER TABLE marketplace_review_records ENABLE ROW LEVEL SECURITY/);
+  assert.match(source, /CREATE TABLE public\.marketplace_review_records/);
+  assert.match(source, /submission_type text NOT NULL/);
+  assert.match(source, /marketplace_review_records_submission_type_check[\s\S]*'app'::text, 'theme'::text/);
+  assert.match(source, /status text DEFAULT 'pending'::text NOT NULL/);
+  assert.match(source, /automated_checks jsonb DEFAULT '\{\}'::jsonb NOT NULL/);
+  assert.match(source, /marketplace_review_records_submission_type_resource_id_key UNIQUE \(submission_type, resource_id\)/);
+  assert.match(source, /ALTER TABLE public\.marketplace_review_records ENABLE ROW LEVEL SECURITY/);
   assert.match(source, /marketplace_review_records_partner_read/);
   assert.match(source, /marketplace_review_records_service_all/);
-  assert.match(source, /EXECUTE FUNCTION update_updated_at\(\)/);
+  assert.match(source, /update_marketplace_review_records_updated_at[\s\S]*EXECUTE FUNCTION public\.update_updated_at\(\)/);
 });
 
 test('shared types and API client expose marketplace review records', () => {
