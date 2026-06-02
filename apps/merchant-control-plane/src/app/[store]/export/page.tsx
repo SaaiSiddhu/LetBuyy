@@ -1,225 +1,443 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useMemo, useRef, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    Button,
+    Card,
+    ClipboardList,
+    Download,
+    Package,
+    Page,
+    PageHeader,
+    Section,
+    Select,
+    Upload,
+    Users,
+    useToast,
+} from '@letbuyy/ui'
+import type { LucideIcon } from '@letbuyy/ui'
 
 type ExportType = 'products' | 'orders' | 'customers'
 
-export default function ExportPage() {
-    const { store } = useParams<{ store: string }>()
-    const [loading, setLoading] = useState(true)
-    const [exporting, setExporting] = useState<ExportType | null>(null)
-    const [importing, setImporting] = useState(false)
-    const [importResult, setImportResult] = useState<string | null>(null)
-    const [statusFilter, setStatusFilter] = useState('')
+interface ExportCard {
+    type: ExportType
+    title: string
+    description: string
+    icon: LucideIcon
+}
 
-    useEffect(() => {
-        setLoading(false)
-    }, [])
+interface ImportResult {
+    tone: 'success' | 'critical'
+    message: string
+}
 
-    const downloadCsv = (csv: string, filename: string) => {
-        const blob = new Blob([csv], { type: 'text/csv' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = filename
-        a.click()
-        URL.revokeObjectURL(url)
+const exportCards: ExportCard[] = [
+    {
+        type: 'products',
+        title: 'Products',
+        description: 'Export product names, pricing, inventory, tags, images, and creation dates.',
+        icon: Package,
+    },
+    {
+        type: 'orders',
+        title: 'Orders',
+        description: 'Export order history with customer, payment, shipping, and tracking details.',
+        icon: ClipboardList,
+    },
+    {
+        type: 'customers',
+        title: 'Customers',
+        description: 'Export customer contact records for support and lifecycle work.',
+        icon: Users,
+    },
+]
+
+const statusOptions = [
+    { label: 'All statuses', value: '' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Processing', value: 'processing' },
+    { label: 'Shipped', value: 'shipped' },
+    { label: 'Delivered', value: 'delivered' },
+    { label: 'Cancelled', value: 'cancelled' },
+]
+
+function getErrorMessage(payload: unknown, fallback: string) {
+    if (payload && typeof payload === 'object') {
+        const error = (payload as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+            const message = (error as { message?: unknown }).message
+            if (typeof message === 'string') return message
+        }
+        const message = (payload as { message?: unknown }).message
+        if (typeof message === 'string') return message
     }
 
-    const toCsvRow = (values: (string | number | boolean | null | undefined)[]) =>
-        values.map(v => {
-            if (v == null) return ''
-            const s = String(v)
-            return s.includes(',') || s.includes('"') || s.includes('\n') ? `"${s.replace(/"/g, '""')}"` : s
-        }).join(',')
+    return fallback
+}
+
+function downloadCsv(csv: string, filename: string) {
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    anchor.click()
+    URL.revokeObjectURL(url)
+}
+
+function toCsvRow(values: (string | number | boolean | null | undefined)[]) {
+    return values.map((value) => {
+        if (value == null) return ''
+        const stringValue = String(value)
+        return stringValue.includes(',') || stringValue.includes('"') || stringValue.includes('\n')
+            ? `"${stringValue.replace(/"/g, '""')}"`
+            : stringValue
+    }).join(',')
+}
+
+function parseCsvRow(line: string) {
+    const result: string[] = []
+    let field = ''
+    let inQuotes = false
+
+    for (let index = 0; index < line.length; index += 1) {
+        const character = line[index]
+        if (inQuotes) {
+            if (character === '"' && line[index + 1] === '"') {
+                field += '"'
+                index += 1
+            } else if (character === '"') {
+                inQuotes = false
+            } else {
+                field += character
+            }
+        } else if (character === '"') {
+            inQuotes = true
+        } else if (character === ',') {
+            result.push(field.trim())
+            field = ''
+        } else {
+            field += character
+        }
+    }
+
+    result.push(field.trim())
+    return result
+}
+
+export default function ExportPage() {
+    const { store } = useParams<{ store: string }>()
+    const { notify } = useToast()
+    const fileInputRef = useRef<HTMLInputElement | null>(null)
+    const [exporting, setExporting] = useState<ExportType | null>(null)
+    const [importing, setImporting] = useState(false)
+    const [importResult, setImportResult] = useState<ImportResult | null>(null)
+    const [statusFilter, setStatusFilter] = useState('')
+
+    const today = useMemo(() => new Date().toISOString().slice(0, 10), [])
 
     const handleExport = async (type: ExportType) => {
+        if (exporting) return
         setExporting(type)
+
         try {
             if (type === 'products') {
                 const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products?limit=100`, { cache: 'no-store' })
-                const payload = await response.json()
-                const data = payload.data || []
-                if (!data?.length) { alert('No products to export'); setExporting(null); return }
+                const payload = await response.json().catch(() => null)
+                if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to export products'))
+
+                const data = Array.isArray(payload?.data) ? payload.data : []
+                if (data.length === 0) {
+                    notify({
+                        title: 'No products to export',
+                        description: 'Add products before downloading a product CSV.',
+                        variant: 'warning',
+                    })
+                    return
+                }
+
                 const headers = ['id', 'name', 'description', 'price', 'compare_price', 'category', 'stock', 'is_active', 'tags', 'images', 'created_at']
-                const rows = [toCsvRow(headers), ...data.map((p: Record<string, unknown>) => toCsvRow([p.id as string, p.name as string, p.description as string, Number(p.price || 0), Number(p.compare_price || 0), p.category as string, Number(p.stock || 0), Boolean(p.is_active), ((p.tags as string[]) || []).join(';'), ((p.images as string[]) || []).join(';'), p.created_at as string]))]
-                downloadCsv(rows.join('\n'), `products-${new Date().toISOString().slice(0, 10)}.csv`)
+                const rows = [
+                    toCsvRow(headers),
+                    ...data.map((product: Record<string, unknown>) => toCsvRow([
+                        product.id as string,
+                        product.name as string,
+                        product.description as string,
+                        Number(product.price || 0),
+                        Number(product.compare_price || 0),
+                        product.category as string,
+                        Number(product.stock || 0),
+                        Boolean(product.is_active),
+                        ((product.tags as string[]) || []).join(';'),
+                        ((product.images as string[]) || []).join(';'),
+                        product.created_at as string,
+                    ])),
+                ]
+                downloadCsv(rows.join('\n'), `products-${today}.csv`)
+                notify({
+                    title: 'Products exported',
+                    description: `${data.length.toLocaleString('en-IN')} products were downloaded as CSV.`,
+                    variant: 'success',
+                })
             } else if (type === 'orders') {
                 const query = new URLSearchParams({ limit: '100' })
                 if (statusFilter) query.set('status', statusFilter)
                 const response = await fetch(`/api/stores/${encodeURIComponent(store)}/orders?${query.toString()}`, { cache: 'no-store' })
-                const payload = await response.json()
-                const data = payload.data || []
-                if (!data?.length) { alert('No orders to export'); setExporting(null); return }
-                const headers = ['order_number', 'status', 'customer_name', 'customer_email', 'customer_phone', 'subtotal', 'shipping_cost', 'discount', 'total', 'payment_method', 'payment_status', 'tracking_number', 'carrier', 'created_at']
-                const rows = [toCsvRow(headers), ...data.map((o: Record<string, unknown>) => toCsvRow([o.order_number as string, o.status as string, o.customer_name as string, o.customer_email as string, o.customer_phone as string, Number(o.subtotal || 0), Number(o.shipping_cost || 0), Number(o.discount || 0), Number(o.total || 0), o.payment_method as string, o.payment_status as string, o.tracking_number as string, o.carrier as string, o.created_at as string]))]
-                downloadCsv(rows.join('\n'), `orders-${new Date().toISOString().slice(0, 10)}.csv`)
-            } else if (type === 'customers') {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/customers?limit=100`, { cache: 'no-store' })
-                const payload = await response.json()
-                const data = payload.data || []
-                if (!data?.length) { alert('No customers to export'); setExporting(null); return }
-                const headers = ['email', 'name', 'phone', 'created_at']
-                const rows = [toCsvRow(headers), ...data.map((c: Record<string, unknown>) => toCsvRow([c.customer_email as string, c.customer_name as string, c.customer_phone as string, c.created_at as string]))]
-                downloadCsv(rows.join('\n'), `customers-${new Date().toISOString().slice(0, 10)}.csv`)
-            }
-        } catch (error) {
-            console.error('Export error:', error)
-            alert('Export failed. Please try again.')
-        }
-        setExporting(null)
-    }
+                const payload = await response.json().catch(() => null)
+                if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to export orders'))
 
-    const handleImportProducts = async () => {
-        const input = document.createElement('input')
-        input.type = 'file'
-        input.accept = '.csv'
-        input.onchange = async (e) => {
-            const file = (e.target as HTMLInputElement).files?.[0]
-            if (!file) return
-            setImporting(true)
-            setImportResult(null)
-
-            try {
-                const text = await file.text()
-                const lines = text.split(/\r?\n/).filter(l => l.trim())
-                if (lines.length < 2) { setImportResult('CSV must have headers + at least one row'); setImporting(false); return }
-
-                // Parse CSV
-                const parseRow = (line: string) => {
-                    const result: string[] = []
-                    let field = '', inQ = false
-                    for (let i = 0; i < line.length; i++) {
-                        const c = line[i]
-                        if (inQ) { if (c === '"' && line[i + 1] === '"') { field += '"'; i++ } else if (c === '"') { inQ = false } else { field += c } }
-                        else { if (c === '"') { inQ = true } else if (c === ',') { result.push(field.trim()); field = '' } else { field += c } }
-                    }
-                    result.push(field.trim())
-                    return result
+                const data = Array.isArray(payload?.data) ? payload.data : []
+                if (data.length === 0) {
+                    notify({
+                        title: 'No orders to export',
+                        description: 'Try another status filter or wait for orders to arrive.',
+                        variant: 'warning',
+                    })
+                    return
                 }
 
-                const headers = parseRow(lines[0]).map(h => h.toLowerCase())
-                const nameIdx = headers.indexOf('name')
-                if (nameIdx === -1) { setImportResult('CSV must have a "name" column'); setImporting(false); return }
-
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/import`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ csv: text }),
+                const headers = ['order_number', 'status', 'customer_name', 'customer_email', 'customer_phone', 'subtotal', 'shipping_cost', 'discount', 'total', 'payment_method', 'payment_status', 'tracking_number', 'carrier', 'created_at']
+                const rows = [
+                    toCsvRow(headers),
+                    ...data.map((order: Record<string, unknown>) => toCsvRow([
+                        order.order_number as string,
+                        order.status as string,
+                        order.customer_name as string,
+                        order.customer_email as string,
+                        order.customer_phone as string,
+                        Number(order.subtotal || 0),
+                        Number(order.shipping_cost || 0),
+                        Number(order.discount || 0),
+                        Number(order.total || 0),
+                        order.payment_method as string,
+                        order.payment_status as string,
+                        order.tracking_number as string,
+                        order.carrier as string,
+                        order.created_at as string,
+                    ])),
+                ]
+                downloadCsv(rows.join('\n'), `orders-${today}.csv`)
+                notify({
+                    title: 'Orders exported',
+                    description: `${data.length.toLocaleString('en-IN')} orders were downloaded as CSV.`,
+                    variant: 'success',
                 })
-                const payload = await response.json()
+            } else {
+                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/customers?limit=100`, { cache: 'no-store' })
+                const payload = await response.json().catch(() => null)
+                if (!response.ok) throw new Error(getErrorMessage(payload, 'Unable to export customers'))
 
-                if (!response.ok) { setImportResult(`Import failed: ${payload.error || 'Unable to import products'}`); }
-                else { setImportResult(`Successfully imported ${payload.data?.imported || 0} products!`) }
-            } catch (error) {
-                setImportResult('Failed to parse CSV file')
+                const data = Array.isArray(payload?.data) ? payload.data : []
+                if (data.length === 0) {
+                    notify({
+                        title: 'No customers to export',
+                        description: 'Customer records will be available after checkout or account activity.',
+                        variant: 'warning',
+                    })
+                    return
+                }
+
+                const headers = ['email', 'name', 'phone', 'created_at']
+                const rows = [
+                    toCsvRow(headers),
+                    ...data.map((customer: Record<string, unknown>) => toCsvRow([
+                        customer.customer_email as string,
+                        customer.customer_name as string,
+                        customer.customer_phone as string,
+                        customer.created_at as string,
+                    ])),
+                ]
+                downloadCsv(rows.join('\n'), `customers-${today}.csv`)
+                notify({
+                    title: 'Customers exported',
+                    description: `${data.length.toLocaleString('en-IN')} customers were downloaded as CSV.`,
+                    variant: 'success',
+                })
             }
-            setImporting(false)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Export failed. Please try again.'
+            notify({
+                title: 'Export failed',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setExporting(null)
         }
-        input.click()
     }
 
-    if (loading) {
-        return (
-            <div style={{ padding: 32 }}>
-                <div className="settings-skeleton" style={{ width: 200, height: 28, marginBottom: 24 }} />
-                <div className="settings-skeleton" style={{ width: '100%', height: 200 }} />
-            </div>
-        )
-    }
+    const handleImportFile = async (event: ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0]
+        if (!file || importing) return
+        setImporting(true)
+        setImportResult(null)
 
-    const exportCards: { type: ExportType; title: string; desc: string; icon: string }[] = [
-        { type: 'products', title: 'Products', desc: 'Export all products with name, price, stock, images, tags', icon: 'inventory_2' },
-        { type: 'orders', title: 'Orders', desc: 'Export order history with customer details and payment info', icon: 'receipt_long' },
-        { type: 'customers', title: 'Customers', desc: 'Export customer list with contact and purchase data', icon: 'group' },
-    ]
+        try {
+            const text = await file.text()
+            const lines = text.split(/\r?\n/).filter((line) => line.trim())
+            if (lines.length < 2) {
+                const message = 'CSV must have headers and at least one product row.'
+                setImportResult({ tone: 'critical', message })
+                notify({ title: 'Import file is incomplete', description: message, variant: 'critical' })
+                return
+            }
+
+            const headers = parseCsvRow(lines[0]).map((header) => header.toLowerCase())
+            if (!headers.includes('name')) {
+                const message = 'CSV must include a name column.'
+                setImportResult({ tone: 'critical', message })
+                notify({ title: 'Import file needs a name column', description: message, variant: 'critical' })
+                return
+            }
+
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/products/import`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ csv: text }),
+            })
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to import products'))
+            }
+
+            const imported = Number(payload?.data?.imported || 0)
+            const message = `Successfully imported ${imported.toLocaleString('en-IN')} products.`
+            setImportResult({ tone: 'success', message })
+            notify({
+                title: 'Products imported',
+                description: message,
+                variant: 'success',
+            })
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Failed to parse CSV file.'
+            setImportResult({ tone: 'critical', message })
+            notify({
+                title: 'Import failed',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setImporting(false)
+            event.target.value = ''
+        }
+    }
 
     return (
-        <div style={{ padding: 32, maxWidth: 960 }}>
-            <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 4 }}>Export & Import</h1>
-            <p style={{ fontSize: 13, color: 'var(--text-hint)', marginBottom: 24 }}>Download your store data as CSV files, or bulk import products</p>
+        <Page>
+            <PageHeader
+                title="Export and import"
+                description="Move store data safely with CSV exports and product imports."
+                breadcrumbs={[{ label: 'Store' }, { label: 'Export and import' }]}
+            />
 
-            {/* Export section */}
-            <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <MaterialIcon name="download" style={{ fontSize: 18 }} />
-                Export data
-            </h2>
-
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 16, marginBottom: 32 }}>
-                {exportCards.map(card => (
-                    <div key={card.type} style={{ background: 'var(--bg-card, #fff)', border: '1px solid var(--border)', borderRadius: 10, padding: 20 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                            <MaterialIcon name={card.icon} style={{ fontSize: 24, color: 'var(--primary)' }} />
-                            <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>{card.title}</h3>
-                        </div>
-                        <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 16, lineHeight: 1.5 }}>{card.desc}</p>
-                        {card.type === 'orders' && (
-                            <div style={{ marginBottom: 12 }}>
-                                <select
-                                    value={statusFilter}
-                                    onChange={e => setStatusFilter(e.target.value)}
-                                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, border: '1px solid var(--border)', borderRadius: 6, background: 'var(--bg-secondary)' }}
-                                >
-                                    <option value="">All statuses</option>
-                                    <option value="pending">Pending</option>
-                                    <option value="processing">Processing</option>
-                                    <option value="shipped">Shipped</option>
-                                    <option value="delivered">Delivered</option>
-                                    <option value="cancelled">Cancelled</option>
-                                </select>
-                            </div>
-                        )}
-                        <button
-                            onClick={() => handleExport(card.type)}
-                            disabled={exporting === card.type}
-                            style={{
-                                width: '100%', padding: '8px 16px', fontSize: 12, fontWeight: 500,
-                                background: 'var(--primary)', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer',
-                                opacity: exporting === card.type ? 0.6 : 1,
-                            }}
-                        >
-                            <MaterialIcon name="download" style={{ fontSize: 14, verticalAlign: -2, marginRight: 4 }} />
-                            {exporting === card.type ? 'Exporting...' : 'Export CSV'}
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-            {/* Import section */}
-            <h2 style={{ fontSize: 15, fontWeight: 600, marginBottom: 16, display: 'flex', alignItems: 'center', gap: 8 }}>
-                <MaterialIcon name="upload" style={{ fontSize: 18 }} />
-                Import data
-            </h2>
-
-            <div style={{ background: 'var(--bg-card, #fff)', border: '1px solid var(--border)', borderRadius: 10, padding: 20 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                    <MaterialIcon name="inventory_2" style={{ fontSize: 24, color: 'var(--primary)' }} />
-                    <h3 style={{ margin: 0, fontSize: 14, fontWeight: 600 }}>Import products</h3>
-                </div>
-                <p style={{ fontSize: 12, color: 'var(--text-hint)', marginBottom: 8, lineHeight: 1.5 }}>
-                    Upload a CSV file with product data. Required column: <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>name</code>.
-                    Optional: <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>price</code>, <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>description</code>, <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>category</code>, <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>stock</code>, <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>tags</code> (semicolon-separated), <code style={{ background: 'var(--bg-secondary)', padding: '1px 4px', borderRadius: 3 }}>images</code> (semicolon-separated URLs).
-                </p>
-                {importResult && (
-                    <div style={{ padding: '8px 12px', fontSize: 12, borderRadius: 6, marginBottom: 12, background: importResult.startsWith('Successfully') ? 'rgba(72, 187, 120, 0.1)' : 'rgba(229, 62, 62, 0.1)', color: importResult.startsWith('Successfully') ? '#38a169' : '#e53e3e' }}>
-                        {importResult}
-                    </div>
-                )}
-                <button
-                    onClick={handleImportProducts}
-                    disabled={importing}
-                    style={{
-                        padding: '8px 16px', fontSize: 12, fontWeight: 500,
-                        background: 'transparent', color: 'var(--primary)', border: '1px solid var(--primary)', borderRadius: 6, cursor: 'pointer',
-                        opacity: importing ? 0.6 : 1,
-                    }}
+            <Card>
+                <Section
+                    title="Export data"
+                    description="Download operational data in CSV format for audits, support, and external workflows."
+                    action={<Badge label="CSV" variant="info" />}
                 >
-                    <MaterialIcon name="upload_file" style={{ fontSize: 14, verticalAlign: -2, marginRight: 4 }} />
-                    {importing ? 'Importing...' : 'Choose CSV file'}
-                </button>
-            </div>
-        </div>
+                    <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-3">
+                        {exportCards.map((card) => {
+                            const Icon = card.icon
+                            return (
+                                <div
+                                    key={card.type}
+                                    className="flex h-full flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
+                                >
+                                    <div className="flex items-start gap-[var(--lb-space-3)]">
+                                        <span className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                            <Icon className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        </span>
+                                        <div className="min-w-0">
+                                            <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                                {card.title}
+                                            </h3>
+                                            <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {card.description}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    {card.type === 'orders' && (
+                                        <Select
+                                            label="Order status"
+                                            value={statusFilter}
+                                            options={statusOptions}
+                                            onChange={(event) => setStatusFilter(event.target.value)}
+                                        />
+                                    )}
+                                    <Button
+                                        type="button"
+                                        className="mt-auto w-full"
+                                        onClick={() => void handleExport(card.type)}
+                                        loading={exporting === card.type}
+                                        disabled={Boolean(exporting)}
+                                    >
+                                        <Download className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        {exporting === card.type ? 'Exporting...' : `Export ${card.title}`}
+                                    </Button>
+                                </div>
+                            )
+                        })}
+                    </div>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="Import products"
+                    description="Upload a product CSV with a required name column and optional price, description, category, stock, tags, and image URL columns."
+                    action={<Badge label="Products only" variant="default" />}
+                >
+                    {importResult && (
+                        <Banner
+                            variant={importResult.tone === 'success' ? 'success' : 'critical'}
+                            title={importResult.tone === 'success' ? 'Import complete' : 'Import needs attention'}
+                        >
+                            {importResult.message}
+                        </Banner>
+                    )}
+                    <div className="rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-5)]">
+                        <div className="flex flex-col gap-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-start gap-[var(--lb-space-3)]">
+                                <span className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                    <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                </span>
+                                <div>
+                                    <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                        Product CSV
+                                    </h3>
+                                    <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                        Choose a CSV file and the imported row count appears as soon as processing finishes.
+                                    </p>
+                                </div>
+                            </div>
+                            <Button
+                                type="button"
+                                variant="secondary"
+                                onClick={() => fileInputRef.current?.click()}
+                                loading={importing}
+                                disabled={importing}
+                            >
+                                <Upload className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                {importing ? 'Importing...' : 'Choose CSV file'}
+                            </Button>
+                        </div>
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".csv"
+                            className="sr-only"
+                            onChange={(event) => void handleImportFile(event)}
+                        />
+                    </div>
+                </Section>
+            </Card>
+        </Page>
     )
 }
