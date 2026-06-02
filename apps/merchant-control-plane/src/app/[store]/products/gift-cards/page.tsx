@@ -1,8 +1,26 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    Button,
+    Card,
+    CreditCard,
+    EmptyState,
+    IndexTable,
+    IndianRupee,
+    Input,
+    Page,
+    PageHeader,
+    Plus,
+    RefreshCw,
+    SaveBar,
+    Section,
+    Skeleton,
+    useToast,
+} from '@letbuyy/ui'
 
 interface GiftCard {
     id: string
@@ -14,181 +32,322 @@ interface GiftCard {
     created_at: string
 }
 
+const emptyValue = ''
+
+function getErrorMessage(payload: unknown, fallback: string) {
+    if (payload && typeof payload === 'object') {
+        const error = (payload as { error?: unknown }).error
+        if (typeof error === 'string') return error
+        if (error && typeof error === 'object') {
+            const message = (error as { message?: unknown }).message
+            if (typeof message === 'string') return message
+        }
+        const message = (payload as { message?: unknown }).message
+        if (typeof message === 'string') return message
+    }
+
+    return fallback
+}
+
+function normalizeGiftCard(row: Record<string, unknown>): GiftCard {
+    return {
+        id: String(row.id || ''),
+        code: String(row.code || ''),
+        initial_value: Number(row.initial_value || 0),
+        balance: Number(row.balance || 0),
+        status: String(row.status || 'active'),
+        expires_at: typeof row.expires_at === 'string' ? row.expires_at : null,
+        created_at: typeof row.created_at === 'string' ? row.created_at : '',
+    }
+}
+
+function formatCurrency(value: number) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+    }).format(value)
+}
+
+function maskCode(code: string) {
+    const suffix = code.split('-').pop() || code.slice(-4)
+    return `•••• ${suffix || 'gift card'}`
+}
+
+function statusLabel(status: string) {
+    return status ? `${status.charAt(0).toUpperCase()}${status.slice(1)}` : 'Active'
+}
+
 export default function GiftCardsPage() {
     const { store } = useParams<{ store: string }>()
-
+    const { notify } = useToast()
     const [giftCards, setGiftCards] = useState<GiftCard[]>([])
     const [loading, setLoading] = useState(true)
+    const [loadError, setLoadError] = useState<string | null>(null)
     const [showCreate, setShowCreate] = useState(false)
-    const [newValue, setNewValue] = useState('')
+    const [newValue, setNewValue] = useState(emptyValue)
     const [creating, setCreating] = useState(false)
 
     const loadGiftCards = useCallback(async () => {
-        const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
-            cache: 'no-store',
-        })
-        const payload = await response.json()
-        setGiftCards(Array.isArray(payload.data) ? payload.data : [])
-        setLoading(false)
-    }, [store])
+        setLoading(true)
+        setLoadError(null)
+
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
+                cache: 'no-store',
+            })
+            const payload = await response.json().catch(() => null)
+
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to load gift cards'))
+            }
+
+            const nextGiftCards = Array.isArray(payload?.data)
+                ? payload.data.map((row: Record<string, unknown>) => normalizeGiftCard(row)).filter((card: GiftCard) => card.id)
+                : []
+            setGiftCards(nextGiftCards)
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to load gift cards'
+            setGiftCards([])
+            setLoadError(message)
+            notify({
+                title: 'Gift cards could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setLoading(false)
+        }
+    }, [notify, store])
 
     useEffect(() => {
-        loadGiftCards()
+        void loadGiftCards()
     }, [loadGiftCards])
 
-    async function handleCreate() {
-        const value = parseFloat(newValue)
-        if (!value || value <= 0) return
+    const parsedValue = Number.parseFloat(newValue)
+    const hasValidValue = Number.isFinite(parsedValue) && parsedValue > 0
+    const hasUnsavedCreate = showCreate && newValue.trim() !== emptyValue
+    const saveState = creating ? 'saving' : hasUnsavedCreate ? 'unsaved' : 'saved'
+
+    const resetCreateForm = useCallback(() => {
+        setShowCreate(false)
+        setNewValue(emptyValue)
+    }, [])
+
+    const handleCreate = useCallback(async () => {
+        if (creating) return
+        const value = Number.parseFloat(newValue)
+        if (!Number.isFinite(value) || value <= 0) {
+            notify({
+                title: 'Gift card value is required',
+                description: 'Enter a value greater than zero before issuing a gift card.',
+                variant: 'warning',
+            })
+            return
+        }
+
         setCreating(true)
 
-        await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                initial_value: value,
-            }),
-        })
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/gift-cards`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    initial_value: value,
+                }),
+            })
+            const payload = await response.json().catch(() => null)
 
-        setNewValue('')
-        setShowCreate(false)
-        loadGiftCards()
-        setCreating(false)
-    }
+            if (!response.ok) {
+                throw new Error(getErrorMessage(payload, 'Unable to issue gift card'))
+            }
+
+            setShowCreate(false)
+            setNewValue(emptyValue)
+            notify({
+                title: 'Gift card issued',
+                description: `${formatCurrency(value)} gift card is ready to share.`,
+                variant: 'success',
+            })
+            await loadGiftCards()
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Unable to issue gift card'
+            notify({
+                title: 'Could not issue gift card',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            setCreating(false)
+        }
+    }, [creating, loadGiftCards, newValue, notify, store])
+
+    const columns = useMemo(() => [
+        {
+            key: 'code',
+            header: 'Code',
+            render: (row: GiftCard) => (
+                <code className="rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text)]">
+                    {maskCode(row.code)}
+                </code>
+            ),
+        },
+        {
+            key: 'initial_value',
+            header: 'Initial value',
+            render: (row: GiftCard) => formatCurrency(row.initial_value),
+        },
+        {
+            key: 'balance',
+            header: 'Balance',
+            render: (row: GiftCard) => formatCurrency(row.balance),
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            render: (row: GiftCard) => (
+                <Badge
+                    label={statusLabel(row.status)}
+                    variant={row.status === 'active' ? 'success' : row.status === 'expired' ? 'warning' : 'default'}
+                />
+            ),
+        },
+        {
+            key: 'created_at',
+            header: 'Created',
+            render: (row: GiftCard) => row.created_at
+                ? new Date(row.created_at).toLocaleDateString('en-IN')
+                : 'Not available',
+        },
+    ], [])
 
     if (loading) {
         return (
-            <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-                <div className="products-page-header"><h1>Gift cards</h1></div>
-                <div className="admin-skeleton" style={{ height: 200, borderRadius: 14 }} />
-            </div>
+            <Page>
+                <PageHeader
+                    title="Gift cards"
+                    description="Issue gift card balances that customers can redeem at checkout."
+                    breadcrumbs={[{ label: 'Products' }, { label: 'Gift cards' }]}
+                />
+                <Card>
+                    <Section title="Gift card list">
+                        <Skeleton variant="table" lines={6} />
+                    </Section>
+                </Card>
+            </Page>
         )
     }
 
     return (
-        <div className="setup-dashboard" style={{ maxWidth: 960, padding: '24px 32px' }}>
-            <div className="products-page-header">
-                <h1>Gift cards</h1>
-                <button
-                    onClick={() => setShowCreate(true)}
-                    style={{
-                        background: 'var(--text-primary)', color: 'var(--bg)',
-                        padding: '8px 18px', borderRadius: 8, fontSize: 13,
-                        fontWeight: 600, border: 'none', cursor: 'pointer'
-                    }}
+        <Page>
+            <PageHeader
+                title="Gift cards"
+                description="Issue gift card balances that customers can redeem at checkout."
+                breadcrumbs={[{ label: 'Products' }, { label: 'Gift cards' }]}
+                primaryAction={{
+                    label: showCreate ? 'Issue gift card' : 'New gift card',
+                    onClick: showCreate ? () => void handleCreate() : () => setShowCreate(true),
+                    disabled: creating || (showCreate && !hasValidValue),
+                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }}
+                secondaryActions={[
+                    {
+                        label: 'Refresh',
+                        onClick: () => void loadGiftCards(),
+                        disabled: creating,
+                        icon: <RefreshCw className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                    },
+                ]}
+            />
+
+            {loadError && (
+                <Banner
+                    variant="critical"
+                    title="Gift cards could not load"
+                    action={<Button variant="secondary" onClick={() => void loadGiftCards()}>Retry</Button>}
                 >
-                    Issue gift card
-                </button>
-            </div>
+                    {loadError}
+                </Banner>
+            )}
 
             {showCreate && (
-                <div className="product-form-card" style={{ marginBottom: 20 }}>
-                    <h3>Issue a new gift card</h3>
-                    <div className="product-field">
-                        <label className="product-label">Initial value (₹)</label>
-                        <input
-                            type="number"
-                            className="product-input"
-                            placeholder="500"
-                            value={newValue}
-                            onChange={e => setNewValue(e.target.value)}
-                            min="1"
-                        />
-                    </div>
-                    <p className="product-hint" style={{ marginBottom: 12 }}>
-                        A unique gift card code will be generated automatically.
-                    </p>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                        <button
-                            onClick={handleCreate}
-                            disabled={creating || !newValue}
-                            style={{
-                                background: 'var(--text-primary)', color: 'var(--bg)',
-                                padding: '8px 18px', borderRadius: 8, fontSize: 13,
-                                fontWeight: 600, border: 'none', cursor: 'pointer',
-                                opacity: creating ? 0.6 : 1
-                            }}
-                        >
-                            {creating ? 'Issuing...' : 'Issue'}
-                        </button>
-                        <button
-                            onClick={() => { setShowCreate(false); setNewValue('') }}
-                            style={{
-                                background: 'var(--bg-secondary)', color: 'var(--text-primary)',
-                                border: '1px solid var(--border)', padding: '8px 16px',
-                                borderRadius: 8, fontSize: 13, cursor: 'pointer'
-                            }}
-                        >
-                            Cancel
-                        </button>
-                    </div>
-                </div>
+                <Card>
+                    <Section
+                        title="Issue a new gift card"
+                        description="A unique gift card code is generated automatically after issuing."
+                    >
+                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-[minmax(0,320px)_1fr] md:items-end">
+                            <Input
+                                label="Initial value"
+                                type="number"
+                                min="1"
+                                step="1"
+                                value={newValue}
+                                onChange={(event) => setNewValue(event.target.value)}
+                                placeholder="500"
+                                disabled={creating}
+                                leftIcon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                helperText="Value must be greater than zero."
+                            />
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Button
+                                    type="button"
+                                    onClick={() => void handleCreate()}
+                                    loading={creating}
+                                    disabled={creating || !hasValidValue}
+                                >
+                                    <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Issue gift card
+                                </Button>
+                                <Button type="button" variant="secondary" onClick={resetCreateForm} disabled={creating}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
             )}
 
-            {giftCards.length === 0 && !showCreate ? (
-                <div className="products-empty-card" style={{ textAlign: 'center', padding: '60px 40px' }}>
-                    <MaterialIcon name="card_giftcard" style={{ fontSize: 48, color: 'var(--text-hint)', marginBottom: 16 }} />
-                    <h2 style={{
-                        fontSize: 16, fontWeight: 600, color: 'var(--text-primary)', margin: '0 0 8px'
-                    }}>Sell or issue gift cards</h2>
-                    <p style={{
-                        fontSize: 14, color: 'var(--text-secondary)', margin: '0 0 20px',
-                        maxWidth: 400, marginInline: 'auto', lineHeight: 1.6
-                    }}>
-                        Gift cards are a great way to drive sales and attract new customers.
-                        Issue codes with a set balance that customers can redeem at checkout.
-                    </p>
-                    <button
-                        onClick={() => setShowCreate(true)}
-                        style={{
-                            background: 'var(--text-primary)', color: 'var(--bg)',
-                            padding: '9px 20px', borderRadius: 8, fontSize: 13,
-                            fontWeight: 600, border: 'none', cursor: 'pointer'
-                        }}
-                    >
-                        Issue gift card
-                    </button>
-                </div>
-            ) : giftCards.length > 0 && (
-                <div className="products-list-card">
-                    <table className="products-table">
-                        <thead>
-                            <tr>
-                                <th>Code</th>
-                                <th>Initial Value</th>
-                                <th>Balance</th>
-                                <th>Status</th>
-                                <th>Created</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {giftCards.map(gc => (
-                                <tr key={gc.id}>
-                                    <td>
-                                        <code style={{
-                                            fontSize: 12, padding: '3px 8px',
-                                            background: 'var(--bg-secondary)',
-                                            borderRadius: 4, fontFamily: 'monospace'
-                                        }}>
-                                            •••• {gc.code.split('-').pop()}
-                                        </code>
-                                    </td>
-                                    <td>₹{gc.initial_value.toLocaleString()}</td>
-                                    <td>₹{gc.balance.toLocaleString()}</td>
-                                    <td>
-                                        <span className={`product-status-badge ${gc.status === 'active' ? 'active' : 'archived'}`}>
-                                            <span className="product-status-dot" />
-                                            {gc.status.charAt(0).toUpperCase() + gc.status.slice(1)}
-                                        </span>
-                                    </td>
-                                    <td style={{ color: 'var(--text-secondary)', fontSize: 12 }}>
-                                        {new Date(gc.created_at).toLocaleDateString()}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-        </div>
+            <Card>
+                <Section
+                    title="Gift card list"
+                    description="Track issued balances and redemption status."
+                    action={<Badge label={`${giftCards.length} total`} variant="info" />}
+                >
+                    {giftCards.length === 0 ? (
+                        <EmptyState
+                            icon={<CreditCard className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                            title="Sell or issue gift cards"
+                            body="Gift cards can drive sales, attract new customers, and give shoppers a balance to redeem at checkout."
+                            primaryAction={!showCreate ? (
+                                <Button type="button" onClick={() => setShowCreate(true)}>
+                                    <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Issue gift card
+                                </Button>
+                            ) : undefined}
+                        />
+                    ) : (
+                        <IndexTable
+                            rows={giftCards}
+                            columns={columns}
+                            emptyState={(
+                                <EmptyState
+                                    icon={<CreditCard className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />}
+                                    title="No gift cards found"
+                                    body="Issue a gift card to create a redeemable balance."
+                                />
+                            )}
+                        />
+                    )}
+                </Section>
+            </Card>
+
+            <SaveBar
+                state={saveState}
+                onSave={() => void handleCreate()}
+                onDiscard={resetCreateForm}
+                saveLabel="Issue gift card"
+            />
+        </Page>
     )
 }
