@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+@source "./**/*.{ts,tsx}";
+@source "../.storybook/**/*.{ts,tsx}";
+
+body {
+    margin: 0;
+}
+

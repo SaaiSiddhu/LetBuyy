@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { ArrowDown, ArrowUp, Loader2 } from './icons';
+import { cx } from './utils';
 
 // ============= TYPES =============
 
@@ -39,45 +40,45 @@ export function DataTable<T extends Record<string, unknown>>({
     className = '',
 }: DataTableProps<T>) {
     return (
-        <div className={`overflow-auto rounded-lg border border-border ${className}`}>
-            <table className="w-full text-sm">
-                <thead className="bg-muted/50">
+        <div className={cx('overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)}>
+            <table className="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                <thead className="bg-[var(--lb-color-surface-subdued)]">
                     <tr>
                         {columns.map((col) => (
                             <th
                                 key={col.key}
-                                className={[
-                                    'px-4 py-3 text-left font-medium text-muted-foreground',
-                                    col.sortable ? 'cursor-pointer select-none hover:text-foreground' : '',
-                                ].join(' ')}
+                                className={cx(
+                                    'px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]',
+                                    col.sortable && 'cursor-pointer select-none hover:text-[var(--lb-color-text)]',
+                                )}
                                 style={col.width ? { width: col.width } : undefined}
                                 onClick={() => col.sortable && onSort?.(col.key)}
                             >
-                                <div className="flex items-center gap-1">
+                                <div className="flex items-center gap-[var(--lb-space-1)]">
                                     {col.header}
                                     {col.sortable && sortKey === col.key && (
                                         sortDirection === 'asc'
-                                            ? <ArrowUp className="h-3 w-3" aria-hidden="true" />
-                                            : <ArrowDown className="h-3 w-3" aria-hidden="true" />
+                                            ? <ArrowUp className="h-[1em] w-[1em]" aria-hidden="true" />
+                                            : <ArrowDown className="h-[1em] w-[1em]" aria-hidden="true" />
                                     )}
                                 </div>
                             </th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-border">
+                <tbody className="divide-y divide-[var(--lb-color-border)]">
                     {loading ? (
                         <tr>
-                            <td colSpan={columns.length} className="px-4 py-12 text-center">
-                                <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                                    <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                            <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center">
+                                <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[var(--lb-color-text-subdued)]">
+                                    <Loader2 className="h-[1em] w-[1em] animate-spin" aria-hidden="true" />
                                     Loading...
                                 </div>
                             </td>
                         </tr>
                     ) : data.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length} className="px-4 py-12 text-center text-muted-foreground">
+                            <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center text-[var(--lb-color-text-subdued)]">
                                 {emptyMessage}
                             </td>
                         </tr>
@@ -85,14 +86,14 @@ export function DataTable<T extends Record<string, unknown>>({
                         data.map((row, i) => (
                             <tr
                                 key={(row.id as string) || i}
-                                className={[
-                                    'transition-colors hover:bg-muted/50',
-                                    onRowClick ? 'cursor-pointer' : '',
-                                ].join(' ')}
+                                className={cx(
+                                    'transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    onRowClick && 'cursor-pointer',
+                                )}
                                 onClick={() => onRowClick?.(row)}
                             >
                                 {columns.map((col) => (
-                                    <td key={col.key} className="px-4 py-3">
+                                    <td key={col.key} className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">
                                         {col.render
                                             ? col.render(row[col.key], row, i)
                                             : String(row[col.key] ?? '')}
@@ -107,32 +108,5 @@ export function DataTable<T extends Record<string, unknown>>({
     );
 }
 
-// ============= STATUS BADGE =============
-
-export interface BadgeProps {
-    label: string;
-    variant?: 'default' | 'success' | 'warning' | 'danger' | 'info';
-    className?: string;
-}
-
-const badgeVariants: Record<string, string> = {
-    default: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-    success: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300',
-    warning: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300',
-    danger: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
-    info: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
-};
-
-export function Badge({ label, variant = 'default', className = '' }: BadgeProps) {
-    return (
-        <span
-            className={[
-                'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium',
-                badgeVariants[variant],
-                className,
-            ].join(' ')}
-        >
-            {label}
-        </span>
-    );
-}
+export { Badge } from './feedback';
+export type { BadgeProps } from './feedback';

@@ -19,6 +19,7 @@
 - Before-screenshots (real local stack): `artifacts/shopify-ux/ux0/before/dashboard.png`, `artifacts/shopify-ux/ux0/before/products.png`, `artifacts/shopify-ux/ux0/before/orders.png`, `artifacts/shopify-ux/ux0/before/customers.png`, `artifacts/shopify-ux/ux0/before/themes.png`, `artifacts/shopify-ux/ux0/before/apps.png`, `artifacts/shopify-ux/ux0/before/analytics.png`, `artifacts/shopify-ux/ux0/before/settings.png`.
 
 ## PROGRESS LOG (newest first)
+- 2026-06-02T10:23:32Z [UX1.2] Token-driven component layer and Storybook - DONE - evidence: `pnpm --filter @letbuyy/ui typecheck` -> PASS; `pnpm --filter @letbuyy/ui build-storybook` -> completed successfully; `node .tmp/ux1-storybook-screenshots.mjs` -> 5 screenshots captured; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful - screenshot `artifacts/shopify-ux/ux1/storybook/*.png` - commit pending.
 - 2026-06-02T10:02:07Z [UX1.1] Design token foundation - DONE - evidence: `pnpm --filter @letbuyy/ui typecheck` -> PASS; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful - screenshot n/a (token source and CSS-variable export; component visual proof starts in UX1.2) - commit `5164abc`.
 - 2026-06-02T09:54:56Z [GATE UX0] Baseline visual inventory and governance gate - DONE - evidence: `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing local-stack generated `.next`, nested `node_modules`, `.turbo`, `dist`, and `.wrangler` caches - screenshot `artifacts/shopify-ux/ux0/before/*.png` - commit `6a94a25`.
 - 2026-06-02T09:46:28Z [UX0.2] Before-state visual inventory - DONE - evidence: `pnpm run federation:local:up` -> real local stack booted after clearing stale listeners; `node .tmp/ux0-before-screenshots.mjs` -> 8 screenshots captured - screenshot `artifacts/shopify-ux/ux0/before/*.png` - commit `6a94a25`.
@@ -27,6 +28,11 @@
 ## SKIPPED - NEEDS HUMAN / BACKEND
 
 ## VISUAL LEDGER
+- 2026-06-02T10:23:32Z UX1 Page grammar story - before n/a | after `artifacts/shopify-ux/ux1/storybook/page-grammar.png`
+- 2026-06-02T10:23:32Z UX1 Forms and feedback story - before n/a | after `artifacts/shopify-ux/ux1/storybook/forms-and-feedback.png`
+- 2026-06-02T10:23:32Z UX1 Empty and loading states story - before n/a | after `artifacts/shopify-ux/ux1/storybook/empty-and-loading-states.png`
+- 2026-06-02T10:23:32Z UX1 Tables and productivity story - before n/a | after `artifacts/shopify-ux/ux1/storybook/tables-and-productivity.png`
+- 2026-06-02T10:23:32Z UX1 Overlays and command palette story - before n/a | after `artifacts/shopify-ux/ux1/storybook/overlays-and-command-palette.png`
 - 2026-06-02T09:46:28Z Dashboard - before `artifacts/shopify-ux/ux0/before/dashboard.png` | after pending
 - 2026-06-02T09:46:28Z Products - before `artifacts/shopify-ux/ux0/before/products.png` | after pending
 - 2026-06-02T09:46:28Z Orders - before `artifacts/shopify-ux/ux0/before/orders.png` | after pending
@@ -37,6 +43,10 @@
 - 2026-06-02T09:46:28Z Settings - before `artifacts/shopify-ux/ux0/before/settings.png` | after pending
 
 ## VALIDATOR LEDGER
+- 2026-06-02T10:23:32Z pnpm --filter @letbuyy/ui typecheck -> PASS
+- 2026-06-02T10:23:32Z pnpm --filter @letbuyy/ui build-storybook -> PASS
+- 2026-06-02T10:23:32Z pnpm lint -> PASS (pre-existing warnings only)
+- 2026-06-02T10:23:32Z pnpm turbo typecheck -> PASS (57/57 tasks successful)
 - 2026-06-02T10:02:07Z pnpm --filter @letbuyy/ui typecheck -> PASS
 - 2026-06-02T10:02:07Z pnpm lint -> PASS (pre-existing warnings only)
 - 2026-06-02T10:02:07Z pnpm turbo typecheck -> PASS (57/57 tasks successful)
