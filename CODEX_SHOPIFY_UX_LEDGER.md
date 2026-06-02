@@ -19,6 +19,8 @@
 - Before-screenshots (real local stack): `artifacts/shopify-ux/ux0/before/dashboard.png`, `artifacts/shopify-ux/ux0/before/products.png`, `artifacts/shopify-ux/ux0/before/orders.png`, `artifacts/shopify-ux/ux0/before/customers.png`, `artifacts/shopify-ux/ux0/before/themes.png`, `artifacts/shopify-ux/ux0/before/apps.png`, `artifacts/shopify-ux/ux0/before/analytics.png`, `artifacts/shopify-ux/ux0/before/settings.png`.
 
 ## PROGRESS LOG (newest first)
+- 2026-06-02T11:51:11Z [UX2.2] Settings page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/settings-after.png` - commit `b8affa9`.
+- 2026-06-02T11:51:11Z [UX2.2] Analytics page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/analytics-after.png` - commit `b8affa9`.
 - 2026-06-02T11:35:40Z [UX2.2] Apps page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/apps-after.png` - commit `65e2cf9`.
 - 2026-06-02T11:30:21Z [UX2.2] Themes page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/themes-after.png` - commit `2a0f106`.
 - 2026-06-02T11:22:37Z [UX2.2] Dashboard page migration to shared page grammar - DONE - evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 47 pre-existing warnings; `pnpm lint` -> PASS with pre-existing warnings; `pnpm turbo typecheck` -> 57/57 tasks successful; `pnpm run validate:governance` -> `Governance validation passed (128 validators)` after removing generated verification outputs - screenshot `artifacts/shopify-ux/ux2/dashboard-after.png` - commit `d3b4257`.
@@ -49,10 +51,15 @@
 - 2026-06-02T11:13:21Z Customers - before `artifacts/shopify-ux/ux0/before/customers.png` | after `artifacts/shopify-ux/ux2/customers-after.png`
 - 2026-06-02T11:30:21Z Themes - before `artifacts/shopify-ux/ux0/before/themes.png` | after `artifacts/shopify-ux/ux2/themes-after.png`
 - 2026-06-02T11:35:40Z Apps - before `artifacts/shopify-ux/ux0/before/apps.png` | after `artifacts/shopify-ux/ux2/apps-after.png`
-- 2026-06-02T09:46:28Z Analytics - before `artifacts/shopify-ux/ux0/before/analytics.png` | after pending
-- 2026-06-02T09:46:28Z Settings - before `artifacts/shopify-ux/ux0/before/settings.png` | after pending
+- 2026-06-02T11:51:11Z Analytics - before `artifacts/shopify-ux/ux0/before/analytics.png` | after `artifacts/shopify-ux/ux2/analytics-after.png`
+- 2026-06-02T11:51:11Z Settings - before `artifacts/shopify-ux/ux0/before/settings.png` | after `artifacts/shopify-ux/ux2/settings-after.png`
 
 ## VALIDATOR LEDGER
+- 2026-06-02T11:51:11Z pnpm --filter @letbuyy/merchant-control-plane typecheck -> PASS
+- 2026-06-02T11:51:11Z pnpm --filter @letbuyy/merchant-control-plane lint -> PASS (47 pre-existing warnings)
+- 2026-06-02T11:51:11Z pnpm lint -> PASS (pre-existing warnings only)
+- 2026-06-02T11:51:11Z pnpm turbo typecheck -> PASS (57/57 tasks successful)
+- 2026-06-02T11:51:11Z validate:governance -> 128/128 PASS after Analytics and Settings migrations (`b8affa9`)
 - 2026-06-02T11:35:40Z pnpm --filter @letbuyy/merchant-control-plane typecheck -> PASS
 - 2026-06-02T11:35:40Z pnpm --filter @letbuyy/merchant-control-plane lint -> PASS (47 pre-existing warnings)
 - 2026-06-02T11:35:40Z pnpm lint -> PASS (pre-existing warnings only)
