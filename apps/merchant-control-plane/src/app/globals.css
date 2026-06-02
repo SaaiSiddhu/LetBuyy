@@ -458,25 +458,6 @@ body {
   border-radius: 0;
 }
 
-.admin-page {
-  padding: 24px 32px;
-  max-width: 1200px;
-  width: 100%;
-}
-
-.admin-page-title {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 4px;
-}
-
-.admin-page-subtitle {
-  font-size: 14px;
-  color: var(--text-tertiary);
-  margin-bottom: 24px;
-}
-
 /* ======================================
    HEADER BAR
    ====================================== */
@@ -661,17 +642,6 @@ body {
 .dark .admin-header-btn:hover {
   background: rgba(167, 139, 250, 0.15);
   color: #E9DDFF;
-}
-
-.admin-header-btn .notification-dot {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--error);
-  border: 1.5px solid var(--bg);
 }
 
 /* Profile avatar — DEPRECATED (kept for reference, replaced by store-switcher-pill) */
@@ -1472,74 +1442,6 @@ body {
 
 .admin-notifications-footer button:hover {
   color: var(--primary-dark);
-}
-
-/* Breadcrumbs */
-.admin-breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 14px;
-  color: var(--text-tertiary);
-}
-
-.admin-breadcrumb-separator {
-  color: var(--text-hint);
-}
-
-.admin-breadcrumb-current {
-  color: var(--text-primary);
-  font-weight: 600;
-}
-
-/* ======================================
-   CARDS & STATS
-   ====================================== */
-
-.admin-stat-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  margin-bottom: 24px;
-}
-
-.admin-stat-card {
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  transition: border-color 0.2s;
-}
-
-.admin-stat-card:hover {
-  border-color: var(--primary-light);
-}
-
-.admin-stat-label {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-tertiary);
-  margin-bottom: 4px;
-}
-
-.admin-stat-value {
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.admin-stat-change {
-  font-size: 12px;
-  font-weight: 500;
-  margin-top: 4px;
-}
-
-.admin-stat-change.positive {
-  color: var(--success);
-}
-
-.admin-stat-change.negative {
-  color: var(--error);
 }
 
 /* ======================================
@@ -2645,10 +2547,6 @@ body {
 
   .admin-header-search-mobile {
     display: flex;
-  }
-
-  .admin-page {
-    padding: 16px;
   }
 
   /* Trial toast: full-width on mobile */
@@ -3781,144 +3679,6 @@ body {
 .stub-page-store strong {
   color: var(--text-secondary);
 }
-
-/* ======================================
-   ORDERS PAGE — Status Badges & Actions
-   ====================================== */
-
-.order-status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 500;
-}
-
-.order-status-badge.pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--warning);
-}
-
-.order-status-badge.confirmed {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-.order-status-badge.processing {
-  background: rgba(14, 165, 233, 0.1);
-  color: #0284c7;
-}
-
-.order-status-badge.shipped {
-  background: rgba(139, 92, 246, 0.1);
-  color: var(--primary);
-}
-
-.order-status-badge.delivered {
-  background: rgba(34, 197, 94, 0.1);
-  color: var(--success);
-}
-
-.order-status-badge.cancelled {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--error);
-}
-
-.order-status-badge.refunded {
-  background: rgba(100, 116, 139, 0.12);
-  color: var(--text-secondary);
-}
-
-.payment-status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 8px;
-  border-radius: 8px;
-  font-size: 11px;
-  font-weight: 600;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-}
-
-.payment-status-badge.paid {
-  background: rgba(34, 197, 94, 0.1);
-  color: var(--success);
-}
-
-.payment-status-badge.pending {
-  background: rgba(245, 158, 11, 0.1);
-  color: var(--warning);
-}
-
-.payment-status-badge.failed,
-.payment-status-badge.refunded {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--error);
-}
-
-/* Action buttons */
-.order-action-btn {
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  transition: opacity 0.15s;
-}
-
-.order-action-btn:hover {
-  opacity: 0.85;
-}
-
-.order-action-btn.fulfill {
-  background: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
-}
-
-.order-action-btn.cancel {
-  background: rgba(239, 68, 68, 0.1);
-  color: var(--error);
-}
-
-.order-action-btn.ship {
-  background: var(--primary);
-  color: white;
-}
-
-.order-action-btn.confirm-cancel {
-  background: var(--error);
-  color: white;
-}
-
-.order-action-btn.dismiss {
-  background: none;
-  color: var(--text-hint);
-}
-
-.order-action-btn.dismiss:hover {
-  color: var(--text-primary);
-  opacity: 1;
-}
-
-/* Inline tracking input */
-.order-inline-input {
-  padding: 4px 8px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 12px;
-  font-family: inherit;
-  outline: none;
-}
-
-.order-inline-input:focus {
-  border-color: var(--primary);
-}
-
 
 /* ======================================
    PLAN SELECTION LAYOUT
