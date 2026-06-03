@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import {
     Avatar,
@@ -48,6 +48,22 @@ export function SettingsShell({
     const [drawerOpen, setDrawerOpen] = useState(false)
     const normalizedQuery = normalizeSearch(query)
     const activeItem = getSettingsItemByPath(pathname, store)
+
+    useEffect(() => {
+        if (!drawerOpen) return
+
+        function handleKeyDown(event: KeyboardEvent) {
+            if (event.key === 'Escape') {
+                setDrawerOpen(false)
+            }
+        }
+
+        document.addEventListener('keydown', handleKeyDown)
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [drawerOpen])
 
     const filteredGroups = useMemo(() => SETTINGS_NAV_GROUPS.map((group) => ({
         ...group,
@@ -158,11 +174,16 @@ export function SettingsShell({
                     />
                     <aside
                         id="settings-mobile-drawer"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="settings-mobile-drawer-title"
                         className="relative z-10 flex h-full w-[min(380px,calc(100vw-var(--lb-space-5)))] flex-col overflow-hidden border-r border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] shadow-[var(--lb-shadow-lg)]"
-                        aria-label="Settings index"
                     >
                         <div className="mb-[var(--lb-space-4)] flex items-center justify-between gap-[var(--lb-space-3)]">
-                            <h2 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                            <h2
+                                id="settings-mobile-drawer-title"
+                                className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]"
+                            >
                                 Settings
                             </h2>
                             <Button
