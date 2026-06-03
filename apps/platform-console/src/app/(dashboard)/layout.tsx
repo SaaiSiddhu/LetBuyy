@@ -7,6 +7,7 @@ import {
     LogOut,
     Settings,
     Shield,
+    ShieldAlert,
     Store,
     Users,
 } from '@letbuyy/ui';
@@ -32,6 +33,7 @@ export default async function DashboardLayout({
                 <nav className="space-y-1 p-4">
                     <ConsoleNavLink href="/dashboard" label="Dashboard" icon={<Gauge size={16} />} />
                     <ConsoleNavLink href="/operations" label="Operations" icon={<Activity size={16} />} />
+                    <ConsoleNavLink href="/trust-safety" label="Trust & Safety" icon={<ShieldAlert size={16} />} />
                     <ConsoleNavLink href="/users" label="Users" icon={<Users size={16} />} />
                     <ConsoleNavLink href="/stores" label="Stores" icon={<Store size={16} />} />
                     <ConsoleNavLink href="/subscriptions" label="Subscriptions" icon={<CreditCard size={16} />} />
