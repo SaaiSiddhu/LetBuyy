@@ -11,8 +11,6 @@ import {
     IndianRupee,
     Input,
     Key,
-    Page,
-    PageHeader,
     SaveBar,
     Section,
     ShieldCheck,
@@ -20,6 +18,7 @@ import {
     Truck,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings'
 
 type SanitizedPaymentSettings = {
     mode: 'shared' | 'ownAccount'
@@ -74,6 +73,52 @@ function PaymentSummary({ icon, label, value }: PaymentSummaryProps) {
                 </span>
             </span>
         </div>
+    )
+}
+
+type ProviderStatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical'
+
+interface ProviderCardProps {
+    icon: ReactNode
+    name: string
+    description: string
+    statusLabel: string
+    statusVariant: ProviderStatusVariant
+    helperText?: string
+}
+
+function ProviderCard({
+    icon,
+    name,
+    description,
+    statusLabel,
+    statusVariant,
+    helperText,
+}: ProviderCardProps) {
+    return (
+        <article className="flex min-w-0 flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
+            <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
+                <div className="flex min-w-0 items-start gap-[var(--lb-space-3)]">
+                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                        {icon}
+                    </span>
+                    <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                        <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                            {name}
+                        </h3>
+                        <p className="m-0 text-[var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text-subdued)]">
+                            {description}
+                        </p>
+                    </div>
+                </div>
+                <Badge label={statusLabel} variant={statusVariant} />
+            </div>
+            {helperText && (
+                <p className="m-0 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                    {helperText}
+                </p>
+            )}
+        </article>
     )
 }
 
@@ -217,19 +262,19 @@ export default function PaymentsSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Payments"
-                    description="Connect provider credentials and review storefront payment availability."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Payments' }]}
-                />
+            <SettingsPane
+                store={store}
+                title="Payments"
+                description="Connect provider credentials and review storefront payment availability."
+                iconName="payments"
+            >
                 <Card>
                     <Section title="Razorpay account">
                         <Skeleton variant="text" lines={4} />
                     </Section>
                 </Card>
                 <Skeleton variant="card" />
-            </Page>
+            </SettingsPane>
         )
     }
 
@@ -239,15 +284,25 @@ export default function PaymentsSettingsPage() {
         : razorpay?.secret_configured
             ? { label: 'Saved', variant: 'warning' as const }
             : { label: 'Not connected', variant: 'default' as const }
+    const gateways = config?.payment_settings.gateways ?? []
+    const hasCashfree = gateways.includes('cashfree')
+    const hasUpi = gateways.includes('upi')
 
     return (
-        <Page>
-            <PageHeader
-                title="Payments"
-                description="Connect provider credentials and review storefront payment availability."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Payments' }]}
-            />
-
+        <SettingsPane
+            store={store}
+            title="Payments"
+            description="Connect provider credentials and review storefront payment availability."
+            iconName="payments"
+            saveBar={(
+                <SaveBar
+                    state={activeSaveState}
+                    onSave={() => void handleSave()}
+                    onDiscard={handleDiscard}
+                    saveLabel="Save payments"
+                />
+            )}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -351,8 +406,50 @@ export default function PaymentsSettingsPage() {
 
             <Card>
                 <Section
+                    title="Payment providers"
+                    description="Review checkout payment methods from the masked provider configuration returned by the platform."
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                        <ProviderCard
+                            icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            name="Razorpay"
+                            description="Online card, wallet, netbanking, and UPI payments through the seller account."
+                            statusLabel={status.label}
+                            statusVariant={status.variant}
+                            helperText={razorpay?.secret_configured ? 'Credentials are saved in the worker and masked in the merchant UI.' : 'Add seller Razorpay credentials above to enable online checkout.'}
+                        />
+                        <ProviderCard
+                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            name="Cash on delivery"
+                            description="Allow shoppers to place orders with payment collected during fulfillment."
+                            statusLabel={config?.cod_enabled ? 'Enabled' : 'Disabled'}
+                            statusVariant={config?.cod_enabled ? 'success' : 'default'}
+                            helperText="COD availability is returned by the payment configuration endpoint."
+                        />
+                        <ProviderCard
+                            icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            name="Cashfree"
+                            description="India payment gateway option for cards, netbanking, UPI, and wallets."
+                            statusLabel={hasCashfree ? 'Available' : 'Needs backend'}
+                            statusVariant={hasCashfree ? 'info' : 'warning'}
+                            helperText={hasCashfree ? 'Cashfree appears in the configured gateway list.' : 'Payment settings do not yet expose Cashfree enable/configure controls for this pane.'}
+                        />
+                        <ProviderCard
+                            icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            name="UPI"
+                            description="UPI collection through the active online payment gateway."
+                            statusLabel={hasUpi ? 'Enabled' : 'Needs backend'}
+                            statusVariant={hasUpi ? 'success' : 'warning'}
+                            helperText={hasUpi ? 'UPI is included in the configured gateway list.' : 'Payment settings do not yet expose standalone UPI enable/configure controls for this pane.'}
+                        />
+                    </div>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
                     title="Accepted methods"
-                    description="These options reflect the current masked provider configuration returned by the platform."
+                    description="These values are derived from the current masked provider configuration."
                 >
                     <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                         <PaymentSummary
@@ -363,18 +460,11 @@ export default function PaymentsSettingsPage() {
                         <PaymentSummary
                             icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             label="Gateways"
-                            value={config?.payment_settings.gateways.length ? config.payment_settings.gateways.join(', ') : 'No gateways configured'}
+                            value={gateways.length ? gateways.join(', ') : 'No gateways configured'}
                         />
                     </div>
                 </Section>
             </Card>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={handleDiscard}
-                saveLabel="Save payments"
-            />
-        </Page>
+        </SettingsPane>
     )
 }
