@@ -824,6 +824,80 @@ export function ControlComponentHardening() {
     );
 }
 
+export function LayoutComponentHardening() {
+    return (
+        <Page width="narrow" gap="lg">
+            <PageHeader
+                compact
+                eyebrow="Batch 5"
+                title="Layout component hardening"
+                titleMetadata={<Badge label="Stable" variant="success" />}
+                subtitle={<span>Page, PageHeader, Card, and Section composition for merchant operations.</span>}
+                description="Layout primitives now expose width, spacing, metadata, guarded actions, card headers, footers, tones, and section density without changing existing defaults."
+                backAction={{ label: 'Products', href: '#', icon: <MaterialIcon name="arrow_back" />, ariaLabel: 'Back to products' }}
+                breadcrumbs={[{ label: 'Catalog', href: '#' }, { label: 'Bulk update' }]}
+                primaryAction={{ label: 'Publish changes', icon: <MaterialIcon name="publish" /> }}
+                secondaryActions={[
+                    { label: 'Preview', icon: <MaterialIcon name="visibility" /> },
+                    { label: 'Delete draft', icon: <MaterialIcon name="delete" />, destructive: true },
+                ]}
+            />
+            <Card
+                title="Bulk update summary"
+                description="Card headers and footers can now carry workflow copy and actions."
+                action={<Button size="sm" variant="secondary" icon={<MaterialIcon name="edit" />}>Edit</Button>}
+                footer={(
+                    <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        <span>Last checked 2 minutes ago</span>
+                        <Button size="sm" variant="ghost">View activity</Button>
+                    </div>
+                )}
+                headerDivider
+            >
+                <Section
+                    title="Publishing readiness"
+                    description="Section density and footer slots keep operational screens compact."
+                    action={<Badge label="Ready" variant="success" />}
+                    headingLevel={3}
+                    footer={<span className="text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">All readiness checks use shared semantic tokens.</span>}
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                        <MetricCard label="Products" value="184" secondaryValue="Selected for update" icon={<MaterialIcon name="products" />} />
+                        <MetricCard label="Channels" value="3" secondaryValue="Online Store, POS, Market" icon={<MaterialIcon name="storefront" />} />
+                        <MetricCard label="Risk" value="Low" secondaryValue="No blocked variants" icon={<MaterialIcon name="shield_lock" />} />
+                    </div>
+                </Section>
+                <Section
+                    title="Subdued detail band"
+                    description="Use subdued sections for secondary settings inside the same card."
+                    padding="sm"
+                    divider
+                    subdued
+                    headingLevel={3}
+                >
+                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                        <Badge label="Inventory synced" variant="info" />
+                        <Badge label="No pricing conflicts" variant="success" />
+                        <Badge label="Checkout tested" variant="default" />
+                    </div>
+                </Section>
+            </Card>
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                <Card title="Subdued card" description="Card tone can distinguish lower-priority work." tone="subdued" padding="md">
+                    <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                        Merchant settings panels can stay visually quiet while still using the shared card primitive.
+                    </p>
+                </Card>
+                <Card title="Compact footer" description="Footer dividers can be disabled when cards sit inside grouped layouts." padding="md" footerDivider={false} footer={<Button size="sm" variant="secondary">Open settings</Button>}>
+                    <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                        Footer slots accept any token-driven command or status component.
+                    </p>
+                </Card>
+            </div>
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>
