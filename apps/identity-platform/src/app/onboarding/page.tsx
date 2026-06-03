@@ -55,6 +55,11 @@ const translations: Record<Lang, Record<string, string>> = {
         createSite: 'Create Site',
         creating: 'Creating...',
         allSet: "You're all set!",
+        successBadge: 'Store live',
+        successTitle: '🎉 Your store is ready!',
+        successDesc: 'Your LetBuyy workspace is ready. Open the dashboard to add products, payments, shipping, and launch details.',
+        successNext: 'Opening your dashboard',
+        dashboardCta: 'Go to dashboard',
         redirecting: 'Redirecting to your dashboard...',
         logOut: 'Log out',
         store: 'Online Store',
@@ -130,6 +135,11 @@ const translations: Record<Lang, Record<string, string>> = {
         createSite: 'साइट बनाएं',
         creating: 'बना रहे हैं...',
         allSet: 'सब तैयार है!',
+        successBadge: 'स्टोर लाइव',
+        successTitle: '🎉 आपका स्टोर तैयार है!',
+        successDesc: 'आपका LetBuyy वर्कस्पेस तैयार है। उत्पाद, भुगतान, शिपिंग और लॉन्च विवरण जोड़ने के लिए डैशबोर्ड खोलें।',
+        successNext: 'आपका डैशबोर्ड खुल रहा है',
+        dashboardCta: 'डैशबोर्ड पर जाएं',
         redirecting: 'आपके डैशबोर्ड पर जा रहे हैं...',
         logOut: 'लॉग आउट',
         store: 'ऑनलाइन स्टोर',
@@ -201,6 +211,11 @@ const translations: Record<Lang, Record<string, string>> = {
         createSite: 'தளம் உருவாக்கு',
         creating: 'உருவாக்குகிறது...',
         allSet: 'எல்லாம் தயார்!',
+        successBadge: 'கடை live',
+        successTitle: '🎉 உங்கள் கடை தயார்!',
+        successDesc: 'உங்கள் LetBuyy பணியிடம் தயார். தயாரிப்புகள், பணப்பரிவர்த்தனை, ஷிப்பிங், வெளியீட்டு விவரங்களைச் சேர்க்க டாஷ்போர்டைத் திறக்கவும்.',
+        successNext: 'உங்கள் டாஷ்போர்டு திறக்கிறது',
+        dashboardCta: 'டாஷ்போர்டுக்கு செல்லவும்',
         redirecting: 'உங்கள் டாஷ்போர்டுக்கு செல்கிறது...',
         logOut: 'வெளியேறு',
         store: 'ஆன்லைன் கடை',
@@ -493,6 +508,10 @@ export default function OnboardingPage() {
 
     /* ——— Success state ——— */
     if (success) {
+        const selectedSiteType = SITE_TYPES.find((st) => st.id === siteType)
+        const selectedSiteTypeLabel = selectedSiteType ? t[selectedSiteType.nameKey] : 'site'
+        const dashboardUrl = getAdminDashboardUrl(subdomain)
+
         return (
             <div className="auth-container">
                 {/* Top bar */}
@@ -512,22 +531,31 @@ export default function OnboardingPage() {
                         <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
                     </div>
                     <div className="onboard-success">
-                        <div className="onboard-success-icon">
-                            <AuthIcon name="check_circle" size={48} style={{ color: 'var(--success, #22C55E)' }} />
-                        </div>
-                        <h1 className="auth-title">{t.allSet}</h1>
-                        <p className="auth-subtitle">
-                            Your {SITE_TYPES.find((st) => st.id === siteType)?.nameKey
-                                ? t[SITE_TYPES.find((st) => st.id === siteType)!.nameKey]
-                                : 'site'} has been created.
-                        </p>
-                        <div className="onboard-success-url">
-                            <AuthIcon name="link" size={16} style={{ marginRight: 6 }} />
-                            {subdomain}.letbuyy.store
-                        </div>
-                        <p style={{ color: 'var(--text-hint)', fontSize: 13, marginTop: 16 }}>
+                        <Badge label={t.successBadge} variant="success" />
+                        <h1 className="auth-title">{t.successTitle}</h1>
+                        <p className="auth-subtitle">{t.successDesc}</p>
+                        <DescriptionList
+                            className="mt-4 text-left"
+                            items={[
+                                { term: t.siteTypeLabel, description: <strong>{selectedSiteTypeLabel}</strong> },
+                                { term: t.subdomainLabel, description: <strong className="break-all">{subdomain}.letbuyy.store</strong> },
+                            ]}
+                        />
+                        <Banner title={t.successNext} variant="success" className="mt-4 text-left">
                             {t.redirecting}
-                        </p>
+                        </Banner>
+                        <div className="onboard-btn-row">
+                            <Button
+                                type="button"
+                                fullWidth
+                                onClick={() => {
+                                    window.location.href = dashboardUrl
+                                }}
+                            >
+                                {t.dashboardCta}
+                                <AuthIcon name="arrow_forward" size={18} />
+                            </Button>
+                        </div>
                     </div>
                 </div>
             </div>
