@@ -3,6 +3,7 @@ import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from
 
 const protectedPrefixes = [
     '/',
+    '/crm',
     '/marketing',
     '/merchant-health',
     '/operations',
@@ -43,6 +44,7 @@ export function proxy(request: NextRequest) {
 export const config = {
     matcher: [
         '/',
+        '/crm/:path*',
         '/login',
         '/invite/:path*',
         '/marketing/:path*',
