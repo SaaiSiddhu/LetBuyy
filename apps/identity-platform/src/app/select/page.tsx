@@ -3,27 +3,49 @@
 import { useState, useEffect } from 'react'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { Badge, Banner, Button } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 
 const translations: Record<Lang, Record<string, string>> = {
     en: {
-        title: 'Choose an account',
-        subtitle: 'to continue to LetBuyy',
+        title: 'Choose a store',
+        subtitle: 'Pick the workspace you want to manage.',
+        selectorHint: 'Multiple stores found',
+        selectorHintDesc: 'Each store opens in its own merchant dashboard with the right site type and status context.',
+        createNew: 'Create a new site',
+        opening: 'Opening...',
+        storeType: 'Type',
+        statusLabel: 'Status',
+        onlineStore: 'Online Store',
         useDifferent: 'Use a different account',
         removeAccount: 'Remove',
         lastLogin: 'Last login:',
     },
     hi: {
-        title: 'एक अकाउंट चुनें',
-        subtitle: 'LetBuyy पर जारी रखें',
+        title: 'एक स्टोर चुनें',
+        subtitle: 'जिस वर्कस्पेस को मैनेज करना है उसे चुनें।',
+        selectorHint: 'कई स्टोर मिले',
+        selectorHintDesc: 'हर स्टोर सही साइट प्रकार और स्थिति संदर्भ के साथ अपने merchant dashboard में खुलता है।',
+        createNew: 'नई साइट बनाएं',
+        opening: 'खुल रहा है...',
+        storeType: 'प्रकार',
+        statusLabel: 'स्थिति',
+        onlineStore: 'ऑनलाइन स्टोर',
         useDifferent: 'दूसरे अकाउंट का उपयोग करें',
         removeAccount: 'हटाएं',
         lastLogin: 'अंतिम लॉगिन:',
     },
     ta: {
-        title: 'ஒரு கணக்கைத் தேர்ந்தெடுக்கவும்',
-        subtitle: 'LetBuyy தொடரவும்',
+        title: 'ஒரு கடையைத் தேர்ந்தெடுக்கவும்',
+        subtitle: 'நீங்கள் நிர்வகிக்க வேண்டிய பணியிடத்தைத் தேர்ந்தெடுக்கவும்.',
+        selectorHint: 'பல கடைகள் கிடைத்தன',
+        selectorHintDesc: 'ஒவ்வொரு கடையும் சரியான தள வகை மற்றும் நிலை விவரங்களுடன் தனி merchant dashboard-ல் திறக்கும்.',
+        createNew: 'புதிய தளம் உருவாக்கு',
+        opening: 'திறக்கிறது...',
+        storeType: 'வகை',
+        statusLabel: 'நிலை',
+        onlineStore: 'ஆன்லைன் கடை',
         useDifferent: 'வேறு கணக்கைப் பயன்படுத்தவும்',
         removeAccount: 'அகற்று',
         lastLogin: 'கடைசி உள்நுழைவு:',
@@ -112,6 +134,33 @@ export default function SelectPage() {
         window.location.href = getAdminDashboardUrl(store.subdomain)
     }
 
+    const formatLabel = (value: string) => (
+        value
+            .split(/[-_\s]+/)
+            .filter(Boolean)
+            .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+            .join(' ') || 'Unknown'
+    )
+
+    const getStatusVariant = (status: string): 'success' | 'warning' | 'info' | 'critical' => {
+        const normalized = status.toLowerCase()
+        if (['active', 'published', 'live'].includes(normalized)) return 'success'
+        if (['draft', 'pending', 'review'].includes(normalized)) return 'warning'
+        if (['suspended', 'disabled', 'archived'].includes(normalized)) return 'critical'
+        return 'info'
+    }
+
+    const getSiteTypeLabel = (type: string) => {
+        switch (type) {
+            case 'store': return t.onlineStore
+            case 'portfolio': return 'Portfolio'
+            case 'resume': return 'Resume / CV'
+            case 'landing': return 'Landing Page'
+            case 'blog': return 'Blog'
+            default: return formatLabel(type)
+        }
+    }
+
     const getSiteTypeIcon = (type: string): AuthIconName => {
         switch (type) {
             case 'store': return 'storefront'
@@ -149,6 +198,10 @@ export default function SelectPage() {
                         <h1 className="auth-title">{t.title}</h1>
                         <p className="auth-subtitle">{t.subtitle}</p>
 
+                        <Banner title={t.selectorHint} variant="info" className="text-left">
+                            {t.selectorHintDesc}
+                        </Banner>
+
                         <div className="auth-accounts-list">
                             {stores.map((store) => (
                                 <button
@@ -161,22 +214,30 @@ export default function SelectPage() {
                                         <AuthIcon name={getSiteTypeIcon(store.site_type)} size={22} />
                                     </div>
                                     <div className="auth-account-info">
-                                        <span className="auth-account-name">{store.name}</span>
+                                        <span className="auth-account-name">{store.store_name || store.name}</span>
                                         <span className="auth-account-email">{store.subdomain}.letbuyy.store</span>
-                                        <span className="auth-account-meta">
-                                            {store.site_type} · {store.status}
+                                        <span className="auth-account-meta flex flex-wrap gap-[var(--lb-space-1)]">
+                                            <Badge label={`${t.storeType}: ${getSiteTypeLabel(store.site_type)}`} variant="info" />
+                                            <Badge label={`${t.statusLabel}: ${formatLabel(store.status)}`} variant={getStatusVariant(store.status)} />
                                         </span>
                                     </div>
                                     <span className="auth-account-arrow">
-                                        {loading === store.id ? '...' : '→'}
+                                        {loading === store.id ? t.opening : <AuthIcon name="arrow_forward" size={18} />}
                                     </span>
                                 </button>
                             ))}
                         </div>
 
-                        <a href="/onboarding" className="auth-link-btn">
-                            + Create a new site
-                        </a>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            fullWidth
+                            onClick={() => {
+                                window.location.href = '/onboarding'
+                            }}
+                        >
+                            {t.createNew}
+                        </Button>
                     </>
                 )}
             </div>
