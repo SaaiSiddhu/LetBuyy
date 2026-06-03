@@ -43,19 +43,12 @@ interface PlanInfo {
 }
 
 type PlanPayload = {
-    data?: {
-        store?: {
-            trial_status?: string
-            trial_ends_at?: string
-            site_type?: string
-        }
-        subscription?: Omit<SubscriptionData, 'plan_name'> & { plan_name?: string }
-    }
+    data?: unknown
     error?: string | { message?: string }
 }
 
 type PlansPayload = {
-    plans?: PlanInfo[]
+    plans?: unknown
     error?: string | { message?: string }
 }
 
@@ -64,9 +57,80 @@ function getPayloadError(payload: { error?: string | { message?: string } } | nu
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
 function coerceCents(value: unknown) {
     const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
     return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeStoreData(value: unknown) {
+    if (!isRecord(value)) {
+        return {
+            trial_status: 'active',
+            trial_ends_at: '',
+            site_type: 'store',
+        }
+    }
+
+    return {
+        trial_status: readString(value.trial_status, 'active'),
+        trial_ends_at: readString(value.trial_ends_at),
+        site_type: readString(value.site_type, 'store'),
+    }
+}
+
+function normalizeSubscription(value: unknown): SubscriptionData | null {
+    if (!isRecord(value)) return null
+
+    const plan = readString(value.plan, 'current')
+    const planName = readString(value.plan_name, plan)
+    const promoEndsAt = readString(value.promo_ends_at)
+
+    return {
+        plan,
+        plan_name: planName,
+        status: readString(value.status, 'active'),
+        billing_period: readString(value.billing_period, 'monthly'),
+        current_period_end: readString(value.current_period_end),
+        promo_ends_at: promoEndsAt || null,
+        amount_paid: coerceCents(value.amount_paid),
+    }
+}
+
+function normalizeFeatures(value: unknown): PlanInfo['features'] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((feature) => {
+        if (typeof feature === 'string' && feature.trim()) return [{ label: feature.trim() }]
+        if (!isRecord(feature) || typeof feature.label !== 'string' || !feature.label.trim()) return []
+
+        return [{
+            label: feature.label.trim(),
+            icon: typeof feature.icon === 'string' ? feature.icon : undefined,
+        }]
+    })
+}
+
+function normalizePlanInfo(value: unknown): PlanInfo | null {
+    if (!isRecord(value)) return null
+
+    const slug = readString(value.slug)
+    const name = readString(value.name, slug || 'Plan')
+
+    return {
+        name,
+        slug,
+        price_monthly_inr: coerceCents(value.price_monthly_inr),
+        price_yearly_inr: coerceCents(value.price_yearly_inr),
+        features: normalizeFeatures(value.features),
+    }
 }
 
 function formatMoney(amount: number) {
@@ -163,12 +227,13 @@ export default function PlanSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load plan settings'))
             }
 
-            const storeData = payload?.data?.store
-            const sub = payload?.data?.subscription
+            const data = isRecord(payload?.data) ? payload.data : null
+            const storeData = normalizeStoreData(data?.store)
+            const sub = normalizeSubscription(data?.subscription)
 
             setTrialData({
-                trial_status: storeData?.trial_status || 'active',
-                trial_ends_at: storeData?.trial_ends_at || '',
+                trial_status: storeData.trial_status,
+                trial_ends_at: storeData.trial_ends_at,
             })
 
             if (!sub) {
@@ -180,17 +245,12 @@ export default function PlanSettingsPage() {
             let nextPlanInfo: PlanInfo | null = null
 
             try {
-                const planResponse = await fetch(`/api/plans?site_type=${storeData?.site_type || 'store'}&slug=${sub.plan}`)
+                const planResponse = await fetch(`/api/plans?site_type=${encodeURIComponent(storeData.site_type)}&slug=${encodeURIComponent(sub.plan)}`)
                 const plansPayload = (await planResponse.json().catch(() => null)) as PlansPayload | null
+                const planData = Array.isArray(plansPayload?.plans) ? plansPayload.plans[0] : null
 
-                if (planResponse.ok && plansPayload?.plans?.[0]) {
-                    const plan = plansPayload.plans[0]
-                    nextPlanInfo = {
-                        ...plan,
-                        price_monthly_inr: coerceCents(plan.price_monthly_inr),
-                        price_yearly_inr: coerceCents(plan.price_yearly_inr),
-                        features: Array.isArray(plan.features) ? plan.features : [],
-                    }
+                if (planResponse.ok) {
+                    nextPlanInfo = normalizePlanInfo(planData)
                 }
             } catch {
                 nextPlanInfo = null
@@ -199,8 +259,7 @@ export default function PlanSettingsPage() {
             setPlanInfo(nextPlanInfo)
             setSubscription({
                 ...sub,
-                amount_paid: coerceCents(sub.amount_paid),
-                plan_name: nextPlanInfo?.name || sub.plan_name || sub.plan,
+                plan_name: nextPlanInfo?.name || sub.plan_name,
             })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load plan settings'
