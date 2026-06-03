@@ -6,6 +6,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon, type AuthIconName } from '@/components/AuthIcon'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { Badge, Banner, Button, DescriptionList, Input, ProgressBar } from '@letbuyy/ui'
 
 /* ——————————————————————————————————————
    Types
@@ -37,6 +38,15 @@ const translations: Record<Lang, Record<string, string>> = {
         chooseSite: 'Choose the type of site for your business',
         nameSite: 'Name your site',
         storeUrl: 'This will be your store URL',
+        guidedSetup: 'Guided launch',
+        stepType: 'Type',
+        stepDetails: 'Details',
+        stepReview: 'Review',
+        smartDefaults: 'India commerce defaults',
+        smartDefaultsDesc: 'We will start your site with INR currency, GST-ready tax settings, and COD-friendly launch guidance.',
+        currencyDefault: 'INR currency',
+        gstDefault: 'GST-ready setup',
+        codDefault: 'COD-ready guidance',
         displayName: 'Display Name',
         displayPlaceholder: 'My Awesome Store',
         subdomain: 'Subdomain',
@@ -103,6 +113,15 @@ const translations: Record<Lang, Record<string, string>> = {
         chooseSite: 'अपने व्यापार के लिए साइट का प्रकार चुनें',
         nameSite: 'अपनी साइट का नाम दें',
         storeUrl: 'यह आपका स्टोर URL होगा',
+        guidedSetup: 'गाइडेड लॉन्च',
+        stepType: 'प्रकार',
+        stepDetails: 'विवरण',
+        stepReview: 'समीक्षा',
+        smartDefaults: 'भारत कॉमर्स डिफॉल्ट',
+        smartDefaultsDesc: 'हम INR मुद्रा, GST-ready टैक्स सेटिंग्स और COD-friendly लॉन्च मार्गदर्शन से शुरुआत करेंगे।',
+        currencyDefault: 'INR मुद्रा',
+        gstDefault: 'GST-ready सेटअप',
+        codDefault: 'COD-ready मार्गदर्शन',
         displayName: 'प्रदर्शन नाम',
         displayPlaceholder: 'मेरा स्टोर',
         subdomain: 'सबडोमेन',
@@ -165,6 +184,15 @@ const translations: Record<Lang, Record<string, string>> = {
         chooseSite: 'உங்கள் வணிகத்திற்கான தளத்தின் வகையைத் தேர்ந்தெடுக்கவும்',
         nameSite: 'உங்கள் தளத்திற்கு பெயரிடுங்கள்',
         storeUrl: 'இது உங்கள் கடை URL ஆக இருக்கும்',
+        guidedSetup: 'வழிகாட்டப்பட்ட வெளியீடு',
+        stepType: 'வகை',
+        stepDetails: 'விவரம்',
+        stepReview: 'சரிபார்',
+        smartDefaults: 'இந்தியா வர்த்தக இயல்புகள்',
+        smartDefaultsDesc: 'INR நாணயம், GST-ready வரி அமைப்புகள், COD-friendly வெளியீட்டு வழிகாட்டுதலுடன் தொடங்குவோம்.',
+        currencyDefault: 'INR நாணயம்',
+        gstDefault: 'GST-ready அமைப்பு',
+        codDefault: 'COD-ready வழிகாட்டுதல்',
         displayName: 'காட்சி பெயர்',
         displayPlaceholder: 'என் கடை',
         subdomain: 'சப்டொமைன்',
@@ -245,7 +273,8 @@ const TEMPLATES: { id: TemplateId; nameKey: string; descKey: string; icon: AuthI
     { id: 'classic', nameKey: 'classicTemplate', icon: 'menu_book', descKey: 'classicTemplateDesc' },
 ]
 
-const TOTAL_STEPS = 6
+const TOTAL_STEPS = 3
+const SMART_DEFAULT_KEYS = ['currencyDefault', 'gstDefault', 'codDefault'] as const
 
 /* ——————————————————————————————————————
    Component
@@ -527,10 +556,25 @@ export default function OnboardingPage() {
                 </div>
 
                 {/* Progress bar */}
-                <div className="onboard-progress">
-                    {Array.from({ length: TOTAL_STEPS }, (_, i) => (
-                        <div key={i} className={`onboard-progress-step ${step >= i + 1 ? 'active' : ''}`} />
-                    ))}
+                <div className="mb-[var(--lb-space-5)] grid gap-[var(--lb-space-3)]">
+                    <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
+                        <Badge label={t.guidedSetup} variant="info" />
+                        <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                            Step {Math.min(step, TOTAL_STEPS)} of {TOTAL_STEPS}
+                        </span>
+                    </div>
+                    <ProgressBar
+                        value={Math.min(step, TOTAL_STEPS)}
+                        max={TOTAL_STEPS}
+                        label={step === 1 ? t.stepType : step === 2 ? t.stepDetails : t.stepReview}
+                    />
+                    <div className="grid grid-cols-3 gap-[var(--lb-space-2)] text-center text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                        {[t.stepType, t.stepDetails, t.stepReview].map((label, index) => (
+                            <span key={label} className={index + 1 === Math.min(step, TOTAL_STEPS) ? 'text-[color:var(--lb-color-text)]' : undefined}>
+                                {label}
+                            </span>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Error banner */}
@@ -554,6 +598,9 @@ export default function OnboardingPage() {
                                     className={`onboard-type-card ${siteType === type.id ? 'selected' : ''}`}
                                     onClick={() => {
                                         setSiteType(type.id)
+                                        setGoal(type.id === 'store' ? 'sell' : type.id === 'landing' ? 'leads' : type.id === 'blog' ? 'blog' : 'showcase')
+                                        setTeamSize('solo')
+                                        setTemplate(type.id === 'store' ? 'modern' : 'blank')
                                         setStep(2)
                                     }}
                                 >
@@ -574,12 +621,21 @@ export default function OnboardingPage() {
                         <h1 className="auth-title">{t.nameSite}</h1>
                         <p className="auth-subtitle">{t.storeUrl}</p>
 
+                        <Banner title={t.smartDefaults} variant="info" className="mb-[var(--lb-space-4)]">
+                            {t.smartDefaultsDesc}
+                        </Banner>
+
                         {/* Display name (optional) */}
-                        <div style={{ marginBottom: 16 }}>
-                            <label className="auth-label">{t.displayName}</label>
-                            <input
+                        <div className="mb-[var(--lb-space-4)] grid gap-[var(--lb-space-2)]">
+                            <label
+                                htmlFor="store-display-name"
+                                className="block text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]"
+                            >
+                                {t.displayName}
+                            </label>
+                            <Input
+                                id="store-display-name"
                                 type="text"
-                                className="auth-input"
                                 placeholder={t.displayPlaceholder}
                                 value={storeName}
                                 onChange={(e) => setStoreName(e.target.value)}
@@ -587,8 +643,10 @@ export default function OnboardingPage() {
                         </div>
 
                         {/* Subdomain */}
-                        <div>
-                            <label className="auth-label">{t.subdomain}</label>
+                        <div className="grid gap-[var(--lb-space-1)]">
+                            <label className="text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
+                                {t.subdomain}
+                            </label>
                             <div
                                 className={`onboard-subdomain-wrapper ${validation
                                     ? validation.valid
@@ -658,37 +716,54 @@ export default function OnboardingPage() {
                     </>
                 )}
 
-                {/* ——— STEP 3: Template picker ——— */}
+                {/* ——— STEP 3: Review & create ——— */}
                 {step === 3 && (
                     <>
-                        <h1 className="auth-title">{t.pickTemplate}</h1>
-                        <p className="auth-subtitle">{t.pickTemplateDesc}</p>
+                        <h1 className="auth-title">{t.confirmTitle}</h1>
+                        <p className="auth-subtitle">{t.confirmDesc}</p>
 
-                        <div className="onboard-type-grid">
-                            {TEMPLATES.map((tmpl) => (
-                                <button
-                                    key={tmpl.id}
-                                    className={`onboard-type-card ${template === tmpl.id ? 'selected' : ''}`}
-                                    onClick={() => setTemplate(tmpl.id)}
-                                >
-                                    <span className="onboard-type-icon">
-                                        <AuthIcon name={tmpl.icon} size={28} />
-                                    </span>
-                                    <span className="onboard-type-name">{t[tmpl.nameKey]}</span>
-                                    <span className="onboard-type-desc">{t[tmpl.descKey]}</span>
-                                </button>
+                        <div className="mb-[var(--lb-space-4)] grid gap-[var(--lb-space-2)]">
+                            {SMART_DEFAULT_KEYS.map((key) => (
+                                <Badge key={key} label={t[key]} variant="success" />
                             ))}
                         </div>
+
+                        <DescriptionList
+                            className="mb-6"
+                            items={[
+                                {
+                                    term: t.siteTypeLabel,
+                                    description: <strong>{siteType ? t[SITE_TYPES.find(s => s.id === siteType)?.nameKey || 'store'] : '—'}</strong>,
+                                },
+                                {
+                                    term: t.displayName,
+                                    description: <strong>{storeName.trim() || subdomain}</strong>,
+                                },
+                                {
+                                    term: t.subdomainLabel,
+                                    description: <strong className="break-all">{subdomain}.letbuyy.store</strong>,
+                                },
+                            ]}
+                        />
 
                         <div className="onboard-btn-row">
                             <button className="auth-btn-secondary" onClick={() => setStep(2)}>
                                 <AuthIcon name="arrow_back" size={18} style={{ marginRight: 4 }} />
                                 {t.back}
                             </button>
-                            <button className="auth-btn" onClick={() => setStep(4)}>
-                                {t.next}
-                                <AuthIcon name="arrow_forward" size={18} style={{ marginLeft: 4 }} />
-                            </button>
+                            <Button
+                                type="button"
+                                loading={loading}
+                                onClick={handleSubmit}
+                                disabled={loading}
+                            >
+                                {t.confirm}
+                                {!loading && (
+                                    <span className="ml-[var(--lb-space-1)] inline-flex">
+                                        <AuthIcon name="rocket_launch" size={18} />
+                                    </span>
+                                )}
+                            </Button>
                         </div>
                     </>
                 )}
