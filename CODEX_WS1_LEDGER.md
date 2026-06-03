@@ -1,10 +1,10 @@
 # CODEX WS1 DESIGN SYSTEM LEDGER - started 2026-06-03T12:45:17Z
 
 ## CURRENT STATUS
-- Stage: WS1 Design System.
+- Stage: WS1 Design System - DONE.
 - Branch: `stream/master-execution`.
 - Source scope: `packages/typescript/ui/**` only. Root ledgers are bookkeeping exceptions required by the master mission.
-- Active batch: DS3 full Storybook catalog validation complete; commit pending.
+- Active batch: Closed. Stage gate passed after commit `2121d7b`.
 
 ## STABLE COMPONENT API LIST
 - Existing verified exports: `Button`, `Input`, `Textarea`, `DataTable`, `Badge`, `Page`, `PageShell`, `PageContent`, `PageHeader`, `PageHeaderActions`, `PageActions`, `Card`, `Section`, `Banner`, `ToastProvider`, `useToast`, `Skeleton`, `EmptyState`, `EmptyStateIllustration`, `SaveBar`, `Modal`, `ConfirmDialog`, `Tooltip`, `Tabs`, `Select`, `Combobox`, `MetricCard`, `Avatar`, `Pagination`, `FilterBar`, `TableFilterBar`, `IndexTable`, `CommandPalette`, `DesignSystemRoot`, visual token preview primitives, icons, fonts, and token exports.
@@ -12,6 +12,7 @@
 - DS2 additive API: `Chart`, `DateRangePicker`, `DensityToggle`, `FilterChips`, `ProgressBar`, `Breadcrumbs`, `DescriptionList`, `Divider`, `Spinner`, `TextStyle`, and matching prop/value types are exported from `@letbuyy/ui`. Chart sizing uses design tokens `chartHeightSm`, `chartHeightMd`, and `chartHeightLg`.
 
 ## PROGRESS LOG
+- 2026-06-03T13:13:44Z [WS1 GATE] Design system completion - DONE. Evidence: responsive enhancements, new checklist primitives, token exports, token documentation page, checklist component stories, and full component catalog stories are committed. Final proof: `pnpm --filter @letbuyy/ui typecheck` -> PASS; Storybook builds -> PASS; desktop/mobile screenshots -> PASS; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact cleanup -> no generated directories; post-commit `pnpm run validate:governance` after `2121d7b` -> PASS (128/128 validators).
 - 2026-06-03T13:12:00Z [DS3] Full component Storybook catalog - DONE / COMMIT PENDING. Added `component-catalog.stories.tsx` with core controls/layout, data/navigation/analytics, and feedback/overlays/responsive state stories so the design system has broad component documentation in addition to token and checklist stories. Evidence: `pnpm --filter @letbuyy/ui typecheck` -> PASS after correcting story API usage; `pnpm --filter @letbuyy/ui exec storybook build -o ../../../.tmp/storybook-ws1-catalog` -> PASS; Playwright screenshots `.tmp/ws1-catalog-core-desktop.png` and `.tmp/ws1-catalog-feedback-mobile.png` -> PASS after shortening the mobile heading to avoid truncation; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact cleanup -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T13:01:37Z [DS2] Checklist components - DONE / COMMIT PENDING. Added token-driven charting, date range, density, filtering, progress, navigation, metadata, separator, loading, and typography primitives. Added Storybook coverage under `LetBuyy UI/Checklist Components` with individual stories and an overview story used for visual proof. Evidence: `pnpm --filter @letbuyy/ui typecheck` -> PASS after fixing the inherited `onChange` prop conflict in `DensityToggleProps`; `pnpm --filter @letbuyy/ui exec storybook build -o ../../../.tmp/storybook-ws1-components` -> PASS; desktop screenshot `.tmp/ws1-checklist-desktop.png` and mobile screenshot `.tmp/ws1-checklist-mobile.png` captured from static Storybook after fixing oversized SVG labels; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact cleanup -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:47:09Z [DS1] Responsive enhancements - DONE. Full gate evidence: `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -24,6 +25,7 @@
 - None.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T13:13:44Z [WS1 final post-commit gate] post-commit `pnpm run validate:governance` after `2121d7b` -> PASS (128/128 validators).
 - 2026-06-03T13:12:00Z [DS3 full gate] `pnpm --filter @letbuyy/ui typecheck` -> PASS; `pnpm --filter @letbuyy/ui exec storybook build -o ../../../.tmp/storybook-ws1-catalog` -> PASS; Playwright screenshots from static Storybook -> PASS for desktop and mobile; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact scan -> no generated directories after cleanup; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T13:01:37Z [DS2 full gate] `pnpm --filter @letbuyy/ui typecheck` -> PASS; `pnpm --filter @letbuyy/ui exec storybook build -o ../../../.tmp/storybook-ws1-components` -> PASS; Playwright screenshots from static Storybook -> PASS for desktop and mobile; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact scan -> no generated directories after cleanup; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:47:09Z [DS1 full gate] `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
