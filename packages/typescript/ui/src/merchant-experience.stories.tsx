@@ -12,6 +12,8 @@ import {
     CommandPalette,
     Combobox,
     ConfirmDialog,
+    ColorPreviewButton,
+    ColorSwatch,
     DataTable,
     EmptyState,
     IndexTable,
@@ -22,6 +24,7 @@ import {
     Page,
     PageHeader,
     Pagination,
+    RadiusPreview,
     SaveBar,
     Section,
     Select,
@@ -186,6 +189,24 @@ export function UsageGuidelines() {
                             <Banner title="Accessible status" variant="success">
                                 Status content uses semantic roles and tokenized contrast.
                             </Banner>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Dynamic previews" description="Centralize merchant-provided colors and radii with shared preview primitives.">
+                        <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
+                            <ColorSwatch color="#6366f1" label="Indigo swatch" size="lg" />
+                            <ColorSwatch color="#22c55e" label="Green swatch" size="lg" />
+                            <RadiusPreview
+                                radius={12}
+                                label="Radius preview 12px"
+                                className="grid h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] place-items-center border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]"
+                            >
+                                12
+                            </RadiusPreview>
+                            <ColorPreviewButton color="#111827" radius={12} className="h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[var(--lb-color-text-inverse)]">
+                                Preview CTA
+                            </ColorPreviewButton>
                         </div>
                     </Section>
                 </Card>

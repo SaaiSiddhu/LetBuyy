@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { ChangeEvent, CSSProperties } from 'react'
+import type { ChangeEvent } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import {
     Badge,
@@ -9,6 +9,9 @@ import {
     Button,
     Card,
     ConfirmDialog,
+    ColorPreviewBlock,
+    ColorPreviewSurface,
+    ColorSwatch,
     Copy,
     Edit3,
     EmptyState,
@@ -353,9 +356,9 @@ export default function ThemesPage() {
                                     className="grid min-h-[calc(var(--lb-space-7)*8)] gap-[var(--lb-space-4)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] md:grid-cols-[minmax(0,1.1fr)_minmax(260px,0.9fr)]"
                                     aria-label={`${currentTheme?.name || 'Current theme'} storefront preview mock`}
                                 >
-                                    <div
+                                    <ColorPreviewSurface
+                                        color={displayColors[0]}
                                         className="flex min-h-[calc(var(--lb-space-7)*5)] flex-col justify-between rounded-[var(--lb-radius-lg)] p-[var(--lb-space-5)] text-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)]"
-                                        style={{ backgroundColor: displayColors[0] }}
                                     >
                                         <div className="space-y-[var(--lb-space-3)]">
                                             <div className="h-[var(--lb-space-3)] w-[var(--lb-space-7)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] opacity-80" />
@@ -366,16 +369,16 @@ export default function ThemesPage() {
                                             <span className="h-[var(--lb-space-5)] w-[var(--lb-space-7)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] opacity-95" />
                                             <span className="h-[var(--lb-space-5)] w-[var(--lb-space-7)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-surface)] opacity-80" />
                                         </div>
-                                    </div>
+                                    </ColorPreviewSurface>
                                     <div className="grid gap-[var(--lb-space-3)] sm:grid-cols-2 md:grid-cols-1 xl:grid-cols-2">
                                         {[0, 1, 2, 3].map((item) => (
                                             <div
                                                 key={item}
                                                 className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-sm)]"
                                             >
-                                                <div
+                                                <ColorPreviewBlock
+                                                    color={displayColors[(item + 1) % displayColors.length]}
                                                     className="mb-[var(--lb-space-3)] h-[var(--lb-space-7)] rounded-[var(--lb-radius-md)]"
-                                                    style={{ backgroundColor: displayColors[(item + 1) % displayColors.length] }}
                                                 />
                                                 <div className="space-y-[var(--lb-space-2)]">
                                                     <div className="h-[var(--lb-space-2)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-border-strong)]" />
@@ -405,10 +408,12 @@ export default function ThemesPage() {
 
                                     <div className="flex flex-wrap gap-[var(--lb-space-2)]" aria-label="Current theme colors">
                                         {displayColors.map((color, index) => (
-                                            <span
+                                            <ColorSwatch
                                                 key={`${color}-${index}`}
-                                                className="h-[var(--lb-space-5)] w-[var(--lb-space-5)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)]"
-                                                style={{ backgroundColor: color }}
+                                                label={`Current theme color ${index + 1}`}
+                                                color={color}
+                                                size="md"
+                                                className="h-[var(--lb-space-5)] w-[var(--lb-space-5)]"
                                             />
                                         ))}
                                     </div>
@@ -600,9 +605,9 @@ function ThemeLibraryCard({
             <div className="relative flex h-[calc(var(--lb-space-7)*3)] items-end overflow-hidden bg-[var(--lb-color-primary-soft)] p-[var(--lb-space-4)]">
                 <div className="absolute inset-0 grid grid-cols-3" aria-hidden="true">
                     {palette.map((color, index) => (
-                        <span
+                        <ColorPreviewBlock
                             key={`${theme.slug}-preview-${index}`}
-                            style={{ backgroundColor: color } satisfies CSSProperties}
+                            color={color}
                         />
                     ))}
                 </div>
@@ -637,10 +642,11 @@ function ThemeLibraryCard({
                 <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
                     <div className="flex gap-[var(--lb-space-1)]" aria-label={`${theme.name} palette`}>
                         {palette.map((color, index) => (
-                            <span
+                            <ColorSwatch
                                 key={`${theme.slug}-${index}`}
-                                className="h-[var(--lb-space-4)] w-[var(--lb-space-4)] rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)]"
-                                style={{ backgroundColor: color } satisfies CSSProperties}
+                                label={`${theme.name} color ${index + 1}`}
+                                color={color}
+                                size="sm"
                             />
                         ))}
                     </div>

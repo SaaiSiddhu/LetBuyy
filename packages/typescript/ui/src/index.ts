@@ -50,6 +50,15 @@ export type {
     PaginationProps,
 } from './productivity';
 
+export { ColorPreviewBlock, ColorPreviewButton, ColorPreviewSurface, ColorSwatch, RadiusPreview } from './visual';
+export type {
+    ColorPreviewBlockProps,
+    ColorPreviewButtonProps,
+    ColorPreviewSurfaceProps,
+    ColorSwatchProps,
+    RadiusPreviewProps,
+} from './visual';
+
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
 

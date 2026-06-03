@@ -7,6 +7,7 @@ import {
     Button,
     Card,
     Code,
+    ColorPreviewButton,
     Image as ImageIcon,
     Input,
     LayoutGrid,
@@ -14,6 +15,7 @@ import {
     Page,
     PageHeader,
     RefreshCw,
+    RadiusPreview,
     Save,
     SaveBar,
     Section,
@@ -54,15 +56,7 @@ const fontOptions = [
     'Merriweather',
 ].map((font) => ({ label: font, value: font }))
 
-const colorPresets = [
-    { value: '#6366f1', className: 'bg-[#6366f1]' },
-    { value: '#3b82f6', className: 'bg-[#3b82f6]' },
-    { value: '#22c55e', className: 'bg-[#22c55e]' },
-    { value: '#f59e0b', className: 'bg-[#f59e0b]' },
-    { value: '#ef4444', className: 'bg-[#ef4444]' },
-    { value: '#ec4899', className: 'bg-[#ec4899]' },
-    { value: '#8b5cf6', className: 'bg-[#8b5cf6]' },
-]
+const colorPresets = ['#6366f1', '#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#ec4899', '#8b5cf6']
 
 function getErrorMessage(payload: unknown, fallback: string) {
     if (payload && typeof payload === 'object') {
@@ -275,15 +269,17 @@ export default function AppearancePage() {
                             </div>
                             <div className="flex flex-wrap gap-[var(--lb-space-2)]" aria-label="Color presets">
                                 {colorPresets.map((preset) => {
-                                    const selected = preset.value.toLowerCase() === form.primary_color.toLowerCase()
+                                    const selected = preset.toLowerCase() === form.primary_color.toLowerCase()
                                     return (
-                                        <button
-                                            key={preset.value}
+                                        <ColorPreviewButton
+                                            key={preset}
+                                            color={preset}
                                             type="button"
-                                            aria-label={`Use ${preset.value}`}
+                                            aria-label={`Use ${preset}`}
                                             aria-pressed={selected}
-                                            onClick={() => updateForm('primary_color', preset.value)}
-                                            className={`h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-full)] border transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] ${preset.className} ${selected ? 'border-[var(--lb-color-text)] shadow-[var(--lb-shadow-md)]' : 'border-[var(--lb-color-border)]'}`}
+                                            onClick={() => updateForm('primary_color', preset)}
+                                            radius="var(--lb-radius-full)"
+                                            className={`h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] border ${selected ? 'border-[var(--lb-color-text)] shadow-[var(--lb-shadow-md)]' : 'border-[var(--lb-color-border)]'}`}
                                         />
                                     )
                                 })}
@@ -344,13 +340,13 @@ export default function AppearancePage() {
                                         {radiusValue}px applied to storefront surfaces.
                                     </p>
                                 </div>
-                                <div
+                                <RadiusPreview
+                                    radius={radiusValue}
                                     className="grid h-[calc(var(--lb-size-control-lg)*2)] w-[calc(var(--lb-size-control-lg)*2)] place-items-center border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]"
-                                    style={{ borderRadius: `${radiusValue}px` }}
-                                    aria-label={`Radius preview ${radiusValue}px`}
+                                    label={`Radius preview ${radiusValue}px`}
                                 >
                                     <LayoutGrid className="h-[var(--lb-size-icon-lg)] w-[var(--lb-size-icon-lg)]" aria-hidden="true" />
-                                </div>
+                                </RadiusPreview>
                             </div>
                             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                                 <Input
@@ -394,9 +390,9 @@ export default function AppearancePage() {
                 <Card>
                     <Section title="Preview" description="A lightweight sample of how the selected brand settings will feel.">
                         <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                            <div
+                            <RadiusPreview
+                                radius={radiusValue}
                                 className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] shadow-[var(--lb-shadow-sm)]"
-                                style={{ borderRadius: `${radiusValue}px` }}
                             >
                                 <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                     Storefront card
@@ -407,14 +403,15 @@ export default function AppearancePage() {
                                 <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
                                     Logo, color, radius, and copy all stay visible before saving.
                                 </p>
-                                <button
+                                <ColorPreviewButton
+                                    color={form.primary_color}
+                                    radius={radiusValue}
                                     type="button"
-                                    className="mt-[var(--lb-space-4)] inline-flex h-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-inverse)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                    style={{ backgroundColor: form.primary_color, borderRadius: `${radiusValue}px` }}
+                                    className="mt-[var(--lb-space-4)] h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-inverse)]"
                                 >
                                     Shop now
-                                </button>
-                            </div>
+                                </ColorPreviewButton>
+                            </RadiusPreview>
                         </div>
                         <Banner variant="info" title="Theme editor connection">
                             These settings continue to save through the existing store settings endpoint. The flagship live theme editor work remains in UX7.
