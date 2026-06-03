@@ -23,6 +23,8 @@ interface AppsSettingsClientProps {
     onUninstall: (appId: string) => Promise<{ ok: boolean; message: string }>
 }
 
+const APP_MARKETPLACE_URL = 'https://apps.letbuyy.store'
+
 function formatDate(value?: string | null) {
     if (!value) return 'Recently installed'
     return new Date(value).toLocaleDateString('en-IN', {
@@ -38,6 +40,21 @@ function appName(app: InstalledApp) {
 
 function appScopes(app: InstalledApp) {
     return Array.isArray(app.scopes_granted) ? app.scopes_granted : []
+}
+
+function safeExternalUrl(value?: string | null) {
+    if (!value) return null
+
+    try {
+        const url = new URL(value)
+        return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : null
+    } catch {
+        return null
+    }
+}
+
+function appLaunchUrl(app: InstalledApp) {
+    return safeExternalUrl(app.marketplace_apps?.app_url)
 }
 
 export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSettingsClientProps) {
@@ -89,7 +106,7 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
             }}
             primaryAction={{
                 label: 'Browse app marketplace',
-                href: 'https://apps.letbuyy.store',
+                href: APP_MARKETPLACE_URL,
                 icon: <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
             }}
         >
@@ -115,7 +132,7 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
                         Sales channels
                     </p>
                     <p className="m-0 mt-[var(--lb-space-1)] text-[var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[var(--lb-color-text)]">
-                        {apps.filter((app) => app.marketplace_apps?.app_url).length}
+                        {apps.filter((app) => appLaunchUrl(app)).length}
                     </p>
                 </Card>
             </div>
@@ -132,53 +149,65 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
                             body="Install apps from the marketplace when you are ready to add channels, automations, or embedded merchant tools."
                             primaryAction={(
                                 <a
-                                    href="https://apps.letbuyy.store"
+                                    href={APP_MARKETPLACE_URL}
+                                    target="_blank"
+                                    rel="noreferrer"
                                     className="inline-flex h-[var(--lb-size-control-md)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                 >
+                                    <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                     Browse app marketplace
                                 </a>
                             )}
                         />
                     ) : (
                         <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            {apps.map((app) => (
-                                <div key={app.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] lg:flex-row lg:items-center lg:justify-between">
-                                    <div className="min-w-0 space-y-[var(--lb-space-2)]">
-                                        <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                            <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                                {appName(app)}
-                                            </h3>
-                                            <Badge label={app.status} variant={app.status === 'active' ? 'success' : 'warning'} />
-                                            {app.marketplace_apps?.pricing_model && (
-                                                <Badge label={app.marketplace_apps.pricing_model} variant="info" />
-                                            )}
+                            {apps.map((app) => {
+                                const launchUrl = appLaunchUrl(app)
+
+                                return (
+                                    <div key={app.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] lg:flex-row lg:items-center lg:justify-between">
+                                        <div className="min-w-0 space-y-[var(--lb-space-2)]">
+                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                                <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                    {appName(app)}
+                                                </h3>
+                                                <Badge label={app.status} variant={app.status === 'active' ? 'success' : 'warning'} />
+                                                {app.marketplace_apps?.pricing_model && (
+                                                    <Badge label={app.marketplace_apps.pricing_model} variant="info" />
+                                                )}
+                                            </div>
+                                            <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {app.marketplace_apps?.tagline || `Installed ${formatDate(app.installed_at)}`}
+                                            </p>
+                                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                                {appScopes(app).slice(0, 5).map((scope) => (
+                                                    <Badge key={scope} label={scope} variant="default" />
+                                                ))}
+                                                {appScopes(app).length > 5 && (
+                                                    <Badge label={`+${appScopes(app).length - 5} more`} variant="default" />
+                                                )}
+                                            </div>
                                         </div>
-                                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                            {app.marketplace_apps?.tagline || `Installed ${formatDate(app.installed_at)}`}
-                                        </p>
                                         <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                            {appScopes(app).slice(0, 5).map((scope) => (
-                                                <Badge key={scope} label={scope} variant="default" />
-                                            ))}
-                                            {appScopes(app).length > 5 && (
-                                                <Badge label={`+${appScopes(app).length - 5} more`} variant="default" />
+                                            {launchUrl && (
+                                                <a
+                                                    href={launchUrl}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="inline-flex h-[var(--lb-size-control-sm)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--lb-color-bg)]"
+                                                >
+                                                    <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    Open
+                                                </a>
                                             )}
+                                            <Button type="button" variant="destructive" size="sm" onClick={() => setPendingApp(app)}>
+                                                <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                Uninstall
+                                            </Button>
                                         </div>
                                     </div>
-                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                        {app.marketplace_apps?.app_url && (
-                                            <Button type="button" variant="secondary" size="sm" onClick={() => window.open(app.marketplace_apps?.app_url || '', '_blank', 'noopener,noreferrer')}>
-                                                <ExternalLink className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                Open
-                                            </Button>
-                                        )}
-                                        <Button type="button" variant="destructive" size="sm" onClick={() => setPendingApp(app)}>
-                                            <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                            Uninstall
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
+                                )
+                            })}
                         </div>
                     )}
                 </Section>
