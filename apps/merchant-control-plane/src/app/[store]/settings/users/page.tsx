@@ -10,6 +10,7 @@ import {
     Card,
     ConfirmDialog,
     EmptyState,
+    IndexTable,
     Input,
     Mail,
     Page,
@@ -21,8 +22,8 @@ import {
     ShieldCheck,
     Skeleton,
     Trash2,
-    User,
     Users,
+    type IndexTableColumn,
     useToast,
 } from '@letbuyy/ui'
 
@@ -262,6 +263,67 @@ export default function UsersSettingsPage() {
         }
     }, [employeeToRemove, notify, removingId, store])
 
+    const staffColumns = useMemo<IndexTableColumn<Employee>[]>(() => [
+        {
+            key: 'email',
+            header: 'Staff member',
+            render: (employee) => (
+                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                    <Avatar name={employee.email} />
+                    <div className="min-w-0">
+                        <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                            {employee.email}
+                        </p>
+                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                            Added {formatDate(employee.created_at)}
+                        </p>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            key: 'role',
+            header: 'Role',
+            render: (employee) => (
+                <div className="min-w-[180px]">
+                    <Select
+                        aria-label={`Role for ${employee.email}`}
+                        value={employee.role}
+                        onChange={(event) => void handleRoleChange(employee, event.target.value)}
+                        options={ROLES.map((role) => ({ value: role.value, label: role.label }))}
+                        disabled={updatingRoleId === employee.id || Boolean(removingId)}
+                    />
+                </div>
+            ),
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            render: (employee) => (
+                <Badge
+                    label={formatStatus(employee.status)}
+                    variant={employee.status === 'active' ? 'success' : 'warning'}
+                />
+            ),
+        },
+        {
+            key: 'actions',
+            header: 'Actions',
+            render: (employee) => (
+                <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setEmployeeToRemove(employee)}
+                    disabled={removingId === employee.id || Boolean(updatingRoleId)}
+                >
+                    <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                    Remove
+                </Button>
+            ),
+        },
+    ], [handleRoleChange, removingId, updatingRoleId])
+
     if (loading) {
         return (
             <Page>
@@ -409,55 +471,24 @@ export default function UsersSettingsPage() {
                         </Button>
                     )}
                 >
-                    {employees.length === 0 ? (
-                        <EmptyState
-                            icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title="No staff members yet"
-                            body="Invite team members when you are ready to share product, order, or fulfillment work."
-                            primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
-                        />
-                    ) : (
-                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            {employees.map((employee) => (
-                                <div key={employee.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] lg:flex-row lg:items-center lg:justify-between">
-                                    <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
-                                        <Avatar name={employee.email} />
-                                        <div className="min-w-0">
-                                            <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">{employee.email}</p>
-                                            <p className="m-0 flex flex-wrap items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                <User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                <span>{getRoleLabel(employee.role)}</span>
-                                                <span>Added {formatDate(employee.created_at)}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="grid gap-[var(--lb-space-2)] sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
-                                        <Select
-                                            aria-label={`Role for ${employee.email}`}
-                                            value={employee.role}
-                                            onChange={(event) => void handleRoleChange(employee, event.target.value)}
-                                            options={ROLES.map((role) => ({ value: role.value, label: role.label }))}
-                                            disabled={updatingRoleId === employee.id || Boolean(removingId)}
-                                        />
-                                        <Badge
-                                            label={formatStatus(employee.status)}
-                                            variant={employee.status === 'active' ? 'success' : 'warning'}
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => setEmployeeToRemove(employee)}
-                                            disabled={removingId === employee.id || Boolean(updatingRoleId)}
-                                        >
-                                            <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                            Remove
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
+                    <IndexTable
+                        columns={staffColumns}
+                        rows={employees}
+                        emptyState={(
+                            <EmptyState
+                                icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                title="No staff members yet"
+                                body="Invite team members when you are ready to share product, order, or fulfillment work."
+                                primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
+                            />
+                        )}
+                        savedViews={[
+                            { label: 'All', value: 'all', count: employees.length },
+                            { label: 'Active', value: 'active', count: activeStaff },
+                            { label: 'Invited', value: 'invited', count: invitedStaff },
+                        ]}
+                        activeView="all"
+                    />
                 </Section>
             </Card>
 
