@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 09:14 IST [S4.3] Added top-level contextual guidance to General, Billing, Plan, and Notifications so migrated panes present consistent merchant guidance through `SettingsPane`.
 - 2026-06-03 09:11 IST [S5.7] Closed mobile drawer focus-trap edge case so Tab and Shift+Tab from the focused dialog container enter drawer controls instead of escaping.
 - 2026-06-03 09:08 IST [S5.6] Completed mobile settings drawer keyboard handling by cycling Tab focus within the open drawer.
 - 2026-06-03 09:05 IST [S5.5] Tightened mobile settings drawer behavior with initial dialog focus, page scroll lock while open, and focus restoration on close.
@@ -89,3 +90,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 09:11 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after drawer focus-trap edge correction.
 - 2026-06-03 09:11 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 09:11 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 09:14 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after guidance batch.
+- 2026-06-03 09:14 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 09:14 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

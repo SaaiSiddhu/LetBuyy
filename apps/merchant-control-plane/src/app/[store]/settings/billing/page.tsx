@@ -237,6 +237,10 @@ export default function BillingSettingsPage() {
                 label: 'Payment settings',
                 onClick: () => router.push(`/${store}/settings/payments`),
             }]}
+            guidance={{
+                title: 'Billing source of truth',
+                body: 'Use this pane for subscription charges and invoices. Plan changes stay in Plan, and storefront payment methods stay in Payments.',
+            }}
         >
             {loadError && (
                 <Banner

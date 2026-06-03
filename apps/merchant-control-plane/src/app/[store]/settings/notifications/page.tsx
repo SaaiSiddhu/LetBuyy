@@ -200,6 +200,10 @@ export default function NotificationsSettingsPage() {
             title="Notifications"
             description="Choose which store events notify staff and which customer emails are automatic."
             store={store}
+            guidance={{
+                title: 'Operational notifications',
+                body: 'Staff alerts are editable here. Customer transactional emails still follow the existing order and account workflows.',
+            }}
             saveBar={{
                 state: activeSaveState,
                 onSave: () => void handleSave(),

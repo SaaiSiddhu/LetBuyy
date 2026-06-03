@@ -290,6 +290,10 @@ export default function PlanSettingsPage() {
                     onClick: () => router.push(`/${store}/settings/billing`),
                     icon: <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }]}
+                guidance={{
+                    title: 'Subscription control',
+                    body: 'Use this pane to understand active entitlements, trial timing, and plan changes before reviewing invoices in Billing.',
+                }}
             >
                 {loadError && (
                     <Banner

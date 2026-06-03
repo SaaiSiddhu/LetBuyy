@@ -266,6 +266,10 @@ export default function GeneralSettingsPage() {
                 title="General"
                 description="Manage the core identity, language, and market defaults for this store."
                 store={store}
+                guidance={{
+                    title: 'Core store identity',
+                    body: 'Keep these details aligned with the public storefront, billing records, and support workflows before launch.',
+                }}
                 saveBar={{
                     state: activeSaveState,
                     onSave: () => void handleSave(),
