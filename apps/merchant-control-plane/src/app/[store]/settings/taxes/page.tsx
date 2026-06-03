@@ -13,8 +13,6 @@ import {
     Globe,
     IndianRupee,
     Input,
-    Page,
-    PageHeader,
     Plus,
     SaveBar,
     Section,
@@ -25,6 +23,7 @@ import {
     Truck,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings'
 
 interface TaxRate {
     id: string
@@ -108,6 +107,11 @@ export default function TaxesSettingsPage() {
 
     const activeRates = useMemo(() => taxRates.filter((rate) => rate.is_active).length, [taxRates])
     const shippingRates = useMemo(() => taxRates.filter((rate) => rate.is_shipping).length, [taxRates])
+    const indiaRates = useMemo(
+        () => taxRates.filter((rate) => ['IN', 'INDIA'].includes((rate.country || '').trim().toUpperCase())).length,
+        [taxRates],
+    )
+    const regionalRates = useMemo(() => taxRates.filter((rate) => Boolean(rate.state?.trim())).length, [taxRates])
     const activeSaveState: SaveState = formMode
         ? (formSaveState === 'saving' ? 'saving' : 'unsaved')
         : settingsSaveState
@@ -363,35 +367,54 @@ export default function TaxesSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Taxes and duties"
-                    description="Configure price tax handling and checkout tax rates."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Taxes and duties' }]}
-                />
+            <SettingsPane
+                store={store}
+                title="Taxes and duties"
+                description="Configure GST, regional rates, and checkout tax handling."
+                iconName="taxes"
+            >
                 <Card>
                     <Section title="Tax rates">
                         <Skeleton variant="table" lines={5} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Taxes and duties"
-                description="Configure price tax handling and checkout tax rates."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Taxes and duties' }]}
-                primaryAction={{
-                    label: 'Add tax rate',
-                    onClick: startAdd,
-                    disabled: Boolean(formMode) || settingsSaveState !== 'saved',
-                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                }}
-            />
-
+        <SettingsPane
+            store={store}
+            title="Taxes and duties"
+            description="Configure GST, regional rates, and checkout tax handling."
+            iconName="taxes"
+            primaryAction={{
+                label: 'Add tax rate',
+                onClick: startAdd,
+                disabled: Boolean(formMode) || settingsSaveState !== 'saved',
+                icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }}
+            saveBar={(
+                <SaveBar
+                    state={activeSaveState}
+                    onSave={() => {
+                        if (formMode) {
+                            void handleSaveRate()
+                        } else {
+                            void handleSaveSettings()
+                        }
+                    }}
+                    onDiscard={() => {
+                        if (formMode) {
+                            resetForm()
+                        } else {
+                            handleTaxInclusiveChange(initialTaxInclusive)
+                        }
+                    }}
+                    saveLabel={formMode ? (formMode === 'edit' ? 'Update rate' : 'Add rate') : 'Save taxes'}
+                />
+            )}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -408,28 +431,41 @@ export default function TaxesSettingsPage() {
                 </Banner>
             )}
 
-            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                <TaxMetric
-                    icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Price mode"
-                    value={taxData.tax_inclusive ? 'Tax inclusive' : 'Tax exclusive'}
-                />
-                <TaxMetric
-                    icon={<ClipboardList className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Active rates"
-                    value={`${activeRates} of ${taxRates.length}`}
-                />
-                <TaxMetric
-                    icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Shipping taxes"
-                    value={`${shippingRates} configured`}
-                />
-            </div>
+            <Card>
+                <Section
+                    title="Tax overview"
+                    description="Review the store's checkout tax mode, active rates, and India GST coverage."
+                    action={!formMode && (
+                        <Button type="button" variant="secondary" onClick={startAdd} disabled={settingsSaveState !== 'saved'}>
+                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            Add tax rate
+                        </Button>
+                    )}
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                        <TaxMetric
+                            icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Price mode"
+                            value={taxData.tax_inclusive ? 'Tax inclusive' : 'Tax exclusive'}
+                        />
+                        <TaxMetric
+                            icon={<ClipboardList className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Active rates"
+                            value={`${activeRates} of ${taxRates.length}`}
+                        />
+                        <TaxMetric
+                            icon={<ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="India GST rates"
+                            value={`${indiaRates} configured`}
+                        />
+                    </div>
+                </Section>
+            </Card>
 
             <Card>
                 <Section
-                    title="Tax region"
-                    description="India is the default tax region for this store. Choose whether product prices already include taxes."
+                    title="Taxes and duties"
+                    description="India is the default region for this store. Choose whether displayed product prices already include tax."
                 >
                     <label className="flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
                         <input
@@ -448,6 +484,58 @@ export default function TaxesSettingsPage() {
                             </span>
                         </span>
                     </label>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="GST and regional setup"
+                    description="Regional tax rates come from the existing tax-rate API and are applied during checkout."
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                        <TaxMetric
+                            icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Regional rates"
+                            value={`${regionalRates} state scoped`}
+                        />
+                        <TaxMetric
+                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Shipping taxes"
+                            value={`${shippingRates} configured`}
+                        />
+                        <TaxMetric
+                            icon={<ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Tax priority"
+                            value="Rate order ready"
+                        />
+                    </div>
+                    <Banner variant="info" title="GST calculation guidance">
+                        Use country-wide rates for standard GST and state-scoped rates for regional rules. Product prices can be marked tax inclusive above without changing the saved rates.
+                    </Banner>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="Product tax codes and HSN"
+                    description="Product-level HSN and tax-code mapping is shown as read-only until the backend exposes product tax metadata."
+                    action={<Badge label="Needs backend" variant="warning" />}
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                        <TaxMetric
+                            icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="HSN catalog"
+                            value="Backend needed"
+                        />
+                        <TaxMetric
+                            icon={<ClipboardList className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Product tax codes"
+                            value="Not connected"
+                        />
+                    </div>
+                    <Banner variant="warning" title="HSN assignment needs backend support">
+                        The current taxes endpoint exposes the tax-inclusive flag and tax rates only. Product-level HSN codes, tax categories, and duty mappings need backend support before this pane can configure them.
+                    </Banner>
                 </Section>
             </Card>
 
@@ -559,7 +647,7 @@ export default function TaxesSettingsPage() {
 
             <Card>
                 <Section
-                    title="Tax rates"
+                    title="Regional tax rates"
                     description="Rates are applied during checkout based on the customer address and product pricing mode."
                     action={!formMode && (
                         <Button type="button" variant="secondary" onClick={startAdd} disabled={settingsSaveState !== 'saved'}>
@@ -616,25 +704,6 @@ export default function TaxesSettingsPage() {
                 Compound taxes are calculated on top of other taxes. Shipping taxes apply to delivery costs when checkout has a shipping rate.
             </Banner>
 
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => {
-                    if (formMode) {
-                        void handleSaveRate()
-                    } else {
-                        void handleSaveSettings()
-                    }
-                }}
-                onDiscard={() => {
-                    if (formMode) {
-                        resetForm()
-                    } else {
-                        handleTaxInclusiveChange(initialTaxInclusive)
-                    }
-                }}
-                saveLabel={formMode ? (formMode === 'edit' ? 'Update rate' : 'Add rate') : 'Save taxes'}
-            />
-
             <ConfirmDialog
                 open={Boolean(rateToDelete)}
                 title="Delete tax rate?"
@@ -646,6 +715,6 @@ export default function TaxesSettingsPage() {
                     if (!deletingId) setRateToDelete(null)
                 }}
             />
-        </Page>
+        </SettingsPane>
     )
 }
