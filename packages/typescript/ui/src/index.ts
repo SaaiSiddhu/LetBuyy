@@ -35,8 +35,8 @@ export type {
 export { ConfirmDialog, Modal, Tooltip } from './overlays';
 export type { ConfirmDialogProps, ModalProps, TooltipProps } from './overlays';
 
-export { Combobox, Select, Tabs } from './controls';
-export type { ComboboxProps, SelectOption, SelectProps, TabItem, TabsProps } from './controls';
+export { Checkbox, ChoiceList, Combobox, Radio, Select, Tabs } from './controls';
+export type { CheckboxProps, ChoiceListOption, ChoiceListProps, ComboboxProps, RadioProps, SelectOption, SelectProps, TabItem, TabsProps } from './controls';
 
 export { Avatar, CommandPalette, IndexTable, MetricCard, Pagination } from './productivity';
 export type {

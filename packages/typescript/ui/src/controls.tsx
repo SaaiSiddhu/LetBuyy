@@ -173,6 +173,311 @@ export interface SelectOption {
     icon?: React.ReactNode;
 }
 
+export interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+    label: React.ReactNode;
+    description?: React.ReactNode;
+    helperText?: React.ReactNode;
+    error?: React.ReactNode;
+    inputClassName?: string;
+    labelClassName?: string;
+    labelTextClassName?: string;
+    wrapperClassName?: string;
+    onCheckedChange?: (checked: boolean) => void;
+}
+
+export function Checkbox({
+    label,
+    description,
+    helperText,
+    error,
+    inputClassName = '',
+    labelClassName = '',
+    labelTextClassName = '',
+    wrapperClassName = '',
+    onCheckedChange,
+    className = '',
+    id,
+    onChange,
+    ...props
+}: CheckboxProps) {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = description ? `${inputId}-description` : undefined;
+    const helperId = helperText && !error ? `${inputId}-helper` : undefined;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const describedBy = [descriptionId, helperId, errorId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+
+    return (
+        <div className={cx('flex flex-col gap-[var(--lb-space-1)]', className, wrapperClassName)}>
+            <label className={cx('flex items-start gap-[var(--lb-space-3)]', props.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer', labelClassName)} htmlFor={inputId}>
+                <input
+                    id={inputId}
+                    type="checkbox"
+                    className={cx(
+                        'mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 rounded-[var(--lb-radius-sm)] border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
+                        inputClassName,
+                    )}
+                    aria-describedby={describedBy}
+                    aria-invalid={error ? true : props['aria-invalid']}
+                    onChange={(event) => {
+                        onChange?.(event);
+                        onCheckedChange?.(event.currentTarget.checked);
+                    }}
+                    {...props}
+                />
+                <span className="min-w-0">
+                    <span className={cx('block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]', labelTextClassName)}>
+                        {label}
+                    </span>
+                    {description && (
+                        <span id={descriptionId} className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            {description}
+                        </span>
+                    )}
+                </span>
+            </label>
+            {helperText && !error && (
+                <p id={helperId} className="m-0 pl-[calc(var(--lb-size-icon-inline)+var(--lb-space-3))] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {helperText}
+                </p>
+            )}
+            {error && (
+                <p id={errorId} className="m-0 pl-[calc(var(--lb-size-icon-inline)+var(--lb-space-3))] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">
+                    {error}
+                </p>
+            )}
+        </div>
+    );
+}
+
+export interface RadioProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+    label: React.ReactNode;
+    description?: React.ReactNode;
+    helperText?: React.ReactNode;
+    error?: React.ReactNode;
+    inputClassName?: string;
+    labelClassName?: string;
+    labelTextClassName?: string;
+    wrapperClassName?: string;
+    onCheckedChange?: (checked: boolean) => void;
+}
+
+export function Radio({
+    label,
+    description,
+    helperText,
+    error,
+    inputClassName = '',
+    labelClassName = '',
+    labelTextClassName = '',
+    wrapperClassName = '',
+    onCheckedChange,
+    className = '',
+    id,
+    onChange,
+    ...props
+}: RadioProps) {
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const descriptionId = description ? `${inputId}-description` : undefined;
+    const helperId = helperText && !error ? `${inputId}-helper` : undefined;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const describedBy = [descriptionId, helperId, errorId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+
+    return (
+        <div className={cx('flex flex-col gap-[var(--lb-space-1)]', className, wrapperClassName)}>
+            <label className={cx('flex items-start gap-[var(--lb-space-3)]', props.disabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer', labelClassName)} htmlFor={inputId}>
+                <input
+                    id={inputId}
+                    type="radio"
+                    className={cx(
+                        'mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
+                        inputClassName,
+                    )}
+                    aria-describedby={describedBy}
+                    aria-invalid={error ? true : props['aria-invalid']}
+                    onChange={(event) => {
+                        onChange?.(event);
+                        onCheckedChange?.(event.currentTarget.checked);
+                    }}
+                    {...props}
+                />
+                <span className="min-w-0">
+                    <span className={cx('block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]', labelTextClassName)}>
+                        {label}
+                    </span>
+                    {description && (
+                        <span id={descriptionId} className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            {description}
+                        </span>
+                    )}
+                </span>
+            </label>
+            {helperText && !error && (
+                <p id={helperId} className="m-0 pl-[calc(var(--lb-size-icon-inline)+var(--lb-space-3))] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {helperText}
+                </p>
+            )}
+            {error && (
+                <p id={errorId} className="m-0 pl-[calc(var(--lb-size-icon-inline)+var(--lb-space-3))] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">
+                    {error}
+                </p>
+            )}
+        </div>
+    );
+}
+
+export interface ChoiceListOption {
+    label: React.ReactNode;
+    value: string;
+    description?: React.ReactNode;
+    disabled?: boolean;
+    icon?: React.ReactNode;
+    badge?: React.ReactNode;
+}
+
+export interface ChoiceListProps {
+    options: ChoiceListOption[];
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    helperText?: React.ReactNode;
+    error?: React.ReactNode;
+    name?: string;
+    value?: string | string[];
+    defaultValue?: string | string[];
+    onChange?: (value: string | string[]) => void;
+    multiple?: boolean;
+    disabled?: boolean;
+    requiredIndicator?: boolean;
+    ariaLabel?: string;
+    layout?: 'vertical' | 'horizontal';
+    className?: string;
+    optionClassName?: string;
+    legendClassName?: string;
+}
+
+const choiceListLayoutStyles: Record<NonNullable<ChoiceListProps['layout']>, string> = {
+    vertical: 'grid gap-[var(--lb-space-3)]',
+    horizontal: 'flex flex-wrap gap-[var(--lb-space-3)]',
+};
+
+function normalizeChoiceListValue(value: string | string[] | undefined) {
+    if (Array.isArray(value)) return value;
+    return value ? [value] : [];
+}
+
+export function ChoiceList({
+    options,
+    title,
+    description,
+    helperText,
+    error,
+    name,
+    value,
+    defaultValue,
+    onChange,
+    multiple = false,
+    disabled = false,
+    requiredIndicator = false,
+    ariaLabel,
+    layout = 'vertical',
+    className = '',
+    optionClassName = '',
+    legendClassName = '',
+}: ChoiceListProps) {
+    const generatedId = useId();
+    const [internalValue, setInternalValue] = useState<string[]>(normalizeChoiceListValue(defaultValue));
+    const selectedValues = normalizeChoiceListValue(value ?? internalValue);
+    const helperId = helperText && !error ? `${generatedId}-helper` : undefined;
+    const errorId = error ? `${generatedId}-error` : undefined;
+    const descriptionId = description ? `${generatedId}-description` : undefined;
+    const describedBy = [descriptionId, helperId, errorId].filter(Boolean).join(' ') || undefined;
+    const inputName = name ?? (multiple ? undefined : generatedId);
+
+    const updateSelection = (optionValue: string, checked: boolean) => {
+        const nextValue = multiple
+            ? checked
+                ? Array.from(new Set([...selectedValues, optionValue]))
+                : selectedValues.filter((selectedValue) => selectedValue !== optionValue)
+            : [optionValue];
+        setInternalValue(nextValue);
+        onChange?.(multiple ? nextValue : nextValue[0] ?? '');
+    };
+
+    return (
+        <fieldset
+            className={cx('min-w-0 border-0 p-0 m-0', className)}
+            disabled={disabled}
+            aria-label={!title ? ariaLabel : undefined}
+            aria-describedby={describedBy}
+        >
+            {title && (
+                <legend className={cx('mb-[var(--lb-space-1)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]', legendClassName)}>
+                    {title}
+                    {requiredIndicator && <span className="ml-[var(--lb-space-1)] text-[color:var(--lb-color-critical)]" aria-hidden="true">*</span>}
+                </legend>
+            )}
+            {description && (
+                <p id={descriptionId} className="m-0 mb-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {description}
+                </p>
+            )}
+            <div className={choiceListLayoutStyles[layout]}>
+                {options.map((option) => {
+                    const checked = selectedValues.includes(option.value);
+                    const optionDisabled = disabled || option.disabled;
+                    return (
+                        <label
+                            key={option.value}
+                            className={cx(
+                                'flex min-w-[min(260px,100%)] items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-3)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)]',
+                                checked && 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]',
+                                optionDisabled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer hover:bg-[var(--lb-color-surface-subdued)]',
+                                optionClassName,
+                            )}
+                        >
+                            <input
+                                type={multiple ? 'checkbox' : 'radio'}
+                                name={inputName}
+                                value={option.value}
+                                checked={checked}
+                                disabled={optionDisabled}
+                                className={cx(
+                                    'mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 border-[var(--lb-color-border)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed',
+                                    multiple && 'rounded-[var(--lb-radius-sm)]',
+                                )}
+                                onChange={(event) => updateSelection(option.value, event.currentTarget.checked)}
+                            />
+                            <span className="min-w-0 flex-1">
+                                <span className="flex min-w-0 flex-wrap items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                    {option.icon && <span className="inline-flex shrink-0 text-[color:var(--lb-color-text-subdued)]" aria-hidden="true">{option.icon}</span>}
+                                    <span>{option.label}</span>
+                                    {option.badge}
+                                </span>
+                                {option.description && (
+                                    <span className="mt-[var(--lb-space-1)] block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                        {option.description}
+                                    </span>
+                                )}
+                            </span>
+                        </label>
+                    );
+                })}
+            </div>
+            {helperText && !error && (
+                <p id={helperId} className="m-0 mt-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {helperText}
+                </p>
+            )}
+            {error && (
+                <p id={errorId} className="m-0 mt-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">
+                    {error}
+                </p>
+            )}
+        </fieldset>
+    );
+}
+
 export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'children'> {
     label?: string;
     helperText?: string;

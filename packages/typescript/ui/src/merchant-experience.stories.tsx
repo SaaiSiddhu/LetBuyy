@@ -9,6 +9,8 @@ import {
     Button,
     Card,
     CheckCircle2,
+    Checkbox,
+    ChoiceList,
     CommandPalette,
     Combobox,
     ConfirmDialog,
@@ -25,6 +27,7 @@ import {
     PageHeader,
     Pagination,
     RadiusPreview,
+    Radio,
     SaveBar,
     Section,
     Select,
@@ -849,6 +852,137 @@ export function ControlComponentHardening() {
                                 { label: 'Locked channel', value: 'locked' },
                             ]}
                         />
+                    </div>
+                </Section>
+            </Card>
+        </Page>
+    );
+}
+
+export function ChoiceControlSurfaceHardening() {
+    const [channels, setChannels] = useState<string[]>(['online-store', 'pos']);
+    const [fulfillmentMode, setFulfillmentMode] = useState('ship');
+    const [autoPublish, setAutoPublish] = useState(true);
+    const [giftWrap, setGiftWrap] = useState(false);
+    const [visibility, setVisibility] = useState('visible');
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 11"
+                title="Choice control hardening"
+                description="Checkbox, Radio, and ChoiceList provide accessible grouped choices for merchant settings, filters, and bulk workflows."
+                titleMetadata={<Badge label="Forms" variant="info" />}
+            />
+            <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-[1.1fr_0.9fr]">
+                <Card title="Publishing channels" description="Multiple-choice groups support descriptions, icons, disabled options, badges, and helper/error copy." headerDivider>
+                    <Section>
+                        <ChoiceList
+                            title="Sales channels"
+                            description="Choose where selected products can be published."
+                            helperText={`${channels.length} channel${channels.length === 1 ? '' : 's'} selected for this bulk edit.`}
+                            multiple
+                            value={channels}
+                            onChange={(nextValue) => setChannels(Array.isArray(nextValue) ? nextValue : [nextValue])}
+                            options={[
+                                {
+                                    label: 'Online Store',
+                                    value: 'online-store',
+                                    description: 'Visible on the tenant storefront and product search.',
+                                    icon: <MaterialIcon name="storefront" />,
+                                    badge: <Badge label="Ready" variant="success" />,
+                                },
+                                {
+                                    label: 'Point of Sale',
+                                    value: 'pos',
+                                    description: 'Available to staff terminals and local pickup flows.',
+                                    icon: <MaterialIcon name="payments" />,
+                                },
+                                {
+                                    label: 'Wholesale portal',
+                                    value: 'wholesale',
+                                    description: 'Locked until the wholesale app is installed.',
+                                    disabled: true,
+                                    icon: <MaterialIcon name="lock" />,
+                                    badge: <Badge label="Locked" variant="warning" />,
+                                },
+                            ]}
+                        />
+                    </Section>
+                </Card>
+                <Card title="Fulfillment method" description="Single-choice groups use native radios with card-like hit targets." headerDivider>
+                    <Section>
+                        <ChoiceList
+                            title="Default fulfillment"
+                            requiredIndicator
+                            value={fulfillmentMode}
+                            onChange={(nextValue) => setFulfillmentMode(String(nextValue))}
+                            options={[
+                                {
+                                    label: 'Ship orders',
+                                    value: 'ship',
+                                    description: 'Use shipping rates and carrier labels.',
+                                    icon: <MaterialIcon name="local_shipping" />,
+                                },
+                                {
+                                    label: 'Pickup only',
+                                    value: 'pickup',
+                                    description: 'Route customers to available pickup locations.',
+                                    icon: <MaterialIcon name="store" />,
+                                },
+                            ]}
+                        />
+                    </Section>
+                </Card>
+            </div>
+            <Card title="Inline choices" description="Standalone Checkbox and Radio controls cover compact settings rows and filter panels." headerDivider>
+                <Section>
+                    <div className="grid gap-[var(--lb-space-5)] md:grid-cols-2">
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            <Checkbox
+                                label="Auto-publish after inventory sync"
+                                description="Keep products moving when stock and pricing validations pass."
+                                checked={autoPublish}
+                                onCheckedChange={setAutoPublish}
+                            />
+                            <Checkbox
+                                label="Gift wrap eligible"
+                                description="Shown only for product types with packaging rules."
+                                helperText="This is optional for Online Store orders."
+                                checked={giftWrap}
+                                onCheckedChange={setGiftWrap}
+                            />
+                            <Checkbox
+                                label="Require approval"
+                                description="Disabled until platform roles are configured."
+                                disabled
+                            />
+                        </div>
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            <Radio
+                                name="visibility"
+                                value="visible"
+                                label="Visible to customers"
+                                description="Products appear in collections and search."
+                                checked={visibility === 'visible'}
+                                onCheckedChange={(checked) => checked && setVisibility('visible')}
+                            />
+                            <Radio
+                                name="visibility"
+                                value="hidden"
+                                label="Hidden from storefront"
+                                description="Products remain editable but cannot be discovered by shoppers."
+                                checked={visibility === 'hidden'}
+                                onCheckedChange={(checked) => checked && setVisibility('hidden')}
+                            />
+                            <Radio
+                                name="visibility"
+                                value="scheduled"
+                                label="Scheduled visibility"
+                                description="Requires a publishing window before selection."
+                                disabled
+                            />
+                        </div>
                     </div>
                 </Section>
             </Card>

@@ -262,6 +262,28 @@ Implemented in this batch:
 - `Tooltip`: now preserves existing trigger `aria-describedby` values while merging the tooltip id and supports inverse/width styling.
 - Added `ModalSurfaceHardening` and `ConfirmTooltipSurfaceHardening` Storybook stories showing the batch 10 public API additions.
 
+## Batch 11 — Choice Control Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed; lockfile was up to date and install completed using pnpm v10.6.2.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframe rendered `ChoiceControlSurfaceHardening`.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--choice-control-surface-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-choice-control-surface-hardening.jpg` — passed.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-choice-control-surface-hardening.jpg`.
+- `pnpm run validate:governance` — passed; governance validation passed (128 validators).
+
+Implemented in this batch:
+- `Checkbox`: added an accessible standalone checkbox primitive with label, description, helper text, error text, class slots, and `onCheckedChange`.
+- `Radio`: added an accessible standalone radio primitive with label, description, helper text, error text, class slots, and `onCheckedChange`.
+- `ChoiceListOption`: added option labels, descriptions, disabled state, icons, and badge slots for grouped choices.
+- `ChoiceList`: added accessible single- and multi-choice fieldsets with controlled/uncontrolled values, helper/error descriptions, required indicator, responsive vertical/horizontal layout, option cards, and disabled-state handling.
+- Added `ChoiceControlSurfaceHardening` Storybook story showing grouped publishing choices, fulfillment radio choices, standalone settings checkboxes, and visibility radios.
+
 ## Stable Public API
 
 Components:
@@ -270,6 +292,8 @@ Components:
 - `Banner`
 - `Button`
 - `Card`
+- `Checkbox`
+- `ChoiceList`
 - `ColorPreviewBlock`
 - `ColorPreviewButton`
 - `ColorPreviewSurface`
@@ -287,6 +311,7 @@ Components:
 - `Page`
 - `PageHeader`
 - `Pagination`
+- `Radio`
 - `RadiusPreview`
 - `SaveBar`
 - `Section`
@@ -313,6 +338,9 @@ Types:
 - `BannerProps`
 - `ButtonProps`
 - `CardProps`
+- `CheckboxProps`
+- `ChoiceListOption`
+- `ChoiceListProps`
 - `ColorPreviewBlockProps`
 - `ColorPreviewButtonProps`
 - `ColorPreviewSurfaceProps`
@@ -336,6 +364,7 @@ Types:
 - `PageHeaderProps`
 - `PageProps`
 - `PaginationProps`
+- `RadioProps`
 - `RadiusPreviewProps`
 - `SaveBarProps`
 - `SectionProps`
