@@ -343,6 +343,107 @@ export function FormsAndFeedback() {
     );
 }
 
+export function ComponentApiMatrix() {
+    const [bannerVisible, setBannerVisible] = useState(true);
+
+    return (
+        <ToastProvider duration={0} maxToasts={2}>
+            <Page>
+                <PageHeader
+                    eyebrow="Batch 2"
+                    title="Hardened component APIs"
+                    description="Additive props for merchant workflows: icon buttons, prefixed fields, dismissible feedback, richer tables, and controlled save states."
+                />
+                <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-2">
+                    <Card>
+                        <Section title="Button and fields" description="Optional icons, pressed state, prefixes, suffixes, label actions, and required indicators.">
+                            <div className="grid gap-[var(--lb-space-4)]">
+                                <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                    <Button icon={<MaterialIcon name="settings" />}>Configure</Button>
+                                    <Button variant="secondary" trailingIcon={<MaterialIcon name="arrow_forward" />}>Review</Button>
+                                    <Button variant="outline" pressed>Pressed filter</Button>
+                                    <Button size="icon" variant="ghost" aria-label="Search" icon={<MaterialIcon name="search" />} />
+                                </div>
+                                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                                    <Input
+                                        label="Base price"
+                                        requiredIndicator
+                                        prefixContent="₹"
+                                        suffixContent="INR"
+                                        defaultValue="2499"
+                                        helperText="Displayed price before discounts."
+                                        labelAction={<Button size="sm" variant="ghost">Reset</Button>}
+                                    />
+                                    <Input
+                                        label="Search customers"
+                                        controlSize="lg"
+                                        leftIcon={<MaterialIcon name="search" />}
+                                        placeholder="Name, email, or order ID"
+                                    />
+                                </div>
+                            </div>
+                        </Section>
+                    </Card>
+                    <Card>
+                        <Section title="Feedback controls" description="Dismissible banners, persistent toasts, and explicit save controls.">
+                            <div className="grid gap-[var(--lb-space-3)]">
+                                {bannerVisible && (
+                                    <Banner
+                                        title="Inventory sync paused"
+                                        variant="warning"
+                                        onDismiss={() => setBannerVisible(false)}
+                                        action={<Button size="sm" variant="secondary">Resume</Button>}
+                                    >
+                                        Reconnect the sales channel before publishing bulk edits.
+                                    </Banner>
+                                )}
+                                <div className="flex">
+                                    <ToastDemo />
+                                </div>
+                                <SaveBar
+                                    state="unsaved"
+                                    message="3 product edits pending"
+                                    saveDisabled
+                                    saveLabel="Save edits"
+                                    discardLabel="Discard edits"
+                                    className="!static !w-full"
+                                />
+                            </div>
+                        </Section>
+                    </Card>
+                </div>
+                <Card>
+                    <Section title="DataTable compatibility upgrade" description="Caption, density, row keys, keyboard row activation, sticky headers, alignment, and row actions.">
+                        <DataTable
+                            caption="Product publishing table"
+                            ariaLabel="Product publishing status"
+                            density="compact"
+                            stickyHeader
+                            rowKey="id"
+                            data={sampleRows}
+                            columns={[
+                                { key: 'title', header: 'Product', sortable: true },
+                                { key: 'status', header: 'Status', render: (value) => <Badge label={String(value)} variant={value === 'Active' ? 'success' : 'warning'} /> },
+                                { key: 'inventory', header: 'Inventory', align: 'end', sortable: true },
+                                { key: 'channel', header: 'Channel' },
+                            ]}
+                            sortKey="title"
+                            sortDirection="asc"
+                            onSort={() => undefined}
+                            onRowClick={() => undefined}
+                            rowActions={(row) => (
+                                <Button size="sm" variant="ghost" trailingIcon={<MaterialIcon name="visibility" />}>
+                                    View {row.title}
+                                </Button>
+                            )}
+                        />
+                    </Section>
+                </Card>
+            </Page>
+        </ToastProvider>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>

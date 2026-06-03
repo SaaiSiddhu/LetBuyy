@@ -77,9 +77,20 @@ export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     children: React.ReactNode;
     variant?: Exclude<StatusVariant, 'default'>;
     action?: React.ReactNode;
+    onDismiss?: () => void;
+    dismissLabel?: string;
 }
 
-export function Banner({ title, children, variant = 'info', action, className = '', ...props }: BannerProps) {
+export function Banner({
+    title,
+    children,
+    variant = 'info',
+    action,
+    onDismiss,
+    dismissLabel = 'Dismiss banner',
+    className = '',
+    ...props
+}: BannerProps) {
     const style = statusStyles[variant];
 
     return (
@@ -106,7 +117,21 @@ export function Banner({ title, children, variant = 'info', action, className = 
                     {children}
                 </div>
             </div>
-            {action && <div className="shrink-0">{action}</div>}
+            {(action || onDismiss) && (
+                <div className="flex shrink-0 items-start gap-[var(--lb-space-2)]">
+                    {action}
+                    {onDismiss && (
+                        <button
+                            type="button"
+                            className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                            onClick={onDismiss}
+                            aria-label={dismissLabel}
+                        >
+                            <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        </button>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
@@ -118,6 +143,8 @@ export interface ToastMessage {
     title: string;
     description?: string;
     variant?: ToastVariant;
+    duration?: number;
+    action?: React.ReactNode;
 }
 
 interface ToastContextValue {
@@ -129,9 +156,11 @@ const ToastContext = createContext<ToastContextValue | null>(null);
 
 export interface ToastProviderProps {
     children: React.ReactNode;
+    duration?: number;
+    maxToasts?: number;
 }
 
-export function ToastProvider({ children }: ToastProviderProps) {
+export function ToastProvider({ children, duration = 5000, maxToasts = 4 }: ToastProviderProps) {
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
     const dismiss = useCallback((id: string) => {
@@ -140,10 +169,14 @@ export function ToastProvider({ children }: ToastProviderProps) {
 
     const notify = useCallback((toast: Omit<ToastMessage, 'id'>) => {
         const id = globalThis.crypto?.randomUUID?.() ?? `toast-${Date.now()}`;
-        setToasts((current) => [...current, { ...toast, id }]);
-        window.setTimeout(() => dismiss(id), 5000);
+        const nextToast = { ...toast, id };
+        setToasts((current) => [...current, nextToast].slice(-maxToasts));
+        const timeout = toast.duration ?? duration;
+        if (timeout > 0) {
+            window.setTimeout(() => dismiss(id), timeout);
+        }
         return id;
-    }, [dismiss]);
+    }, [dismiss, duration, maxToasts]);
 
     const value = useMemo(() => ({ notify, dismiss }), [dismiss, notify]);
 
@@ -178,6 +211,11 @@ export function ToastProvider({ children }: ToastProviderProps) {
                                     <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                         {toast.description}
                                     </p>
+                                )}
+                                {toast.action && (
+                                    <div className="mt-[var(--lb-space-2)]">
+                                        {toast.action}
+                                    </div>
                                 )}
                             </div>
                             <button
@@ -293,6 +331,9 @@ export interface SaveBarProps extends React.HTMLAttributes<HTMLDivElement> {
     onDiscard?: () => void;
     saveLabel?: string;
     discardLabel?: string;
+    message?: React.ReactNode;
+    saveDisabled?: boolean;
+    discardDisabled?: boolean;
 }
 
 export function SaveBar({
@@ -301,6 +342,9 @@ export function SaveBar({
     onDiscard,
     saveLabel = 'Save',
     discardLabel = 'Discard',
+    message,
+    saveDisabled = false,
+    discardDisabled = false,
     className = '',
     ...props
 }: SaveBarProps) {
@@ -318,14 +362,14 @@ export function SaveBar({
         >
             <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                 {state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
+                {message ?? (state === 'saving' ? 'Saving changes' : 'Unsaved changes')}
             </div>
             <div className="flex items-center gap-[var(--lb-space-2)]">
                 <button
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onDiscard}
-                    disabled={state === 'saving'}
+                    disabled={state === 'saving' || discardDisabled}
                 >
                     {discardLabel}
                 </button>
@@ -333,7 +377,7 @@ export function SaveBar({
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-action-primary)] bg-[var(--lb-color-action-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-action-primary-text)] hover:bg-[var(--lb-color-action-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onSave}
-                    disabled={state === 'saving'}
+                    disabled={state === 'saving' || saveDisabled}
                 >
                     {state === 'saving' ? 'Saving' : saveLabel}
                 </button>

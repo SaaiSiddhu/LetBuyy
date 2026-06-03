@@ -8,7 +8,11 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
     variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
     size?: 'sm' | 'md' | 'lg' | 'icon';
     loading?: boolean;
+    loadingLabel?: string;
     fullWidth?: boolean;
+    icon?: React.ReactNode;
+    trailingIcon?: React.ReactNode;
+    pressed?: boolean;
 }
 
 const variantStyles: Record<string, string> = {
@@ -30,12 +34,18 @@ export function Button({
     variant = 'primary',
     size = 'md',
     loading = false,
+    loadingLabel = 'Loading',
     fullWidth = false,
+    icon,
+    trailingIcon,
+    pressed,
     className = '',
     disabled,
     children,
     ...props
 }: ButtonProps) {
+    const { 'aria-pressed': ariaPressed, ...buttonProps } = props;
+
     return (
         <button
             className={cx(
@@ -48,12 +58,17 @@ export function Button({
                 className,
             )}
             disabled={disabled || loading}
-            {...props}
+            aria-pressed={pressed ?? ariaPressed}
+            aria-busy={loading || undefined}
+            {...buttonProps}
         >
             {loading && (
                 <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" />
             )}
+            {loading && !children && <span className="sr-only">{loadingLabel}</span>}
+            {!loading && icon && <span className="inline-flex shrink-0" aria-hidden="true">{icon}</span>}
             {children}
+            {trailingIcon && <span className="inline-flex shrink-0" aria-hidden="true">{trailingIcon}</span>}
         </button>
     );
 }

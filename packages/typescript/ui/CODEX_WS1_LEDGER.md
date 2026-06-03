@@ -37,6 +37,31 @@ Implemented in this batch:
 - Added focus-visible support to `Pagination`.
 - Added keyboard selection semantics to `CommandPalette`.
 
+## Batch 2 — Additive API Hardening and Component Matrix
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed, lockfile resolution skipped, 651 packages linked from existing store.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser screenshot — passed; direct story iframe rendered `ComponentApiMatrix`.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-component-api-matrix.jpg`.
+
+Implemented in this batch:
+- `Button`: added optional `icon`, `trailingIcon`, `pressed`, and `loadingLabel` props.
+- `Input`: added optional `prefixContent`, `suffixContent`, `labelAction`, `requiredIndicator`, and `controlSize` props without colliding with native input attributes.
+- `Textarea`: added optional `labelAction` and `requiredIndicator` props.
+- `Banner`: added optional `onDismiss` and `dismissLabel` props.
+- `ToastProvider`: added optional `duration` and `maxToasts` props.
+- `ToastMessage`: added optional `duration` and `action` fields.
+- `SaveBar`: added optional `message`, `saveDisabled`, and `discardDisabled` props.
+- `DataTable`: added optional `caption`, `ariaLabel`, `loadingLabel`, `emptyState`, `rowKey`, `rowActions`, `rowClassName`, `isRowDisabled`, `density`, `stickyHeader`, and column `align`/`className`.
+- `DataTable`: added keyboard row activation for clickable rows while preventing nested row actions from triggering the row handler.
+- Added `ComponentApiMatrix` Storybook story showing the batch 2 public API additions.
+
 ## Stable Public API
 
 Components:
