@@ -13,10 +13,7 @@ import {
     IndexTable,
     Input,
     Mail,
-    Page,
-    PageHeader,
     Plus,
-    SaveBar,
     Section,
     Select,
     ShieldCheck,
@@ -26,6 +23,7 @@ import {
     type IndexTableColumn,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface Employee {
     id: string
@@ -326,182 +324,180 @@ export default function UsersSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Users and permissions"
-                    description="Invite staff and control access to this store."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Users and permissions' }]}
-                />
+            <SettingsPane
+                title="Users and permissions"
+                description="Invite staff and control access to this store."
+                store={store}
+            >
                 <Card>
                     <Section title="Staff">
                         <Skeleton variant="table" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
+        <>
+            <SettingsPane
                 title="Users and permissions"
                 description="Invite staff and control access to this store."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Users and permissions' }]}
+                store={store}
+                guidance={{
+                    title: 'Access guidance',
+                    body: 'Use manager access for trusted operators, editor access for catalog and content teammates, and fulfillment access for order handling.',
+                }}
                 primaryAction={{
                     label: 'Add staff',
                     onClick: startAdd,
                     disabled: showAdd,
                     icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
-            />
+                saveBar={{
+                    state: activeSaveState,
+                    onSave: () => void handleAdd(),
+                    onDiscard: resetInviteForm,
+                    saveLabel: 'Send invite',
+                }}
+            >
+                {loadError && (
+                    <Banner
+                        variant="critical"
+                        title="Staff could not load"
+                        action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                    >
+                        {loadError}
+                    </Banner>
+                )}
 
-            {loadError && (
-                <Banner
-                    variant="critical"
-                    title="Staff could not load"
-                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
-                >
-                    {loadError}
-                </Banner>
-            )}
+                {formError && (
+                    <Banner variant="critical" title="Staff invite needs attention">
+                        {formError}
+                    </Banner>
+                )}
 
-            {formError && (
-                <Banner variant="critical" title="Staff invite needs attention">
-                    {formError}
-                </Banner>
-            )}
-
-            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                <Card className="p-[var(--lb-space-4)]">
-                    <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <Users className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" aria-hidden="true" />
-                        <div>
-                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Staff members</p>
-                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{employees.length}</p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="p-[var(--lb-space-4)]">
-                    <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <ShieldCheck className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-success)]" aria-hidden="true" />
-                        <div>
-                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Active access</p>
-                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{activeStaff}</p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="p-[var(--lb-space-4)]">
-                    <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <Mail className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-warning)]" aria-hidden="true" />
-                        <div>
-                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Pending invites</p>
-                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{invitedStaff}</p>
-                        </div>
-                    </div>
-                </Card>
-            </div>
-
-            <Card>
-                <Section
-                    title="Store owner"
-                    description="The store owner has full access to every setting, workflow, and billing action."
-                >
-                    <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                    <Card className="p-[var(--lb-space-4)]">
                         <div className="flex items-center gap-[var(--lb-space-3)]">
-                            <Avatar name="Owner" />
+                            <Users className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" aria-hidden="true" />
                             <div>
-                                <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">Owner</p>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Full access to all settings</p>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Staff members</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{employees.length}</p>
                             </div>
                         </div>
-                        <Badge label="Primary owner" variant="success" />
-                    </div>
-                </Section>
-            </Card>
+                    </Card>
+                    <Card className="p-[var(--lb-space-4)]">
+                        <div className="flex items-center gap-[var(--lb-space-3)]">
+                            <ShieldCheck className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-success)]" aria-hidden="true" />
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Active access</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{activeStaff}</p>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card className="p-[var(--lb-space-4)]">
+                        <div className="flex items-center gap-[var(--lb-space-3)]">
+                            <Mail className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-warning)]" aria-hidden="true" />
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Pending invites</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{invitedStaff}</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
 
-            {showAdd && (
                 <Card>
                     <Section
-                        title="Invite staff"
-                        description="Send an invite with the right level of access for day-to-day store operations."
+                        title="Store owner"
+                        description="The store owner has full access to every setting, workflow, and billing action."
                     >
-                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                            <Input
-                                label="Email address"
-                                type="email"
-                                value={newEmail}
-                                onChange={(event) => {
-                                    setNewEmail(event.target.value)
-                                    setSaveState('unsaved')
-                                }}
-                                placeholder="staff@example.com"
-                                helperText="The invite is sent to this email address."
-                            />
-                            <Select
-                                label="Role"
-                                value={newRole}
-                                onChange={(event) => {
-                                    setNewRole(event.target.value)
-                                    setSaveState('unsaved')
-                                }}
-                                options={ROLE_OPTIONS}
-                                helperText={ROLES.find((role) => role.value === newRole)?.desc}
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                            <Button type="button" onClick={() => void handleAdd()} loading={saveState === 'saving'}>
-                                Send invite
-                            </Button>
-                            <Button type="button" variant="secondary" onClick={resetInviteForm} disabled={saveState === 'saving'}>
-                                Cancel
-                            </Button>
+                        <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-center gap-[var(--lb-space-3)]">
+                                <Avatar name="Owner" />
+                                <div>
+                                    <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">Owner</p>
+                                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Full access to all settings</p>
+                                </div>
+                            </div>
+                            <Badge label="Primary owner" variant="success" />
                         </div>
                     </Section>
                 </Card>
-            )}
 
-            <Card>
-                <Section
-                    title="Staff"
-                    description="Staff can help manage store operations based on their assigned role."
-                    action={!showAdd && (
-                        <Button type="button" variant="secondary" onClick={startAdd}>
-                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            Add staff
-                        </Button>
-                    )}
-                >
-                    <IndexTable
-                        columns={staffColumns}
-                        rows={employees}
-                        emptyState={(
-                            <EmptyState
-                                icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                                title="No staff members yet"
-                                body="Invite team members when you are ready to share product, order, or fulfillment work."
-                                primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
-                            />
+                {showAdd && (
+                    <Card>
+                        <Section
+                            title="Invite staff"
+                            description="Send an invite with the right level of access for day-to-day store operations."
+                        >
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Input
+                                    label="Email address"
+                                    type="email"
+                                    value={newEmail}
+                                    onChange={(event) => {
+                                        setNewEmail(event.target.value)
+                                        setSaveState('unsaved')
+                                    }}
+                                    placeholder="staff@example.com"
+                                    helperText="The invite is sent to this email address."
+                                />
+                                <Select
+                                    label="Role"
+                                    value={newRole}
+                                    onChange={(event) => {
+                                        setNewRole(event.target.value)
+                                        setSaveState('unsaved')
+                                    }}
+                                    options={ROLE_OPTIONS}
+                                    helperText={ROLES.find((role) => role.value === newRole)?.desc}
+                                />
+                            </div>
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Button type="button" onClick={() => void handleAdd()} loading={saveState === 'saving'}>
+                                    Send invite
+                                </Button>
+                                <Button type="button" variant="secondary" onClick={resetInviteForm} disabled={saveState === 'saving'}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        </Section>
+                    </Card>
+                )}
+
+                <Card>
+                    <Section
+                        title="Staff"
+                        description="Staff can help manage store operations based on their assigned role."
+                        action={!showAdd && (
+                            <Button type="button" variant="secondary" onClick={startAdd}>
+                                <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Add staff
+                            </Button>
                         )}
-                        savedViews={[
-                            { label: 'All', value: 'all', count: employees.length },
-                            { label: 'Active', value: 'active', count: activeStaff },
-                            { label: 'Invited', value: 'invited', count: invitedStaff },
-                        ]}
-                        activeView="all"
-                    />
-                </Section>
-            </Card>
-
-            <Banner variant="info" title="Access guidance">
-                Use manager access for trusted operators, editor access for catalog and content teammates, and fulfillment access for order handling.
-            </Banner>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleAdd()}
-                onDiscard={resetInviteForm}
-                saveLabel="Send invite"
-            />
+                    >
+                        <IndexTable
+                            columns={staffColumns}
+                            rows={employees}
+                            emptyState={(
+                                <EmptyState
+                                    icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                    title="No staff members yet"
+                                    body="Invite team members when you are ready to share product, order, or fulfillment work."
+                                    primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
+                                />
+                            )}
+                            savedViews={[
+                                { label: 'All', value: 'all', count: employees.length },
+                                { label: 'Active', value: 'active', count: activeStaff },
+                                { label: 'Invited', value: 'invited', count: invitedStaff },
+                            ]}
+                            activeView="all"
+                        />
+                    </Section>
+                </Card>
+            </SettingsPane>
 
             <ConfirmDialog
                 open={Boolean(employeeToRemove)}
@@ -514,6 +510,6 @@ export default function UsersSettingsPage() {
                     if (!removingId) setEmployeeToRemove(null)
                 }}
             />
-        </Page>
+        </>
     )
 }

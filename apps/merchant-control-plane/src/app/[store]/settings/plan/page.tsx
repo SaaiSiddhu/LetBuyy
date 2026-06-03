@@ -15,8 +15,6 @@ import {
     EmptyState,
     IndianRupee,
     ListChecks,
-    Page,
-    PageHeader,
     Rocket,
     Section,
     Skeleton,
@@ -24,6 +22,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface SubscriptionData {
     plan: string
@@ -256,12 +255,11 @@ export default function PlanSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Plan"
-                    description="Review subscription status, trial timing, and plan features."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Plan' }]}
-                />
+            <SettingsPane
+                title="Plan"
+                description="Review subscription status, trial timing, and plan features."
+                store={store}
+            >
                 <Card>
                     <Section title="Current plan">
                         <Skeleton variant="card" />
@@ -272,16 +270,16 @@ export default function PlanSettingsPage() {
                         <Skeleton lines={5} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
+        <>
+            <SettingsPane
                 title="Plan"
                 description="Review subscription status, trial timing, and plan features."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Plan' }]}
+                store={store}
                 primaryAction={{
                     label: hasSubscription ? 'Change plan' : 'Compare plans',
                     onClick: () => router.push(`/${store}/access_account/checkout/select-plan`),
@@ -292,134 +290,133 @@ export default function PlanSettingsPage() {
                     onClick: () => router.push(`/${store}/settings/billing`),
                     icon: <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }]}
-            />
+            >
+                {loadError && (
+                    <Banner
+                        variant="critical"
+                        title="Plan settings could not load"
+                        action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                    >
+                        {loadError}
+                    </Banner>
+                )}
 
-            {loadError && (
-                <Banner
-                    variant="critical"
-                    title="Plan settings could not load"
-                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
-                >
-                    {loadError}
-                </Banner>
-            )}
-
-            <Card>
-                <Section
-                    title="Current plan"
-                    description={hasSubscription
-                        ? 'Your plan controls billing cadence and active merchant features.'
-                        : 'Your trial keeps the store open while you choose the right paid plan.'}
-                >
-                    <div className="flex flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
-                        <div className="min-w-0 space-y-[var(--lb-space-2)]">
-                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
-                                    {hasSubscription ? subscription?.plan_name : 'Free Trial'}
-                                </h3>
-                                <Badge
-                                    label={hasSubscription
-                                        ? formatStatus(subscription?.status || 'active')
-                                        : isTrialExpired ? 'Expired' : 'Trial'}
-                                    variant={hasSubscription
-                                        ? statusVariant(subscription?.status || 'active')
-                                        : isTrialExpired ? 'critical' : 'success'}
-                                />
-                            </div>
-                            <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
-                                {hasSubscription
-                                    ? currentPrice
-                                    : !isTrialExpired && trialEnds
-                                        ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining in your trial`
-                                        : isTrialExpired
-                                            ? 'Your trial has expired'
-                                            : 'Trial period'}
-                            </p>
-                        </div>
-                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                            <Button variant="secondary" onClick={() => router.push(`/${store}/settings/billing`)}>
-                                <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                Billing
-                            </Button>
-                            <Button onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>
-                                <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                {hasSubscription ? 'Change plan' : 'Compare plans'}
-                            </Button>
-                        </div>
-                    </div>
-
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                        <PlanMetric
-                            icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Plan"
-                            value={hasSubscription ? subscription?.plan_name || 'Active plan' : 'Free trial'}
-                        />
-                        <PlanMetric
-                            icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Price"
-                            value={currentPrice}
-                        />
-                        <PlanMetric
-                            icon={<ListChecks className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Included features"
-                            value={hasSubscription ? `${featureCount} feature${featureCount === 1 ? '' : 's'}` : 'Trial access'}
-                        />
-                    </div>
-
-                    {!hasSubscription && trialEnds && (
-                        <Banner
-                            variant={isTrialExpired ? 'critical' : 'info'}
-                            title={isTrialExpired ? 'Trial ended' : 'Trial active'}
-                        >
-                            Trial {isTrialExpired ? 'ended' : 'ends'} on <strong>{formatDate(trialData.trial_ends_at)}</strong>.
-                        </Banner>
-                    )}
-
-                    {hasSubscription && subscription?.current_period_end && (
-                        <Banner variant="info" title="Renewal schedule">
-                            Your plan renews on <strong>{formatDate(subscription.current_period_end)}</strong>.
-                        </Banner>
-                    )}
-
-                    {subscription?.promo_ends_at && (
-                        <Banner variant="success" title="Promotional pricing active">
-                            Promotional pricing remains active until <strong>{formatDate(subscription.promo_ends_at)}</strong>.
-                        </Banner>
-                    )}
-                </Section>
-            </Card>
-
-            {hasSubscription && (
                 <Card>
                     <Section
-                        title="Plan features"
-                        description="Use this as a quick checklist of the capabilities included in the active plan."
+                        title="Current plan"
+                        description={hasSubscription
+                            ? 'Your plan controls billing cadence and active merchant features.'
+                            : 'Your trial keeps the store open while you choose the right paid plan.'}
                     >
-                        {featureCount > 0 ? (
-                            <ul className="m-0 grid list-none gap-[var(--lb-space-3)] p-0 md:grid-cols-2">
-                                {planInfo?.features.map((feature) => (
-                                    <li
-                                        key={feature.label}
-                                        className="flex items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
-                                    >
-                                        <CheckCircle2 className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
-                                        <span className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                            {feature.label}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <EmptyState
-                                icon={<ListChecks className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                                title="Plan features are not available"
-                                body="The active subscription is loaded, but the plan catalog did not return a feature list."
-                                primaryAction={<Button onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>Compare plans</Button>}
+                        <div className="flex flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                            <div className="min-w-0 space-y-[var(--lb-space-2)]">
+                                <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                    <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                                        {hasSubscription ? subscription?.plan_name : 'Free Trial'}
+                                    </h3>
+                                    <Badge
+                                        label={hasSubscription
+                                            ? formatStatus(subscription?.status || 'active')
+                                            : isTrialExpired ? 'Expired' : 'Trial'}
+                                        variant={hasSubscription
+                                            ? statusVariant(subscription?.status || 'active')
+                                            : isTrialExpired ? 'critical' : 'success'}
+                                    />
+                                </div>
+                                <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                                    {hasSubscription
+                                        ? currentPrice
+                                        : !isTrialExpired && trialEnds
+                                            ? `${daysLeft} day${daysLeft !== 1 ? 's' : ''} remaining in your trial`
+                                            : isTrialExpired
+                                                ? 'Your trial has expired'
+                                                : 'Trial period'}
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Button variant="secondary" onClick={() => router.push(`/${store}/settings/billing`)}>
+                                    <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    Billing
+                                </Button>
+                                <Button onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>
+                                    <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    {hasSubscription ? 'Change plan' : 'Compare plans'}
+                                </Button>
+                            </div>
+                        </div>
+
+                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                            <PlanMetric
+                                icon={<Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                label="Plan"
+                                value={hasSubscription ? subscription?.plan_name || 'Active plan' : 'Free trial'}
                             />
+                            <PlanMetric
+                                icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                label="Price"
+                                value={currentPrice}
+                            />
+                            <PlanMetric
+                                icon={<ListChecks className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                label="Included features"
+                                value={hasSubscription ? `${featureCount} feature${featureCount === 1 ? '' : 's'}` : 'Trial access'}
+                            />
+                        </div>
+
+                        {!hasSubscription && trialEnds && (
+                            <Banner
+                                variant={isTrialExpired ? 'critical' : 'info'}
+                                title={isTrialExpired ? 'Trial ended' : 'Trial active'}
+                            >
+                                Trial {isTrialExpired ? 'ended' : 'ends'} on <strong>{formatDate(trialData.trial_ends_at)}</strong>.
+                            </Banner>
+                        )}
+
+                        {hasSubscription && subscription?.current_period_end && (
+                            <Banner variant="info" title="Renewal schedule">
+                                Your plan renews on <strong>{formatDate(subscription.current_period_end)}</strong>.
+                            </Banner>
+                        )}
+
+                        {subscription?.promo_ends_at && (
+                            <Banner variant="success" title="Promotional pricing active">
+                                Promotional pricing remains active until <strong>{formatDate(subscription.promo_ends_at)}</strong>.
+                            </Banner>
                         )}
                     </Section>
                 </Card>
-            )}
+
+                {hasSubscription && (
+                    <Card>
+                        <Section
+                            title="Plan features"
+                            description="Use this as a quick checklist of the capabilities included in the active plan."
+                        >
+                            {featureCount > 0 ? (
+                                <ul className="m-0 grid list-none gap-[var(--lb-space-3)] p-0 md:grid-cols-2">
+                                    {planInfo?.features.map((feature) => (
+                                        <li
+                                            key={feature.label}
+                                            className="flex items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
+                                        >
+                                            <CheckCircle2 className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
+                                            <span className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                {feature.label}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <EmptyState
+                                    icon={<ListChecks className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                    title="Plan features are not available"
+                                    body="The active subscription is loaded, but the plan catalog did not return a feature list."
+                                    primaryAction={<Button onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>Compare plans</Button>}
+                                />
+                            )}
+                        </Section>
+                    </Card>
+                )}
 
             <Card>
                 <Section
@@ -490,6 +487,7 @@ export default function PlanSettingsPage() {
                     </Section>
                 </Card>
             )}
+            </SettingsPane>
 
             <ConfirmDialog
                 open={cancelDialogOpen}
@@ -503,6 +501,6 @@ export default function PlanSettingsPage() {
                     if (!cancelling) setCancelDialogOpen(false)
                 }}
             />
-        </Page>
+        </>
     )
 }

@@ -8,9 +8,6 @@ import {
     Card,
     ClipboardList,
     FileText,
-    Page,
-    PageHeader,
-    SaveBar,
     Section,
     Shield,
     Skeleton,
@@ -19,6 +16,7 @@ import {
     useToast,
     type LucideIcon,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface PolicyField {
     key: string
@@ -192,30 +190,37 @@ export default function PoliciesSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Policies"
-                    description="Manage storefront and checkout policies that help customers buy with confidence."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Policies' }]}
-                />
+            <SettingsPane
+                title="Policies"
+                description="Manage storefront and checkout policies that help customers buy with confidence."
+                store={store}
+            >
                 <Card>
                     <Section title="Storefront policies">
                         <Skeleton variant="text" lines={6} />
                     </Section>
                 </Card>
                 <Skeleton variant="card" />
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Policies"
-                description="Manage storefront and checkout policies that help customers buy with confidence."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Policies' }]}
-            />
-
+        <SettingsPane
+            title="Policies"
+            description="Manage storefront and checkout policies that help customers buy with confidence."
+            store={store}
+            guidance={{
+                title: 'Policies appear on your storefront',
+                body: 'These policies appear on storefront policy pages and during checkout. Clear policies build customer trust.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save policies',
+            }}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -225,10 +230,6 @@ export default function PoliciesSettingsPage() {
                     {loadError}
                 </Banner>
             )}
-
-            <Banner variant="info" title="Policies appear on your storefront">
-                These policies appear on storefront policy pages and during checkout. Clear policies build customer trust.
-            </Banner>
 
             <Card>
                 <Section
@@ -268,13 +269,6 @@ export default function PoliciesSettingsPage() {
                     </div>
                 </Section>
             </Card>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={handleDiscard}
-                saveLabel="Save policies"
-            />
-        </Page>
+        </SettingsPane>
     )
 }

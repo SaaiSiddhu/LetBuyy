@@ -11,12 +11,11 @@ import {
     EmptyState,
     FileText,
     IndianRupee,
-    Page,
-    PageHeader,
     Section,
     Skeleton,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface Invoice {
     id: string
@@ -172,12 +171,11 @@ export default function BillingSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Billing"
-                    description="Review subscription charges, payment methods, and invoice history."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Billing' }]}
-                />
+            <SettingsPane
+                title="Billing"
+                description="Review subscription charges, payment methods, and invoice history."
+                store={store}
+            >
                 <Card>
                     <Section title="Current subscription">
                         <Skeleton variant="card" />
@@ -188,26 +186,24 @@ export default function BillingSettingsPage() {
                         <Skeleton variant="table" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Billing"
-                description="Review subscription charges, payment methods, and invoice history."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Billing' }]}
-                primaryAction={{
-                    label: 'Manage plan',
-                    onClick: () => router.push(`/${store}/settings/plan`),
-                }}
-                secondaryActions={[{
-                    label: 'Payment settings',
-                    onClick: () => router.push(`/${store}/settings/payments`),
-                }]}
-            />
-
+        <SettingsPane
+            title="Billing"
+            description="Review subscription charges, payment methods, and invoice history."
+            store={store}
+            primaryAction={{
+                label: 'Manage plan',
+                onClick: () => router.push(`/${store}/settings/plan`),
+            }}
+            secondaryActions={[{
+                label: 'Payment settings',
+                onClick: () => router.push(`/${store}/settings/payments`),
+            }]}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -351,6 +347,6 @@ export default function BillingSettingsPage() {
                     )}
                 </Section>
             </Card>
-        </Page>
+        </SettingsPane>
     )
 }

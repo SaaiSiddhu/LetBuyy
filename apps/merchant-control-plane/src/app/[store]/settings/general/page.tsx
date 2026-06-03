@@ -9,15 +9,13 @@ import {
     Card,
     ConfirmDialog,
     Input,
-    Page,
-    PageHeader,
-    SaveBar,
     Section,
     Select,
     Skeleton,
     Textarea,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface GeneralData {
     id: string
@@ -242,12 +240,11 @@ export default function GeneralSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="General"
-                    description="Manage the core identity, language, and market defaults for this store."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'General' }]}
-                />
+            <SettingsPane
+                title="General"
+                description="Manage the core identity, language, and market defaults for this store."
+                store={store}
+            >
                 <Card>
                     <Section title="Store details">
                         <Skeleton variant="text" lines={4} />
@@ -259,19 +256,23 @@ export default function GeneralSettingsPage() {
                     </Section>
                 </Card>
                 <Skeleton variant="card" />
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
         <>
-            <Page>
-                <PageHeader
-                    title="General"
-                    description="Manage the core identity, language, and market defaults for this store."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'General' }]}
-                />
-
+            <SettingsPane
+                title="General"
+                description="Manage the core identity, language, and market defaults for this store."
+                store={store}
+                saveBar={{
+                    state: activeSaveState,
+                    onSave: () => void handleSave(),
+                    onDiscard: handleDiscard,
+                    saveLabel: 'Save settings',
+                }}
+            >
                 {loadError && (
                     <Banner
                         variant="critical"
@@ -347,13 +348,6 @@ export default function GeneralSettingsPage() {
                             />
                         </Section>
                     </Card>
-
-                    <SaveBar
-                        state={activeSaveState}
-                        onSave={() => void handleSave()}
-                        onDiscard={handleDiscard}
-                        saveLabel="Save settings"
-                    />
                 </form>
 
                 <Card className="border-[var(--lb-color-critical)]">
@@ -375,7 +369,7 @@ export default function GeneralSettingsPage() {
                         </Banner>
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
 
             <ConfirmDialog
                 open={deleteDialogOpen}

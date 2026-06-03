@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 08:00 IST [S2.1-S2.9] Normalized the remaining settings panes through `SettingsPane` so per-pane headers, guidance, and SaveBar placement share one shell: Settings index, General, Payments, Domains, Plan, Billing, Users, Checkout, Shipping, Taxes, Notifications, Policies, and Subscribe checkout. Settings hub now reads the same local nav manifest as the left index/search, including missing backend-needed panes.
 - 2026-06-03 07:31 IST [S2.4/S2.5] Migrated subscribe checkout off bespoke global CSS into `SettingsPane`/Card/Section controls and migrated Users staff list to `IndexTable` - typecheck pass before cleanup; governance pass after generated artifact cleanup.
 - 2026-06-03 07:24 IST [S3] Added missing panes: Apps and sales channels (gateway-backed), Business details (partial read + backend-needed mutation), Languages and localization (partial read + backend-needed locale endpoint), Security (backend-needed), Custom Data (backend-needed) - `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass; lint -> pass with 5 pre-existing warnings outside WS9.
 - 2026-06-03 07:16 IST [S1.1/S4.1/S5.1] Settings shell components created - grouped left index, settings search, mobile drawer, active route ARIA, and owned layout replacement - verification pending.
@@ -53,3 +54,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 07:24 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 07:31 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by install/typecheck.
 - 2026-06-03 07:36 IST Visual route check -> `curl -I http://localhost:3002/demo/settings` returned 307 auth redirect to accounts app; screenshots blocked without local authenticated merchant session.
+- 2026-06-03 08:00 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after remaining pane wrapper migration.
+- 2026-06-03 08:00 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 08:00 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

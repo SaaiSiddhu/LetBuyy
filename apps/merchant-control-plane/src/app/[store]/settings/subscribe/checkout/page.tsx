@@ -4,11 +4,11 @@ import { createMerchantApiClient } from '@/lib/api/client'
 import { toSubscriptionPlanView } from '@/lib/billing/plan-ui'
 import SubscribeCheckoutClient from './SubscribeCheckoutClient'
 
-/* ——————————————————————————————————————
+/*
    Subscribe Checkout Page (Server Component)
    Reads plan from query params, fetches from DB
    URL: /{store}/settings/subscribe/checkout?plan=starter&bp=MONTHLY&site_type=store
-   —————————————————————————————————————— */
+*/
 
 interface PageProps {
     params: Promise<{ store: string }>

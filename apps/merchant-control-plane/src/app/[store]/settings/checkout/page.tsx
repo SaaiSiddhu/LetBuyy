@@ -6,14 +6,12 @@ import {
     Banner,
     Button,
     Card,
-    Page,
-    PageHeader,
-    SaveBar,
     Section,
     Select,
     Skeleton,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface CheckoutSettings {
     contact_method: 'email' | 'phone' | 'both'
@@ -241,12 +239,11 @@ export default function CheckoutSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Checkout"
-                    description="Control how customers identify themselves and complete checkout."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Checkout' }]}
-                />
+            <SettingsPane
+                title="Checkout"
+                description="Control how customers identify themselves and complete checkout."
+                store={store}
+            >
                 <Card>
                     <Section title="Customer contact method">
                         <Skeleton variant="text" lines={3} />
@@ -258,18 +255,26 @@ export default function CheckoutSettingsPage() {
                     </Section>
                 </Card>
                 <Skeleton variant="card" />
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Checkout"
-                description="Control how customers identify themselves and complete checkout."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Checkout' }]}
-            />
-
+        <SettingsPane
+            title="Checkout"
+            description="Control how customers identify themselves and complete checkout."
+            store={store}
+            guidance={{
+                title: 'Checkout impact',
+                body: 'These settings control how customers interact with your checkout process.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save checkout',
+            }}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -353,17 +358,6 @@ export default function CheckoutSettingsPage() {
                     </div>
                 </Section>
             </Card>
-
-            <Banner variant="info" title="Checkout impact">
-                These settings control how customers interact with your checkout process.
-            </Banner>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={handleDiscard}
-                saveLabel="Save checkout"
-            />
-        </Page>
+        </SettingsPane>
     )
 }

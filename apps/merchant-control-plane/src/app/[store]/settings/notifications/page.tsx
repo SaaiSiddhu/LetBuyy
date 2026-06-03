@@ -10,9 +10,6 @@ import {
     Mail,
     MessageSquare,
     Package,
-    Page,
-    PageHeader,
-    SaveBar,
     Section,
     ShoppingBag,
     Skeleton,
@@ -21,6 +18,7 @@ import {
     type LucideIcon,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface NotificationPref {
     key: string
@@ -178,12 +176,11 @@ export default function NotificationsSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Notifications"
-                    description="Choose which store events notify staff and which customer emails are automatic."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Notifications' }]}
-                />
+            <SettingsPane
+                title="Notifications"
+                description="Choose which store events notify staff and which customer emails are automatic."
+                store={store}
+            >
                 <Card>
                     <Section title="Staff notifications">
                         <Skeleton variant="text" lines={6} />
@@ -194,18 +191,22 @@ export default function NotificationsSettingsPage() {
                         <Skeleton variant="text" lines={3} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Notifications"
-                description="Choose which store events notify staff and which customer emails are automatic."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Notifications' }]}
-            />
-
+        <SettingsPane
+            title="Notifications"
+            description="Choose which store events notify staff and which customer emails are automatic."
+            store={store}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save notifications',
+            }}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -290,13 +291,6 @@ export default function NotificationsSettingsPage() {
                     </div>
                 </Section>
             </Card>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={handleDiscard}
-                saveLabel="Save notifications"
-            />
-        </Page>
+        </SettingsPane>
     )
 }

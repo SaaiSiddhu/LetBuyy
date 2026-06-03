@@ -11,15 +11,13 @@ import {
     EmptyState,
     Globe,
     Input,
-    Page,
-    PageHeader,
     Plus,
-    SaveBar,
     Section,
     Skeleton,
     Truck,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface ShippingZone {
     id: string
@@ -262,164 +260,162 @@ export default function ShippingSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Shipping and delivery"
-                    description="Define delivery zones and rate coverage for checkout."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Shipping and delivery' }]}
-                />
+            <SettingsPane
+                title="Shipping and delivery"
+                description="Define delivery zones and rate coverage for checkout."
+                store={store}
+            >
                 <Card>
                     <Section title="Shipping zones">
                         <Skeleton variant="table" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
+        <>
+            <SettingsPane
                 title="Shipping and delivery"
                 description="Define delivery zones and rate coverage for checkout."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Shipping and delivery' }]}
+                store={store}
+                guidance={{
+                    title: 'Checkout impact',
+                    body: 'Shipping zones define regional coverage. Delivery rates attached to each zone are shown during checkout based on the customer delivery address.',
+                }}
                 primaryAction={{
                     label: 'Add zone',
                     onClick: startAdd,
                     disabled: Boolean(formMode),
                     icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
                 }}
-            />
+                saveBar={{
+                    state: activeSaveState,
+                    onSave: () => void handleSaveZone(),
+                    onDiscard: resetForm,
+                    saveLabel: formMode === 'edit' ? 'Update zone' : 'Add zone',
+                }}
+            >
+                {loadError && (
+                    <Banner
+                        variant="critical"
+                        title="Shipping settings could not load"
+                        action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                    >
+                        {loadError}
+                    </Banner>
+                )}
 
-            {loadError && (
-                <Banner
-                    variant="critical"
-                    title="Shipping settings could not load"
-                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
-                >
-                    {loadError}
-                </Banner>
-            )}
+                {formError && (
+                    <Banner variant="critical" title="Shipping zone needs attention">
+                        {formError}
+                    </Banner>
+                )}
 
-            {formError && (
-                <Banner variant="critical" title="Shipping zone needs attention">
-                    {formError}
-                </Banner>
-            )}
+                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                    <ZoneMetric
+                        icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                        label="Shipping zones"
+                        value={`${zones.length} configured`}
+                    />
+                    <ZoneMetric
+                        icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                        label="Country groups"
+                        value={`${zones.reduce((total, zone) => total + (zone.countries?.length || 0), 0)} countries`}
+                    />
+                    <ZoneMetric
+                        icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                        label="Delivery rates"
+                        value={`${totalRates} rate${totalRates === 1 ? '' : 's'}`}
+                    />
+                </div>
 
-            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                <ZoneMetric
-                    icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Shipping zones"
-                    value={`${zones.length} configured`}
-                />
-                <ZoneMetric
-                    icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Country groups"
-                    value={`${zones.reduce((total, zone) => total + (zone.countries?.length || 0), 0)} countries`}
-                />
-                <ZoneMetric
-                    icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Delivery rates"
-                    value={`${totalRates} rate${totalRates === 1 ? '' : 's'}`}
-                />
-            </div>
+                {formMode && (
+                    <Card>
+                        <Section
+                            title={formMode === 'edit' ? 'Edit shipping zone' : 'Add shipping zone'}
+                            description="Group countries into delivery zones so checkout can show the right shipping options."
+                        >
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Input
+                                    label="Zone name"
+                                    value={formName}
+                                    onChange={(event) => setFormName(event.target.value)}
+                                    placeholder="e.g. Domestic, International"
+                                    helperText="Use a merchant-friendly name for fulfilment teams."
+                                />
+                                <Input
+                                    label="Countries"
+                                    value={formCountries}
+                                    onChange={(event) => setFormCountries(event.target.value)}
+                                    placeholder="e.g. India, Nepal, Sri Lanka"
+                                    helperText="Separate country names with commas."
+                                />
+                            </div>
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Button type="button" onClick={() => void handleSaveZone()} loading={saveState === 'saving'}>
+                                    {formMode === 'edit' ? 'Update zone' : 'Add zone'}
+                                </Button>
+                                <Button type="button" variant="secondary" onClick={resetForm} disabled={saveState === 'saving'}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        </Section>
+                    </Card>
+                )}
 
-            {formMode && (
                 <Card>
                     <Section
-                        title={formMode === 'edit' ? 'Edit shipping zone' : 'Add shipping zone'}
-                        description="Group countries into delivery zones so checkout can show the right shipping options."
+                        title="Shipping zones"
+                        description="Customers see delivery options based on the zone that matches their address."
+                        action={!formMode && (
+                            <Button type="button" variant="secondary" onClick={startAdd}>
+                                <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Add zone
+                            </Button>
+                        )}
                     >
-                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                            <Input
-                                label="Zone name"
-                                value={formName}
-                                onChange={(event) => setFormName(event.target.value)}
-                                placeholder="e.g. Domestic, International"
-                                helperText="Use a merchant-friendly name for fulfilment teams."
+                        {zones.length === 0 ? (
+                            <EmptyState
+                                icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                title="No shipping zones configured"
+                                body="Create zones for domestic, regional, or international delivery so checkout can offer the right rates."
+                                primaryAction={!formMode ? <Button type="button" onClick={startAdd}>Add zone</Button> : undefined}
                             />
-                            <Input
-                                label="Countries"
-                                value={formCountries}
-                                onChange={(event) => setFormCountries(event.target.value)}
-                                placeholder="e.g. India, Nepal, Sri Lanka"
-                                helperText="Separate country names with commas."
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                            <Button type="button" onClick={() => void handleSaveZone()} loading={saveState === 'saving'}>
-                                {formMode === 'edit' ? 'Update zone' : 'Add zone'}
-                            </Button>
-                            <Button type="button" variant="secondary" onClick={resetForm} disabled={saveState === 'saving'}>
-                                Cancel
-                            </Button>
-                        </div>
+                        ) : (
+                            <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
+                                {zones.map((zone) => {
+                                    const zoneRates = rates.filter((rate) => rate.zone_id === zone.id)
+                                    return (
+                                        <div key={zone.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                                            <div className="min-w-0 space-y-[var(--lb-space-2)]">
+                                                <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                                    <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                        {zone.name}
+                                                    </h3>
+                                                    <Badge label={`${zoneRates.length} rate${zoneRates.length === 1 ? '' : 's'}`} variant={zoneRates.length > 0 ? 'success' : 'warning'} />
+                                                </div>
+                                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                    {formatCountries(zone.countries || [])}
+                                                </p>
+                                            </div>
+                                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                                <Button type="button" variant="secondary" size="sm" onClick={() => startEdit(zone)} disabled={Boolean(formMode)}>
+                                                    Edit
+                                                </Button>
+                                                <Button type="button" variant="destructive" size="sm" onClick={() => setZoneToDelete(zone)} disabled={deletingId === zone.id}>
+                                                    Delete
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        )}
                     </Section>
                 </Card>
-            )}
-
-            <Card>
-                <Section
-                    title="Shipping zones"
-                    description="Customers see delivery options based on the zone that matches their address."
-                    action={!formMode && (
-                        <Button type="button" variant="secondary" onClick={startAdd}>
-                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            Add zone
-                        </Button>
-                    )}
-                >
-                    {zones.length === 0 ? (
-                        <EmptyState
-                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title="No shipping zones configured"
-                            body="Create zones for domestic, regional, or international delivery so checkout can offer the right rates."
-                            primaryAction={!formMode ? <Button type="button" onClick={startAdd}>Add zone</Button> : undefined}
-                        />
-                    ) : (
-                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            {zones.map((zone) => {
-                                const zoneRates = rates.filter((rate) => rate.zone_id === zone.id)
-                                return (
-                                    <div key={zone.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
-                                        <div className="min-w-0 space-y-[var(--lb-space-2)]">
-                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                                <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                                    {zone.name}
-                                                </h3>
-                                                <Badge label={`${zoneRates.length} rate${zoneRates.length === 1 ? '' : 's'}`} variant={zoneRates.length > 0 ? 'success' : 'warning'} />
-                                            </div>
-                                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                {formatCountries(zone.countries || [])}
-                                            </p>
-                                        </div>
-                                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                            <Button type="button" variant="secondary" size="sm" onClick={() => startEdit(zone)} disabled={Boolean(formMode)}>
-                                                Edit
-                                            </Button>
-                                            <Button type="button" variant="destructive" size="sm" onClick={() => setZoneToDelete(zone)} disabled={deletingId === zone.id}>
-                                                Delete
-                                            </Button>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    )}
-                </Section>
-            </Card>
-
-            <Banner variant="info" title="Checkout impact">
-                Shipping zones define regional coverage. Delivery rates attached to each zone are shown during checkout based on the customer delivery address.
-            </Banner>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSaveZone()}
-                onDiscard={resetForm}
-                saveLabel={formMode === 'edit' ? 'Update zone' : 'Add zone'}
-            />
+            </SettingsPane>
 
             <ConfirmDialog
                 open={Boolean(zoneToDelete)}
@@ -432,6 +428,6 @@ export default function ShippingSettingsPage() {
                     if (!deletingId) setZoneToDelete(null)
                 }}
             />
-        </Page>
+        </>
     )
 }

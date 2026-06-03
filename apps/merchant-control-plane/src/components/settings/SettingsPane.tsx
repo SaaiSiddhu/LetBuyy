@@ -14,6 +14,7 @@ interface SettingsPaneProps {
     description: string
     store: string
     children: React.ReactNode
+    breadcrumbs?: Array<{ label: string; href?: string }>
     eyebrow?: string
     guidance?: {
         title: string
@@ -30,6 +31,7 @@ export function SettingsPane({
     description,
     store,
     children,
+    breadcrumbs,
     eyebrow,
     guidance,
     primaryAction,
@@ -42,7 +44,7 @@ export function SettingsPane({
                 title={title}
                 description={description}
                 eyebrow={eyebrow}
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: title }]}
+                breadcrumbs={breadcrumbs ?? [{ label: 'Settings', href: `/${store}/settings` }, { label: title }]}
                 primaryAction={primaryAction}
                 secondaryActions={secondaryActions}
             />

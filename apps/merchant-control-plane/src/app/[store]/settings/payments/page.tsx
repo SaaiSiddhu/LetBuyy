@@ -11,15 +11,13 @@ import {
     IndianRupee,
     Input,
     Key,
-    Page,
-    PageHeader,
-    SaveBar,
     Section,
     ShieldCheck,
     Skeleton,
     Truck,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 type SanitizedPaymentSettings = {
     mode: 'shared' | 'ownAccount'
@@ -217,19 +215,18 @@ export default function PaymentsSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Payments"
-                    description="Connect provider credentials and review storefront payment availability."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Payments' }]}
-                />
+            <SettingsPane
+                title="Payments"
+                description="Connect provider credentials and review storefront payment availability."
+                store={store}
+            >
                 <Card>
                     <Section title="Razorpay account">
                         <Skeleton variant="text" lines={4} />
                     </Section>
                 </Card>
                 <Skeleton variant="card" />
-            </Page>
+            </SettingsPane>
         )
     }
 
@@ -241,13 +238,21 @@ export default function PaymentsSettingsPage() {
             : { label: 'Not connected', variant: 'default' as const }
 
     return (
-        <Page>
-            <PageHeader
-                title="Payments"
-                description="Connect provider credentials and review storefront payment availability."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Payments' }]}
-            />
-
+        <SettingsPane
+            title="Payments"
+            description="Connect provider credentials and review storefront payment availability."
+            store={store}
+            guidance={{
+                title: 'Secret handling',
+                body: 'Secrets are sent to the LetBuyy API worker and stored encrypted. The admin UI only receives masked payment settings.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save payments',
+            }}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -341,10 +346,6 @@ export default function PaymentsSettingsPage() {
                 </Section>
             </Card>
 
-            <Banner variant="info" title="Secret handling">
-                Secrets are sent to the LetBuyy API worker and stored encrypted. The admin UI only receives masked payment settings.
-            </Banner>
-
             <Banner variant="warning" title="Before going live">
                 Test payments should be verified end to end before switching a store to live Razorpay credentials.
             </Banner>
@@ -368,13 +369,6 @@ export default function PaymentsSettingsPage() {
                     </div>
                 </Section>
             </Card>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={handleDiscard}
-                saveLabel="Save payments"
-            />
-        </Page>
+        </SettingsPane>
     )
 }

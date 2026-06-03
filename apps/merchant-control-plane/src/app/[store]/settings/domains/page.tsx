@@ -9,13 +9,11 @@ import {
     Card,
     Globe,
     Input,
-    Page,
-    PageHeader,
-    SaveBar,
     Section,
     Skeleton,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface DomainStoreData {
     id: string
@@ -154,12 +152,11 @@ export default function DomainSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Domains"
-                    description="Manage LetBuyy and custom domains for this store."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Domains' }]}
-                />
+            <SettingsPane
+                title="Domains"
+                description="Manage LetBuyy and custom domains for this store."
+                store={store}
+            >
                 <Card>
                     <Section title="Primary domain">
                         <Skeleton variant="text" lines={3} />
@@ -170,18 +167,26 @@ export default function DomainSettingsPage() {
                         <Skeleton variant="text" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Domains"
-                description="Manage LetBuyy and custom domains for this store."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Domains' }]}
-            />
-
+        <SettingsPane
+            title="Domains"
+            description="Manage LetBuyy and custom domains for this store."
+            store={store}
+            guidance={{
+                title: 'Custom domains need DNS setup',
+                body: 'Connect a custom domain to give your store a professional web address. Update DNS before switching traffic.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save domain',
+            }}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -191,10 +196,6 @@ export default function DomainSettingsPage() {
                     {loadError}
                 </Banner>
             )}
-
-            <Banner variant="info" title="Custom domains need DNS setup">
-                Connect a custom domain to give your store a professional web address. Update DNS before switching traffic.
-            </Banner>
 
             <Card>
                 <Section
@@ -236,13 +237,6 @@ export default function DomainSettingsPage() {
                     />
                 </Section>
             </Card>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSave()}
-                onDiscard={handleDiscard}
-                saveLabel="Save domain"
-            />
-        </Page>
+        </SettingsPane>
     )
 }
