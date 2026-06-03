@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 09:59 IST [S5.12] Hardened Payments payload handling by normalizing masked payment settings before state updates, summaries, and save feedback.
 - 2026-06-03 09:50 IST [S5.11] Hardened Subscribe checkout numeric fields so plan cents, promo months, and Razorpay amount values are normalized before display and payment handoff.
 - 2026-06-03 09:46 IST [S5.10] Hardened Billing and Plan monetary fields so string or malformed cents values do not corrupt totals, plan prices, or subscription amount labels.
 - 2026-06-03 09:43 IST [S5.9] Hardened settings date rendering in Apps, Billing, Plan, and Users so malformed gateway date fields fall back gracefully instead of rendering `Invalid Date` or NaN trial timing.
@@ -109,3 +110,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 09:50 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Subscribe checkout numeric hardening.
 - 2026-06-03 09:50 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 09:50 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 09:59 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Payments payload normalization.
+- 2026-06-03 09:59 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 09:59 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

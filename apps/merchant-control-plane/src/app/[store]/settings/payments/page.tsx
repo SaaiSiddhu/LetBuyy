@@ -40,7 +40,7 @@ type PaymentConfig = {
 }
 
 type PaymentConfigPayload = {
-    data?: PaymentConfig
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -49,6 +49,38 @@ type SaveState = 'saved' | 'unsaved' | 'saving'
 function getPayloadError(payload: PaymentConfigPayload | null, fallback: string) {
     if (!payload?.error) return fallback
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown) {
+    return typeof value === 'string' ? value : ''
+}
+
+function normalizePaymentConfig(value: unknown): PaymentConfig {
+    const data = isRecord(value) ? value : {}
+    const settings = isRecord(data.payment_settings) ? data.payment_settings : {}
+    const razorpayData = isRecord(settings.razorpay) ? settings.razorpay : null
+
+    return {
+        store_id: readString(data.store_id),
+        online_payment_enabled: data.online_payment_enabled === true,
+        cod_enabled: data.cod_enabled === true,
+        payment_settings: {
+            mode: settings.mode === 'ownAccount' ? 'ownAccount' : 'shared',
+            gateways: Array.isArray(settings.gateways) ? settings.gateways.filter((gateway): gateway is string => typeof gateway === 'string') : [],
+            razorpay: razorpayData ? {
+                key_id: typeof razorpayData.key_id === 'string' ? razorpayData.key_id : null,
+                test_mode: typeof razorpayData.test_mode === 'boolean' ? razorpayData.test_mode : true,
+                verified: razorpayData.verified === true,
+                connected_at: typeof razorpayData.connected_at === 'string' ? razorpayData.connected_at : null,
+                updated_at: typeof razorpayData.updated_at === 'string' ? razorpayData.updated_at : null,
+                secret_configured: razorpayData.secret_configured === true,
+            } : null,
+        },
+    }
 }
 
 interface PaymentSummaryProps {
@@ -109,8 +141,9 @@ export default function PaymentsSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load payment settings'))
             }
 
-            const nextTestMode = payload.data.payment_settings.razorpay?.test_mode ?? true
-            setConfig(payload.data)
+            const nextConfig = normalizePaymentConfig(payload.data)
+            const nextTestMode = nextConfig.payment_settings.razorpay?.test_mode ?? true
+            setConfig(nextConfig)
             setTestMode(nextTestMode)
             setInitialTestMode(nextTestMode)
             setKeyId('')
@@ -169,19 +202,21 @@ export default function PaymentsSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to save payment settings'))
             }
 
-            const nextTestMode = payload.data.payment_settings.razorpay?.test_mode ?? testMode
-            setConfig(payload.data)
+            const nextConfig = normalizePaymentConfig(payload.data)
+            const nextRazorpay = nextConfig.payment_settings.razorpay
+            const nextTestMode = nextRazorpay?.test_mode ?? testMode
+            setConfig(nextConfig)
             setKeyId('')
             setKeySecret('')
             setTestMode(nextTestMode)
             setInitialTestMode(nextTestMode)
             setSaveState('saved')
             notify({
-                title: payload.data.payment_settings.razorpay?.verified ? 'Razorpay connected' : 'Razorpay credentials saved',
-                description: payload.data.payment_settings.razorpay?.verified
+                title: nextRazorpay?.verified ? 'Razorpay connected' : 'Razorpay credentials saved',
+                description: nextRazorpay?.verified
                     ? 'The seller Razorpay account is connected and verified.'
                     : 'Verification did not complete. Re-check the credentials before going live.',
-                variant: payload.data.payment_settings.razorpay?.verified ? 'success' : 'warning',
+                variant: nextRazorpay?.verified ? 'success' : 'warning',
             })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to save payment settings'
