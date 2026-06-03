@@ -27,33 +27,36 @@ export default function TrialBanner({ trialEndsAt, trialStatus }: TrialBannerPro
 
     return (
         <div className="admin-trial-toast">
-            <div
-                className="admin-trial-toast-header"
-                onClick={() => setCollapsed(!collapsed)}
-            >
-                <span className="admin-trial-toast-title">
-                    🎉 {daysLeft} day{daysLeft !== 1 ? 's' : ''} left in your trial
-                </span>
-                <span style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+            <div className="admin-trial-toast-header">
+                <button
+                    type="button"
+                    className="admin-trial-toast-toggle"
+                    onClick={() => setCollapsed(!collapsed)}
+                    aria-expanded={!collapsed}
+                    aria-controls="admin-trial-toast-body"
+                >
+                    <span className="admin-trial-toast-title">
+                        <MaterialIcon name="sparkles" className="admin-trial-toast-title-icon" size={16} />
+                        {daysLeft} day{daysLeft !== 1 ? 's' : ''} left in your trial
+                    </span>
                     <MaterialIcon
                         name="expand_less"
                         className={`admin-trial-toast-chevron ${collapsed ? 'collapsed' : ''}`}
-                        style={{ fontSize: '20px', color: 'var(--text-hint)' }}
+                        size={20}
                     />
-                    <MaterialIcon
-                        name="close"
-                        onClick={(e) => {
-                            e.stopPropagation()
-                            setDismissed(true)
-                        }}
-                        style={{ fontSize: '18px', color: 'var(--text-hint)', cursor: 'pointer' }}
-                        aria-label="Dismiss"
-                    />
-                </span>
+                </button>
+                <button
+                    type="button"
+                    className="admin-trial-toast-dismiss"
+                    onClick={() => setDismissed(true)}
+                    aria-label="Dismiss trial banner"
+                >
+                    <MaterialIcon name="close" size={18} />
+                </button>
             </div>
 
             {!collapsed && (
-                <div className="admin-trial-toast-body">
+                <div className="admin-trial-toast-body" id="admin-trial-toast-body">
                     <p>
                         Extend your trial or pick a plan to keep your store running.
                         Your trial includes <strong>all features</strong>.

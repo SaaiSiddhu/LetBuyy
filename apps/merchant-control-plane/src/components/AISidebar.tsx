@@ -188,65 +188,35 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
         <div className="admin-ai-panel">
             {/* Header */}
             <div className="admin-ai-panel-header">
-                <div className="admin-ai-panel-title" style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <MaterialIcon name="auto_awesome" style={{ fontSize: '18px', color: 'var(--primary)' }} />
+                <div className="admin-ai-panel-title">
+                    <MaterialIcon name="auto_awesome" className="admin-ai-panel-title-icon" size={18} />
                     LetBuyy AI
                 </div>
                 <div className="admin-ai-panel-actions">
-                    <button onClick={onClose} title="Close">
-                        <MaterialIcon name="close" style={{ fontSize: '18px' }} />
+                    <button type="button" onClick={onClose} title="Close" aria-label="Close AI panel">
+                        <MaterialIcon name="close" size={18} />
                     </button>
                 </div>
             </div>
 
             {/* Tabs */}
-            <div style={{
-                display: 'flex',
-                borderBottom: '1px solid var(--border)',
-                padding: '0 16px',
-            }}>
+            <div className="admin-ai-tabs" role="tablist" aria-label="AI assistant panels">
                 <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'chat'}
+                    className={`admin-ai-tab ${activeTab === 'chat' ? 'active' : ''}`}
                     onClick={() => setActiveTab('chat')}
-                    style={{
-                        flex: 1,
-                        padding: '10px 0',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        color: activeTab === 'chat' ? 'var(--primary)' : 'var(--text-hint)',
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: activeTab === 'chat' ? '2px solid var(--primary)' : '2px solid transparent',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                    }}
                 >
                     Chat
-                    <span style={{
-                        marginLeft: '4px',
-                        fontSize: '10px',
-                        padding: '1px 5px',
-                        borderRadius: '8px',
-                        backgroundColor: 'var(--primary)',
-                        color: '#fff',
-                        verticalAlign: 'super',
-                    }}>
-                        Soon
-                    </span>
+                    <span className="admin-ai-tab-badge">Soon</span>
                 </button>
                 <button
+                    type="button"
+                    role="tab"
+                    aria-selected={activeTab === 'todos'}
+                    className={`admin-ai-tab ${activeTab === 'todos' ? 'active' : ''}`}
                     onClick={() => setActiveTab('todos')}
-                    style={{
-                        flex: 1,
-                        padding: '10px 0',
-                        fontSize: '13px',
-                        fontWeight: 600,
-                        color: activeTab === 'todos' ? 'var(--primary)' : 'var(--text-hint)',
-                        background: 'none',
-                        border: 'none',
-                        borderBottom: activeTab === 'todos' ? '2px solid var(--primary)' : '2px solid transparent',
-                        cursor: 'pointer',
-                        transition: 'all 0.15s',
-                    }}
                 >
                     To-dos ({completedCount}/{todos.length})
                 </button>
@@ -274,25 +244,16 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
 
                         {/* Progress bar */}
                         {todos.length > 0 && (
-                            <div style={{
-                                margin: '0 0 12px 0',
-                                height: '4px',
-                                borderRadius: '2px',
-                                backgroundColor: 'var(--border)',
-                                overflow: 'hidden',
-                            }}>
-                                <div style={{
-                                    width: `${(completedCount / todos.length) * 100}%`,
-                                    height: '100%',
-                                    borderRadius: '2px',
-                                    backgroundColor: 'var(--primary)',
-                                    transition: 'width 0.3s ease',
-                                }} />
-                            </div>
+                            <progress
+                                className="admin-ai-progress"
+                                value={completedCount}
+                                max={todos.length}
+                                aria-label="Setup progress"
+                            />
                         )}
 
                         {loading ? (
-                            <div style={{ textAlign: 'center', padding: '24px 0', color: 'var(--text-hint)', fontSize: '13px' }}>
+                            <div className="admin-ai-loading">
                                 Loading your setup progress...
                             </div>
                         ) : (
@@ -300,32 +261,25 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                                 <div
                                     key={todo.id}
                                     className="admin-ai-todo-item"
-                                    onClick={() => toggleTodo(todo.id)}
-                                    style={{ cursor: 'pointer' }}
                                 >
-                                    <div className={`admin-ai-todo-checkbox ${todo.done ? 'checked' : ''}`} />
-                                    <span
-                                        className="admin-ai-todo-text"
-                                        style={{
-                                            textDecoration: todo.done ? 'line-through' : 'none',
-                                            opacity: todo.done ? 0.5 : 1,
-                                            flex: 1,
-                                        }}
+                                    <button
+                                        type="button"
+                                        className="admin-ai-todo-check"
+                                        onClick={() => toggleTodo(todo.id)}
+                                        aria-pressed={todo.done}
                                     >
-                                        {todo.text}
-                                    </span>
+                                        <span className={`admin-ai-todo-checkbox ${todo.done ? 'checked' : ''}`} />
+                                        <span className={`admin-ai-todo-text ${todo.done ? 'complete' : ''}`}>
+                                            {todo.text}
+                                        </span>
+                                    </button>
                                     {todo.link && !todo.done && (
                                         <a
                                             href={todo.link}
-                                            onClick={(e) => e.stopPropagation()}
-                                            style={{
-                                                fontSize: '11px',
-                                                color: 'var(--primary)',
-                                                textDecoration: 'none',
-                                                whiteSpace: 'nowrap',
-                                            }}
+                                            className="admin-ai-todo-link"
                                         >
-                                            Go →
+                                            Go
+                                            <MaterialIcon name="arrow_right" size={12} />
                                         </a>
                                     )}
                                 </div>
@@ -334,17 +288,9 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
 
                         {/* Celebration message when all done */}
                         {!loading && completedCount === todos.length && todos.length > 0 && (
-                            <div style={{
-                                textAlign: 'center',
-                                padding: '16px',
-                                marginTop: '8px',
-                                borderRadius: '8px',
-                                backgroundColor: 'var(--success-light, #dcfce7)',
-                                color: 'var(--success, #16a34a)',
-                                fontSize: '13px',
-                                fontWeight: 600,
-                            }}>
-                                🎉 All setup tasks complete! Your site is ready.
+                            <div className="admin-ai-complete" role="status">
+                                <MaterialIcon name="check_circle" size={16} />
+                                <span>All setup tasks complete. Your site is ready.</span>
                             </div>
                         )}
                     </div>
@@ -366,11 +312,13 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
                             }}
                         />
                         <button
+                            type="button"
                             className="admin-ai-send-btn"
                             onClick={handleSend}
                             disabled={!input.trim()}
+                            aria-label="Send AI message"
                         >
-                            <MaterialIcon name="arrow_upward" style={{ fontSize: '16px' }} />
+                            <MaterialIcon name="arrow_upward" size={16} />
                         </button>
                     </div>
                 </div>

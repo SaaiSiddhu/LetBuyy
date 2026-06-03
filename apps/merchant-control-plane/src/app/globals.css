@@ -1483,8 +1483,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 16px;
-  cursor: pointer;
+  gap: 8px;
+  padding: 10px 12px 10px 16px;
   transition: background 0.15s;
 }
 
@@ -1492,20 +1492,70 @@ body {
   background: var(--bg-secondary);
 }
 
+.admin-trial-toast-toggle {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-trial-toast-toggle:focus-visible,
+.admin-trial-toast-dismiss:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
 .admin-trial-toast-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
 }
 
+.admin-trial-toast-title-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
 .admin-trial-toast-chevron {
   color: var(--text-hint);
-  font-size: 20px;
+  flex-shrink: 0;
   transition: transform 0.2s;
 }
 
 .admin-trial-toast-chevron.collapsed {
   transform: rotate(180deg);
+}
+
+.admin-trial-toast-dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-hint);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.admin-trial-toast-dismiss:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
 }
 
 .admin-trial-toast-body {
@@ -2066,9 +2116,17 @@ body {
 }
 
 .admin-ai-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
+}
+
+.admin-ai-panel-title-icon {
+  color: var(--primary);
+  flex-shrink: 0;
 }
 
 .admin-ai-panel-actions {
@@ -2094,6 +2152,52 @@ body {
 .admin-ai-panel-actions button:hover {
   background: var(--bg-secondary);
   color: var(--text-primary);
+}
+
+.admin-ai-panel-actions button:focus-visible,
+.admin-ai-tab:focus-visible,
+.admin-ai-todo-check:focus-visible,
+.admin-ai-todo-link:focus-visible,
+.admin-ai-send-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.admin-ai-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  padding: 0 16px;
+}
+
+.admin-ai-tab {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-hint);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.admin-ai-tab.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.admin-ai-tab-badge {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  padding: 1px 5px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: var(--bg);
+  font-size: 10px;
+  line-height: 1.3;
+  vertical-align: super;
 }
 
 .admin-ai-panel-body {
@@ -2129,11 +2233,61 @@ body {
   border-radius: 10px;
 }
 
+.admin-ai-progress {
+  display: block;
+  width: 100%;
+  height: 4px;
+  margin: 0 0 12px;
+  border: none;
+  border-radius: 999px;
+  overflow: hidden;
+  appearance: none;
+  background: var(--border);
+}
+
+.admin-ai-progress::-webkit-progress-bar {
+  background: var(--border);
+  border-radius: 999px;
+}
+
+.admin-ai-progress::-webkit-progress-value {
+  background: var(--primary);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}
+
+.admin-ai-progress::-moz-progress-bar {
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+.admin-ai-loading {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--text-hint);
+  font-size: 13px;
+}
+
 .admin-ai-todo-item {
   display: flex;
   align-items: flex-start;
+  justify-content: space-between;
   gap: 8px;
   padding: 8px 0;
+}
+
+.admin-ai-todo-check {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
   cursor: pointer;
 }
 
@@ -2153,9 +2307,42 @@ body {
 }
 
 .admin-ai-todo-text {
+  flex: 1;
   font-size: 13px;
   color: var(--text-secondary);
   line-height: 1.4;
+}
+
+.admin-ai-todo-text.complete {
+  opacity: 0.5;
+  text-decoration: line-through;
+}
+
+.admin-ai-todo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.admin-ai-complete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 16px;
+  border-radius: 8px;
+  background: var(--success-light, #dcfce7);
+  color: var(--success, #16a34a);
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
 }
 
 /* AI Chat Messages */
@@ -2255,6 +2442,11 @@ body {
 
 .admin-ai-send-btn:hover {
   background: var(--primary-hover);
+}
+
+.admin-ai-send-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
 }
 
 /* ======================================
