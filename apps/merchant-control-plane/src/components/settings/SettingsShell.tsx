@@ -92,6 +92,16 @@ export function SettingsShell({
             const lastElement = focusableElements[focusableElements.length - 1]
             const activeElement = document.activeElement
 
+            if (activeElement === drawer) {
+                event.preventDefault()
+                if (event.shiftKey) {
+                    lastElement.focus()
+                } else {
+                    firstElement.focus()
+                }
+                return
+            }
+
             if (!drawer.contains(activeElement)) {
                 event.preventDefault()
                 firstElement.focus()
