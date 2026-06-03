@@ -34,10 +34,7 @@ interface ShippingRate {
 }
 
 type ShippingPayload = {
-    data?: {
-        zones?: unknown
-        rates?: unknown
-    }
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -159,8 +156,9 @@ export default function ShippingSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load shipping settings'))
             }
 
-            setZones(normalizeZones(payload?.data?.zones))
-            setRates(normalizeRates(payload?.data?.rates))
+            const data = isRecord(payload?.data) ? payload.data : {}
+            setZones(normalizeZones(data.zones))
+            setRates(normalizeRates(data.rates))
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load shipping settings'
             setLoadError(message)

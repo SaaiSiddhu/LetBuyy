@@ -38,10 +38,7 @@ interface TaxRate {
 }
 
 type TaxesPayload = {
-    data?: {
-        tax_inclusive?: boolean
-        rates?: unknown
-    }
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -158,10 +155,11 @@ export default function TaxesSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load tax settings'))
             }
 
-            const taxInclusive = Boolean(payload?.data?.tax_inclusive)
+            const data = isRecord(payload?.data) ? payload.data : {}
+            const taxInclusive = data.tax_inclusive === true
             setTaxData({ tax_inclusive: taxInclusive })
             setInitialTaxInclusive(taxInclusive)
-            setTaxRates(normalizeTaxRates(payload?.data?.rates))
+            setTaxRates(normalizeTaxRates(data.rates))
             setSettingsSaveState('saved')
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load tax settings'
