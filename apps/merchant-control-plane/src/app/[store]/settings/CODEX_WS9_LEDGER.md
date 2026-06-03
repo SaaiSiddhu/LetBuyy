@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 09:05 IST [S5.5] Tightened mobile settings drawer behavior with initial dialog focus, page scroll lock while open, and focus restoration on close.
 - 2026-06-03 08:53 IST [S5.4] Added mobile settings drawer dialog semantics, labelled title, modal state, and Escape-to-close behavior inside the owned settings shell.
 - 2026-06-03 08:47 IST [S5.3] Replaced full-page retry reloads with abort-safe pane-local data reload handlers for General, Domains, Checkout, Notifications, and Policies, preserving each pane's existing gateway/app-boundary data flow.
 - 2026-06-03 08:33 IST [S2.3] Migrated Billing invoice history from a raw table to shared `IndexTable` while preserving invoice formatting, empty state, and existing `/api/stores/:store/billing` data flow.
@@ -77,3 +78,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 08:53 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after mobile drawer a11y cleanup.
 - 2026-06-03 08:53 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 08:53 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 09:05 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after drawer focus/scroll handling.
+- 2026-06-03 09:05 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 09:05 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

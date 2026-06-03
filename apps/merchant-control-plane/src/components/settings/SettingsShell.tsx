@@ -52,6 +52,11 @@ export function SettingsShell({
     useEffect(() => {
         if (!drawerOpen) return
 
+        const previousActiveElement = document.activeElement instanceof HTMLElement ? document.activeElement : null
+        const previousBodyOverflow = document.body.style.overflow
+        document.body.style.overflow = 'hidden'
+        document.getElementById('settings-mobile-drawer')?.focus()
+
         function handleKeyDown(event: KeyboardEvent) {
             if (event.key === 'Escape') {
                 setDrawerOpen(false)
@@ -62,6 +67,11 @@ export function SettingsShell({
 
         return () => {
             document.removeEventListener('keydown', handleKeyDown)
+            document.body.style.overflow = previousBodyOverflow
+
+            if (previousActiveElement?.isConnected) {
+                previousActiveElement.focus()
+            }
         }
     }, [drawerOpen])
 
@@ -177,6 +187,7 @@ export function SettingsShell({
                         role="dialog"
                         aria-modal="true"
                         aria-labelledby="settings-mobile-drawer-title"
+                        tabIndex={-1}
                         className="relative z-10 flex h-full w-[min(380px,calc(100vw-var(--lb-space-5)))] flex-col overflow-hidden border-r border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] shadow-[var(--lb-shadow-lg)]"
                     >
                         <div className="mb-[var(--lb-space-4)] flex items-center justify-between gap-[var(--lb-space-3)]">
