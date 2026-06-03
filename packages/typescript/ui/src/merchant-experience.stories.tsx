@@ -6,6 +6,8 @@ import {
     Avatar,
     Badge,
     Banner,
+    BlockStack,
+    Box,
     Button,
     Card,
     CheckCircle2,
@@ -17,7 +19,9 @@ import {
     ColorPreviewButton,
     ColorSwatch,
     DataTable,
+    Divider,
     EmptyState,
+    InlineStack,
     IndexTable,
     Input,
     MaterialIcon,
@@ -34,6 +38,7 @@ import {
     Skeleton,
     Tabs,
     Textarea,
+    Text,
     ToastProvider,
     Tooltip,
     letbuyyTokens,
@@ -1060,6 +1065,80 @@ export function LayoutComponentHardening() {
                     </p>
                 </Card>
             </div>
+        </Page>
+    );
+}
+
+export function CompositionPrimitiveHardening() {
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 12"
+                title="Composition primitive hardening"
+                description="Box, BlockStack, InlineStack, Text, and Divider give consumers token-driven composition without app-local layout fragments."
+                titleMetadata={<Badge label="Layout" variant="info" />}
+            />
+            <Box as="section" padding="5" tone="raised" border radius="lg" shadow="sm">
+                <BlockStack gap="5">
+                    <InlineStack align="start" justify="between" gap="4">
+                        <BlockStack gap="1" className="max-w-[var(--lb-size-content-measure)]">
+                            <Text as="h2" variant="heading" weight="semibold">Storefront readiness checkpoint</Text>
+                            <Text tone="subdued">Shared primitives keep dense merchant panels consistent while letting app teams compose their own workflow-specific content.</Text>
+                        </BlockStack>
+                        <InlineStack gap="2">
+                            <Badge label="AA focus" variant="success" />
+                            <Badge label="Tokenized" variant="info" />
+                        </InlineStack>
+                    </InlineStack>
+                    <Divider />
+                    <InlineStack align="stretch" gap="4">
+                        <Box padding="4" tone="subdued" border radius="lg" className="min-w-[220px] flex-1">
+                            <BlockStack gap="2">
+                                <Text variant="caption" tone="subdued" weight="semibold" className="uppercase">Publish queue</Text>
+                                <InlineStack justify="between" wrap={false}>
+                                    <Text as="span" variant="display" weight="semibold">184</Text>
+                                    <Text as="span" tone="success" weight="medium">Ready</Text>
+                                </InlineStack>
+                                <Text variant="caption" tone="subdued">Products can move to Online Store after price sync.</Text>
+                            </BlockStack>
+                        </Box>
+                        <Box padding="4" tone="warning" border radius="lg" className="min-w-[220px] flex-1">
+                            <BlockStack gap="2">
+                                <Text variant="caption" tone="warning" weight="semibold" className="uppercase">Review needed</Text>
+                                <InlineStack justify="between" wrap={false}>
+                                    <Text as="span" variant="display" weight="semibold">7</Text>
+                                    <Text as="span" tone="warning" weight="medium">Held</Text>
+                                </InlineStack>
+                                <Text variant="caption" tone="subdued">Resolve blocked variants before automated publishing.</Text>
+                            </BlockStack>
+                        </Box>
+                        <Box padding="4" tone="info" border radius="lg" className="min-w-[220px] flex-1">
+                            <BlockStack gap="2">
+                                <Text variant="caption" tone="info" weight="semibold" className="uppercase">Channels</Text>
+                                <InlineStack justify="between" wrap={false}>
+                                    <Text as="span" variant="display" weight="semibold">3</Text>
+                                    <Text as="span" tone="info" weight="medium">Active</Text>
+                                </InlineStack>
+                                <Text variant="caption" tone="subdued">Online Store, POS, and marketplace channels are linked.</Text>
+                            </BlockStack>
+                        </Box>
+                    </InlineStack>
+                    <Divider />
+                    <InlineStack justify="between" gap="4">
+                        <InlineStack gap="3">
+                            <Avatar name="LetBuyy Ops" size="sm" />
+                            <BlockStack gap="0">
+                                <Text as="span" weight="medium">Reviewed by operations</Text>
+                                <Text as="span" variant="caption" tone="subdued">Composition primitives preserve text rhythm and spacing.</Text>
+                            </BlockStack>
+                        </InlineStack>
+                        <InlineStack gap="2">
+                            <Button variant="secondary" size="sm">View changes</Button>
+                            <Button size="sm">Approve queue</Button>
+                        </InlineStack>
+                    </InlineStack>
+                </BlockStack>
+            </Box>
         </Page>
     );
 }

@@ -10,8 +10,8 @@ export type { InputProps, TextareaProps } from './input';
 export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
 
-export { Page, PageHeader, Card, Section } from './layout';
-export type { PageProps, PageHeaderAction, PageHeaderProps, CardProps, SectionProps } from './layout';
+export { BlockStack, Box, Card, Divider, InlineStack, Page, PageHeader, Section, Text } from './layout';
+export type { BlockStackProps, BoxProps, CardProps, DividerProps, InlineStackProps, PageHeaderAction, PageHeaderProps, PageProps, SectionProps, TextProps } from './layout';
 
 export {
     Banner,

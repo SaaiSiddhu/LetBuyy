@@ -284,12 +284,37 @@ Implemented in this batch:
 - `ChoiceList`: added accessible single- and multi-choice fieldsets with controlled/uncontrolled values, helper/error descriptions, required indicator, responsive vertical/horizontal layout, option cards, and disabled-state handling.
 - Added `ChoiceControlSurfaceHardening` Storybook story showing grouped publishing choices, fulfillment radio choices, standalone settings checkboxes, and visibility radios.
 
+## Batch 12 — Composition Primitive Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed; lockfile was up to date and install completed using pnpm v10.6.2.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframe rendered `CompositionPrimitiveHardening`.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--composition-primitive-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-composition-primitive-hardening.jpg` — passed.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-composition-primitive-hardening.jpg`.
+- `pnpm run validate:governance` — passed; governance validation passed (128 validators).
+
+Implemented in this batch:
+- `Box`: added token-driven composition surface with semantic element selection, spacing, tone, border, radius, and shadow props.
+- `BlockStack`: added vertical composition primitive with tokenized gap, alignment, and justification props.
+- `InlineStack`: added horizontal/wrapping composition primitive with tokenized gap, alignment, justification, and wrap props.
+- `Text`: added semantic text primitive with variant, tone, weight, alignment, and truncation props.
+- `Divider`: added horizontal and vertical separator primitive with subdued tone support.
+- Added `CompositionPrimitiveHardening` Storybook story showing operational composition with tokenized surfaces, stacks, text, and dividers.
+
 ## Stable Public API
 
 Components:
 - `Avatar`
 - `Badge`
 - `Banner`
+- `BlockStack`
+- `Box`
 - `Button`
 - `Card`
 - `Checkbox`
@@ -303,8 +328,10 @@ Components:
 - `ConfirmDialog`
 - `DataTable`
 - `DesignSystemRoot`
+- `Divider`
 - `EmptyState`
 - `IndexTable`
+- `InlineStack`
 - `Input`
 - `MetricCard`
 - `Modal`
@@ -319,6 +346,7 @@ Components:
 - `Skeleton`
 - `Tabs`
 - `Textarea`
+- `Text`
 - `ToastProvider`
 - `Tooltip`
 
@@ -336,6 +364,8 @@ Types:
 - `AvatarProps`
 - `BadgeProps`
 - `BannerProps`
+- `BlockStackProps`
+- `BoxProps`
 - `ButtonProps`
 - `CardProps`
 - `CheckboxProps`
@@ -352,10 +382,12 @@ Types:
 - `ConfirmDialogProps`
 - `DataTableProps`
 - `DesignSystemRootProps`
+- `DividerProps`
 - `EmptyStateProps`
 - `IndexTableBulkAction`
 - `IndexTableColumn`
 - `IndexTableProps`
+- `InlineStackProps`
 - `InputProps`
 - `LetbuyyTheme`
 - `MetricCardProps`
@@ -375,6 +407,7 @@ Types:
 - `TabItem`
 - `TabsProps`
 - `TextareaProps`
+- `TextProps`
 - `ToastMessage`
 - `ToastProviderProps`
 - `ToastVariant`
