@@ -2,11 +2,13 @@
 
 ## BASELINE
 - Active mission: `docs/Codex_waves/CODEX_PRODUCTION_HARDENING_MISSION.md`.
-- Active phase: P4 - scaffold service readiness review.
+- Active phase: COMPLETE - Stage 1 handoff to WS1 Design System.
 - Historical production-readiness baseline: `CODEX_PRODUCTION_LEDGER.md` records P0 through final local gate evidence from June 2, including fresh Supabase replay of `000_baseline.sql`, `073_order_item_required_field_compatibility.sql`, `074_cod_pending_status.sql`, and `075_cashfree_payment_provider.sql`.
 - Current branch/worktree caveat: many pre-existing non-WS7 dirty files are present and treated as user-owned. WS7 will not modify them.
 
 ## PROGRESS LOG
+- 2026-06-03T12:37:15Z [FINAL GATE] WS7 Production Hardening - DONE / HUMAN-GATED FOR LIVE PROVIDERS ONLY. Evidence: J1-J5 real-stack Playwright -> 5/5 PASS; COD/GST node tests -> 7/7 PASS; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); final escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` after P4 code -> PASS (57/57); generated artifact scan -> no generated directories; final `pnpm run validate:governance` -> PASS (128/128 validators). Remaining unexecuted items require Cashfree/provider credentials, production/staging infrastructure, or explicit service activation decisions.
+- 2026-06-03T12:36:20Z [P4] Scaffold service advancement - DONE. Evidence: `services/queue-workers` now claims durable `platform_queue_jobs` from Cloudflare Queue wake-ups and processes analytics event stream/rollups, search documents, in-app notification side effects, app-charge payout ledger entries, and `payout.ledger_entry.created` outbox events using package-owned event/planner contracts. Updated queue-worker dependencies, runtime manifest allowlist, lockfile importer, and event-spine tests. Reserved standalone roots remain incubating and are skipped pending activation decisions.
 - 2026-06-03T12:22:01Z [P3] Build stability and font-hosting proof - DONE. Evidence: build attempt 1 failed because generated app-local dependency links had been removed for governance cleanup; `pnpm install --offline --force` failed on a missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` failed on registry DNS; escalated `pnpm install --force` restored workspace links. Sandbox `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` then failed only because Turbopack could not bind a local worker port in the sandbox; escalated rerun of the same build -> PASS (57/57 tasks). Font source scan for `next/font/google`, `fonts.googleapis.com`, and `fonts.gstatic.com` across apps/packages/services/config -> no matches. Generated build/cache/dependency artifacts were removed; artifact scan returned no directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:03:45Z [P2.1/P2.2/P2.3] India payments depth review - PARTIAL PASS / HUMAN-GATED. Evidence: current real-stack J4 passed COD order creation, `pending_cod`, merchant confirmation to `confirmed`, intra-state CGST/SGST, inter-state IGST, event spine, and queue processing. `node --test tests/gst/gst-invoice.test.mjs tests/billing/subscription-checkout.test.mjs` -> 7/7 PASS. Source review confirms COD provider contract implementation and Cashfree adapter/routes implement real create/verify/capture/refund/webhook paths. Cashfree sandbox charge and signed webhook proof remains credential-gated.
 - 2026-06-03T12:03:25Z [P1 commit checkpoint] Commit and post-commit governance - DONE. Evidence: `git commit -m "docs(ws7): record p1 real-stack proof"` -> `ce9f9de`; post-commit `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -21,8 +23,16 @@
 
 ## SKIPPED - NEEDS HUMAN
 - [SKIP] Cashfree sandbox charge and webhook proof - requires Cashfree sandbox credentials and dashboard webhook configuration. Existing adapter/routes/webhook code are documented in `CODEX_PRODUCTION_LEDGER.md`; live/sandbox provider proof remains credential-gated.
+- [SKIP] Production/staging Supabase, Cloudflare, Vercel, email, OAuth, payout, and live payment provisioning - requires human-owned provider accounts, credentials, dashboard configuration, and explicit production approval.
+- [SKIP] Standalone activation of reserved/incubating service roots (`services/analytics-pipeline`, `services/search-service`, `services/notification-service`, `services/media-service`, `services/event-bus`, `services/checkout-runtime`) - requires an explicit human/governance decision to promote each reserved root to active package authority with package manifests, deployment configs, service contracts, queue/provider policies, and provider/storage credentials where applicable. The unblocked durable event-spine consumers now run through `services/queue-workers`.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T12:37:15Z final generated artifact scan -> no generated directories; final `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-03T12:36:55Z `CI=true pnpm install --frozen-lockfile` -> PASS; escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> PASS (57/57 tasks).
+- 2026-06-03T12:35:40Z `pnpm run lint` -> PASS (8/8 tasks; warnings only, no errors); lint-created `.turbo` artifacts were removed.
+- 2026-06-03T12:34:55Z generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-03T12:34:05Z `pnpm --filter @letbuyy/queue-workers typecheck` -> PASS; `node --test tests/federation/event-spine-contracts.test.mjs` -> PASS (14/14); `pnpm turbo typecheck` -> PASS (57/57 tasks).
+- 2026-06-03T12:33:10Z `CI=true pnpm install --no-frozen-lockfile` in sandbox -> FAIL due registry DNS after interactive prompt; escalated rerun -> PASS, and `pnpm-lock.yaml` was trimmed to the queue-worker importer dependency change only.
 - 2026-06-03T12:21:55Z `pnpm run validate:governance` -> PASS (128/128 validators) after P3 generated artifact cleanup.
 - 2026-06-03T12:21:45Z generated artifact scan after cleanup -> no generated app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories.
 - 2026-06-03T12:21:20Z font source scan for `next/font/google`, `fonts.googleapis.com`, and `fonts.gstatic.com` -> no matches.

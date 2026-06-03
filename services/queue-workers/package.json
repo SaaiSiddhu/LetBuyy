@@ -13,7 +13,11 @@
     "test": "echo 'No tests yet' && exit 0"
   },
   "dependencies": {
-    "@letbuyy/infrastructure": "workspace:*"
+    "@letbuyy/event-core": "workspace:*",
+    "@letbuyy/infrastructure": "workspace:*",
+    "@letbuyy/notification-core": "workspace:*",
+    "@letbuyy/orchestration": "workspace:*",
+    "@letbuyy/runtime-composition": "workspace:*"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260524.1",

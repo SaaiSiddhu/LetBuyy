@@ -1067,9 +1067,21 @@ importers:
 
   services/queue-workers:
     dependencies:
+      '@letbuyy/event-core':
+        specifier: workspace:*
+        version: link:../../packages/event-core
       '@letbuyy/infrastructure':
         specifier: workspace:*
         version: link:../../packages/infrastructure
+      '@letbuyy/notification-core':
+        specifier: workspace:*
+        version: link:../../packages/notification-core
+      '@letbuyy/orchestration':
+        specifier: workspace:*
+        version: link:../../packages/orchestration
+      '@letbuyy/runtime-composition':
+        specifier: workspace:*
+        version: link:../../packages/runtime-composition
     devDependencies:
       '@cloudflare/workers-types':
         specifier: ^4.20260524.1

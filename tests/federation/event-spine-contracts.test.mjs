@@ -6,6 +6,8 @@ const EVENT_CORE = 'packages/event-core/src/index.ts';
 const ORCHESTRATION_EVENTS = 'packages/orchestration/src/event-runtime.ts';
 const GATEWAY_EVENT_ADAPTER = 'services/api-gateway/src/execution/event-execution.adapter.ts';
 const QUEUE_EXECUTION_ADAPTER = 'services/api-gateway/src/execution/queue-execution.adapter.ts';
+const QUEUE_WORKER_CONSUMER = 'services/queue-workers/src/platform-queue-consumer.ts';
+const QUEUE_WORKER_ENTRYPOINT = 'services/queue-workers/src/index.ts';
 const NOTIFICATION_CORE = 'packages/notification-core/src/index.ts';
 const PRODUCT_ROUTE = 'services/api-gateway/src/routes/products.ts';
 const ORDER_ROUTE = 'services/api-gateway/src/routes/orders.ts';
@@ -87,6 +89,8 @@ test('orchestration queue fanout uses event-core contracts before legacy prefix 
 
 test('queue consumers drive analytics, search, notifications, and payout ledger side effects', () => {
   const queueSource = read(QUEUE_EXECUTION_ADAPTER);
+  const queueWorkerSource = read(QUEUE_WORKER_CONSUMER);
+  const queueWorkerEntrypoint = read(QUEUE_WORKER_ENTRYPOINT);
   const notificationSource = read(NOTIFICATION_CORE);
   const baselineSchema = read(BASELINE_SCHEMA);
 
@@ -100,6 +104,17 @@ test('queue consumers drive analytics, search, notifications, and payout ledger 
   assert.match(queueSource, /processPaymentJob/);
   assert.match(queueSource, /partner_payout_ledger_entries/);
   assert.match(queueSource, /eventType: 'payout\.ledger_entry\.created'/);
+
+  assert.match(queueWorkerEntrypoint, /consumePlatformQueuesForCloudflareQueue/);
+  assert.match(queueWorkerSource, /claim_platform_queue_jobs/);
+  assert.match(queueWorkerSource, /type PlatformQueueName = 'analytics-events' \| 'search-indexing' \| 'payment-events'/);
+  assert.match(queueWorkerSource, /from\('analytics_event_stream'\)/);
+  assert.match(queueWorkerSource, /from\('search_documents'\)/);
+  assert.match(queueWorkerSource, /from\('notifications'\)\.insert/);
+  assert.match(queueWorkerSource, /partner_payout_ledger_entries/);
+  assert.match(queueWorkerSource, /eventType: 'payout\.ledger_entry\.created'/);
+  assert.match(queueWorkerSource, /complete_platform_queue_job/);
+  assert.match(queueWorkerSource, /fail_platform_queue_job/);
 
   assert.match(notificationSource, /export function planInAppNotificationForEvent/);
   assert.match(notificationSource, /case 'order\.created'/);

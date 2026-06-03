@@ -1,4 +1,5 @@
 import { insertSupabaseRows, upsertSupabaseRows, type SupabaseServiceEnv } from '@letbuyy/infrastructure/supabase-adapter';
+import { consumePlatformQueuesForCloudflareQueue } from './platform-queue-consumer';
 
 type QueuePayload = {
   messageId?: string;
@@ -24,6 +25,7 @@ export interface Env extends SupabaseServiceEnv {
   RUNTIME_NAME?: string;
   PRIMARY_REGION?: string;
   FAILOVER_REGION?: string;
+  PLATFORM_QUEUE_CLAIM_LIMIT?: string;
 }
 
 function stringValue(value: unknown, fallback: string): string {
@@ -129,13 +131,14 @@ async function recordQueueLagMetric(
   });
 }
 
-async function handleMessage(env: Env, batch: MessageBatch<QueuePayload | Record<string, unknown>>, message: QueueBatchMessage): Promise<void> {
+async function handleMessage(env: Env, batch: MessageBatch<QueuePayload | Record<string, unknown>>, message: QueueBatchMessage): Promise<Required<QueuePayload>> {
   const normalized = normalizePayload(message, batch);
   const status = batch.queue.includes('dead-letters') ? 'dead-lettered' : 'completed';
 
   await persistQueueMessage(env, normalized, status);
   await recordQueueMetric(env, normalized, status);
   await recordQueueLagMetric(env, normalized, message);
+  return normalized;
 }
 
 function writeQueueLog(level: 'info' | 'error', fields: Record<string, unknown>): void {
@@ -157,12 +160,18 @@ export default {
   async queue(batch, env) {
     for (const message of batch.messages) {
       try {
-        await handleMessage(env, batch, message);
+        const normalized = await handleMessage(env, batch, message);
+        const platformQueueResult = await consumePlatformQueuesForCloudflareQueue(env, {
+          cloudflareQueueName: batch.queue,
+          bodyQueueName: normalized.queueName,
+          workerId: `cloudflare:${batch.queue}:${message.id}`,
+        });
         message.ack();
         writeQueueLog('info', {
           queue_name: batch.queue,
           message_id: message.id,
           status: 'acked',
+          platform_queue_result: platformQueueResult,
         });
       } catch (error) {
         message.retry();

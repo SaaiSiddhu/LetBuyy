@@ -1,23 +1,25 @@
 # CODEX MASTER EXECUTION LEDGER - started 2026-06-03T12:01:23Z
 
 ## CURRENT STAGE
-- Stage: STAGE 1 - WS7 Production Hardening.
-- Active task: P4 - scaffold service readiness review on branch `stream/master-execution`.
-- Scope lock: edit only required ledgers plus WS7-owned backend paths (`services/**`, `database/**`, `packages/infrastructure/**`, `scripts/dev/**`) until the Stage 1 gate is complete.
+- Stage: STAGE 2 - WS1 Design System.
+- Active task: Stage 2 mission intake pending on branch `stream/master-execution`.
+- Scope lock: Stage 1 WS7 is complete except human-gated provider/prod items. Stage 2 must follow the design-system mission and its local DO-NOT-TOUCH boundaries.
 
 ## BASELINE CONTEXT
 - Existing branch state before this ledger: `stream/master-execution` was created from `develop`; the worktree already contained many user-owned UI/mobile/design-system modifications and two WS7-owned modified files (`services/api-gateway/src/middleware/rateLimit.ts`, `services/api-gateway/src/routes/auth.ts`).
 - Existing production evidence: `CODEX_PRODUCTION_LEDGER.md` records June 2 PASS evidence for fresh baseline replay, `pnpm run federation:local:up`, J1-J5 real-stack Playwright, COD/GST, network-free build, 128/128 governance, typecheck, lint, build, and node tests. `CODEX_PRODUCTION_STATUS.md` remains `BLOCKED - AWAITING HUMAN` only because Cashfree sandbox charge/webhook proof and production credentials/policy decisions are human-gated.
 
 ## STAGE GATES
-- STAGE 1 WS7 Production Hardening: IN PROGRESS. P1 real stack, P2 payments, and P3 build stability are proven or human-gated where credentials are required; P4 scaffold services remain next.
-- STAGE 2 WS1 Design System: PENDING.
+- STAGE 1 WS7 Production Hardening: DONE / HUMAN-GATED FOR LIVE PROVIDERS ONLY. P1 real stack, P2 COD/GST/Cashfree code path, P3 build stability, and P4 queue-worker scaffold advancement are proven. Cashfree sandbox charge/webhook and live production provisioning remain `[SKIP - NEEDS HUMAN]`.
+- STAGE 2 WS1 Design System: NEXT.
 - STAGE 3 WS9/WS2/WS5: PENDING.
 - STAGE 4 WS6/WS3/WS4: PENDING.
 - STAGE 5 WS8 Mobile Parity: PENDING.
 - STAGE 6 WS10 Developer Ecosystem: PENDING.
 
 ## PROGRESS LOG
+- 2026-06-03T12:37:15Z [STAGE 1 GATE] WS7 Production Hardening gate - DONE / HUMAN-GATED FOR LIVE PROVIDERS ONLY. Evidence: J1-J5 real-stack Playwright -> 5/5 PASS; COD/GST node tests -> 7/7 PASS; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); final escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` after P4 code -> PASS (57/57); generated artifact scan -> no generated directories; final `pnpm run validate:governance` -> PASS (128/128 validators). Remaining unexecuted items require Cashfree/provider credentials, production/staging infrastructure, or explicit service activation decisions.
+- 2026-06-03T12:36:20Z [STAGE 1/P4] Queue-worker scaffold service advancement - DONE. Evidence: added `services/queue-workers/src/platform-queue-consumer.ts` so the Cloudflare Queue worker claims durable `platform_queue_jobs` and processes analytics rollups/event stream rows, search projections, in-app notification side effects, app-charge payout ledger rows, and follow-up `payout.ledger_entry.created` outbox events through package-owned planners/contracts. Updated queue-worker package/runtime manifest dependencies and event-spine contract tests. `node --test tests/federation/event-spine-contracts.test.mjs` -> PASS (14/14); `pnpm --filter @letbuyy/queue-workers typecheck` -> PASS; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run validate:governance` -> PASS (128/128).
 - 2026-06-03T12:22:01Z [STAGE 1/P3] Build stability and self-hosted font proof - DONE. Evidence: first build attempt failed because generated app-local dependency links had been removed for governance cleanup; `pnpm install --offline --force` failed on a missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` failed on registry DNS; escalated `pnpm install --force` restored workspace links without downloading packages. Sandbox `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` then failed only because Turbopack could not bind a local worker port in the sandbox; escalated rerun of the same build -> PASS (57/57 tasks, no network font fetch). `rg -n "next/font/google|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com" apps packages services config --glob '!**/.next/**' --glob '!**/node_modules/**' --glob '!**/dist/**'` -> no matches. Generated build/cache/dependency artifacts were removed; artifact scan returned no directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:03:45Z [STAGE 1/P2] India payments source/test review - PARTIAL PASS / HUMAN-GATED. Evidence: J4 from the current real-stack suite created real COD orders, verified `pending_cod`, merchant confirmation, intra-state CGST/SGST, inter-state IGST, event spine, and queue jobs. `node --test tests/gst/gst-invoice.test.mjs tests/billing/subscription-checkout.test.mjs` -> 7/7 PASS. Source inspection confirms `packages/infrastructure/cod-adapter` implements the payment provider contract and `packages/infrastructure/cashfree-adapter` implements create order, verify, capture, refund, and HMAC webhook verification; gateway Cashfree create/verify routes recalculate order totals and claim idempotency before provider calls. Cashfree sandbox charge/webhook proof remains `[SKIP - NEEDS HUMAN]` because credentials/webhook dashboard access are not available.
 - 2026-06-03T12:03:25Z [STAGE 1/P1] Post-commit governance - DONE. Evidence: after commit `ce9f9de`, `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -31,8 +33,15 @@
 - [SKIP] Cashfree sandbox charge and webhook provider proof - requires Cashfree sandbox `CASHFREE_APP_ID`, `CASHFREE_SECRET_KEY`, and a Cashfree dashboard webhook pointed at the local/staging webhook service. This is carried forward from `CODEX_PRODUCTION_LEDGER.md`; code path exists but provider proof cannot be executed without credentials.
 - [SKIP] Production/staging database provisioning from baseline - requires brand-new Supabase projects and explicit human approval before applying `database/supabase/migrations/000_baseline.sql` and forward migrations outside throwaway local databases.
 - [SKIP] Cloudflare/Vercel deployment, Resend production email, social OAuth, Razorpay live payments, and partner payout rails - require provider credentials, dashboard setup, and/or policy decisions. Details are carried forward in `CODEX_PRODUCTION_LEDGER.md`.
+- [SKIP] Standalone activation of reserved/incubating service roots (`services/analytics-pipeline`, `services/search-service`, `services/notification-service`, `services/media-service`, `services/event-bus`, `services/checkout-runtime`) - requires an explicit human/governance decision to promote each root from reserved/incubating status to active package authority with package manifests, deployment configs, service contracts, queue/provider policies, and provider/storage credentials where applicable. Queue-worker now covers the unblocked durable event-spine consumers for analytics/search/notifications/payout.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T12:37:15Z [Stage 1 final validation] generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-03T12:36:55Z [Stage 1 final build] `CI=true pnpm install --frozen-lockfile` -> PASS; escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> PASS (57/57 tasks).
+- 2026-06-03T12:35:40Z [P4 lint] `pnpm run lint` -> PASS (8/8 tasks; warnings only, no errors); lint-created `.turbo` artifacts were removed.
+- 2026-06-03T12:34:55Z [P4 validation] generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-03T12:34:05Z [P4 typecheck/tests] `pnpm --filter @letbuyy/queue-workers typecheck` -> PASS; `node --test tests/federation/event-spine-contracts.test.mjs` -> PASS (14/14); `pnpm turbo typecheck` -> PASS (57/57 tasks).
+- 2026-06-03T12:33:10Z [P4 dependency restoration] `CI=true pnpm install --no-frozen-lockfile` in sandbox -> FAIL due registry DNS after interactive prompt; escalated rerun -> PASS, lockfile scoped to queue-worker workspace dependencies only. Later `CI=true pnpm install --frozen-lockfile` -> PASS before final build.
 - 2026-06-03T12:21:55Z [P3 validation] `pnpm run validate:governance` -> PASS (128/128 validators) after generated artifact cleanup.
 - 2026-06-03T12:21:45Z [P3 cleanup] generated artifact scan after cleanup -> no generated app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories.
 - 2026-06-03T12:21:20Z [P3 fonts] `rg -n "next/font/google|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com" apps packages services config --glob '!**/.next/**' --glob '!**/node_modules/**' --glob '!**/dist/**'` -> no matches.
