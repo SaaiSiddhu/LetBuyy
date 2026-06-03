@@ -4461,6 +4461,11 @@ body {
   background: var(--bg-secondary, #f4f4f5);
 }
 
+.te-search-icon {
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
 .te-left-sidebar-search-input {
   flex: 1;
   border: none;

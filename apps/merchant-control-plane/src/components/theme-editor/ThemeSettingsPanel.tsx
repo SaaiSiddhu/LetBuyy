@@ -31,9 +31,9 @@ export default function ThemeSettingsPanel({ themeSettings, settingsSchema, onSe
                                 className={`te-theme-group-toggle ${isExpanded ? 'te-theme-group-toggle--open' : ''}`}
                                 onClick={() => setExpandedGroup(isExpanded ? null : groupKey)}
                             >
-                                <MaterialIcon name={groupKey === 'colors' ? 'palette' : groupKey === 'typography' ? 'text_fields' : groupKey === 'layout' ? 'dashboard' : groupKey === 'header' ? 'web_asset' : 'view_stream'} style={{ fontSize: '18px' }} />
+                                <MaterialIcon name={groupKey === 'colors' ? 'palette' : groupKey === 'typography' ? 'text_fields' : groupKey === 'layout' ? 'dashboard' : groupKey === 'header' ? 'web_asset' : 'view_stream'} size={18} />
                                 <span className="te-theme-group-label">{group.label}</span>
-                                <MaterialIcon name={isExpanded ? 'expand_less' : 'expand_more'} className="te-theme-group-arrow" style={{ fontSize: '16px' }} />
+                                <MaterialIcon name={isExpanded ? 'expand_less' : 'expand_more'} className="te-theme-group-arrow" size={16} />
                             </button>
 
                             {isExpanded && (

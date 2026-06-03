@@ -55,9 +55,9 @@ export default function EditorHeader({
             {/* Center: Page selector */}
             <div className="te-header-center">
                 <div className="te-header-page-selector">
-                    <MaterialIcon name="description" style={{ fontSize: '18px' }} />
+                    <MaterialIcon name="description" size={18} />
                     <span>Home page</span>
-                    <MaterialIcon name="expand_more" style={{ fontSize: '16px' }} />
+                    <MaterialIcon name="expand_more" size={16} />
                 </div>
             </div>
 

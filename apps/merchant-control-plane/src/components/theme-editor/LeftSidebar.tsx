@@ -45,7 +45,7 @@ export default function LeftSidebar({
 
             {/* Search */}
             <div className="te-left-sidebar-search">
-                <MaterialIcon name="search" style={{ fontSize: '16px', color: 'var(--clr-text-secondary)' }} />
+                <MaterialIcon name="search" className="te-search-icon" size={16} />
                 <input
                     type="text"
                     placeholder="Filter sections…"
@@ -100,7 +100,7 @@ export default function LeftSidebar({
                 )}
 
                 <button className="te-add-section-btn" onClick={onAddSection}>
-                    <MaterialIcon name="add" style={{ fontSize: '18px' }} />
+                    <MaterialIcon name="add" size={18} />
                     Add section
                 </button>
             </div>

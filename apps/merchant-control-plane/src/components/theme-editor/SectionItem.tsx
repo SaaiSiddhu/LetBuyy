@@ -32,7 +32,7 @@ export default function SectionItem({
         >
             {/* Drag handle */}
             <span className={`te-section-item-drag ${isPinned ? 'te-section-item-drag--disabled' : ''}`}>
-                <MaterialIcon name="drag_indicator" style={{ fontSize: '16px' }} />
+                <MaterialIcon name="drag_indicator" size={16} />
             </span>
 
             {/* Section name */}
@@ -41,7 +41,7 @@ export default function SectionItem({
             {/* Selected indicator */}
             {isSelected && (
                 <span className="te-section-item-indicator">
-                    <MaterialIcon name="chevron_left" style={{ fontSize: '14px' }} />
+                    <MaterialIcon name="chevron_left" size={14} />
                 </span>
             )}
 
@@ -52,7 +52,7 @@ export default function SectionItem({
                     onClick={onToggleVisibility}
                     title={section.visible ? 'Hide section' : 'Show section'}
                 >
-                    <MaterialIcon name={section.visible ? 'visibility' : 'visibility_off'} style={{ fontSize: '16px' }} />
+                    <MaterialIcon name={section.visible ? 'visibility' : 'visibility_off'} size={16} />
                 </button>
 
                 {onDelete && !isPinned && (
@@ -61,7 +61,7 @@ export default function SectionItem({
                         onClick={onDelete}
                         title="Remove section"
                     >
-                        <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
+                        <MaterialIcon name="delete" size={16} />
                     </button>
                 )}
             </div>

@@ -150,7 +150,7 @@ function BlockEditor({
                         className="te-block-editor-add"
                         onClick={() => onAddBlock(section.id, blockType)}
                     >
-                        <MaterialIcon name="add" style={{ fontSize: '16px' }} />
+                        <MaterialIcon name="add" size={16} />
                         Add {blockSchema.name}
                     </button>
                 ))}
@@ -186,7 +186,7 @@ function BlockCard({
                         className="te-block-card-delete"
                         onClick={() => onDeleteBlock(sectionId, block.id)}
                     >
-                        <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
+                        <MaterialIcon name="delete" size={16} />
                     </button>
                 </div>
                 <EmptyState
@@ -209,7 +209,7 @@ function BlockCard({
                     onClick={() => onDeleteBlock(sectionId, block.id)}
                     title="Remove block"
                 >
-                    <MaterialIcon name="delete" style={{ fontSize: '16px' }} />
+                    <MaterialIcon name="delete" size={16} />
                 </button>
             </div>
             <SchemaFormRenderer

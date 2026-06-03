@@ -311,7 +311,7 @@ function ImageInput({ label, value, onChange, storeName, helpText }: { label: st
                             onClick={(e) => { e.preventDefault(); onChange('') }}
                             title="Remove image"
                         >
-                            <MaterialIcon name="close" style={{ fontSize: '14px' }} />
+                            <MaterialIcon name="close" size={14} />
                         </button>
                     </div>
                 ) : null}
@@ -323,7 +323,7 @@ function ImageInput({ label, value, onChange, storeName, helpText }: { label: st
                     onChange={(e) => onChange(e.target.value)}
                 />
                 <label className={`te-field-upload-btn ${isUploading ? 'te-field-upload-btn--busy' : ''}`}>
-                    <MaterialIcon name={isUploading ? 'hourglass_top' : 'cloud_upload'} style={{ fontSize: '16px' }} />
+                    <MaterialIcon name={isUploading ? 'hourglass_top' : 'cloud_upload'} size={16} />
                     {isUploading ? 'Uploading...' : 'Upload image'}
                     <input
                         className="te-field-file-input"

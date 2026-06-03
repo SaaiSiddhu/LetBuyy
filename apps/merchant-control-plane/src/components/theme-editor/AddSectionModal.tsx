@@ -35,7 +35,7 @@ export default function AddSectionModal({ open, sectionSchemas, existingSectionT
                 </div>
 
                 <div className="te-modal-search">
-                    <MaterialIcon name="search" style={{ fontSize: '16px', color: 'var(--clr-text-secondary)' }} />
+                    <MaterialIcon name="search" className="te-search-icon" size={16} />
                     <input
                         type="text"
                         placeholder="Search sections…"
