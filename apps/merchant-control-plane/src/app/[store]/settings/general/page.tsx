@@ -31,6 +31,11 @@ interface GeneralData {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
+
 const currencyOptions = [
     { value: 'INR', label: 'Indian Rupee (INR)' },
     { value: 'USD', label: 'US Dollar (USD)' },
@@ -55,6 +60,15 @@ const emptyGeneralData: GeneralData = {
     currency: 'INR',
     locale: DEFAULT_ADMIN_LOCALE,
     site_type: 'store',
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
 function readString(record: Record<string, unknown>, key: string, fallback = '') {
@@ -99,13 +113,13 @@ export default function GeneralSettingsPage() {
                 cache: 'no-store',
                 signal,
             })
-            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to load general settings')
+                throw new Error(getPayloadError(payload, 'Unable to load general settings'))
             }
 
-            const storeData = payload.data
+            const storeData = isRecord(payload?.data) ? payload.data : null
             if (!storeData) {
                 throw new Error('General settings were not returned for this store')
             }
@@ -170,10 +184,10 @@ export default function GeneralSettingsPage() {
                     locale: data.locale,
                 }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save general settings')
+                throw new Error(getPayloadError(payload, 'Unable to save general settings'))
             }
 
             setInitialData(data)
@@ -213,10 +227,10 @@ export default function GeneralSettingsPage() {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'DELETE',
             })
-            const payload = await response.json().catch(() => ({})) as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to delete store')
+                throw new Error(getPayloadError(payload, 'Unable to delete store'))
             }
 
             notify({

@@ -23,6 +23,20 @@ interface DomainStoreData {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
 function readString(record: Record<string, unknown>, key: string, fallback = '') {
     const value = record[key]
     return typeof value === 'string' ? value : fallback
@@ -55,13 +69,13 @@ export default function DomainSettingsPage() {
                 cache: 'no-store',
                 signal,
             })
-            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to load domain settings')
+                throw new Error(getPayloadError(payload, 'Unable to load domain settings'))
             }
 
-            const data = payload.data
+            const data = isRecord(payload?.data) ? payload.data : null
             if (!data) {
                 throw new Error('Domain settings were not returned for this store')
             }
@@ -112,10 +126,10 @@ export default function DomainSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ custom_domain: normalizedDomain || null }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save domain settings')
+                throw new Error(getPayloadError(payload, 'Unable to save domain settings'))
             }
 
             setStoreData((current) => ({ ...current, custom_domain: normalizedDomain }))
