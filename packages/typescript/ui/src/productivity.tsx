@@ -182,12 +182,22 @@ export interface PaginationProps {
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    ariaLabel?: string;
     previousLabel?: string;
     nextLabel?: string;
+    firstLabel?: string;
+    lastLabel?: string;
     pageLabel?: (page: number, totalPages: number) => string;
     showPageNumbers?: boolean;
+    showBoundaryControls?: boolean;
     siblingCount?: number;
     compact?: boolean;
+    disabled?: boolean;
+    summary?: React.ReactNode;
+    pageSize?: number;
+    pageSizeOptions?: number[];
+    onPageSizeChange?: (pageSize: number) => void;
+    pageSizeLabel?: string;
     className?: string;
 }
 
@@ -205,62 +215,123 @@ export function Pagination({
     page,
     totalPages,
     onPageChange,
+    ariaLabel = 'Pagination',
     previousLabel = 'Previous',
     nextLabel = 'Next',
+    firstLabel = 'First page',
+    lastLabel = 'Last page',
     pageLabel = (currentPage, pageCount) => `Page ${currentPage} of ${pageCount}`,
     showPageNumbers = false,
+    showBoundaryControls = false,
     siblingCount = 1,
     compact = false,
+    disabled = false,
+    summary,
+    pageSize,
+    pageSizeOptions = [],
+    onPageSizeChange,
+    pageSizeLabel = 'Rows per page',
     className = '',
 }: PaginationProps) {
     const pages = paginationRange(page, totalPages, siblingCount);
+    const canGoPrevious = page > 1 && !disabled;
+    const canGoNext = page < totalPages && !disabled;
 
     return (
-        <nav className={cx('flex items-center justify-between gap-[var(--lb-space-3)]', className)} aria-label="Pagination">
-            <button
-                type="button"
-                className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
-                onClick={() => onPageChange(Math.max(page - 1, 1))}
-                disabled={page <= 1}
-                aria-label={previousLabel}
-            >
-                <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                {!compact && previousLabel}
-            </button>
-            {showPageNumbers ? (
-                <div className="flex items-center gap-[var(--lb-space-1)]">
-                    {pages.map((item) => (
-                        <button
-                            key={item}
-                            type="button"
-                            className={cx(
-                                'inline-flex h-[var(--lb-size-control-md)] min-w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
-                                item === page
-                                    ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
-                                    : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
-                            )}
-                            aria-current={item === page ? 'page' : undefined}
-                            onClick={() => onPageChange(item)}
-                        >
-                            {item}
-                        </button>
-                    ))}
+        <nav className={cx('flex flex-wrap items-center justify-between gap-[var(--lb-space-3)]', className)} aria-label={ariaLabel} aria-disabled={disabled || undefined}>
+            {summary && (
+                <div className="min-w-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {summary}
                 </div>
-            ) : (
-                <span className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]" aria-current="page">
-                    {pageLabel(page, totalPages)}
-                </span>
             )}
-            <button
-                type="button"
-                className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
-                onClick={() => onPageChange(Math.min(page + 1, totalPages))}
-                disabled={page >= totalPages}
-                aria-label={nextLabel}
-            >
-                {!compact && nextLabel}
-                <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-            </button>
+            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                {showBoundaryControls && (
+                    <button
+                        type="button"
+                        className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                        onClick={() => onPageChange(1)}
+                        disabled={!canGoPrevious}
+                        aria-label={firstLabel}
+                    >
+                        <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        <ChevronLeft className="-ml-[var(--lb-space-2)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        {!compact && firstLabel}
+                    </button>
+                )}
+                <button
+                    type="button"
+                    className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                    onClick={() => onPageChange(Math.max(page - 1, 1))}
+                    disabled={!canGoPrevious}
+                    aria-label={previousLabel}
+                >
+                    <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                    {!compact && previousLabel}
+                </button>
+                {showPageNumbers ? (
+                    <div className="flex items-center gap-[var(--lb-space-1)]">
+                        {pages.map((item) => (
+                            <button
+                                key={item}
+                                type="button"
+                                className={cx(
+                                    'inline-flex h-[var(--lb-size-control-md)] min-w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50',
+                                    item === page
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                        : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                )}
+                                aria-current={item === page ? 'page' : undefined}
+                                disabled={disabled}
+                                onClick={() => onPageChange(item)}
+                            >
+                                {item}
+                            </button>
+                        ))}
+                    </div>
+                ) : (
+                    <span className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]" aria-current="page">
+                        {pageLabel(page, totalPages)}
+                    </span>
+                )}
+                <button
+                    type="button"
+                    className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                    onClick={() => onPageChange(Math.min(page + 1, totalPages))}
+                    disabled={!canGoNext}
+                    aria-label={nextLabel}
+                >
+                    {!compact && nextLabel}
+                    <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                </button>
+                {showBoundaryControls && (
+                    <button
+                        type="button"
+                        className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                        onClick={() => onPageChange(totalPages)}
+                        disabled={!canGoNext}
+                        aria-label={lastLabel}
+                    >
+                        {!compact && lastLabel}
+                        <ChevronRight className="-mr-[var(--lb-space-2)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                    </button>
+                )}
+                {pageSizeOptions.length > 0 && onPageSizeChange && (
+                    <label className="inline-flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        {!compact && <span>{pageSizeLabel}</span>}
+                        <select
+                            className="h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                            value={pageSize}
+                            onChange={(event) => onPageSizeChange(Number(event.target.value))}
+                            disabled={disabled}
+                        >
+                            {pageSizeOptions.map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                            ))}
+                        </select>
+                    </label>
+                )}
+            </div>
         </nav>
     );
 }
@@ -269,6 +340,9 @@ export interface IndexTableColumn<T> {
     key: string;
     header: string;
     sortable?: boolean;
+    align?: 'start' | 'center' | 'end';
+    className?: string;
+    width?: string;
     render?: (row: T, index: number) => React.ReactNode;
 }
 
@@ -276,13 +350,18 @@ export interface IndexTableBulkAction<T> {
     label: string;
     onAction: (rows: T[]) => void;
     destructive?: boolean;
+    disabled?: boolean;
+    ariaLabel?: string;
 }
 
 export interface IndexTableProps<T extends { id: string }> {
     columns: IndexTableColumn<T>[];
     rows: T[];
     loading?: boolean;
+    loadingLabel?: string;
     emptyState?: React.ReactNode;
+    caption?: string;
+    ariaLabel?: string;
     savedViews?: Array<{ label: string; value: string; count?: number }>;
     activeView?: string;
     onViewChange?: (value: string) => void;
@@ -292,14 +371,41 @@ export interface IndexTableProps<T extends { id: string }> {
     sortDirection?: 'asc' | 'desc';
     onSort?: (key: string) => void;
     onRowClick?: (row: T) => void;
+    rowActions?: (row: T, index: number) => React.ReactNode;
+    selectable?: boolean;
+    selectedRowIds?: string[];
+    defaultSelectedRowIds?: string[];
+    onSelectionChange?: (selectedRowIds: string[], selectedRows: T[]) => void;
+    isRowDisabled?: (row: T, index: number) => boolean;
+    selectedLabel?: (count: number) => React.ReactNode;
+    selectAllLabel?: string;
+    selectRowLabel?: (row: T, index: number) => string;
+    density?: 'compact' | 'comfortable';
+    stickyHeader?: boolean;
     className?: string;
 }
+
+const indexTableCellDensity: Record<NonNullable<IndexTableProps<{ id: string }>['density']>, string> = {
+    compact: 'px-[var(--lb-space-3)] py-[var(--lb-space-2)]',
+    comfortable: 'px-[var(--lb-space-3)] py-[var(--lb-space-3)]',
+};
+
+const indexTableAlign: Record<NonNullable<IndexTableColumn<{ id: string }>['align']>, string> = {
+    start: 'text-left',
+    center: 'text-center',
+    end: 'text-right',
+};
+
+const indexTableCheckboxClassName = 'h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] rounded-[var(--lb-radius-sm)] border-[var(--lb-color-border)] accent-[var(--lb-color-action-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50';
 
 export function IndexTable<T extends { id: string }>({
     columns,
     rows,
     loading = false,
+    loadingLabel = 'Loading rows',
     emptyState,
+    caption,
+    ariaLabel,
     savedViews = [],
     activeView,
     onViewChange,
@@ -309,24 +415,56 @@ export function IndexTable<T extends { id: string }>({
     sortDirection,
     onSort,
     onRowClick,
+    rowActions,
+    selectable = true,
+    selectedRowIds,
+    defaultSelectedRowIds = [],
+    onSelectionChange,
+    isRowDisabled,
+    selectedLabel = (count) => `${count} selected`,
+    selectAllLabel = 'Select all rows',
+    selectRowLabel = (_row, index) => `Select row ${index + 1}`,
+    density = 'comfortable',
+    stickyHeader = false,
     className = '',
 }: IndexTableProps<T>) {
-    const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
-    const selectedRows = rows.filter((row) => selectedIds.has(row.id));
-    const allSelected = rows.length > 0 && selectedIds.size === rows.length;
+    const [internalSelectedIds, setInternalSelectedIds] = useState<Set<string>>(() => new Set(defaultSelectedRowIds));
+    const controlledSelection = selectedRowIds !== undefined;
+    const selectedIds = controlledSelection ? new Set(selectedRowIds) : internalSelectedIds;
+    const rowEntries = rows.map((row, index) => ({
+        row,
+        index,
+        disabled: isRowDisabled?.(row, index) ?? false,
+    }));
+    const selectableRows = rowEntries.filter((entry) => !entry.disabled);
+    const selectedRows = rowEntries.filter((entry) => selectedIds.has(entry.row.id)).map((entry) => entry.row);
+    const allSelected = selectableRows.length > 0 && selectableRows.every((entry) => selectedIds.has(entry.row.id));
+    const someSelected = selectableRows.some((entry) => selectedIds.has(entry.row.id));
     const sortableColumns = columns.filter((column) => column.sortable);
+    const cellPadding = indexTableCellDensity[density];
+    const colSpan = columns.length + (selectable ? 1 : 0) + (rowActions ? 1 : 0);
 
-    const toggleAll = () => {
-        setSelectedIds(allSelected ? new Set() : new Set(rows.map((row) => row.id)));
+    const commitSelection = (nextIds: Set<string>) => {
+        if (!controlledSelection) setInternalSelectedIds(nextIds);
+        const nextIdList = Array.from(nextIds);
+        onSelectionChange?.(nextIdList, rows.filter((row) => nextIds.has(row.id)));
     };
 
-    const toggleRow = (id: string) => {
-        setSelectedIds((current) => {
-            const next = new Set(current);
-            if (next.has(id)) next.delete(id);
-            else next.add(id);
-            return next;
-        });
+    const toggleAll = () => {
+        if (allSelected) {
+            const selectableIdSet = new Set(selectableRows.map((entry) => entry.row.id));
+            commitSelection(new Set(Array.from(selectedIds).filter((id) => !selectableIdSet.has(id))));
+            return;
+        }
+        commitSelection(new Set([...Array.from(selectedIds), ...selectableRows.map((entry) => entry.row.id)]));
+    };
+
+    const toggleRow = (row: T, index: number) => {
+        if (isRowDisabled?.(row, index)) return;
+        const next = new Set(selectedIds);
+        if (next.has(row.id)) next.delete(row.id);
+        else next.add(row.id);
+        commitSelection(next);
     };
 
     return (
@@ -367,18 +505,20 @@ export function IndexTable<T extends { id: string }>({
             )}
             {selectedRows.length > 0 && bulkActions.length > 0 && (
                 <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
-                    <span className="text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]">{selectedRows.length} selected</span>
+                    <span className="text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]">{selectedLabel(selectedRows.length)}</span>
                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                         {bulkActions.map((action) => (
                             <button
                                 key={action.label}
                                 type="button"
                                 className={cx(
-                                    'h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
+                                    'h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] disabled:cursor-not-allowed disabled:opacity-50',
                                     action.destructive
                                         ? 'border-[var(--lb-color-critical)] text-[color:var(--lb-color-critical)] hover:bg-[var(--lb-color-critical-soft)]'
                                         : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface)]',
                                 )}
+                                disabled={action.disabled}
+                                aria-label={action.ariaLabel}
                                 onClick={() => action.onAction(selectedRows)}
                             >
                                 {action.label}
@@ -426,20 +566,25 @@ export function IndexTable<T extends { id: string }>({
                     </div>
                 ) : (
                     <div className="divide-y divide-[var(--lb-color-border)]">
-                        <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
-                            <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
-                            Select all visible rows
-                        </label>
-                        {rows.map((row, rowIndex) => (
-                            <article key={row.id} className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-3)]">
+                        {selectable && (
+                            <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                                <input type="checkbox" className={indexTableCheckboxClassName} checked={allSelected} aria-checked={someSelected && !allSelected ? 'mixed' : allSelected} onChange={toggleAll} aria-label={selectAllLabel} />
+                                Select all visible rows
+                            </label>
+                        )}
+                        {rowEntries.map(({ row, index: rowIndex, disabled: rowDisabled }) => (
+                            <article key={row.id} className={cx('grid gap-[var(--lb-space-3)] p-[var(--lb-space-3)]', rowDisabled && 'opacity-60', selectedIds.has(row.id) && 'bg-[var(--lb-color-primary-soft)]')}>
                                 <div className="flex items-start gap-[var(--lb-space-3)]">
-                                    <input
-                                        type="checkbox"
-                                        className="mt-[var(--lb-space-1)]"
-                                        checked={selectedIds.has(row.id)}
-                                        onChange={() => toggleRow(row.id)}
-                                        aria-label={`Select row ${rowIndex + 1}`}
-                                    />
+                                    {selectable && (
+                                        <input
+                                            type="checkbox"
+                                            className={cx(indexTableCheckboxClassName, 'mt-[var(--lb-space-1)]')}
+                                            checked={selectedIds.has(row.id)}
+                                            disabled={rowDisabled}
+                                            onChange={() => toggleRow(row, rowIndex)}
+                                            aria-label={selectRowLabel(row, rowIndex)}
+                                        />
+                                    )}
                                     <div className="min-w-0 flex-1">
                                         {columns[0]?.render ? columns[0].render(row, rowIndex) : String(row[columns[0]?.key as keyof T] ?? '')}
                                     </div>
@@ -458,15 +603,18 @@ export function IndexTable<T extends { id: string }>({
                                     ))}
                                 </dl>
 
-                                {onRowClick && (
+                                {(onRowClick || rowActions) && (
                                     <div className="flex justify-end">
-                                        <button
-                                            type="button"
-                                            className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                            onClick={() => onRowClick(row)}
-                                        >
-                                            Open
-                                        </button>
+                                        {rowActions ? rowActions(row, rowIndex) : (
+                                            <button
+                                                type="button"
+                                                className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                disabled={rowDisabled}
+                                                onClick={() => onRowClick?.(row)}
+                                            >
+                                                Open
+                                            </button>
+                                        )}
                                     </div>
                                 )}
                             </article>
@@ -475,18 +623,23 @@ export function IndexTable<T extends { id: string }>({
                 )}
             </div>
             <div className="hidden overflow-auto md:block">
-                <table className="w-full border-collapse text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                    <thead className="bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]">
+                <table className="w-full border-collapse text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]" aria-label={ariaLabel}>
+                    {caption && <caption className="sr-only">{caption}</caption>}
+                    <thead className={cx('bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]', stickyHeader && 'sticky top-0 z-10')}>
                         <tr>
-                            <th className="w-[var(--lb-size-control-lg)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left">
-                                <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
-                            </th>
+                            {selectable && (
+                                <th className={cx(cellPadding, 'w-[var(--lb-size-control-lg)] text-left')}>
+                                    <input type="checkbox" className={indexTableCheckboxClassName} checked={allSelected} aria-checked={someSelected && !allSelected ? 'mixed' : allSelected} onChange={toggleAll} aria-label={selectAllLabel} />
+                                </th>
+                            )}
                             {columns.map((column) => {
                                 const sorted = sortKey === column.key;
+                                const align = indexTableAlign[column.align ?? 'start'];
                                 return (
                                     <th
                                         key={column.key}
-                                        className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)]"
+                                        className={cx(cellPadding, align, 'font-[var(--lb-font-weight-medium)]', column.className)}
+                                        style={column.width ? { width: column.width } : undefined}
                                         aria-sort={sorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
                                     >
                                         {column.sortable ? (
@@ -508,41 +661,58 @@ export function IndexTable<T extends { id: string }>({
                                     </th>
                                 );
                             })}
+                            {rowActions && (
+                                <th className={cx(cellPadding, 'text-right font-[var(--lb-font-weight-medium)]')} scope="col">Actions</th>
+                            )}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--lb-color-border)]">
                         {loading ? (
                             <tr>
-                                <td colSpan={columns.length + 1} className="p-[var(--lb-space-5)]">
-                                    <Skeleton variant="table" lines={4} />
+                                <td colSpan={colSpan} className="p-[var(--lb-space-5)]" aria-label={loadingLabel}>
+                                    <Skeleton variant="table" lines={4} label={loadingLabel} />
                                 </td>
                             </tr>
                         ) : rows.length === 0 ? (
                             <tr>
-                                <td colSpan={columns.length + 1} className="p-[var(--lb-space-5)]">
+                                <td colSpan={colSpan} className="p-[var(--lb-space-5)]">
                                     {emptyState}
                                 </td>
                             </tr>
                         ) : (
-                            rows.map((row, index) => (
-                                <tr key={row.id} className="hover:bg-[var(--lb-color-surface-subdued)]">
-                                    <td className="px-[var(--lb-space-3)] py-[var(--lb-space-3)]">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedIds.has(row.id)}
-                                            onChange={() => toggleRow(row.id)}
-                                            aria-label={`Select row ${index + 1}`}
-                                        />
-                                    </td>
-                                    {columns.map((column) => (
-                                        <td
-                                            key={column.key}
-                                            className={cx('px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[color:var(--lb-color-text)]', onRowClick && 'cursor-pointer')}
-                                            onClick={() => onRowClick?.(row)}
-                                        >
-                                            {column.render ? column.render(row, index) : String(row[column.key as keyof T] ?? '')}
+                            rowEntries.map(({ row, index, disabled: rowDisabled }) => (
+                                <tr key={row.id} className={cx('hover:bg-[var(--lb-color-surface-subdued)]', selectedIds.has(row.id) && 'bg-[var(--lb-color-primary-soft)]', rowDisabled && 'opacity-60')} aria-selected={selectable ? selectedIds.has(row.id) : undefined}>
+                                    {selectable && (
+                                        <td className={cellPadding}>
+                                            <input
+                                                type="checkbox"
+                                                className={indexTableCheckboxClassName}
+                                                checked={selectedIds.has(row.id)}
+                                                disabled={rowDisabled}
+                                                onChange={() => toggleRow(row, index)}
+                                                aria-label={selectRowLabel(row, index)}
+                                            />
                                         </td>
-                                    ))}
+                                    )}
+                                    {columns.map((column) => {
+                                        const align = indexTableAlign[column.align ?? 'start'];
+                                        return (
+                                            <td
+                                                key={column.key}
+                                                className={cx(cellPadding, align, 'text-[color:var(--lb-color-text)]', onRowClick && !rowDisabled && 'cursor-pointer', column.className)}
+                                                onClick={() => {
+                                                    if (!rowDisabled) onRowClick?.(row);
+                                                }}
+                                            >
+                                                {column.render ? column.render(row, index) : String(row[column.key as keyof T] ?? '')}
+                                            </td>
+                                        );
+                                    })}
+                                    {rowActions && (
+                                        <td className={cx(cellPadding, 'text-right text-[color:var(--lb-color-text)]')} onClick={(event) => event.stopPropagation()}>
+                                            {rowActions(row, index)}
+                                        </td>
+                                    )}
                                 </tr>
                             ))
                         )}

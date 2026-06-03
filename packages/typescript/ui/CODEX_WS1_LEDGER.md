@@ -187,6 +187,30 @@ Implemented in this batch:
 - `DataTable`: added controlled/uncontrolled selection state, disabled-row selection guards, selected-row styling, select-all semantics, and bulk action surface.
 - Added `ActionInputTableHardening` Storybook story showing the batch 7 public API additions.
 
+## Batch 8 — Index Table and Pagination Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed, lockfile resolution skipped, 651 packages linked from existing store.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframe rendered `IndexTablePaginationHardening`.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--index-table-pagination-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-index-table-pagination-hardening.jpg` — passed.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-index-table-pagination-hardening.jpg`.
+- `pnpm run validate:governance` — passed; governance validation passed (128 validators).
+
+Implemented in this batch:
+- `Pagination`: added optional `ariaLabel`, `firstLabel`, `lastLabel`, `showBoundaryControls`, `disabled`, `summary`, `pageSize`, `pageSizeOptions`, `onPageSizeChange`, and `pageSizeLabel` props.
+- `Pagination`: added first/last controls, page-size select control, disabled-state guarding, and summary slot while preserving existing previous/next defaults.
+- `IndexTableColumn`: added optional `align`, `className`, and `width` fields.
+- `IndexTableBulkAction`: added optional `disabled` and `ariaLabel` fields.
+- `IndexTable`: added optional `loadingLabel`, `caption`, `ariaLabel`, `rowActions`, `selectable`, `selectedRowIds`, `defaultSelectedRowIds`, `onSelectionChange`, `isRowDisabled`, `selectedLabel`, `selectAllLabel`, `selectRowLabel`, `density`, and `stickyHeader` props.
+- `IndexTable`: added controlled/uncontrolled selection, disabled-row selection guards, selectable opt-out, row actions, selected-row styling, compact density, and table caption/label support.
+- Added `IndexTablePaginationHardening` Storybook story showing the batch 8 public API additions.
+
 ## Stable Public API
 
 Components:

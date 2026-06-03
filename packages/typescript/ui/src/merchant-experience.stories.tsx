@@ -1124,6 +1124,95 @@ export function ActionInputTableHardening() {
     );
 }
 
+export function IndexTablePaginationHardening() {
+    const [selectedProductIds, setSelectedProductIds] = useState<string[]>(['prod-1']);
+    const [page, setPage] = useState(2);
+    const [pageSize, setPageSize] = useState(25);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 8"
+                title="Index table and pagination hardening"
+                description="IndexTable and Pagination now support controlled table selection, disabled row safety, row actions, sticky headers, summaries, boundary controls, and page-size selection."
+                titleMetadata={<Badge label="Tables" variant="info" />}
+            />
+            <Card title="Controlled merchant index" description="Selection can be driven by the consuming app while disabled rows stay visible but protected." headerDivider>
+                <Section>
+                    <IndexTable
+                        caption="Controlled product index"
+                        ariaLabel="Controlled product index table"
+                        rows={sampleRows}
+                        selectedRowIds={selectedProductIds}
+                        onSelectionChange={setSelectedProductIds}
+                        selectedLabel={(count) => `${count} products selected`}
+                        selectAllLabel="Select all publishable products"
+                        selectRowLabel={(row) => `Select ${row.title}`}
+                        isRowDisabled={(row) => row.status === 'Draft'}
+                        density="compact"
+                        stickyHeader
+                        savedViews={[
+                            { label: 'All', value: 'all', count: 3 },
+                            { label: 'Active', value: 'active', count: 2 },
+                            { label: 'Draft', value: 'draft', count: 1 },
+                        ]}
+                        activeView="all"
+                        filterChips={[{ label: 'Channel: Online Store' }, { label: 'Inventory below 50' }]}
+                        bulkActions={[
+                            { label: 'Publish', onAction: () => undefined },
+                            { label: 'Export', onAction: () => undefined },
+                            { label: 'Archive', destructive: true, disabled: selectedProductIds.length < 2, onAction: () => undefined },
+                        ]}
+                        columns={[
+                            { key: 'title', header: 'Product', sortable: true, width: '34%' },
+                            { key: 'status', header: 'Status', render: (row) => <Badge label={row.status} variant={row.status === 'Active' ? 'success' : 'warning'} /> },
+                            { key: 'inventory', header: 'Inventory', sortable: true, align: 'end' },
+                            { key: 'channel', header: 'Channel' },
+                        ]}
+                        sortKey="title"
+                        sortDirection="asc"
+                        onSort={() => undefined}
+                        rowActions={(row) => (
+                            <Button size="sm" variant="ghost" trailingIcon={<MaterialIcon name="visibility" />}>
+                                View
+                                <span className="sr-only"> {row.title}</span>
+                            </Button>
+                        )}
+                    />
+                </Section>
+            </Card>
+            <Card title="Pagination command row" description="Pagination can expose summaries, first/last controls, compact mode, disabled states, and page-size changes." headerDivider>
+                <Section>
+                    <div className="grid gap-[var(--lb-space-4)]">
+                        <Pagination
+                            ariaLabel="Product index pagination"
+                            page={page}
+                            totalPages={9}
+                            onPageChange={setPage}
+                            showPageNumbers
+                            showBoundaryControls
+                            siblingCount={2}
+                            summary={<span>Showing 26-50 of 213 products</span>}
+                            pageSize={pageSize}
+                            pageSizeOptions={[10, 25, 50]}
+                            onPageSizeChange={setPageSize}
+                            pageSizeLabel="Products per page"
+                        />
+                        <Pagination
+                            page={1}
+                            totalPages={4}
+                            onPageChange={() => undefined}
+                            compact
+                            disabled
+                            summary={<span>Background sync is refreshing this list</span>}
+                        />
+                    </div>
+                </Section>
+            </Card>
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>
