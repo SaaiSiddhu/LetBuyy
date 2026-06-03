@@ -59,9 +59,6 @@ export default function RootLayout({
             `,
           }}
         />
-        <style suppressHydrationWarning dangerouslySetInnerHTML={{
-          __html: `html { background: #FFFFFF; } html.dark { background: #0A0F1A; }`
-        }} />
       </head>
       <body className="antialiased">
         <DesignSystemRoot surface="admin">
