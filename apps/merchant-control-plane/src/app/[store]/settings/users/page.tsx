@@ -34,7 +34,7 @@ interface Employee {
 }
 
 type StaffPayload = {
-    data?: Employee[] | Employee
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -55,6 +55,40 @@ const ROLE_OPTIONS = ROLES.map((role) => ({
 function getPayloadError(payload: StaffPayload | null, fallback: string) {
     if (!payload?.error) return fallback
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
+function readRole(value: unknown) {
+    const role = readString(value).trim().toLowerCase()
+    return ROLES.some((item) => item.value === role) ? role : 'viewer'
+}
+
+function readStatus(value: unknown) {
+    const status = readString(value).trim().toLowerCase()
+    return status || 'invited'
+}
+
+function normalizeEmployees(value: unknown): Employee[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((employee) => {
+        if (!isRecord(employee) || typeof employee.id !== 'string' || !employee.id || typeof employee.email !== 'string' || !employee.email) return []
+
+        return [{
+            id: employee.id,
+            email: employee.email,
+            role: readRole(employee.role),
+            status: readStatus(employee.status),
+            created_at: readString(employee.created_at),
+        }]
+    })
 }
 
 function getRoleLabel(role: string) {
@@ -110,7 +144,7 @@ export default function UsersSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load staff members'))
             }
 
-            setEmployees(Array.isArray(payload?.data) ? payload.data : [])
+            setEmployees(normalizeEmployees(payload?.data))
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load staff members'
             setLoadError(message)
