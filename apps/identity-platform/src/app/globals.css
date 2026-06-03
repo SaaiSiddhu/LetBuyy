@@ -521,6 +521,32 @@ body {
   cursor: not-allowed;
 }
 
+.auth-btn {
+  width: 100%;
+  padding: 13px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: var(--primary);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.auth-btn:hover {
+  background: var(--primary-dark);
+}
+
+.auth-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .auth-btn-secondary {
   width: 100%;
   padding: 12px;
