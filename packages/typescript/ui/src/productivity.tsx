@@ -9,6 +9,7 @@ import {
     Command,
     Loader2,
     Search,
+    X,
 } from './icons';
 import { Badge, Skeleton } from './feedback';
 import { cx } from './utils';
@@ -20,10 +21,43 @@ export interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
     delta?: string;
     deltaTone?: 'positive' | 'negative' | 'neutral';
     sparkline?: number[];
+    sparklineTone?: 'primary' | 'positive' | 'negative' | 'neutral';
+    sparklineLabel?: string;
     icon?: React.ReactNode;
+    action?: React.ReactNode;
+    footer?: React.ReactNode;
+    tone?: 'default' | 'subdued' | 'info' | 'success' | 'warning' | 'critical';
+    size?: 'sm' | 'md';
     loading?: boolean;
     loadingLabel?: string;
 }
+
+const metricCardToneStyles: Record<NonNullable<MetricCardProps['tone']>, string> = {
+    default: '',
+    subdued: 'bg-[var(--lb-color-surface-subdued)]',
+    info: 'border-[var(--lb-color-info)] bg-[var(--lb-color-info-soft)]',
+    success: 'border-[var(--lb-color-success)] bg-[var(--lb-color-success-soft)]',
+    warning: 'border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)]',
+    critical: 'border-[var(--lb-color-critical)] bg-[var(--lb-color-critical-soft)]',
+};
+
+const metricCardSizeStyles: Record<NonNullable<MetricCardProps['size']>, { container: string; value: string }> = {
+    sm: {
+        container: 'p-[var(--lb-space-4)]',
+        value: 'text-[length:var(--lb-font-size-heading)] leading-[var(--lb-line-height-heading)]',
+    },
+    md: {
+        container: 'p-[var(--lb-space-5)]',
+        value: 'text-[length:var(--lb-font-size-display)] leading-[var(--lb-line-height-display)]',
+    },
+};
+
+const metricCardSparklineToneStyles: Record<NonNullable<MetricCardProps['sparklineTone']>, string> = {
+    primary: 'text-[color:var(--lb-color-primary)]',
+    positive: 'text-[color:var(--lb-color-success)]',
+    negative: 'text-[color:var(--lb-color-critical)]',
+    neutral: 'text-[color:var(--lb-color-text-subdued)]',
+};
 
 export function MetricCard({
     label,
@@ -32,12 +66,19 @@ export function MetricCard({
     delta,
     deltaTone = 'neutral',
     sparkline,
+    sparklineTone = 'primary',
+    sparklineLabel,
     icon,
+    action,
+    footer,
+    tone = 'default',
+    size = 'md',
     loading = false,
     loadingLabel = 'Loading metric',
     className = '',
     ...props
 }: MetricCardProps) {
+    const sizeStyles = metricCardSizeStyles[size];
     const points = useMemo(() => {
         if (!sparkline || sparkline.length === 0) return '';
         const max = Math.max(...sparkline);
@@ -55,7 +96,9 @@ export function MetricCard({
     return (
         <div
             className={cx(
-                'rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] shadow-[var(--lb-shadow-sm)]',
+                'rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-sm)]',
+                sizeStyles.container,
+                metricCardToneStyles[tone],
                 className,
             )}
             aria-busy={loading || undefined}
@@ -71,12 +114,12 @@ export function MetricCard({
                     </div>
                     {loading ? (
                         <div className="space-y-[var(--lb-space-2)]" aria-label={loadingLabel}>
-                            <div className="h-[var(--lb-space-6)] w-28 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)]" />
-                            <div className="h-[var(--lb-space-3)] w-20 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)]" />
+                            <div className="h-[var(--lb-space-6)] w-28 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-border)]" />
+                            <div className="h-[var(--lb-space-3)] w-20 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-border)]" />
                         </div>
                     ) : (
                         <>
-                            <p className="m-0 text-[length:var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[color:var(--lb-color-text)]">
+                            <p className={cx('m-0 font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]', sizeStyles.value)}>
                                 {value}
                             </p>
                             {secondaryValue && (
@@ -99,12 +142,28 @@ export function MetricCard({
                         </p>
                     )}
                 </div>
-                {points && (
-                    <svg viewBox="0 0 100 48" className="h-[var(--lb-size-metric-sparkline-height)] w-[var(--lb-size-metric-sparkline-width)] text-[color:var(--lb-color-primary)]" aria-hidden="true">
-                        <polyline points={points} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
+                {(action || points) && (
+                    <div className="flex shrink-0 flex-col items-end gap-[var(--lb-space-3)]">
+                        {action && <div className="shrink-0">{action}</div>}
+                        {points && (
+                            <svg
+                                viewBox="0 0 100 48"
+                                className={cx('h-[var(--lb-size-metric-sparkline-height)] w-[var(--lb-size-metric-sparkline-width)]', metricCardSparklineToneStyles[sparklineTone])}
+                                role={sparklineLabel ? 'img' : undefined}
+                                aria-label={sparklineLabel}
+                                aria-hidden={sparklineLabel ? undefined : true}
+                            >
+                                <polyline points={points} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        )}
+                    </div>
                 )}
             </div>
+            {footer && (
+                <div className="mt-[var(--lb-space-4)] border-t border-[var(--lb-color-border)] pt-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {footer}
+                </div>
+            )}
         </div>
     );
 }
@@ -116,6 +175,13 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
     size?: 'sm' | 'md' | 'lg';
     status?: 'online' | 'away' | 'offline';
     statusLabel?: string;
+    shape?: 'circle' | 'rounded';
+    fallbackTone?: 'primary' | 'secondary' | 'success' | 'warning' | 'critical' | 'neutral';
+    label?: React.ReactNode;
+    description?: React.ReactNode;
+    labelPosition?: 'right' | 'bottom';
+    badge?: React.ReactNode;
+    containerClassName?: string;
 }
 
 const avatarSizeClasses = {
@@ -130,6 +196,20 @@ const avatarStatusStyles: Record<NonNullable<AvatarProps['status']>, string> = {
     offline: 'bg-[var(--lb-color-border-strong)]',
 };
 
+const avatarShapeStyles: Record<NonNullable<AvatarProps['shape']>, string> = {
+    circle: 'rounded-[var(--lb-radius-full)]',
+    rounded: 'rounded-[var(--lb-radius-lg)]',
+};
+
+const avatarFallbackToneStyles: Record<NonNullable<AvatarProps['fallbackTone']>, string> = {
+    primary: 'bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]',
+    secondary: 'bg-[var(--lb-color-secondary-soft)] text-[color:var(--lb-color-secondary)]',
+    success: 'bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-success)]',
+    warning: 'bg-[var(--lb-color-warning-soft)] text-[color:var(--lb-color-warning)]',
+    critical: 'bg-[var(--lb-color-critical-soft)] text-[color:var(--lb-color-critical)]',
+    neutral: 'bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]',
+};
+
 export function Avatar({
     name,
     imageUrl,
@@ -137,6 +217,13 @@ export function Avatar({
     size = 'md',
     status,
     statusLabel,
+    shape = 'circle',
+    fallbackTone = 'primary',
+    label,
+    description,
+    labelPosition = 'right',
+    badge,
+    containerClassName = '',
     className = '',
     ...props
 }: AvatarProps) {
@@ -150,29 +237,48 @@ export function Avatar({
 
     return (
         <div
-            className="relative inline-flex shrink-0"
+            className={cx(
+                'inline-flex shrink-0 gap-[var(--lb-space-2)]',
+                labelPosition === 'right' ? 'items-center' : 'flex-col items-start',
+                containerClassName,
+            )}
             role={role ?? 'img'}
             aria-label={ariaLabel ?? (statusLabel ? `${name}, ${statusLabel}` : name)}
             {...avatarProps}
         >
-            <span
-                className={cx(
-                    'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]',
-                    avatarSizeClasses[size],
-                    className,
-                )}
-                aria-hidden="true"
-            >
-                {imageUrl ? <img src={imageUrl} alt={imageAlt} className="h-full w-full object-cover" /> : initials}
-            </span>
-            {status && (
+            <span className="relative inline-flex shrink-0">
                 <span
                     className={cx(
-                        'absolute bottom-0 right-0 block h-[var(--lb-space-3)] w-[var(--lb-space-3)] rounded-[var(--lb-radius-full)] border-2 border-[var(--lb-color-surface)]',
-                        avatarStatusStyles[status],
+                        'inline-flex shrink-0 items-center justify-center overflow-hidden font-[var(--lb-font-weight-semibold)]',
+                        avatarSizeClasses[size],
+                        avatarShapeStyles[shape],
+                        avatarFallbackToneStyles[fallbackTone],
+                        className,
                     )}
                     aria-hidden="true"
-                />
+                >
+                    {imageUrl ? <img src={imageUrl} alt={imageAlt} className="h-full w-full object-cover" /> : initials}
+                </span>
+                {status && (
+                    <span
+                        className={cx(
+                            'absolute bottom-0 right-0 block h-[var(--lb-space-3)] w-[var(--lb-space-3)] rounded-[var(--lb-radius-full)] border-2 border-[var(--lb-color-surface)]',
+                            avatarStatusStyles[status],
+                        )}
+                        aria-hidden="true"
+                    />
+                )}
+                {badge && (
+                    <span className="absolute -right-[var(--lb-space-1)] -top-[var(--lb-space-1)]">
+                        {badge}
+                    </span>
+                )}
+            </span>
+            {(label || description) && (
+                <span className="min-w-0">
+                    {label && <span className="block truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{label}</span>}
+                    {description && <span className="block truncate text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{description}</span>}
+                </span>
             )}
         </div>
     );
@@ -731,6 +837,9 @@ export interface CommandPaletteAction {
     group?: string;
     keywords?: string[];
     disabled?: boolean;
+    badge?: React.ReactNode;
+    meta?: React.ReactNode;
+    ariaLabel?: string;
     icon?: React.ReactNode;
     onSelect: () => void;
 }
@@ -740,29 +849,57 @@ export interface CommandPaletteProps {
     actions: CommandPaletteAction[];
     onClose: () => void;
     title?: string;
+    description?: string;
+    showHeader?: boolean;
+    showCloseButton?: boolean;
+    dismissLabel?: string;
     placeholder?: string;
+    inputLabel?: string;
     emptyMessage?: string;
+    emptyState?: React.ReactNode;
     loading?: boolean;
     loadingLabel?: string;
     query?: string;
     defaultQuery?: string;
     onQueryChange?: (query: string) => void;
+    closeOnSelect?: boolean;
     footer?: React.ReactNode;
+    size?: 'sm' | 'md' | 'lg';
+    className?: string;
+    listClassName?: string;
+    actionClassName?: string;
 }
+
+const commandPaletteSizeStyles: Record<NonNullable<CommandPaletteProps['size']>, string> = {
+    sm: 'w-[min(560px,100%)]',
+    md: 'w-[min(var(--lb-size-command-palette-width),100%)]',
+    lg: 'w-[min(920px,100%)]',
+};
 
 export function CommandPalette({
     open,
     actions,
     onClose,
     title = 'Command palette',
+    description,
+    showHeader = false,
+    showCloseButton = false,
+    dismissLabel = 'Close command palette',
     placeholder = 'Search commands',
+    inputLabel = 'Search commands',
     emptyMessage = 'No commands found',
+    emptyState,
     loading = false,
     loadingLabel = 'Loading commands',
     query,
     defaultQuery = '',
     onQueryChange,
+    closeOnSelect = true,
     footer,
+    size = 'md',
+    className = '',
+    listClassName = '',
+    actionClassName = '',
 }: CommandPaletteProps) {
     const paletteId = useId();
     const [internalQuery, setInternalQuery] = useState(defaultQuery);
@@ -784,6 +921,7 @@ export function CommandPalette({
             return groups;
         }, []);
     }, [filteredActions]);
+    const descriptionId = description ? `${paletteId}-description` : undefined;
 
     useEffect(() => {
         if (!open) return;
@@ -818,7 +956,7 @@ export function CommandPalette({
     const selectAction = (action: CommandPaletteAction) => {
         if (action.disabled) return;
         action.onSelect();
-        onClose();
+        if (closeOnSelect) onClose();
     };
 
     const updateQuery = (nextQuery: string) => {
@@ -849,8 +987,42 @@ export function CommandPalette({
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-4)] pt-[var(--lb-size-command-palette-offset)]">
-            <div role="dialog" aria-modal="true" aria-labelledby={`${paletteId}-title`} className="w-[min(var(--lb-size-command-palette-width),100%)] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]">
-                <h2 id={`${paletteId}-title`} className="sr-only">{title}</h2>
+            <div
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby={`${paletteId}-title`}
+                aria-describedby={descriptionId}
+                className={cx(commandPaletteSizeStyles[size], 'overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]', className)}
+            >
+                {(showHeader || showCloseButton) ? (
+                    <div className="flex items-start justify-between gap-[var(--lb-space-4)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)] py-[var(--lb-space-3)]">
+                        <div className="min-w-0">
+                            <h2 id={`${paletteId}-title`} className={cx('m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]', !showHeader && 'sr-only')}>
+                                {title}
+                            </h2>
+                            {description && (
+                                <p id={descriptionId} className={cx('m-0 mt-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]', !showHeader && 'sr-only')}>
+                                    {description}
+                                </p>
+                            )}
+                        </div>
+                        {showCloseButton && (
+                            <button
+                                type="button"
+                                className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] shrink-0 items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                onClick={onClose}
+                                aria-label={dismissLabel}
+                            >
+                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </button>
+                        )}
+                    </div>
+                ) : (
+                    <>
+                        <h2 id={`${paletteId}-title`} className="sr-only">{title}</h2>
+                        {description && <p id={descriptionId} className="sr-only">{description}</p>}
+                    </>
+                )}
                 <div className="flex items-center gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)]">
                     <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                     <input
@@ -864,19 +1036,22 @@ export function CommandPalette({
                         onChange={(event) => updateQuery(event.target.value)}
                         onKeyDown={handleInputKeyDown}
                         placeholder={placeholder}
+                        aria-label={inputLabel}
                         autoFocus
                     />
                     <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                 </div>
-                <div id={listboxId} role="listbox" className="max-h-[var(--lb-size-command-palette-list-max-height)] overflow-auto p-[var(--lb-space-2)]">
+                <div id={listboxId} role="listbox" className={cx('max-h-[var(--lb-size-command-palette-list-max-height)] overflow-auto p-[var(--lb-space-2)]', listClassName)}>
                     {loading ? (
                         <div className="px-[var(--lb-space-3)] py-[var(--lb-space-5)]" aria-label={loadingLabel}>
                             <Skeleton lines={3} />
                         </div>
                     ) : filteredActions.length === 0 ? (
-                        <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-5)] text-center text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
-                            {emptyMessage}
-                        </p>
+                        emptyState ?? (
+                            <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-5)] text-center text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
+                                {emptyMessage}
+                            </p>
+                        )
                     ) : (
                         groupedActions.map((group) => (
                             <div key={group.group} className="grid gap-[var(--lb-space-1)]">
@@ -893,19 +1068,27 @@ export function CommandPalette({
                                             role="option"
                                             aria-selected={index === activeIndex}
                                             aria-disabled={action.disabled || undefined}
+                                            aria-label={action.ariaLabel}
                                             className={cx(
                                                 'flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
                                                 index === activeIndex && 'bg-[var(--lb-color-surface-subdued)]',
                                                 action.disabled && 'cursor-not-allowed opacity-50',
+                                                actionClassName,
                                             )}
                                             onClick={() => selectAction(action)}
                                         >
                                             {action.icon && <span className="text-[color:var(--lb-color-text-subdued)]">{action.icon}</span>}
                                             <span className="min-w-0 flex-1">
-                                                <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{action.label}</span>
+                                                <span className="flex min-w-0 flex-wrap items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                                    <span className="truncate">{action.label}</span>
+                                                    {action.badge}
+                                                </span>
                                                 {action.description && <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{action.description}</span>}
                                             </span>
-                                            {action.shortcut && <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{action.shortcut}</kbd>}
+                                            <span className="flex shrink-0 items-center gap-[var(--lb-space-2)]">
+                                                {action.meta && <span className="text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{action.meta}</span>}
+                                                {action.shortcut && <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{action.shortcut}</kbd>}
+                                            </span>
                                         </button>
                                     );
                                 })}

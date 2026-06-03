@@ -211,6 +211,32 @@ Implemented in this batch:
 - `IndexTable`: added controlled/uncontrolled selection, disabled-row selection guards, selectable opt-out, row actions, selected-row styling, compact density, and table caption/label support.
 - Added `IndexTablePaginationHardening` Storybook story showing the batch 8 public API additions.
 
+## Batch 9 — Metric, Avatar, and Command Palette Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed, lockfile resolution skipped, 651 packages linked from existing store.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframes rendered `ProductivitySurfaceHardening` and `CommandPaletteSurfaceHardening`.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--productivity-surface-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-productivity-surface-hardening.jpg` — passed.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--command-palette-surface-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-command-palette-surface-hardening.jpg` — passed.
+- Screenshots: `packages/typescript/ui/storybook-screenshots/ws1-productivity-surface-hardening.jpg`, `packages/typescript/ui/storybook-screenshots/ws1-command-palette-surface-hardening.jpg`.
+- `pnpm run validate:governance` — passed; governance validation passed (128 validators).
+
+Implemented in this batch:
+- `MetricCard`: added optional `sparklineTone`, `sparklineLabel`, `action`, `footer`, `tone`, and `size` props.
+- `MetricCard`: added tone variants, compact sizing, accessible sparkline labeling, action slots, and footer slots.
+- `Avatar`: added optional `shape`, `fallbackTone`, `label`, `description`, `labelPosition`, `badge`, and `containerClassName` props.
+- `Avatar`: added labelled identity rows, rounded avatar shape, fallback tone variants, and badge overlays while preserving the existing image/fallback API.
+- `CommandPaletteAction`: added optional `badge`, `meta`, and `ariaLabel` fields.
+- `CommandPalette`: added optional `description`, `showHeader`, `showCloseButton`, `dismissLabel`, `inputLabel`, `emptyState`, `closeOnSelect`, `size`, `className`, `listClassName`, and `actionClassName` props.
+- `CommandPalette`: added visible header/description rendering, close button, size variants, custom empty state slot, action badges/metadata, and selectable close behavior.
+- Added `ProductivitySurfaceHardening` and `CommandPaletteSurfaceHardening` Storybook stories showing the batch 9 public API additions.
+
 ## Stable Public API
 
 Components:

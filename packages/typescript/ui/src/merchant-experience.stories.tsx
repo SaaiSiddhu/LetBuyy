@@ -1213,6 +1213,172 @@ export function IndexTablePaginationHardening() {
     );
 }
 
+export function ProductivitySurfaceHardening() {
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 9"
+                title="Metric and avatar hardening"
+                description="MetricCard and Avatar now support denser dashboard composition with tones, actions, accessible sparklines, labelled identities, shapes, badges, and fallback tones."
+                titleMetadata={<Badge label="Productivity" variant="success" />}
+            />
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-3">
+                <MetricCard
+                    label="Revenue"
+                    value="₹86,240"
+                    secondaryValue="Online Store only"
+                    delta="+12.4% from last week"
+                    deltaTone="positive"
+                    tone="success"
+                    icon={<MaterialIcon name="analytics" />}
+                    action={<Button size="sm" variant="secondary">View</Button>}
+                    sparkline={[4, 8, 7, 12, 18, 15, 22]}
+                    sparklineTone="positive"
+                    sparklineLabel="Revenue trend increased this week"
+                    footer={<span>Compared with the same seven-day period.</span>}
+                />
+                <MetricCard
+                    label="Fulfillment risk"
+                    value="12"
+                    secondaryValue="Orders need SLA review"
+                    delta="3 high priority"
+                    deltaTone="negative"
+                    tone="warning"
+                    size="sm"
+                    icon={<MaterialIcon name="warning" />}
+                    action={<Badge label="Review" variant="warning" size="sm" />}
+                    sparkline={[8, 7, 9, 12, 11, 14, 12]}
+                    sparklineTone="negative"
+                />
+                <MetricCard
+                    label="Inventory sync"
+                    value="Syncing"
+                    loading
+                    loadingLabel="Loading inventory sync metric"
+                    tone="subdued"
+                    icon={<MaterialIcon name="sync" />}
+                    footer={<span>Warehouse updates refresh every 15 minutes.</span>}
+                />
+            </div>
+            <Card title="Team identity row" description="Avatars can render labels, descriptions, badges, shapes, and fallback tones without app-local wrappers." headerDivider>
+                <Section>
+                    <div className="flex flex-wrap items-center gap-[var(--lb-space-5)]">
+                        <Avatar
+                            name="Aarav Merchant"
+                            label="Aarav Merchant"
+                            description="Store owner"
+                            status="online"
+                            statusLabel="Online"
+                            fallbackTone="primary"
+                            badge={<Badge label="2" variant="info" size="sm" hideIcon />}
+                        />
+                        <Avatar
+                            name="Priya Support"
+                            label="Priya Support"
+                            description="Escalations"
+                            status="away"
+                            statusLabel="Away"
+                            fallbackTone="secondary"
+                            shape="rounded"
+                        />
+                        <Avatar
+                            name="LetBuyy Ops"
+                            label="LetBuyy Ops"
+                            description="Offline"
+                            status="offline"
+                            statusLabel="Offline"
+                            size="lg"
+                            fallbackTone="neutral"
+                            labelPosition="bottom"
+                        />
+                    </div>
+                </Section>
+            </Card>
+        </Page>
+    );
+}
+
+export function CommandPaletteSurfaceHardening() {
+    const [open, setOpen] = useState(true);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 9"
+                title="Command palette surface hardening"
+                description="CommandPalette now supports visible headers, close controls, size variants, empty state slots, close-on-select control, action badges, metadata, and per-action aria labels."
+                titleMetadata={<Badge label="Commands" variant="info" />}
+            />
+            <Card title="Command trigger" description="The palette opens by default for screenshot evidence and can remain open after selecting an action." headerDivider>
+                <Section>
+                    <Button icon={<MaterialIcon name="search" />} onClick={() => setOpen(true)}>Open command center</Button>
+                </Section>
+            </Card>
+            <CommandPalette
+                open={open}
+                size="lg"
+                title="Merchant command center"
+                description="Search product, order, and settings workflows from one keyboard-first surface."
+                showHeader
+                showCloseButton
+                dismissLabel="Close merchant command center"
+                placeholder="Search workflows"
+                inputLabel="Search merchant workflows"
+                closeOnSelect={false}
+                footer={<span>Enter runs the active command. Disabled commands remain visible for workflow context.</span>}
+                emptyState={<EmptyState compact bordered={false} title="No matching command" body="Try another product, order, or settings keyword." />}
+                onClose={() => setOpen(false)}
+                actions={[
+                    {
+                        id: 'publish-products',
+                        label: 'Publish selected products',
+                        description: 'Push selected items to Online Store',
+                        group: 'Products',
+                        keywords: ['catalog', 'channel'],
+                        shortcut: 'P P',
+                        badge: <Badge label="Ready" variant="success" size="sm" />,
+                        meta: '184 items',
+                        icon: <MaterialIcon name="publish" />,
+                        ariaLabel: 'Publish selected products to Online Store',
+                        onSelect: () => undefined,
+                    },
+                    {
+                        id: 'sync-inventory',
+                        label: 'Sync inventory now',
+                        description: 'Request a fresh inventory sync',
+                        group: 'Products',
+                        keywords: ['stock', 'warehouse'],
+                        shortcut: 'S I',
+                        meta: 'Warehouse',
+                        icon: <MaterialIcon name="sync" />,
+                        onSelect: () => undefined,
+                    },
+                    {
+                        id: 'capture-payment',
+                        label: 'Capture pending payment',
+                        description: 'Unavailable until fraud review clears',
+                        group: 'Orders',
+                        disabled: true,
+                        badge: <Badge label="Blocked" variant="critical" size="sm" />,
+                        icon: <MaterialIcon name="payments" />,
+                        onSelect: () => undefined,
+                    },
+                    {
+                        id: 'open-settings',
+                        label: 'Open checkout settings',
+                        description: 'Manage payment and shipping settings',
+                        group: 'Settings',
+                        keywords: ['checkout', 'payments', 'shipping'],
+                        shortcut: 'G S',
+                        icon: <MaterialIcon name="settings" />,
+                        onSelect: () => undefined,
+                    },
+                ]}
+            />
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>
