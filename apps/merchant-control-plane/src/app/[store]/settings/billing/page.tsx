@@ -11,12 +11,11 @@ import {
     EmptyState,
     FileText,
     IndianRupee,
-    Page,
-    PageHeader,
     Section,
     Skeleton,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings'
 
 interface Invoice {
     id: string
@@ -172,12 +171,11 @@ export default function BillingSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Billing"
-                    description="Review subscription charges, payment methods, and invoice history."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Billing' }]}
-                />
+            <SettingsPane
+                store={store}
+                title="Billing"
+                description="Review subscription charges, payment methods, and invoice history."
+            >
                 <Card>
                     <Section title="Current subscription">
                         <Skeleton variant="card" />
@@ -188,26 +186,26 @@ export default function BillingSettingsPage() {
                         <Skeleton variant="table" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Billing"
-                description="Review subscription charges, payment methods, and invoice history."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Billing' }]}
-                primaryAction={{
-                    label: 'Manage plan',
-                    onClick: () => router.push(`/${store}/settings/plan`),
-                }}
-                secondaryActions={[{
-                    label: 'Payment settings',
-                    onClick: () => router.push(`/${store}/settings/payments`),
-                }]}
-            />
-
+        <SettingsPane
+            store={store}
+            title="Billing"
+            description="Review subscription charges, payment methods, and invoice history."
+            primaryAction={{
+                label: 'Manage plan',
+                onClick: () => router.push(`/${store}/settings/plan`),
+                icon: <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }}
+            secondaryActions={[{
+                label: 'Payment settings',
+                onClick: () => router.push(`/${store}/settings/payments`),
+                icon: <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }]}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -314,6 +312,19 @@ export default function BillingSettingsPage() {
 
             <Card>
                 <Section
+                    title="App charges"
+                    description="Approved marketplace app charges and usage fees will appear here once the billing feed is connected."
+                >
+                    <EmptyState
+                        icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                        title="No itemized app charges available"
+                        body="The current billing API returns subscription invoices and payment configuration, but not per-app approved charges yet."
+                    />
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
                     title="Billing history"
                     description="Invoices and subscription charge records for this store."
                 >
@@ -351,6 +362,6 @@ export default function BillingSettingsPage() {
                     )}
                 </Section>
             </Card>
-        </Page>
+        </SettingsPane>
     )
 }
