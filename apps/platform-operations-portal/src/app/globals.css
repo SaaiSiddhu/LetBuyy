@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "./**/*.{ts,tsx}";
+@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 :root {
   --font-system: var(--font-letbuyy-sans), Arial, Helvetica, sans-serif;

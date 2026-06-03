@@ -19,6 +19,7 @@ export default function TeamDashboardLayout({
                     {/* Items shown based on employee role — TODO: role-based filtering */}
                     <TeamNavLink href="/" label="Dashboard" icon="dashboard" />
                     <TeamNavLink href="/support" label="Support" icon="support" />
+                    <TeamNavLink href="/merchant-health" label="Merchant Health" icon="monitoring" />
                     <TeamNavLink href="/users" label="Users" icon="users" />
                     <TeamNavLink href="/stores" label="Stores" icon="store" />
                     <TeamNavLink href="/marketing" label="Marketing" icon="marketing" />

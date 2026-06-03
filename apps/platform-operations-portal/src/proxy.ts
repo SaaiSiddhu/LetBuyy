@@ -4,6 +4,7 @@ import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from
 const protectedPrefixes = [
     '/',
     '/marketing',
+    '/merchant-health',
     '/operations',
     '/stores',
     '/support',
@@ -45,6 +46,7 @@ export const config = {
         '/login',
         '/invite/:path*',
         '/marketing/:path*',
+        '/merchant-health/:path*',
         '/operations/:path*',
         '/stores/:path*',
         '/support/:path*',
