@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { useId } from 'react';
+import { X } from './icons';
 import { cx } from './utils';
 
 export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -15,6 +16,12 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     labelAction?: React.ReactNode;
     requiredIndicator?: boolean;
     controlSize?: 'sm' | 'md' | 'lg';
+    trailingAction?: React.ReactNode;
+    clearable?: boolean;
+    clearLabel?: string;
+    onClear?: () => void;
+    showCharacterCount?: boolean;
+    characterCountLabel?: (current: number, maxLength?: number) => string;
 }
 
 const inputSizeStyles: Record<NonNullable<InputProps['controlSize']>, string> = {
@@ -22,6 +29,23 @@ const inputSizeStyles: Record<NonNullable<InputProps['controlSize']>, string> = 
     md: 'h-[var(--lb-size-control-md)] text-[length:var(--lb-font-size-body)]',
     lg: 'h-[var(--lb-size-control-lg)] text-[length:var(--lb-font-size-body)]',
 };
+
+const textareaResizeStyles: Record<NonNullable<TextareaProps['resize']>, string> = {
+    none: 'resize-none',
+    vertical: 'resize-y',
+    horizontal: 'resize-x',
+    both: 'resize',
+};
+
+function getFieldValueLength(value: unknown) {
+    if (value === undefined || value === null) return 0;
+    if (Array.isArray(value)) return value.join(', ').length;
+    return String(value).length;
+}
+
+function formatCharacterCount(current: number, maxLength?: number) {
+    return maxLength ? `${current}/${maxLength}` : String(current);
+}
 
 export function Input({
     label,
@@ -34,6 +58,12 @@ export function Input({
     labelAction,
     requiredIndicator = false,
     controlSize = 'md',
+    trailingAction,
+    clearable = false,
+    clearLabel = 'Clear field',
+    onClear,
+    showCharacterCount = false,
+    characterCountLabel,
     className = '',
     id,
     ...props
@@ -42,7 +72,16 @@ export function Input({
     const inputId = id ?? generatedId;
     const errorId = error ? `${inputId}-error` : undefined;
     const helperId = helperText && !error ? `${inputId}-helper` : undefined;
-    const describedBy = [errorId, helperId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const countId = showCharacterCount ? `${inputId}-count` : undefined;
+    const describedBy = [errorId, helperId, countId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const hasLeadingContent = Boolean(leftIcon || prefixContent);
+    const hasClearAction = Boolean(clearable && onClear);
+    const hasTrailingContent = Boolean(rightIcon || suffixContent || trailingAction || hasClearAction);
+    const hasComplexTrailingContent = Boolean(trailingAction || hasClearAction || (rightIcon && suffixContent));
+    const characterCount = getFieldValueLength(props.value ?? props.defaultValue);
+    const characterCountText = characterCountLabel
+        ? characterCountLabel(characterCount, props.maxLength)
+        : formatCharacterCount(characterCount, props.maxLength);
 
     return (
         <div className="flex flex-col gap-[var(--lb-space-2)]">
@@ -74,10 +113,10 @@ export function Input({
                         'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
                         'disabled:cursor-not-allowed disabled:opacity-50',
                         error ? 'border-[var(--lb-color-critical)] focus-visible:ring-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
-                        (leftIcon || prefixContent) ? 'pl-[var(--lb-space-7)]' : undefined,
+                        hasLeadingContent ? 'pl-[var(--lb-space-7)]' : undefined,
                         prefixContent && leftIcon ? 'pl-[calc(var(--lb-space-7)+var(--lb-space-4))]' : undefined,
-                        (rightIcon || suffixContent) ? 'pr-[var(--lb-space-7)]' : undefined,
-                        suffixContent && rightIcon ? 'pr-[calc(var(--lb-space-7)+var(--lb-space-4))]' : undefined,
+                        hasTrailingContent ? 'pr-[var(--lb-space-7)]' : undefined,
+                        hasComplexTrailingContent ? 'pr-[calc(var(--lb-space-7)+var(--lb-space-6))]' : undefined,
                         className,
                     )}
                     aria-describedby={describedBy}
@@ -85,15 +124,39 @@ export function Input({
                     aria-required={requiredIndicator ? true : props['aria-required']}
                     {...props}
                 />
-                {(rightIcon || suffixContent) && (
+                {hasTrailingContent && (
                     <div className="absolute right-[var(--lb-space-3)] top-1/2 flex -translate-y-1/2 items-center gap-[var(--lb-space-2)] text-[color:var(--lb-color-text-subdued)]">
                         {suffixContent && <span className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]">{suffixContent}</span>}
-                        {rightIcon}
+                        {rightIcon && <span className="inline-flex shrink-0" aria-hidden="true">{rightIcon}</span>}
+                        {trailingAction && <div className="shrink-0">{trailingAction}</div>}
+                        {hasClearAction && (
+                            <button
+                                type="button"
+                                className="inline-flex h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] items-center justify-center rounded-[var(--lb-radius-sm)] text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50"
+                                onClick={onClear}
+                                disabled={props.disabled || props.readOnly}
+                                aria-label={clearLabel}
+                            >
+                                <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            </button>
+                        )}
                     </div>
                 )}
             </div>
-            {error && <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>}
-            {helperText && !error && <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
+            {(error || helperText || showCharacterCount) && (
+                <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
+                    {error ? (
+                        <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>
+                    ) : helperText ? (
+                        <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>
+                    ) : (
+                        <span aria-hidden="true" />
+                    )}
+                    {showCharacterCount && (
+                        <p id={countId} className="m-0 shrink-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{characterCountText}</p>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
@@ -104,6 +167,9 @@ export interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextArea
     error?: string;
     labelAction?: React.ReactNode;
     requiredIndicator?: boolean;
+    showCharacterCount?: boolean;
+    characterCountLabel?: (current: number, maxLength?: number) => string;
+    resize?: 'none' | 'vertical' | 'horizontal' | 'both';
 }
 
 export function Textarea({
@@ -112,6 +178,9 @@ export function Textarea({
     error,
     labelAction,
     requiredIndicator = false,
+    showCharacterCount = false,
+    characterCountLabel,
+    resize = 'vertical',
     className = '',
     id,
     ...props
@@ -120,7 +189,12 @@ export function Textarea({
     const inputId = id ?? generatedId;
     const errorId = error ? `${inputId}-error` : undefined;
     const helperId = helperText && !error ? `${inputId}-helper` : undefined;
-    const describedBy = [errorId, helperId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const countId = showCharacterCount ? `${inputId}-count` : undefined;
+    const describedBy = [errorId, helperId, countId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const characterCount = getFieldValueLength(props.value ?? props.defaultValue);
+    const characterCountText = characterCountLabel
+        ? characterCountLabel(characterCount, props.maxLength)
+        : formatCharacterCount(characterCount, props.maxLength);
 
     return (
         <div className="flex flex-col gap-[var(--lb-space-2)]">
@@ -143,6 +217,7 @@ export function Textarea({
                     'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
                     'disabled:cursor-not-allowed disabled:opacity-50',
                     error ? 'border-[var(--lb-color-critical)] focus-visible:ring-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
+                    textareaResizeStyles[resize],
                     className,
                 )}
                 aria-describedby={describedBy}
@@ -150,8 +225,20 @@ export function Textarea({
                 aria-required={requiredIndicator ? true : props['aria-required']}
                 {...props}
             />
-            {error && <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>}
-            {helperText && !error && <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
+            {(error || helperText || showCharacterCount) && (
+                <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
+                    {error ? (
+                        <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>
+                    ) : helperText ? (
+                        <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>
+                    ) : (
+                        <span aria-hidden="true" />
+                    )}
+                    {showCharacterCount && (
+                        <p id={countId} className="m-0 shrink-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{characterCountText}</p>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

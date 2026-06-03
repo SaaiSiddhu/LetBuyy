@@ -1018,6 +1018,112 @@ export function FeedbackComponentHardening() {
     );
 }
 
+export function ActionInputTableHardening() {
+    const [query, setQuery] = useState('Classic');
+    const [note, setNote] = useState('Apply margin guardrails before publishing.');
+    const [selectedRows, setSelectedRows] = useState<React.Key[]>(['prod-1']);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 7"
+                title="Action, input, and table hardening"
+                description="Button, Input, Textarea, and DataTable now cover denser merchant workflows while preserving existing compatibility exports."
+                titleMetadata={<Badge label="Additive" variant="success" />}
+            />
+            <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-[0.9fr_1.1fr]">
+                <Card title="Action grammar" description="Buttons can align content, wrap long operational labels, and move loading indicators." headerDivider>
+                    <Section>
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            <Button fullWidth justify="between" trailingIcon={<MaterialIcon name="arrow_forward" />}>
+                                Publish selected products
+                            </Button>
+                            <Button loading loadingPosition="trailing" variant="secondary">
+                                Syncing inventory
+                            </Button>
+                            <Button variant="outline" wrap justify="start">
+                                Long workflow action label wraps cleanly instead of forcing overflow in constrained merchant panels
+                            </Button>
+                        </div>
+                    </Section>
+                </Card>
+                <Card title="Field affordances" description="Inputs and textareas can expose clear actions, trailing commands, counts, and resize intent." headerDivider>
+                    <Section>
+                        <div className="grid gap-[var(--lb-space-4)]">
+                            <Input
+                                label="Product search"
+                                value={query}
+                                onChange={(event) => setQuery(event.target.value)}
+                                leftIcon={<MaterialIcon name="search" />}
+                                clearable
+                                onClear={() => setQuery('')}
+                                showCharacterCount
+                                maxLength={40}
+                                helperText="Controlled clear affordance for filters and search fields."
+                            />
+                            <Input
+                                label="Price override"
+                                prefixContent="₹"
+                                suffixContent="INR"
+                                defaultValue="2499"
+                                trailingAction={<Button size="sm" variant="ghost">Apply</Button>}
+                                helperText="Inline trailing actions stay token-driven."
+                            />
+                            <Textarea
+                                label="Bulk edit note"
+                                value={note}
+                                onChange={(event) => setNote(event.target.value)}
+                                maxLength={120}
+                                showCharacterCount
+                                resize="vertical"
+                                helperText="Character counts are included in the described-by chain."
+                            />
+                        </div>
+                    </Section>
+                </Card>
+            </div>
+            <Card title="Selectable compatibility table" description="DataTable now supports row selection, bulk actions, selection labels, and disabled row safety." headerDivider>
+                <Section>
+                    <DataTable
+                        caption="Selectable product table"
+                        ariaLabel="Selectable product publishing table"
+                        rowKey="id"
+                        selectable
+                        selectedRowKeys={selectedRows}
+                        onSelectionChange={setSelectedRows}
+                        selectionLabel="Products selected"
+                        density="compact"
+                        data={sampleRows}
+                        columns={[
+                            { key: 'title', header: 'Product', sortable: true },
+                            { key: 'status', header: 'Status', render: (value) => <Badge label={String(value)} variant={value === 'Active' ? 'success' : 'warning'} /> },
+                            { key: 'inventory', header: 'Inventory', align: 'end' },
+                            { key: 'channel', header: 'Channel' },
+                        ]}
+                        sortKey="title"
+                        sortDirection="asc"
+                        onSort={() => undefined}
+                        bulkActions={(
+                            <>
+                                <Button size="sm">Publish</Button>
+                                <Button size="sm" variant="secondary">Export</Button>
+                            </>
+                        )}
+                        isRowDisabled={(row) => row.status === 'Draft'}
+                        selectRowLabel={(row) => `Select ${row.title}`}
+                        rowActions={(row) => (
+                            <Button size="sm" variant="ghost" trailingIcon={<MaterialIcon name="visibility" />}>
+                                View
+                                <span className="sr-only"> {row.title}</span>
+                            </Button>
+                        )}
+                    />
+                </Section>
+            </Card>
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>

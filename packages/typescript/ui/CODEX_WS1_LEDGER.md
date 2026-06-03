@@ -163,6 +163,30 @@ Implemented in this batch:
 - `SaveBar`: added optional `placement`, `tone`, `icon`, `secondaryAction`, `ariaLabel`, and `compact` props.
 - Added `FeedbackComponentHardening` Storybook story showing the batch 6 public API additions.
 
+## Batch 7 — Action, Input, and Table Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed, lockfile resolution skipped, 651 packages linked from existing store.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframe rendered `ActionInputTableHardening`.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--action-input-table-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-action-input-table-hardening.jpg` — passed.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-action-input-table-hardening.jpg`.
+- `pnpm run validate:governance` — passed; governance validation passed (128 validators).
+
+Implemented in this batch:
+- `Button`: added optional `loadingPosition`, `justify`, and `wrap` props.
+- `Input`: added optional `trailingAction`, `clearable`, `clearLabel`, `onClear`, `showCharacterCount`, and `characterCountLabel` props.
+- `Input`: added clear-button affordance, character count ARIA wiring, and wider trailing-control spacing without changing existing default field behavior.
+- `Textarea`: added optional `showCharacterCount`, `characterCountLabel`, and `resize` props.
+- `DataTable`: added optional `selectable`, `selectedRowKeys`, `defaultSelectedRowKeys`, `onSelectionChange`, `bulkActions`, `selectionLabel`, `selectAllLabel`, and `selectRowLabel` props.
+- `DataTable`: added controlled/uncontrolled selection state, disabled-row selection guards, selected-row styling, select-all semantics, and bulk action surface.
+- Added `ActionInputTableHardening` Storybook story showing the batch 7 public API additions.
+
 ## Stable Public API
 
 Components:
