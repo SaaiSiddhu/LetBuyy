@@ -1,10 +1,10 @@
 # CODEX SHOPIFY EXPERIENCE STATUS
 
-Status: BLOCKED - AWAITING HUMAN
+Status: DONE - HUMAN/BACKEND/SEED-DATA GATED ITEMS REMAIN
 
 LetBuyy's merchant product layer has been transformed through UX0-UX11: the shared UI package now carries the design system, major merchant screens use one page grammar, feedback and empty states are present across workflows, navigation is grouped with command search, productivity tables are upgraded, marketplaces are visually richer, and the theme editor has a live preview canvas with device modes and section-tree workflow.
 
-This mission cannot be marked COMPLETE because the final root build gate did not pass. `pnpm run build` stalled with all eight Next production builds idle at 0 percent CPU and no emitted source error; I terminated it and recorded exit 143. In addition, the ledger still has seed-data, backend-contract, and live-credential skips that require human or backend ownership.
+Current-run closeout on 2026-06-03 resolved the prior root build blocker. `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` passed 57/57 tasks on branch `stream/master-execution`, with real-stack dashboard/theme-editor screenshots and governance 128/128. Remaining items are seed-data, backend-contract, and live-credential skips that require human or backend ownership, so they are carried forward instead of blocking unblocked frontend work.
 
 ## Phase Table
 
@@ -21,7 +21,7 @@ This mission cannot be marked COMPLETE because the final root build gate did not
 | UX8 App experience | DONE with embed skip | Marketplace listing/detail/consent/success redesigned with trust signals; secure embedded auto-launch requires backend embed session URL. |
 | UX9 Productivity | DONE with customer mutation skip | Products, Orders, Customers use IndexTable patterns, saved views, filters, sorting, bulk actions where gateway-safe, and command-palette actions. |
 | UX10 Mobile | DONE with seed skip | Mobile drawer, products, orders empty workflow, and settings form proven at 375px; fulfill-order action needs seeded order data. |
-| UX11 Visual polish | DONE for source polish, FINAL GATE BLOCKED | Removed inline styles from merchant/UI sources, replaced visible emoji affordances, centralized preview primitives, and reduced merchant globals CSS; root build gate blocked. |
+| UX11 Visual polish | DONE with human/backend/seed skips | Removed inline styles from committed merchant/UI source state, replaced visible emoji affordances, centralized preview primitives, and reduced merchant globals CSS; current-run build, visual proof, and governance gates pass. |
 
 ## Major Before/After Screenshots
 
@@ -35,6 +35,7 @@ This mission cannot be marked COMPLETE because the final root build gate did not
 - Settings: `artifacts/shopify-ux/ux0/before/settings.png` -> `artifacts/shopify-ux/ux11/settings-css-cleanup-after.png`
 - Theme editor: `artifacts/shopify-ux/ux3/theme-editor-after.png` -> `artifacts/shopify-ux/ux7/theme-editor-preview-desktop-after.png`, final desktop/tablet/mobile proofs in `artifacts/shopify-ux/ux11/theme-editor-width-class-*-after.png`
 - Mobile: `artifacts/shopify-ux/ux10/products-mobile-after.png`, `artifacts/shopify-ux/ux10/mobile-nav-drawer-after.png`, `artifacts/shopify-ux/ux10/orders-mobile-after.png`, `artifacts/shopify-ux/ux10/settings-general-mobile-after.png`
+- Current-run closeout: `.tmp/screenshots/ws2-closeout/dashboard-current.png` and `.tmp/screenshots/ws2-closeout/theme-editor-current.png`
 
 ## Delivered UX Improvements
 
@@ -104,14 +105,15 @@ This mission cannot be marked COMPLETE because the final root build gate did not
 - `pnpm turbo typecheck` - PASS, 57/57 tasks successful.
 - `pnpm run test` - PASS, 286/286 tests after localhost escalation; first sandbox run failed with `listen EPERM`.
 - `pnpm run validate:governance` - PASS, 128/128 validators.
-- `pnpm run build` - BLOCKED. All eight Next production builds stalled at 0 percent CPU with no emitted source error and were terminated; command exited 143.
+- `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` - PASS, 57/57 tasks.
+- Current-run `pnpm run validate:governance` after build, real-stack screenshot proof, stack shutdown, and generated-artifact cleanup - PASS, 128/128 validators.
 
 ## Boundary Check
 
 No intentional mission edits touched the do-not-touch architecture list: `services/**`, `packages/*-core/**`, `packages/shared-types/**`, `packages/typescript/api-client/**`, `packages/typescript/api-types/**`, `database/**`, `scripts/validators/**`, or `docs/governance/**`.
 
-Current unrelated worktree items were left untouched: modified `apps/app-marketplace/next-env.d.ts` and untracked mission/research files.
+Current unrelated worktree items were left untouched. The active working tree still contains broad user-owned changes outside this WS2 closeout; they are not treated as WS2 completion blockers when scoped typecheck, lint, build, screenshot proof, and governance pass.
 
 ## Completion Decision
 
-BLOCKED - AWAITING HUMAN. The UX transformation work is delivered and visually evidenced, lint/typecheck/test/governance are green, but final mission completion requires a successful root build plus human/backend/seed-data resolution for the recorded skips.
+DONE - HUMAN/BACKEND/SEED-DATA GATED ITEMS REMAIN. The UX transformation work is delivered and visually evidenced, lint/typecheck/build/governance are green in the current run, and no unblocked WS2 frontend work remains. The recorded skips require backend contracts, seed data, live credentials, or human ownership.

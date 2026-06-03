@@ -40,7 +40,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontVariables}>
       <body className="antialiased">
-        <DesignSystemRoot surface="operations">
+        <DesignSystemRoot surface="operations" theme="dark">
           {children}
         </DesignSystemRoot>
       </body>
