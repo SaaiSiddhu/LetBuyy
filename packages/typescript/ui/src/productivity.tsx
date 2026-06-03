@@ -16,12 +16,28 @@ import { cx } from './utils';
 export interface MetricCardProps extends React.HTMLAttributes<HTMLDivElement> {
     label: string;
     value: string;
+    secondaryValue?: string;
     delta?: string;
     deltaTone?: 'positive' | 'negative' | 'neutral';
     sparkline?: number[];
+    icon?: React.ReactNode;
+    loading?: boolean;
+    loadingLabel?: string;
 }
 
-export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkline, className = '', ...props }: MetricCardProps) {
+export function MetricCard({
+    label,
+    value,
+    secondaryValue,
+    delta,
+    deltaTone = 'neutral',
+    sparkline,
+    icon,
+    loading = false,
+    loadingLabel = 'Loading metric',
+    className = '',
+    ...props
+}: MetricCardProps) {
     const points = useMemo(() => {
         if (!sparkline || sparkline.length === 0) return '';
         const max = Math.max(...sparkline);
@@ -42,16 +58,34 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
                 'rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] shadow-[var(--lb-shadow-sm)]',
                 className,
             )}
+            aria-busy={loading || undefined}
             {...props}
         >
             <div className="flex items-start justify-between gap-[var(--lb-space-4)]">
                 <div className="space-y-[var(--lb-space-2)]">
-                    <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                        {label}
-                    </p>
-                    <p className="m-0 text-[length:var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[color:var(--lb-color-text)]">
-                        {value}
-                    </p>
+                    <div className="flex items-center gap-[var(--lb-space-2)]">
+                        {icon && <span className="text-[color:var(--lb-color-primary)]" aria-hidden="true">{icon}</span>}
+                        <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            {label}
+                        </p>
+                    </div>
+                    {loading ? (
+                        <div className="space-y-[var(--lb-space-2)]" aria-label={loadingLabel}>
+                            <div className="h-[var(--lb-space-6)] w-28 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)]" />
+                            <div className="h-[var(--lb-space-3)] w-20 rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)]" />
+                        </div>
+                    ) : (
+                        <>
+                            <p className="m-0 text-[length:var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[color:var(--lb-color-text)]">
+                                {value}
+                            </p>
+                            {secondaryValue && (
+                                <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    {secondaryValue}
+                                </p>
+                            )}
+                        </>
+                    )}
                     {delta && (
                         <p
                             className={cx(
@@ -78,7 +112,10 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
 export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
     name: string;
     imageUrl?: string;
+    imageAlt?: string;
     size?: 'sm' | 'md' | 'lg';
+    status?: 'online' | 'away' | 'offline';
+    statusLabel?: string;
 }
 
 const avatarSizeClasses = {
@@ -87,7 +124,23 @@ const avatarSizeClasses = {
     lg: 'h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] text-[length:var(--lb-font-size-heading)]',
 } as const;
 
-export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }: AvatarProps) {
+const avatarStatusStyles: Record<NonNullable<AvatarProps['status']>, string> = {
+    online: 'bg-[var(--lb-color-success)]',
+    away: 'bg-[var(--lb-color-warning)]',
+    offline: 'bg-[var(--lb-color-border-strong)]',
+};
+
+export function Avatar({
+    name,
+    imageUrl,
+    imageAlt = '',
+    size = 'md',
+    status,
+    statusLabel,
+    className = '',
+    ...props
+}: AvatarProps) {
+    const { role, 'aria-label': ariaLabel, ...avatarProps } = props;
     const initials = name
         .split(/\s+/)
         .filter(Boolean)
@@ -97,15 +150,30 @@ export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }
 
     return (
         <div
-            className={cx(
-                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]',
-                avatarSizeClasses[size],
-                className,
-            )}
-            aria-label={name}
-            {...props}
+            className="relative inline-flex shrink-0"
+            role={role ?? 'img'}
+            aria-label={ariaLabel ?? (statusLabel ? `${name}, ${statusLabel}` : name)}
+            {...avatarProps}
         >
-            {imageUrl ? <img src={imageUrl} alt="" className="h-full w-full object-cover" /> : initials}
+            <span
+                className={cx(
+                    'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]',
+                    avatarSizeClasses[size],
+                    className,
+                )}
+                aria-hidden="true"
+            >
+                {imageUrl ? <img src={imageUrl} alt={imageAlt} className="h-full w-full object-cover" /> : initials}
+            </span>
+            {status && (
+                <span
+                    className={cx(
+                        'absolute bottom-0 right-0 block h-[var(--lb-space-3)] w-[var(--lb-space-3)] rounded-[var(--lb-radius-full)] border-2 border-[var(--lb-color-surface)]',
+                        avatarStatusStyles[status],
+                    )}
+                    aria-hidden="true"
+                />
+            )}
         </div>
     );
 }
@@ -114,10 +182,39 @@ export interface PaginationProps {
     page: number;
     totalPages: number;
     onPageChange: (page: number) => void;
+    previousLabel?: string;
+    nextLabel?: string;
+    pageLabel?: (page: number, totalPages: number) => string;
+    showPageNumbers?: boolean;
+    siblingCount?: number;
+    compact?: boolean;
     className?: string;
 }
 
-export function Pagination({ page, totalPages, onPageChange, className = '' }: PaginationProps) {
+function paginationRange(page: number, totalPages: number, siblingCount: number) {
+    const start = Math.max(1, page - siblingCount);
+    const end = Math.min(totalPages, page + siblingCount);
+    return Array.from({ length: end - start + 1 }, (_, index) => start + index);
+}
+
+function firstEnabledActionIndex(actions: CommandPaletteAction[]) {
+    return actions.findIndex((action) => !action.disabled);
+}
+
+export function Pagination({
+    page,
+    totalPages,
+    onPageChange,
+    previousLabel = 'Previous',
+    nextLabel = 'Next',
+    pageLabel = (currentPage, pageCount) => `Page ${currentPage} of ${pageCount}`,
+    showPageNumbers = false,
+    siblingCount = 1,
+    compact = false,
+    className = '',
+}: PaginationProps) {
+    const pages = paginationRange(page, totalPages, siblingCount);
+
     return (
         <nav className={cx('flex items-center justify-between gap-[var(--lb-space-3)]', className)} aria-label="Pagination">
             <button
@@ -125,20 +222,43 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
                 className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.max(page - 1, 1))}
                 disabled={page <= 1}
+                aria-label={previousLabel}
             >
                 <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                Previous
+                {!compact && previousLabel}
             </button>
-            <span className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]" aria-current="page">
-                Page {page} of {totalPages}
-            </span>
+            {showPageNumbers ? (
+                <div className="flex items-center gap-[var(--lb-space-1)]">
+                    {pages.map((item) => (
+                        <button
+                            key={item}
+                            type="button"
+                            className={cx(
+                                'inline-flex h-[var(--lb-size-control-md)] min-w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                item === page
+                                    ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                    : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
+                            )}
+                            aria-current={item === page ? 'page' : undefined}
+                            onClick={() => onPageChange(item)}
+                        >
+                            {item}
+                        </button>
+                    ))}
+                </div>
+            ) : (
+                <span className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]" aria-current="page">
+                    {pageLabel(page, totalPages)}
+                </span>
+            )}
             <button
                 type="button"
                 className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.min(page + 1, totalPages))}
                 disabled={page >= totalPages}
+                aria-label={nextLabel}
             >
-                Next
+                {!compact && nextLabel}
                 <ChevronRight className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
             </button>
         </nav>
@@ -438,6 +558,9 @@ export interface CommandPaletteAction {
     label: string;
     description?: string;
     shortcut?: string;
+    group?: string;
+    keywords?: string[];
+    disabled?: boolean;
     icon?: React.ReactNode;
     onSelect: () => void;
 }
@@ -446,20 +569,51 @@ export interface CommandPaletteProps {
     open: boolean;
     actions: CommandPaletteAction[];
     onClose: () => void;
+    title?: string;
     placeholder?: string;
+    emptyMessage?: string;
+    loading?: boolean;
+    loadingLabel?: string;
+    query?: string;
+    defaultQuery?: string;
+    onQueryChange?: (query: string) => void;
+    footer?: React.ReactNode;
 }
 
-export function CommandPalette({ open, actions, onClose, placeholder = 'Search commands' }: CommandPaletteProps) {
+export function CommandPalette({
+    open,
+    actions,
+    onClose,
+    title = 'Command palette',
+    placeholder = 'Search commands',
+    emptyMessage = 'No commands found',
+    loading = false,
+    loadingLabel = 'Loading commands',
+    query,
+    defaultQuery = '',
+    onQueryChange,
+    footer,
+}: CommandPaletteProps) {
     const paletteId = useId();
-    const [query, setQuery] = useState('');
+    const [internalQuery, setInternalQuery] = useState(defaultQuery);
     const [activeIndex, setActiveIndex] = useState(0);
+    const currentQuery = query ?? internalQuery;
     const filteredActions = useMemo(() => {
-        const normalizedQuery = query.trim().toLowerCase();
+        const normalizedQuery = currentQuery.trim().toLowerCase();
         if (!normalizedQuery) return actions;
-        return actions.filter((action) => `${action.label} ${action.description ?? ''}`.toLowerCase().includes(normalizedQuery));
-    }, [actions, query]);
+        return actions.filter((action) => `${action.label} ${action.description ?? ''} ${(action.keywords ?? []).join(' ')}`.toLowerCase().includes(normalizedQuery));
+    }, [actions, currentQuery]);
     const activeAction = filteredActions[activeIndex];
     const listboxId = `${paletteId}-listbox`;
+    const groupedActions = useMemo(() => {
+        return filteredActions.reduce<Array<{ group: string; actions: CommandPaletteAction[] }>>((groups, action) => {
+            const groupName = action.group ?? 'Commands';
+            const existing = groups.find((group) => group.group === groupName);
+            if (existing) existing.actions.push(action);
+            else groups.push({ group: groupName, actions: [action] });
+            return groups;
+        }, []);
+    }, [filteredActions]);
 
     useEffect(() => {
         if (!open) return;
@@ -472,8 +626,8 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
 
     useEffect(() => {
         if (!open) return;
-        setActiveIndex(filteredActions.length > 0 ? 0 : -1);
-    }, [filteredActions.length, open]);
+        setActiveIndex(firstEnabledActionIndex(filteredActions));
+    }, [filteredActions, open]);
 
     const moveActiveAction = (direction: 1 | -1) => {
         if (filteredActions.length === 0) {
@@ -482,14 +636,24 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
         }
 
         setActiveIndex((current) => {
-            if (current < 0) return 0;
-            return (current + direction + filteredActions.length) % filteredActions.length;
+            let nextIndex = current < 0 ? (direction > 0 ? -1 : 0) : current;
+            for (let attempts = 0; attempts < filteredActions.length; attempts += 1) {
+                nextIndex = (nextIndex + direction + filteredActions.length) % filteredActions.length;
+                if (!filteredActions[nextIndex]?.disabled) return nextIndex;
+            }
+            return -1;
         });
     };
 
     const selectAction = (action: CommandPaletteAction) => {
+        if (action.disabled) return;
         action.onSelect();
         onClose();
+    };
+
+    const updateQuery = (nextQuery: string) => {
+        setInternalQuery(nextQuery);
+        onQueryChange?.(nextQuery);
     };
 
     const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -516,7 +680,7 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-4)] pt-[var(--lb-size-command-palette-offset)]">
             <div role="dialog" aria-modal="true" aria-labelledby={`${paletteId}-title`} className="w-[min(var(--lb-size-command-palette-width),100%)] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]">
-                <h2 id={`${paletteId}-title`} className="sr-only">Command palette</h2>
+                <h2 id={`${paletteId}-title`} className="sr-only">{title}</h2>
                 <div className="flex items-center gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)]">
                     <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                     <input
@@ -526,8 +690,8 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
                         aria-activedescendant={activeAction ? `${listboxId}-option-${activeIndex}` : undefined}
                         aria-autocomplete="list"
                         className="h-[var(--lb-size-control-lg)] flex-1 bg-transparent text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none placeholder:text-[color:var(--lb-color-text-subdued)]"
-                        value={query}
-                        onChange={(event) => setQuery(event.target.value)}
+                        value={currentQuery}
+                        onChange={(event) => updateQuery(event.target.value)}
                         onKeyDown={handleInputKeyDown}
                         placeholder={placeholder}
                         autoFocus
@@ -535,34 +699,55 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
                     <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                 </div>
                 <div id={listboxId} role="listbox" className="max-h-[var(--lb-size-command-palette-list-max-height)] overflow-auto p-[var(--lb-space-2)]">
-                    {filteredActions.length === 0 ? (
+                    {loading ? (
+                        <div className="px-[var(--lb-space-3)] py-[var(--lb-space-5)]" aria-label={loadingLabel}>
+                            <Skeleton lines={3} />
+                        </div>
+                    ) : filteredActions.length === 0 ? (
                         <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-5)] text-center text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
-                            No commands found
+                            {emptyMessage}
                         </p>
                     ) : (
-                        filteredActions.map((action, index) => (
-                            <button
-                                key={action.id}
-                                id={`${listboxId}-option-${index}`}
-                                type="button"
-                                role="option"
-                                aria-selected={index === activeIndex}
-                                className={cx(
-                                    'flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
-                                    index === activeIndex && 'bg-[var(--lb-color-surface-subdued)]',
-                                )}
-                                onClick={() => selectAction(action)}
-                            >
-                                {action.icon && <span className="text-[color:var(--lb-color-text-subdued)]">{action.icon}</span>}
-                                <span className="min-w-0 flex-1">
-                                    <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{action.label}</span>
-                                    {action.description && <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{action.description}</span>}
-                                </span>
-                                {action.shortcut && <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{action.shortcut}</kbd>}
-                            </button>
+                        groupedActions.map((group) => (
+                            <div key={group.group} className="grid gap-[var(--lb-space-1)]">
+                                <p className="m-0 px-[var(--lb-space-3)] pt-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    {group.group}
+                                </p>
+                                {group.actions.map((action) => {
+                                    const index = filteredActions.findIndex((filteredAction) => filteredAction.id === action.id);
+                                    return (
+                                        <button
+                                            key={action.id}
+                                            id={`${listboxId}-option-${index}`}
+                                            type="button"
+                                            role="option"
+                                            aria-selected={index === activeIndex}
+                                            aria-disabled={action.disabled || undefined}
+                                            className={cx(
+                                                'flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                                index === activeIndex && 'bg-[var(--lb-color-surface-subdued)]',
+                                                action.disabled && 'cursor-not-allowed opacity-50',
+                                            )}
+                                            onClick={() => selectAction(action)}
+                                        >
+                                            {action.icon && <span className="text-[color:var(--lb-color-text-subdued)]">{action.icon}</span>}
+                                            <span className="min-w-0 flex-1">
+                                                <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{action.label}</span>
+                                                {action.description && <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{action.description}</span>}
+                                            </span>
+                                            {action.shortcut && <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{action.shortcut}</kbd>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         ))
                     )}
                 </div>
+                {footer && (
+                    <div className="border-t border-[var(--lb-color-border)] px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        {footer}
+                    </div>
+                )}
             </div>
         </div>
     );

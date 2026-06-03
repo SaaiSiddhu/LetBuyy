@@ -444,6 +444,249 @@ export function ComponentApiMatrix() {
     );
 }
 
+export function WorkflowComponentHardening() {
+    const [modalOpen, setModalOpen] = useState(true);
+    const [confirmOpen, setConfirmOpen] = useState(false);
+    const [paletteOpen, setPaletteOpen] = useState(false);
+    const [page, setPage] = useState(3);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 3"
+                title="Workflow component hardening"
+                description="Expanded overlay, productivity, avatar, pagination, tooltip, and command APIs for dense merchant workflows."
+                primaryAction={{ label: 'Open palette', icon: <MaterialIcon name="search" />, onClick: () => setPaletteOpen(true) }}
+                secondaryActions={[{ label: 'Review modal', onClick: () => setModalOpen(true) }]}
+            />
+            <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-[1.2fr_0.8fr]">
+                <Card>
+                    <Section title="Operational metrics" description="Metric cards support icons, secondary values, and loading states.">
+                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                            <MetricCard
+                                label="Conversion"
+                                value="4.8%"
+                                secondaryValue="Online store only"
+                                delta="+0.6% from yesterday"
+                                deltaTone="positive"
+                                icon={<MaterialIcon name="analytics" />}
+                                sparkline={[3, 4, 5, 4, 7, 8, 9]}
+                            />
+                            <MetricCard
+                                label="Fulfillment risk"
+                                value="12"
+                                secondaryValue="Orders need SLA review"
+                                delta="3 high priority"
+                                deltaTone="negative"
+                                icon={<MaterialIcon name="warning" />}
+                                sparkline={[8, 7, 9, 12, 11, 14, 12]}
+                            />
+                            <MetricCard
+                                label="Inventory sync"
+                                value="Syncing"
+                                loading
+                                icon={<MaterialIcon name="sync" />}
+                            />
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Team and navigation" description="Avatars expose status labels and pagination can render page controls.">
+                        <div className="grid gap-[var(--lb-space-4)]">
+                            <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
+                                <Avatar name="Aarav Merchant" size="lg" status="online" statusLabel="Online" />
+                                <Avatar name="Priya Support" status="away" statusLabel="Away" />
+                                <Avatar name="LetBuyy Ops" size="sm" status="offline" statusLabel="Offline" />
+                                <Tooltip content="Shows support availability without adding text noise." side="right" align="start">
+                                    <Button size="icon" variant="ghost" aria-label="Status help" icon={<MaterialIcon name="info" />} />
+                                </Tooltip>
+                            </div>
+                            <Pagination
+                                page={page}
+                                totalPages={8}
+                                onPageChange={setPage}
+                                showPageNumbers
+                                siblingCount={2}
+                                previousLabel="Previous orders page"
+                                nextLabel="Next orders page"
+                            />
+                        </div>
+                    </Section>
+                </Card>
+            </div>
+            <Card>
+                <Section title="Overlay controls" description="Modal and confirmation dialogs add sizing, dismissal, footer alignment, and guarded action states.">
+                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                        <Button variant="secondary" onClick={() => setModalOpen(true)}>Open sized modal</Button>
+                        <Button variant="destructive" onClick={() => setConfirmOpen(true)}>Open guarded confirm</Button>
+                        <Button variant="outline" onClick={() => setPaletteOpen(true)}>Open grouped commands</Button>
+                    </div>
+                </Section>
+            </Card>
+            <Modal
+                open={modalOpen}
+                title="Review bulk product update"
+                description="Large dialogs can lock overlay click dismissal and align footer actions for safer merchant changes."
+                size="lg"
+                closeOnOverlayClick={false}
+                footerAlign="between"
+                dismissLabel="Close product update review"
+                onClose={() => setModalOpen(false)}
+                footer={(
+                    <>
+                        <Button variant="ghost" onClick={() => setModalOpen(false)}>Keep editing</Button>
+                        <div className="flex gap-[var(--lb-space-2)]">
+                            <Button variant="secondary" onClick={() => setModalOpen(false)}>Schedule</Button>
+                            <Button onClick={() => setModalOpen(false)} icon={<MaterialIcon name="check" />}>Apply update</Button>
+                        </div>
+                    </>
+                )}
+            >
+                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                    <Input label="Products selected" defaultValue="184" suffixContent="items" readOnly />
+                    <Select
+                        label="Publish channel"
+                        defaultValue="online"
+                        options={[
+                            { label: 'Online Store', value: 'online' },
+                            { label: 'Point of Sale', value: 'pos' },
+                        ]}
+                    />
+                    <Banner title="Review inventory before publishing" variant="info" className="md:col-span-2">
+                        Updates affect active products and storefront visibility.
+                    </Banner>
+                </div>
+            </Modal>
+            <ConfirmDialog
+                open={confirmOpen}
+                title="Archive selected products"
+                description="Products will leave every active channel."
+                destructive
+                confirmLabel="Archive products"
+                confirmDisabled
+                closeOnOverlayClick={false}
+                onConfirm={() => setConfirmOpen(false)}
+                onClose={() => setConfirmOpen(false)}
+            >
+                <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                    Resolve pending inventory holds before this destructive action can continue.
+                </p>
+            </ConfirmDialog>
+            <CommandPalette
+                open={paletteOpen}
+                title="Merchant command center"
+                placeholder="Search products, orders, or settings"
+                emptyMessage="No merchant commands matched"
+                footer="Grouped actions include disabled states and keyword matching."
+                onClose={() => setPaletteOpen(false)}
+                actions={[
+                    {
+                        id: 'publish-products',
+                        label: 'Publish selected products',
+                        description: 'Push selected items to Online Store',
+                        group: 'Products',
+                        keywords: ['catalog', 'channel'],
+                        shortcut: 'P P',
+                        icon: <MaterialIcon name="publish" />,
+                        onSelect: () => setPaletteOpen(false),
+                    },
+                    {
+                        id: 'sync-inventory',
+                        label: 'Sync inventory now',
+                        description: 'Request a fresh inventory sync',
+                        group: 'Products',
+                        keywords: ['stock', 'warehouse'],
+                        shortcut: 'S I',
+                        icon: <MaterialIcon name="sync" />,
+                        onSelect: () => setPaletteOpen(false),
+                    },
+                    {
+                        id: 'refund-order',
+                        label: 'Refund selected order',
+                        description: 'Unavailable while settlement is pending',
+                        group: 'Orders',
+                        disabled: true,
+                        icon: <MaterialIcon name="payment" />,
+                        onSelect: () => undefined,
+                    },
+                ]}
+            />
+        </Page>
+    );
+}
+
+export function CommandPaletteWorkflowStates() {
+    const [open, setOpen] = useState(true);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 3"
+                title="Grouped command palette"
+                description="CommandPalette now supports grouped actions, keyword matching, disabled actions, loading and empty copy, controlled query, and custom footer content."
+            />
+            <Card>
+                <Section title="Palette trigger">
+                    <Button onClick={() => setOpen(true)} icon={<MaterialIcon name="search" />}>Open grouped commands</Button>
+                </Section>
+            </Card>
+            <CommandPalette
+                open={open}
+                title="Merchant command center"
+                placeholder="Search merchant workflows"
+                footer={(
+                    <span>
+                        Press Enter to run the selected command. Disabled commands stay visible for workflow context.
+                    </span>
+                )}
+                onClose={() => setOpen(false)}
+                actions={[
+                    {
+                        id: 'create-product',
+                        label: 'Create product',
+                        description: 'Add a new product to the catalog',
+                        group: 'Products',
+                        keywords: ['catalog', 'inventory'],
+                        shortcut: 'N P',
+                        icon: <MaterialIcon name="products" />,
+                        onSelect: () => setOpen(false),
+                    },
+                    {
+                        id: 'review-low-stock',
+                        label: 'Review low stock',
+                        description: 'Open inventory items below threshold',
+                        group: 'Products',
+                        keywords: ['inventory', 'stock'],
+                        shortcut: 'G I',
+                        icon: <MaterialIcon name="low_inventory" />,
+                        onSelect: () => setOpen(false),
+                    },
+                    {
+                        id: 'capture-payment',
+                        label: 'Capture pending payment',
+                        description: 'Unavailable until fraud review clears',
+                        group: 'Orders',
+                        disabled: true,
+                        shortcut: 'C P',
+                        icon: <MaterialIcon name="payments" />,
+                        onSelect: () => undefined,
+                    },
+                    {
+                        id: 'open-settings',
+                        label: 'Open checkout settings',
+                        description: 'Manage payment and shipping settings',
+                        group: 'Settings',
+                        keywords: ['checkout', 'payments', 'shipping'],
+                        shortcut: 'G S',
+                        icon: <MaterialIcon name="settings" />,
+                        onSelect: () => setOpen(false),
+                    },
+                ]}
+            />
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>
