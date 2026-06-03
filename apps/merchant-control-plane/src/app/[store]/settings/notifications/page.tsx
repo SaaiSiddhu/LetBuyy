@@ -64,57 +64,57 @@ export default function NotificationsSettingsPage() {
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
     const enabledCount = useMemo(() => prefs.filter((pref) => pref.enabled).length, [prefs])
 
-    useEffect(() => {
-        let mounted = true
+    const loadData = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true)
+        setLoadError(null)
 
-        async function load() {
-            setLoading(true)
-            setLoadError(null)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+                signal,
+            })
+            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
 
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                    cache: 'no-store',
-                })
-                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
-
-                if (!response.ok) {
-                    throw new Error(payload.error || 'Unable to load notification settings')
-                }
-
-                const data = payload.data
-                const nextSiteSettings = data?.site_settings && typeof data.site_settings === 'object'
-                    ? data.site_settings as Record<string, unknown>
-                    : {}
-                const savedPrefs = nextSiteSettings.notifications && typeof nextSiteSettings.notifications === 'object'
-                    ? nextSiteSettings.notifications as Record<string, unknown>
-                    : {}
-                const nextPrefs = mergePrefs(savedPrefs)
-
-                if (!mounted) return
-                setSiteSettings(nextSiteSettings)
-                setPrefs(nextPrefs)
-                setInitialPrefs(nextPrefs)
-                setSaveState('saved')
-            } catch (error) {
-                if (!mounted) return
-                const message = error instanceof Error ? error.message : 'Unable to load notification settings'
-                setLoadError(message)
-                notify({
-                    title: 'Notification settings could not load',
-                    description: message,
-                    variant: 'critical',
-                })
-            } finally {
-                if (mounted) setLoading(false)
+            if (!response.ok) {
+                throw new Error(payload.error || 'Unable to load notification settings')
             }
-        }
 
-        void load()
+            const data = payload.data
+            const nextSiteSettings = data?.site_settings && typeof data.site_settings === 'object'
+                ? data.site_settings as Record<string, unknown>
+                : {}
+            const savedPrefs = nextSiteSettings.notifications && typeof nextSiteSettings.notifications === 'object'
+                ? nextSiteSettings.notifications as Record<string, unknown>
+                : {}
+            const nextPrefs = mergePrefs(savedPrefs)
 
-        return () => {
-            mounted = false
+            setSiteSettings(nextSiteSettings)
+            setPrefs(nextPrefs)
+            setInitialPrefs(nextPrefs)
+            setSaveState('saved')
+        } catch (error) {
+            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
+
+            const message = error instanceof Error ? error.message : 'Unable to load notification settings'
+            setLoadError(message)
+            notify({
+                title: 'Notification settings could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            if (!signal?.aborted) setLoading(false)
         }
     }, [notify, store])
+
+    useEffect(() => {
+        const controller = new AbortController()
+        void loadData(controller.signal)
+
+        return () => {
+            controller.abort()
+        }
+    }, [loadData])
 
     const togglePref = useCallback((key: string) => {
         setPrefs((current) => current.map((pref) => (
@@ -211,7 +211,7 @@ export default function NotificationsSettingsPage() {
                 <Banner
                     variant="critical"
                     title="Notification settings could not load"
-                    action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
                 >
                     {loadError}
                 </Banner>

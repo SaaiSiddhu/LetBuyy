@@ -135,56 +135,56 @@ export default function CheckoutSettingsPage() {
     const hasUnsavedChanges = useMemo(() => !settingsEqual(settings, initialSettings), [settings, initialSettings])
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
-    useEffect(() => {
-        let mounted = true
+    const loadData = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true)
+        setLoadError(null)
 
-        async function load() {
-            setLoading(true)
-            setLoadError(null)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+                signal,
+            })
+            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
 
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                    cache: 'no-store',
-                })
-                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
-
-                if (!response.ok) {
-                    throw new Error(payload.error || 'Unable to load checkout settings')
-                }
-
-                const data = payload.data
-                if (!data) {
-                    throw new Error('Checkout settings were not returned for this store')
-                }
-
-                const nextSiteSettings = isRecord(data.site_settings) ? data.site_settings : {}
-                const nextSettings = readCheckoutSettings(nextSiteSettings)
-
-                if (!mounted) return
-                setSiteSettings(nextSiteSettings)
-                setSettings(nextSettings)
-                setInitialSettings(nextSettings)
-                setSaveState('saved')
-            } catch (error) {
-                if (!mounted) return
-                const message = error instanceof Error ? error.message : 'Unable to load checkout settings'
-                setLoadError(message)
-                notify({
-                    title: 'Checkout settings could not load',
-                    description: message,
-                    variant: 'critical',
-                })
-            } finally {
-                if (mounted) setLoading(false)
+            if (!response.ok) {
+                throw new Error(payload.error || 'Unable to load checkout settings')
             }
-        }
 
-        void load()
+            const data = payload.data
+            if (!data) {
+                throw new Error('Checkout settings were not returned for this store')
+            }
 
-        return () => {
-            mounted = false
+            const nextSiteSettings = isRecord(data.site_settings) ? data.site_settings : {}
+            const nextSettings = readCheckoutSettings(nextSiteSettings)
+
+            setSiteSettings(nextSiteSettings)
+            setSettings(nextSettings)
+            setInitialSettings(nextSettings)
+            setSaveState('saved')
+        } catch (error) {
+            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
+
+            const message = error instanceof Error ? error.message : 'Unable to load checkout settings'
+            setLoadError(message)
+            notify({
+                title: 'Checkout settings could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            if (!signal?.aborted) setLoading(false)
         }
     }, [notify, store])
+
+    useEffect(() => {
+        const controller = new AbortController()
+        void loadData(controller.signal)
+
+        return () => {
+            controller.abort()
+        }
+    }, [loadData])
 
     const updateField = useCallback(<Key extends keyof CheckoutSettings>(key: Key, value: CheckoutSettings[Key]) => {
         setSettings((current) => ({ ...current, [key]: value }))
@@ -279,7 +279,7 @@ export default function CheckoutSettingsPage() {
                 <Banner
                     variant="critical"
                     title="Checkout settings could not load"
-                    action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
                 >
                     {loadError}
                 </Banner>
