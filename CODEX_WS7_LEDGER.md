@@ -12,6 +12,7 @@
 - Runtime readiness: marketing-site 3000, identity-platform 3001, merchant-control-plane 3002, storefront-runtime 3003, app-marketplace 3004, theme-marketplace 3005, platform-console 3010, platform-operations-portal 3011 -> all 200.
 
 ## PROGRESS LOG
+- 2026-06-03T01:59:25Z [P4] Scaffold service assessment - DONE - evidence: `services/queue-workers/src/index.ts` is already executable and persists queue deliveries plus telemetry; deployment topology marks notification-service, search-service, analytics-pipeline, media-service, event-bus, and checkout-runtime as `platform: reserved`, so activating Worker configs/source for those roots would require an intentional topology-authority change.
 - 2026-06-03T01:57:09Z [GATE] Governance validation - DONE - evidence: first `pnpm run validate:governance` failed only at stale artifacts from nested `node_modules`; second failed only at service `.wrangler`; after cleaning generated artifacts, final `pnpm run validate:governance` -> PASS, 128 validators.
 - 2026-06-03T01:55:33Z [GATE] Verification before governance - DONE - evidence: `pnpm turbo typecheck` -> 57/57, `pnpm run test` -> 286/286, `pnpm run lint` -> exit 0 with app-owned warnings only, `pnpm run federation:local:down` -> exit 0, generated artifacts removed.
 - 2026-06-03T01:52:54Z [P3] Full workspace build stability - DONE - evidence: `pnpm turbo build` -> 57 successful / 57 total in 1m1.85s; no network-fetch failure observed.
@@ -32,6 +33,7 @@
 - 2026-06-03T01:44:16Z J5 Customer SSO vs REAL stack -> PASS.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T02:00:09Z `pnpm run validate:governance` after P4 ledger update -> PASS, 128 validators.
 - 2026-06-03T01:57:09Z `pnpm run validate:governance` -> PASS, 128 validators.
 - 2026-06-03T01:57:09Z `pnpm run validate:governance` attempt 2 -> FAIL only at stale artifacts `services/api-gateway/.wrangler`, `services/webhook-service/.wrangler`; cleaned generated artifacts.
 - 2026-06-03T01:57:09Z `pnpm run validate:governance` attempt 1 -> FAIL only at stale nested `node_modules`; cleaned generated artifacts.
@@ -41,4 +43,10 @@
 - 2026-06-03T01:52:54Z `pnpm turbo build` -> PASS, 57/57.
 
 ## SKIPPED / BLOCKED
+- [SKIP - RESERVED RUNTIME] Notification Service executable activation - current topology is `platform: reserved`; unblocks after a topology decision adds deployment config, package manifest, source authority, provider/tenant preference contracts, and validation gates.
+- [SKIP - RESERVED RUNTIME] Search Service executable activation - current topology is `platform: reserved`; unblocks after a topology decision adds deployment config, package manifest, source authority, tenant-aware index contracts, and validation gates.
+- [SKIP - RESERVED RUNTIME] Analytics Pipeline executable activation - current topology is `platform: reserved`; unblocks after a topology decision adds deployment config, package manifest, source authority, event ingestion contracts, and privacy/retention gates.
+- [SKIP - RESERVED RUNTIME] Media Service executable activation - current topology is `platform: reserved`; unblocks after a topology decision adds deployment config, package manifest, source authority, storage bindings, signed-access policy, and validation gates.
+- [SKIP - RESERVED RUNTIME] Event Bus executable activation - current topology is `platform: reserved`; unblocks after a topology decision adds deployment config, package manifest, source authority, event-store transport contracts, and replay/idempotency gates.
+- [SKIP - RESERVED RUNTIME] Checkout Runtime executable activation - current topology is `platform: reserved`; unblocks after a topology decision extracts checkout execution from `services/api-gateway` with idempotent state transitions, payment-provider contracts, and validation gates.
 - [SKIP - NEEDS HUMAN] Cashfree sandbox provider execution - requires sandbox `CASHFREE_APP_ID`, `CASHFREE_SECRET_KEY`, optional `CASHFREE_ENVIRONMENT=sandbox`, and optional `CASHFREE_API_VERSION`; rerun `pnpm run federation:local:down`, export credentials, rerun `pnpm run federation:local:up`, then rerun the Cashfree order probe. Live Cashfree keys remain out of scope and must not be used locally.
