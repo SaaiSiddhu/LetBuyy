@@ -36,6 +36,10 @@ function appName(app: InstalledApp) {
     return app.marketplace_apps?.name || app.app_id
 }
 
+function appScopes(app: InstalledApp) {
+    return Array.isArray(app.scopes_granted) ? app.scopes_granted : []
+}
+
 export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSettingsClientProps) {
     const { notify } = useToast()
     const [apps, setApps] = useState(installedApps)
@@ -153,11 +157,11 @@ export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSe
                                             {app.marketplace_apps?.tagline || `Installed ${formatDate(app.installed_at)}`}
                                         </p>
                                         <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                                            {(app.scopes_granted || []).slice(0, 5).map((scope) => (
+                                            {appScopes(app).slice(0, 5).map((scope) => (
                                                 <Badge key={scope} label={scope} variant="default" />
                                             ))}
-                                            {app.scopes_granted.length > 5 && (
-                                                <Badge label={`+${app.scopes_granted.length - 5} more`} variant="default" />
+                                            {appScopes(app).length > 5 && (
+                                                <Badge label={`+${appScopes(app).length - 5} more`} variant="default" />
                                             )}
                                         </div>
                                     </div>
