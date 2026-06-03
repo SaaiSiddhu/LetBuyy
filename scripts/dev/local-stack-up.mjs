@@ -31,7 +31,12 @@ const ports = {
   supabaseAnalytics: 15427,
   supabasePooler: 15429,
   gateway: 8787,
+  webhookService: 8788,
 };
+
+const serviceRuntimes = [
+  { name: "webhook-service", cwd: "services/webhook-service", url: `http://127.0.0.1:${ports.webhookService}/health` },
+];
 
 const webApps = [
   { name: "marketing-site", cwd: "apps/marketing-site", url: "http://127.0.0.1:3000" },
@@ -66,6 +71,7 @@ const localSecrets = {
   RAZORPAY_KEY_SECRET: localValue("razorpay"),
   RAZORPAY_WEBHOOK_SECRET: localValue("razorpay-webhook"),
   STRIPE_SECRET_KEY: ["sk", "test", "local"].join("_"),
+  STRIPE_WEBHOOK_SECRET: localValue("stripe-webhook"),
   PAYPAL_CLIENT_ID: "local-paypal-client",
   PAYPAL_CLIENT_SECRET: localValue("paypal-client"),
   PAYPAL_MODE: "sandbox",
@@ -75,6 +81,30 @@ const localSecrets = {
   UPSTASH_REDIS_REST_URL: "http://127.0.0.1:63790",
   UPSTASH_REDIS_REST_TOKEN: localValue("upstash-rest"),
 };
+
+const providerCredentialKeys = [
+  "RAZORPAY_KEY_ID",
+  "RAZORPAY_KEY_SECRET",
+  "RAZORPAY_WEBHOOK_SECRET",
+  "STRIPE_SECRET_KEY",
+  "STRIPE_WEBHOOK_SECRET",
+  "PAYPAL_CLIENT_ID",
+  "PAYPAL_CLIENT_SECRET",
+  "PAYPAL_MODE",
+  "PAYPAL_WEBHOOK_ID",
+  "CASHFREE_APP_ID",
+  "CASHFREE_SECRET_KEY",
+  "CASHFREE_ENVIRONMENT",
+  "CASHFREE_API_VERSION",
+];
+
+function providerCredentialOverrides() {
+  return Object.fromEntries(
+    providerCredentialKeys
+      .map((key) => [key, process.env[key]])
+      .filter((entry) => typeof entry[1] === "string" && entry[1].length > 0),
+  );
+}
 
 function parseNodeMajor(version) {
   const match = /^v?(\d+)\./.exec(version.trim());
@@ -705,15 +735,30 @@ function parseSupabaseStatus() {
   };
 }
 
-function writeGatewayVars(keys) {
-  const varsPath = join(repoRoot, "services", "api-gateway", ".dev.vars");
-  const values = {
+function workerVars(keys) {
+  return {
     ...localSecrets,
+    ...providerCredentialOverrides(),
     SUPABASE_URL: keys.apiUrl,
     SUPABASE_ANON_KEY: keys.anonKey,
     SUPABASE_SERVICE_ROLE_KEY: keys.serviceRoleKey,
   };
+}
+
+function writeWorkerVars(relativePath, keys) {
+  const varsPath = join(repoRoot, relativePath);
+  const values = {
+    ...workerVars(keys),
+  };
   writeFileSync(varsPath, Object.entries(values).map(([key, value]) => `${key}="${value}"`).join("\n") + "\n", "utf8");
+}
+
+function writeGatewayVars(keys) {
+  writeWorkerVars(join("services", "api-gateway", ".dev.vars"), keys);
+}
+
+function writeWebhookVars(keys) {
+  writeWorkerVars(join("services", "webhook-service", ".dev.vars"), keys);
 }
 
 function processEnv(keys) {
@@ -721,6 +766,7 @@ function processEnv(keys) {
   return {
     ...process.env,
     ...localSecrets,
+    ...providerCredentialOverrides(),
     ...(modernNodeBin ? { PATH: `${modernNodeBin}:${process.env.PATH || ""}` } : {}),
     NODE_ENV: "development",
     NEXT_PUBLIC_SUPABASE_URL: keys.apiUrl,
@@ -802,16 +848,23 @@ async function main() {
     throw new Error("Supabase status did not expose local anon/service-role keys.");
   }
   writeGatewayVars(keys);
+  writeWebhookVars(keys);
 
   const env = processEnv(keys);
   const processes = [];
   processes.push(startProcess("api-gateway", "services/api-gateway", "pnpm", ["dev"], env));
+  for (const service of serviceRuntimes) {
+    processes.push(startProcess(service.name, service.cwd, "pnpm", ["dev"], env));
+  }
   for (const app of webApps) {
     processes.push(startProcess(app.name, app.cwd, "pnpm", ["dev"], env));
   }
   writeFileSync(pidsFile, JSON.stringify({ projectId, supabaseProjectRoot, logsDir, processes }, null, 2), "utf8");
 
   await waitFor("api-gateway", `http://127.0.0.1:${ports.gateway}/health`, (response, body) => response.ok && body.includes("healthy"));
+  for (const service of serviceRuntimes) {
+    await waitFor(service.name, service.url, (response, body) => response.ok && body.includes("healthy"));
+  }
   const productProof = await waitFor(
     "seeded product query",
     `http://127.0.0.1:${ports.gateway}/v1/storefront/urban-kicks-demo/products?limit=1`,

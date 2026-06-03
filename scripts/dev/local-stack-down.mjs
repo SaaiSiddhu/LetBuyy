@@ -53,5 +53,11 @@ try {
   // ignored: .dev.vars is local-only and may not exist
 }
 
+try {
+  unlinkSync(join(repoRoot, "services", "webhook-service", ".dev.vars"));
+} catch {
+  // ignored: .dev.vars is local-only and may not exist
+}
+
 rmSync(runRoot, { recursive: true, force: true });
 console.log("[federation-stack] local federation stack stopped");
