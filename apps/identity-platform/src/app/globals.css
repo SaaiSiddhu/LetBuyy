@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@source "../../../../packages/typescript/ui/src";
 
 :root {
   --font-inter: var(--font-letbuyy-sans), ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;

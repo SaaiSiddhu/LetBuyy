@@ -5,7 +5,7 @@ import { getAuthHeaders } from '@/lib/csrf-client'
 import { useSearchParams } from 'next/navigation'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { AuthIcon } from '@/components/AuthIcon'
-import { Globe, ShieldCheck } from '@letbuyy/ui'
+import { Badge, Banner, Button, Globe, Input, ProgressBar, ShieldCheck } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 type Step = 'email' | 'otp' | 'password'
@@ -27,6 +27,14 @@ const translations: Record<Lang, Record<string, string>> = {
         termsLink: 'Terms',
         and: 'and',
         privacyLink: 'Privacy Policy',
+        guidedBadge: 'Guided setup',
+        stepAccount: 'Account',
+        stepVerify: 'Verify',
+        stepSecure: 'Secure',
+        emailHelper: 'Use the email you will manage your store with.',
+        emailValid: 'We will send a 6-digit verification code.',
+        emailInvalid: 'Enter a valid email address.',
+        actionNeeded: 'Action needed',
         rateLimited: 'Too many signup attempts. Please try again later.',
         // OTP step
         otpTitle: 'Check your email',
@@ -65,6 +73,14 @@ const translations: Record<Lang, Record<string, string>> = {
         termsLink: 'शर्तें',
         and: 'और',
         privacyLink: 'गोपनीयता नीति',
+        guidedBadge: 'मार्गदर्शित सेटअप',
+        stepAccount: 'अकाउंट',
+        stepVerify: 'सत्यापित',
+        stepSecure: 'सुरक्षित',
+        emailHelper: 'वह ईमेल इस्तेमाल करें जिससे आप अपना स्टोर संभालेंगे।',
+        emailValid: 'हम 6-अंकीय सत्यापन कोड भेजेंगे।',
+        emailInvalid: 'सही ईमेल पता दर्ज करें।',
+        actionNeeded: 'कार्रवाई चाहिए',
         rateLimited: 'बहुत सारे प्रयास। कृपया बाद में पुनः प्रयास करें।',
         otpTitle: 'अपना ईमेल जांचें',
         otpSubtitle: 'हमने 6-अंकीय कोड भेजा',
@@ -101,6 +117,14 @@ const translations: Record<Lang, Record<string, string>> = {
         termsLink: 'விதிமுறைகள்',
         and: 'மற்றும்',
         privacyLink: 'தனியுரிமைக் கொள்கை',
+        guidedBadge: 'வழிகாட்டப்பட்ட அமைப்பு',
+        stepAccount: 'கணக்கு',
+        stepVerify: 'சரிபார்',
+        stepSecure: 'பாதுகாப்பு',
+        emailHelper: 'உங்கள் கடையை நிர்வகிக்கும் மின்னஞ்சலை பயன்படுத்தவும்.',
+        emailValid: '6-இலக்க சரிபார்ப்பு குறியீட்டை அனுப்புவோம்.',
+        emailInvalid: 'சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்.',
+        actionNeeded: 'நடவடிக்கை தேவை',
         rateLimited: 'பல முயற்சிகள். பிறகு மீண்டும் முயற்சிக்கவும்.',
         otpTitle: 'உங்கள் மின்னஞ்சலைச் சரிபார்க்கவும்',
         otpSubtitle: '6-இலக்க குறியீட்டை அனுப்பினோம்',
@@ -123,10 +147,15 @@ const translations: Record<Lang, Record<string, string>> = {
     },
 }
 
+function isValidEmail(value: string) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
 function SignupContent() {
     const searchParams = useSearchParams()
     const [step, setStep] = useState<Step>('email')
     const [email, setEmail] = useState('')
+    const [emailTouched, setEmailTouched] = useState(false)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [isDark, setIsDark] = useState(false)
@@ -146,6 +175,10 @@ function SignupContent() {
     const [showPassword, setShowPassword] = useState(false)
 
     const t = translations[lang]
+    const trimmedEmail = email.trim()
+    const emailFormatValid = isValidEmail(trimmedEmail)
+    const emailError = emailTouched && trimmedEmail.length > 0 && !emailFormatValid ? t.emailInvalid : undefined
+    const emailHelper = emailFormatValid ? t.emailValid : t.emailHelper
 
     useEffect(() => {
         const savedTheme = localStorage.getItem('letbuyy_theme')
@@ -202,7 +235,8 @@ function SignupContent() {
     // ——— Step 1: Email Submit ———
     const handleEmailSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!email.trim()) return
+        setEmailTouched(true)
+        if (!trimmedEmail || !emailFormatValid) return
 
         setLoading(true)
         setError(null)
@@ -222,7 +256,7 @@ function SignupContent() {
             if (!res.ok) {
                 if (res.status === 429) setError(t.rateLimited)
                 else if (res.status === 409) {
-                    window.location.href = `/lookup?email=${encodeURIComponent(email.trim())}&from=signup`
+                    window.location.href = `/lookup?email=${encodeURIComponent(trimmedEmail)}&from=signup`
                     return
                 }
                 else if (res.status === 403) setError(data.error || 'Verification failed')
@@ -410,10 +444,21 @@ function SignupContent() {
 
             <div className="auth-card">
                 {/* Step indicator */}
-                <div className="auth-step-indicator">
-                    {[1, 2, 3].map(n => (
-                        <div key={n} className={`auth-step-dot ${n <= stepNumber ? 'active' : ''} ${n === stepNumber ? 'current' : ''}`} />
-                    ))}
+                <div className="mb-[var(--lb-space-5)] grid gap-[var(--lb-space-3)]">
+                    <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
+                        <Badge label={t.guidedBadge} variant="info" />
+                        <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                            Step {stepNumber} of 3
+                        </span>
+                    </div>
+                    <ProgressBar value={stepNumber} max={3} label={step === 'email' ? t.stepAccount : step === 'otp' ? t.stepVerify : t.stepSecure} />
+                    <div className="grid grid-cols-3 gap-[var(--lb-space-2)] text-center text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
+                        {[t.stepAccount, t.stepVerify, t.stepSecure].map((label, index) => (
+                            <span key={label} className={index + 1 === stepNumber ? 'text-[color:var(--lb-color-text)]' : undefined}>
+                                {label}
+                            </span>
+                        ))}
+                    </div>
                 </div>
 
                 {/* ——— STEP 1: EMAIL ——— */}
@@ -427,29 +472,38 @@ function SignupContent() {
                         <p className="auth-subtitle">{t.subtitle}</p>
 
                         <form onSubmit={handleEmailSubmit} className="auth-form">
-                            <div className="auth-field">
-                                <label htmlFor="signupEmail">{t.email}</label>
-                                <input
-                                    id="signupEmail"
-                                    type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
-                                    placeholder={t.emailPlaceholder}
-                                    autoComplete="email"
-                                    autoFocus
-                                    required
-                                />
-                            </div>
+                            <Input
+                                id="signupEmail"
+                                label={t.email}
+                                type="email"
+                                value={email}
+                                onBlur={() => setEmailTouched(true)}
+                                onChange={(e) => {
+                                    setEmail(e.target.value)
+                                    setError(null)
+                                }}
+                                placeholder={t.emailPlaceholder}
+                                autoComplete="email"
+                                autoFocus
+                                required
+                                error={emailError}
+                                helperText={emailHelper}
+                            />
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && (
+                                <Banner title={t.actionNeeded} variant="critical">
+                                    {error}
+                                </Banner>
+                            )}
 
-                            <button
+                            <Button
                                 type="submit"
-                                className="auth-btn-primary"
-                                disabled={loading || !email.trim()}
+                                fullWidth
+                                loading={loading}
+                                disabled={!emailFormatValid}
                             >
-                                {loading ? '...' : t.continue}
-                            </button>
+                                {t.continue}
+                            </Button>
                         </form>
 
                         <div className="auth-divider">
@@ -457,15 +511,15 @@ function SignupContent() {
                         </div>
 
                         <div className="auth-oauth-row">
-                            <button className="auth-btn-oauth coming-soon" onClick={(e) => e.preventDefault()} aria-disabled="true">
+                            <Button type="button" variant="outline" fullWidth onClick={(e) => e.preventDefault()} aria-disabled="true">
                                 <ShieldCheck width={18} height={18} aria-hidden="true" />
                                 {t.apple}
-                                <span className="auth-coming-soon-badge">{t.comingSoon}</span>
-                            </button>
-                            <button className="auth-btn-oauth" onClick={() => handleOAuth('google')}>
+                                <Badge label={t.comingSoon} variant="warning" />
+                            </Button>
+                            <Button type="button" variant="outline" fullWidth onClick={() => handleOAuth('google')}>
                                 <Globe width={18} height={18} aria-hidden="true" />
                                 {t.google}
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="auth-bottom-link">
@@ -511,15 +565,21 @@ function SignupContent() {
                             ))}
                         </div>
 
-                        {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                        {error && (
+                            <Banner title={t.actionNeeded} variant="critical">
+                                {error}
+                            </Banner>
+                        )}
 
-                        <button
-                            className="auth-btn-primary"
+                        <Button
+                            type="button"
+                            fullWidth
+                            loading={loading}
                             disabled={loading || otp.join('').length !== 6}
                             onClick={() => handleOtpVerify()}
                         >
-                            {loading ? '...' : t.otpVerify}
-                        </button>
+                            {t.otpVerify}
+                        </Button>
 
                         <div className="auth-otp-actions">
                             <button
@@ -611,18 +671,25 @@ function SignupContent() {
                             </div>
 
                             {confirmPassword && !pwMatch && (
-                                <div className="auth-error">{t.pwMismatch}</div>
+                                <Banner title={t.actionNeeded} variant="critical">
+                                    {t.pwMismatch}
+                                </Banner>
                             )}
 
-                            {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                            {error && (
+                                <Banner title={t.actionNeeded} variant="critical">
+                                    {error}
+                                </Banner>
+                            )}
 
-                            <button
+                            <Button
                                 type="submit"
-                                className="auth-btn-primary"
+                                fullWidth
+                                loading={loading}
                                 disabled={loading || !pwValid || !pwMatch}
                             >
-                                {loading ? '...' : t.pwCreate}
-                            </button>
+                                {t.pwCreate}
+                            </Button>
                         </form>
                     </div>
                 )}
