@@ -5,11 +5,6 @@ import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
 import { MaterialIcon } from '@letbuyy/ui'
 
-/* ——————————————————————————————————————
-   Select Plan Client – Shopify-level
-   Premium inline-styled plan picker
-   —————————————————————————————————————— */
-
 interface SelectPlanClientProps {
     plans: SubscriptionPlanView[]
     currentPlan: string | null
@@ -21,7 +16,10 @@ interface SelectPlanClientProps {
     trialEndsAt: string | null
 }
 
-/* — Formatters — */
+function cx(...classes: Array<string | false | null | undefined>) {
+    return classes.filter(Boolean).join(' ')
+}
+
 function formatINR(paise: number): string {
     const rupees = paise / 100
     if (rupees >= 1000) {
@@ -59,133 +57,61 @@ export default function SelectPlanClient({
         router.push(`/${storeSlug}/settings/subscribe/checkout?plan=${planSlug}&bp=${billingPeriod.toUpperCase()}&site_type=${siteType}`)
     }
 
-    // Compare features
     const compareFeatures = plans.find(p => p.compare_features?.length > 0)?.compare_features || []
     const planSlugs = plans.map(p => p.slug)
-    const gridColumns = 'repeat(auto-fit, minmax(240px, 1fr))'
-    const compareGridColumns = `1.5fr repeat(${Math.max(plans.length, 1)}, minmax(120px, 1fr))`
+    const compareColumnCount = Math.min(Math.max(plans.length, 1), 6)
+    const compareRowClassName = `select-plan-compare-row select-plan-compare-row--${compareColumnCount}`
 
     return (
-        <div style={{
-            maxWidth: 1100,
-            margin: '0 auto',
-            padding: '40px 24px 80px',
-        }}>
-            {/* Hero */}
-            <div style={{ textAlign: 'center', marginBottom: 48 }}>
-                <div style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    fontSize: 13,
-                    color: 'var(--text-secondary, #94A3B8)',
-                    marginBottom: 16,
-                }}>
-                    <MaterialIcon name="storefront" style={{ fontSize: 16 }} />
+        <div className="select-plan-page">
+            <section className="select-plan-hero">
+                <div className="select-plan-breadcrumb" aria-label="Plan selection context">
+                    <MaterialIcon name="storefront" size={16} />
                     <span>{storeName}</span>
-                    <MaterialIcon name="chevron_right" style={{ fontSize: 14, opacity: 0.5 }} />
+                    <MaterialIcon name="chevron_right" size={14} className="select-plan-muted-icon" />
                     <span>Select a plan</span>
                 </div>
 
-                <h1 style={{
-                    fontSize: 32,
-                    fontWeight: 700,
-                    color: 'var(--text-primary, #F1F5F9)',
-                    margin: '0 0 16px',
-                    letterSpacing: '-0.5px',
-                    lineHeight: 1.25,
-                }}>
+                <h1 className="select-plan-title">
                     {isTrialExpired
-                        ? 'Your trial has ended — pick a plan to continue'
+                        ? 'Your trial has ended - pick a plan to continue'
                         : trialDaysLeft > 0
-                            ? `${trialDaysLeft} day${trialDaysLeft !== 1 ? 's' : ''} left in your trial — choose a plan`
+                            ? `${trialDaysLeft} day${trialDaysLeft !== 1 ? 's' : ''} left in your trial - choose a plan`
                             : 'Everything you need to run your business'}
                 </h1>
 
-                {/* Value highlights row */}
-                <div style={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    gap: 24,
-                    flexWrap: 'wrap',
-                    marginBottom: 32,
-                }}>
+                <div className="select-plan-highlights" aria-label="Plan highlights">
                     {[
                         { icon: 'language', text: 'Custom domain' },
                         { icon: 'auto_awesome', text: 'AI built-in' },
                         { icon: 'monitoring', text: '24/7 monitoring' },
                         { icon: 'currency_rupee', text: 'Indian INR pricing' },
-                    ].map((h, i) => (
-                        <div key={i} style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 6,
-                            fontSize: 13,
-                            color: 'var(--text-secondary, #94A3B8)',
-                        }}>
-                            <MaterialIcon name={h.icon} style={{ fontSize: 16, color: 'var(--primary, #8B5CF6)' }} />
-                            <span>{h.text}</span>
+                    ].map((highlight, index) => (
+                        <div key={index} className="select-plan-highlight">
+                            <MaterialIcon name={highlight.icon} size={16} className="select-plan-primary-icon" />
+                            <span>{highlight.text}</span>
                         </div>
                     ))}
                 </div>
 
-                {/* Billing toggle pill */}
-                <div style={{
-                    display: 'inline-flex',
-                    background: 'var(--bg-tertiary, #1E293B)',
-                    borderRadius: 12,
-                    padding: 4,
-                    border: '1px solid var(--border, #334155)',
-                }}>
-                    {(['monthly', 'yearly'] as const).map(bp => (
+                <div className="select-plan-toggle" role="group" aria-label="Billing period">
+                    {(['monthly', 'yearly'] as const).map(period => (
                         <button
-                            key={bp}
-                            onClick={() => setBillingPeriod(bp)}
-                            style={{
-                                padding: '10px 24px',
-                                borderRadius: 8,
-                                border: 'none',
-                                cursor: 'pointer',
-                                fontSize: 14,
-                                fontWeight: 600,
-                                fontFamily: 'inherit',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                transition: 'all 0.2s',
-                                background: billingPeriod === bp ? 'var(--bg-secondary, #0F172A)' : 'transparent',
-                                color: billingPeriod === bp ? 'var(--text-primary, #F1F5F9)' : 'var(--text-secondary, #94A3B8)',
-                                boxShadow: billingPeriod === bp ? '0 1px 3px rgba(0,0,0,0.3)' : 'none',
-                            }}
+                            key={period}
+                            type="button"
+                            className={cx('select-plan-toggle-button', billingPeriod === period && 'is-active')}
+                            onClick={() => setBillingPeriod(period)}
+                            aria-pressed={billingPeriod === period}
                         >
-                            {bp === 'monthly' ? 'Monthly' : 'Annual'}
-                            {bp === 'yearly' && (
-                                <span style={{
-                                    fontSize: 11,
-                                    fontWeight: 700,
-                                    padding: '2px 8px',
-                                    borderRadius: 20,
-                                    background: 'rgba(34, 197, 94, 0.15)',
-                                    color: '#22C55E',
-                                }}>Save 20%</span>
-                            )}
+                            {period === 'monthly' ? 'Monthly' : 'Annual'}
+                            {period === 'yearly' && <span className="select-plan-save-badge">Save 20%</span>}
                         </button>
                     ))}
                 </div>
-            </div>
+            </section>
 
-            {/* Plan cards grid */}
             {plans.length > 0 ? (
-                <div style={{
-                    display: 'grid',
-                    gridTemplateColumns: gridColumns,
-                    gap: 20,
-                    marginTop: 0,
-                    marginBottom: 56,
-                    marginLeft: plans.length <= 2 ? 'auto' : 0,
-                    marginRight: plans.length <= 2 ? 'auto' : 0,
-                    maxWidth: plans.length <= 2 ? 720 : undefined,
-                }}>
+                <section className={cx('select-plan-grid', plans.length <= 2 && 'select-plan-grid--compact')} aria-label="Available plans">
                     {plans.map(plan => {
                         const price = billingPeriod === 'monthly' ? plan.price_monthly_inr : plan.price_yearly_inr
                         const hasPromo = plan.promo_price_inr > 0 && plan.promo_months > 0
@@ -194,347 +120,141 @@ export default function SelectPlanClient({
                         const isFree = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
 
                         return (
-                            <div
+                            <article
                                 key={plan.id}
-                                style={{
-                                    position: 'relative',
-                                    background: isPopular
-                                        ? 'linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(59, 130, 246, 0.06) 100%)'
-                                        : 'var(--bg-secondary, #0F172A)',
-                                    border: isPopular
-                                        ? '2px solid var(--primary, #8B5CF6)'
-                                        : '1px solid var(--border, #334155)',
-                                    borderRadius: 16,
-                                    padding: '32px 28px',
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    transition: 'transform 0.2s, box-shadow 0.2s',
-                                }}
-                                onMouseEnter={e => {
-                                    e.currentTarget.style.transform = 'translateY(-4px)'
-                                    e.currentTarget.style.boxShadow = '0 12px 40px rgba(0,0,0,0.25)'
-                                }}
-                                onMouseLeave={e => {
-                                    e.currentTarget.style.transform = 'translateY(0)'
-                                    e.currentTarget.style.boxShadow = 'none'
-                                }}
+                                className={cx('select-plan-card', isPopular && 'select-plan-card--popular')}
                             >
-                                {/* Popular badge */}
-                                {isPopular && (
-                                    <div style={{
-                                        position: 'absolute',
-                                        top: -12,
-                                        left: '50%',
-                                        transform: 'translateX(-50%)',
-                                        background: 'var(--primary, #8B5CF6)',
-                                        color: '#fff',
-                                        fontSize: 11,
-                                        fontWeight: 700,
-                                        padding: '4px 16px',
-                                        borderRadius: 20,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px',
-                                    }}>
-                                        Most Popular
-                                    </div>
-                                )}
+                                {isPopular && <div className="select-plan-popular-badge">Most Popular</div>}
 
-                                {/* Plan name & tagline */}
-                                <div style={{ marginBottom: 20 }}>
-                                    <h3 style={{
-                                        fontSize: 20,
-                                        fontWeight: 700,
-                                        color: 'var(--text-primary, #F1F5F9)',
-                                        margin: '0 0 4px',
-                                    }}>{plan.name}</h3>
-                                    <p style={{
-                                        fontSize: 13,
-                                        color: 'var(--text-secondary, #94A3B8)',
-                                        margin: 0,
-                                        lineHeight: 1.5,
-                                    }}>{plan.tagline}</p>
+                                <div className="select-plan-card-heading">
+                                    <h2>{plan.name}</h2>
+                                    <p>{plan.tagline}</p>
                                 </div>
 
-                                {/* Price */}
-                                <div style={{ marginBottom: 24 }}>
+                                <div className="select-plan-price-block">
                                     {hasPromo && (
-                                        <div style={{
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 6,
-                                            marginBottom: 4,
-                                        }}>
-                                            <span style={{
-                                                fontSize: 12,
-                                                fontWeight: 600,
-                                                padding: '2px 8px',
-                                                borderRadius: 6,
-                                                background: 'rgba(139, 92, 246, 0.15)',
-                                                color: 'var(--primary-light, #A78BFA)',
-                                            }}>
-                                                First {plan.promo_months} months
-                                            </span>
-                                        </div>
+                                        <span className="select-plan-promo-badge">
+                                            First {plan.promo_months} months
+                                        </span>
                                     )}
 
-                                    <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
+                                    <div className="select-plan-price-row">
                                         {hasPromo ? (
                                             <>
-                                                <span style={{
-                                                    fontSize: 40,
-                                                    fontWeight: 800,
-                                                    color: 'var(--text-primary, #F1F5F9)',
-                                                    letterSpacing: '-1px',
-                                                    lineHeight: 1,
-                                                }}>{formatINR(plan.promo_price_inr)}</span>
-                                                <span style={{
-                                                    fontSize: 14,
-                                                    color: 'var(--text-hint, #64748B)',
-                                                    textDecoration: 'line-through',
-                                                }}>{formatINR(price)}</span>
+                                                <span className="select-plan-price">{formatINR(plan.promo_price_inr)}</span>
+                                                <span className="select-plan-price-strike">{formatINR(price)}</span>
                                             </>
                                         ) : plan.requires_contact ? (
-                                            <span style={{
-                                                fontSize: 32,
-                                                fontWeight: 800,
-                                                color: 'var(--text-primary, #F1F5F9)',
-                                                letterSpacing: '-1px',
-                                                lineHeight: 1,
-                                            }}>Custom</span>
+                                            <span className="select-plan-price select-plan-price--custom">Custom</span>
                                         ) : (
-                                            <span style={{
-                                                fontSize: 40,
-                                                fontWeight: 800,
-                                                color: 'var(--text-primary, #F1F5F9)',
-                                                letterSpacing: '-1px',
-                                                lineHeight: 1,
-                                            }}>{formatINR(price)}</span>
+                                            <span className="select-plan-price">{formatINR(price)}</span>
                                         )}
                                         {!plan.requires_contact && !isFree && (
-                                            <span style={{
-                                                fontSize: 14,
-                                                color: 'var(--text-hint, #64748B)',
-                                            }}>/month</span>
+                                            <span className="select-plan-price-period">/month</span>
                                         )}
                                     </div>
 
                                     {plan.gmv_percentage > 0 && (
-                                        <p style={{
-                                            fontSize: 12,
-                                            color: 'var(--text-hint, #64748B)',
-                                            margin: '4px 0 0',
-                                        }}>
-                                            + {plan.gmv_percentage}% transaction fee
-                                        </p>
+                                        <p className="select-plan-fee-note">+ {plan.gmv_percentage}% transaction fee</p>
                                     )}
                                 </div>
 
-                                {/* CTA */}
                                 <button
+                                    type="button"
                                     onClick={() => handleSelectPlan(plan.slug)}
                                     disabled={isCurrent}
-                                    style={{
-                                        width: '100%',
-                                        padding: '12px 0',
-                                        borderRadius: 10,
-                                        border: 'none',
-                                        cursor: isCurrent ? 'default' : 'pointer',
-                                        fontSize: 14,
-                                        fontWeight: 700,
-                                        fontFamily: 'inherit',
-                                        marginBottom: 24,
-                                        transition: 'all 0.2s',
-                                        background: isCurrent
-                                            ? 'var(--bg-tertiary, #1E293B)'
-                                            : isPopular
-                                                ? 'var(--primary, #8B5CF6)'
-                                                : plan.requires_contact
-                                                    ? 'transparent'
-                                                    : 'var(--bg-tertiary, #1E293B)',
-                                        color: isCurrent
-                                            ? 'var(--text-hint, #64748B)'
-                                            : isPopular
-                                                ? '#fff'
-                                                : 'var(--text-primary, #F1F5F9)',
-                                    }}
+                                    className={cx(
+                                        'select-plan-cta',
+                                        isPopular && 'select-plan-cta--primary',
+                                        plan.requires_contact && 'select-plan-cta--outline',
+                                        isCurrent && 'select-plan-cta--disabled',
+                                    )}
                                 >
                                     {isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : isFree ? 'Start free' : 'Start free trial'}
                                 </button>
 
-                                {/* Features */}
-                                <div style={{ flex: 1 }}>
-                                    <p style={{
-                                        fontSize: 11,
-                                        fontWeight: 600,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px',
-                                        color: 'var(--text-hint, #64748B)',
-                                        margin: '0 0 12px',
-                                    }}>What&apos;s included</p>
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                                        {(plan.features || []).map((f, i) => (
-                                            <li key={i} style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 8,
-                                                fontSize: 13,
-                                                color: 'var(--text-secondary, #94A3B8)',
-                                            }}>
-                                                <MaterialIcon name={f.icon} style={{ fontSize: 16, color: 'var(--primary-light, #A78BFA)', flexShrink: 0, }} />
-                                                {f.label}
+                                <div className="select-plan-feature-list">
+                                    <p className="select-plan-feature-eyebrow">What&apos;s included</p>
+                                    <ul>
+                                        {(plan.features || []).map((feature, index) => (
+                                            <li key={index}>
+                                                <MaterialIcon name={feature.icon} size={16} className="select-plan-feature-icon" />
+                                                <span>{feature.label}</span>
                                             </li>
                                         ))}
                                     </ul>
                                 </div>
-                            </div>
+                            </article>
                         )
                     })}
-                </div>
+                </section>
             ) : (
-                /* Empty state */
-                <div style={{
-                    textAlign: 'center',
-                    padding: '60px 20px',
-                    background: 'var(--bg-secondary, #0F172A)',
-                    borderRadius: 16,
-                    border: '1px solid var(--border, #334155)',
-                    marginBottom: 48,
-                }}>
-                    <MaterialIcon name="credit_card" style={{ fontSize: 48, color: 'var(--text-hint, #64748B)', marginBottom: 16, display: 'block', }} />
-                    <p style={{
-                        fontSize: 16,
-                        fontWeight: 600,
-                        color: 'var(--text-primary, #F1F5F9)',
-                        margin: '0 0 8px',
-                    }}>Plans are loading…</p>
-                    <p style={{
-                        fontSize: 13,
-                        color: 'var(--text-secondary, #94A3B8)',
-                        margin: 0,
-                    }}>The plans database hasn&apos;t been set up yet. Contact support if this persists.</p>
-                </div>
+                <section className="select-plan-empty" aria-live="polite">
+                    <MaterialIcon name="credit_card" size={48} className="select-plan-empty-icon" />
+                    <h2>Plans are loading...</h2>
+                    <p>The plans database has not been set up yet. Contact support if this persists.</p>
+                </section>
             )}
 
-            {/* Compare plans toggle */}
             {compareFeatures.length > 0 && (
-                <>
-                    <div style={{ textAlign: 'center', marginBottom: 40 }}>
+                <section className="select-plan-compare-section">
+                    <div className="select-plan-compare-toggle">
                         <button
+                            type="button"
                             onClick={() => setShowCompare(!showCompare)}
-                            style={{
-                                background: 'none',
-                                border: '1px solid var(--border, #334155)',
-                                borderRadius: 10,
-                                padding: '10px 24px',
-                                cursor: 'pointer',
-                                fontSize: 14,
-                                fontWeight: 600,
-                                fontFamily: 'inherit',
-                                color: 'var(--text-primary, #F1F5F9)',
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 8,
-                                transition: 'all 0.2s',
-                            }}
+                            className="select-plan-secondary-button"
+                            aria-expanded={showCompare}
                         >
-                            <MaterialIcon name={showCompare ? 'expand_less' : 'compare'} style={{ fontSize: 18 }} />
+                            <MaterialIcon name={showCompare ? 'expand_less' : 'compare'} size={18} />
                             {showCompare ? 'Hide comparison' : 'Compare all features'}
                         </button>
                     </div>
 
-                    {/* Comparison table */}
                     {showCompare && (
-                        <div style={{
-                            marginBottom: 56,
-                            border: '1px solid var(--border, #334155)',
-                            background: 'var(--bg-secondary, #0F172A)',
-                        }}>
-                            {/* Sticky main header — sticks below 56px page header */}
-                            <div style={{
-                                display: 'grid',
-                                gridTemplateColumns: compareGridColumns,
-                                background: '#1E293B',
-                                borderBottom: '2px solid var(--border, #334155)',
-                                position: 'sticky',
-                                top: 57,
-                                zIndex: 20,
-                            }}>
-                                <div style={{ padding: '16px 24px', fontSize: 13, fontWeight: 600, color: 'var(--text-secondary, #94A3B8)' }}>
-                                    Feature
-                                </div>
-                                {plans.map(p => (
-                                    <div key={p.slug} style={{
-                                        padding: '16px 20px',
-                                        textAlign: 'center',
-                                        fontSize: 14,
-                                        fontWeight: 700,
-                                        color: p.is_popular ? 'var(--primary, #8B5CF6)' : 'var(--text-primary, #F1F5F9)',
-                                    }}>
-                                        {p.name}
+                        <div className="select-plan-compare" role="table" aria-label="Plan feature comparison">
+                            <div className={cx(compareRowClassName, 'select-plan-compare-main-header')} role="row">
+                                <div className="select-plan-compare-feature-head" role="columnheader">Feature</div>
+                                {plans.map(plan => (
+                                    <div
+                                        key={plan.slug}
+                                        className={cx('select-plan-compare-plan-head', plan.is_popular && 'is-popular')}
+                                        role="columnheader"
+                                    >
+                                        {plan.name}
                                     </div>
                                 ))}
                             </div>
 
-                            {/* Table body — categories with sticky sub-headers */}
-                            {compareFeatures.map((cat, ci) => (
-                                <div key={ci}>
-                                    {/* Sticky category sub-header — stacks below main header (57 + ~52 = 109) */}
-                                    <div style={{
-                                        display: 'grid',
-                                        gridTemplateColumns: '1fr',
-                                        padding: '10px 24px',
-                                        background: '#0F172A',
-                                        borderBottom: '1px solid var(--border, #334155)',
-                                        borderTop: ci > 0 ? '1px solid var(--border, #334155)' : 'none',
-                                        fontSize: 12,
-                                        fontWeight: 700,
-                                        textTransform: 'uppercase',
-                                        letterSpacing: '0.5px',
-                                        color: 'var(--primary-light, #A78BFA)',
-                                        position: 'sticky',
-                                        top: 109,
-                                        zIndex: 15,
-                                    }}>
-                                        {cat.category}
+                            {compareFeatures.map((category, categoryIndex) => (
+                                <div key={categoryIndex} role="rowgroup">
+                                    <div className="select-plan-compare-category">
+                                        {category.category}
                                     </div>
 
-                                    {/* Feature rows */}
-                                    {cat.items.map((item, ii) => (
-                                        <div key={ii} style={{
-                                            display: 'grid',
-                                            gridTemplateColumns: compareGridColumns,
-                                            borderBottom: '1px solid var(--border, #334155)',
-                                        }}>
-                                            <div style={{
-                                                padding: '14px 24px',
-                                                fontSize: 13,
-                                                color: 'var(--text-primary, #F1F5F9)',
-                                            }}>
+                                    {category.items.map((item, itemIndex) => (
+                                        <div key={itemIndex} className={compareRowClassName} role="row">
+                                            <div className="select-plan-compare-feature" role="cell">
                                                 {item.label}
                                                 {item.description && (
-                                                    <div style={{ fontSize: 11, color: 'var(--text-hint, #64748B)', marginTop: 2 }}>
+                                                    <div className="select-plan-compare-description">
                                                         {item.description}
                                                     </div>
                                                 )}
                                             </div>
                                             {planSlugs.map(slug => {
-                                                const val = (item as unknown as Record<string, unknown>)[slug] ?? false
+                                                const value = (item as unknown as Record<string, unknown>)[slug] ?? false
                                                 return (
-                                                    <div key={slug} style={{
-                                                        padding: '14px 20px',
-                                                        textAlign: 'center',
-                                                        fontSize: 13,
-                                                        color: val === false ? 'var(--text-hint, #64748B)' : 'var(--text-primary, #F1F5F9)',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                    }}>
-                                                        {val === true ? (
-                                                            <MaterialIcon name="check_circle" style={{ fontSize: 18, color: '#22C55E' }} />
-                                                        ) : val === false ? (
-                                                            <MaterialIcon name="remove" style={{ fontSize: 18, opacity: 0.3 }} />
+                                                    <div
+                                                        key={slug}
+                                                        className={cx('select-plan-compare-value', value === false && 'is-muted')}
+                                                        role="cell"
+                                                    >
+                                                        {value === true ? (
+                                                            <MaterialIcon name="check_circle" size={18} className="select-plan-success-icon" />
+                                                        ) : value === false ? (
+                                                            <MaterialIcon name="remove" size={18} className="select-plan-muted-icon" />
                                                         ) : (
-                                                            <span>{String(val)}</span>
+                                                            <span>{String(value)}</span>
                                                         )}
                                                     </div>
                                                 )
@@ -545,25 +265,18 @@ export default function SelectPlanClient({
                             ))}
                         </div>
                     )}
-                </>
+                </section>
             )}
 
-            {/* Footer */}
-            <div style={{
-                textAlign: 'center',
-                borderTop: '1px solid var(--border, #334155)',
-                paddingTop: 32,
-            }}>
-                <p style={{ fontSize: 14, color: 'var(--text-secondary, #94A3B8)', margin: '0 0 8px' }}>
+            <footer className="select-plan-footer">
+                <p>
                     Need help choosing?{' '}
-                    <a href="mailto:support@letbuyy.com" style={{ color: 'var(--primary, #8B5CF6)', fontWeight: 600, textDecoration: 'none' }}>
+                    <a href="mailto:support@letbuyy.com">
                         Contact our team
                     </a>
                 </p>
-                <p style={{ fontSize: 13, color: 'var(--text-hint, #64748B)', margin: 0 }}>
-                    All plans include a 7-day free trial. Cancel anytime.
-                </p>
-            </div>
+                <p>All plans include a 7-day free trial. Cancel anytime.</p>
+            </footer>
         </div>
     )
 }
