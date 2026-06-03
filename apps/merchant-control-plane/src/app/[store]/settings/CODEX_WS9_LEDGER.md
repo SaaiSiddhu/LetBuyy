@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 10:17 IST [S5.17] Hardened Apps installation payloads by normalizing gateway rows, marketplace metadata, scopes, status, and install dates before app metrics, badges, launch links, and uninstall actions render.
 - 2026-06-03 10:14 IST [S5.16] Hardened Plan payloads by normalizing trial store data, subscription summaries, catalog plan pricing, and feature rows before plan status, pricing, and entitlement cards render.
 - 2026-06-03 10:11 IST [S5.15] Hardened Billing gateway payloads by normalizing subscription summaries, invoice rows, and nested payment method configuration before summary metrics and invoice history render.
 - 2026-06-03 10:08 IST [S5.14] Hardened Users staff payloads by normalizing employee rows, dropping records without stable ids/emails, and falling back unknown roles to least-privilege viewer before rendering role controls or remove actions.
@@ -129,3 +130,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 10:14 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Plan payload normalization.
 - 2026-06-03 10:14 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 10:14 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 10:17 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Apps installation payload normalization.
+- 2026-06-03 10:17 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 10:17 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

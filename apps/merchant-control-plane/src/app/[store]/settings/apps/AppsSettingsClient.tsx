@@ -19,11 +19,24 @@ import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface AppsSettingsClientProps {
     store: string
-    installedApps: InstalledApp[]
+    installedApps: unknown
     onUninstall: (appId: string) => Promise<{ ok: boolean; message: string }>
 }
 
 const APP_MARKETPLACE_URL = 'https://apps.letbuyy.store'
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
+function readOptionalString(value: unknown) {
+    const text = readString(value).trim()
+    return text || null
+}
 
 function formatDate(value?: string | null) {
     if (!value) return 'Recently installed'
@@ -60,9 +73,45 @@ function appLaunchUrl(app: InstalledApp) {
     return safeExternalUrl(app.marketplace_apps?.app_url)
 }
 
+function normalizeMarketplaceApp(value: unknown, appId: string): InstalledApp['marketplace_apps'] {
+    if (!isRecord(value)) return null
+
+    return {
+        id: readString(value.id, appId),
+        name: readString(value.name, appId),
+        slug: readOptionalString(value.slug),
+        icon_url: readOptionalString(value.icon_url),
+        tagline: readOptionalString(value.tagline),
+        pricing_model: readOptionalString(value.pricing_model),
+        app_url: readOptionalString(value.app_url),
+    }
+}
+
+function normalizeInstalledApps(value: unknown): InstalledApp[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((app) => {
+        if (!isRecord(app) || typeof app.id !== 'string' || !app.id || typeof app.app_id !== 'string' || !app.app_id) return []
+
+        return [{
+            id: app.id,
+            app_id: app.app_id,
+            store_id: readString(app.store_id),
+            status: readString(app.status, 'active'),
+            scopes_granted: Array.isArray(app.scopes_granted)
+                ? app.scopes_granted.filter((scope): scope is string => typeof scope === 'string' && scope.trim().length > 0)
+                : [],
+            config: isRecord(app.config) ? app.config : {},
+            installed_at: readOptionalString(app.installed_at),
+            uninstalled_at: readOptionalString(app.uninstalled_at),
+            marketplace_apps: normalizeMarketplaceApp(app.marketplace_apps, app.app_id),
+        }]
+    })
+}
+
 export function AppsSettingsClient({ store, installedApps, onUninstall }: AppsSettingsClientProps) {
     const { notify } = useToast()
-    const [apps, setApps] = useState(installedApps)
+    const [apps, setApps] = useState(() => normalizeInstalledApps(installedApps))
     const [pendingApp, setPendingApp] = useState<InstalledApp | null>(null)
     const [isPending, startTransition] = useTransition()
 
