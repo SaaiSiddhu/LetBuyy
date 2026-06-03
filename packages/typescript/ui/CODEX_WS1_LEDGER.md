@@ -89,6 +89,31 @@ Implemented in this batch:
 - `CommandPalette`: added grouped rendering, keyword filtering, disabled action states, and first-enabled keyboard active item behavior.
 - Added `WorkflowComponentHardening` and `CommandPaletteWorkflowStates` Storybook stories for the batch 3 public API additions.
 
+## Batch 4 — Control Component Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed, lockfile resolution skipped, 651 packages linked from existing store.
+- `pnpm --filter @letbuyy/ui typecheck` — passed after fixing the `prefixContent` class guard.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframe rendered `ControlComponentHardening`.
+- `pnpm exec playwright screenshot --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--control-component-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-control-component-hardening.jpg` — passed.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-control-component-hardening.jpg`.
+
+Implemented in this batch:
+- `TabItem`: added optional `icon`, `disabled`, and `panelClassName` fields.
+- `Tabs`: added optional `variant`, `ariaLabel`, and `panelClassName` props.
+- `Tabs`: added pill styling and keyboard navigation that skips disabled tabs.
+- `SelectOption`: added optional `description`, `keywords`, and `icon` fields for richer combobox rendering and search.
+- `Select`: added optional `placeholder`, `requiredIndicator`, `labelAction`, `prefixContent`, `controlSize`, and `hideLabel` props.
+- `Select`: added required ARIA wiring and token-driven control sizing.
+- `Combobox`: added optional `id`, `name`, `helperText`, `error`, `loading`, `loadingLabel`, `disabled`, `required`, `requiredIndicator`, `labelAction`, `query`, `defaultQuery`, `onQueryChange`, and `inputClassName` props.
+- `Combobox`: added keyword/description search, hidden form value support, helper/error text, disabled input state, metadata-rich options, and first-enabled keyboard active item behavior.
+- Added `ControlComponentHardening` Storybook story showing the batch 4 public API additions.
+
 ## Stable Public API
 
 Components:

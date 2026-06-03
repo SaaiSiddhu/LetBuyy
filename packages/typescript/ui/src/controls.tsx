@@ -8,6 +8,9 @@ export interface TabItem {
     value: string;
     label: string;
     badge?: string;
+    icon?: React.ReactNode;
+    disabled?: boolean;
+    panelClassName?: string;
     content: React.ReactNode;
 }
 
@@ -16,27 +19,73 @@ export interface TabsProps {
     value?: string;
     defaultValue?: string;
     onValueChange?: (value: string) => void;
+    variant?: 'underline' | 'pills';
+    ariaLabel?: string;
+    panelClassName?: string;
     className?: string;
 }
 
-export function Tabs({ items, value, defaultValue, onValueChange, className = '' }: TabsProps) {
+const tabVariantStyles: Record<NonNullable<TabsProps['variant']>, { list: string; tab: string; active: string; inactive: string }> = {
+    underline: {
+        list: 'gap-[var(--lb-space-2)] border-b border-[var(--lb-color-border)]',
+        tab: 'border-b-2 px-[var(--lb-space-3)]',
+        active: 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]',
+        inactive: 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
+    },
+    pills: {
+        list: 'gap-[var(--lb-space-2)]',
+        tab: 'rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-3)]',
+        active: 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]',
+        inactive: 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] hover:text-[color:var(--lb-color-text)]',
+    },
+};
+
+function firstEnabledTabIndex(items: TabItem[]) {
+    return items.findIndex((item) => !item.disabled);
+}
+
+function nextEnabledTabIndex(items: TabItem[], currentIndex: number, direction: 1 | -1) {
+    if (items.length === 0) return -1;
+    for (let attempts = 0; attempts < items.length; attempts += 1) {
+        const nextIndex = (currentIndex + direction * (attempts + 1) + items.length) % items.length;
+        if (!items[nextIndex]?.disabled) return nextIndex;
+    }
+    return -1;
+}
+
+export function Tabs({
+    items,
+    value,
+    defaultValue,
+    onValueChange,
+    variant = 'underline',
+    ariaLabel,
+    panelClassName = '',
+    className = '',
+}: TabsProps) {
     const tabsId = useId();
     const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
-    const fallbackValue = defaultValue ?? items[0]?.value ?? '';
+    const fallbackItem = items.find((item) => item.value === defaultValue && !item.disabled)
+        ?? items[firstEnabledTabIndex(items)]
+        ?? items[0];
+    const fallbackValue = fallbackItem?.value ?? '';
     const [internalValue, setInternalValue] = useState(fallbackValue);
     const activeValue = value ?? internalValue;
-    const activeItem = items.find((item) => item.value === activeValue) ?? items[0];
-    const activeIndex = Math.max(items.findIndex((item) => item.value === activeItem?.value), 0);
+    const activeItem = items.find((item) => item.value === activeValue && !item.disabled) ?? fallbackItem;
+    const activeIndex = items.findIndex((item) => item.value === activeItem?.value);
+    const styles = tabVariantStyles[variant];
 
     const selectTab = (nextValue: string) => {
-        setInternalValue(nextValue);
-        onValueChange?.(nextValue);
+        const nextItem = items.find((item) => item.value === nextValue);
+        if (!nextItem || nextItem.disabled) return;
+        setInternalValue(nextItem.value);
+        onValueChange?.(nextItem.value);
     };
 
     const moveFocus = (nextIndex: number) => {
-        const boundedIndex = (nextIndex + items.length) % items.length;
+        const boundedIndex = nextIndex;
         const nextItem = items[boundedIndex];
-        if (!nextItem) return;
+        if (!nextItem || nextItem.disabled) return;
         selectTab(nextItem.value);
         tabRefs.current[boundedIndex]?.focus();
     };
@@ -45,25 +94,26 @@ export function Tabs({ items, value, defaultValue, onValueChange, className = ''
         if (items.length === 0) return;
         if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
             event.preventDefault();
-            moveFocus(index + 1);
+            moveFocus(nextEnabledTabIndex(items, index, 1));
         }
         if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
             event.preventDefault();
-            moveFocus(index - 1);
+            moveFocus(nextEnabledTabIndex(items, index, -1));
         }
         if (event.key === 'Home') {
             event.preventDefault();
-            moveFocus(0);
+            moveFocus(firstEnabledTabIndex(items));
         }
         if (event.key === 'End') {
             event.preventDefault();
-            moveFocus(items.length - 1);
+            const reversedIndex = [...items].reverse().findIndex((item) => !item.disabled);
+            moveFocus(reversedIndex < 0 ? -1 : items.length - 1 - reversedIndex);
         }
     };
 
     return (
         <div className={cx('space-y-[var(--lb-space-4)]', className)}>
-            <div role="tablist" className="flex flex-wrap gap-[var(--lb-space-2)] border-b border-[var(--lb-color-border)]">
+            <div role="tablist" aria-label={ariaLabel} className={cx('flex flex-wrap', styles.list)}>
                 {items.map((item, index) => {
                     const active = item.value === activeItem?.value;
                     return (
@@ -76,17 +126,19 @@ export function Tabs({ items, value, defaultValue, onValueChange, className = ''
                             type="button"
                             role="tab"
                             aria-selected={active}
+                            aria-disabled={item.disabled || undefined}
                             aria-controls={`${tabsId}-panel-${index}`}
                             tabIndex={active ? 0 : -1}
+                            disabled={item.disabled}
                             className={cx(
-                                'inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] border-b-2 px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
-                                active
-                                    ? 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]'
-                                    : 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
+                                'inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                                styles.tab,
+                                active ? styles.active : styles.inactive,
                             )}
                             onKeyDown={(event) => handleTabKeyDown(event, index)}
                             onClick={() => selectTab(item.value)}
                         >
+                            {item.icon && <span className="inline-flex shrink-0" aria-hidden="true">{item.icon}</span>}
                             {item.label}
                             {item.badge && (
                                 <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
@@ -98,7 +150,13 @@ export function Tabs({ items, value, defaultValue, onValueChange, className = ''
                 })}
             </div>
             {activeItem && (
-                <div id={`${tabsId}-panel-${activeIndex}`} role="tabpanel" aria-labelledby={`${tabsId}-tab-${activeIndex}`} tabIndex={0} className="focus-visible:outline-none">
+                <div
+                    id={`${tabsId}-panel-${activeIndex}`}
+                    role="tabpanel"
+                    aria-labelledby={`${tabsId}-tab-${activeIndex}`}
+                    tabIndex={0}
+                    className={cx('focus-visible:outline-none', panelClassName, activeItem.panelClassName)}
+                >
                     {activeItem.content}
                 </div>
             )}
@@ -110,6 +168,9 @@ export interface SelectOption {
     label: string;
     value: string;
     disabled?: boolean;
+    description?: string;
+    keywords?: string[];
+    icon?: React.ReactNode;
 }
 
 export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>, 'children'> {
@@ -117,34 +178,78 @@ export interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectE
     helperText?: string;
     error?: string;
     options: SelectOption[];
+    placeholder?: string;
+    requiredIndicator?: boolean;
+    labelAction?: React.ReactNode;
+    prefixContent?: React.ReactNode;
+    controlSize?: 'sm' | 'md' | 'lg';
+    hideLabel?: boolean;
 }
 
-export function Select({ label, helperText, error, options, className = '', id, ...props }: SelectProps) {
+const selectControlSizeStyles: Record<NonNullable<SelectProps['controlSize']>, string> = {
+    sm: 'h-[var(--lb-size-control-sm)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]',
+    md: 'h-[var(--lb-size-control-md)] text-[length:var(--lb-font-size-body)] rounded-[var(--lb-radius-lg)]',
+    lg: 'h-[var(--lb-size-control-lg)] text-[length:var(--lb-font-size-body)] rounded-[var(--lb-radius-lg)]',
+};
+
+export function Select({
+    label,
+    helperText,
+    error,
+    options,
+    placeholder,
+    requiredIndicator = false,
+    labelAction,
+    prefixContent,
+    controlSize = 'md',
+    hideLabel = false,
+    className = '',
+    id,
+    ...props
+}: SelectProps) {
     const generatedId = useId();
     const selectId = id ?? generatedId;
     const errorId = error ? `${selectId}-error` : undefined;
     const helperId = helperText && !error ? `${selectId}-helper` : undefined;
     const describedBy = [errorId, helperId, props['aria-describedby']].filter(Boolean).join(' ') || undefined;
+    const hasPrefixContent = Boolean(prefixContent);
 
     return (
         <div className="flex flex-col gap-[var(--lb-space-2)]">
             {label && (
-                <label htmlFor={selectId} className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                    {label}
-                </label>
+                <div className={cx('flex items-center justify-between gap-[var(--lb-space-3)]', hideLabel && 'sr-only')}>
+                    <label htmlFor={selectId} className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                        {label}
+                        {requiredIndicator && <span className="ml-[var(--lb-space-1)] text-[color:var(--lb-color-critical)]" aria-hidden="true">*</span>}
+                    </label>
+                    {labelAction}
+                </div>
             )}
             <div className="relative">
+                {prefixContent && (
+                    <span className="pointer-events-none absolute left-[var(--lb-space-3)] top-1/2 z-10 -translate-y-1/2 text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
+                        {prefixContent}
+                    </span>
+                )}
                 <select
                     id={selectId}
                     className={cx(
-                        'h-[var(--lb-size-control-md)] w-full appearance-none rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] pr-[var(--lb-space-7)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                        'w-full appearance-none border bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] pr-[var(--lb-space-7)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                        selectControlSizeStyles[controlSize],
+                        hasPrefixContent && 'pl-[var(--lb-space-7)]',
                         error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
                         className,
                     )}
                     aria-invalid={Boolean(error)}
                     aria-describedby={describedBy}
+                    aria-required={props.required || undefined}
                     {...props}
                 >
+                    {placeholder && (
+                        <option value="" disabled>
+                            {placeholder}
+                        </option>
+                    )}
                     {options.map((option) => (
                         <option key={option.value} value={option.value} disabled={option.disabled}>
                             {option.label}
@@ -160,48 +265,90 @@ export function Select({ label, helperText, error, options, className = '', id, 
 }
 
 export interface ComboboxProps {
+    id?: string;
+    name?: string;
     label?: string;
+    helperText?: string;
+    error?: string;
     placeholder?: string;
     options: SelectOption[];
     value?: string;
     onValueChange?: (value: string) => void;
     emptyMessage?: string;
+    loading?: boolean;
+    loadingLabel?: string;
+    disabled?: boolean;
+    required?: boolean;
+    requiredIndicator?: boolean;
+    labelAction?: React.ReactNode;
+    query?: string;
+    defaultQuery?: string;
+    onQueryChange?: (query: string) => void;
     className?: string;
+    inputClassName?: string;
 }
 
 export function Combobox({
+    id,
+    name,
     label,
+    helperText,
+    error,
     placeholder = 'Search',
     options,
     value,
     onValueChange,
     emptyMessage = 'No results',
+    loading = false,
+    loadingLabel = 'Loading options',
+    disabled = false,
+    required = false,
+    requiredIndicator = false,
+    labelAction,
+    query,
+    defaultQuery = '',
+    onQueryChange,
     className = '',
+    inputClassName = '',
 }: ComboboxProps) {
     const generatedId = useId();
-    const listboxId = `${generatedId}-listbox`;
-    const [query, setQuery] = useState('');
+    const inputId = id ?? generatedId;
+    const listboxId = `${inputId}-listbox`;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const helperId = helperText && !error ? `${inputId}-helper` : undefined;
+    const describedBy = [errorId, helperId].filter(Boolean).join(' ') || undefined;
+    const [internalQuery, setInternalQuery] = useState(defaultQuery);
     const [open, setOpen] = useState(false);
     const [activeIndex, setActiveIndex] = useState(-1);
     const selected = options.find((option) => option.value === value);
+    const currentQuery = query ?? internalQuery;
+    const displayValue = currentQuery || selected?.label || '';
     const filteredOptions = useMemo(() => {
-        const normalizedQuery = query.trim().toLowerCase();
+        const normalizedQuery = currentQuery.trim().toLowerCase();
         if (!normalizedQuery) return options;
-        return options.filter((option) => option.label.toLowerCase().includes(normalizedQuery));
-    }, [options, query]);
+        return options.filter((option) => `${option.label} ${option.description ?? ''} ${(option.keywords ?? []).join(' ')}`.toLowerCase().includes(normalizedQuery));
+    }, [options, currentQuery]);
     const activeOption = activeIndex >= 0 ? filteredOptions[activeIndex] : undefined;
+
+    const updateQuery = (nextQuery: string) => {
+        setInternalQuery(nextQuery);
+        onQueryChange?.(nextQuery);
+    };
+
+    const firstEnabledOptionIndex = () => filteredOptions.findIndex((option) => !option.disabled);
 
     const selectOption = (option: SelectOption) => {
         if (option.disabled) return;
         onValueChange?.(option.value);
-        setQuery(option.label);
+        updateQuery(option.label);
         setOpen(false);
         setActiveIndex(-1);
     };
 
     const openWithFirstOption = () => {
+        if (disabled) return;
         setOpen(true);
-        setActiveIndex(filteredOptions.length > 0 ? 0 : -1);
+        setActiveIndex(firstEnabledOptionIndex());
     };
 
     const moveActiveOption = (direction: 1 | -1) => {
@@ -212,12 +359,17 @@ export function Combobox({
 
         setOpen(true);
         setActiveIndex((current) => {
-            const nextIndex = current < 0 ? 0 : (current + direction + filteredOptions.length) % filteredOptions.length;
-            return nextIndex;
+            let nextIndex = current < 0 ? (direction > 0 ? -1 : 0) : current;
+            for (let attempts = 0; attempts < filteredOptions.length; attempts += 1) {
+                nextIndex = (nextIndex + direction + filteredOptions.length) % filteredOptions.length;
+                if (!filteredOptions[nextIndex]?.disabled) return nextIndex;
+            }
+            return -1;
         });
     };
 
     const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (disabled) return;
         if (event.key === 'ArrowDown') {
             event.preventDefault();
             moveActiveOption(1);
@@ -240,26 +392,39 @@ export function Combobox({
     return (
         <div className={cx('relative flex flex-col gap-[var(--lb-space-2)]', className)}>
             {label && (
-                <label htmlFor={generatedId} className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                    {label}
-                </label>
+                <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
+                    <label htmlFor={inputId} className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                        {label}
+                        {requiredIndicator && <span className="ml-[var(--lb-space-1)] text-[color:var(--lb-color-critical)]" aria-hidden="true">*</span>}
+                    </label>
+                    {labelAction}
+                </div>
             )}
+            {name && <input type="hidden" name={name} value={value ?? ''} />}
             <input
-                id={generatedId}
+                id={inputId}
                 role="combobox"
                 aria-autocomplete="list"
                 aria-expanded={open}
                 aria-controls={open ? listboxId : undefined}
                 aria-activedescendant={open && activeOption ? `${listboxId}-option-${activeIndex}` : undefined}
                 aria-haspopup="listbox"
+                aria-invalid={Boolean(error)}
+                aria-describedby={describedBy}
+                aria-required={required || undefined}
                 autoComplete="off"
-                className="h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] placeholder:text-[color:var(--lb-color-text-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                disabled={disabled}
+                className={cx(
+                    'h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] placeholder:text-[color:var(--lb-color-text-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                    error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
+                    inputClassName,
+                )}
                 placeholder={placeholder}
-                value={query || selected?.label || ''}
+                value={displayValue}
                 onChange={(event) => {
-                    setQuery(event.target.value);
+                    updateQuery(event.target.value);
                     setOpen(true);
-                    setActiveIndex(0);
+                    setActiveIndex(firstEnabledOptionIndex());
                 }}
                 onFocus={openWithFirstOption}
                 onKeyDown={handleKeyDown}
@@ -270,7 +435,11 @@ export function Combobox({
                     role="listbox"
                     className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
                 >
-                    {filteredOptions.length === 0 ? (
+                    {loading ? (
+                        <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
+                            {loadingLabel}
+                        </div>
+                    ) : filteredOptions.length === 0 ? (
                         <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                             {emptyMessage}
                         </div>
@@ -283,20 +452,32 @@ export function Combobox({
                                 role="option"
                                 aria-selected={option.value === value}
                                 className={cx(
-                                    'flex w-full items-center justify-between rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-left text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50',
+                                    'flex w-full items-start justify-between gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-left text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:cursor-not-allowed disabled:opacity-50',
                                     activeIndex === index && 'bg-[var(--lb-color-surface-subdued)]',
                                 )}
                                 disabled={option.disabled}
                                 onMouseDown={(event) => event.preventDefault()}
                                 onClick={() => selectOption(option)}
                             >
-                                {option.label}
-                                {option.value === value && <Check className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                <span className="flex min-w-0 items-start gap-[var(--lb-space-2)]">
+                                    {option.icon && <span className="mt-[var(--lb-space-1)] shrink-0 text-[color:var(--lb-color-text-subdued)]" aria-hidden="true">{option.icon}</span>}
+                                    <span className="min-w-0">
+                                        <span className="block">{option.label}</span>
+                                        {option.description && (
+                                            <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                {option.description}
+                                            </span>
+                                        )}
+                                    </span>
+                                </span>
+                                {option.value === value && <Check className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0" aria-hidden="true" />}
                             </button>
                         ))
                     )}
                 </div>
             )}
+            {error && <p id={errorId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>}
+            {helperText && !error && <p id={helperId} className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
         </div>
     );
 }

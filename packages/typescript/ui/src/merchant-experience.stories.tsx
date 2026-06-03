@@ -687,6 +687,143 @@ export function CommandPaletteWorkflowStates() {
     );
 }
 
+export function ControlComponentHardening() {
+    const [tab, setTab] = useState('channels');
+    const [market, setMarket] = useState('');
+    const [collection, setCollection] = useState('new-arrivals');
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 4"
+                title="Control component hardening"
+                description="Tabs, Select, and Combobox now support disabled states, richer labels, option metadata, and clearer ARIA/error wiring."
+            />
+            <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-[0.9fr_1.1fr]">
+                <Card>
+                    <Section title="Pill tabs" description="Disabled tabs stay visible while keyboard navigation skips unavailable workflow steps.">
+                        <Tabs
+                            ariaLabel="Publishing workflow"
+                            variant="pills"
+                            value={tab}
+                            onValueChange={setTab}
+                            items={[
+                                {
+                                    value: 'channels',
+                                    label: 'Channels',
+                                    badge: '4',
+                                    icon: <MaterialIcon name="storefront" />,
+                                    content: (
+                                        <Banner title="Online Store ready" variant="success">
+                                            Product publishing can continue for active storefront channels.
+                                        </Banner>
+                                    ),
+                                },
+                                {
+                                    value: 'inventory',
+                                    label: 'Inventory',
+                                    icon: <MaterialIcon name="inventory" />,
+                                    content: (
+                                        <Banner title="Inventory checked" variant="info">
+                                            Stock rules are available for this catalog segment.
+                                        </Banner>
+                                    ),
+                                },
+                                {
+                                    value: 'payments',
+                                    label: 'Payments',
+                                    icon: <MaterialIcon name="payments" />,
+                                    disabled: true,
+                                    content: null,
+                                },
+                            ]}
+                        />
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Native select" description="Select supports placeholder options, prefixes, required marks, label actions, and control sizing.">
+                        <div className="grid gap-[var(--lb-space-4)]">
+                            <Select
+                                label="Primary market"
+                                placeholder="Choose a market"
+                                required
+                                requiredIndicator
+                                labelAction={<Button size="sm" variant="ghost">Reset</Button>}
+                                prefixContent={<MaterialIcon name="language" />}
+                                controlSize="lg"
+                                value={market}
+                                onChange={(event) => setMarket(event.target.value)}
+                                helperText="Used for checkout currency, tax, and shipping defaults."
+                                options={[
+                                    { label: 'India', value: 'india' },
+                                    { label: 'United States', value: 'us' },
+                                    { label: 'United Kingdom', value: 'uk', disabled: true },
+                                ]}
+                            />
+                            <Select
+                                label="Fulfillment SLA"
+                                defaultValue="same-day"
+                                controlSize="sm"
+                                options={[
+                                    { label: 'Same day', value: 'same-day' },
+                                    { label: 'Two business days', value: 'two-day' },
+                                ]}
+                            />
+                        </div>
+                    </Section>
+                </Card>
+            </div>
+            <Card>
+                <Section title="Combobox metadata" description="Combobox options can include descriptions, icons, keyword search, hidden form values, helper text, and disabled states.">
+                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                        <Combobox
+                            name="collection"
+                            label="Default collection"
+                            helperText="Search by visible label or hidden keyword metadata."
+                            value={collection}
+                            onValueChange={setCollection}
+                            labelAction={<Button size="sm" variant="ghost">Manage</Button>}
+                            requiredIndicator
+                            options={[
+                                {
+                                    label: 'New arrivals',
+                                    value: 'new-arrivals',
+                                    description: 'Recently published products',
+                                    keywords: ['fresh', 'latest'],
+                                    icon: <MaterialIcon name="new_releases" />,
+                                },
+                                {
+                                    label: 'Best sellers',
+                                    value: 'best-sellers',
+                                    description: 'Products with the highest order volume',
+                                    keywords: ['popular', 'top'],
+                                    icon: <MaterialIcon name="trending_up" />,
+                                },
+                                {
+                                    label: 'Wholesale only',
+                                    value: 'wholesale',
+                                    description: 'Unavailable for Online Store publishing',
+                                    disabled: true,
+                                    icon: <MaterialIcon name="block" />,
+                                },
+                            ]}
+                        />
+                        <Combobox
+                            label="Restricted channel"
+                            value="locked"
+                            disabled
+                            error="Channel access is locked for this role."
+                            options={[
+                                { label: 'Locked channel', value: 'locked' },
+                            ]}
+                        />
+                    </div>
+                </Section>
+            </Card>
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>
