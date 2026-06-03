@@ -5746,6 +5746,18 @@ body {
   height: fit-content;
 }
 
+.te-preview-frame--desktop {
+  max-width: 1280px;
+}
+
+.te-preview-frame--tablet {
+  max-width: 768px;
+}
+
+.te-preview-frame--mobile {
+  max-width: 390px;
+}
+
 .te-preview-browser-bar {
   display: flex;
   align-items: center;

@@ -12,12 +12,6 @@ interface CenterPanelProps {
     selectedSectionId: string | null
 }
 
-const VIEWPORT_WIDTHS: Record<CenterPanelProps['viewport'], number> = {
-    desktop: 1280,
-    tablet: 768,
-    mobile: 390,
-}
-
 function getStorefrontBaseUrl() {
     const configured = process.env.NEXT_PUBLIC_STOREFRONT_URL?.replace(/\/$/, '')
     if (configured) return configured
@@ -63,10 +57,7 @@ export default function CenterPanel({
 
     return (
         <div className="te-center-panel">
-            <div
-                className="te-preview-frame"
-                style={{ maxWidth: VIEWPORT_WIDTHS[viewport] }}
-            >
+            <div className={`te-preview-frame te-preview-frame--${viewport}`}>
                 <div className="te-preview-browser-bar">
                     <div className="te-preview-dots">
                         <span className="te-preview-dot te-preview-dot--red" />
