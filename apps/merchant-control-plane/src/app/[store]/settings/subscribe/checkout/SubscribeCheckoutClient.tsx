@@ -56,12 +56,20 @@ function cx(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(' ')
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown) {
+    return typeof value === 'string' ? value : ''
+}
+
 function paymentErrorMessage(payload: unknown, fallback: string) {
-    if (!payload || typeof payload !== 'object') return fallback
-    const error = (payload as { error?: unknown }).error
+    if (!isRecord(payload)) return fallback
+    const error = payload.error
     if (typeof error === 'string') return error
-    if (error && typeof error === 'object') {
-        const message = (error as { message?: unknown }).message
+    if (isRecord(error)) {
+        const message = error.message
         if (typeof message === 'string' && message.length > 0) return message
     }
     return fallback
@@ -87,6 +95,19 @@ function formatRupees(value: number) {
 function coerceNumber(value: unknown) {
     const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
     return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeOrderData(payload: unknown) {
+    const data = isRecord(payload) ? payload : {}
+
+    return {
+        activated: data.activated === true,
+        checkout_mode: readString(data.checkout_mode),
+        key_id: readString(data.key_id),
+        razorpay_order_id: readString(data.razorpay_order_id),
+        razorpay_subscription_id: readString(data.razorpay_subscription_id),
+        amount: coerceNumber(data.amount),
+    }
 }
 
 interface PaymentMethodOptionProps {
@@ -222,8 +243,10 @@ export default function SubscribeCheckoutClient({
                 }),
             })
 
-            const orderData = await orderRes.json()
-            if (!orderRes.ok) throw new Error(paymentErrorMessage(orderData, 'Failed to create order'))
+            const orderPayload = await orderRes.json().catch(() => null)
+            if (!orderRes.ok) throw new Error(paymentErrorMessage(orderPayload, 'Failed to create order'))
+
+            const orderData = normalizeOrderData(orderPayload)
 
             if (orderData.activated || orderData.checkout_mode === 'free_activation') {
                 router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
@@ -249,7 +272,7 @@ export default function SubscribeCheckoutClient({
                 ...(orderData.razorpay_subscription_id
                     ? { subscription_id: orderData.razorpay_subscription_id }
                     : { order_id: orderData.razorpay_order_id }),
-                amount: coerceNumber(orderData.amount),
+                amount: orderData.amount,
                 currency: 'INR',
                 name: 'LetBuyy',
                 description: `${plan.name} Plan - ${billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}`,
@@ -279,7 +302,7 @@ export default function SubscribeCheckoutClient({
                                 site_type: siteType,
                             }),
                         })
-                        const verifyData = await verifyRes.json()
+                        const verifyData = await verifyRes.json().catch(() => null)
                         if (!verifyRes.ok) {
                             setError(paymentErrorMessage(verifyData, 'Payment verification failed'))
                             setIsProcessing(false)
