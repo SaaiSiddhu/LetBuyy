@@ -2,8 +2,8 @@
 
 ## CURRENT STAGE
 - Stage: STAGE 2 - WS1 Design System.
-- Active task: Stage 2 mission intake pending on branch `stream/master-execution`.
-- Scope lock: Stage 1 WS7 is complete except human-gated provider/prod items. Stage 2 must follow the design-system mission and its local DO-NOT-TOUCH boundaries.
+- Active task: Stage 2 new component batch pending in `packages/typescript/ui/**` on branch `stream/master-execution`.
+- Scope lock: Stage 1 WS7 is complete except human-gated provider/prod items. Stage 2 source edits are restricted to `packages/typescript/ui/**`; root ledgers are the bookkeeping exception required by the mission.
 
 ## BASELINE CONTEXT
 - Existing branch state before this ledger: `stream/master-execution` was created from `develop`; the worktree already contained many user-owned UI/mobile/design-system modifications and two WS7-owned modified files (`services/api-gateway/src/middleware/rateLimit.ts`, `services/api-gateway/src/routes/auth.ts`).
@@ -11,13 +11,14 @@
 
 ## STAGE GATES
 - STAGE 1 WS7 Production Hardening: DONE / HUMAN-GATED FOR LIVE PROVIDERS ONLY. P1 real stack, P2 COD/GST/Cashfree code path, P3 build stability, and P4 queue-worker scaffold advancement are proven. Cashfree sandbox charge/webhook and live production provisioning remain `[SKIP - NEEDS HUMAN]`.
-- STAGE 2 WS1 Design System: NEXT.
+- STAGE 2 WS1 Design System: IN PROGRESS.
 - STAGE 3 WS9/WS2/WS5: PENDING.
 - STAGE 4 WS6/WS3/WS4: PENDING.
 - STAGE 5 WS8 Mobile Parity: PENDING.
 - STAGE 6 WS10 Developer Ecosystem: PENDING.
 
 ## PROGRESS LOG
+- 2026-06-03T12:47:09Z [STAGE 2/DS1] Responsive enhancement batch - DONE. Evidence: read `docs/Codex_waves/CODEX_DESIGN_SYSTEM_MISSION.md` and `packages/typescript/ui/AGENTS.md`; inspected existing UI package implementation and dirty user-owned design-system changes. Updated `Page`, `PageHeaderActions`, `Card`, `Section`, `SaveBar`, `CommandPalette`, and `Modal` for mobile-first responsive behavior while preserving existing defaults. Sandbox `pnpm --filter @letbuyy/ui typecheck` first failed because package-local dependency links had been removed during generated-artifact cleanup; sandbox `CI=true pnpm install --frozen-lockfile` failed on registry DNS; escalated `CI=true pnpm install --frozen-lockfile` restored workspace links with lockfile unchanged and downloaded 0 packages; rerun `pnpm --filter @letbuyy/ui typecheck` -> PASS. Full gate: `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:37:15Z [STAGE 1 GATE] WS7 Production Hardening gate - DONE / HUMAN-GATED FOR LIVE PROVIDERS ONLY. Evidence: J1-J5 real-stack Playwright -> 5/5 PASS; COD/GST node tests -> 7/7 PASS; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); final escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` after P4 code -> PASS (57/57); generated artifact scan -> no generated directories; final `pnpm run validate:governance` -> PASS (128/128 validators). Remaining unexecuted items require Cashfree/provider credentials, production/staging infrastructure, or explicit service activation decisions.
 - 2026-06-03T12:36:20Z [STAGE 1/P4] Queue-worker scaffold service advancement - DONE. Evidence: added `services/queue-workers/src/platform-queue-consumer.ts` so the Cloudflare Queue worker claims durable `platform_queue_jobs` and processes analytics rollups/event stream rows, search projections, in-app notification side effects, app-charge payout ledger rows, and follow-up `payout.ledger_entry.created` outbox events through package-owned planners/contracts. Updated queue-worker package/runtime manifest dependencies and event-spine contract tests. `node --test tests/federation/event-spine-contracts.test.mjs` -> PASS (14/14); `pnpm --filter @letbuyy/queue-workers typecheck` -> PASS; `pnpm turbo typecheck` -> PASS (57/57); `pnpm run validate:governance` -> PASS (128/128).
 - 2026-06-03T12:22:01Z [STAGE 1/P3] Build stability and self-hosted font proof - DONE. Evidence: first build attempt failed because generated app-local dependency links had been removed for governance cleanup; `pnpm install --offline --force` failed on a missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` failed on registry DNS; escalated `pnpm install --force` restored workspace links without downloading packages. Sandbox `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` then failed only because Turbopack could not bind a local worker port in the sandbox; escalated rerun of the same build -> PASS (57/57 tasks, no network font fetch). `rg -n "next/font/google|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com" apps packages services config --glob '!**/.next/**' --glob '!**/node_modules/**' --glob '!**/dist/**'` -> no matches. Generated build/cache/dependency artifacts were removed; artifact scan returned no directories; `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -36,6 +37,8 @@
 - [SKIP] Standalone activation of reserved/incubating service roots (`services/analytics-pipeline`, `services/search-service`, `services/notification-service`, `services/media-service`, `services/event-bus`, `services/checkout-runtime`) - requires an explicit human/governance decision to promote each root from reserved/incubating status to active package authority with package manifests, deployment configs, service contracts, queue/provider policies, and provider/storage credentials where applicable. Queue-worker now covers the unblocked durable event-spine consumers for analytics/search/notifications/payout.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T12:47:09Z [Stage 2 DS1 gate] `pnpm turbo typecheck` -> PASS (57/57); `pnpm run lint` -> PASS (8/8 tasks, warnings only); generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-03T12:45:17Z [Stage 2 DS1 scoped typecheck] `pnpm --filter @letbuyy/ui typecheck` -> PASS after escalated frozen install restored package-local dependency links.
 - 2026-06-03T12:37:15Z [Stage 1 final validation] generated artifact scan -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:36:55Z [Stage 1 final build] `CI=true pnpm install --frozen-lockfile` -> PASS; escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> PASS (57/57 tasks).
 - 2026-06-03T12:35:40Z [P4 lint] `pnpm run lint` -> PASS (8/8 tasks; warnings only, no errors); lint-created `.turbo` artifacts were removed.

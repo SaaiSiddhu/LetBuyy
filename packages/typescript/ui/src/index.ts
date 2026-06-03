@@ -10,12 +10,34 @@ export type { InputProps, TextareaProps } from './input';
 export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
 
-export { Page, PageHeader, Card, Section } from './layout';
-export type { PageProps, PageHeaderAction, PageHeaderProps, CardProps, SectionProps } from './layout';
+export {
+    Card,
+    getPageIconName,
+    letbuyyPageHeaderDefaults,
+    Page,
+    PageActions,
+    PageContent,
+    PageHeader,
+    PageHeaderActions,
+    PageShell,
+    Section,
+} from './layout';
+export type {
+    CardProps,
+    PageContentProps,
+    PageHeaderAction,
+    PageHeaderActionsProps,
+    PageHeaderProps,
+    PageIdentity,
+    PageProps,
+    PageShellProps,
+    SectionProps,
+} from './layout';
 
 export {
     Banner,
     EmptyState,
+    EmptyStateIllustration,
     SaveBar,
     Skeleton,
     ToastProvider,
@@ -23,6 +45,7 @@ export {
 } from './feedback';
 export type {
     BannerProps,
+    EmptyStateKind,
     EmptyStateProps,
     SaveBarProps,
     SkeletonProps,
@@ -38,11 +61,12 @@ export type { ConfirmDialogProps, ModalProps, TooltipProps } from './overlays';
 export { Combobox, Select, Tabs } from './controls';
 export type { ComboboxProps, SelectOption, SelectProps, TabItem, TabsProps } from './controls';
 
-export { Avatar, CommandPalette, IndexTable, MetricCard, Pagination } from './productivity';
+export { Avatar, CommandPalette, FilterBar, IndexTable, MetricCard, Pagination, TableFilterBar } from './productivity';
 export type {
     AvatarProps,
     CommandPaletteAction,
     CommandPaletteProps,
+    FilterBarProps,
     IndexTableBulkAction,
     IndexTableColumn,
     IndexTableProps,
@@ -63,11 +87,17 @@ export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
 
 export {
+    letbuyyComponentTokens,
+    letbuyyColorTokens,
+    letbuyyDensityCssVariables,
+    letbuyyDensityTokens,
+    letbuyyPrimitiveTokens,
+    letbuyySemanticTokens,
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
     letbuyyTokens,
 } from './tokens';
-export type { LetbuyyTheme } from './tokens';
+export type { LetbuyyDensity, LetbuyyTheme } from './tokens';
 
 export { letbuyyFontCssVariables, letbuyyFontStacks } from './fonts';
 

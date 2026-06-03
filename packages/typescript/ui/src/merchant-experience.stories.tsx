@@ -35,6 +35,7 @@ import {
     Tooltip,
     useToast,
 } from './index';
+import { letbuyyTokens } from './tokens';
 
 interface ProductStoryRow extends Record<string, unknown> {
     id: string;
@@ -49,6 +50,8 @@ const sampleRows: ProductStoryRow[] = [
     { id: 'prod-2', title: 'Canvas Tote', status: 'Draft', inventory: '18', channel: 'Point of Sale' },
     { id: 'prod-3', title: 'Everyday Hoodie', status: 'Active', inventory: '7', channel: 'Online Store' },
 ];
+
+const storyTokenColors = letbuyyTokens.color.light;
 
 function ToastDemo() {
     const { notify } = useToast();
@@ -151,7 +154,7 @@ export function UsageGuidelines() {
             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                 <Card>
                     <Section title="Page structure" description="Start every admin screen with Page, PageHeader, Card, then Section.">
-                        <div className="space-y-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                        <div className="space-y-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                             <p className="m-0">Use the same skeleton for dashboards, settings, lists, editors, and workflow steps.</p>
                             <Badge label="Page -> PageHeader -> Card -> Section" variant="info" />
                         </div>
@@ -163,7 +166,7 @@ export function UsageGuidelines() {
                             {['--lb-color-surface', '--lb-color-text', '--lb-space-4', '--lb-radius-lg', '--lb-shadow-sm'].map((token) => (
                                 <code
                                     key={token}
-                                    className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] text-[var(--lb-color-text)]"
+                                    className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]"
                                 >
                                     {token}
                                 </code>
@@ -195,16 +198,16 @@ export function UsageGuidelines() {
                 <Card>
                     <Section title="Dynamic previews" description="Centralize merchant-provided colors and radii with shared preview primitives.">
                         <div className="flex flex-wrap items-center gap-[var(--lb-space-3)]">
-                            <ColorSwatch color="#6366f1" label="Indigo swatch" size="lg" />
-                            <ColorSwatch color="#22c55e" label="Green swatch" size="lg" />
+                            <ColorSwatch color={storyTokenColors.primary} label="Primary swatch" size="lg" />
+                            <ColorSwatch color={storyTokenColors.success} label="Success swatch" size="lg" />
                             <RadiusPreview
                                 radius={12}
                                 label="Radius preview 12px"
-                                className="grid h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] place-items-center border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]"
+                                className="grid h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] place-items-center border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]"
                             >
                                 12
                             </RadiusPreview>
-                            <ColorPreviewButton color="#111827" radius={12} className="h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[var(--lb-color-text-inverse)]">
+                            <ColorPreviewButton color={storyTokenColors.primaryCta} radius={12} className="h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[color:var(--lb-color-primary-cta-text)]">
                                 Preview CTA
                             </ColorPreviewButton>
                         </div>
@@ -381,7 +384,7 @@ export function StatusBadges() {
             <Badge label="Warning" variant="warning" />
             <Badge label="Critical" variant="critical" />
             <Badge label="Legacy danger alias" variant="danger" />
-            <CheckCircle2 className="h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[var(--lb-color-success)]" aria-hidden="true" />
+            <CheckCircle2 className="h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[color:var(--lb-color-success)]" aria-hidden="true" />
         </div>
     );
 }

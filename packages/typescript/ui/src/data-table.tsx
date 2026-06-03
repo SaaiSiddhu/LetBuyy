@@ -40,16 +40,16 @@ export function DataTable<T extends Record<string, unknown>>({
     className = '',
 }: DataTableProps<T>) {
     return (
-        <div className={cx('overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)}>
-            <table className="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                <thead className="bg-[var(--lb-color-surface-subdued)]">
+        <div className={cx('overflow-auto rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-table-border)] bg-[var(--lb-component-table-bg)] shadow-[var(--lb-component-card-shadow)]', className)}>
+            <table className="w-full text-[length:var(--lb-font-size-table)] leading-[var(--lb-line-height-table)]">
+                <thead className="bg-[var(--lb-component-table-header-bg)]">
                     <tr>
                         {columns.map((col) => (
                             <th
                                 key={col.key}
                                 className={cx(
-                                    'px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]',
-                                    col.sortable && 'cursor-pointer select-none hover:text-[var(--lb-color-text)]',
+                                    'h-[var(--lb-density-table-header-height)] px-[var(--lb-space-3)] py-0 text-left font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-table-text-secondary)]',
+                                    col.sortable && 'cursor-pointer select-none hover:text-[color:var(--lb-component-table-text)]',
                                 )}
                                 style={col.width ? { width: col.width } : undefined}
                                 onClick={() => col.sortable && onSort?.(col.key)}
@@ -58,19 +58,19 @@ export function DataTable<T extends Record<string, unknown>>({
                                     {col.header}
                                     {col.sortable && sortKey === col.key && (
                                         sortDirection === 'asc'
-                                            ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                            : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            ? <ArrowUp className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
+                                            : <ArrowDown className="h-[var(--lb-density-table-icon-size)] w-[var(--lb-density-table-icon-size)]" aria-hidden="true" />
                                     )}
                                 </div>
                             </th>
                         ))}
                     </tr>
                 </thead>
-                <tbody className="divide-y divide-[var(--lb-color-border)]">
+                <tbody className="divide-y divide-[var(--lb-component-table-border)]">
                     {loading ? (
                         <tr>
-                            <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center">
-                                <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[var(--lb-color-text-subdued)]">
+                            <td colSpan={columns.length} className="px-[var(--lb-space-3)] py-[var(--lb-space-4)] text-center">
+                                <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[color:var(--lb-component-table-text-secondary)]">
                                     <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" />
                                     Loading...
                                 </div>
@@ -78,7 +78,7 @@ export function DataTable<T extends Record<string, unknown>>({
                         </tr>
                     ) : data.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center text-[var(--lb-color-text-subdued)]">
+                            <td colSpan={columns.length} className="px-[var(--lb-space-3)] py-[var(--lb-space-4)] text-center text-[color:var(--lb-component-table-text-secondary)]">
                                 {emptyMessage}
                             </td>
                         </tr>
@@ -87,13 +87,13 @@ export function DataTable<T extends Record<string, unknown>>({
                             <tr
                                 key={(row.id as string) || i}
                                 className={cx(
-                                    'transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    'transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] hover:bg-[var(--lb-component-table-row-hover-bg)]',
                                     onRowClick && 'cursor-pointer',
                                 )}
                                 onClick={() => onRowClick?.(row)}
                             >
                                 {columns.map((col) => (
-                                    <td key={col.key} className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">
+                                    <td key={col.key} className="h-[var(--lb-density-table-row-height)] px-[var(--lb-space-3)] py-0 text-[color:var(--lb-component-table-text)]">
                                         {col.render
                                             ? col.render(row[col.key], row, i)
                                             : String(row[col.key] ?? '')}

@@ -42,16 +42,16 @@ export function Tabs({ items, value, defaultValue, onValueChange, className = ''
                             role="tab"
                             aria-selected={active}
                             className={cx(
-                                'inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] border-b-2 px-[var(--lb-space-3)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                'inline-flex h-[var(--lb-density-action-bar-height)] items-center gap-[var(--lb-space-2)] border-b-2 px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
                                 active
-                                    ? 'border-[var(--lb-color-primary)] text-[var(--lb-color-primary)]'
-                                    : 'border-transparent text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-text)]',
+                                    ? 'border-[var(--lb-color-primary)] text-[color:var(--lb-color-primary)]'
+                                    : 'border-transparent text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
                             )}
                             onClick={() => selectTab(item.value)}
                         >
                             {item.label}
                             {item.badge && (
-                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                <span className="rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                     {item.badge}
                                 </span>
                             )}
@@ -86,9 +86,9 @@ export function Select({ label, helperText, error, options, className = '', id, 
     const selectId = id ?? generatedId;
 
     return (
-        <div className="flex flex-col gap-[var(--lb-space-2)]">
+        <div className="flex flex-col gap-[var(--lb-space-1)]">
             {label && (
-                <label htmlFor={selectId} className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                <label htmlFor={selectId} className="text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
                     {label}
                 </label>
             )}
@@ -96,8 +96,8 @@ export function Select({ label, helperText, error, options, className = '', id, 
                 <select
                     id={selectId}
                     className={cx(
-                        'h-[var(--lb-size-control-md)] w-full appearance-none rounded-[var(--lb-radius-lg)] border bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] pr-[var(--lb-space-7)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
-                        error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-color-border)]',
+                        'h-[var(--lb-density-input-height)] w-full appearance-none rounded-[var(--lb-radius-lg)] border bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] pr-[var(--lb-space-7)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-input-text)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:border-[var(--lb-component-input-focus-border)] focus-visible:ring-2 focus-visible:ring-[var(--lb-component-input-focus-ring)] disabled:cursor-not-allowed disabled:opacity-50',
+                        error ? 'border-[var(--lb-color-critical)]' : 'border-[var(--lb-component-input-border)]',
                         className,
                     )}
                     aria-invalid={Boolean(error)}
@@ -109,10 +109,10 @@ export function Select({ label, helperText, error, options, className = '', id, 
                         </option>
                     ))}
                 </select>
-                <ChevronDown className="pointer-events-none absolute right-[var(--lb-space-3)] top-1/2 h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] -translate-y-1/2 text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
+                <ChevronDown className="pointer-events-none absolute right-[var(--lb-space-3)] top-1/2 h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] -translate-y-1/2 text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
             </div>
-            {error && <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-critical)]">{error}</p>}
-            {helperText && !error && <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">{helperText}</p>}
+            {error && <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-critical)]">{error}</p>}
+            {helperText && !error && <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{helperText}</p>}
         </div>
     );
 }
@@ -154,9 +154,9 @@ export function Combobox({
     };
 
     return (
-        <div className={cx('relative flex flex-col gap-[var(--lb-space-2)]', className)}>
+        <div className={cx('relative flex flex-col gap-[var(--lb-space-1)]', className)}>
             {label && (
-                <label htmlFor={generatedId} className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                <label htmlFor={generatedId} className="text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
                     {label}
                 </label>
             )}
@@ -165,7 +165,7 @@ export function Combobox({
                 role="combobox"
                 aria-expanded={open}
                 aria-controls={`${generatedId}-listbox`}
-                className="h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)] placeholder:text-[var(--lb-color-text-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                className="h-[var(--lb-density-input-height)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-component-input-text)] placeholder:text-[color:var(--lb-component-input-placeholder)] focus-visible:outline-none focus-visible:border-[var(--lb-component-input-focus-border)] focus-visible:ring-2 focus-visible:ring-[var(--lb-component-input-focus-ring)]"
                 placeholder={placeholder}
                 value={query || selected?.label || ''}
                 onChange={(event) => {
@@ -178,10 +178,10 @@ export function Combobox({
                 <div
                     id={`${generatedId}-listbox`}
                     role="listbox"
-                    className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
+                    className="absolute top-[calc(100%+var(--lb-space-2))] z-40 max-h-[var(--lb-size-combobox-menu-max-height)] w-full overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] p-[var(--lb-space-1)] shadow-[var(--lb-shadow-lg)]"
                 >
                     {filteredOptions.length === 0 ? (
-                        <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-body)] text-[var(--lb-color-text-subdued)]">
+                        <div className="px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-secondary)] text-[color:var(--lb-color-text-subdued)]">
                             {emptyMessage}
                         </div>
                     ) : (
@@ -191,7 +191,7 @@ export function Combobox({
                                 type="button"
                                 role="option"
                                 aria-selected={option.value === value}
-                                className="flex w-full items-center justify-between rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-left text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
+                                className="flex w-full items-center justify-between rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-left text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
                                 disabled={option.disabled}
                                 onClick={() => selectOption(option)}
                             >
