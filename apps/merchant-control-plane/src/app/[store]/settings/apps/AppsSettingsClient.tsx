@@ -27,7 +27,10 @@ const APP_MARKETPLACE_URL = 'https://apps.letbuyy.store'
 
 function formatDate(value?: string | null) {
     if (!value) return 'Recently installed'
-    return new Date(value).toLocaleDateString('en-IN', {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Recently installed'
+
+    return date.toLocaleDateString('en-IN', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',

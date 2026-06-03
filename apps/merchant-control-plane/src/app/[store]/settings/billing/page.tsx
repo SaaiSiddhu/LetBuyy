@@ -72,7 +72,10 @@ function formatMoney(amount: number, currency: string) {
 
 function formatDate(value: string) {
     if (!value) return 'Not scheduled'
-    return new Date(value).toLocaleDateString('en-US', {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Not scheduled'
+
+    return date.toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
@@ -81,7 +84,10 @@ function formatDate(value: string) {
 
 function formatShortDate(value: string) {
     if (!value) return 'Recently'
-    return new Date(value).toLocaleDateString('en-US', {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Recently'
+
+    return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',

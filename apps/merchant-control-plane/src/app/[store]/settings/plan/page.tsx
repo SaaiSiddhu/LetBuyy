@@ -73,12 +73,20 @@ function formatMoney(amount: number) {
 }
 
 function formatDate(value: string) {
-    if (!value) return 'Not scheduled'
-    return new Date(value).toLocaleDateString('en-US', {
+    const date = parseDate(value)
+    if (!date) return 'Not scheduled'
+
+    return date.toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
     })
+}
+
+function parseDate(value: string) {
+    if (!value) return null
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? null : date
 }
 
 function formatStatus(status: string) {
@@ -199,7 +207,7 @@ export default function PlanSettingsPage() {
         void loadData()
     }, [loadData])
 
-    const trialEnds = trialData.trial_ends_at ? new Date(trialData.trial_ends_at) : null
+    const trialEnds = parseDate(trialData.trial_ends_at)
     const daysLeft = trialEnds ? Math.max(0, Math.ceil((trialEnds.getTime() - renderTime) / (1000 * 60 * 60 * 24))) : 0
     const isTrialExpired = trialData.trial_status === 'expired' || Boolean(trialEnds && trialEnds < renderDate)
     const hasSubscription = Boolean(subscription)

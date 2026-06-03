@@ -67,7 +67,10 @@ function formatStatus(status: string) {
 
 function formatDate(value: string) {
     if (!value) return 'Recently'
-    return new Date(value).toLocaleDateString('en-US', {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Recently'
+
+    return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',

@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 09:43 IST [S5.9] Hardened settings date rendering in Apps, Billing, Plan, and Users so malformed gateway date fields fall back gracefully instead of rendering `Invalid Date` or NaN trial timing.
 - 2026-06-03 09:39 IST [S3.2/S5.8] Hardened Apps and sales channels external launch links by validating `app_url`, rendering safe anchors with `target`/`rel`, and counting only launchable URLs as sales channels.
 - 2026-06-03 09:14 IST [S4.3] Added top-level contextual guidance to General, Billing, Plan, and Notifications so migrated panes present consistent merchant guidance through `SettingsPane`.
 - 2026-06-03 09:11 IST [S5.7] Closed mobile drawer focus-trap edge case so Tab and Shift+Tab from the focused dialog container enter drawer controls instead of escaping.
@@ -97,3 +98,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 09:39 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Apps external link hardening.
 - 2026-06-03 09:39 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 09:39 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 09:43 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after settings date fallback hardening.
+- 2026-06-03 09:43 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 09:43 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
