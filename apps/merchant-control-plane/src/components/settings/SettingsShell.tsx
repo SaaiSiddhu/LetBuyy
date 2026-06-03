@@ -63,7 +63,7 @@ export function SettingsShell({
         [filteredGroups],
     )
 
-    const settingsIndex = (
+    const renderSettingsIndex = (instance: 'desktop' | 'mobile') => (
         <div className="flex h-full flex-col gap-[var(--lb-space-5)]">
             <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
                 <div className="flex items-start gap-[var(--lb-space-3)]">
@@ -81,7 +81,12 @@ export function SettingsShell({
                 </div>
             </div>
 
-            <SettingsSearch value={query} onChange={setQuery} resultCount={resultCount} />
+            <SettingsSearch
+                inputId={`settings-search-${instance}`}
+                value={query}
+                onChange={setQuery}
+                resultCount={resultCount}
+            />
 
             <div className="min-h-0 flex-1 overflow-auto pr-[var(--lb-space-1)]">
                 <SettingsIndex
@@ -135,7 +140,7 @@ export function SettingsShell({
 
             <div className="grid min-h-[calc(100vh-var(--lb-space-7))] lg:grid-cols-[360px_minmax(0,1fr)]">
                 <aside className="sticky top-[var(--lb-space-7)] hidden h-[calc(100vh-var(--lb-space-7))] overflow-hidden border-r border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-5)] lg:block">
-                    {settingsIndex}
+                    {renderSettingsIndex('desktop')}
                 </aside>
 
                 <section className="min-w-0" aria-label={activeItem?.label || 'Settings home'}>
@@ -171,7 +176,7 @@ export function SettingsShell({
                             </Button>
                         </div>
                         <div className="min-h-0 flex-1 overflow-hidden">
-                            {settingsIndex}
+                            {renderSettingsIndex('mobile')}
                         </div>
                     </aside>
                 </div>
