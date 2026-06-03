@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 10:11 IST [S5.15] Hardened Billing gateway payloads by normalizing subscription summaries, invoice rows, and nested payment method configuration before summary metrics and invoice history render.
 - 2026-06-03 10:08 IST [S5.14] Hardened Users staff payloads by normalizing employee rows, dropping records without stable ids/emails, and falling back unknown roles to least-privilege viewer before rendering role controls or remove actions.
 - 2026-06-03 10:02 IST [S5.13] Hardened Shipping and Taxes list payloads by normalizing zones, rates, countries, booleans, and numeric fields before rendering counts, badges, edit forms, and delete actions.
 - 2026-06-03 09:59 IST [S5.12] Hardened Payments payload handling by normalizing masked payment settings before state updates, summaries, and save feedback.
@@ -121,3 +122,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 10:08 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Users staff payload normalization.
 - 2026-06-03 10:08 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 10:08 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 10:11 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Billing payload normalization.
+- 2026-06-03 10:11 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 10:11 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

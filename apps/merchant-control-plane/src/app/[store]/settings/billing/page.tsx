@@ -36,24 +36,7 @@ interface PaymentMethodInfo {
 }
 
 type BillingPayload = {
-    data?: {
-        subscription?: {
-            plan: string
-            status: string
-            current_period_end: string
-        }
-        invoices?: Array<Record<string, unknown>>
-        payment?: {
-            cod_enabled: boolean
-            payment_settings: {
-                razorpay: {
-                    key_id: string | null
-                    verified: boolean
-                    secret_configured: boolean
-                } | null
-            }
-        }
-    }
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -62,9 +45,76 @@ function getPayloadError(payload: BillingPayload | null, fallback: string) {
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
+function readBoolean(value: unknown) {
+    return value === true
+}
+
 function coerceCents(value: unknown) {
     const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
     return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeSubscription(value: unknown) {
+    if (!isRecord(value)) return null
+
+    return {
+        plan: readString(value.plan, 'free'),
+        status: readString(value.status, 'trialing'),
+        current_period_end: readString(value.current_period_end),
+    }
+}
+
+function normalizeInvoices(value: unknown): Invoice[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((invoice) => {
+        if (!isRecord(invoice) || typeof invoice.id !== 'string' || !invoice.id) return []
+
+        return [{
+            id: invoice.id,
+            amount_paid: coerceCents(invoice.amount_paid),
+            currency: readString(invoice.currency, 'INR'),
+            status: readString(invoice.status, 'pending'),
+            billing_period: readString(invoice.billing_period),
+            created_at: readString(invoice.created_at),
+        }]
+    })
+}
+
+function normalizePaymentMethods(value: unknown): PaymentMethodInfo[] {
+    if (!isRecord(value)) return []
+
+    const paymentSettings = isRecord(value.payment_settings) ? value.payment_settings : null
+    const razorpay = isRecord(paymentSettings?.razorpay) ? paymentSettings.razorpay : null
+    const methods: PaymentMethodInfo[] = []
+
+    if (readBoolean(razorpay?.secret_configured)) {
+        methods.push({
+            id: 'razorpay',
+            provider: 'Razorpay',
+            detail: readString(razorpay?.key_id, 'Configured'),
+            is_default: readBoolean(razorpay?.verified),
+        })
+    }
+
+    if (readBoolean(value.cod_enabled)) {
+        methods.push({
+            id: 'cod',
+            provider: 'Cash on Delivery',
+            detail: 'Available at checkout',
+            is_default: !readBoolean(razorpay?.secret_configured),
+        })
+    }
+
+    return methods
 }
 
 function formatMoney(amount: number, currency: string) {
@@ -161,42 +211,10 @@ export default function BillingSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load billing settings'))
             }
 
-            const data = payload?.data
-            setSubscription(data?.subscription || null)
-
-            const invoiceData = Array.isArray(data?.invoices) ? data.invoices : []
-            setInvoices(invoiceData.map((invoice) => ({
-                id: invoice.id as string,
-                amount_paid: coerceCents(invoice.amount_paid),
-                currency: (invoice.currency as string) || 'INR',
-                status: (invoice.status as string) || 'pending',
-                billing_period: (invoice.billing_period as string) || '',
-                created_at: (invoice.created_at as string) || '',
-            })))
-
-            const payment = data?.payment
-            const configuredMethods: PaymentMethodInfo[] = []
-            const razorpay = payment?.payment_settings.razorpay
-
-            if (razorpay?.secret_configured) {
-                configuredMethods.push({
-                    id: 'razorpay',
-                    provider: 'Razorpay',
-                    detail: razorpay.key_id || 'Configured',
-                    is_default: razorpay.verified,
-                })
-            }
-
-            if (payment?.cod_enabled) {
-                configuredMethods.push({
-                    id: 'cod',
-                    provider: 'Cash on Delivery',
-                    detail: 'Available at checkout',
-                    is_default: !razorpay?.secret_configured,
-                })
-            }
-
-            setPaymentMethods(configuredMethods)
+            const data = isRecord(payload?.data) ? payload.data : null
+            setSubscription(normalizeSubscription(data?.subscription))
+            setInvoices(normalizeInvoices(data?.invoices))
+            setPaymentMethods(normalizePaymentMethods(data?.payment))
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load billing settings'
             setLoadError(message)
