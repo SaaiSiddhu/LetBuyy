@@ -49,16 +49,26 @@ const statusStyles: Record<StatusVariant, { surface: string; text: string; borde
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     label: string;
     variant?: StatusVariant | 'danger';
+    icon?: React.ReactNode;
+    hideIcon?: boolean;
+    size?: 'sm' | 'md';
 }
 
-export function Badge({ label, variant = 'default', className = '', ...props }: BadgeProps) {
+const badgeSizeStyles: Record<NonNullable<BadgeProps['size']>, string> = {
+    sm: 'px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)]',
+    md: 'px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-body)]',
+};
+
+export function Badge({ label, variant = 'default', icon, hideIcon = false, size = 'sm', className = '', ...props }: BadgeProps) {
     const normalizedVariant = variant === 'danger' ? 'critical' : variant;
     const style = statusStyles[normalizedVariant];
+    const badgeIcon = icon ?? style.icon;
 
     return (
         <span
             className={cx(
-                'inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
+                'inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
+                badgeSizeStyles[size],
                 style.surface,
                 style.text,
                 style.border,
@@ -66,7 +76,7 @@ export function Badge({ label, variant = 'default', className = '', ...props }: 
             )}
             {...props}
         >
-            {style.icon}
+            {!hideIcon && badgeIcon}
             {label}
         </span>
     );
@@ -76,37 +86,52 @@ export interface BannerProps extends React.HTMLAttributes<HTMLDivElement> {
     title?: string;
     children: React.ReactNode;
     variant?: Exclude<StatusVariant, 'default'>;
+    icon?: React.ReactNode;
+    hideIcon?: boolean;
     action?: React.ReactNode;
+    secondaryAction?: React.ReactNode;
     onDismiss?: () => void;
     dismissLabel?: string;
+    compact?: boolean;
+    role?: 'status' | 'alert' | 'note';
 }
 
 export function Banner({
     title,
     children,
     variant = 'info',
+    icon,
+    hideIcon = false,
     action,
+    secondaryAction,
     onDismiss,
     dismissLabel = 'Dismiss banner',
+    compact = false,
+    role,
     className = '',
     ...props
 }: BannerProps) {
     const style = statusStyles[variant];
+    const bannerRole = role ?? (variant === 'critical' ? 'alert' : 'status');
+    const bannerIcon = icon ?? style.icon;
 
     return (
         <div
             className={cx(
-                'flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)]',
+                'flex gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border',
+                compact ? 'p-[var(--lb-space-3)]' : 'p-[var(--lb-space-4)]',
                 style.surface,
                 style.border,
                 className,
             )}
-            role={variant === 'critical' ? 'alert' : 'status'}
+            role={bannerRole}
             {...props}
         >
-            <div className={cx('mt-[var(--lb-space-1)] shrink-0 text-[length:var(--lb-font-size-heading)]', style.text)}>
-                {style.icon}
-            </div>
+            {!hideIcon && (
+                <div className={cx('mt-[var(--lb-space-1)] shrink-0 text-[length:var(--lb-font-size-heading)]', style.text)}>
+                    {bannerIcon}
+                </div>
+            )}
             <div className="min-w-0 flex-1 space-y-[var(--lb-space-1)]">
                 {title && (
                     <h3 className={cx('m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]', style.text)}>
@@ -117,8 +142,9 @@ export function Banner({
                     {children}
                 </div>
             </div>
-            {(action || onDismiss) && (
+            {(action || secondaryAction || onDismiss) && (
                 <div className="flex shrink-0 items-start gap-[var(--lb-space-2)]">
+                    {secondaryAction}
                     {action}
                     {onDismiss && (
                         <button
@@ -145,6 +171,9 @@ export interface ToastMessage {
     variant?: ToastVariant;
     duration?: number;
     action?: React.ReactNode;
+    icon?: React.ReactNode;
+    dismissLabel?: string;
+    onDismiss?: () => void;
 }
 
 interface ToastContextValue {
@@ -158,13 +187,34 @@ export interface ToastProviderProps {
     children: React.ReactNode;
     duration?: number;
     maxToasts?: number;
+    position?: 'top-right' | 'top-center' | 'bottom-right' | 'bottom-center';
+    dismissLabel?: string;
+    className?: string;
 }
 
-export function ToastProvider({ children, duration = 5000, maxToasts = 4 }: ToastProviderProps) {
+const toastPositionStyles: Record<NonNullable<ToastProviderProps['position']>, string> = {
+    'top-right': 'right-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))]',
+    'top-center': 'left-1/2 top-[calc(var(--lb-space-7)+var(--lb-space-4))] -translate-x-1/2',
+    'bottom-right': 'bottom-[var(--lb-space-5)] right-[var(--lb-space-5)]',
+    'bottom-center': 'bottom-[var(--lb-space-5)] left-1/2 -translate-x-1/2',
+};
+
+export function ToastProvider({
+    children,
+    duration = 5000,
+    maxToasts = 4,
+    position = 'top-right',
+    dismissLabel = 'Dismiss notification',
+    className = '',
+}: ToastProviderProps) {
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
     const dismiss = useCallback((id: string) => {
-        setToasts((current) => current.filter((toast) => toast.id !== id));
+        setToasts((current) => {
+            const toast = current.find((item) => item.id === id);
+            toast?.onDismiss?.();
+            return current.filter((item) => item.id !== id);
+        });
     }, []);
 
     const notify = useCallback((toast: Omit<ToastMessage, 'id'>) => {
@@ -184,13 +234,18 @@ export function ToastProvider({ children, duration = 5000, maxToasts = 4 }: Toas
         <ToastContext.Provider value={value}>
             {children}
             <div
-                className="fixed right-[var(--lb-space-5)] top-[calc(var(--lb-space-7)+var(--lb-space-4))] z-50 flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]"
+                className={cx(
+                    'fixed z-50 flex w-[min(380px,calc(100vw-var(--lb-space-6)))] flex-col gap-[var(--lb-space-3)]',
+                    toastPositionStyles[position],
+                    className,
+                )}
                 aria-live="polite"
                 aria-relevant="additions removals"
             >
                 {toasts.map((toast) => {
                     const variant = toast.variant ?? 'info';
                     const style = statusStyles[variant];
+                    const toastIcon = toast.icon ?? style.icon;
                     return (
                         <div
                             key={toast.id}
@@ -201,7 +256,7 @@ export function ToastProvider({ children, duration = 5000, maxToasts = 4 }: Toas
                             role={variant === 'critical' ? 'alert' : 'status'}
                         >
                             <div className={cx('mt-[var(--lb-space-1)] text-[length:var(--lb-font-size-heading)]', style.text)}>
-                                {style.icon}
+                                {toastIcon}
                             </div>
                             <div className="min-w-0 flex-1">
                                 <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
@@ -222,7 +277,7 @@ export function ToastProvider({ children, duration = 5000, maxToasts = 4 }: Toas
                                 type="button"
                                 className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                 onClick={() => dismiss(toast.id)}
-                                aria-label="Dismiss notification"
+                                aria-label={toast.dismissLabel ?? dismissLabel}
                             >
                                 <X className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             </button>
@@ -243,16 +298,32 @@ export function useToast() {
 }
 
 export interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-    variant?: 'text' | 'card' | 'table';
+    variant?: 'text' | 'card' | 'table' | 'avatar' | 'button' | 'media';
     lines?: number;
+    lineWidths?: string[];
+    animated?: boolean;
+    label?: string;
 }
 
-export function Skeleton({ variant = 'text', lines = 3, className = '', ...props }: SkeletonProps) {
+export function Skeleton({
+    variant = 'text',
+    lines = 3,
+    lineWidths = [],
+    animated = true,
+    label,
+    className = '',
+    ...props
+}: SkeletonProps) {
+    const skeletonClassName = cx(
+        'bg-[var(--lb-color-surface-subdued)]',
+        animated && 'animate-pulse',
+    );
+
     if (variant === 'table') {
         return (
-            <div className={cx('space-y-[var(--lb-space-2)]', className)} aria-hidden="true" {...props}>
+            <div className={cx('space-y-[var(--lb-space-2)]', className)} aria-hidden={label ? undefined : true} aria-label={label} {...props}>
                 {Array.from({ length: lines }).map((_, index) => (
-                    <div key={index} className="h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)]" />
+                    <div key={index} className={cx('h-[var(--lb-size-control-md)] rounded-[var(--lb-radius-md)]', skeletonClassName)} style={lineWidths[index] ? { width: lineWidths[index] } : undefined} />
                 ))}
             </div>
         );
@@ -261,22 +332,58 @@ export function Skeleton({ variant = 'text', lines = 3, className = '', ...props
     if (variant === 'card') {
         return (
             <div
-                className={cx('h-[var(--lb-size-skeleton-card-height)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)]', className)}
-                aria-hidden="true"
+                className={cx('h-[var(--lb-size-skeleton-card-height)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]', skeletonClassName, className)}
+                aria-hidden={label ? undefined : true}
+                aria-label={label}
+                {...props}
+            />
+        );
+    }
+
+    if (variant === 'avatar') {
+        return (
+            <div
+                className={cx('h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] rounded-[var(--lb-radius-full)]', skeletonClassName, className)}
+                aria-hidden={label ? undefined : true}
+                aria-label={label}
+                {...props}
+            />
+        );
+    }
+
+    if (variant === 'button') {
+        return (
+            <div
+                className={cx('h-[var(--lb-size-control-md)] w-28 rounded-[var(--lb-radius-lg)]', skeletonClassName, className)}
+                aria-hidden={label ? undefined : true}
+                aria-label={label}
+                {...props}
+            />
+        );
+    }
+
+    if (variant === 'media') {
+        return (
+            <div
+                className={cx('aspect-video rounded-[var(--lb-radius-lg)]', skeletonClassName, className)}
+                aria-hidden={label ? undefined : true}
+                aria-label={label}
                 {...props}
             />
         );
     }
 
     return (
-        <div className={cx('space-y-[var(--lb-space-2)]', className)} aria-hidden="true" {...props}>
+        <div className={cx('space-y-[var(--lb-space-2)]', className)} aria-hidden={label ? undefined : true} aria-label={label} {...props}>
             {Array.from({ length: lines }).map((_, index) => (
                 <div
                     key={index}
                     className={cx(
-                        'h-[var(--lb-space-3)] rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface-subdued)]',
-                        index === lines - 1 ? 'w-2/3' : 'w-full',
+                        'h-[var(--lb-space-3)] rounded-[var(--lb-radius-full)]',
+                        skeletonClassName,
+                        lineWidths[index] ? '' : index === lines - 1 ? 'w-2/3' : 'w-full',
                     )}
+                    style={lineWidths[index] ? { width: lineWidths[index] } : undefined}
                 />
             ))}
         </div>
@@ -285,21 +392,46 @@ export function Skeleton({ variant = 'text', lines = 3, className = '', ...props
 
 export interface EmptyStateProps extends React.HTMLAttributes<HTMLDivElement> {
     icon?: React.ReactNode;
+    media?: React.ReactNode;
     title: string;
-    body?: string;
+    body?: React.ReactNode;
     primaryAction?: React.ReactNode;
     secondaryAction?: React.ReactNode;
+    footer?: React.ReactNode;
+    align?: 'center' | 'start';
+    compact?: boolean;
+    bordered?: boolean;
+    tone?: 'default' | 'subdued';
 }
 
-export function EmptyState({ icon, title, body, primaryAction, secondaryAction, className = '', ...props }: EmptyStateProps) {
+export function EmptyState({
+    icon,
+    media,
+    title,
+    body,
+    primaryAction,
+    secondaryAction,
+    footer,
+    align = 'center',
+    compact = false,
+    bordered = true,
+    tone = 'default',
+    className = '',
+    ...props
+}: EmptyStateProps) {
     return (
         <div
             className={cx(
-                'flex min-h-[var(--lb-size-empty-state-min-height)] flex-col items-center justify-center gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-dashed border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-6)] text-center',
+                'flex flex-col justify-center gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)]',
+                compact ? 'min-h-0 p-[var(--lb-space-5)]' : 'min-h-[var(--lb-size-empty-state-min-height)] p-[var(--lb-space-6)]',
+                align === 'center' ? 'items-center text-center' : 'items-start text-left',
+                bordered && 'border border-dashed border-[var(--lb-color-border)]',
+                tone === 'subdued' ? 'bg-[var(--lb-color-surface-subdued)]' : 'bg-[var(--lb-color-surface)]',
                 className,
             )}
             {...props}
         >
+            {media}
             {icon && (
                 <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
                     {icon}
@@ -316,9 +448,14 @@ export function EmptyState({ icon, title, body, primaryAction, secondaryAction, 
                 )}
             </div>
             {(primaryAction || secondaryAction) && (
-                <div className="flex flex-wrap justify-center gap-[var(--lb-space-2)]">
+                <div className={cx('flex flex-wrap gap-[var(--lb-space-2)]', align === 'center' ? 'justify-center' : 'justify-start')}>
                     {secondaryAction}
                     {primaryAction}
+                </div>
+            )}
+            {footer && (
+                <div className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                    {footer}
                 </div>
             )}
         </div>
@@ -334,6 +471,12 @@ export interface SaveBarProps extends React.HTMLAttributes<HTMLDivElement> {
     message?: React.ReactNode;
     saveDisabled?: boolean;
     discardDisabled?: boolean;
+    placement?: 'sticky' | 'fixed' | 'static';
+    tone?: 'default' | 'critical';
+    icon?: React.ReactNode;
+    secondaryAction?: React.ReactNode;
+    ariaLabel?: string;
+    compact?: boolean;
 }
 
 export function SaveBar({
@@ -345,26 +488,45 @@ export function SaveBar({
     message,
     saveDisabled = false,
     discardDisabled = false,
+    placement = 'sticky',
+    tone = 'default',
+    icon,
+    secondaryAction,
+    ariaLabel = 'Save changes',
+    compact = false,
     className = '',
     ...props
 }: SaveBarProps) {
     const isSaved = state === 'saved';
+    const saveBarIcon = icon ?? (state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />);
+    const placementClassName = placement === 'fixed'
+        ? 'fixed bottom-[var(--lb-space-4)] left-1/2 -translate-x-1/2'
+        : placement === 'static'
+            ? 'relative'
+            : 'sticky bottom-[var(--lb-space-4)] mx-auto';
 
     return (
         <div
             className={cx(
-                'sticky bottom-[var(--lb-space-4)] z-40 mx-auto flex w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] items-center justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)] p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)]',
+                'z-40 flex w-[min(var(--lb-size-save-bar-width),calc(100vw-var(--lb-space-6)))] items-center justify-between gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-3)] shadow-[var(--lb-shadow-lg)]',
+                placementClassName,
+                tone === 'critical'
+                    ? 'border-[var(--lb-color-critical)] bg-[var(--lb-color-critical-soft)]'
+                    : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface-raised)]',
+                compact && 'py-[var(--lb-space-2)]',
                 isSaved ? 'opacity-0 pointer-events-none' : 'opacity-100',
                 className,
             )}
             aria-live="polite"
+            aria-label={ariaLabel}
             {...props}
         >
             <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                {state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                {saveBarIcon}
                 {message ?? (state === 'saving' ? 'Saving changes' : 'Unsaved changes')}
             </div>
             <div className="flex items-center gap-[var(--lb-space-2)]">
+                {secondaryAction}
                 <button
                     type="button"
                     className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"

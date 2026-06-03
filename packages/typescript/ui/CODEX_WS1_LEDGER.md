@@ -138,6 +138,31 @@ Implemented in this batch:
 - `Section`: added optional `footer`, `padding`, `divider`, `subdued`, and `headingLevel` props.
 - Added `LayoutComponentHardening` Storybook story showing the batch 5 public API additions.
 
+## Batch 6 — Feedback Component Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed, lockfile resolution skipped, 651 packages linked from existing store.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframe rendered `FeedbackComponentHardening` with toast and SaveBar content.
+- `pnpm exec playwright screenshot --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--feedback-component-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-feedback-component-hardening.jpg` — passed.
+- Screenshot: `packages/typescript/ui/storybook-screenshots/ws1-feedback-component-hardening.jpg`.
+
+Implemented in this batch:
+- `Badge`: added optional `icon`, `hideIcon`, and `size` props.
+- `Banner`: added optional `icon`, `hideIcon`, `secondaryAction`, `compact`, and narrowed `role` props.
+- `ToastMessage`: added optional `icon`, `dismissLabel`, and `onDismiss` fields.
+- `ToastProvider`: added optional `position`, `dismissLabel`, and `className` props.
+- `ToastProvider`: added positioned toast stacks and per-toast dismiss labels/icons.
+- `Skeleton`: added `avatar`, `button`, and `media` variants plus optional `lineWidths`, `animated`, and `label` props.
+- `EmptyState`: added optional `media`, ReactNode `body`, `footer`, `align`, `compact`, `bordered`, and `tone` props.
+- `SaveBar`: added optional `placement`, `tone`, `icon`, `secondaryAction`, `ariaLabel`, and `compact` props.
+- Added `FeedbackComponentHardening` Storybook story showing the batch 6 public API additions.
+
 ## Stable Public API
 
 Components:

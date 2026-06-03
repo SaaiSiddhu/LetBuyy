@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
     AppWindow,
     Avatar,
@@ -59,6 +59,38 @@ function ToastDemo() {
                 title: 'Product saved',
                 description: 'Classic Sneakers is ready for the Online Store.',
                 variant: 'success',
+            })}
+        >
+            Show toast
+        </Button>
+    );
+}
+
+function AutoToastDemo() {
+    const { notify } = useToast();
+    const shownRef = useRef(false);
+
+    useEffect(() => {
+        if (shownRef.current) return;
+        shownRef.current = true;
+        notify({
+            title: 'Bulk update queued',
+            description: '184 product changes are waiting for publishing review.',
+            variant: 'success',
+            duration: 0,
+            dismissLabel: 'Dismiss bulk update toast',
+            action: <Button size="sm" variant="secondary">Review queue</Button>,
+        });
+    }, [notify]);
+
+    return (
+        <Button
+            variant="secondary"
+            onClick={() => notify({
+                title: 'Sync restarted',
+                description: 'Inventory sync is running in the background.',
+                variant: 'info',
+                duration: 0,
             })}
         >
             Show toast
@@ -895,6 +927,94 @@ export function LayoutComponentHardening() {
                 </Card>
             </div>
         </Page>
+    );
+}
+
+export function FeedbackComponentHardening() {
+    const [bannerVisible, setBannerVisible] = useState(true);
+
+    return (
+        <ToastProvider position="bottom-right" duration={0} maxToasts={2}>
+            <Page>
+                <PageHeader
+                    eyebrow="Batch 6"
+                    title="Feedback component hardening"
+                    description="Feedback primitives now support richer badges, compact banners, positioned toasts, varied skeletons, flexible empty states, and SaveBar placement/tone controls."
+                    titleMetadata={<Badge label="Feedback" variant="info" size="md" />}
+                />
+                <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-[1.1fr_0.9fr]">
+                    <Card title="Status and banners" description="Badges and banners can now hide or replace icons, run compact, and carry primary plus secondary actions." headerDivider>
+                        <Section>
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Badge label="No icon" variant="default" hideIcon />
+                                <Badge label="Large success" variant="success" size="md" />
+                                <Badge label="Custom icon" variant="warning" icon={<MaterialIcon name="schedule" />} />
+                            </div>
+                            {bannerVisible && (
+                                <Banner
+                                    compact
+                                    title="Inventory sync paused"
+                                    variant="warning"
+                                    secondaryAction={<Button size="sm" variant="ghost">Ignore</Button>}
+                                    action={<Button size="sm" variant="secondary">Resume</Button>}
+                                    onDismiss={() => setBannerVisible(false)}
+                                >
+                                    Reconnect the warehouse feed before publishing time-sensitive products.
+                                </Banner>
+                            )}
+                            <Banner title="Critical publishing guard" variant="critical" hideIcon action={<Button size="sm" variant="destructive">Resolve</Button>}>
+                                Price rules must be reviewed before checkout changes can ship.
+                            </Banner>
+                        </Section>
+                    </Card>
+                    <Card title="Skeleton variants" description="Skeleton now supports avatar, media, button, custom widths, animation control, and optional labels." headerDivider>
+                        <Section>
+                            <div className="grid gap-[var(--lb-space-3)]">
+                                <div className="flex items-center gap-[var(--lb-space-3)]">
+                                    <Skeleton variant="avatar" label="Loading merchant avatar" />
+                                    <div className="flex-1">
+                                        <Skeleton lineWidths={['70%', '45%']} label="Loading merchant copy" />
+                                    </div>
+                                </div>
+                                <Skeleton variant="media" className="max-h-32" />
+                                <div className="flex gap-[var(--lb-space-2)]">
+                                    <Skeleton variant="button" />
+                                    <Skeleton variant="button" animated={false} />
+                                </div>
+                            </div>
+                        </Section>
+                    </Card>
+                </div>
+                <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-2">
+                    <EmptyState
+                        align="start"
+                        compact
+                        tone="subdued"
+                        icon={<MaterialIcon name="reviews" />}
+                        title="No review tasks"
+                        body={<span>Review queues can use left-aligned empty states without separate app-local wrappers.</span>}
+                        primaryAction={<Button size="sm">Create task</Button>}
+                        secondaryAction={<Button size="sm" variant="secondary">Import tasks</Button>}
+                        footer="Compact empty states fit inside dashboard panels."
+                    />
+                    <Card title="Toast and save bar" description="ToastProvider can be positioned, and SaveBar can run static, compact, and critical." padding="md">
+                        <div className="grid gap-[var(--lb-space-4)]">
+                            <AutoToastDemo />
+                            <SaveBar
+                                state="unsaved"
+                                placement="static"
+                                tone="critical"
+                                compact
+                                message="3 checkout-risk settings need review"
+                                saveLabel="Review"
+                                discardLabel="Dismiss"
+                                secondaryAction={<Button size="sm" variant="ghost">Details</Button>}
+                            />
+                        </div>
+                    </Card>
+                </div>
+            </Page>
+        </ToastProvider>
     );
 }
 
