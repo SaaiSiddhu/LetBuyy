@@ -237,6 +237,31 @@ Implemented in this batch:
 - `CommandPalette`: added visible header/description rendering, close button, size variants, custom empty state slot, action badges/metadata, and selectable close behavior.
 - Added `ProductivitySurfaceHardening` and `CommandPaletteSurfaceHardening` Storybook stories showing the batch 9 public API additions.
 
+## Batch 10 — Overlay Surface Hardening
+
+Status: stable for consumers, additive-only.
+
+Verification evidence:
+- `pnpm install` — passed; lockfile was up to date and install completed using pnpm v10.6.2.
+- `pnpm --filter @letbuyy/ui typecheck` — passed.
+- `pnpm --filter @letbuyy/ui build` — passed.
+- `pnpm --filter @letbuyy/ui build-storybook` — passed; Storybook build completed successfully.
+- Storybook dev server — passed at `http://localhost:6006/`.
+- Browser render check — passed; direct story iframes rendered `ModalSurfaceHardening` and `ConfirmTooltipSurfaceHardening`.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--modal-surface-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-modal-surface-hardening.jpg` — passed.
+- `pnpm exec playwright screenshot --full-page --viewport-size=1280,720 --wait-for-timeout=2500 'http://localhost:6006/iframe.html?id=merchant-experience-design-system--confirm-tooltip-surface-hardening&viewMode=story' packages/typescript/ui/storybook-screenshots/ws1-confirm-tooltip-surface-hardening.jpg` — passed.
+- Screenshots: `packages/typescript/ui/storybook-screenshots/ws1-modal-surface-hardening.jpg`, `packages/typescript/ui/storybook-screenshots/ws1-confirm-tooltip-surface-hardening.jpg`.
+- `pnpm run validate:governance` — passed; governance validation passed (128 validators).
+
+Implemented in this batch:
+- `Modal`: widened `title` and `description` to React nodes and added optional `placement`, `role`, `ariaLabel`, `eyebrow`, `titleMetadata`, `headerAction`, `headerDivider`, `footerDivider`, `preventScroll`, `overlayClassName`, `headerClassName`, `bodyClassName`, and `footerClassName` props.
+- `Modal`: added top placement, body scroll locking, alert-dialog role support, richer header composition, configurable dividers, and style slots.
+- `ConfirmDialog`: added optional `icon`, `tone`, `confirmLoadingLabel`, `dismissLabel`, and `footerAlign` props.
+- `ConfirmDialog`: now renders through `Modal` with `role="alertdialog"` and tone-aware confirm/icon behavior.
+- `Tooltip`: added optional `tone`, `maxWidth`, `disabled`, `triggerClassName`, and `className` props.
+- `Tooltip`: now preserves existing trigger `aria-describedby` values while merging the tooltip id and supports inverse/width styling.
+- Added `ModalSurfaceHardening` and `ConfirmTooltipSurfaceHardening` Storybook stories showing the batch 10 public API additions.
+
 ## Stable Public API
 
 Components:

@@ -1379,6 +1379,117 @@ export function CommandPaletteSurfaceHardening() {
     );
 }
 
+export function ModalSurfaceHardening() {
+    const [open, setOpen] = useState(true);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 10"
+                title="Modal surface hardening"
+                description="Modal now supports richer headers, metadata, header actions, top placement, body and footer class slots, scroll locking, and configurable dividers."
+                titleMetadata={<Badge label="Overlay" variant="info" />}
+            />
+            <Card title="Modal trigger" description="The modal opens by default for screenshot evidence." headerDivider>
+                <Section>
+                    <Button onClick={() => setOpen(true)} icon={<MaterialIcon name="edit" />}>Open review modal</Button>
+                </Section>
+            </Card>
+            <Modal
+                open={open}
+                placement="top"
+                size="lg"
+                eyebrow="Bulk product review"
+                title="Review storefront publishing"
+                titleMetadata={<Badge label="184 products" variant="info" />}
+                description={<span>Top-placed dialogs keep large operational workflows visible without app-local wrappers.</span>}
+                headerAction={<Button size="sm" variant="secondary" icon={<MaterialIcon name="visibility" />}>Preview</Button>}
+                footerAlign="between"
+                bodyClassName="bg-[var(--lb-color-surface-subdued)]"
+                dismissLabel="Close storefront publishing review"
+                onClose={() => setOpen(false)}
+                footer={(
+                    <>
+                        <Button variant="ghost" onClick={() => setOpen(false)}>Keep editing</Button>
+                        <div className="flex gap-[var(--lb-space-2)]">
+                            <Button variant="secondary" onClick={() => setOpen(false)}>Schedule</Button>
+                            <Button onClick={() => setOpen(false)} icon={<MaterialIcon name="check" />}>Publish changes</Button>
+                        </div>
+                    </>
+                )}
+            >
+                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                    <Input label="Products selected" defaultValue="184" suffixContent="items" readOnly />
+                    <Select
+                        label="Publish channel"
+                        defaultValue="online"
+                        options={[
+                            { label: 'Online Store', value: 'online' },
+                            { label: 'Point of Sale', value: 'pos' },
+                        ]}
+                    />
+                    <Banner title="Inventory and prices are ready" variant="success" compact className="md:col-span-2">
+                        This modal is using tokenized body styling, header metadata, and split footer actions.
+                    </Banner>
+                </div>
+            </Modal>
+        </Page>
+    );
+}
+
+export function ConfirmTooltipSurfaceHardening() {
+    const [open, setOpen] = useState(true);
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="Batch 10"
+                title="Confirm dialog and tooltip hardening"
+                description="ConfirmDialog now supports alert-dialog semantics, tone-aware icons, loading labels, footer alignment, and Tooltip adds tone, max-width, disabled, and class slots."
+                titleMetadata={<Badge label="Safety" variant="warning" />}
+            />
+            <Card title="Confirmation trigger" description="The dialog opens by default for screenshot evidence." headerDivider>
+                <Section>
+                    <Button variant="destructive" onClick={() => setOpen(true)} icon={<MaterialIcon name="delete" />}>Open guarded confirm</Button>
+                </Section>
+            </Card>
+            <ConfirmDialog
+                open={open}
+                title="Archive selected products"
+                description="Products will leave active sales channels and storefront search."
+                destructive
+                icon={<MaterialIcon name="warning" />}
+                confirmLabel="Archive products"
+                confirmLoading
+                confirmLoadingLabel="Archiving products"
+                closeOnOverlayClick={false}
+                footerAlign="between"
+                dismissLabel="Close archive confirmation"
+                onConfirm={() => setOpen(false)}
+                onClose={() => setOpen(false)}
+            >
+                <div className="grid gap-[var(--lb-space-3)] pb-[var(--lb-space-5)]">
+                    <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                        Resolve channel holds before this destructive action can finish.
+                    </p>
+                    <div className="pt-[var(--lb-space-7)]">
+                        <Tooltip
+                            content="Tooltips can be inverse, wider, and forced visible in dense safety copy."
+                            side="top"
+                            align="start"
+                            tone="inverse"
+                            maxWidth="md"
+                            className="!opacity-100"
+                        >
+                            <Button size="sm" variant="secondary" icon={<MaterialIcon name="info" />}>Why blocked?</Button>
+                        </Tooltip>
+                    </div>
+                </div>
+            </ConfirmDialog>
+        </Page>
+    );
+}
+
 export function EmptyAndLoadingStates() {
     return (
         <Page>
