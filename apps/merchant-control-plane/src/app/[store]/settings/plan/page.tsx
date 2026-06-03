@@ -64,6 +64,11 @@ function getPayloadError(payload: { error?: string | { message?: string } } | nu
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
+function coerceCents(value: unknown) {
+    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
+    return Number.isFinite(amount) ? amount : 0
+}
+
 function formatMoney(amount: number) {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
@@ -179,7 +184,13 @@ export default function PlanSettingsPage() {
                 const plansPayload = (await planResponse.json().catch(() => null)) as PlansPayload | null
 
                 if (planResponse.ok && plansPayload?.plans?.[0]) {
-                    nextPlanInfo = plansPayload.plans[0]
+                    const plan = plansPayload.plans[0]
+                    nextPlanInfo = {
+                        ...plan,
+                        price_monthly_inr: coerceCents(plan.price_monthly_inr),
+                        price_yearly_inr: coerceCents(plan.price_yearly_inr),
+                        features: Array.isArray(plan.features) ? plan.features : [],
+                    }
                 }
             } catch {
                 nextPlanInfo = null
@@ -188,6 +199,7 @@ export default function PlanSettingsPage() {
             setPlanInfo(nextPlanInfo)
             setSubscription({
                 ...sub,
+                amount_paid: coerceCents(sub.amount_paid),
                 plan_name: nextPlanInfo?.name || sub.plan_name || sub.plan,
             })
         } catch (error) {

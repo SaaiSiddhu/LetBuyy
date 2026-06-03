@@ -62,6 +62,11 @@ function getPayloadError(payload: BillingPayload | null, fallback: string) {
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
+function coerceCents(value: unknown) {
+    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
+    return Number.isFinite(amount) ? amount : 0
+}
+
 function formatMoney(amount: number, currency: string) {
     return new Intl.NumberFormat('en-IN', {
         style: 'currency',
@@ -162,7 +167,7 @@ export default function BillingSettingsPage() {
             const invoiceData = Array.isArray(data?.invoices) ? data.invoices : []
             setInvoices(invoiceData.map((invoice) => ({
                 id: invoice.id as string,
-                amount_paid: (invoice.amount_paid as number) || 0,
+                amount_paid: coerceCents(invoice.amount_paid),
                 currency: (invoice.currency as string) || 'INR',
                 status: (invoice.status as string) || 'pending',
                 billing_period: (invoice.billing_period as string) || '',
