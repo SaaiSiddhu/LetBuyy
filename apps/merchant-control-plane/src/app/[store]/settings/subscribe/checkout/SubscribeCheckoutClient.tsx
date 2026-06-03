@@ -84,6 +84,11 @@ function formatRupees(value: number) {
     }).format(value)
 }
 
+function coerceNumber(value: unknown) {
+    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
+    return Number.isFinite(amount) ? amount : 0
+}
+
 interface PaymentMethodOptionProps {
     value: 'upi' | 'card'
     selected: boolean
@@ -143,11 +148,15 @@ export default function SubscribeCheckoutClient({
     const [city, setCity] = useState('')
     const [state, setState] = useState('')
 
-    const monthlyPrice = plan.price_monthly_inr / 100
-    const yearlyPrice = plan.price_yearly_inr / 100
-    const promoPrice = plan.promo_price_inr / 100
-    const hasPromo = plan.promo_price_inr > 0 && plan.promo_months > 0
-    const isFreePlan = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
+    const monthlyCents = coerceNumber(plan.price_monthly_inr)
+    const yearlyCents = coerceNumber(plan.price_yearly_inr)
+    const promoCents = coerceNumber(plan.promo_price_inr)
+    const promoMonths = Math.max(0, Math.floor(coerceNumber(plan.promo_months)))
+    const monthlyPrice = monthlyCents / 100
+    const yearlyPrice = yearlyCents / 100
+    const promoPrice = promoCents / 100
+    const hasPromo = promoCents > 0 && promoMonths > 0
+    const isFreePlan = monthlyCents === 0 && yearlyCents === 0 && !plan.requires_contact
     const currentPrice = billingPeriod === 'yearly' ? yearlyPrice : hasPromo ? promoPrice : monthlyPrice
     const yearlySavings = Math.max(0, Math.round((monthlyPrice - yearlyPrice) * 12))
 
@@ -168,12 +177,12 @@ export default function SubscribeCheckoutClient({
 
         if (hasPromo && billingPeriod === 'monthly') {
             const promoEnd = new Date(today)
-            promoEnd.setMonth(promoEnd.getMonth() + plan.promo_months)
+            promoEnd.setMonth(promoEnd.getMonth() + promoMonths)
             entries.push({
                 date: promoEnd.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
                 label: 'Regular pricing begins',
                 amount: `${formatRupees(monthlyPrice)}/month`,
-                description: `${formatRupees(promoPrice)} x ${plan.promo_months} months promo ends`,
+                description: `${formatRupees(promoPrice)} x ${promoMonths} months promo ends`,
             })
         }
 
@@ -195,7 +204,7 @@ export default function SubscribeCheckoutClient({
         }
 
         return entries
-    }, [billingPeriod, hasPromo, monthlyPrice, plan.promo_months, promoPrice, yearlyPrice])
+    }, [billingPeriod, hasPromo, monthlyPrice, promoMonths, promoPrice, yearlyPrice])
 
     const handleSubscribe = async () => {
         setIsProcessing(true)
@@ -240,7 +249,7 @@ export default function SubscribeCheckoutClient({
                 ...(orderData.razorpay_subscription_id
                     ? { subscription_id: orderData.razorpay_subscription_id }
                     : { order_id: orderData.razorpay_order_id }),
-                amount: orderData.amount,
+                amount: coerceNumber(orderData.amount),
                 currency: 'INR',
                 name: 'LetBuyy',
                 description: `${plan.name} Plan - ${billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}`,
