@@ -3,7 +3,7 @@
 ## CURRENT STATUS
 - Stage: WS9 Settings Architecture.
 - Branch: `stream/master-execution`.
-- Active task: S1.1 settings shell/index implementation pending.
+- Active task: S2.1 Store details pane migration pending.
 - Source ownership: `apps/merchant-control-plane/src/app/[store]/settings/**` and `apps/merchant-control-plane/src/components/settings/**` only. Root ledgers are bookkeeping exceptions.
 
 ## BASELINE (S0)
@@ -37,16 +37,23 @@
 | Custom Data | `settings/custom-data/page.tsx` | Metafields/metaobjects endpoint not confirmed | Placeholder with `[SKIP - NEEDS BACKEND: metafields/metaobjects API]`. |
 
 ## PROGRESS LOG
+- 2026-06-03T13:45:06Z [S1.1/S1.2] Settings hub shell and reusable pane wrapper - DONE. Files: `apps/merchant-control-plane/src/components/settings/SettingsShell.tsx`, `SettingsIndex.tsx`, `SettingsPane.tsx`, `settings-navigation.ts`, `index.ts`, `apps/merchant-control-plane/src/app/[store]/settings/layout.tsx`, and `settings/page.tsx`. Evidence: `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS after frozen workspace-link restoration; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 6 pre-existing warnings outside the new settings files; `pnpm run federation:local:up` -> PASS; `npx tsx .tmp/ws9-settings-s1-proof.ts` -> PASS, 6 screenshots for hub/general/payments at desktop/mobile; `file .tmp/screenshots/ws9-s1-after/*.png` -> PASS expected PNG dimensions. Manifest: `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-s1-after/manifest.json`.
 - 2026-06-03T13:31:44Z [S0.2] Before screenshots - DONE. Commands: clean `pnpm run federation:local:up` -> PASS after resolving stale local `workerd` inspector port with `pnpm run federation:local:down` and `kill -9 30414`; `npx tsx .tmp/ws9-settings-before.ts` -> PASS, created local merchant session through `/v1/auth/custom/sessions/create`, visited all 13 settings panes on `http://127.0.0.1:3002/urban-kicks-demo/settings*`, and saved 26 desktop/mobile screenshots; `file .tmp/screenshots/ws9-before/*.png` -> PASS, all PNGs have expected desktop/mobile dimensions. Manifest: `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-before/manifest.json`.
 - 2026-06-03T13:16:59Z [S0.1] Baseline inventory - DONE. Commands: `find 'apps/merchant-control-plane/src/app/[store]/settings' -maxdepth 4 -type f`, `find 'apps/merchant-control-plane/src/app/api/stores/[store]' -maxdepth 3 -type f`, and `rg` over settings/proxy routes -> PASS. Result: 13 current settings surfaces inventoried plus 5 missing panes mapped to current or backend-needed data.
 
 ## SKIPPED - NEEDS HUMAN / BACKEND / HANDOFF
-- None yet. Backend gaps are identified as S0 dispositions only; final skip entries will be appended when a pane is implemented as a placeholder.
+- [SKIP - NEEDS BACKEND] Business details settings fields - requires persisted `sites.business_details` or equivalent fields for legal entity, GSTIN, and billing address. S1 shell exposes a disabled placeholder row only.
+- [SKIP - NEEDS BACKEND] Languages and localization settings endpoint - requires store locale/language endpoint and theme locale coordination fields. S1 shell exposes a disabled placeholder row only.
+- [SKIP - NEEDS BACKEND] Security settings endpoints - requires merchant 2FA, passkey, and recovery-code endpoints. S1 shell exposes a disabled placeholder row only.
+- [SKIP - NEEDS BACKEND] Apps and sales channels settings endpoint - requires installed app/sales channel settings API with uninstall/data-loss contract. S1 shell exposes a disabled placeholder row only.
+- [SKIP - NEEDS BACKEND] Custom data settings API - requires metafields/metaobjects API and tenant ownership contracts. S1 shell exposes a disabled placeholder row only.
 
 ## VISUAL LEDGER
+- 2026-06-03T13:45:06Z [S1 after] Real stack screenshot manifest: `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-s1-after/manifest.json` (6 files: desktop + mobile hub, General, Payments). Representative visual checks completed for `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-s1-after/ws9-s1-after-desktop-hub.png`, `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-s1-after/ws9-s1-after-mobile-hub.png`, and `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-s1-after/ws9-s1-after-desktop-payments.png`.
 - 2026-06-03T13:31:44Z [S0.2 before] Real stack screenshot manifest: `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-before/manifest.json` (26 files: desktop + mobile for index, general, plan, billing, subscribe checkout, users, payments, checkout, shipping, taxes, domains, notifications, policies).
 - Representative visual sanity checks completed: `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-before/ws9-before-desktop-index.png` and `/Users/saai_sidd/Git/Letbuyy_Store/.tmp/screenshots/ws9-before/ws9-before-mobile-payments.png` render seeded `Urban Kicks Demo` settings data without auth redirects.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T13:48:29Z [S1 pre-commit] `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> PASS; `pnpm --filter @letbuyy/merchant-control-plane lint` -> PASS with 6 unrelated pre-existing warnings; generated artifact scan after stack shutdown/cleanup -> no generated directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T13:36:12Z [S0.2 pre-commit] `pnpm run validate:governance` after before-screenshot proof and generated artifact cleanup -> PASS (128/128 validators).
 - 2026-06-03T13:13:44Z [Stage 3 baseline] `pnpm run validate:governance` after Stage 2 closeout -> PASS (128/128 validators).

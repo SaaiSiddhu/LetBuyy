@@ -1,156 +1,179 @@
-'use client'
-
 import Link from 'next/link'
-import { useParams } from 'next/navigation'
+import { notFound } from 'next/navigation'
+import { Badge, Banner, Card, MaterialIcon, Section, type MaterialIconName } from '@letbuyy/ui'
+import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
 import {
-    Badge,
-    Card,
-    MaterialIcon,
-    Page,
-    PageHeader,
-    Section,
-} from '@letbuyy/ui'
+    SettingsPane,
+    getSettingsItemHref,
+    settingsIndexGroups,
+    type SettingsIndexItem,
+} from '@/components/settings'
 
-const settingsGroups = [
-    {
-        title: 'Store setup',
-        description: 'Identity, subscription, billing, and team access.',
-        sections: [
-            { href: 'general', label: 'General', description: 'Store name, handle, currency, language, and site type.', iconName: 'settings', badge: 'Core' },
-            { href: 'plan', label: 'Plan', description: 'Current plan, upgrade options, and cancellation workflow.', iconName: 'rocket_launch', badge: 'Billing' },
-            { href: 'billing', label: 'Billing', description: 'Invoices, billing profile, and subscription payment details.', iconName: 'receipt_long', badge: 'Billing' },
-            { href: 'users', label: 'Users and permissions', description: 'Invite staff and manage access to the merchant workspace.', iconName: 'group', badge: 'Access' },
-        ],
-    },
-    {
-        title: 'Commerce operations',
-        description: 'Checkout, payment acceptance, delivery, and tax configuration.',
-        sections: [
-            { href: 'payments', label: 'Payments', description: 'Configure Razorpay and verify masked provider settings.', iconName: 'payments', badge: 'Money' },
-            { href: 'checkout', label: 'Checkout', description: 'Tune buyer checkout preferences and order conversion settings.', iconName: 'shopping_cart_checkout', badge: 'Orders' },
-            { href: 'shipping', label: 'Shipping and delivery', description: 'Create zones, delivery rates, and fulfillment defaults.', iconName: 'local_shipping', badge: 'Orders' },
-            { href: 'taxes', label: 'Taxes and duties', description: 'Manage tax rates, inclusive pricing, and regional duties.', iconName: 'request_quote', badge: 'Compliance' },
-        ],
-    },
-    {
-        title: 'Storefront trust',
-        description: 'Domain, notifications, and legal content merchants need before launch.',
-        sections: [
-            { href: 'domains', label: 'Domains', description: 'Connect your LetBuyy subdomain and custom domain records.', iconName: 'language', badge: 'Launch' },
-            { href: 'notifications', label: 'Notifications', description: 'Merchant and shopper email preferences for order events.', iconName: 'notifications', badge: 'Comms' },
-            { href: 'policies', label: 'Policies', description: 'Publish privacy, refund, shipping, and terms policy pages.', iconName: 'policy', badge: 'Trust' },
-        ],
-    },
-]
+interface SettingsPageProps {
+    params: Promise<{ store: string }>
+}
 
-export default function SettingsPage() {
-    const { store } = useParams<{ store: string }>()
+const launchPriorityKeys = new Set(['payments', 'shipping', 'domains', 'policies'])
+
+function allSettingsItems() {
+    return settingsIndexGroups.flatMap((group) => group.items)
+}
+
+function statusLabel(item: SettingsIndexItem) {
+    if (item.badge) return item.badge
+    return item.status === 'ready' ? 'Ready' : 'Planned'
+}
+
+export default async function SettingsPage({ params }: SettingsPageProps) {
+    const { store } = await params
+    const user = await getSessionUser()
+    if (!user) return notFound()
+
+    const storeData = await getStoreForUser(store, user.id)
+    if (!storeData) return notFound()
+
+    const storeName = storeData.name || storeData.store_name || store
+    const subdomain = storeData.subdomain || storeData.store_name || store
+    const items = allSettingsItems()
+    const readyItems = items.filter((item) => item.status === 'ready')
+    const plannedItems = items.filter((item) => item.status !== 'ready')
+    const launchItems = readyItems.filter((item) => launchPriorityKeys.has(item.key))
 
     return (
-        <Page>
-            <PageHeader
-                title="Settings"
-                description="Configure the store controls that support launch, operations, billing, and customer trust."
-                breadcrumbs={[{ label: 'Home', href: `/${store}/dashboard` }, { label: 'Settings' }]}
-                primaryAction={{ label: 'Open general settings', href: `/${store}/settings/general` }}
-            />
+        <SettingsPane
+            store={store}
+            title="Settings"
+            description="Centralized controls for store setup, billing, payments, delivery, compliance, and platform access."
+            iconName="settings"
+        >
+            <Banner variant="info" title="Settings architecture baseline">
+                {readyItems.length} settings routes are available now. {plannedItems.length} rows are staged as honest placeholders until their backend fields or endpoints exist.
+            </Banner>
 
-            <Card>
-                <Section
-                    title="Launch checklist"
-                    description="These are the settings merchants usually need before accepting real orders."
-                >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2 xl:grid-cols-4">
-                        <ChecklistItem href={`/${store}/settings/payments`} icon="payments" title="Set up payments" />
-                        <ChecklistItem href={`/${store}/settings/shipping`} icon="local_shipping" title="Review shipping" />
-                        <ChecklistItem href={`/${store}/settings/domains`} icon="language" title="Connect domain" />
-                        <ChecklistItem href={`/${store}/settings/policies`} icon="policy" title="Publish policies" />
-                    </div>
-                </Section>
-            </Card>
+            <div className="grid gap-[var(--lb-density-card-gap)] xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                <Card>
+                    <Section title="Store profile" description="Current real-stack store context used by every settings pane.">
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            <ProfileRow icon="storefront" label="Store" value={storeName} detail={`${subdomain}.letbuyy.store`} />
+                            <ProfileRow icon="account_circle" label="Session" value={user.fullName || user.email.split('@')[0] || 'User'} detail={user.email} />
+                            <ProfileRow icon="currency_rupee" label="Market" value="India-first defaults" detail="INR, GST-aware commerce settings" />
+                        </div>
+                    </Section>
+                </Card>
 
-            {settingsGroups.map((group) => (
-                <Card key={group.title}>
-                    <Section title={group.title} description={group.description}>
-                        <div className="grid gap-[var(--lb-space-3)] lg:grid-cols-2">
-                            {group.sections.map((section) => (
-                                <SettingsLink
-                                    key={section.href}
-                                    href={`/${store}/settings/${section.href}`}
-                                    label={section.label}
-                                    description={section.description}
-                                    badge={section.badge}
-                                    iconName={section.iconName}
-                                />
+                <Card>
+                    <Section title="Launch priorities" description="Operational settings merchants usually verify before accepting real orders.">
+                        <div className="grid gap-[var(--lb-space-2)] sm:grid-cols-2">
+                            {launchItems.map((item) => (
+                                <SettingsTile key={item.key} store={store} item={item} compact />
                             ))}
                         </div>
                     </Section>
                 </Card>
-            ))}
-        </Page>
+            </div>
+
+            <Section
+                title="Settings map"
+                description="Grouped settings index aligned to the left navigation shell."
+                columns={2}
+            >
+                {settingsIndexGroups.map((group) => (
+                    <Card key={group.label}>
+                        <div className="grid gap-[var(--lb-space-3)] p-[var(--lb-density-card-padding)]">
+                            <div className="flex items-center justify-between gap-[var(--lb-space-3)]">
+                                <h2 className="m-0 text-[length:var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-[color:var(--lb-color-text)]">
+                                    {group.label}
+                                </h2>
+                                <Badge
+                                    label={`${group.items.filter((item) => item.status === 'ready').length}/${group.items.length} ready`}
+                                    variant={group.items.every((item) => item.status === 'ready') ? 'success' : 'warning'}
+                                />
+                            </div>
+                            <div className="grid gap-[var(--lb-space-2)]">
+                                {group.items.map((item) => (
+                                    <SettingsTile key={item.key} store={store} item={item} />
+                                ))}
+                            </div>
+                        </div>
+                    </Card>
+                ))}
+            </Section>
+        </SettingsPane>
     )
 }
 
-function ChecklistItem({
-    href,
+function ProfileRow({
     icon,
-    title,
+    label,
+    value,
+    detail,
 }: {
-    href: string
-    icon: string
-    title: string
+    icon: MaterialIconName
+    label: string
+    value: string
+    detail: string
 }) {
     return (
-        <Link
-            href={href}
-            className="flex items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] text-[var(--lb-color-text)] transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-        >
-            <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                <MaterialIcon name={icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+        <div className="flex min-w-0 items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
+            <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
+                <MaterialIcon name={icon} />
             </span>
-            <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)]">
-                {title}
+            <span className="min-w-0">
+                <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{label}</span>
+                <strong className="block truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{value}</strong>
+                <span className="block truncate text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{detail}</span>
             </span>
-        </Link>
+        </div>
     )
 }
 
-function SettingsLink({
-    href,
-    label,
-    description,
-    badge,
-    iconName,
+function SettingsTile({
+    store,
+    item,
+    compact = false,
 }: {
-    href: string
-    label: string
-    description: string
-    badge: string
-    iconName: string
+    store: string
+    item: SettingsIndexItem
+    compact?: boolean
 }) {
-    return (
-        <Link
-            href={href}
-            className="group flex min-h-[calc(var(--lb-size-control-lg)+var(--lb-space-7))] gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-        >
-            <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                <MaterialIcon name={iconName} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+    const className = [
+        'group flex min-h-[var(--lb-size-control-lg)] min-w-0 gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] transition-colors duration-[var(--lb-motion-fast)]',
+        item.status === 'ready' ? 'hover:bg-[var(--lb-color-surface)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]' : 'opacity-75',
+    ].join(' ')
+
+    const body = (
+        <>
+            <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
+                <MaterialIcon name={item.icon} />
             </span>
             <span className="min-w-0 flex-1">
                 <span className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                    <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                        {label}
+                    <strong className="text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{item.label}</strong>
+                    <Badge label={statusLabel(item)} variant={item.status === 'ready' ? 'info' : 'warning'} />
+                </span>
+                {!compact && (
+                    <span className="mt-[var(--lb-space-1)] block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                        {item.description}
                     </span>
-                    <Badge label={badge} variant="info" />
-                </span>
-                <span className="mt-[var(--lb-space-2)] block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                    {description}
-                </span>
+                )}
             </span>
-            <MaterialIcon
-                name="arrow_forward"
-                className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-text-subdued)] transition-colors duration-[var(--lb-motion-fast)] group-hover:text-[var(--lb-color-text)]"
-            />
+            {item.status === 'ready' && (
+                <MaterialIcon name="arrow_forward" className="mt-[var(--lb-space-1)] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[color:var(--lb-color-text-subdued)] group-hover:text-[color:var(--lb-color-text)]" />
+            )}
+        </>
+    )
+
+    if (item.status !== 'ready') {
+        return (
+            <span className={className} aria-disabled="true">
+                {body}
+            </span>
+        )
+    }
+
+    return (
+        <Link href={getSettingsItemHref(store, item)} className={className}>
+            {body}
         </Link>
     )
 }

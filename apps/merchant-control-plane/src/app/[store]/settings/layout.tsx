@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import SettingsSidebar from '@/components/SettingsSidebar'
+import { SettingsShell } from '@/components/settings'
 
 interface SettingsLayoutProps {
     children: React.ReactNode
@@ -19,16 +19,14 @@ export default async function SettingsLayout({ children, params }: SettingsLayou
     if (!storeData) return notFound()
 
     return (
-        <div className="settings-shell">
-            <SettingsSidebar
-                storeName={storeData.name || storeData.store_name || store}
-                subdomain={storeData.subdomain || storeData.store_name || store}
-                userName={user.fullName || ''}
-                userEmail={user.email}
-            />
-            <div className="settings-content">
-                {children}
-            </div>
-        </div>
+        <SettingsShell
+            store={store}
+            storeName={storeData.name || storeData.store_name || store}
+            subdomain={storeData.subdomain || storeData.store_name || store}
+            userName={user.fullName || user.email.split('@')[0] || 'User'}
+            userEmail={user.email}
+        >
+            {children}
+        </SettingsShell>
     )
 }
