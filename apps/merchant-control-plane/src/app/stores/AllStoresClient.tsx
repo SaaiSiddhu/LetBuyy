@@ -105,7 +105,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
                 <div className="all-stores-header">
                     <h1 className="all-stores-greeting">Welcome back, {firstName}</h1>
                     <button className="all-stores-create-btn" onClick={handleCreateStore}>
-                        <MaterialIcon name="add" style={{ fontSize: 18 }} />
+                        <MaterialIcon name="add" size={18} />
                         Create store
                     </button>
                 </div>
