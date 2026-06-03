@@ -33,6 +33,7 @@ import {
     Textarea,
     ToastProvider,
     Tooltip,
+    letbuyyTokens,
     useToast,
 } from './index';
 
@@ -140,6 +141,60 @@ export default {
     title: 'Merchant Experience/Design System',
 };
 
+export function TokenSystem() {
+    const lightColors = letbuyyTokens.color.light;
+
+    return (
+        <Page>
+            <PageHeader
+                eyebrow="LetBuyy tokens"
+                title="Brand-led neutral system"
+                description="A 90 percent neutral merchant UI foundation with violet and indigo accents reserved for focus, action, selection, and status emphasis."
+            />
+            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-3">
+                <Card>
+                    <Section title="Brand accents" description="Primary and secondary brand tokens stay exact to the WS1 mission.">
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            <div className="flex items-center gap-[var(--lb-space-3)]">
+                                <ColorSwatch color={lightColors.primary} label="Primary #8B5CF6" size="lg" shape="rounded" />
+                                <div>
+                                    <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">Primary</p>
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{lightColors.primary}</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-[var(--lb-space-3)]">
+                                <ColorSwatch color={lightColors.secondary} label="Secondary #6366F1" size="lg" shape="rounded" />
+                                <div>
+                                    <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]">Secondary</p>
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{lightColors.secondary}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Action contrast" description="Interactive backgrounds use action tokens so foreground contrast remains AA.">
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                            <Button>Primary action</Button>
+                            <Button variant="secondary">Secondary action</Button>
+                            <Button variant="outline">Outline action</Button>
+                        </div>
+                    </Section>
+                </Card>
+                <Card>
+                    <Section title="Motion and shape" description="Radius, shadow, and motion values are semantic CSS variables.">
+                        <div className="grid gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            <code className="rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-2)]">--lb-radius-lg = {letbuyyTokens.radius.lg}</code>
+                            <code className="rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-2)]">--lb-shadow-sm = {letbuyyTokens.shadow.sm}</code>
+                            <code className="rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-2)]">--lb-motion-fast = {letbuyyTokens.motion.duration.fast}</code>
+                        </div>
+                    </Section>
+                </Card>
+            </div>
+        </Page>
+    );
+}
+
 export function UsageGuidelines() {
     return (
         <Page>
@@ -151,7 +206,7 @@ export function UsageGuidelines() {
             <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                 <Card>
                     <Section title="Page structure" description="Start every admin screen with Page, PageHeader, Card, then Section.">
-                        <div className="space-y-[var(--lb-space-3)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                        <div className="space-y-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                             <p className="m-0">Use the same skeleton for dashboards, settings, lists, editors, and workflow steps.</p>
                             <Badge label="Page -> PageHeader -> Card -> Section" variant="info" />
                         </div>
@@ -163,7 +218,7 @@ export function UsageGuidelines() {
                             {['--lb-color-surface', '--lb-color-text', '--lb-space-4', '--lb-radius-lg', '--lb-shadow-sm'].map((token) => (
                                 <code
                                     key={token}
-                                    className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] text-[var(--lb-color-text)]"
+                                    className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)]"
                                 >
                                     {token}
                                 </code>
@@ -200,11 +255,11 @@ export function UsageGuidelines() {
                             <RadiusPreview
                                 radius={12}
                                 label="Radius preview 12px"
-                                className="grid h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] place-items-center border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]"
+                                className="grid h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] place-items-center border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]"
                             >
                                 12
                             </RadiusPreview>
-                            <ColorPreviewButton color="#111827" radius={12} className="h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[var(--lb-color-text-inverse)]">
+                            <ColorPreviewButton color="#111827" radius={12} className="h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[color:var(--lb-color-text-inverse)]">
                                 Preview CTA
                             </ColorPreviewButton>
                         </div>
@@ -381,7 +436,7 @@ export function StatusBadges() {
             <Badge label="Warning" variant="warning" />
             <Badge label="Critical" variant="critical" />
             <Badge label="Legacy danger alias" variant="danger" />
-            <CheckCircle2 className="h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[var(--lb-color-success)]" aria-hidden="true" />
+            <CheckCircle2 className="h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[color:var(--lb-color-success)]" aria-hidden="true" />
         </div>
     );
 }

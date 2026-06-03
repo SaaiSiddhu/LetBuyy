@@ -40,37 +40,45 @@ export function DataTable<T extends Record<string, unknown>>({
     className = '',
 }: DataTableProps<T>) {
     return (
-        <div className={cx('overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)}>
-            <table className="w-full text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+        <div className={cx('overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]', className)} aria-busy={loading}>
+            <table className="w-full text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
                 <thead className="bg-[var(--lb-color-surface-subdued)]">
                     <tr>
-                        {columns.map((col) => (
-                            <th
-                                key={col.key}
-                                className={cx(
-                                    'px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]',
-                                    col.sortable && 'cursor-pointer select-none hover:text-[var(--lb-color-text)]',
-                                )}
-                                style={col.width ? { width: col.width } : undefined}
-                                onClick={() => col.sortable && onSort?.(col.key)}
-                            >
-                                <div className="flex items-center gap-[var(--lb-space-1)]">
-                                    {col.header}
-                                    {col.sortable && sortKey === col.key && (
-                                        sortDirection === 'asc'
-                                            ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                            : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                        {columns.map((col) => {
+                            const sorted = sortKey === col.key;
+                            return (
+                                <th
+                                    key={col.key}
+                                    className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]"
+                                    style={col.width ? { width: col.width } : undefined}
+                                    aria-sort={sorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
+                                >
+                                    {col.sortable ? (
+                                        <button
+                                            type="button"
+                                            className="inline-flex items-center gap-[var(--lb-space-1)] text-left hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                            onClick={() => onSort?.(col.key)}
+                                        >
+                                            {col.header}
+                                            {sorted && (
+                                                sortDirection === 'asc'
+                                                    ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                    : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                            )}
+                                        </button>
+                                    ) : (
+                                        <span>{col.header}</span>
                                     )}
-                                </div>
-                            </th>
-                        ))}
+                                </th>
+                            );
+                        })}
                     </tr>
                 </thead>
                 <tbody className="divide-y divide-[var(--lb-color-border)]">
                     {loading ? (
                         <tr>
                             <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center">
-                                <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[var(--lb-color-text-subdued)]">
+                                <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[color:var(--lb-color-text-subdued)]">
                                     <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" />
                                     Loading...
                                 </div>
@@ -78,7 +86,7 @@ export function DataTable<T extends Record<string, unknown>>({
                         </tr>
                     ) : data.length === 0 ? (
                         <tr>
-                            <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center text-[var(--lb-color-text-subdued)]">
+                            <td colSpan={columns.length} className="px-[var(--lb-space-4)] py-[var(--lb-space-7)] text-center text-[color:var(--lb-color-text-subdued)]">
                                 {emptyMessage}
                             </td>
                         </tr>
@@ -93,7 +101,7 @@ export function DataTable<T extends Record<string, unknown>>({
                                 onClick={() => onRowClick?.(row)}
                             >
                                 {columns.map((col) => (
-                                    <td key={col.key} className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">
+                                    <td key={col.key} className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[color:var(--lb-color-text)]">
                                         {col.render
                                             ? col.render(row[col.key], row, i)
                                             : String(row[col.key] ?? '')}

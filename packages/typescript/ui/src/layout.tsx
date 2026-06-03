@@ -9,7 +9,7 @@ export function Page({ children, className = '', ...props }: PageProps) {
     return (
         <main
             className={cx(
-                'mx-auto flex w-full max-w-[var(--lb-size-page-max)] flex-col gap-[var(--lb-space-5)] px-[var(--lb-space-5)] py-[var(--lb-space-5)] text-[var(--lb-color-text)]',
+                'mx-auto flex w-full max-w-[var(--lb-size-page-max)] flex-col gap-[var(--lb-space-5)] px-[var(--lb-space-5)] py-[var(--lb-space-5)] text-[color:var(--lb-color-text)]',
                 className,
             )}
             {...props}
@@ -50,10 +50,10 @@ export function PageHeader({
 }: PageHeaderProps) {
     const renderDefaultAction = (action: PageHeaderAction, variant: 'primary' | 'secondary') => {
         const buttonClassName = cx(
-            'inline-flex h-[var(--lb-size-control-md)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:pointer-events-none disabled:opacity-50',
+            'inline-flex h-[var(--lb-size-control-md)] items-center justify-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-4)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] transition-colors duration-[var(--lb-motion-fast)] ease-[var(--lb-ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:pointer-events-none disabled:opacity-50',
             variant === 'primary'
-                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)]'
-                : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
+                ? 'border-[var(--lb-color-action-primary)] bg-[var(--lb-color-action-primary)] text-[color:var(--lb-color-action-primary-text)] hover:bg-[var(--lb-color-action-primary-hover)]'
+                : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
         );
         const content = (
             <>
@@ -80,12 +80,12 @@ export function PageHeader({
     return (
         <header className={cx('flex flex-col gap-[var(--lb-space-4)]', className)} {...props}>
             {breadcrumbs.length > 0 && (
-                <nav aria-label="Breadcrumb" className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                <nav aria-label="Breadcrumb" className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                     <ol className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
                         {breadcrumbs.map((breadcrumb, index) => (
                             <li key={`${breadcrumb.label}-${index}`} className="flex items-center gap-[var(--lb-space-2)]">
                                 {breadcrumb.href ? (
-                                    <a className="hover:text-[var(--lb-color-text)]" href={breadcrumb.href}>
+                                    <a className="hover:text-[color:var(--lb-color-text)]" href={breadcrumb.href}>
                                         {breadcrumb.label}
                                     </a>
                                 ) : (
@@ -100,15 +100,15 @@ export function PageHeader({
             <div className="flex flex-col gap-[var(--lb-space-4)] md:flex-row md:items-start md:justify-between">
                 <div className="min-w-0 space-y-[var(--lb-space-1)]">
                     {eyebrow && (
-                        <p className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-primary)]">
+                        <p className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary)]">
                             {eyebrow}
                         </p>
                     )}
-                    <h1 className="m-0 font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[var(--lb-color-text)] text-[length:var(--lb-font-size-display)]">
+                    <h1 className="m-0 font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[color:var(--lb-color-text)] text-[length:var(--lb-font-size-display)]">
                         {title}
                     </h1>
                     {description && (
-                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                             {description}
                         </p>
                     )}
@@ -156,12 +156,12 @@ export function Section({ title, description, action, children, className = '', 
                 <div className="flex flex-col gap-[var(--lb-space-3)] md:flex-row md:items-start md:justify-between">
                     <div className="space-y-[var(--lb-space-1)]">
                         {title && (
-                            <h2 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                            <h2 className="m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
                                 {title}
                             </h2>
                         )}
                         {description && (
-                            <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                            <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                                 {description}
                             </p>
                         )}

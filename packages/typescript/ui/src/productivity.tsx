@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useId, useMemo, useState } from 'react';
 import {
     ArrowDown,
     ArrowUp,
@@ -46,19 +46,19 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
         >
             <div className="flex items-start justify-between gap-[var(--lb-space-4)]">
                 <div className="space-y-[var(--lb-space-2)]">
-                    <p className="m-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                    <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                         {label}
                     </p>
-                    <p className="m-0 text-[var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[var(--lb-color-text)]">
+                    <p className="m-0 text-[length:var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[color:var(--lb-color-text)]">
                         {value}
                     </p>
                     {delta && (
                         <p
                             className={cx(
-                                'm-0 text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
-                                deltaTone === 'positive' && 'text-[var(--lb-color-success)]',
-                                deltaTone === 'negative' && 'text-[var(--lb-color-critical)]',
-                                deltaTone === 'neutral' && 'text-[var(--lb-color-text-subdued)]',
+                                'm-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
+                                deltaTone === 'positive' && 'text-[color:var(--lb-color-success)]',
+                                deltaTone === 'negative' && 'text-[color:var(--lb-color-critical)]',
+                                deltaTone === 'neutral' && 'text-[color:var(--lb-color-text-subdued)]',
                             )}
                         >
                             {delta}
@@ -66,7 +66,7 @@ export function MetricCard({ label, value, delta, deltaTone = 'neutral', sparkli
                     )}
                 </div>
                 {points && (
-                    <svg viewBox="0 0 100 48" className="h-[var(--lb-size-metric-sparkline-height)] w-[var(--lb-size-metric-sparkline-width)] text-[var(--lb-color-primary)]" aria-hidden="true">
+                    <svg viewBox="0 0 100 48" className="h-[var(--lb-size-metric-sparkline-height)] w-[var(--lb-size-metric-sparkline-width)] text-[color:var(--lb-color-primary)]" aria-hidden="true">
                         <polyline points={points} fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                 )}
@@ -82,9 +82,9 @@ export interface AvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const avatarSizeClasses = {
-    sm: 'h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[var(--lb-font-size-caption)]',
-    md: 'h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] text-[var(--lb-font-size-body)]',
-    lg: 'h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] text-[var(--lb-font-size-heading)]',
+    sm: 'h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] text-[length:var(--lb-font-size-caption)]',
+    md: 'h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] text-[length:var(--lb-font-size-body)]',
+    lg: 'h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] text-[length:var(--lb-font-size-heading)]',
 } as const;
 
 export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }: AvatarProps) {
@@ -98,7 +98,7 @@ export function Avatar({ name, imageUrl, size = 'md', className = '', ...props }
     return (
         <div
             className={cx(
-                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-primary)]',
+                'inline-flex shrink-0 items-center justify-center overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-primary)]',
                 avatarSizeClasses[size],
                 className,
             )}
@@ -122,19 +122,19 @@ export function Pagination({ page, totalPages, onPageChange, className = '' }: P
         <nav className={cx('flex items-center justify-between gap-[var(--lb-space-3)]', className)} aria-label="Pagination">
             <button
                 type="button"
-                className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[var(--lb-font-size-body)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
+                className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.max(page - 1, 1))}
                 disabled={page <= 1}
             >
                 <ChevronLeft className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                 Previous
             </button>
-            <span className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+            <span className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]" aria-current="page">
                 Page {page} of {totalPages}
             </span>
             <button
                 type="button"
-                className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[var(--lb-font-size-body)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] disabled:opacity-50"
+                className="inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                 onClick={() => onPageChange(Math.min(page + 1, totalPages))}
                 disabled={page >= totalPages}
             >
@@ -222,10 +222,10 @@ export function IndexTable<T extends { id: string }>({
                                         key={view.value}
                                         type="button"
                                         className={cx(
-                                            'inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
+                                            'inline-flex h-[var(--lb-size-control-sm)] items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
                                             active
-                                                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]'
-                                                : 'border-[var(--lb-color-border)] text-[var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                                ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                                : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
                                         )}
                                         onClick={() => onViewChange?.(view.value)}
                                     >
@@ -247,17 +247,17 @@ export function IndexTable<T extends { id: string }>({
             )}
             {selectedRows.length > 0 && bulkActions.length > 0 && (
                 <div className="flex flex-wrap items-center justify-between gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
-                    <span className="text-[var(--lb-font-size-body)] text-[var(--lb-color-text)]">{selectedRows.length} selected</span>
+                    <span className="text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)]">{selectedRows.length} selected</span>
                     <div className="flex flex-wrap gap-[var(--lb-space-2)]">
                         {bulkActions.map((action) => (
                             <button
                                 key={action.label}
                                 type="button"
                                 className={cx(
-                                    'h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
+                                    'h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
                                     action.destructive
-                                        ? 'border-[var(--lb-color-critical)] text-[var(--lb-color-critical)] hover:bg-[var(--lb-color-critical-soft)]'
-                                        : 'border-[var(--lb-color-border)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface)]',
+                                        ? 'border-[var(--lb-color-critical)] text-[color:var(--lb-color-critical)] hover:bg-[var(--lb-color-critical-soft)]'
+                                        : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface)]',
                                 )}
                                 onClick={() => action.onAction(selectedRows)}
                             >
@@ -276,10 +276,10 @@ export function IndexTable<T extends { id: string }>({
                                 key={column.key}
                                 type="button"
                                 className={cx(
-                                    'inline-flex h-[var(--lb-size-control-sm)] shrink-0 items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
+                                    'inline-flex h-[var(--lb-size-control-sm)] shrink-0 items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)]',
                                     active
-                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]'
-                                        : 'border-[var(--lb-color-border)] text-[var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                        ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]'
+                                        : 'border-[var(--lb-color-border)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)]',
                                 )}
                                 aria-pressed={active}
                                 onClick={() => onSort(column.key)}
@@ -306,7 +306,7 @@ export function IndexTable<T extends { id: string }>({
                     </div>
                 ) : (
                     <div className="divide-y divide-[var(--lb-color-border)]">
-                        <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">
+                        <label className="flex items-center gap-[var(--lb-space-2)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text-subdued)]">
                             <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
                             Select all visible rows
                         </label>
@@ -328,10 +328,10 @@ export function IndexTable<T extends { id: string }>({
                                 <dl className="m-0 grid gap-[var(--lb-space-3)]">
                                     {columns.slice(1).map((column) => (
                                         <div key={column.key} className="grid gap-[var(--lb-space-1)]">
-                                            <dt className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                            <dt className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                                 {column.header}
                                             </dt>
-                                            <dd className="m-0 min-w-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                            <dd className="m-0 min-w-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                                                 {column.render ? column.render(row, rowIndex) : String(row[column.key as keyof T] ?? '')}
                                             </dd>
                                         </div>
@@ -342,7 +342,7 @@ export function IndexTable<T extends { id: string }>({
                                     <div className="flex justify-end">
                                         <button
                                             type="button"
-                                            className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                            className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                             onClick={() => onRowClick(row)}
                                         >
                                             Open
@@ -355,31 +355,39 @@ export function IndexTable<T extends { id: string }>({
                 )}
             </div>
             <div className="hidden overflow-auto md:block">
-                <table className="w-full border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                    <thead className="bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]">
+                <table className="w-full border-collapse text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                    <thead className="bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text-subdued)]">
                         <tr>
                             <th className="w-[var(--lb-size-control-lg)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left">
                                 <input type="checkbox" checked={allSelected} onChange={toggleAll} aria-label="Select all rows" />
                             </th>
-                            {columns.map((column) => (
-                                <th key={column.key} className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)]">
-                                    <button
-                                        type="button"
-                                        className={cx(
-                                            'inline-flex items-center gap-[var(--lb-space-1)] text-left',
-                                            column.sortable ? 'hover:text-[var(--lb-color-text)]' : 'pointer-events-none',
-                                        )}
-                                        onClick={() => column.sortable && onSort?.(column.key)}
+                            {columns.map((column) => {
+                                const sorted = sortKey === column.key;
+                                return (
+                                    <th
+                                        key={column.key}
+                                        className="px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)]"
+                                        aria-sort={sorted ? (sortDirection === 'asc' ? 'ascending' : 'descending') : undefined}
                                     >
-                                        {column.header}
-                                        {column.sortable && sortKey === column.key && (
-                                            sortDirection === 'asc'
-                                                ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        {column.sortable ? (
+                                            <button
+                                                type="button"
+                                                className="inline-flex items-center gap-[var(--lb-space-1)] text-left hover:text-[color:var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                onClick={() => onSort?.(column.key)}
+                                            >
+                                                {column.header}
+                                                {sorted && (
+                                                    sortDirection === 'asc'
+                                                        ? <ArrowUp className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                        : <ArrowDown className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                                )}
+                                            </button>
+                                        ) : (
+                                            <span>{column.header}</span>
                                         )}
-                                    </button>
-                                </th>
-                            ))}
+                                    </th>
+                                );
+                            })}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-[var(--lb-color-border)]">
@@ -409,7 +417,7 @@ export function IndexTable<T extends { id: string }>({
                                     {columns.map((column) => (
                                         <td
                                             key={column.key}
-                                            className={cx('px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]', onRowClick && 'cursor-pointer')}
+                                            className={cx('px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-[color:var(--lb-color-text)]', onRowClick && 'cursor-pointer')}
                                             onClick={() => onRowClick?.(row)}
                                         >
                                             {column.render ? column.render(row, index) : String(row[column.key as keyof T] ?? '')}
@@ -442,12 +450,16 @@ export interface CommandPaletteProps {
 }
 
 export function CommandPalette({ open, actions, onClose, placeholder = 'Search commands' }: CommandPaletteProps) {
+    const paletteId = useId();
     const [query, setQuery] = useState('');
+    const [activeIndex, setActiveIndex] = useState(0);
     const filteredActions = useMemo(() => {
         const normalizedQuery = query.trim().toLowerCase();
         if (!normalizedQuery) return actions;
         return actions.filter((action) => `${action.label} ${action.description ?? ''}`.toLowerCase().includes(normalizedQuery));
     }, [actions, query]);
+    const activeAction = filteredActions[activeIndex];
+    const listboxId = `${paletteId}-listbox`;
 
     useEffect(() => {
         if (!open) return;
@@ -458,44 +470,95 @@ export function CommandPalette({ open, actions, onClose, placeholder = 'Search c
         return () => document.removeEventListener('keydown', handleKeyDown);
     }, [onClose, open]);
 
+    useEffect(() => {
+        if (!open) return;
+        setActiveIndex(filteredActions.length > 0 ? 0 : -1);
+    }, [filteredActions.length, open]);
+
+    const moveActiveAction = (direction: 1 | -1) => {
+        if (filteredActions.length === 0) {
+            setActiveIndex(-1);
+            return;
+        }
+
+        setActiveIndex((current) => {
+            if (current < 0) return 0;
+            return (current + direction + filteredActions.length) % filteredActions.length;
+        });
+    };
+
+    const selectAction = (action: CommandPaletteAction) => {
+        action.onSelect();
+        onClose();
+    };
+
+    const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            moveActiveAction(1);
+        }
+        if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            moveActiveAction(-1);
+        }
+        if (event.key === 'Enter' && activeAction) {
+            event.preventDefault();
+            selectAction(activeAction);
+        }
+        if (event.key === 'Escape') {
+            event.preventDefault();
+            onClose();
+        }
+    };
+
     if (!open) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-[var(--lb-color-overlay)] px-[var(--lb-space-4)] pt-[var(--lb-size-command-palette-offset)]">
-            <div role="dialog" aria-modal="true" aria-label="Command palette" className="w-[min(var(--lb-size-command-palette-width),100%)] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]">
+            <div role="dialog" aria-modal="true" aria-labelledby={`${paletteId}-title`} className="w-[min(var(--lb-size-command-palette-width),100%)] overflow-hidden rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] shadow-[var(--lb-shadow-lg)]">
+                <h2 id={`${paletteId}-title`} className="sr-only">Command palette</h2>
                 <div className="flex items-center gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] px-[var(--lb-space-4)]">
-                    <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
+                    <Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                     <input
-                        className="h-[var(--lb-size-control-lg)] flex-1 bg-transparent text-[var(--lb-font-size-body)] text-[var(--lb-color-text)] outline-none placeholder:text-[var(--lb-color-text-subdued)]"
+                        role="combobox"
+                        aria-expanded="true"
+                        aria-controls={listboxId}
+                        aria-activedescendant={activeAction ? `${listboxId}-option-${activeIndex}` : undefined}
+                        aria-autocomplete="list"
+                        className="h-[var(--lb-size-control-lg)] flex-1 bg-transparent text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none placeholder:text-[color:var(--lb-color-text-subdued)]"
                         value={query}
                         onChange={(event) => setQuery(event.target.value)}
+                        onKeyDown={handleInputKeyDown}
                         placeholder={placeholder}
                         autoFocus
                     />
-                    <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-text-subdued)]" aria-hidden="true" />
+                    <Command className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" aria-hidden="true" />
                 </div>
-                <div className="max-h-[var(--lb-size-command-palette-list-max-height)] overflow-auto p-[var(--lb-space-2)]">
+                <div id={listboxId} role="listbox" className="max-h-[var(--lb-size-command-palette-list-max-height)] overflow-auto p-[var(--lb-space-2)]">
                     {filteredActions.length === 0 ? (
-                        <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-5)] text-center text-[var(--lb-font-size-body)] text-[var(--lb-color-text-subdued)]">
+                        <p className="m-0 px-[var(--lb-space-3)] py-[var(--lb-space-5)] text-center text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text-subdued)]">
                             No commands found
                         </p>
                     ) : (
-                        filteredActions.map((action) => (
+                        filteredActions.map((action, index) => (
                             <button
                                 key={action.id}
+                                id={`${listboxId}-option-${index}`}
                                 type="button"
-                                className="flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
-                                onClick={() => {
-                                    action.onSelect();
-                                    onClose();
-                                }}
+                                role="option"
+                                aria-selected={index === activeIndex}
+                                className={cx(
+                                    'flex w-full items-center gap-[var(--lb-space-3)] rounded-[var(--lb-radius-md)] px-[var(--lb-space-3)] py-[var(--lb-space-3)] text-left hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                    index === activeIndex && 'bg-[var(--lb-color-surface-subdued)]',
+                                )}
+                                onClick={() => selectAction(action)}
                             >
-                                {action.icon && <span className="text-[var(--lb-color-text-subdued)]">{action.icon}</span>}
+                                {action.icon && <span className="text-[color:var(--lb-color-text-subdued)]">{action.icon}</span>}
                                 <span className="min-w-0 flex-1">
-                                    <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">{action.label}</span>
-                                    {action.description && <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">{action.description}</span>}
+                                    <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">{action.label}</span>
+                                    {action.description && <span className="block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">{action.description}</span>}
                                 </span>
-                                {action.shortcut && <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] text-[var(--lb-color-text-subdued)]">{action.shortcut}</kbd>}
+                                {action.shortcut && <kbd className="rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">{action.shortcut}</kbd>}
                             </button>
                         ))
                     )}

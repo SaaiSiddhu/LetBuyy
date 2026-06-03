@@ -12,17 +12,17 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const variantStyles: Record<string, string> = {
-    primary: 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)] shadow-[var(--lb-shadow-sm)]',
-    secondary: 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
-    outline: 'border-[var(--lb-color-border)] bg-transparent text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
-    ghost: 'border-transparent bg-transparent text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
-    destructive: 'border-[var(--lb-color-critical)] bg-[var(--lb-color-critical)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-critical-hover)] shadow-[var(--lb-shadow-sm)]',
+    primary: 'border-[var(--lb-color-action-primary)] bg-[var(--lb-color-action-primary)] text-[color:var(--lb-color-action-primary-text)] hover:bg-[var(--lb-color-action-primary-hover)] shadow-[var(--lb-shadow-sm)]',
+    secondary: 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
+    outline: 'border-[var(--lb-color-border)] bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
+    ghost: 'border-transparent bg-transparent text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)]',
+    destructive: 'border-[var(--lb-color-critical)] bg-[var(--lb-color-critical)] text-[color:var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-critical-hover)] shadow-[var(--lb-shadow-sm)]',
 };
 
 const sizeStyles: Record<string, string> = {
-    sm: 'h-[var(--lb-size-control-sm)] px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]',
-    md: 'h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[var(--lb-font-size-body)] rounded-[var(--lb-radius-lg)]',
-    lg: 'h-[var(--lb-size-control-lg)] px-[var(--lb-space-5)] text-[var(--lb-font-size-body)] rounded-[var(--lb-radius-lg)]',
+    sm: 'h-[var(--lb-size-control-sm)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] rounded-[var(--lb-radius-md)]',
+    md: 'h-[var(--lb-size-control-md)] px-[var(--lb-space-4)] text-[length:var(--lb-font-size-body)] rounded-[var(--lb-radius-lg)]',
+    lg: 'h-[var(--lb-size-control-lg)] px-[var(--lb-space-5)] text-[length:var(--lb-font-size-body)] rounded-[var(--lb-radius-lg)]',
     icon: 'h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] rounded-[var(--lb-radius-lg)]',
 };
 

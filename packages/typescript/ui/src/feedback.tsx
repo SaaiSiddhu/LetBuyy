@@ -16,31 +16,31 @@ export type StatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critic
 const statusStyles: Record<StatusVariant, { surface: string; text: string; border: string; icon: React.ReactNode }> = {
     default: {
         surface: 'bg-[var(--lb-color-surface-subdued)]',
-        text: 'text-[var(--lb-color-text)]',
+        text: 'text-[color:var(--lb-color-text)]',
         border: 'border-[var(--lb-color-border)]',
         icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     info: {
         surface: 'bg-[var(--lb-color-info-soft)]',
-        text: 'text-[var(--lb-color-info)]',
+        text: 'text-[color:var(--lb-color-info)]',
         border: 'border-[var(--lb-color-info)]',
         icon: <Info className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     success: {
         surface: 'bg-[var(--lb-color-success-soft)]',
-        text: 'text-[var(--lb-color-success)]',
+        text: 'text-[color:var(--lb-color-success)]',
         border: 'border-[var(--lb-color-success)]',
         icon: <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     warning: {
         surface: 'bg-[var(--lb-color-warning-soft)]',
-        text: 'text-[var(--lb-color-warning)]',
+        text: 'text-[color:var(--lb-color-warning)]',
         border: 'border-[var(--lb-color-warning)]',
         icon: <AlertTriangle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
     critical: {
         surface: 'bg-[var(--lb-color-critical-soft)]',
-        text: 'text-[var(--lb-color-critical)]',
+        text: 'text-[color:var(--lb-color-critical)]',
         border: 'border-[var(--lb-color-critical)]',
         icon: <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
     },
@@ -58,7 +58,7 @@ export function Badge({ label, variant = 'default', className = '', ...props }: 
     return (
         <span
             className={cx(
-                'inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
+                'inline-flex items-center gap-[var(--lb-space-1)] rounded-[var(--lb-radius-full)] border px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)]',
                 style.surface,
                 style.text,
                 style.border,
@@ -93,16 +93,16 @@ export function Banner({ title, children, variant = 'info', action, className = 
             role={variant === 'critical' ? 'alert' : 'status'}
             {...props}
         >
-            <div className={cx('mt-[var(--lb-space-1)] shrink-0 text-[var(--lb-font-size-heading)]', style.text)}>
+            <div className={cx('mt-[var(--lb-space-1)] shrink-0 text-[length:var(--lb-font-size-heading)]', style.text)}>
                 {style.icon}
             </div>
             <div className="min-w-0 flex-1 space-y-[var(--lb-space-1)]">
                 {title && (
-                    <h3 className={cx('m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]', style.text)}>
+                    <h3 className={cx('m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]', style.text)}>
                         {title}
                     </h3>
                 )}
-                <div className="text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                <div className="text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                     {children}
                 </div>
             </div>
@@ -167,22 +167,22 @@ export function ToastProvider({ children }: ToastProviderProps) {
                             )}
                             role={variant === 'critical' ? 'alert' : 'status'}
                         >
-                            <div className={cx('mt-[var(--lb-space-1)] text-[var(--lb-font-size-heading)]', style.text)}>
+                            <div className={cx('mt-[var(--lb-space-1)] text-[length:var(--lb-font-size-heading)]', style.text)}>
                                 {style.icon}
                             </div>
                             <div className="min-w-0 flex-1">
-                                <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                <p className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                                     {toast.title}
                                 </p>
                                 {toast.description && (
-                                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                         {toast.description}
                                     </p>
                                 )}
                             </div>
                             <button
                                 type="button"
-                                className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                className="inline-flex h-[var(--lb-size-control-sm)] w-[var(--lb-size-control-sm)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
                                 onClick={() => dismiss(toast.id)}
                                 aria-label="Dismiss notification"
                             >
@@ -263,16 +263,16 @@ export function EmptyState({ icon, title, body, primaryAction, secondaryAction, 
             {...props}
         >
             {icon && (
-                <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
                     {icon}
                 </div>
             )}
             <div className="max-w-[var(--lb-size-empty-state-measure)] space-y-[var(--lb-space-2)]">
-                <h3 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                <h3 className="m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
                     {title}
                 </h3>
                 {body && (
-                    <p className="m-0 text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                    <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                         {body}
                     </p>
                 )}
@@ -316,14 +316,14 @@ export function SaveBar({
             aria-live="polite"
             {...props}
         >
-            <div className="flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+            <div className="flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                 {state === 'saving' ? <Loader2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] animate-spin" aria-hidden="true" /> : <AlertCircle className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                 {state === 'saving' ? 'Saving changes' : 'Unsaved changes'}
             </div>
             <div className="flex items-center gap-[var(--lb-space-2)]">
                 <button
                     type="button"
-                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onDiscard}
                     disabled={state === 'saving'}
                 >
@@ -331,7 +331,7 @@ export function SaveBar({
                 </button>
                 <button
                     type="button"
-                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-primary)] bg-[var(--lb-color-primary)] px-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-inverse)] hover:bg-[var(--lb-color-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
+                    className="h-[var(--lb-size-control-sm)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-action-primary)] bg-[var(--lb-color-action-primary)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-action-primary-text)] hover:bg-[var(--lb-color-action-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] disabled:opacity-50"
                     onClick={onSave}
                     disabled={state === 'saving'}
                 >
