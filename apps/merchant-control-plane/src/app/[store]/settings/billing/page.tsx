@@ -11,8 +11,10 @@ import {
     EmptyState,
     FileText,
     IndianRupee,
+    IndexTable,
     Section,
     Skeleton,
+    type IndexTableColumn,
     useToast,
 } from '@letbuyy/ui'
 import { SettingsPane } from '@/components/settings/SettingsPane'
@@ -101,6 +103,38 @@ export default function BillingSettingsPage() {
     const [subscription, setSubscription] = useState<{ plan: string; status: string; current_period_end: string } | null>(null)
 
     const totalPaid = useMemo(() => invoices.reduce((total, invoice) => total + invoice.amount_paid, 0), [invoices])
+    const invoiceColumns = useMemo<IndexTableColumn<Invoice>[]>(() => [
+        {
+            key: 'created_at',
+            header: 'Date',
+            render: (invoice) => formatShortDate(invoice.created_at),
+        },
+        {
+            key: 'billing_period',
+            header: 'Period',
+            render: (invoice) => (
+                <span className="capitalize text-[var(--lb-color-text-subdued)]">
+                    {invoice.billing_period || 'Not set'}
+                </span>
+            ),
+        },
+        {
+            key: 'amount_paid',
+            header: 'Amount',
+            render: (invoice) => (
+                <span className="font-[var(--lb-font-weight-semibold)]">
+                    {formatMoney(invoice.amount_paid, invoice.currency)}
+                </span>
+            ),
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            render: (invoice) => (
+                <Badge label={invoice.status || 'Pending'} variant={statusVariant(invoice.status)} />
+            ),
+        },
+    ], [])
 
     const loadData = useCallback(async (options?: { quiet?: boolean }) => {
         if (!options?.quiet) setLoading(true)
@@ -313,38 +347,17 @@ export default function BillingSettingsPage() {
                     title="Billing history"
                     description="Invoices and subscription charge records for this store."
                 >
-                    {invoices.length === 0 ? (
-                        <EmptyState
-                            icon={<FileText className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title="No invoices yet"
-                            body="Invoices will appear here after your first paid subscription cycle."
-                        />
-                    ) : (
-                        <div className="overflow-auto rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            <table className="w-full border-collapse text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                                <thead className="bg-[var(--lb-color-surface-subdued)]">
-                                    <tr>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Date</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-left font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Period</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Amount</th>
-                                        <th className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-medium)] text-[var(--lb-color-text-subdued)]">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-[var(--lb-color-border)] bg-[var(--lb-color-surface)]">
-                                    {invoices.map((invoice) => (
-                                        <tr key={invoice.id}>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-[var(--lb-color-text)]">{formatShortDate(invoice.created_at)}</td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] capitalize text-[var(--lb-color-text-subdued)]">{invoice.billing_period || 'Not set'}</td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right font-[var(--lb-font-weight-semibold)] text-[var(--lb-color-text)]">{formatMoney(invoice.amount_paid, invoice.currency)}</td>
-                                            <td className="px-[var(--lb-space-4)] py-[var(--lb-space-3)] text-right">
-                                                <Badge label={invoice.status || 'Pending'} variant={statusVariant(invoice.status)} />
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+                    <IndexTable
+                        columns={invoiceColumns}
+                        rows={invoices}
+                        emptyState={(
+                            <EmptyState
+                                icon={<FileText className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                title="No invoices yet"
+                                body="Invoices will appear here after your first paid subscription cycle."
+                            />
+                        )}
+                    />
                 </Section>
             </Card>
         </SettingsPane>

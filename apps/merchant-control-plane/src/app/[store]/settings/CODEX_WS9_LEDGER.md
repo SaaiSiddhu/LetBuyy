@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 08:33 IST [S2.3] Migrated Billing invoice history from a raw table to shared `IndexTable` while preserving invoice formatting, empty state, and existing `/api/stores/:store/billing` data flow.
 - 2026-06-03 08:29 IST [S3.1] Hardened Apps and sales channels installed-app rendering against malformed `scopes_granted` compatibility data while preserving the existing app-store gateway contract.
 - 2026-06-03 08:05 IST [S4.2/S5.2] Fixed settings shell search a11y by giving desktop and mobile drawer search instances unique input/result IDs while keeping shared query state and drawer navigation behavior.
 - 2026-06-03 08:00 IST [S2.1-S2.9] Normalized the remaining settings panes through `SettingsPane` so per-pane headers, guidance, and SaveBar placement share one shell: Settings index, General, Payments, Domains, Plan, Billing, Users, Checkout, Shipping, Taxes, Notifications, Policies, and Subscribe checkout. Settings hub now reads the same local nav manifest as the left index/search, including missing backend-needed panes.
@@ -65,3 +66,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 08:29 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Apps settings runtime guard.
 - 2026-06-03 08:29 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 08:29 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 08:33 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Billing invoice `IndexTable` migration.
+- 2026-06-03 08:33 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 08:33 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
