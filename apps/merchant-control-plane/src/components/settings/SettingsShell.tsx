@@ -35,6 +35,15 @@ function itemMatches(query: string, groupTitle: string, itemText: string[]) {
     return haystack.includes(query)
 }
 
+const DRAWER_FOCUSABLE_SELECTOR = [
+    'a[href]',
+    'button:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+].join(', ')
+
 export function SettingsShell({
     store,
     storeName,
@@ -60,6 +69,44 @@ export function SettingsShell({
         function handleKeyDown(event: KeyboardEvent) {
             if (event.key === 'Escape') {
                 setDrawerOpen(false)
+                return
+            }
+
+            if (event.key !== 'Tab') {
+                return
+            }
+
+            const drawer = document.getElementById('settings-mobile-drawer')
+            if (!drawer) return
+
+            const focusableElements = Array.from(drawer.querySelectorAll<HTMLElement>(DRAWER_FOCUSABLE_SELECTOR))
+                .filter((element) => !element.closest('[hidden]'))
+
+            if (focusableElements.length === 0) {
+                event.preventDefault()
+                drawer.focus()
+                return
+            }
+
+            const firstElement = focusableElements[0]
+            const lastElement = focusableElements[focusableElements.length - 1]
+            const activeElement = document.activeElement
+
+            if (!drawer.contains(activeElement)) {
+                event.preventDefault()
+                firstElement.focus()
+                return
+            }
+
+            if (event.shiftKey && activeElement === firstElement) {
+                event.preventDefault()
+                lastElement.focus()
+                return
+            }
+
+            if (!event.shiftKey && activeElement === lastElement) {
+                event.preventDefault()
+                firstElement.focus()
             }
         }
 
