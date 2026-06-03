@@ -83,6 +83,36 @@ export type {
     RadiusPreviewProps,
 } from './visual';
 
+export {
+    Breadcrumbs,
+    Chart,
+    DateRangePicker,
+    DensityToggle,
+    DescriptionList,
+    Divider,
+    FilterChips,
+    ProgressBar,
+    Spinner,
+    TextStyle,
+} from './primitives';
+export type {
+    BreadcrumbItem,
+    BreadcrumbsProps,
+    ChartDatum,
+    ChartProps,
+    DateRangePickerProps,
+    DateRangeValue,
+    DensityToggleProps,
+    DescriptionListItem,
+    DescriptionListProps,
+    DividerProps,
+    FilterChip,
+    FilterChipsProps,
+    ProgressBarProps,
+    SpinnerProps,
+    TextStyleProps,
+} from './primitives';
+
 export { DesignSystemRoot } from './design-system-root';
 export type { DesignSystemRootProps } from './design-system-root';
 
