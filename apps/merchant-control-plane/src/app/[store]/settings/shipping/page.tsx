@@ -10,9 +10,8 @@ import {
     ConfirmDialog,
     EmptyState,
     Globe,
+    IndianRupee,
     Input,
-    Page,
-    PageHeader,
     Plus,
     SaveBar,
     Section,
@@ -20,6 +19,7 @@ import {
     Truck,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings'
 
 interface ShippingZone {
     id: string
@@ -77,6 +77,39 @@ function ZoneMetric({ icon, label, value }: ZoneMetricProps) {
 
 function formatCountries(countries: string[]) {
     return countries.length > 0 ? countries.join(', ') : 'No countries assigned'
+}
+
+function formatCurrency(value: number) {
+    return `INR ${value.toLocaleString('en-IN', { maximumFractionDigits: 2 })}`
+}
+
+interface RateSummaryProps {
+    rate: ShippingRate
+    zoneName: string
+}
+
+function RateSummary({ rate, zoneName }: RateSummaryProps) {
+    return (
+        <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+            <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                    <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                        {rate.name}
+                    </h3>
+                    <Badge label={zoneName} variant="info" />
+                </div>
+                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                    {rate.min_order_amount ? `Minimum order ${formatCurrency(rate.min_order_amount)}` : 'No minimum order amount'}
+                </p>
+            </div>
+            <div className="flex items-center gap-[var(--lb-space-2)] text-[var(--lb-color-text)]">
+                <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]">
+                    {formatCurrency(rate.price)}
+                </span>
+            </div>
+        </div>
+    )
 }
 
 export default function ShippingSettingsPage() {
@@ -262,35 +295,42 @@ export default function ShippingSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Shipping and delivery"
-                    description="Define delivery zones and rate coverage for checkout."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Shipping and delivery' }]}
-                />
+            <SettingsPane
+                store={store}
+                title="Shipping and delivery"
+                description="Define delivery zones and rate coverage for checkout."
+                iconName="shipping"
+            >
                 <Card>
                     <Section title="Shipping zones">
                         <Skeleton variant="table" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Shipping and delivery"
-                description="Define delivery zones and rate coverage for checkout."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Shipping and delivery' }]}
-                primaryAction={{
-                    label: 'Add zone',
-                    onClick: startAdd,
-                    disabled: Boolean(formMode),
-                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                }}
-            />
-
+        <SettingsPane
+            store={store}
+            title="Shipping and delivery"
+            description="Define delivery zones and rate coverage for checkout."
+            iconName="shipping"
+            primaryAction={{
+                label: 'Add zone',
+                onClick: startAdd,
+                disabled: Boolean(formMode),
+                icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }}
+            saveBar={(
+                <SaveBar
+                    state={activeSaveState}
+                    onSave={() => void handleSaveZone()}
+                    onDiscard={resetForm}
+                    saveLabel={formMode === 'edit' ? 'Update zone' : 'Add zone'}
+                />
+            )}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -307,23 +347,60 @@ export default function ShippingSettingsPage() {
                 </Banner>
             )}
 
-            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                <ZoneMetric
-                    icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Shipping zones"
-                    value={`${zones.length} configured`}
-                />
-                <ZoneMetric
-                    icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Country groups"
-                    value={`${zones.reduce((total, zone) => total + (zone.countries?.length || 0), 0)} countries`}
-                />
-                <ZoneMetric
-                    icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                    label="Delivery rates"
-                    value={`${totalRates} rate${totalRates === 1 ? '' : 's'}`}
-                />
-            </div>
+            <Card>
+                <Section
+                    title="Shipping overview"
+                    description="Review the delivery coverage and checkout rate footprint for this store."
+                    action={!formMode && (
+                        <Button type="button" variant="secondary" onClick={startAdd}>
+                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            Add zone
+                        </Button>
+                    )}
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                        <ZoneMetric
+                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Shipping zones"
+                            value={`${zones.length} configured`}
+                        />
+                        <ZoneMetric
+                            icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Country groups"
+                            value={`${zones.reduce((total, zone) => total + (zone.countries?.length || 0), 0)} countries`}
+                        />
+                        <ZoneMetric
+                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Delivery rates"
+                            value={`${totalRates} rate${totalRates === 1 ? '' : 's'}`}
+                        />
+                    </div>
+                </Section>
+            </Card>
+
+            <Card>
+                <Section
+                    title="Delivery profiles"
+                    description="Profiles are shown as read-only until a profile-level shipping API is available."
+                    action={<Badge label="Needs backend" variant="warning" />}
+                >
+                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                        <ZoneMetric
+                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="General profile"
+                            value="All products use zone rates"
+                        />
+                        <ZoneMetric
+                            icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            label="Profile source"
+                            value="Backend needed"
+                        />
+                    </div>
+                    <Banner variant="warning" title="Shipping profiles need backend support">
+                        The current shipping endpoint exposes zones and rates only. Product-specific delivery profiles need a profile API before this pane can configure them.
+                    </Banner>
+                </Section>
+            </Card>
 
             {formMode && (
                 <Card>
@@ -410,16 +487,34 @@ export default function ShippingSettingsPage() {
                 </Section>
             </Card>
 
+            <Card>
+                <Section
+                    title="Delivery rates"
+                    description="Rates returned by the shipping API are grouped by their delivery zone."
+                >
+                    {rates.length === 0 ? (
+                        <EmptyState
+                            icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                            title="No delivery rates configured"
+                            body="Add rates from the shipping API workflow so checkout can quote delivery costs."
+                        />
+                    ) : (
+                        <div className="grid gap-[var(--lb-space-3)]">
+                            {rates.map((rate) => (
+                                <RateSummary
+                                    key={rate.id}
+                                    rate={rate}
+                                    zoneName={zones.find((zone) => zone.id === rate.zone_id)?.name || 'Unassigned zone'}
+                                />
+                            ))}
+                        </div>
+                    )}
+                </Section>
+            </Card>
+
             <Banner variant="info" title="Checkout impact">
                 Shipping zones define regional coverage. Delivery rates attached to each zone are shown during checkout based on the customer delivery address.
             </Banner>
-
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleSaveZone()}
-                onDiscard={resetForm}
-                saveLabel={formMode === 'edit' ? 'Update zone' : 'Add zone'}
-            />
 
             <ConfirmDialog
                 open={Boolean(zoneToDelete)}
@@ -432,6 +527,6 @@ export default function ShippingSettingsPage() {
                     if (!deletingId) setZoneToDelete(null)
                 }}
             />
-        </Page>
+        </SettingsPane>
     )
 }
