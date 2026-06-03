@@ -30,6 +30,11 @@ interface NotificationPref {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
+
 const DEFAULT_PREFS: NotificationPref[] = [
     { key: 'new_order', label: 'New order', description: 'When a customer places an order', Icon: ShoppingBag, enabled: true },
     { key: 'order_fulfilled', label: 'Order fulfilled', description: 'When an order is marked as fulfilled', Icon: Package, enabled: false },
@@ -43,11 +48,23 @@ function prefsSignature(prefs: NotificationPref[]) {
     return prefs.map((pref) => `${pref.key}:${pref.enabled ? '1' : '0'}`).join('|')
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
 function mergePrefs(saved: Record<string, unknown>) {
-    return DEFAULT_PREFS.map((pref) => ({
-        ...pref,
-        enabled: typeof saved[pref.key] === 'boolean' ? saved[pref.key] as boolean : pref.enabled,
-    }))
+    return DEFAULT_PREFS.map((pref) => {
+        const savedValue = saved[pref.key]
+        return {
+            ...pref,
+            enabled: typeof savedValue === 'boolean' ? savedValue : pref.enabled,
+        }
+    })
 }
 
 export default function NotificationsSettingsPage() {
@@ -73,19 +90,15 @@ export default function NotificationsSettingsPage() {
                 cache: 'no-store',
                 signal,
             })
-            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to load notification settings')
+                throw new Error(getPayloadError(payload, 'Unable to load notification settings'))
             }
 
-            const data = payload.data
-            const nextSiteSettings = data?.site_settings && typeof data.site_settings === 'object'
-                ? data.site_settings as Record<string, unknown>
-                : {}
-            const savedPrefs = nextSiteSettings.notifications && typeof nextSiteSettings.notifications === 'object'
-                ? nextSiteSettings.notifications as Record<string, unknown>
-                : {}
+            const data = isRecord(payload?.data) ? payload.data : null
+            const nextSiteSettings = isRecord(data?.site_settings) ? data.site_settings : {}
+            const savedPrefs = isRecord(nextSiteSettings.notifications) ? nextSiteSettings.notifications : {}
             const nextPrefs = mergePrefs(savedPrefs)
 
             setSiteSettings(nextSiteSettings)
@@ -139,10 +152,10 @@ export default function NotificationsSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ site_settings: nextSettings }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save notification settings')
+                throw new Error(getPayloadError(payload, 'Unable to save notification settings'))
             }
 
             setSiteSettings(nextSettings)

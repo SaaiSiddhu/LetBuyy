@@ -24,6 +24,11 @@ interface CheckoutSettings {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
+
 const DEFAULTS: CheckoutSettings = {
     contact_method: 'email',
     customer_accounts: 'optional',
@@ -59,6 +64,11 @@ const companyNameOptions = [
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
 function readEnum<Value extends string>(record: Record<string, unknown>, key: string, allowed: readonly Value[], fallback: Value) {
@@ -144,13 +154,13 @@ export default function CheckoutSettingsPage() {
                 cache: 'no-store',
                 signal,
             })
-            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to load checkout settings')
+                throw new Error(getPayloadError(payload, 'Unable to load checkout settings'))
             }
 
-            const data = payload.data
+            const data = isRecord(payload?.data) ? payload.data : null
             if (!data) {
                 throw new Error('Checkout settings were not returned for this store')
             }
@@ -202,10 +212,10 @@ export default function CheckoutSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ site_settings: nextSiteSettings }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save checkout settings')
+                throw new Error(getPayloadError(payload, 'Unable to save checkout settings'))
             }
 
             setSiteSettings(nextSiteSettings)

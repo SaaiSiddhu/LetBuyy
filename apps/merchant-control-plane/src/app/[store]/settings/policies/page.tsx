@@ -29,6 +29,11 @@ interface PolicyField {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
+
 const POLICY_FIELDS: PolicyField[] = [
     {
         key: 'refund_policy',
@@ -68,6 +73,15 @@ function policySignature(policies: PolicyField[]) {
     return policies.map((policy) => `${policy.key}:${policy.value}`).join('|')
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
 export default function PoliciesSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
@@ -90,13 +104,13 @@ export default function PoliciesSettingsPage() {
                 cache: 'no-store',
                 signal,
             })
-            const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to load policies')
+                throw new Error(getPayloadError(payload, 'Unable to load policies'))
             }
 
-            const data = payload.data ?? {}
+            const data = isRecord(payload?.data) ? payload.data : {}
             const nextPolicies = POLICY_FIELDS.map((policy) => {
                 const value = data[policy.key]
                 return {
@@ -154,10 +168,10 @@ export default function PoliciesSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(update),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save policies')
+                throw new Error(getPayloadError(payload, 'Unable to save policies'))
             }
 
             setInitialPolicies(policies)
