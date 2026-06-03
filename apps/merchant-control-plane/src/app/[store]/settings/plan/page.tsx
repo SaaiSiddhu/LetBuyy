@@ -6,17 +6,13 @@ import {
     Badge,
     Banner,
     Button,
-    Calendar,
     Card,
     CheckCircle2,
-    Clock,
     ConfirmDialog,
     CreditCard,
     EmptyState,
     IndianRupee,
     ListChecks,
-    Page,
-    PageHeader,
     Rocket,
     Section,
     Skeleton,
@@ -24,6 +20,7 @@ import {
     Trash2,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings'
 
 interface SubscriptionData {
     plan: string
@@ -36,11 +33,18 @@ interface SubscriptionData {
 }
 
 interface PlanInfo {
+    id?: string
     name: string
     slug: string
+    tagline?: string
+    is_popular?: boolean
     price_monthly_inr: number
     price_yearly_inr: number
-    features: Array<{ label: string; icon?: string }>
+    gmv_percentage?: number
+    promo_price_inr?: number
+    promo_months?: number
+    requires_contact?: boolean
+    features?: Array<{ label: string; icon?: string }>
 }
 
 type PlanPayload = {
@@ -120,6 +124,106 @@ function PlanMetric({ icon, label, value }: PlanMetricProps) {
     )
 }
 
+function formatPlanCatalogPrice(plan: PlanInfo, period: 'monthly' | 'yearly') {
+    if (plan.requires_contact) return 'Custom'
+
+    const amount = period === 'yearly' ? plan.price_yearly_inr : plan.price_monthly_inr
+    if (amount <= 0) return 'Free'
+
+    return formatMoney(amount)
+}
+
+interface PlanComparisonCardProps {
+    plan: PlanInfo
+    isCurrent: boolean
+    onSelect: (plan: PlanInfo) => void
+}
+
+function PlanComparisonCard({ plan, isCurrent, onSelect }: PlanComparisonCardProps) {
+    const featurePreview = (plan.features || []).slice(0, 4)
+    const hasPromo = (plan.promo_price_inr || 0) > 0 && (plan.promo_months || 0) > 0
+
+    return (
+        <article
+            className={[
+                'flex h-full min-w-0 flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)]',
+                isCurrent
+                    ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
+                    : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)]',
+            ].join(' ')}
+            aria-current={isCurrent ? 'true' : undefined}
+        >
+            <div className="flex min-w-0 items-start justify-between gap-[var(--lb-space-3)]">
+                <div className="min-w-0 space-y-[var(--lb-space-1)]">
+                    <h3 className="m-0 truncate text-[var(--lb-font-size-section-title)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-section-title)] text-[var(--lb-color-text)]">
+                        {plan.name}
+                    </h3>
+                    {plan.tagline && (
+                        <p className="m-0 text-[var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text-subdued)]">
+                            {plan.tagline}
+                        </p>
+                    )}
+                </div>
+                <div className="flex shrink-0 flex-col items-end gap-[var(--lb-space-1)]">
+                    {isCurrent && <Badge label="Current" variant="success" />}
+                    {!isCurrent && plan.is_popular && <Badge label="Popular" variant="info" />}
+                </div>
+            </div>
+
+            <div className="grid gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
+                <div className="flex items-baseline justify-between gap-[var(--lb-space-2)]">
+                    <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        Monthly
+                    </span>
+                    <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                        {hasPromo ? formatMoney(plan.promo_price_inr || 0) : formatPlanCatalogPrice(plan, 'monthly')}
+                    </span>
+                </div>
+                <div className="flex items-baseline justify-between gap-[var(--lb-space-2)]">
+                    <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] uppercase leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        Annual
+                    </span>
+                    <span className="text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                        {formatPlanCatalogPrice(plan, 'yearly')}
+                    </span>
+                </div>
+                {hasPromo && (
+                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-success)]">
+                        Promo pricing for first {plan.promo_months} month{plan.promo_months === 1 ? '' : 's'}.
+                    </p>
+                )}
+                {(plan.gmv_percentage || 0) > 0 && (
+                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                        + {plan.gmv_percentage}% transaction fee.
+                    </p>
+                )}
+            </div>
+
+            <ul className="m-0 flex flex-1 list-none flex-col gap-[var(--lb-space-2)] p-0">
+                {featurePreview.length > 0 ? featurePreview.map((feature) => (
+                    <li key={feature.label} className="flex items-start gap-[var(--lb-space-2)] text-[var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text)]">
+                        <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
+                        <span>{feature.label}</span>
+                    </li>
+                )) : (
+                    <li className="text-[var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text-subdued)]">
+                        Feature list unavailable.
+                    </li>
+                )}
+            </ul>
+
+            <Button
+                variant={isCurrent ? 'secondary' : 'primary'}
+                disabled={isCurrent}
+                onClick={() => onSelect(plan)}
+            >
+                <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                {isCurrent ? 'Current plan' : plan.requires_contact ? 'Contact sales' : 'Choose plan'}
+            </Button>
+        </article>
+    )
+}
+
 export default function PlanSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const router = useRouter()
@@ -132,6 +236,7 @@ export default function PlanSettingsPage() {
     })
     const [subscription, setSubscription] = useState<SubscriptionData | null>(null)
     const [planInfo, setPlanInfo] = useState<PlanInfo | null>(null)
+    const [availablePlans, setAvailablePlans] = useState<PlanInfo[]>([])
     const [cancelling, setCancelling] = useState(false)
     const [cancelDialogOpen, setCancelDialogOpen] = useState(false)
     const [renderTime] = useState(() => Date.now())
@@ -159,26 +264,30 @@ export default function PlanSettingsPage() {
                 trial_ends_at: storeData?.trial_ends_at || '',
             })
 
-            if (!sub) {
-                setSubscription(null)
-                setPlanInfo(null)
-                return
-            }
-
+            let nextAvailablePlans: PlanInfo[] = []
             let nextPlanInfo: PlanInfo | null = null
 
             try {
-                const planResponse = await fetch(`/api/plans?site_type=${storeData?.site_type || 'store'}&slug=${sub.plan}`)
+                const planResponse = await fetch(`/api/plans?site_type=${storeData?.site_type || 'store'}`)
                 const plansPayload = (await planResponse.json().catch(() => null)) as PlansPayload | null
 
-                if (planResponse.ok && plansPayload?.plans?.[0]) {
-                    nextPlanInfo = plansPayload.plans[0]
+                if (planResponse.ok && Array.isArray(plansPayload?.plans)) {
+                    nextAvailablePlans = plansPayload.plans
+                    nextPlanInfo = sub ? nextAvailablePlans.find((plan) => plan.slug === sub.plan) || null : null
                 }
             } catch {
+                nextAvailablePlans = []
                 nextPlanInfo = null
             }
 
+            setAvailablePlans(nextAvailablePlans)
             setPlanInfo(nextPlanInfo)
+
+            if (!sub) {
+                setSubscription(null)
+                return
+            }
+
             setSubscription({
                 ...sub,
                 plan_name: nextPlanInfo?.name || sub.plan_name || sub.plan,
@@ -218,6 +327,15 @@ export default function PlanSettingsPage() {
         return subscription.amount_paid > 0 ? `${formatMoney(subscription.amount_paid)} paid` : 'Configured plan'
     }, [planInfo, subscription])
 
+    const handleSelectPlan = useCallback((plan: PlanInfo) => {
+        if (plan.requires_contact) {
+            window.open('mailto:sales@letbuyy.com?subject=Enterprise Plan Inquiry', '_blank', 'noopener,noreferrer')
+            return
+        }
+
+        router.push(`/${store}/access_account/checkout/select-plan`)
+    }, [router, store])
+
     const handleCancelPlan = useCallback(async () => {
         if (cancelling) return
         setCancelling(true)
@@ -256,12 +374,11 @@ export default function PlanSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Plan"
-                    description="Review subscription status, trial timing, and plan features."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Plan' }]}
-                />
+            <SettingsPane
+                store={store}
+                title="Plan"
+                description="Review subscription status, trial timing, and plan features."
+            >
                 <Card>
                     <Section title="Current plan">
                         <Skeleton variant="card" />
@@ -272,28 +389,26 @@ export default function PlanSettingsPage() {
                         <Skeleton lines={5} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Plan"
-                description="Review subscription status, trial timing, and plan features."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Plan' }]}
-                primaryAction={{
-                    label: hasSubscription ? 'Change plan' : 'Compare plans',
-                    onClick: () => router.push(`/${store}/access_account/checkout/select-plan`),
-                    icon: <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                }}
-                secondaryActions={[{
-                    label: 'Billing history',
-                    onClick: () => router.push(`/${store}/settings/billing`),
-                    icon: <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                }]}
-            />
-
+        <SettingsPane
+            store={store}
+            title="Plan"
+            description="Review subscription status, trial timing, and plan features."
+            primaryAction={{
+                label: hasSubscription ? 'Change plan' : 'Compare plans',
+                onClick: () => router.push(`/${store}/access_account/checkout/select-plan`),
+                icon: <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }}
+            secondaryActions={[{
+                label: 'Billing history',
+                onClick: () => router.push(`/${store}/settings/billing`),
+                icon: <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }]}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -397,7 +512,7 @@ export default function PlanSettingsPage() {
                     >
                         {featureCount > 0 ? (
                             <ul className="m-0 grid list-none gap-[var(--lb-space-3)] p-0 md:grid-cols-2">
-                                {planInfo?.features.map((feature) => (
+                                {planInfo?.features?.map((feature) => (
                                     <li
                                         key={feature.label}
                                         className="flex items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]"
@@ -423,34 +538,34 @@ export default function PlanSettingsPage() {
 
             <Card>
                 <Section
-                    title={hasSubscription ? 'Change your plan' : 'Upgrade your plan'}
-                    description={hasSubscription
-                        ? 'Move to a plan that matches your current catalog, order volume, and support needs.'
-                        : 'Choose a paid plan to unlock advanced features, remove branding, and keep the store live after trial.'}
+                    title="Compare plans"
+                    description="Review available plans and switch when your catalog, order volume, or support needs change."
                     action={(
                         <Button onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>
                             <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            {hasSubscription ? 'Change plan' : 'Compare plans'}
+                            Open plan selector
                         </Button>
                     )}
                 >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                        <PlanMetric
+                    {availablePlans.length > 0 ? (
+                        <div className="grid gap-[var(--lb-space-4)] lg:grid-cols-3">
+                            {availablePlans.map((plan) => (
+                                <PlanComparisonCard
+                                    key={plan.id || plan.slug}
+                                    plan={plan}
+                                    isCurrent={Boolean(subscription?.plan && subscription.plan === plan.slug)}
+                                    onSelect={handleSelectPlan}
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <EmptyState
                             icon={<Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Next action"
-                            value={hasSubscription ? 'Review alternatives' : 'Pick a plan'}
+                            title="Plan catalog is not available"
+                            body="Current subscription data loaded, but the plan catalog did not return comparison details."
+                            primaryAction={<Button onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>Open plan selector</Button>}
                         />
-                        <PlanMetric
-                            icon={<Calendar className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Billing cadence"
-                            value={hasSubscription ? formatStatus(subscription?.billing_period || 'monthly') : 'Select at checkout'}
-                        />
-                        <PlanMetric
-                            icon={<Clock className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Trial timing"
-                            value={trialEnds ? formatDate(trialData.trial_ends_at) : 'Not scheduled'}
-                        />
-                    </div>
+                    )}
                 </Section>
             </Card>
 
@@ -503,6 +618,6 @@ export default function PlanSettingsPage() {
                     if (!cancelling) setCancelDialogOpen(false)
                 }}
             />
-        </Page>
+        </SettingsPane>
     )
 }
