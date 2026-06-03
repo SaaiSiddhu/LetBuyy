@@ -12,8 +12,6 @@ import {
     EmptyState,
     Input,
     Mail,
-    Page,
-    PageHeader,
     Plus,
     SaveBar,
     Section,
@@ -25,6 +23,7 @@ import {
     Users,
     useToast,
 } from '@letbuyy/ui'
+import { SettingsPane } from '@/components/settings'
 
 interface Employee {
     id: string
@@ -264,35 +263,42 @@ export default function UsersSettingsPage() {
 
     if (loading) {
         return (
-            <Page>
-                <PageHeader
-                    title="Users and permissions"
-                    description="Invite staff and control access to this store."
-                    breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Users and permissions' }]}
-                />
+            <SettingsPane
+                store={store}
+                title="Users and permissions"
+                description="Invite staff and control access to this store."
+                iconName="users"
+            >
                 <Card>
                     <Section title="Staff">
                         <Skeleton variant="table" lines={4} />
                     </Section>
                 </Card>
-            </Page>
+            </SettingsPane>
         )
     }
 
     return (
-        <Page>
-            <PageHeader
-                title="Users and permissions"
-                description="Invite staff and control access to this store."
-                breadcrumbs={[{ label: 'Settings', href: `/${store}/settings` }, { label: 'Users and permissions' }]}
-                primaryAction={{
-                    label: 'Add staff',
-                    onClick: startAdd,
-                    disabled: showAdd,
-                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-                }}
-            />
-
+        <SettingsPane
+            store={store}
+            title="Users and permissions"
+            description="Invite staff and control access to this store."
+            iconName="users"
+            primaryAction={{
+                label: 'Add staff',
+                onClick: startAdd,
+                disabled: showAdd,
+                icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+            }}
+            saveBar={(
+                <SaveBar
+                    state={activeSaveState}
+                    onSave={() => void handleAdd()}
+                    onDiscard={resetInviteForm}
+                    saveLabel="Send invite"
+                />
+            )}
+        >
             {loadError && (
                 <Banner
                     variant="critical"
@@ -465,13 +471,6 @@ export default function UsersSettingsPage() {
                 Use manager access for trusted operators, editor access for catalog and content teammates, and fulfillment access for order handling.
             </Banner>
 
-            <SaveBar
-                state={activeSaveState}
-                onSave={() => void handleAdd()}
-                onDiscard={resetInviteForm}
-                saveLabel="Send invite"
-            />
-
             <ConfirmDialog
                 open={Boolean(employeeToRemove)}
                 title="Remove staff member?"
@@ -483,6 +482,6 @@ export default function UsersSettingsPage() {
                     if (!removingId) setEmployeeToRemove(null)
                 }}
             />
-        </Page>
+        </SettingsPane>
     )
 }
