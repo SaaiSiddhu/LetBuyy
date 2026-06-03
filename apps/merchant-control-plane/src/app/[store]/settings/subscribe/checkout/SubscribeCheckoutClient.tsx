@@ -3,7 +3,26 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
-import { MaterialIcon } from '@letbuyy/ui'
+import {
+    Badge,
+    Banner,
+    Button,
+    Card,
+    Check,
+    CheckCircle2,
+    CreditCard,
+    IndianRupee,
+    Input,
+    ListChecks,
+    Lock,
+    Phone,
+    Rocket,
+    Section,
+    Select,
+    ShieldCheck,
+    Store,
+    Tag,
+} from '@letbuyy/ui'
 
 declare global {
     interface Window {
@@ -33,8 +52,22 @@ const STATES = [
     'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
 ]
 
+const STATE_OPTIONS = [
+    { label: 'Select state', value: '' },
+    ...STATES.map((stateName) => ({ label: stateName, value: stateName })),
+]
+
 function cx(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(' ')
+}
+
+function formatCheckoutPrice(amount: number) {
+    if (amount <= 0) return 'Free'
+    return `₹${amount.toLocaleString('en-IN')}`
+}
+
+function billingPeriodLabel(value: 'monthly' | 'yearly') {
+    return value === 'yearly' ? 'Annual' : 'Monthly'
 }
 
 function paymentErrorMessage(payload: unknown, fallback: string) {
@@ -53,7 +86,7 @@ function checkoutThemeColor() {
     return (
         rootStyle.getPropertyValue('--lb-color-primary').trim() ||
         rootStyle.getPropertyValue('--primary').trim() ||
-        '#2563eb'
+        '#8B5CF6'
     )
 }
 
@@ -233,210 +266,329 @@ export default function SubscribeCheckoutClient({
     }
 
     return (
-        <div className="subscribe-checkout-page">
-            <div className="subscribe-checkout-breadcrumb" aria-label="Checkout context">
-                <MaterialIcon name="storefront" size={16} />
-                <span>{storeName}</span>
-                <MaterialIcon name="chevron_right" size={14} className="select-plan-muted-icon" />
-                <span>Subscribe</span>
+        <div className="grid min-w-0 gap-[var(--lb-space-4)] xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start">
+            <div className="flex min-w-0 flex-col gap-[var(--lb-space-4)]">
+                <Card>
+                    <Section title="Checkout context" description="Confirm the store, site type, and billing period before payment.">
+                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                            <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                <Store className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                        Store
+                                    </p>
+                                    <p className="m-0 truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                        {storeName}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                <Tag className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                        Site type
+                                    </p>
+                                    <p className="m-0 truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                        {siteType}
+                                    </p>
+                                </div>
+                            </div>
+                            <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                <ListChecks className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                <div className="min-w-0">
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                        Billing
+                                    </p>
+                                    <p className="m-0 truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                        {billingPeriodLabel(billingPeriod)}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </Section>
+                </Card>
+
+                {!isFreePlan && (
+                    <Banner
+                        variant="success"
+                        title="Yearly billing option"
+                        action={(
+                            <div className="flex rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)]">
+                                {(['monthly', 'yearly'] as const).map((period) => (
+                                    <button
+                                        key={period}
+                                        type="button"
+                                        className={cx(
+                                            'inline-flex h-[var(--lb-density-icon-button-height)] items-center justify-center rounded-[var(--lb-radius-sm)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
+                                            billingPeriod === period
+                                                ? 'bg-[var(--lb-color-primary)] text-[color:var(--lb-color-text-inverse)]'
+                                                : 'text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
+                                        )}
+                                        onClick={() => setBillingPeriod(period)}
+                                        aria-pressed={billingPeriod === period}
+                                    >
+                                        {billingPeriodLabel(period)}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    >
+                        <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                            {yearlySavings > 0
+                                ? `Save ₹${yearlySavings.toLocaleString('en-IN')} with annual billing at ₹${yearlyPrice.toLocaleString('en-IN')}/mo.`
+                                : `Annual billing is available at ₹${yearlyPrice.toLocaleString('en-IN')}/mo.`}
+                        </p>
+                    </Banner>
+                )}
+
+                {isFreePlan ? (
+                    <Card>
+                        <Section title="Activation" description="No payment method is required for the Free plan.">
+                            <div className="flex items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-success)] bg-[var(--lb-color-success-soft)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)]">
+                                <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
+                                <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
+                                    Activate the plan now and upgrade whenever you need higher limits.
+                                </p>
+                            </div>
+                        </Section>
+                    </Card>
+                ) : (
+                    <Card>
+                        <Section title="Payment method" description="Razorpay will collect and verify payment after this review step.">
+                            <div className="grid gap-[var(--lb-space-3)]">
+                                <label
+                                    className={cx(
+                                        'flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)] transition-colors',
+                                        paymentMethod === 'upi'
+                                            ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
+                                            : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    )}
+                                >
+                                    <input
+                                        className="sr-only"
+                                        type="radio"
+                                        name="payment"
+                                        value="upi"
+                                        checked={paymentMethod === 'upi'}
+                                        onChange={() => setPaymentMethod('upi')}
+                                    />
+                                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] text-[var(--lb-color-primary)]">
+                                        <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                            UPI
+                                        </span>
+                                        <span className="block text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
+                                            Google Pay, PhonePe, BHIM, and other UPI apps.
+                                        </span>
+                                    </span>
+                                    {paymentMethod === 'upi' && <Check className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />}
+                                </label>
+
+                                {paymentMethod === 'upi' && (
+                                    <div className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:grid-cols-2">
+                                        <Input
+                                            id="upi-id"
+                                            label="UPI ID"
+                                            helperText="Optional pre-fill for the Razorpay checkout."
+                                            type="text"
+                                            placeholder="yourname@upi"
+                                            value={upiId}
+                                            onChange={(event) => setUpiId(event.target.value)}
+                                        />
+                                        <Input
+                                            id="phone"
+                                            label="Phone number"
+                                            type="tel"
+                                            placeholder="+91 XXXXXXXXXX"
+                                            value={phone}
+                                            onChange={(event) => setPhone(event.target.value)}
+                                            leftIcon={<Phone className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                        />
+                                    </div>
+                                )}
+
+                                <label
+                                    className={cx(
+                                        'flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)] transition-colors',
+                                        paymentMethod === 'card'
+                                            ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
+                                            : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    )}
+                                >
+                                    <input
+                                        className="sr-only"
+                                        type="radio"
+                                        name="payment"
+                                        value="card"
+                                        checked={paymentMethod === 'card'}
+                                        onChange={() => setPaymentMethod('card')}
+                                    />
+                                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] text-[var(--lb-color-primary)]">
+                                        <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                    </span>
+                                    <span className="min-w-0 flex-1">
+                                        <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
+                                            Credit or debit card
+                                        </span>
+                                        <span className="block text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
+                                            Visa, Mastercard, Amex, and RuPay.
+                                        </span>
+                                    </span>
+                                    {paymentMethod === 'card' && <Check className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />}
+                                </label>
+                            </div>
+                        </Section>
+                    </Card>
+                )}
+
+                {!isFreePlan && (
+                    <Card>
+                        <Section title="Billing address" description="This address is used for taxes and subscription invoicing.">
+                            <div className="grid gap-[var(--lb-space-3)]">
+                                <Input
+                                    id="billing-address"
+                                    label="Address"
+                                    type="text"
+                                    placeholder="Street address"
+                                    value={address}
+                                    onChange={(event) => setAddress(event.target.value)}
+                                />
+                                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                                    <Input
+                                        id="pin-code"
+                                        label="PIN code"
+                                        type="text"
+                                        placeholder="6-digit PIN"
+                                        value={pinCode}
+                                        onChange={(event) => setPinCode(event.target.value)}
+                                        maxLength={6}
+                                    />
+                                    <Input
+                                        id="city"
+                                        label="City"
+                                        type="text"
+                                        placeholder="City"
+                                        value={city}
+                                        onChange={(event) => setCity(event.target.value)}
+                                    />
+                                </div>
+                                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                                    <Select
+                                        id="state"
+                                        label="State"
+                                        options={STATE_OPTIONS}
+                                        value={state}
+                                        onChange={(event) => setState(event.target.value)}
+                                    />
+                                    <Input id="country" label="Country" type="text" value="India" disabled />
+                                </div>
+                            </div>
+                        </Section>
+                    </Card>
+                )}
             </div>
 
-            <div className="subscribe-checkout-grid">
-                <div className="subscribe-checkout-form">
-                    {!isFreePlan && (
-                        <section className="subscribe-checkout-callout subscribe-checkout-callout--success">
-                            <div>
-                                <strong>Save with yearly billing</strong>
-                                <p>₹{yearlySavings.toLocaleString('en-IN')} off (₹{yearlyPrice.toLocaleString('en-IN')}/mo)</p>
+            <aside className="min-w-0 xl:sticky xl:top-[var(--lb-space-6)]" aria-label="Plan summary">
+                <Card>
+                    <Section
+                        title="Plan summary"
+                        description={`${billingPeriodLabel(billingPeriod)} billing for ${plan.name}.`}
+                        action={<Badge label={plan.name} variant={isFreePlan ? 'info' : 'success'} />}
+                    >
+                        <div className="grid gap-[var(--lb-space-4)]">
+                            <div className="rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
+                                    <div className="min-w-0">
+                                        <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                            Amount due
+                                        </p>
+                                        <p className="m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-bold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
+                                            {formatCheckoutPrice(currentPrice)} INR
+                                        </p>
+                                    </div>
+                                    <IndianRupee className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                </div>
+                                <p className="m-[var(--lb-space-2)_0_0] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    {isFreePlan ? 'No payment required' : 'Plus applicable taxes'}
+                                    {hasPromo && billingPeriod === 'monthly' && ` · ${formatCheckoutPrice(promoPrice)} × ${plan.promo_months} mo`}
+                                </p>
                             </div>
-                            <button
-                                type="button"
-                                className={cx('subscribe-checkout-toggle', billingPeriod === 'yearly' && 'is-active')}
-                                onClick={() => setBillingPeriod(billingPeriod === 'yearly' ? 'monthly' : 'yearly')}
-                                aria-pressed={billingPeriod === 'yearly'}
-                                aria-label="Toggle yearly billing"
-                            >
-                                <span className="subscribe-checkout-toggle-knob" />
-                            </button>
-                        </section>
-                    )}
 
-                    {isFreePlan ? (
-                        <section className="subscribe-checkout-section subscribe-checkout-callout subscribe-checkout-callout--success">
-                            <h2 className="subscribe-checkout-section-title">Activation</h2>
-                            <p>No payment method is required for the Free plan.</p>
-                        </section>
-                    ) : (
-                        <section className="subscribe-checkout-section">
-                            <h2 className="subscribe-checkout-section-title">Payment method</h2>
-
-                            <label className={cx('subscribe-checkout-payment-option', paymentMethod === 'upi' && 'is-selected')}>
-                                <input
-                                    className="subscribe-checkout-payment-input"
-                                    type="radio"
-                                    name="payment"
-                                    value="upi"
-                                    checked={paymentMethod === 'upi'}
-                                    onChange={() => setPaymentMethod('upi')}
-                                />
-                                <span className="subscribe-checkout-radio-mark" aria-hidden="true" />
-                                <span>
-                                    <strong>UPI</strong>
-                                    <span>Google Pay, PhonePe, BHIM, etc.</span>
-                                </span>
-                            </label>
-
-                            {paymentMethod === 'upi' && (
-                                <div className="subscribe-checkout-form-row">
-                                    <div className="subscribe-checkout-field">
-                                        <label htmlFor="upi-id">UPI ID (optional pre-fill)</label>
-                                        <input id="upi-id" type="text" placeholder="yourname@upi" value={upiId} onChange={e => setUpiId(e.target.value)} />
+                            <div className="grid gap-[var(--lb-space-3)]">
+                                {timeline.map((entry, index) => (
+                                    <div key={`${entry.label}-${index}`} className="flex gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] pb-[var(--lb-space-3)] last:border-b-0 last:pb-0">
+                                        <span
+                                            className={cx(
+                                                'mt-[6px] h-[var(--lb-space-2)] w-[var(--lb-space-2)] shrink-0 rounded-[var(--lb-radius-full)]',
+                                                entry.isActive ? 'bg-[var(--lb-color-primary)]' : 'bg-[var(--lb-color-border)]',
+                                            )}
+                                        />
+                                        <div className="min-w-0 flex-1">
+                                            <div className="flex items-start justify-between gap-[var(--lb-space-2)]">
+                                                <span className="text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
+                                                    {entry.label}
+                                                </span>
+                                                <span className="text-right text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
+                                                    {entry.amount}
+                                                </span>
+                                            </div>
+                                            <p className="m-[var(--lb-space-1)_0_0] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                {entry.date}
+                                            </p>
+                                            {entry.description && (
+                                                <p className="m-[var(--lb-space-1)_0_0] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                    {entry.description}
+                                                </p>
+                                            )}
+                                        </div>
                                     </div>
-                                    <div className="subscribe-checkout-field">
-                                        <label htmlFor="phone">Phone number</label>
-                                        <input id="phone" type="tel" placeholder="+91 XXXXXXXXXX" value={phone} onChange={e => setPhone(e.target.value)} />
+                                ))}
+                            </div>
+
+                            <Button type="button" fullWidth size="lg" loading={isProcessing} onClick={handleSubscribe}>
+                                <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                {isFreePlan ? 'Activate Free plan' : `Subscribe · ${formatCheckoutPrice(currentPrice)}`}
+                            </Button>
+
+                            {error && (
+                                <Banner variant="critical" title="Payment could not continue">
+                                    <p className="m-0">{error}</p>
+                                </Banner>
+                            )}
+
+                            <p className="m-0 text-center text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                {isFreePlan ? 'Upgrade whenever you need higher limits.' : 'Change or cancel your plan anytime.'}
+                            </p>
+
+                            {plan.gmv_percentage > 0 && (
+                                <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
+                                    <div className="mb-[var(--lb-space-2)] flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
+                                        <ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                        Included benefits
                                     </div>
+                                    <ul className="m-0 grid list-none gap-[var(--lb-space-2)] p-0 text-[length:var(--lb-font-size-small)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text-subdued)]">
+                                        <li className="flex items-start gap-[var(--lb-space-2)]">
+                                            <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
+                                            Transaction fee: only {plan.gmv_percentage}% of GMV
+                                        </li>
+                                        <li className="flex items-start gap-[var(--lb-space-2)]">
+                                            <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
+                                            7-day free trial included
+                                        </li>
+                                    </ul>
                                 </div>
                             )}
 
-                            <label className={cx('subscribe-checkout-payment-option', paymentMethod === 'card' && 'is-selected')}>
-                                <input
-                                    className="subscribe-checkout-payment-input"
-                                    type="radio"
-                                    name="payment"
-                                    value="card"
-                                    checked={paymentMethod === 'card'}
-                                    onChange={() => setPaymentMethod('card')}
-                                />
-                                <span className="subscribe-checkout-radio-mark" aria-hidden="true" />
-                                <span>
-                                    <strong>Credit or debit card</strong>
-                                    <span>Visa, Mastercard, Amex, RuPay</span>
-                                </span>
-                            </label>
-                        </section>
-                    )}
-
-                    {!isFreePlan && (
-                        <section className="subscribe-checkout-section">
-                            <h2 className="subscribe-checkout-section-title">Billing address</h2>
-                            <p className="subscribe-checkout-help">For taxes, provide your business location:</p>
-
-                            <div className="subscribe-checkout-field">
-                                <label htmlFor="billing-address">Address</label>
-                                <input id="billing-address" type="text" placeholder="Street address" value={address} onChange={e => setAddress(e.target.value)} />
+                            <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                <Lock className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                {isFreePlan ? 'LetBuyy billing' : 'Secured by Razorpay'}
                             </div>
-
-                            <div className="subscribe-checkout-form-row">
-                                <div className="subscribe-checkout-field">
-                                    <label htmlFor="pin-code">PIN Code</label>
-                                    <input id="pin-code" type="text" placeholder="6-digit PIN" value={pinCode} onChange={e => setPinCode(e.target.value)} maxLength={6} />
-                                </div>
-                                <div className="subscribe-checkout-field">
-                                    <label htmlFor="city">City</label>
-                                    <input id="city" type="text" placeholder="City" value={city} onChange={e => setCity(e.target.value)} />
-                                </div>
-                            </div>
-
-                            <div className="subscribe-checkout-form-row">
-                                <div className="subscribe-checkout-field">
-                                    <label htmlFor="state">State</label>
-                                    <select id="state" value={state} onChange={e => setState(e.target.value)}>
-                                        <option value="">Select state</option>
-                                        {STATES.map(stateName => <option key={stateName} value={stateName}>{stateName}</option>)}
-                                    </select>
-                                </div>
-                                <div className="subscribe-checkout-field">
-                                    <label htmlFor="country">Country</label>
-                                    <input id="country" type="text" value="India" disabled />
-                                </div>
-                            </div>
-                        </section>
-                    )}
-                </div>
-
-                <aside className="subscribe-checkout-summary" aria-label="Plan summary">
-                    <div className="subscribe-checkout-summary-header">
-                        <div className="subscribe-checkout-plan-name">
-                            <MaterialIcon name="check_circle" size={20} className="select-plan-success-icon" />
-                            <span>{plan.name} plan</span>
                         </div>
-                        <strong>₹{currentPrice.toLocaleString('en-IN')}</strong>
-                    </div>
-                    <p className="subscribe-checkout-summary-note">
-                        {billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}
-                        {hasPromo && billingPeriod === 'monthly' && ` · ₹${promoPrice} × ${plan.promo_months} mo`}
-                    </p>
-
-                    <div className="subscribe-checkout-timeline">
-                        {timeline.map((entry, index) => (
-                            <div key={index} className="subscribe-checkout-timeline-item">
-                                <span className={cx('subscribe-checkout-timeline-dot', entry.isActive && 'is-active')} />
-                                <div className="subscribe-checkout-timeline-content">
-                                    <div className="subscribe-checkout-timeline-row">
-                                        <span>{entry.label}</span>
-                                        <span>{entry.amount}</span>
-                                    </div>
-                                    <p>{entry.date}</p>
-                                    {entry.description && <p>{entry.description}</p>}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-
-                    <div className="subscribe-checkout-total">
-                        <span>Amount due</span>
-                        <div>
-                            <strong>₹{currentPrice.toLocaleString('en-IN')} INR</strong>
-                            <p>{isFreePlan ? 'no payment required' : 'plus applicable taxes'}</p>
-                        </div>
-                    </div>
-
-                    <button
-                        type="button"
-                        className="subscribe-checkout-submit"
-                        onClick={handleSubscribe}
-                        disabled={isProcessing}
-                    >
-                        {isProcessing ? 'Processing...' : isFreePlan ? 'Activate Free plan' : `Subscribe · ₹${currentPrice.toLocaleString('en-IN')}`}
-                    </button>
-
-                    {error && (
-                        <div className="subscribe-checkout-error" role="alert">
-                            <MaterialIcon name="error" size={16} />
-                            {error}
-                        </div>
-                    )}
-
-                    <p className="subscribe-checkout-policy">
-                        {isFreePlan ? 'Upgrade whenever you need higher limits.' : 'Change or cancel your plan anytime.'}
-                    </p>
-
-                    {plan.gmv_percentage > 0 && (
-                        <div className="subscribe-checkout-benefits">
-                            <div className="subscribe-checkout-benefits-title">
-                                <MaterialIcon name="local_offer" size={16} className="select-plan-primary-icon" />
-                                <span>Included benefits</span>
-                            </div>
-                            <ul>
-                                <li>
-                                    <MaterialIcon name="check" size={14} className="select-plan-success-icon" />
-                                    Transaction fee: only {plan.gmv_percentage}% of GMV
-                                </li>
-                                <li>
-                                    <MaterialIcon name="check" size={14} className="select-plan-success-icon" />
-                                    7-day free trial included
-                                </li>
-                            </ul>
-                        </div>
-                    )}
-
-                    <div className="subscribe-checkout-powered">
-                        <MaterialIcon name="lock" size={12} />
-                        {isFreePlan ? 'LetBuyy billing' : 'Secured by Razorpay'}
-                    </div>
-                </aside>
-            </div>
+                    </Section>
+                </Card>
+            </aside>
         </div>
     )
 }
