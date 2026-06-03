@@ -2,11 +2,12 @@
 
 ## BASELINE
 - Active mission: `docs/Codex_waves/CODEX_PRODUCTION_HARDENING_MISSION.md`.
-- Active phase: P2 - India payments depth.
+- Active phase: P4 - scaffold service readiness review.
 - Historical production-readiness baseline: `CODEX_PRODUCTION_LEDGER.md` records P0 through final local gate evidence from June 2, including fresh Supabase replay of `000_baseline.sql`, `073_order_item_required_field_compatibility.sql`, `074_cod_pending_status.sql`, and `075_cashfree_payment_provider.sql`.
 - Current branch/worktree caveat: many pre-existing non-WS7 dirty files are present and treated as user-owned. WS7 will not modify them.
 
 ## PROGRESS LOG
+- 2026-06-03T12:22:01Z [P3] Build stability and font-hosting proof - DONE. Evidence: build attempt 1 failed because generated app-local dependency links had been removed for governance cleanup; `pnpm install --offline --force` failed on a missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` failed on registry DNS; escalated `pnpm install --force` restored workspace links. Sandbox `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` then failed only because Turbopack could not bind a local worker port in the sandbox; escalated rerun of the same build -> PASS (57/57 tasks). Font source scan for `next/font/google`, `fonts.googleapis.com`, and `fonts.gstatic.com` across apps/packages/services/config -> no matches. Generated build/cache/dependency artifacts were removed; artifact scan returned no directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:03:45Z [P2.1/P2.2/P2.3] India payments depth review - PARTIAL PASS / HUMAN-GATED. Evidence: current real-stack J4 passed COD order creation, `pending_cod`, merchant confirmation to `confirmed`, intra-state CGST/SGST, inter-state IGST, event spine, and queue processing. `node --test tests/gst/gst-invoice.test.mjs tests/billing/subscription-checkout.test.mjs` -> 7/7 PASS. Source review confirms COD provider contract implementation and Cashfree adapter/routes implement real create/verify/capture/refund/webhook paths. Cashfree sandbox charge and signed webhook proof remains credential-gated.
 - 2026-06-03T12:03:25Z [P1 commit checkpoint] Commit and post-commit governance - DONE. Evidence: `git commit -m "docs(ws7): record p1 real-stack proof"` -> `ce9f9de`; post-commit `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:03:10Z [P1.4] Clean generated artifacts after proof - DONE. Evidence: escalated `pnpm run federation:local:down` stopped the throwaway Supabase stack; generated app/service/package build/cache/dependency directories were removed; generated artifact scan returned no matching directories.
@@ -22,6 +23,13 @@
 - [SKIP] Cashfree sandbox charge and webhook proof - requires Cashfree sandbox credentials and dashboard webhook configuration. Existing adapter/routes/webhook code are documented in `CODEX_PRODUCTION_LEDGER.md`; live/sandbox provider proof remains credential-gated.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T12:21:55Z `pnpm run validate:governance` -> PASS (128/128 validators) after P3 generated artifact cleanup.
+- 2026-06-03T12:21:45Z generated artifact scan after cleanup -> no generated app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories.
+- 2026-06-03T12:21:20Z font source scan for `next/font/google`, `fonts.googleapis.com`, and `fonts.gstatic.com` -> no matches.
+- 2026-06-03T12:19:35Z escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` attempt 3 -> PASS (57/57 tasks).
+- 2026-06-03T12:18:50Z `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` attempt 2 -> FAIL only inside the sandbox because Turbopack could not bind a local worker port while processing CSS; escalated rerun succeeded.
+- 2026-06-03T12:18:10Z `pnpm install --offline --force` -> FAIL due missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` -> FAIL on registry DNS; escalated `pnpm install --force` -> PASS and restored workspace dependency links without package downloads.
+- 2026-06-03T12:04:20Z `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` attempt 1 -> FAIL due missing app-local `node_modules`/`next` after generated artifact cleanup; dependency-link restoration and rerun completed later in P3.
 - 2026-06-03T12:04:05Z `pnpm run validate:governance` -> PASS (128/128 validators) after P2 ledger update and generated artifact cleanup.
 - 2026-06-03T12:03:45Z `node --test tests/gst/gst-invoice.test.mjs tests/billing/subscription-checkout.test.mjs` -> PASS (7/7); `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS. Scoped `@letbuyy/payments` and `@letbuyy/infrastructure` typechecks after generated artifact cleanup failed because package-local generated dependency artifacts were intentionally removed; root `pnpm turbo typecheck` had already passed 57/57 before cleanup.
 - 2026-06-03T12:03:25Z post-commit `pnpm run validate:governance` -> PASS (128/128 validators) after commit `ce9f9de`.

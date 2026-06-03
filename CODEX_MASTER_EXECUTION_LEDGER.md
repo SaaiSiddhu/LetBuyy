@@ -2,7 +2,7 @@
 
 ## CURRENT STAGE
 - Stage: STAGE 1 - WS7 Production Hardening.
-- Active task: P2 - India payments depth revalidation on branch `stream/master-execution`.
+- Active task: P4 - scaffold service readiness review on branch `stream/master-execution`.
 - Scope lock: edit only required ledgers plus WS7-owned backend paths (`services/**`, `database/**`, `packages/infrastructure/**`, `scripts/dev/**`) until the Stage 1 gate is complete.
 
 ## BASELINE CONTEXT
@@ -10,7 +10,7 @@
 - Existing production evidence: `CODEX_PRODUCTION_LEDGER.md` records June 2 PASS evidence for fresh baseline replay, `pnpm run federation:local:up`, J1-J5 real-stack Playwright, COD/GST, network-free build, 128/128 governance, typecheck, lint, build, and node tests. `CODEX_PRODUCTION_STATUS.md` remains `BLOCKED - AWAITING HUMAN` only because Cashfree sandbox charge/webhook proof and production credentials/policy decisions are human-gated.
 
 ## STAGE GATES
-- STAGE 1 WS7 Production Hardening: IN PROGRESS. Current rerun against today's worktree is pending.
+- STAGE 1 WS7 Production Hardening: IN PROGRESS. P1 real stack, P2 payments, and P3 build stability are proven or human-gated where credentials are required; P4 scaffold services remain next.
 - STAGE 2 WS1 Design System: PENDING.
 - STAGE 3 WS9/WS2/WS5: PENDING.
 - STAGE 4 WS6/WS3/WS4: PENDING.
@@ -18,6 +18,7 @@
 - STAGE 6 WS10 Developer Ecosystem: PENDING.
 
 ## PROGRESS LOG
+- 2026-06-03T12:22:01Z [STAGE 1/P3] Build stability and self-hosted font proof - DONE. Evidence: first build attempt failed because generated app-local dependency links had been removed for governance cleanup; `pnpm install --offline --force` failed on a missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` failed on registry DNS; escalated `pnpm install --force` restored workspace links without downloading packages. Sandbox `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` then failed only because Turbopack could not bind a local worker port in the sandbox; escalated rerun of the same build -> PASS (57/57 tasks, no network font fetch). `rg -n "next/font/google|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com" apps packages services config --glob '!**/.next/**' --glob '!**/node_modules/**' --glob '!**/dist/**'` -> no matches. Generated build/cache/dependency artifacts were removed; artifact scan returned no directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:03:45Z [STAGE 1/P2] India payments source/test review - PARTIAL PASS / HUMAN-GATED. Evidence: J4 from the current real-stack suite created real COD orders, verified `pending_cod`, merchant confirmation, intra-state CGST/SGST, inter-state IGST, event spine, and queue jobs. `node --test tests/gst/gst-invoice.test.mjs tests/billing/subscription-checkout.test.mjs` -> 7/7 PASS. Source inspection confirms `packages/infrastructure/cod-adapter` implements the payment provider contract and `packages/infrastructure/cashfree-adapter` implements create order, verify, capture, refund, and HMAC webhook verification; gateway Cashfree create/verify routes recalculate order totals and claim idempotency before provider calls. Cashfree sandbox charge/webhook proof remains `[SKIP - NEEDS HUMAN]` because credentials/webhook dashboard access are not available.
 - 2026-06-03T12:03:25Z [STAGE 1/P1] Post-commit governance - DONE. Evidence: after commit `ce9f9de`, `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-03T12:03:10Z [STAGE 1/P1] Generated artifact cleanup for governance - DONE. Evidence: stopped throwaway stack with escalated `pnpm run federation:local:down`; removed generated `.next`, `.turbo`, nested `node_modules`, Flutter `.dart_tool`/`build`, service `.wrangler`, and package `dist` directories; `find apps services packages -type d (...)` -> no generated artifact directories.
@@ -32,6 +33,13 @@
 - [SKIP] Cloudflare/Vercel deployment, Resend production email, social OAuth, Razorpay live payments, and partner payout rails - require provider credentials, dashboard setup, and/or policy decisions. Details are carried forward in `CODEX_PRODUCTION_LEDGER.md`.
 
 ## VALIDATOR LEDGER
+- 2026-06-03T12:21:55Z [P3 validation] `pnpm run validate:governance` -> PASS (128/128 validators) after generated artifact cleanup.
+- 2026-06-03T12:21:45Z [P3 cleanup] generated artifact scan after cleanup -> no generated app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories.
+- 2026-06-03T12:21:20Z [P3 fonts] `rg -n "next/font/google|fonts\\.googleapis\\.com|fonts\\.gstatic\\.com" apps packages services config --glob '!**/.next/**' --glob '!**/node_modules/**' --glob '!**/dist/**'` -> no matches.
+- 2026-06-03T12:19:35Z [P3 build attempt 3] escalated `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> PASS (57/57 tasks).
+- 2026-06-03T12:18:50Z [P3 build attempt 2] `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> FAIL only inside the sandbox because Turbopack could not bind a local worker port while processing CSS; escalated rerun succeeded.
+- 2026-06-03T12:18:10Z [P3 dependency restoration] `pnpm install --offline --force` -> FAIL due missing offline tarball for `jose-6.1.3`; sandbox `pnpm install --force` -> FAIL on registry DNS; escalated `pnpm install --force` -> PASS and restored workspace dependency links without package downloads.
+- 2026-06-03T12:04:20Z [P3 build attempt 1] `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> FAIL because app-local `node_modules` had been intentionally removed for stale-artifact governance cleanup, so Next app build scripts could not resolve `next`. Dependency-link restoration and rerun completed later in P3.
 - 2026-06-03T12:04:05Z [P2 validation] `pnpm run validate:governance` -> PASS (128/128 validators) after P2 ledger update and generated artifact cleanup.
 - 2026-06-03T12:03:45Z [P2 tests] `node --test tests/gst/gst-invoice.test.mjs tests/billing/subscription-checkout.test.mjs` -> PASS (7/7). `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS. Scoped `@letbuyy/payments` and `@letbuyy/infrastructure` typechecks after artifact cleanup failed because package-local `dist`/`node_modules` generated dependency artifacts were intentionally removed for governance; root `pnpm turbo typecheck` had passed 57/57 before cleanup.
 - 2026-06-03T12:03:25Z [post-commit] `pnpm run validate:governance` -> PASS (128/128 validators) after commit `ce9f9de`.
