@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
+import { Badge, Banner, Button, Input, ProgressBar } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -17,9 +18,15 @@ const translations: Record<Lang, Record<string, string>> = {
         minLength: 'At least 8 characters',
         hasUppercase: 'One uppercase letter',
         hasNumber: 'One number',
+        strength: 'Password strength',
+        secureHint: 'Use a password you do not use on other services.',
+        showPassword: 'Show password',
+        hidePassword: 'Hide password',
         mismatch: 'Passwords do not match',
         expired: 'This reset link has expired.',
+        expiredHelp: 'Request a new password reset link to continue securely.',
         requestNew: 'Request a new link →',
+        genericError: 'Something went wrong. Please try again.',
     },
     hi: {
         title: 'अपना पासवर्ड रीसेट करें',
@@ -30,9 +37,15 @@ const translations: Record<Lang, Record<string, string>> = {
         minLength: 'कम से कम 8 अक्षर',
         hasUppercase: 'एक बड़ा अक्षर',
         hasNumber: 'एक संख्या',
+        strength: 'पासवर्ड मजबूती',
+        secureHint: 'ऐसा पासवर्ड उपयोग करें जिसे आप दूसरी services पर उपयोग नहीं करते।',
+        showPassword: 'पासवर्ड दिखाएं',
+        hidePassword: 'पासवर्ड छिपाएं',
         mismatch: 'पासवर्ड मेल नहीं खाते',
         expired: 'यह रीसेट लिंक समाप्त हो गया है।',
+        expiredHelp: 'सुरक्षित रूप से जारी रखने के लिए नया पासवर्ड रीसेट लिंक अनुरोध करें।',
         requestNew: 'नया लिंक अनुरोध करें →',
+        genericError: 'कुछ गलत हुआ। कृपया दोबारा प्रयास करें।',
     },
     ta: {
         title: 'உங்கள் கடவுச்சொல்லை மீட்டமைக்கவும்',
@@ -43,9 +56,15 @@ const translations: Record<Lang, Record<string, string>> = {
         minLength: 'குறைந்தது 8 எழுத்துகள்',
         hasUppercase: 'ஒரு பெரிய எழுத்து',
         hasNumber: 'ஒரு எண்',
+        strength: 'கடவுச்சொல் வலிமை',
+        secureHint: 'மற்ற சேவைகளில் பயன்படுத்தாத கடவுச்சொல்லைப் பயன்படுத்தவும்.',
+        showPassword: 'கடவுச்சொல்லைக் காட்டு',
+        hidePassword: 'கடவுச்சொல்லை மறை',
         mismatch: 'கடவுச்சொற்கள் பொருந்தவில்லை',
         expired: 'இந்த மீட்டமைப்பு இணைப்பு காலாவதியானது.',
+        expiredHelp: 'பாதுகாப்பாக தொடர புதிய கடவுச்சொல் மீட்டமைப்பு இணைப்பைக் கோரவும்.',
         requestNew: 'புதிய இணைப்பை கோரவும் →',
+        genericError: 'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.',
     },
 }
 
@@ -94,6 +113,8 @@ function ResetPasswordContent() {
 
     const isValid = rules.minLength && rules.hasUppercase && rules.hasNumber
     const passwordsMatch = password === confirmPassword && confirmPassword.length > 0
+    const ruleCount = Object.values(rules).filter(Boolean).length
+    const visibilityButtonClass = 'inline-flex h-[var(--lb-density-icon-button-height)] w-[var(--lb-density-icon-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]'
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -120,7 +141,7 @@ function ResetPasswordContent() {
                 window.location.href = data.redirectTo
             }
         } catch {
-            setError('Something went wrong. Please try again.')
+            setError(t.genericError)
         } finally {
             setLoading(false)
         }
@@ -139,9 +160,18 @@ function ResetPasswordContent() {
                 <div className="auth-card">
                     <div className="auth-icon"><AuthIcon name="warning" size={36} /></div>
                     <h1 className="auth-title">{t.expired}</h1>
-                    <a href="/forgot-password" className="auth-btn-primary" style={{ display: 'block', textAlign: 'center', textDecoration: 'none' }}>
+                    <Banner title={t.expired} variant="warning" className="text-left">
+                        {t.expiredHelp}
+                    </Banner>
+                    <Button
+                        type="button"
+                        fullWidth
+                        onClick={() => {
+                            window.location.href = '/forgot-password'
+                        }}
+                    >
                         {t.requestNew}
-                    </a>
+                    </Button>
                 </div>
             </main>
         )
@@ -165,73 +195,72 @@ function ResetPasswordContent() {
                 <p className="auth-subtitle">{t.subtitle}</p>
 
                 <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="auth-field">
-                        <label htmlFor="newResetPassword">{t.newPassword}</label>
-                        <div className="auth-password-wrapper">
-                            <input
-                                id="newResetPassword"
-                                type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
-                                autoComplete="new-password"
-                                autoFocus
-                                required
-                            />
+                    <Input
+                        id="newResetPassword"
+                        type={showPassword ? 'text' : 'password'}
+                        label={t.newPassword}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        helperText={t.secureHint}
+                        autoComplete="new-password"
+                        autoFocus
+                        required
+                        rightIcon={
                             <button
                                 type="button"
-                                className="auth-toggle-password"
+                                className={visibilityButtonClass}
                                 onClick={() => setShowPassword(!showPassword)}
+                                aria-label={showPassword ? t.hidePassword : t.showPassword}
                             >
                                 <AuthIcon name={showPassword ? 'visibility_off' : 'visibility'} size={18} />
                             </button>
-                        </div>
+                        }
+                    />
 
-                        <div className="auth-password-rules">
-                            <div className={`auth-rule ${rules.minLength ? 'valid' : 'invalid'}`}>
-                                <AuthIcon name={rules.minLength ? 'check_circle' : 'cancel'} size={14} style={{ marginRight: 4 }} /> {t.minLength}
-                            </div>
-                            <div className={`auth-rule ${rules.hasUppercase ? 'valid' : 'invalid'}`}>
-                                <AuthIcon name={rules.hasUppercase ? 'check_circle' : 'cancel'} size={14} style={{ marginRight: 4 }} /> {t.hasUppercase}
-                            </div>
-                            <div className={`auth-rule ${rules.hasNumber ? 'valid' : 'invalid'}`}>
-                                <AuthIcon name={rules.hasNumber ? 'check_circle' : 'cancel'} size={14} style={{ marginRight: 4 }} /> {t.hasNumber}
-                            </div>
+                    <div className="grid gap-[var(--lb-space-2)]">
+                        <ProgressBar value={ruleCount} max={3} label={t.strength} />
+                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                            <Badge label={t.minLength} variant={rules.minLength ? 'success' : 'warning'} />
+                            <Badge label={t.hasUppercase} variant={rules.hasUppercase ? 'success' : 'warning'} />
+                            <Badge label={t.hasNumber} variant={rules.hasNumber ? 'success' : 'warning'} />
                         </div>
                     </div>
 
-                    <div className="auth-field">
-                        <label htmlFor="confirmResetPassword">{t.confirmPassword}</label>
-                        <div className="auth-password-wrapper">
-                            <input
-                                id="confirmResetPassword"
-                                type={showConfirm ? 'text' : 'password'}
-                                value={confirmPassword}
-                                onChange={(e) => setConfirmPassword(e.target.value)}
-                                autoComplete="new-password"
-                                required
-                            />
+                    <Input
+                        id="confirmResetPassword"
+                        type={showConfirm ? 'text' : 'password'}
+                        label={t.confirmPassword}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        autoComplete="new-password"
+                        error={confirmPassword && !passwordsMatch ? t.mismatch : undefined}
+                        required
+                        rightIcon={
                             <button
                                 type="button"
-                                className="auth-toggle-password"
+                                className={visibilityButtonClass}
                                 onClick={() => setShowConfirm(!showConfirm)}
+                                aria-label={showConfirm ? t.hidePassword : t.showPassword}
                             >
                                 <AuthIcon name={showConfirm ? 'visibility_off' : 'visibility'} size={18} />
                             </button>
-                        </div>
-                        {confirmPassword && !passwordsMatch && (
-                            <div className="auth-rule invalid">{t.mismatch}</div>
-                        )}
-                    </div>
+                        }
+                    />
 
-                    {error && <div className="auth-error">{error}</div>}
+                    {error && (
+                        <Banner variant="critical" className="text-left">
+                            {error}
+                        </Banner>
+                    )}
 
-                    <button
+                    <Button
                         type="submit"
-                        className="auth-btn-primary"
+                        fullWidth
+                        loading={loading}
                         disabled={loading || !isValid || !passwordsMatch}
                     >
-                        {loading ? '...' : t.resetPassword}
-                    </button>
+                        {t.resetPassword}
+                    </Button>
                 </form>
             </div>
         </main>
@@ -240,7 +269,7 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
     return (
-        <Suspense fallback={<div className="auth-container"><div className="auth-card" style={{ textAlign: 'center' }}><p style={{ color: 'var(--text-hint)' }}>Loading...</p></div></div>}>
+        <Suspense fallback={<div className="auth-container"><div className="auth-card"><p className="text-center text-[color:var(--text-hint)]">Loading...</p></div></div>}>
             <ResetPasswordContent />
         </Suspense>
     )

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react'
 import TurnstileWidget from '@/components/TurnstileWidget'
 import { getAuthHeaders } from '@/lib/csrf-client'
 import { AuthIcon } from '@/components/AuthIcon'
+import { Banner, Button, Input } from '@letbuyy/ui'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -13,27 +14,36 @@ const translations: Record<Lang, Record<string, string>> = {
         subtitle: "Enter your email and we'll send you a reset link.",
         email: 'Email',
         emailPlaceholder: 'you@example.com',
+        emailHelper: 'Use the email attached to your LetBuyy merchant account.',
         sendResetLink: 'Send reset link',
         backToLogin: 'Back to login',
+        privacyNote: 'For your security, we will show the same confirmation even if the email is not registered.',
         rateLimited: 'Too many requests. Please try again later.',
+        genericError: 'Something went wrong. Please try again.',
     },
     hi: {
         title: 'पासवर्ड भूल गए?',
         subtitle: 'अपना ईमेल दर्ज करें और हम आपको एक रीसेट लिंक भेजेंगे।',
         email: 'ईमेल',
         emailPlaceholder: 'you@example.com',
+        emailHelper: 'अपने LetBuyy merchant account से जुड़ा ईमेल उपयोग करें।',
         sendResetLink: 'रीसेट लिंक भेजें',
         backToLogin: 'लॉगिन पर वापस',
+        privacyNote: 'आपकी सुरक्षा के लिए, ईमेल registered न होने पर भी वही confirmation दिखेगा।',
         rateLimited: 'बहुत सारे प्रयास। कृपया बाद में पुनः प्रयास करें।',
+        genericError: 'कुछ गलत हुआ। कृपया दोबारा प्रयास करें।',
     },
     ta: {
         title: 'கடவுச்சொல் மறந்துவிட்டதா?',
         subtitle: 'உங்கள் மின்னஞ்சலை உள்ளிடவும், மீட்டமைப்பு இணைப்பை அனுப்புவோம்.',
         email: 'மின்னஞ்சல்',
         emailPlaceholder: 'you@example.com',
+        emailHelper: 'உங்கள் LetBuyy merchant account-இன் மின்னஞ்சலைப் பயன்படுத்தவும்.',
         sendResetLink: 'மீட்டமைப்பு இணைப்பை அனுப்பவும்',
         backToLogin: 'உள்நுழைவுக்குத் திரும்பவும்',
+        privacyNote: 'பாதுகாப்புக்காக, மின்னஞ்சல் பதிவு செய்யப்படாவிட்டாலும் அதே உறுதிப்படுத்தலை காட்டுவோம்.',
         rateLimited: 'பல முயற்சிகள். பிறகு மீண்டும் முயற்சிக்கவும்.',
+        genericError: 'ஏதோ தவறு நடந்தது. மீண்டும் முயற்சிக்கவும்.',
     },
 }
 
@@ -98,7 +108,7 @@ export default function ForgotPasswordPage() {
             // Always redirect to check-email (don't reveal if email exists)
             window.location.href = `/check-email?email=${encodeURIComponent(email.trim())}&type=password_reset`
         } catch {
-            setError('Something went wrong. Please try again.')
+            setError(t.genericError)
         } finally {
             setLoading(false)
         }
@@ -123,35 +133,53 @@ export default function ForgotPasswordPage() {
                 <h1 className="auth-title">{t.title}</h1>
                 <p className="auth-subtitle">{t.subtitle}</p>
 
+                <Banner title={t.email} variant="info" className="text-left">
+                    {t.privacyNote}
+                </Banner>
+
+                <div className="h-[var(--lb-space-3)]" aria-hidden="true" />
+
                 <form onSubmit={handleSubmit} className="auth-form">
-                    <div className="auth-field">
-                        <label htmlFor="resetEmail">{t.email}</label>
-                        <input
-                            id="resetEmail"
-                            type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder={t.emailPlaceholder}
-                            autoComplete="email"
-                            autoFocus
-                            required
-                        />
-                    </div>
+                    <Input
+                        id="resetEmail"
+                        type="email"
+                        label={t.email}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder={t.emailPlaceholder}
+                        helperText={t.emailHelper}
+                        autoComplete="email"
+                        autoFocus
+                        required
+                    />
 
-                    {error && <div className="auth-error"><AuthIcon name="error" />{error}</div>}
+                    {error && (
+                        <Banner title={t.rateLimited === error ? t.rateLimited : undefined} variant="critical" className="text-left">
+                            {error}
+                        </Banner>
+                    )}
 
-                    <button
+                    <Button
                         type="submit"
-                        className="auth-btn-primary"
+                        fullWidth
+                        loading={loading}
                         disabled={loading || !email.trim()}
                     >
-                        {loading ? '...' : t.sendResetLink}
-                    </button>
+                        {t.sendResetLink}
+                    </Button>
                 </form>
 
-                <a href="/lookup" className="auth-link-btn">
-                    ← {t.backToLogin}
-                </a>
+                <Button
+                    type="button"
+                    variant="ghost"
+                    fullWidth
+                    onClick={() => {
+                        window.location.href = '/lookup'
+                    }}
+                >
+                    <AuthIcon name="arrow_back" size={16} />
+                    {t.backToLogin}
+                </Button>
 
                 <TurnstileWidget onVerify={handleTurnstileVerify} />
             </div>
