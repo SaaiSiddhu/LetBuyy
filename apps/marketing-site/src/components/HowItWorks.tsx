@@ -26,7 +26,7 @@ const steps: Array<{ number: string; title: string; description: string; icon: L
 
 export default function HowItWorks() {
     return (
-        <section className="how-it-works">
+        <section id="how-it-works" className="how-it-works">
             <div className="container">
                 <motion.div
                     className="how-it-works-header"

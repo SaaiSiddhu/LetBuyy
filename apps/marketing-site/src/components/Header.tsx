@@ -57,11 +57,10 @@ export default function Header() {
     }, [])
 
     const navLinks = [
-        { href: '#capabilities', label: 'Product' },
+        { href: '#capabilities', label: 'Use cases' },
         { href: '#features', label: 'Features' },
+        { href: '#how-it-works', label: 'Launch path' },
         { href: '#pricing', label: 'Pricing' },
-        { href: '/templates', label: 'Templates' },
-        { href: '/docs', label: 'Docs' },
     ]
 
     const cycleTheme = () => {
