@@ -40,7 +40,7 @@ interface TaxRate {
 type TaxesPayload = {
     data?: {
         tax_inclusive?: boolean
-        rates?: TaxRate[]
+        rates?: unknown
     }
     error?: string | { message?: string }
 }
@@ -51,6 +51,40 @@ type FormMode = 'add' | 'edit' | null
 function getPayloadError(payload: TaxesPayload | null, fallback: string) {
     if (!payload?.error) return fallback
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
+function coerceNumber(value: unknown) {
+    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
+    return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeTaxRates(value: unknown): TaxRate[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((rate) => {
+        if (!isRecord(rate) || typeof rate.id !== 'string' || !rate.id) return []
+
+        return [{
+            id: rate.id,
+            name: readString(rate.name, 'Unnamed tax rate'),
+            rate: coerceNumber(rate.rate),
+            country: readString(rate.country, 'IN'),
+            state: typeof rate.state === 'string' ? rate.state : null,
+            is_compound: rate.is_compound === true,
+            is_shipping: rate.is_shipping === true,
+            priority: coerceNumber(rate.priority),
+            is_active: rate.is_active === true,
+            created_at: readString(rate.created_at),
+        }]
+    })
 }
 
 function formatTaxPercent(rate: number) {
@@ -127,7 +161,7 @@ export default function TaxesSettingsPage() {
             const taxInclusive = Boolean(payload?.data?.tax_inclusive)
             setTaxData({ tax_inclusive: taxInclusive })
             setInitialTaxInclusive(taxInclusive)
-            setTaxRates(Array.isArray(payload?.data?.rates) ? payload.data.rates : [])
+            setTaxRates(normalizeTaxRates(payload?.data?.rates))
             setSettingsSaveState('saved')
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load tax settings'

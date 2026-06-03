@@ -26,6 +26,7 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 
 ## PROGRESS LOG (newest first)
 
+- 2026-06-03 10:02 IST [S5.13] Hardened Shipping and Taxes list payloads by normalizing zones, rates, countries, booleans, and numeric fields before rendering counts, badges, edit forms, and delete actions.
 - 2026-06-03 09:59 IST [S5.12] Hardened Payments payload handling by normalizing masked payment settings before state updates, summaries, and save feedback.
 - 2026-06-03 09:50 IST [S5.11] Hardened Subscribe checkout numeric fields so plan cents, promo months, and Razorpay amount values are normalized before display and payment handoff.
 - 2026-06-03 09:46 IST [S5.10] Hardened Billing and Plan monetary fields so string or malformed cents values do not corrupt totals, plan prices, or subscription amount labels.
@@ -113,3 +114,6 @@ Before screenshots: PENDING - requires reachable authenticated merchant route an
 - 2026-06-03 09:59 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Payments payload normalization.
 - 2026-06-03 09:59 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
 - 2026-06-03 09:59 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.
+- 2026-06-03 10:02 IST `pnpm --filter @letbuyy/merchant-control-plane typecheck` -> pass after Shipping and Taxes list payload normalization.
+- 2026-06-03 10:02 IST `pnpm --filter @letbuyy/merchant-control-plane lint` -> pass with same 5 pre-existing warnings outside WS9 (`products/page.tsx`, `stores/AllStoresClient.tsx`, `HeaderBar.tsx`, `lib/auth/session.ts`).
+- 2026-06-03 10:02 IST `pnpm run validate:governance` -> pass, 128 validators, after removing generated nested `node_modules` and `tsconfig.tsbuildinfo` artifacts created by offline install/typecheck.

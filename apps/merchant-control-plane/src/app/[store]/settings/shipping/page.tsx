@@ -35,8 +35,8 @@ interface ShippingRate {
 
 type ShippingPayload = {
     data?: {
-        zones?: ShippingZone[]
-        rates?: ShippingRate[]
+        zones?: unknown
+        rates?: unknown
     }
     error?: string | { message?: string }
 }
@@ -47,6 +47,55 @@ type FormMode = 'add' | 'edit' | null
 function getPayloadError(payload: ShippingPayload | null, fallback: string) {
     if (!payload?.error) return fallback
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
+function coerceNumber(value: unknown) {
+    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
+    return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeCountries(value: unknown) {
+    if (Array.isArray(value)) return value.filter((country): country is string => typeof country === 'string' && country.trim().length > 0)
+    if (typeof value === 'string') return value.split(',').map((country) => country.trim()).filter(Boolean)
+    return []
+}
+
+function normalizeZones(value: unknown): ShippingZone[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((zone) => {
+        if (!isRecord(zone) || typeof zone.id !== 'string' || !zone.id) return []
+
+        return [{
+            id: zone.id,
+            name: readString(zone.name, 'Unnamed zone'),
+            countries: normalizeCountries(zone.countries),
+        }]
+    })
+}
+
+function normalizeRates(value: unknown): ShippingRate[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((rate) => {
+        if (!isRecord(rate) || typeof rate.id !== 'string' || !rate.id || typeof rate.zone_id !== 'string' || !rate.zone_id) return []
+
+        return [{
+            id: rate.id,
+            zone_id: rate.zone_id,
+            name: readString(rate.name, 'Delivery rate'),
+            price: coerceNumber(rate.price),
+            min_order_amount: rate.min_order_amount == null ? null : coerceNumber(rate.min_order_amount),
+        }]
+    })
 }
 
 interface ZoneMetricProps {
@@ -110,8 +159,8 @@ export default function ShippingSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load shipping settings'))
             }
 
-            setZones(Array.isArray(payload?.data?.zones) ? payload.data.zones : [])
-            setRates(Array.isArray(payload?.data?.rates) ? payload.data.rates : [])
+            setZones(normalizeZones(payload?.data?.zones))
+            setRates(normalizeRates(payload?.data?.rates))
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load shipping settings'
             setLoadError(message)
