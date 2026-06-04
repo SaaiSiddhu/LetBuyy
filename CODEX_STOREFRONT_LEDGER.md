@@ -3,8 +3,8 @@
 ## CURRENT STATUS
 - Stage: STAGE 4 - WS4 Storefront.
 - Branch: `stream/master-execution`.
-- Active gate: SF3 Customer Account Polish.
-- Active task: SF3 gate validation and commit.
+- Active gate: SF4 Cart & Checkout Polish.
+- Active task: SF4 gate validation and commit.
 - Scope lock: source edits are limited to `apps/storefront-runtime/src/**`; root execution ledgers are bookkeeping exceptions. No services, packages, database, governance source, or other app roots may be changed in WS4.
 
 ## MISSION CONTEXT READ
@@ -119,6 +119,30 @@
   - Visual review completed for settings mobile/desktop, address form mobile, orders empty mobile, and wishlist empty mobile; no text overlap, clipping, or incoherent horizontal overflow found.
 - Gate proof: customer account profile/settings, order-history UI, addresses, and wishlist are polished within available frontend/API data. Generated-artifact cleanup scan was empty and full governance passed 128/128. Live order-row detail screenshots, real pincode lookup, and hydrated wishlist product cards remain backend-data skips.
 
+## SF4 - CART & CHECKOUT POLISH
+
+### SF4.1-SF4.4 Cart, Checkout, Payment, and Confirmation
+- Status: DONE WITH BACKEND/PROVIDER SKIPS.
+- Source changes:
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/cart/page.tsx` with accessible cart action labels, live quantity feedback, stable quantity controls, and checkout reassurance copy that final taxes/discounts/payment availability are verified during checkout.
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx` with saved-address autofill, field normalization, stronger email/phone/PIN validation, inline checkout error banners instead of browser alerts, scroll-to-top behavior for validation/payment/success transitions, payment-method unavailable placeholder, clearer COD copy/security text, and a readable fixed-contrast order-confirmation card.
+  - Preserved existing API/client contracts and did not modify backend, database, packages, payment adapters, or service code.
+- Scoped proof:
+  - `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS.
+  - `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors.
+  - `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; route output includes cart, checkout, checkout provider returns, order lookup, account pages, and storefront routes.
+  - Production server `pnpm --filter @letbuyy/storefront-runtime exec next start -p 3003` -> PASS after sandbox port binding escalation.
+  - Escalated `node .tmp/ws4-sf4-cart-checkout-proof.mjs` -> PASS against `http://localhost:3003`; asserted cart quantity controls, checkout validation error banner, saved-address autofill, payment method list, selected COD copy, COD confirmation CTA, mocked order-confirmation state, and no horizontal overflow on desktop/mobile proof pages.
+  - Screenshot paths: `.tmp/screenshots/ws4-sf4/sf4-cart-desktop.png`, `.tmp/screenshots/ws4-sf4/sf4-cart-mobile.png`, `.tmp/screenshots/ws4-sf4/sf4-checkout-address-error-mobile.png`, `.tmp/screenshots/ws4-sf4/sf4-checkout-payment-mobile.png`, `.tmp/screenshots/ws4-sf4/sf4-checkout-success-mobile.png`.
+  - Visual review completed for cart desktop/mobile, checkout validation mobile, checkout payment mobile, and checkout success mobile; no text overlap, clipping, unreadable confirmation state, or incoherent horizontal overflow found after the scroll-position and contrast fixes.
+- [SKIP - NEEDS BACKEND] Live saved-address autofill screenshot with real authenticated address rows. Required backend evidence: customer session plus at least one persisted address row returned by `/api/customer/addresses`.
+- [SKIP - NEEDS BACKEND] Live persisted COD/order-confirmation screenshot. Required backend evidence: governed seeded cart/order creation path with idempotent test order and safe cleanup or rollback; SF4 proof used a Playwright route fulfillment to verify the UI state without mutating backend data.
+- [SKIP - NEEDS HUMAN] Live Razorpay/Stripe/PayPal checkout proof. Required human/provider inputs: configured sandbox provider keys, allowed test charge flow, webhook credentials, and permission to create provider-side payment attempts.
+
+### GATE SF4 Cart & Checkout Polish
+- Status: PASS WITH BACKEND/PROVIDER SKIPS.
+- Gate proof: cart and checkout UX is polished within storefront scope; scoped storefront typecheck/lint/build and Playwright screenshots passed. Live saved-address data, real persisted order creation, and online provider payment attempts remain logged skips.
+
 ## VALIDATOR LEDGER
 - 2026-06-04T03:08:00Z [WS3 predecessor gate] Post-commit `pnpm run validate:governance` after `82ea1656` -> PASS (128/128 validators). WS4 started from a green governance baseline.
 - 2026-06-04T03:33:58Z [SF2 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -128,3 +152,6 @@
 - 2026-06-04T04:05:38Z [SF1 post-commit governance] Post-commit `pnpm run validate:governance` after `79ecd20c` -> PASS (128/128 validators).
 - 2026-06-04T04:14:42Z [SF3 scoped gate] `pnpm install --frozen-lockfile --force` -> PASS with lockfile unchanged; `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf3-account-proof.mjs` -> PASS with authenticated account screenshots and no overflow failures.
 - 2026-06-04T04:16:29Z [SF3 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T04:18:54Z [SF3 post-commit governance] Post-commit `pnpm run validate:governance` after `7edc318f` -> PASS (128/128 validators).
+- 2026-06-04T04:38:14Z [SF4 scoped gate] `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf4-cart-checkout-proof.mjs` -> PASS with cart/checkout/COD screenshots and no overflow failures.
+- 2026-06-04T04:40:47Z [SF4 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).

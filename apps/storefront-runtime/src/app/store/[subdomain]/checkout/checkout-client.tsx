@@ -1,10 +1,10 @@
 'use client';
 
 import { useCart } from '@/context/cart-context';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image, { type ImageLoaderProps } from 'next/image';
 import {
-    ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
+    AlertCircle, ArrowLeft, CheckCircle, CreditCard, Loader2, Lock,
     ShieldCheck, MapPin, Truck, Clock, Package, User, Phone, Mail, Home
 } from '@letbuyy/ui';
 import Link from 'next/link';
@@ -83,6 +83,18 @@ interface FormData {
     pincode: string;
 }
 
+interface SavedAddress {
+    id: string;
+    label?: string | null;
+    full_name?: string | null;
+    address_line1?: string | null;
+    address_line2?: string | null;
+    city?: string | null;
+    state?: string | null;
+    postal_code?: string | null;
+    customer_phone?: string | null;
+}
+
 type DeliveryOption = 'standard' | 'express';
 type PaymentMethod = 'online' | 'stripe' | 'paypal' | 'cod';
 type ProviderOrderMethod = 'razorpay' | 'stripe' | 'paypal' | 'cod';
@@ -129,9 +141,18 @@ type PayPalOrderData = {
     approval_url?: string;
 };
 
+function scrollToCheckoutTop() {
+    if (typeof window === 'undefined') return;
+    window.requestAnimationFrame(() => {
+        window.scrollTo({ top: 0, behavior: 'auto' });
+    });
+}
+
 export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled }: CheckoutClientProps) {
     const { items, cartTotal, clearCart } = useCart();
     const basePath = `/store/${subdomain}`;
+    const hasPaymentMethods = onlinePaymentEnabled || codEnabled;
+    const initialPaymentMethod: PaymentMethod = onlinePaymentEnabled ? 'online' : codEnabled ? 'cod' : 'online';
 
     const [step, setStep] = useState(1); // 1: Address, 2: Review & Pay
     const [isProcessing, setIsProcessing] = useState(false);
@@ -139,11 +160,13 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const [orderNumber, setOrderNumber] = useState('');
     const [deliveryOption, setDeliveryOption] = useState<DeliveryOption>('standard');
     const [razorpayLoaded, setRazorpayLoaded] = useState(false);
-    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(onlinePaymentEnabled ? 'online' : 'cod');
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(initialPaymentMethod);
     const [couponInput, setCouponInput] = useState('');
     const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
     const [couponError, setCouponError] = useState('');
     const [isCheckingCoupon, setIsCheckingCoupon] = useState(false);
+    const [checkoutError, setCheckoutError] = useState('');
+    const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
     const idempotencyKeysRef = useRef<Record<string, string>>({});
 
     const [formData, setFormData] = useState<FormData>({
@@ -161,6 +184,30 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     // Theme
     const primaryColor = 'var(--primary, #6366f1)';
 
+    useEffect(() => {
+        let isMounted = true;
+
+        fetch('/api/customer/addresses')
+            .then(response => response.ok ? response.json() : { addresses: [] })
+            .then(payload => {
+                if (!isMounted) return;
+                setSavedAddresses(Array.isArray(payload.addresses) ? payload.addresses : []);
+            })
+            .catch(() => {
+                if (isMounted) setSavedAddresses([]);
+            });
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    useEffect(() => {
+        if (isSuccess) {
+            scrollToCheckoutTop();
+        }
+    }, [isSuccess]);
+
     // Delivery costs
     const deliveryCharges = deliveryOption === 'express' ? 99 : 0;
     const discountAmount = appliedCoupon?.discount || 0;
@@ -171,6 +218,37 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             idempotencyKeysRef.current[scope] = `checkout-${scope}-${crypto.randomUUID()}`;
         }
         return idempotencyKeysRef.current[scope];
+    };
+
+    const showCheckoutError = (message: string) => {
+        setCheckoutError(message);
+        scrollToCheckoutTop();
+    };
+
+    const updateFormField = (field: keyof FormData, value: string) => {
+        const normalizedValue = field === 'phone'
+            ? value.replace(/[^\d+\-\s]/g, '').slice(0, 16)
+            : field === 'pincode'
+                ? value.replace(/\D/g, '').slice(0, 6)
+                : value;
+
+        setFormData(prev => ({ ...prev, [field]: normalizedValue }));
+        setErrors(prev => ({ ...prev, [field]: undefined }));
+        setCheckoutError('');
+    };
+
+    const applySavedAddress = (address: SavedAddress) => {
+        setFormData(prev => ({
+            ...prev,
+            name: address.full_name || prev.name,
+            phone: address.customer_phone || prev.phone,
+            address: [address.address_line1, address.address_line2].filter(Boolean).join(', '),
+            city: address.city || '',
+            state: address.state || '',
+            pincode: address.postal_code || '',
+        }));
+        setErrors({});
+        setCheckoutError('');
     };
 
     // Auto-create customer record after order
@@ -197,8 +275,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const validateForm = (): boolean => {
         const newErrors: Partial<FormData> = {};
         if (!formData.name.trim()) newErrors.name = 'Name is required';
-        if (!formData.email.includes('@')) newErrors.email = 'Valid email required';
-        if (formData.phone.length < 10) newErrors.phone = 'Valid phone required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) newErrors.email = 'Valid email required';
+        if (formData.phone.replace(/\D/g, '').length < 10) newErrors.phone = 'Valid phone required';
         if (!formData.address.trim()) newErrors.address = 'Address is required';
         if (!formData.city.trim()) newErrors.city = 'City is required';
         if (!formData.state.trim()) newErrors.state = 'State is required';
@@ -211,7 +289,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     // Proceed to payment step
     const proceedToPayment = () => {
         if (validateForm()) {
+            setCheckoutError('');
             setStep(2);
+            scrollToCheckoutTop();
+        } else {
+            showCheckoutError('Complete the highlighted delivery fields before continuing.');
         }
     };
 
@@ -309,10 +391,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 clearCart();
                 autoCreateCustomer(result.order);
             } else {
-                alert('Order creation failed. Please try again.');
+                showCheckoutError('Order creation failed. Please try again.');
             }
         } catch {
-            alert('Order creation failed. Please try again.');
+            showCheckoutError('Order creation failed. Please try again.');
         } finally {
             setIsProcessing(false);
         }
@@ -321,12 +403,12 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     // Initialize Razorpay payment
     const handlePayment = async () => {
         if (!razorpayLoaded) {
-            alert('Payment gateway is loading. Please try again.');
+            showCheckoutError('Payment gateway is loading. Please try again.');
             return;
         }
 
         if (!window.Razorpay) {
-            alert('Payment gateway is unavailable. Please try again.');
+            showCheckoutError('Payment gateway is unavailable. Please try again.');
             return;
         }
 
@@ -335,7 +417,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
         try {
             const orderResult = await createCheckoutOrder('razorpay');
             if (!orderResult.success || !orderResult.order) {
-                alert('Order creation failed. Please try again.');
+                showCheckoutError('Order creation failed. Please try again.');
                 setIsProcessing(false);
                 return;
             }
@@ -353,7 +435,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             const keyId = paymentData?.keyId || paymentData?.key_id;
             const razorpayOrderId = paymentData?.razorpayOrderId || paymentData?.razorpay_order_id;
             if (!paymentRes.ok || paymentResult.success === false || !keyId || !razorpayOrderId || !paymentData?.amount) {
-                alert(storefrontApiErrorMessage(paymentResult, 'Online payment is not configured for this store yet.'));
+                showCheckoutError(storefrontApiErrorMessage(paymentResult, 'Online payment is not configured for this store yet.'));
                 setIsProcessing(false);
                 return;
             }
@@ -386,10 +468,10 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                             clearCart();
                             autoCreateCustomer(orderResult.order);
                         } else {
-                            alert(storefrontApiErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
+                            showCheckoutError(storefrontApiErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
                         }
                     } catch {
-                        alert('Payment verification failed. Please contact support.');
+                        showCheckoutError('Payment verification failed. Please contact support.');
                     } finally {
                         setIsProcessing(false);
                     }
@@ -417,12 +499,12 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             const rzp = new window.Razorpay(options);
             rzp.on('payment.failed', function () {
                 setIsProcessing(false);
-                alert('Payment failed. Please try again.');
+                showCheckoutError('Payment failed. Please try again.');
             });
             rzp.open();
         } catch {
             setIsProcessing(false);
-            alert('Payment failed. Please try again.');
+            showCheckoutError('Payment failed. Please try again.');
         }
     };
 
@@ -433,7 +515,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             const orderResult = await createCheckoutOrder('stripe');
 
             if (!orderResult.success || !orderResult.order) {
-                alert('Order creation failed. Please try again.');
+                showCheckoutError('Order creation failed. Please try again.');
                 setIsProcessing(false);
                 return;
             }
@@ -455,11 +537,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             if (stripeRes.ok && stripeResult.success !== false && stripeUrl) {
                 window.location.href = stripeUrl;
             } else {
-                alert(storefrontApiErrorMessage(stripeResult, 'Failed to create Stripe checkout session. Please try again.'));
+                showCheckoutError(storefrontApiErrorMessage(stripeResult, 'Failed to create Stripe checkout session. Please try again.'));
                 setIsProcessing(false);
             }
         } catch {
-            alert('Payment failed. Please try again.');
+            showCheckoutError('Payment failed. Please try again.');
             setIsProcessing(false);
         }
     };
@@ -471,7 +553,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             const orderResult = await createCheckoutOrder('paypal');
 
             if (!orderResult.success || !orderResult.order) {
-                alert('Order creation failed. Please try again.');
+                showCheckoutError('Order creation failed. Please try again.');
                 setIsProcessing(false);
                 return;
             }
@@ -492,11 +574,11 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
             if (paypalRes.ok && paypalResult.success !== false && approvalUrl) {
                 window.location.href = approvalUrl;
             } else {
-                alert(storefrontApiErrorMessage(paypalResult, 'Failed to create PayPal order. Please try again.'));
+                showCheckoutError(storefrontApiErrorMessage(paypalResult, 'Failed to create PayPal order. Please try again.'));
                 setIsProcessing(false);
             }
         } catch {
-            alert('Payment failed. Please try again.');
+            showCheckoutError('Payment failed. Please try again.');
             setIsProcessing(false);
         }
     };
@@ -508,7 +590,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 <motion.div
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="card-theme p-8 rounded-2xl shadow-xl max-w-md w-full text-center"
+                    className="w-full max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-900 shadow-xl"
                 >
                     <motion.div
                         initial={{ scale: 0 }}
@@ -518,13 +600,20 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     >
                         <CheckCircle size={32} />
                     </motion.div>
-                    <h1 className="text-2xl font-bold mb-2 text-theme">Order Confirmed!</h1>
-                    <p className="text-theme-secondary mb-2 text-sm">Thank you for your purchase</p>
+                    <h1 className="mb-2 text-2xl font-bold text-slate-950">Order Confirmed!</h1>
+                    <p className="mb-2 text-sm text-slate-600">
+                        Thank you for your purchase. We will send order updates to the contact details you provided.
+                    </p>
                     {orderNumber && (
-                        <p className="text-xs card-theme-secondary py-2 px-4 rounded-lg inline-block mb-6">
+                        <p className="mb-6 inline-block rounded-lg bg-slate-50 px-4 py-2 text-xs text-slate-700">
                             Order Number: <span className="font-mono font-semibold">{orderNumber}</span>
                         </p>
                     )}
+                    <p className="mb-6 rounded-xl border border-slate-200 px-4 py-3 text-sm text-slate-600">
+                        {paymentMethod === 'cod'
+                            ? 'COD order confirmed. Keep the order amount ready for the delivery partner.'
+                            : 'Payment confirmation is complete. Keep this order number for support.'}
+                    </p>
                     <div className="space-y-3">
                         <Link
                             href={`${basePath}/orders`}
@@ -535,7 +624,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                         </Link>
                         <Link
                             href={basePath}
-                            className="block w-full py-3 rounded-xl font-semibold border border-card text-theme-secondary"
+                            className="block w-full rounded-xl border border-slate-200 py-3 font-semibold text-slate-600"
                         >
                             Continue Shopping
                         </Link>
@@ -577,6 +666,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                             <ArrowLeft size={16} className="mr-2" /> Back to Cart
                         </Link>
                     </div>
+
+                    {checkoutError && (
+                        <div className="mb-4 flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700" role="alert">
+                            <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                            <div className="min-w-0">
+                                <p className="font-semibold">Checkout needs attention</p>
+                                <p>{checkoutError}</p>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Progress Steps */}
                     <div className="flex items-center justify-center mb-8">
@@ -620,6 +719,35 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             Delivery Address
                                         </h2>
 
+                                        <div className="mb-4 rounded-xl border border-card p-3">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <p className="text-sm font-semibold">Saved address autofill</p>
+                                                    <p className="mt-1 text-xs text-theme-secondary">
+                                                        {savedAddresses.length > 0
+                                                            ? 'Choose a saved customer address to fill the delivery form.'
+                                                            : 'Saved customer addresses will appear here when available.'}
+                                                    </p>
+                                                </div>
+                                                <MapPin size={18} style={{ color: primaryColor }} />
+                                            </div>
+                                            {savedAddresses.length > 0 && (
+                                                <div className="mt-3 flex flex-wrap gap-2">
+                                                    {savedAddresses.map(address => (
+                                                        <button
+                                                            key={address.id}
+                                                            type="button"
+                                                            onClick={() => applySavedAddress(address)}
+                                                            className="min-h-11 rounded-full border px-3 text-xs font-semibold capitalize"
+                                                            style={{ borderColor: 'var(--border, #E5E7EB)', color: primaryColor }}
+                                                        >
+                                                            {address.label || 'Address'}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <div className="space-y-4">
                                             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                                                 <div>
@@ -629,7 +757,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         <input
                                                             type="text"
                                                             value={formData.name}
-                                                            onChange={e => setFormData({ ...formData, name: e.target.value })}
+                                                            onChange={e => updateFormField('name', e.target.value)}
                                                             className={`min-h-11 w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.name ? 'ring-2 ring-red-300' : ''}`}
                                                             placeholder="John Doe"
                                                         />
@@ -643,7 +771,8 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         <input
                                                             type="tel"
                                                             value={formData.phone}
-                                                            onChange={e => setFormData({ ...formData, phone: e.target.value })}
+                                                            onChange={e => updateFormField('phone', e.target.value)}
+                                                            inputMode="tel"
                                                             className={`min-h-11 w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.phone ? 'ring-2 ring-red-300' : ''}`}
                                                             placeholder="9876543210"
                                                         />
@@ -659,7 +788,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <input
                                                         type="email"
                                                         value={formData.email}
-                                                        onChange={e => setFormData({ ...formData, email: e.target.value })}
+                                                        onChange={e => updateFormField('email', e.target.value)}
                                                         className={`min-h-11 w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.email ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="john@example.com"
                                                     />
@@ -673,7 +802,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <Home size={16} className="absolute left-3 top-3 text-theme-muted" />
                                                     <textarea
                                                         value={formData.address}
-                                                        onChange={e => setFormData({ ...formData, address: e.target.value })}
+                                                        onChange={e => updateFormField('address', e.target.value)}
                                                         rows={2}
                                                         className={`min-h-[88px] w-full pl-9 pr-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 resize-none ${errors.address ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="House/Flat No, Street, Landmark..."
@@ -688,7 +817,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <input
                                                         type="text"
                                                         value={formData.city}
-                                                        onChange={e => setFormData({ ...formData, city: e.target.value })}
+                                                        onChange={e => updateFormField('city', e.target.value)}
                                                         className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.city ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="Bengaluru"
                                                     />
@@ -699,7 +828,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                     <input
                                                         type="text"
                                                         value={formData.state}
-                                                        onChange={e => setFormData({ ...formData, state: e.target.value })}
+                                                        onChange={e => updateFormField('state', e.target.value)}
                                                         className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.state ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="Karnataka"
                                                     />
@@ -711,7 +840,9 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         type="text"
                                                         maxLength={6}
                                                         value={formData.pincode}
-                                                        onChange={e => setFormData({ ...formData, pincode: e.target.value.replace(/\D/g, '') })}
+                                                        onChange={e => updateFormField('pincode', e.target.value)}
+                                                        inputMode="numeric"
+                                                        pattern="[0-9]{6}"
                                                         className={`min-h-11 w-full px-3 py-2.5 input-theme rounded-lg text-sm outline-none focus:ring-2 focus:ring-opacity-50 ${errors.pincode ? 'ring-2 ring-red-300' : ''}`}
                                                         placeholder="560001"
                                                     />
@@ -899,10 +1030,21 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         />
                                                         <Truck size={20} className="text-green-600" />
                                                         <div>
-                                                            <p className="font-medium text-sm">Cash on Delivery</p>
-                                                            <p className="text-xs text-theme-secondary">Pay when you receive</p>
+                                                            <p className="font-medium text-sm">Cash on Delivery (COD)</p>
+                                                            <p className="text-xs text-theme-secondary">
+                                                                Pay cash when the courier delivers. Keep the exact order amount ready.
+                                                            </p>
                                                         </div>
                                                     </label>
+                                                )}
+                                                {!hasPaymentMethods && (
+                                                    <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+                                                        <AlertCircle size={18} className="mt-0.5 shrink-0" />
+                                                        <div>
+                                                            <p className="font-semibold">Payment methods unavailable</p>
+                                                            <p className="text-xs">This store needs a checkout payment method enabled before orders can be placed.</p>
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </div>
                                         </div>
@@ -915,7 +1057,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                         paymentMethod === 'online' ? handlePayment :
                                                             handleCODOrder
                                             }
-                                            disabled={isProcessing || (paymentMethod === 'online' && !razorpayLoaded)}
+                                            disabled={!hasPaymentMethods || isProcessing || (paymentMethod === 'online' && !razorpayLoaded)}
                                             className="flex min-h-11 w-full items-center justify-center gap-3 rounded-xl py-4 text-lg font-bold text-white shadow-lg disabled:opacity-60"
                                             style={{ backgroundColor: paymentMethod === 'cod' ? '#16a34a' : paymentMethod === 'paypal' ? '#0070ba' : paymentMethod === 'stripe' ? '#6366f1' : '#1a1a2e' }}
                                         >
@@ -925,7 +1067,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </>
                                             ) : paymentMethod === 'cod' ? (
                                                 <>
-                                                    <Truck size={22} /> Place Order (COD)
+                                                    <Truck size={22} /> Confirm COD order
                                                 </>
                                             ) : paymentMethod === 'paypal' ? (
                                                 <>
@@ -945,7 +1087,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         <div className="flex items-center justify-center gap-2 text-xs text-theme-muted">
                                             <Lock size={12} />
                                             <span>{
-                                                paymentMethod === 'cod' ? 'Secure Order Placement' :
+                                                paymentMethod === 'cod' ? 'COD order is confirmed server-side' :
                                                     paymentMethod === 'paypal' ? 'Secured by PayPal' :
                                                         paymentMethod === 'stripe' ? 'Secured by Stripe' :
                                                             'Secured by Razorpay'

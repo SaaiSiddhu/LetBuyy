@@ -54,6 +54,7 @@ export default function CartPage() {
                     </div>
                     <button
                         onClick={clearCart}
+                        aria-label="Clear all items from cart"
                         className="flex min-h-11 items-center px-2 text-sm hover:text-red-500 transition-colors"
                         style={{ color: 'var(--text-muted)' }}
                     >
@@ -107,6 +108,7 @@ export default function CartPage() {
                                             </div>
                                             <button
                                                 onClick={() => removeFromCart(item.id)}
+                                                aria-label={`Remove ${item.name} from cart`}
                                                 className="flex h-11 w-11 items-center justify-center text-card-muted hover:text-red-500 transition-colors"
                                             >
                                                 <X size={16} />
@@ -118,13 +120,15 @@ export default function CartPage() {
                                             <div className="flex items-center border border-card rounded-lg overflow-hidden">
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                                                    aria-label={`Decrease quantity of ${item.name}`}
                                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover transition-colors text-card"
                                                 >
                                                     <Minus size={12} />
                                                 </button>
-                                                <span className="text-xs font-semibold w-6 text-center text-card">{item.quantity}</span>
+                                                <span className="text-xs font-semibold w-6 text-center text-card" aria-live="polite">{item.quantity}</span>
                                                 <button
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                                                    aria-label={`Increase quantity of ${item.name}`}
                                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover transition-colors text-card"
                                                 >
                                                     <Plus size={12} />
@@ -169,6 +173,9 @@ export default function CartPage() {
                             >
                                 Proceed to Checkout <ArrowRight size={18} />
                             </Link>
+                            <p className="mt-3 text-center text-xs" style={{ color: 'var(--card-text-muted)' }}>
+                                Taxes, discounts, and final payment availability are verified during checkout.
+                            </p>
 
                             {/* Trust Badges */}
                             <div className="mt-4 pt-4 grid grid-cols-3 gap-2" style={{ borderTop: '1px solid var(--card-border)' }}>
