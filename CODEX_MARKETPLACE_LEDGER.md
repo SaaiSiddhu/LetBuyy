@@ -3,8 +3,8 @@
 ## CURRENT STATUS
 - Stage: STAGE 4 - WS3 Marketplace UX.
 - Branch: `stream/master-execution`.
-- Active gate: MK2 Theme Marketplace.
-- Active task: MK2.7 Screenshots of all states and GATE MK2 proof - commit/post-commit governance pending.
+- Active gate: MK2 Theme Marketplace complete.
+- Active task: None - WS4 Storefront SF2.1 is now active in the master execution ledger.
 - Scope lock: source edits are limited to `apps/app-marketplace/src/**` and `apps/theme-marketplace/src/**`; root execution ledgers are bookkeeping exceptions. No backend, DB, service, contract, governance, or shared UI package changes are allowed in this UI stage.
 
 ## MISSION CONTEXT READ
@@ -105,7 +105,7 @@
 - [SKIP - NEEDS BACKEND] Payment receipt, payment amount, provider status, and license issuance: the current theme marketplace UI does not expose settled payment-provider receipt/license data to the success page, so it renders explicit provider-confirmation placeholders instead of fabricated values. Required backend evidence: payment provider settlement/receipt endpoint and license issuance contract available to the theme marketplace success surface.
 
 ### MK2.7 Screenshots and MK2 Gate
-- Status: DONE WITH BACKEND-DATA SKIPS - pre-commit governance passed; commit and post-commit governance pending.
+- Status: DONE WITH BACKEND-DATA SKIPS / COMMIT `82ea1656`.
 - Source changes: replaced the generic Next 404 fallback for missing `/themes/[slug]` catalog rows with a designed `@letbuyy/ui` `PageHeader`, `Card`, and `EmptyState` state. Converted the dashboard installations thumbnail from an inline `backgroundImage` style to `next/image` with a package-icon fallback, keeping the change inside the theme marketplace UI boundary.
 - Scoped proof: source assertion for no `notFound`, no `as any`, and no inline `style={{...}}` in the touched theme marketplace surfaces -> PASS. `pnpm --filter @letbuyy/theme-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/theme-marketplace lint` -> PASS with 33 pre-existing warnings and no errors. `pnpm --filter @letbuyy/theme-marketplace exec next build --webpack` -> PASS; dynamic route output includes `/themes`, `/themes/[slug]`, `/checkout`, `/checkout/success`, `/install`, and `/dashboard/installations`.
 - Gate screenshot/overflow proof: production-server Playwright proof `.tmp/ws3-mk2-gate-proof.mjs` used a local synthetic merchant cookie for protected states and captured desktop/mobile screenshots for listing default, filtered listing, autocomplete empty, detail missing-data, checkout no-theme, purchase success/provider placeholders, install missing-theme, and installations empty. Assertions verified required rendered text and no horizontal overflow: desktop body/document scroll width 1440 with viewport 1440 for all eight states; mobile body/document scroll width 390 with viewport 390 for all eight states.
@@ -155,3 +155,4 @@
 - 2026-06-04T02:45:15Z [MK2.6 post-commit governance] Post-commit `pnpm run validate:governance` after `59f9626d` -> PASS (128/128 validators).
 - 2026-06-04T03:02:30Z [MK2.7 scoped] Source assertion for no generic `notFound`, no `as any`, and no inline React styles in the touched theme marketplace surfaces -> PASS. `pnpm --filter @letbuyy/theme-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/theme-marketplace lint` -> PASS with 33 pre-existing warnings and no errors. `pnpm --filter @letbuyy/theme-marketplace exec next build --webpack` -> PASS. Production-server Playwright gate proof for 8 states x desktop/mobile -> PASS with no horizontal overflow.
 - 2026-06-04T03:05:00Z [MK2.7/GATE MK2 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T03:08:00Z [MK2.7/GATE MK2 post-commit governance] Post-commit `pnpm run validate:governance` after `82ea1656` -> PASS (128/128 validators).
