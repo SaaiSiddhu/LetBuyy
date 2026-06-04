@@ -7,17 +7,19 @@
 import { useState } from 'react';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import {
-    User as UserIcon, Lock, Loader2, Check, Eye, EyeOff, Save,
+    User as UserIcon, Lock, Loader2, Check, Eye, EyeOff, Save, AlertCircle, Mail, Phone,
 } from '@letbuyy/ui';
 
 export default function SettingsPage() {
-    const { customer } = useCustomerAuth();
+    const { customer, refreshSession } = useCustomerAuth();
 
     // Profile edit state
     const [fullName, setFullName] = useState(customer?.fullName || '');
     const [phone, setPhone] = useState('');
+    const [acceptsMarketing, setAcceptsMarketing] = useState(false);
     const [profileSaving, setProfileSaving] = useState(false);
     const [profileSaved, setProfileSaved] = useState(false);
+    const [profileError, setProfileError] = useState('');
 
     // Password state
     const [currentPassword, setCurrentPassword] = useState('');
@@ -31,17 +33,31 @@ export default function SettingsPage() {
 
     const handleProfileSave = async (e: React.FormEvent) => {
         e.preventDefault();
+        setProfileError('');
+        setProfileSaved(false);
+
+        if (!fullName.trim()) {
+            setProfileError('Full name is required.');
+            return;
+        }
+
         setProfileSaving(true);
         try {
             const res = await fetch('/api/customer/profile', {
-                method: 'PUT',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ fullName, phone }),
+                body: JSON.stringify({ fullName: fullName.trim(), phone: phone.trim(), acceptsMarketing }),
             });
             if (res.ok) {
+                await refreshSession();
                 setProfileSaved(true);
                 setTimeout(() => setProfileSaved(false), 3000);
+            } else {
+                const data = await res.json();
+                setProfileError(data.error || 'Failed to update profile.');
             }
+        } catch {
+            setProfileError('Network error. Please try again.');
         } finally {
             setProfileSaving(false);
         }
@@ -95,16 +111,29 @@ export default function SettingsPage() {
             <div className="space-y-6">
                 {/* Profile Info */}
                 <form onSubmit={handleProfileSave} className="rounded-2xl border p-5" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
-                    <h2 className="font-semibold mb-4 flex items-center gap-2">
-                        <UserIcon size={18} />
-                        Profile
-                    </h2>
+                    <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                        <div>
+                            <h2 className="font-semibold flex items-center gap-2">
+                                <UserIcon size={18} />
+                                Profile
+                            </h2>
+                            <p className="mt-1 text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                Keep contact details current for order updates and support.
+                            </p>
+                        </div>
+                        {profileSaved && (
+                            <span className="inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold text-green-700 bg-green-50">
+                                <Check size={14} /> Saved
+                            </span>
+                        )}
+                    </div>
                     <div className="space-y-3">
                         <div>
                             <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, #6B7280)' }}>
                                 Email Address
                             </label>
-                            <p className="text-sm font-medium px-4 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}>
+                            <p className="flex items-center gap-2 text-sm font-medium px-4 py-2.5 rounded-xl" style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}>
+                                <Mail size={16} style={{ color: 'var(--text-secondary, #6B7280)' }} />
                                 {customer?.email}
                             </p>
                         </div>
@@ -123,14 +152,37 @@ export default function SettingsPage() {
                             <label className="text-xs font-medium block mb-1" style={{ color: 'var(--text-secondary, #6B7280)' }}>
                                 Phone Number
                             </label>
-                            <input
-                                value={phone}
-                                onChange={e => setPhone(e.target.value)}
-                                placeholder="Enter phone number"
-                                className="w-full px-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2"
-                                style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
-                            />
+                            <div className="relative">
+                                <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, #6B7280)' }} />
+                                <input
+                                    value={phone}
+                                    onChange={e => setPhone(e.target.value.replace(/[^\d+\-\s]/g, ''))}
+                                    placeholder="+91 98765 43210"
+                                    inputMode="tel"
+                                    className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm border outline-none focus:ring-2"
+                                    style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
+                                />
+                            </div>
                         </div>
+                        <label className="flex items-start gap-3 rounded-xl border p-3 text-sm" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+                            <input
+                                type="checkbox"
+                                checked={acceptsMarketing}
+                                onChange={e => setAcceptsMarketing(e.target.checked)}
+                                className="mt-1 h-4 w-4 rounded border-gray-300"
+                            />
+                            <span>
+                                <span className="block font-medium">Send me store updates</span>
+                                <span style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                    Receive restock, order, and offer updates from this store.
+                                </span>
+                            </span>
+                        </label>
+                        {profileError && (
+                            <p className="flex items-center gap-1 text-sm text-red-500">
+                                <AlertCircle size={14} /> {profileError}
+                            </p>
+                        )}
                         <button
                             type="submit"
                             disabled={profileSaving}

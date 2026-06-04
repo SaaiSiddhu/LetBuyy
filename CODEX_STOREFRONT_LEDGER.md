@@ -3,8 +3,8 @@
 ## CURRENT STATUS
 - Stage: STAGE 4 - WS4 Storefront.
 - Branch: `stream/master-execution`.
-- Active gate: SF1 Component Grammar.
-- Active task: SF1 gate validation and commit.
+- Active gate: SF3 Customer Account Polish.
+- Active task: SF3 gate validation and commit.
 - Scope lock: source edits are limited to `apps/storefront-runtime/src/**`; root execution ledgers are bookkeeping exceptions. No services, packages, database, governance source, or other app roots may be changed in WS4.
 
 ## MISSION CONTEXT READ
@@ -78,9 +78,53 @@
 - Status: PASS.
 - Gate proof: storefront grammar, skeletons, and empty states are implemented; scoped storefront checks/build/screenshots are green; generated-artifact cleanup scan was empty; full governance passed 128/128.
 
+## SF3 - CUSTOMER ACCOUNT POLISH
+
+### SF3.1 Profile Page / Account Settings
+- Status: DONE.
+- Source changes:
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/account/settings/page.tsx` to call the existing `/api/customer/profile` `PATCH` contract instead of an unsupported `PUT`.
+  - Added profile save error/success states, required full-name validation, session refresh after save, phone input formatting, and the existing API-supported marketing preference toggle.
+  - Kept password change behavior on the existing customer set-password route while improving the profile form layout and account copy.
+
+### SF3.2 Order History
+- Status: DONE WITH BACKEND-DATA SKIP.
+- Source changes:
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/account/orders/page.tsx` with expandable order details, timeline steps, item summaries, date/status display, and accessible detail toggles using only fields already returned by the existing customer orders API.
+- [SKIP - NEEDS BACKEND] Live customer order-row screenshot with real status timeline and order details. Required backend evidence: authenticated customer session with at least one order row including status, created date, total, and item details from `/api/customer/orders`.
+
+### SF3.3 Addresses
+- Status: DONE WITH BACKEND-DATA SKIP.
+- Source changes:
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/account/addresses/page.tsx` with India phone/PIN input constraints and visible 6-digit PIN helper copy.
+  - Preserved existing address CRUD endpoints and did not alter API behavior.
+- [SKIP - NEEDS BACKEND] Real PIN-code-to-city/state lookup. Required backend evidence: a governed pincode lookup contract returning city/state/district data for Indian PIN codes; until then, city/state remain merchant/customer-entered and the UI shows a clear backend-needed note.
+
+### SF3.4 Wishlist
+- Status: DONE WITH BACKEND-DATA SKIP.
+- Source changes:
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/account/wishlist/page.tsx` to avoid fabricated product names. Saved wishlist IDs now render as honest saved-product cards with a backend-needed detail note while preserving remove and product-link behavior.
+- [SKIP - NEEDS BACKEND] Hydrated wishlist product details. Required backend evidence: customer wishlist API payload with product names/images/prices or a storefront batch product lookup for the saved product ids.
+
+### GATE SF3 Customer Account Polish
+- Status: PASS WITH BACKEND-DATA SKIPS.
+- Scoped proof:
+  - `pnpm install --frozen-lockfile --force` -> PASS after generated cleanup removed workspace links; lockfile unchanged.
+  - `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS.
+  - `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors.
+  - `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; route output includes customer account settings/orders/addresses/wishlist plus checkout/order/storefront routes.
+  - Production server with proof-only `CUSTOMER_SESSION_SECRET` -> PASS for authenticated screenshot proof.
+  - Escalated `node .tmp/ws4-sf3-account-proof.mjs` -> PASS against `http://localhost:3003`; asserted authenticated settings/profile, address form with PIN backend-needed helper, orders empty state, wishlist empty state, and no horizontal overflow.
+  - Screenshot paths: `.tmp/screenshots/ws4-sf3/sf3-settings-mobile.png`, `.tmp/screenshots/ws4-sf3/sf3-address-form-mobile.png`, `.tmp/screenshots/ws4-sf3/sf3-orders-empty-mobile.png`, `.tmp/screenshots/ws4-sf3/sf3-wishlist-empty-mobile.png`, `.tmp/screenshots/ws4-sf3/sf3-settings-desktop.png`.
+  - Visual review completed for settings mobile/desktop, address form mobile, orders empty mobile, and wishlist empty mobile; no text overlap, clipping, or incoherent horizontal overflow found.
+- Gate proof: customer account profile/settings, order-history UI, addresses, and wishlist are polished within available frontend/API data. Generated-artifact cleanup scan was empty and full governance passed 128/128. Live order-row detail screenshots, real pincode lookup, and hydrated wishlist product cards remain backend-data skips.
+
 ## VALIDATOR LEDGER
 - 2026-06-04T03:08:00Z [WS3 predecessor gate] Post-commit `pnpm run validate:governance` after `82ea1656` -> PASS (128/128 validators). WS4 started from a green governance baseline.
 - 2026-06-04T03:33:58Z [SF2 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-04T03:36:45Z [SF2 post-commit governance] Post-commit `pnpm run validate:governance` after `76d3bee3` -> PASS (128/128 validators).
 - 2026-06-04T04:00:07Z [SF1 scoped gate] `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf1-grammar-proof.mjs` -> PASS with desktop/mobile screenshots and no overflow failures.
 - 2026-06-04T04:01:59Z [SF1 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T04:05:38Z [SF1 post-commit governance] Post-commit `pnpm run validate:governance` after `79ecd20c` -> PASS (128/128 validators).
+- 2026-06-04T04:14:42Z [SF3 scoped gate] `pnpm install --frozen-lockfile --force` -> PASS with lockfile unchanged; `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf3-account-proof.mjs` -> PASS with authenticated account screenshots and no overflow failures.
+- 2026-06-04T04:16:29Z [SF3 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).

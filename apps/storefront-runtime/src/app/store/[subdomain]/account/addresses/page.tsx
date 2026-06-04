@@ -44,6 +44,7 @@ export default function AddressesPage() {
     const [form, setForm] = useState(EMPTY_FORM);
     const [saving, setSaving] = useState(false);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const pinCodeComplete = form.postal_code.length === 6;
 
     const fetchAddresses = useCallback(async () => {
         try {
@@ -284,8 +285,9 @@ export default function AddressesPage() {
                             />
                             <input
                                 value={form.phone}
-                                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                                placeholder="Phone Number"
+                                onChange={e => setForm(f => ({ ...f, phone: e.target.value.replace(/[^\d+\-\s]/g, '') }))}
+                                placeholder="+91 98765 43210"
+                                inputMode="tel"
                                 className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
                                 style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
                             />
@@ -326,8 +328,11 @@ export default function AddressesPage() {
                                 <input
                                     required
                                     value={form.postal_code}
-                                    onChange={e => setForm(f => ({ ...f, postal_code: e.target.value }))}
+                                    onChange={e => setForm(f => ({ ...f, postal_code: e.target.value.replace(/\D/g, '').slice(0, 6) }))}
                                     placeholder="PIN Code *"
+                                    inputMode="numeric"
+                                    pattern="[0-9]{6}"
+                                    maxLength={6}
                                     className="w-full px-4 py-3 rounded-xl text-sm border outline-none focus:ring-2"
                                     style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
                                 />
@@ -339,6 +344,13 @@ export default function AddressesPage() {
                                     style={{ borderColor: 'var(--border, #E5E7EB)', backgroundColor: 'var(--input-bg, #f9fafb)' }}
                                 />
                             </div>
+                            {form.postal_code.length > 0 && (
+                                <p className="text-xs" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                                    {pinCodeComplete
+                                        ? 'PIN code captured. City/state lookup needs backend support, so confirm those fields before saving.'
+                                        : 'Enter a 6-digit India PIN code.'}
+                                </p>
+                            )}
 
                             <label className="flex items-center gap-2 cursor-pointer">
                                 <input
