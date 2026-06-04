@@ -1,8 +1,9 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { InstalledAppsGrid } from '@/components/InstalledAppsGrid';
 import { LetbuyyApiError } from '@letbuyy/api-client';
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
-import { Package, Settings, Trash2 } from '@letbuyy/ui';
+import { Package } from '@letbuyy/ui';
 import Link from 'next/link';
 
 export const metadata = {
@@ -40,46 +41,7 @@ export default async function MyAppsPage() {
                             <p>Please sign in to view your installed apps.</p>
                         </div>
                     ) : installedApps.length > 0 ? (
-                        <div className="my-apps-grid">
-                            {installedApps.map((installation) => {
-                                const app = installation.marketplace_apps;
-                                const appName = app?.name || 'Installed app';
-                                return (
-                                    <div key={installation.id} className="installed-app-card">
-                                        <div className="installed-app-icon">
-                                            {app?.icon_url ? (
-                                                <img src={app.icon_url} alt={appName} style={{
-                                                    width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover'
-                                                }} />
-                                            ) : (
-                                                <div style={{
-                                                    width: '100%', height: '100%',
-                                                    background: 'linear-gradient(135deg, var(--primary), var(--accent-cyan))',
-                                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                                    color: 'white', fontSize: 20, fontWeight: 800, borderRadius: 12,
-                                                }}>
-                                                    {appName.charAt(0)}
-                                                </div>
-                                            )}
-                                        </div>
-                                        <div className="installed-app-info">
-                                            <div className="installed-app-name">{appName}</div>
-                                            <div className="installed-app-status">
-                                                {installation.status === 'active' ? '● Active' : `○ ${installation.status || 'Active'}`}
-                                            </div>
-                                        </div>
-                                        <div className="installed-app-actions">
-                                            <button className="installed-app-btn">
-                                                <Settings size={14} />
-                                            </button>
-                                            <button className="installed-app-btn danger">
-                                                <Trash2 size={14} />
-                                            </button>
-                                        </div>
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <InstalledAppsGrid installations={installedApps} />
                     ) : (
                         <div className="empty-state">
                             <div className="empty-state-icon">
@@ -87,7 +49,7 @@ export default async function MyAppsPage() {
                             </div>
                             <h3>No apps installed</h3>
                             <p>Browse our marketplace to find apps that can help grow your store.</p>
-                            <Link href="/" className="dev-portal-cta" style={{ display: 'inline-flex' }}>
+                            <Link href="/" className="dev-portal-cta empty-state-action">
                                 Browse Apps
                             </Link>
                         </div>

@@ -2146,6 +2146,19 @@ body {
     object-fit: cover;
 }
 
+.installed-app-initial {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+    color: white;
+    font-size: 20px;
+    font-weight: 800;
+}
+
 .installed-app-info {
     flex: 1;
     min-width: 0;
@@ -2168,7 +2181,12 @@ body {
 }
 
 .installed-app-btn {
-    padding: 6px 12px;
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 500;
@@ -2182,6 +2200,11 @@ body {
 .installed-app-btn:hover {
     border-color: var(--primary-light);
     color: var(--primary);
+}
+
+.installed-app-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
 }
 
 .installed-app-btn.danger {
@@ -2220,6 +2243,10 @@ body {
     color: var(--text-tertiary);
     max-width: 400px;
     margin: 0 auto 20px;
+}
+
+.empty-state-action {
+    display: inline-flex;
 }
 
 /* ======================================
