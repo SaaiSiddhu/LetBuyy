@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import type { Theme, ThemeCategory, ThemePricingType } from '@letbuyy/theme-engine';
@@ -7,6 +7,7 @@ import {
     Card,
     Check,
     Download,
+    EmptyState,
     ExternalLink,
     Eye,
     Heart,
@@ -215,7 +216,56 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ThemeDetailPage({ params }: Props) {
     const { slug } = await params;
     const record = await ThemeService.getThemeBySlug(slug);
-    if (!record) notFound();
+    if (!record) {
+        return (
+            <Page className="theme-marketplace-page">
+                <PageHeader
+                    title="Theme not found"
+                    eyebrow="Theme marketplace"
+                    description="This theme is not available in the current catalog data."
+                    identity="themes"
+                    showBreadcrumbs
+                    showDescription
+                    showEyebrow
+                    breadcrumbs={[
+                        { label: 'Themes', href: '/themes' },
+                        { label: 'Theme not found' },
+                    ]}
+                    primaryAction={{
+                        label: 'Browse themes',
+                        href: '/themes',
+                        icon: <Package aria-hidden="true" />,
+                    }}
+                />
+
+                <PageContent>
+                    <Card className="flex min-h-[360px] items-center justify-center p-[var(--lb-density-card-padding)]">
+                        <EmptyState
+                            kind="themes"
+                            title="Theme catalog data is not available yet"
+                            body="The marketplace can render this detail page once the existing theme catalog API returns a matching theme slug. Seed or connect theme data before opening a theme detail."
+                            primaryAction={(
+                                <Link
+                                    href="/themes"
+                                    className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-primary-border)] bg-[var(--lb-component-button-primary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-primary-text)] transition-colors hover:bg-[var(--lb-component-button-primary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                >
+                                    Browse themes
+                                </Link>
+                            )}
+                            secondaryAction={(
+                                <Link
+                                    href="/pricing"
+                                    className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-secondary-text)] transition-colors hover:bg-[var(--lb-component-button-secondary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                >
+                                    View pricing
+                                </Link>
+                            )}
+                        />
+                    </Card>
+                </PageContent>
+            </Page>
+        );
+    }
 
     const theme = normalizeThemeRecord(record);
     const isFree = theme.letbuyy_pricing_type === 'free';

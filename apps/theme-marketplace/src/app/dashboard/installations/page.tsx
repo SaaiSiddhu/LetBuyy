@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import Link from 'next/link';
 import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
@@ -86,10 +87,21 @@ export default async function InstallationsPage({ searchParams }: InstallationsP
                             <div key={inst.id} className="glass-card p-5">
                                 <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                                     {/* Thumbnail */}
-                                    <div
-                                        className="w-20 h-14 rounded-lg bg-cover bg-center flex-shrink-0 border border-border"
-                                        style={{ backgroundImage: `url(${theme.thumbnail_url || ''})` }}
-                                    />
+                                    <div className="relative h-14 w-20 flex-shrink-0 overflow-hidden rounded-lg border border-border bg-surface">
+                                        {theme.thumbnail_url ? (
+                                            <Image
+                                                src={theme.thumbnail_url}
+                                                alt={`${theme.name || 'Installed theme'} thumbnail`}
+                                                fill
+                                                sizes="80px"
+                                                className="object-cover"
+                                            />
+                                        ) : (
+                                            <div className="flex h-full w-full items-center justify-center">
+                                                <Package className="h-5 w-5 text-text-subtle" aria-hidden="true" />
+                                            </div>
+                                        )}
+                                    </div>
 
                                     {/* Info */}
                                     <div className="flex-grow min-w-0">
