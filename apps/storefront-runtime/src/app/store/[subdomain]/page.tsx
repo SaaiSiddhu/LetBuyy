@@ -51,7 +51,7 @@ export default async function StorePage({
             const previewStore = previewToken
                 ? await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken)
                 : null;
-            return (previewStore || await StoreService.getStoreBySubdomain(subdomain)) as never;
+            return (previewStore || await StoreService.getStoreBySubdomainAnyStatus(subdomain)) as never;
         },
         loadTemplate: async (store) => (store as never as { templateConfig: never }).templateConfig,
     });
