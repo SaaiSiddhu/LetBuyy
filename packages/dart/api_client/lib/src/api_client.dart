@@ -634,6 +634,17 @@ class ThemesApi {
     ApiRequestOptions? options,
   }) => list(query: query, options: options);
 
+  Future<JsonMap> catalogPayload({
+    QueryParams? query,
+    ApiRequestOptions? options,
+  }) async {
+    final body = await _client.request(
+      '/themes',
+      options: _mergeOptions(options, query: query),
+    );
+    return asJsonMap(body);
+  }
+
   Future<JsonMap> get(String slug, {ApiRequestOptions? options}) => _client
       .requestJson('/themes/${_encodePathSegment(slug)}', options: options);
 

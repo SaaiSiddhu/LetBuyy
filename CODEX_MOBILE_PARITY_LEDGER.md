@@ -2,7 +2,7 @@
 
 ## CURRENT STATUS
 - Stage: STAGE 5 - WS8 Mobile Parity.
-- Active gate: M5 legacy deletion commit pending.
+- Active gate: M6 theme editor unification.
 - Scope lock: mobile source work is limited to `apps/mobile/merchant-app/**` and `packages/dart/**` unless the active mission explicitly allows a supporting config/documentation file. Web apps, backend services, database, package-core contracts, shared TypeScript packages, and governance validators remain out of scope for WS8 source changes.
 
 ## M0 BASELINE PROOF
@@ -109,7 +109,7 @@
   - `rg "1250|\+8%|\+14%|\+23%|\+2\.1%|₹5\.2K|₹1\.5K|Product A|Product B|Product C|cname\.vercel-dns\.com" ...` -> PASS with no matches in the touched dashboard, analytics, revenue chart, or domain settings files.
 
 ## M5 LEGACY DELETION
-- Status: DONE / PRE-COMMIT GOVERNANCE PASSED / COMMIT PENDING.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED WITH HUMAN ANDROID-EMULATOR SKIP.
 - Source changes:
   - Removed merchant app Firebase initialization and generated options, replaced the legacy Supabase app config with a provider-neutral `AppConfig`, and removed the app-local `supabase_config.dart` file.
   - Removed routed legacy marketing/download surfaces from the active merchant app route table. Deleted `apps/mobile/merchant-app/lib/screens/download/download_screen.dart`; archived the modified landing tree from `apps/mobile/merchant-app/lib/screens/landing/**` to `docs/archive/flutter-legacy/merchant-app-landing/**` instead of force-deleting user-owned local edits.
@@ -138,6 +138,31 @@
   - Escalated `flutter build ios --no-codesign --debug --dart-define-from-file=dart-defines/local.json` in `apps/mobile/merchant-app` -> PASS, built `build/ios/iphoneos/Runner.app`.
   - Escalated `flutter run -d 720BBB11-3F5B-4257-930B-4926520FF590 --debug --dart-define-from-file=dart-defines/local.json` -> PASS after pruning unused `razorpay_flutter`; app built, synced to the iPhone 16e simulator, and exposed Dart VM/DevTools service URLs. Leftover smoke-test processes were terminated and verified.
 
+## M6 THEME EDITOR UNIFICATION
+- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Source changes:
+  - Added `ThemesApi.catalogPayload` to the shared Dart API client so mobile can preserve store-scoped `/v1/themes` metadata such as `current_theme` while still using the package API surface.
+  - Registered `ThemeService` in the merchant app provider graph and rewired it to typed `ApiClient.themes` methods for catalog, install, editor load, draft save/delete, preview-session, releases, rollback, publish, and duplicate-draft behavior.
+  - Replaced the Theme tab's local `StoreThemeModel.defaultThemes` preset editor with a real theme library over `/v1/themes`, including current theme, draft status, preview, duplicate draft, publish, discard draft, and install actions.
+  - Rewired `SectionEditorScreen` to load editor state from `/v1/themes/:slug/editor`, preserve the loaded theme bundle map, normalize theme-engine `sections.header/template/footer` slots into Flutter section models, and save edits through `/v1/themes/:slug/editor/draft`.
+  - Removed the editor's old `StoreService.updateStore` and `updateHeaderSettings` mutation paths for theme edits; all section/header edits now remain local until saved as a theme draft.
+  - Replaced `WebsitePreview`'s hardcoded Flutter `preview_sections/*` renderer with a `webview_flutter` storefront preview pointed at `/preview` with `theme_preview_token`, `viewport`, and `settings_data_b64`, while preserving device-frame controls and section selection/move/add overlays.
+  - Added `StoreMainScreen.navigateToEditor()` so Theme tab actions can jump into the existing Editor tab without introducing a parallel route.
+- Scoped proof:
+  - Escalated `dart format` over touched Dart files -> PASS.
+  - Source scan for `preview_sections`, `PreviewHeader`, `PreviewHero`, `PreviewProducts`, `PreviewFooter`, `PreviewAbout`, `PreviewTestimonials`, and `PreviewNewsletter` in the updated preview/editor/theme files -> PASS with no matches.
+  - Source scan for old `StoreService.updateStore`, `updateHeaderSettings`, local `StoreThemeModel`, and raw theme endpoint strings in the updated M6 files -> PASS with no matches.
+  - Escalated `flutter analyze apps/mobile/merchant-app` -> PASS with no issues.
+  - Escalated `dart analyze packages/dart/api_client` -> PASS with no issues.
+  - Escalated `flutter test apps/mobile/merchant-app` -> PASS: placeholder widget test passed.
+  - Escalated `flutter build apk --debug` in `apps/mobile/merchant-app` -> PASS, built `build/app/outputs/flutter-apk/app-debug.apk`.
+  - Escalated `flutter build ios --debug --no-codesign` in `apps/mobile/merchant-app` -> PASS, built `build/ios/iphoneos/Runner.app`.
+  - Escalated `flutter devices` -> PASS; detected iPhone 16e simulator, macOS, and Chrome, but no Android device.
+  - Escalated `flutter emulators` -> PASS; configured Android AVD `Medium_Phone_API_36.1` exists.
+  - Escalated `flutter emulators --launch Medium_Phone_API_36.1` -> LOCAL DEVICE BLOCKER; emulator reported `The Android emulator exited with code 1 during startup`.
+  - Escalated `flutter run -d 720BBB11-3F5B-4257-930B-4926520FF590 --debug --pid-file /private/tmp/letbuyy-m6-ios.pid` -> PASS; app built, synced, and launched on the iPhone 16e simulator with VM service at `http://127.0.0.1:57506/dMDjtzgAdn4=/`.
+  - Escalated `xcrun simctl io 720BBB11-3F5B-4257-930B-4926520FF590 screenshot /private/tmp/letbuyy-m6-ios-smoke.png` -> PASS; screenshot shows the merchant app launched to the auth screen as expected without a seeded mobile session.
+
 ## SKIPPED - NEEDS HUMAN
 - Staging Supabase project URL and anon key. Required: governed staging `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_STAGING_*` placeholders.
 - Production Supabase project URL and anon key. Required: governed production `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_PRODUCTION_*` placeholders.
@@ -145,6 +170,7 @@
 - iOS device signing, simulator/device release proof, and TestFlight/App Store upload. Required: Apple Developer team, signing certificate, provisioning profile, bundle identifier approval, and human permission to perform signed distribution. The no-codesign compile proof passed.
 - M4 live subscription pricing/copy and paid plan activation. Required: approved plan names/prices/features/commission policy, Razorpay subscription checkout credentials, signed Razorpay callback payloads, and permission to run provider-side payment attempts. Code now points to gateway `/payments/subscription*` contracts but does not assert unapproved pricing as final.
 - M5 Android emulator smoke. Required: a working Android emulator/device on the host. The configured AVD `Medium_Phone_API_36.1` exited with code 1 during startup on two attempts before Flutter could run against it; Android debug APK build passed.
+- M6 Android emulator smoke. Required: a working Android emulator/device on the host. `flutter devices` detected no Android device, and `flutter emulators --launch Medium_Phone_API_36.1` reported `The Android emulator exited with code 1 during startup`; Android debug APK build passed.
 
 ## SKIPPED - NEEDS BACKEND
 - M2 live mobile merchant login against protected gateway endpoints. Current gateway auth accepts Supabase bearer tokens or signed internal SSO/session headers for `lb_session`; a mobile app must not possess the internal signing secret, and raw `lb_session` / cookie transport is not accepted by protected `/v1` merchant routes. Required: a mobile-safe gateway session bridge that validates `lb_session` without exposing internal signing secrets, plus refresh/expiry semantics for mobile clients.
@@ -153,6 +179,7 @@
 - M4 traffic-source and daily revenue chart data. Required: gateway analytics endpoints for source attribution and periodized daily revenue/visitor series; mobile now renders explicit placeholders instead of fabricated sources or chart values.
 - M4 custom-domain verification. Required: gateway-owned domain ownership verification, TXT/CNAME record issuance, SSL activation status, and takeover-prevention workflow before mobile can verify or activate custom domains.
 - M4 store selected-product membership/import persistence. Required: gateway-supported store product-selection contract or field in `UpdateStoreSchema`; current gateway `PATCH /stores/:id` rejects unsupported `selected_product_ids`, so import/remove membership remains backend-gated.
+- M6 protected real-stack theme parity proof. Required: the M2 mobile-safe gateway session bridge plus a seeded mobile merchant session/store/theme draft. The M6 code now calls protected `/v1/themes` editor/draft/preview/publish contracts, but live phone-edited theme parity with web/storefront cannot be proven from the app because the simulator only reaches the auth screen without a backend-accepted mobile session.
 
 ## VALIDATOR LEDGER
 - 2026-06-04T05:16:22Z [M0 baseline] Flutter version/pub get/analyze/test/Android debug build/iOS no-codesign build all passed as recorded above.
@@ -172,3 +199,6 @@
 - 2026-06-04T07:00:10Z [M4 post-commit governance] Post-commit `pnpm run validate:governance` after `7a310e1b` -> PASS (128/128 validators). M4 is complete with backend/human skips; advancing to M5 legacy deletion.
 - 2026-06-04T07:27:50Z [M5 scoped proof] Legacy deletion proof complete: active app/package scans removed Firebase/Firestore/Firebase plugin/Supabase/hardcoded legacy project/unused native Razorpay references; active route table no longer imports landing/download; `flutter analyze` passed for merchant app, core, models, services, and UI kit; model and app tests passed; Android debug APK build passed; iOS no-codesign build passed; iOS simulator smoke passed on iPhone 16e after pruning unused `razorpay_flutter`; Android emulator smoke is `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup.
 - 2026-06-04T07:29:52Z [M5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M5 gate result: PASS WITH HUMAN ANDROID-EMULATOR SKIP.
+- 2026-06-04T07:32:49Z [M5 post-commit governance] Post-commit `pnpm run validate:governance` after `25824c40` -> PASS (128/128 validators). M5 is complete; advancing to M6 theme editor unification.
+- 2026-06-04T07:54:01Z [M6 scoped proof] Theme editor unification proof complete: formatter, old mock-preview/store-mutation scans, merchant app analyze/test, shared API-client analyze, Android debug APK build, iOS no-codesign build, and iOS simulator launch+screenshot passed. Android emulator runtime smoke remains `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup. Protected live theme parity remains `[SKIP - NEEDS BACKEND]` until the M2 mobile-safe gateway session bridge exists.
+- 2026-06-04T07:56:34Z [M6 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M6 gate result: PASS WITH BACKEND/HUMAN SKIPS.

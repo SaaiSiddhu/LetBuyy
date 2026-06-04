@@ -11,6 +11,7 @@ import 'services/storage_service.dart';
 import 'services/product_service.dart';
 import 'services/order_service.dart';
 import 'services/analytics_service.dart';
+import 'services/theme_service.dart';
 import 'services/theme_provider.dart';
 
 void main() async {
@@ -61,6 +62,9 @@ void main() async {
         ),
         ChangeNotifierProvider<AnalyticsService>(
           create: (_) => AnalyticsService(api: apiClient),
+        ),
+        ChangeNotifierProvider<ThemeService>(
+          create: (_) => ThemeService(api: apiClient),
         ),
 
         // Storage

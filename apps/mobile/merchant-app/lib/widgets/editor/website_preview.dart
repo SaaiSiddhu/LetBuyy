@@ -1,33 +1,27 @@
 import 'package:flutter/material.dart';
-import '../../theme/app_theme_colors.dart';
-import 'package:flutter/services.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
-import '../../models/store_model.dart';
-import 'preview_sections/preview_header.dart';
-import 'preview_sections/preview_hero.dart';
-import 'preview_sections/preview_products.dart';
-import 'preview_sections/preview_footer.dart';
-import 'preview_sections/preview_about.dart';
-import 'preview_sections/preview_testimonials.dart';
-import 'preview_sections/preview_newsletter.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
-/// Website-like preview of the store
-/// Renders sections in order with tap-to-edit overlays
+import '../../models/store_model.dart';
+
+/// Storefront-backed preview of the active theme draft.
 class WebsitePreview extends StatelessWidget {
   final StoreModel? store;
   final List<SectionModel> sections;
+  final String? previewUrl;
   final String? selectedSectionId;
   final ValueChanged<SectionModel>? onSectionTap;
   final ValueChanged<SectionModel>? onSectionUpdate;
   final void Function(SectionModel section, int direction)? onMoveSection;
   final VoidCallback? onAddSection;
-  final double zoomLevel; // Browser-like zoom level (0.5 to 1.5)
-  final String deviceMode; // 'phone', 'tablet', 'laptop'
+  final double zoomLevel;
+  final String deviceMode;
 
   const WebsitePreview({
     super.key,
     this.store,
     required this.sections,
+    this.previewUrl,
     this.selectedSectionId,
     this.onSectionTap,
     this.onSectionUpdate,
@@ -39,307 +33,259 @@ class WebsitePreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    // Sort sections: header first, footer last, rest by order
-    final sortedSections = List<SectionModel>.from(sections);
-    sortedSections.sort((a, b) {
-      if (a.type == SectionType.header) return -1;
-      if (b.type == SectionType.header) return 1;
-      if (a.type == SectionType.footer) return 1;
-      if (b.type == SectionType.footer) return -1;
-      return a.order.compareTo(b.order);
-    });
+    final selectedSection = _selectedSection;
 
-    // Filter visible sections
-    final visibleSections = sortedSections.where((s) => s.isVisible).toList();
-
-    // Browser-like zoom: render at virtual width, then scale to fit frame
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final frameWidth = constraints.maxWidth;
-        // At 50% zoom: render at 2x width, scale down = smaller elements
-        // At 100% zoom: render at 1x width = normal
-        // At 150% zoom: render at 0.67x width, scale up = larger elements
-        final virtualWidth = frameWidth / zoomLevel;
-        
-        return Container(
-          decoration: const BoxDecoration(color: Colors.white),
-          clipBehavior: Clip.antiAlias,
-          child: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: SizedBox(
-              width: frameWidth, // Always fill the frame width
-              child: FittedBox(
-                fit: BoxFit.fitWidth,
-                alignment: Alignment.topCenter,
-                child: SizedBox(
-                  width: virtualWidth,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      for (int i = 0; i < visibleSections.length; i++) ...[
-                        _SectionWrapper(
-                          section: visibleSections[i],
-                          store: store,
-                          isSelected: visibleSections[i].id == selectedSectionId,
-                          onTap: () => onSectionTap?.call(visibleSections[i]),
-                          onDragUp: () => onMoveSection?.call(visibleSections[i], -1),
-                          onDragDown: () => onMoveSection?.call(visibleSections[i], 1),
-                          child: _SectionErrorBoundary(
-                            child: _buildSectionPreview(visibleSections[i]),
-                          ),
-                        ),
-                        // Add thin line button between sections (not after footer)
-                        if (visibleSections[i].type != SectionType.footer && 
-                            i < visibleSections.length - 1)
-                          _AddSectionLine(onTap: onAddSection),
-                      ],
-                    ],
-                  ),
-                ),
+    return Container(
+      decoration: const BoxDecoration(color: Colors.white),
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          if (previewUrl != null && previewUrl!.isNotEmpty)
+            _StorefrontPreviewWebView(
+              url: previewUrl!,
+              zoomLevel: zoomLevel,
+              deviceMode: deviceMode,
+            )
+          else
+            _PreviewUnavailable(store: store),
+          if (selectedSection != null)
+            Positioned(
+              left: 8,
+              right: 8,
+              top: 8,
+              child: _SelectedSectionOverlay(
+                section: selectedSection,
+                onTap: () => onSectionTap?.call(selectedSection),
+                onMoveUp: selectedSection.type == SectionType.header
+                    ? null
+                    : () => onMoveSection?.call(selectedSection, -1),
+                onMoveDown: selectedSection.type == SectionType.footer
+                    ? null
+                    : () => onMoveSection?.call(selectedSection, 1),
               ),
             ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildSectionPreview(SectionModel section) {
-    switch (section.type) {
-      case SectionType.header:
-        return PreviewHeader(section: section, store: store, deviceMode: deviceMode);
-      case SectionType.heroBanner:
-        return PreviewHero(section: section, store: store);
-      case SectionType.productGrid:
-      case SectionType.featuredProducts:
-        return PreviewProducts(section: section, store: store);
-      case SectionType.aboutSection:
-        return PreviewAbout(section: section, store: store);
-      case SectionType.testimonials:
-        return PreviewTestimonials(section: section, store: store);
-      case SectionType.newsletter:
-        return PreviewNewsletter(section: section, store: store);
-      case SectionType.footer:
-        return PreviewFooter(section: section, store: store, deviceMode: deviceMode);
-      default:
-        return _buildGenericPreview(section);
-    }
-  }
-
-  Widget _buildGenericPreview(SectionModel section) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      color: Colors.grey[50],
-      child: Row(
-        children: [
-          Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: const Color(0xFF6366F1).withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(10),
+          if (onAddSection != null)
+            Positioned(
+              right: 12,
+              bottom: 12,
+              child: FloatingActionButton.small(
+                onPressed: onAddSection,
+                backgroundColor: const Color(0xFF8B5CF6),
+                foregroundColor: Colors.white,
+                child: const Icon(Icons.add_rounded),
+              ),
             ),
-            child: Icon(section.type.icon, size: 20, color: const Color(0xFF6366F1)),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  section.type.displayName,
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontWeight: FontWeight.w600,
-                    fontSize: 14,
-                  ),
-                ),
-                Text(
-                  'Tap to customize',
-                  style: TextStyle(
-                    color: Colors.grey[400],
-                    fontSize: 11,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Icon(Icons.chevron_right, size: 20, color: Colors.grey[400]),
         ],
       ),
     );
   }
+
+  SectionModel? get _selectedSection {
+    if (selectedSectionId == null) return null;
+    for (final section in sections) {
+      if (section.id == selectedSectionId) return section;
+    }
+    return null;
+  }
 }
 
-/// Wrapper that adds tap overlay, selection border, and interactive handles
-class _SectionWrapper extends StatelessWidget {
-  final SectionModel section;
-  final StoreModel? store;
-  final bool isSelected;
-  final VoidCallback? onTap;
-  final VoidCallback? onDragUp;
-  final VoidCallback? onDragDown;
-  final Widget child;
+class _StorefrontPreviewWebView extends StatefulWidget {
+  final String url;
+  final double zoomLevel;
+  final String deviceMode;
 
-  const _SectionWrapper({
+  const _StorefrontPreviewWebView({
+    required this.url,
+    required this.zoomLevel,
+    required this.deviceMode,
+  });
+
+  @override
+  State<_StorefrontPreviewWebView> createState() =>
+      _StorefrontPreviewWebViewState();
+}
+
+class _StorefrontPreviewWebViewState extends State<_StorefrontPreviewWebView> {
+  late final WebViewController _controller;
+  bool _isLoading = true;
+  Object? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageStarted: (_) {
+            if (mounted) {
+              setState(() {
+                _isLoading = true;
+                _error = null;
+              });
+            }
+          },
+          onPageFinished: (_) async {
+            await _applyZoom();
+            if (mounted) setState(() => _isLoading = false);
+          },
+          onWebResourceError: (error) {
+            if (mounted) {
+              setState(() {
+                _isLoading = false;
+                _error = error.description;
+              });
+            }
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  @override
+  void didUpdateWidget(covariant _StorefrontPreviewWebView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.url != widget.url) {
+      _controller.loadRequest(Uri.parse(widget.url));
+    } else if (oldWidget.zoomLevel != widget.zoomLevel) {
+      _applyZoom();
+    }
+  }
+
+  Future<void> _applyZoom() async {
+    final scale = (widget.zoomLevel / 0.7).clamp(0.5, 1.5).toStringAsFixed(2);
+    await _controller.runJavaScript('''
+      document.documentElement.style.zoom = '$scale';
+      document.body.dataset.letbuyyFlutterViewport = '${widget.deviceMode}';
+    ''');
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        WebViewWidget(controller: _controller),
+        if (_error != null) _PreviewError(message: _error.toString()),
+        if (_isLoading)
+          Container(
+            color: Colors.white.withValues(alpha: 0.82),
+            child: const Center(
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _SelectedSectionOverlay extends StatelessWidget {
+  final SectionModel section;
+  final VoidCallback? onTap;
+  final VoidCallback? onMoveUp;
+  final VoidCallback? onMoveDown;
+
+  const _SelectedSectionOverlay({
     required this.section,
-    this.store,
-    this.isSelected = false,
     this.onTap,
-    this.onDragUp,
-    this.onDragDown,
-    required this.child,
+    this.onMoveUp,
+    this.onMoveDown,
   });
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
     return GestureDetector(
       onTap: onTap,
-      child: Stack(
-        children: [
-          child,
-          
-          // Selection overlay with enhanced controls
-          if (isSelected)
-            Positioned.fill(
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                    color: const Color(0xFF818CF8),
-                    width: 2,
-                  ),
-                  color: const Color(0xFF6366F1).withValues(alpha: 0.05),
-                ),
-                child: Column(
-                  children: [
-                    // Top bar with section name and actions
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                      decoration: const BoxDecoration(
-                        color: Color(0xFF6366F1),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        children: [
-                          // Drag handle
-                          const Icon(Icons.drag_indicator, color: Colors.white70, size: 16),
-                          const SizedBox(width: 4),
-                          
-                          // Section name
-                          Text(
-                            section.type.displayName,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                          
-                          const Spacer(),
-                          
-                          // Move up
-                          if (section.type != SectionType.header)
-                            _MiniActionButton(
-                              icon: Icons.arrow_upward,
-                              onTap: onDragUp,
-                            ),
-                          
-                          // Move down
-                          if (section.type != SectionType.footer)
-                            _MiniActionButton(
-                              icon: Icons.arrow_downward,
-                              onTap: onDragDown,
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+        decoration: BoxDecoration(
+          color: const Color(0xFF8B5CF6),
+          borderRadius: BorderRadius.circular(10),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.18),
+              blurRadius: 12,
+              offset: const Offset(0, 6),
+            ),
+          ],
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.drag_indicator_rounded,
+              color: Colors.white70,
+              size: 16,
+            ),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Text(
+                section.type.displayName,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
                 ),
               ),
             ),
-        ],
+            _OverlayIconButton(
+              icon: Icons.arrow_upward_rounded,
+              onTap: onMoveUp,
+            ),
+            _OverlayIconButton(
+              icon: Icons.arrow_downward_rounded,
+              onTap: onMoveDown,
+            ),
+          ],
+        ),
       ),
     );
   }
 }
 
-/// Mini action button for section controls
-class _MiniActionButton extends StatelessWidget {
+class _OverlayIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onTap;
 
-  const _MiniActionButton({required this.icon, this.onTap});
+  const _OverlayIconButton({required this.icon, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(4),
-        margin: const EdgeInsets.only(left: 4),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(4),
-        ),
-        child: Icon(icon, color: Colors.white, size: 14),
-      ),
+    return IconButton(
+      onPressed: onTap,
+      icon: Icon(icon, size: 14),
+      color: Colors.white,
+      disabledColor: Colors.white38,
+      visualDensity: VisualDensity.compact,
+      constraints: const BoxConstraints(minWidth: 28, minHeight: 28),
+      padding: EdgeInsets.zero,
     );
   }
 }
 
-/// Thin horizontal line with + icon for adding sections
-class _AddSectionLine extends StatefulWidget {
-  final VoidCallback? onTap;
+class _PreviewUnavailable extends StatelessWidget {
+  final StoreModel? store;
 
-  const _AddSectionLine({this.onTap});
-
-  @override
-  State<_AddSectionLine> createState() => _AddSectionLineState();
-}
-
-class _AddSectionLineState extends State<_AddSectionLine> {
-  bool _isHovered = false;
+  const _PreviewUnavailable({this.store});
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    return GestureDetector(
-      onTap: () {
-        HapticFeedback.lightImpact();
-        widget.onTap?.call();
-      },
-      onTapDown: (_) => setState(() => _isHovered = true),
-      onTapUp: (_) => setState(() => _isHovered = false),
-      onTapCancel: () => setState(() => _isHovered = false),
-      child: Container(
-        height: 20,
-        color: Colors.transparent,
-        child: Stack(
-          alignment: Alignment.center,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            // Horizontal line
-            Container(
-              height: 1,
-              color: _isHovered ? const Color(0xFF6366F1) : Colors.grey[200],
-            ),
-            // Plus icon
-            Container(
-              width: 20,
-              height: 20,
-              decoration: BoxDecoration(
-                color: _isHovered ? const Color(0xFF6366F1) : Colors.white,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: _isHovered ? const Color(0xFF6366F1) : Colors.grey[300]!,
-                ),
-              ),
-              child: Icon(
-                Icons.add,
-                size: 12,
-                color: _isHovered ? Colors.white : Colors.grey[400],
+            const Icon(Icons.public_off_rounded, color: Color(0xFF64748B)),
+            const SizedBox(height: 10),
+            Text(
+              store?.subdomain.isNotEmpty == true
+                  ? 'Preview unavailable'
+                  : 'Store preview pending',
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Color(0xFF334155),
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
               ),
             ),
           ],
@@ -349,37 +295,28 @@ class _AddSectionLineState extends State<_AddSectionLine> {
   }
 }
 
-class _SectionErrorBoundary extends StatelessWidget {
-  final Widget child;
+class _PreviewError extends StatelessWidget {
+  final String message;
 
-  const _SectionErrorBoundary({required this.child});
+  const _PreviewError({required this.message});
 
   @override
   Widget build(BuildContext context) {
-    final colors = AppThemeColors.of(context);
-    try {
-      return child;
-    } catch (e) {
-      return _buildErrorWidget();
-    }
-  }
-
-  Widget _buildErrorWidget() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      height: 100,
-      alignment: Alignment.center,
-      color: Colors.red[50],
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          const Icon(Icons.error_outline, color: Colors.red, size: 24),
-          const SizedBox(height: 8),
-          Text(
-            'Section Error',
-            style: TextStyle(color: Colors.red[900], fontSize: 12, fontWeight: FontWeight.bold),
-          ),
-        ],
+    return Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        margin: const EdgeInsets.all(12),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+        decoration: BoxDecoration(
+          color: const Color(0xFF991B1B),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Text(
+          message,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: const TextStyle(color: Colors.white, fontSize: 11),
+        ),
       ),
     );
   }

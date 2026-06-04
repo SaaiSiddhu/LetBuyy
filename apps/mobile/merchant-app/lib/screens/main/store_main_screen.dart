@@ -11,13 +11,18 @@ import '../settings/settings_screen.dart';
 /// Tabs: Home, Editor, Theme, Products, Settings
 class StoreMainScreen extends StatefulWidget {
   const StoreMainScreen({super.key});
-  
+
   /// Static instance for navigation from child widgets
   static StoreMainScreenState? _instance;
-  
+
   /// Navigate to home tab from anywhere
   static void navigateToHome() {
     _instance?.goToHome();
+  }
+
+  /// Navigate to editor tab from anywhere
+  static void navigateToEditor() {
+    _instance?.goToEditor();
   }
 
   @override
@@ -26,16 +31,17 @@ class StoreMainScreen extends StatefulWidget {
 
 class StoreMainScreenState extends State<StoreMainScreen> {
   int _currentIndex = 0;
-  
+
   // Global keys for child screens
-  final GlobalKey<SectionEditorScreenState> _editorKey = GlobalKey<SectionEditorScreenState>();
-  
+  final GlobalKey<SectionEditorScreenState> _editorKey =
+      GlobalKey<SectionEditorScreenState>();
+
   @override
   void initState() {
     super.initState();
     StoreMainScreen._instance = this;
   }
-  
+
   @override
   void dispose() {
     if (StoreMainScreen._instance == this) {
@@ -43,7 +49,7 @@ class StoreMainScreenState extends State<StoreMainScreen> {
     }
     super.dispose();
   }
-  
+
   /// Switch to a specific tab
   void switchToTab(int index) {
     if (index >= 0 && index < 5) {
@@ -54,16 +60,39 @@ class StoreMainScreenState extends State<StoreMainScreen> {
       }
     }
   }
-  
+
   /// Navigate to home tab (convenience method)
   void goToHome() => switchToTab(0);
 
+  /// Navigate to editor tab (convenience method)
+  void goToEditor() => switchToTab(1);
+
   final List<_NavItem> _navItems = const [
-    _NavItem(icon: Icons.home_rounded, activeIcon: Icons.home_rounded, label: 'Home'),
-    _NavItem(icon: Icons.layers_outlined, activeIcon: Icons.layers_rounded, label: 'Editor'),
-    _NavItem(icon: Icons.palette_outlined, activeIcon: Icons.palette_rounded, label: 'Theme'),
-    _NavItem(icon: Icons.inventory_2_outlined, activeIcon: Icons.inventory_2_rounded, label: 'Products'),
-    _NavItem(icon: Icons.settings_outlined, activeIcon: Icons.settings_rounded, label: 'Settings'),
+    _NavItem(
+      icon: Icons.home_rounded,
+      activeIcon: Icons.home_rounded,
+      label: 'Home',
+    ),
+    _NavItem(
+      icon: Icons.layers_outlined,
+      activeIcon: Icons.layers_rounded,
+      label: 'Editor',
+    ),
+    _NavItem(
+      icon: Icons.palette_outlined,
+      activeIcon: Icons.palette_rounded,
+      label: 'Theme',
+    ),
+    _NavItem(
+      icon: Icons.inventory_2_outlined,
+      activeIcon: Icons.inventory_2_rounded,
+      label: 'Products',
+    ),
+    _NavItem(
+      icon: Icons.settings_outlined,
+      activeIcon: Icons.settings_rounded,
+      label: 'Settings',
+    ),
   ];
 
   @override
@@ -85,15 +114,12 @@ class StoreMainScreenState extends State<StoreMainScreen> {
 
   Widget _buildBottomNav() {
     final colors = AppThemeColors.of(context);
-    
+
     return Container(
       decoration: BoxDecoration(
         color: colors.bottomNavBackground,
         border: Border(
-          top: BorderSide(
-            color: colors.bottomNavBorder,
-            width: 1,
-          ),
+          top: BorderSide(color: colors.bottomNavBorder, width: 1),
         ),
       ),
       child: SafeArea(
@@ -115,7 +141,7 @@ class StoreMainScreenState extends State<StoreMainScreen> {
   Widget _buildNavItem(int index, AppThemeColors colors) {
     final isSelected = _currentIndex == index;
     final item = _navItems[index];
-    
+
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -130,9 +156,7 @@ class StoreMainScreenState extends State<StoreMainScreen> {
           vertical: 10,
         ),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? colors.bottomNavSelectedBg
-              : Colors.transparent,
+          color: isSelected ? colors.bottomNavSelectedBg : Colors.transparent,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -140,7 +164,9 @@ class StoreMainScreenState extends State<StoreMainScreen> {
           children: [
             Icon(
               isSelected ? item.activeIcon : item.icon,
-              color: isSelected ? colors.bottomNavSelected : colors.bottomNavUnselected,
+              color: isSelected
+                  ? colors.bottomNavSelected
+                  : colors.bottomNavUnselected,
               size: 24,
             ),
             AnimatedSize(
@@ -178,4 +204,3 @@ class _NavItem {
     required this.label,
   });
 }
-
