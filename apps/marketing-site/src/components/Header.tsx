@@ -564,7 +564,7 @@ export default function Header() {
                                 Start for free
                             </Link>
                             <button className="mobile-drawer-close" onClick={closeAllMenus} aria-label="Close menu">
-                                <X width={32} height={32} aria-hidden="true" />
+                                <X width={24} height={24} aria-hidden="true" />
                             </button>
                         </div>
 
