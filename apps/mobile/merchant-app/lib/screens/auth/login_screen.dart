@@ -1,5 +1,5 @@
 // lib/screens/auth/login_screen.dart
-// 🔐 LOGIN SCREEN — Supabase Auth
+// LOGIN SCREEN - LetBuyy identity session auth
 // Premium glassmorphism design with smooth animations
 
 import 'dart:async';
@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../services/store_auth_service.dart';
 import '../../services/store_service.dart';
@@ -35,7 +34,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
-  bool _isGoogleLoading = false;
   bool _emailFocused = false;
   bool _passwordFocused = false;
   bool _confirmPasswordFocused = false;
@@ -107,23 +105,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   }
 
   // ── Auth handlers ────────────────────────────────────────
-
-  Future<void> _handleGoogleSignIn() async {
-    if (!mounted) return;
-    setState(() { _isGoogleLoading = true; _errorMessage = null; });
-
-    try {
-      final authService = context.read<StoreAuthService>();
-      await authService.signInWithGoogle();
-      // Auth state listener will handle navigation on redirect
-    } catch (e) {
-      if (!mounted) return;
-      setState(() { _errorMessage = e.toString().replaceAll('Exception: ', ''); });
-      HapticFeedback.heavyImpact();
-    } finally {
-      if (mounted) setState(() => _isGoogleLoading = false);
-    }
-  }
 
   Future<void> _handleSubmit() async {
     if (!_formKey.currentState!.validate()) return;
@@ -416,10 +397,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             if (_errorMessage != null) _buildErrorBanner(),
-            _buildGoogleButton(isDark, lang),
-            const SizedBox(height: 28),
-            _buildDivider(isDark, lang),
-            const SizedBox(height: 28),
             _buildInputField(
               controller: _emailController,
               focusNode: _emailFocus,
@@ -502,45 +479,6 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           Expanded(child: Text(_errorMessage!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w500))),
         ],
       ),
-    );
-  }
-
-  Widget _buildGoogleButton(bool isDark, LanguageService lang) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: _isGoogleLoading ? null : _handleGoogleSignIn,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          height: 48,
-          decoration: BoxDecoration(
-            color: isDark ? Colors.white : const Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Center(
-            child: _isGoogleLoading
-                ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: isDark ? Colors.black : Colors.white, strokeWidth: 2))
-                : Row(mainAxisSize: MainAxisSize.min, children: [
-                    Image.asset('assets/icons/google.png', width: 18, height: 18),
-                    const SizedBox(width: 10),
-                    Text(lang.continueWithGoogle, style: TextStyle(color: isDark ? Colors.black87 : Colors.white, fontSize: 14, fontWeight: FontWeight.w600)),
-                  ]),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDivider(bool isDark, LanguageService lang) {
-    return Row(
-      children: [
-        Expanded(child: Container(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFE2E8F0))),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Text(lang.or, style: TextStyle(color: isDark ? Colors.white38 : const Color(0xFF94A3B8), fontSize: 13, fontWeight: FontWeight.w500)),
-        ),
-        Expanded(child: Container(height: 1, color: isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFE2E8F0))),
-      ],
     );
   }
 

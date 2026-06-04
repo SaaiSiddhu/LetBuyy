@@ -9,18 +9,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
 /// 🎯 Custom Razorpay Checkout Service
 /// Provides methods for custom payment UI integration
 class CustomCheckoutService {
-  static final CustomCheckoutService _instance = CustomCheckoutService._internal();
+  static final CustomCheckoutService _instance =
+      CustomCheckoutService._internal();
   factory CustomCheckoutService() => _instance;
   CustomCheckoutService._internal();
 
   final FirebaseFunctions _functions = FirebaseFunctions.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
   Razorpay? _razorpay;
   bool _isInitialized = false;
 
@@ -65,18 +64,10 @@ class CustomCheckoutService {
     debugPrint('💳 CustomCheckoutService disposed');
   }
 
-  /// Force refresh the Firebase auth token before making function calls
+  /// Retained for API compatibility; gateway-backed auth no longer refreshes
+  /// a client-side provider token here.
   Future<void> _ensureFreshToken() async {
-    final user = _auth.currentUser;
-    if (user != null) {
-      try {
-        // Force refresh the ID token
-        await user.getIdToken(true);
-        debugPrint('🔑 Auth token refreshed');
-      } catch (e) {
-        debugPrint('⚠️ Token refresh failed: $e');
-      }
-    }
+    return;
   }
 
   // ========================================
@@ -98,11 +89,9 @@ class CustomCheckoutService {
 
       final callable = _functions.httpsCallable(
         'createRazorpayOrder',
-        options: HttpsCallableOptions(
-          timeout: const Duration(seconds: 30),
-        ),
+        options: HttpsCallableOptions(timeout: const Duration(seconds: 30)),
       );
-      
+
       final result = await callable.call({
         'amount': (amount * 100).toInt(), // Convert to paise
         'receipt': receipt,
@@ -129,13 +118,9 @@ class CustomCheckoutService {
       }
     } catch (e) {
       debugPrint('❌ Order creation error: $e');
-      return OrderCreationResult(
-        success: false,
-        error: e.toString(),
-      );
+      return OrderCreationResult(success: false, error: e.toString());
     }
   }
-
 
   // ========================================
   // UPI PAYMENT METHODS
@@ -159,11 +144,7 @@ class CustomCheckoutService {
       );
     } catch (e) {
       debugPrint('❌ VPA validation error: $e');
-      return VpaValidationResult(
-        valid: false,
-        vpa: vpa,
-        error: e.toString(),
-      );
+      return VpaValidationResult(valid: false, vpa: vpa, error: e.toString());
     }
   }
 
@@ -259,7 +240,7 @@ class CustomCheckoutService {
 
     try {
       HapticFeedback.mediumImpact();
-      
+
       final options = {
         'key': _razorpayKeyId,
         'amount': (_currentAmount! * 100).toInt(),
@@ -304,15 +285,9 @@ class CustomCheckoutService {
         'order_id': _currentOrderId,
         'name': 'LetBuyy',
         'description': 'Order Payment',
-        'prefill': {
-          'contact': userPhone,
-          'email': userEmail,
-          'name': userName,
-        },
+        'prefill': {'contact': userPhone, 'email': userEmail, 'name': userName},
         'method': 'upi',
-        'upi': {
-          'flow': 'intent',
-        },
+        'upi': {'flow': 'intent'},
         'external': {
           'wallets': [app.packageName],
         },
@@ -356,11 +331,7 @@ class CustomCheckoutService {
         'order_id': _currentOrderId,
         'name': 'LetBuyy',
         'description': 'Order Payment',
-        'prefill': {
-          'contact': userPhone,
-          'email': userEmail,
-          'name': userName,
-        },
+        'prefill': {'contact': userPhone, 'email': userEmail, 'name': userName},
         'method': 'card',
         'card': {
           'number': cardNumber.replaceAll(' ', ''),
@@ -433,13 +404,17 @@ class CustomCheckoutService {
       final data = result.data as Map<String, dynamic>;
       final cards = (data['cards'] as List?) ?? [];
 
-      return cards.map((c) => SavedCard(
-        id: c['id'] as String,
-        last4: c['last4'] as String,
-        network: c['network'] as String,
-        cardType: c['cardType'] as String?,
-        cardholderName: c['cardholderName'] as String?,
-      )).toList();
+      return cards
+          .map(
+            (c) => SavedCard(
+              id: c['id'] as String,
+              last4: c['last4'] as String,
+              network: c['network'] as String,
+              cardType: c['cardType'] as String?,
+              cardholderName: c['cardholderName'] as String?,
+            ),
+          )
+          .toList();
     } catch (e) {
       debugPrint('❌ Get saved cards error: $e');
       return [];
@@ -466,12 +441,14 @@ class CustomCheckoutService {
     debugPrint('✅ Payment success: ${response.paymentId}');
     HapticFeedback.heavyImpact();
 
-    _onPaymentComplete?.call(PaymentResult(
-      success: true,
-      paymentId: response.paymentId,
-      orderId: response.orderId,
-      signature: response.signature,
-    ));
+    _onPaymentComplete?.call(
+      PaymentResult(
+        success: true,
+        paymentId: response.paymentId,
+        orderId: response.orderId,
+        signature: response.signature,
+      ),
+    );
 
     _clearOrderState();
   }
@@ -536,11 +513,7 @@ class UpiApp {
   final String packageName;
   final String? iconAsset;
 
-  UpiApp({
-    required this.name,
-    required this.packageName,
-    this.iconAsset,
-  });
+  UpiApp({required this.name, required this.packageName, this.iconAsset});
 }
 
 /// Payment result

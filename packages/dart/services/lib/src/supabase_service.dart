@@ -79,24 +79,6 @@ class SupabaseService {
     );
   }
 
-  /// Sign in with OAuth (Google, Apple, Facebook)
-  Future<bool> signInWithOAuth(OAuthProvider provider) async {
-    final success = await client.auth.signInWithOAuth(
-      provider,
-      redirectTo: kIsWeb ? null : 'io.letbuyy.builder://login-callback',
-    );
-    return success;
-  }
-
-  /// Sign in with Google
-  Future<bool> signInWithGoogle() => signInWithOAuth(OAuthProvider.google);
-
-  /// Sign in with Apple
-  Future<bool> signInWithApple() => signInWithOAuth(OAuthProvider.apple);
-
-  /// Sign in with Facebook
-  Future<bool> signInWithFacebook() => signInWithOAuth(OAuthProvider.facebook);
-
   /// Sign out
   Future<void> signOut() async {
     await client.auth.signOut();

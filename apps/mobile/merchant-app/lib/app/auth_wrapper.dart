@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../services/store_auth_service.dart';
 import '../services/store_service.dart';
@@ -49,7 +48,12 @@ class _AuthWrapperState extends State<AuthWrapper> {
   void _initAuthCheck() {
     final authService = context.read<StoreAuthService>();
 
-    // Listen to Supabase auth state changes
+    if (authService.isSignedIn) {
+      _checkUserState();
+    } else {
+      setState(() => _authState = _AuthState.login);
+    }
+
     _authSub = authService.authStateChanges.listen((authState) {
       if (!mounted) return;
 
@@ -129,10 +133,7 @@ class _AuthWrapperState extends State<AuthWrapper> {
                   const SizedBox(height: 20),
                   Text(
                     _loadingStatus,
-                    style: TextStyle(
-                      color: colors.textSecondary,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: colors.textSecondary, fontSize: 14),
                   ),
                 ],
               ),

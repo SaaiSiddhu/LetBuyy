@@ -4,7 +4,6 @@
 
 import 'dart:developer' as dev;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:letbuyy_core/letbuyy_core.dart';
 import 'package:uuid/uuid.dart';
@@ -12,8 +11,10 @@ import 'package:letbuyy_models/letbuyy_models.dart';
 // ✅ 1. IMPORT SHARED_PREFERENCES
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'auth_service.dart';
+
 class AIChatService {
-  final auth = FirebaseAuth.instance;
+  final auth = AuthService();
   final firestore = FirebaseFirestore.instance;
 
   // ✅ 2. MAKE A SINGLETON
@@ -30,7 +31,8 @@ class AIChatService {
     if (_currentSessionId == null) {
       // This error means you forgot to call initSession() in the UI.
       throw StateError(
-          'AIChatService.currentSessionId called before initSession() was completed.');
+        'AIChatService.currentSessionId called before initSession() was completed.',
+      );
     }
     return _currentSessionId!;
   }
@@ -73,40 +75,42 @@ class AIChatService {
 
   // ... (tools definition remains exactly the same) ...
   final tools = [
-    Tool(functionDeclarations: [
-      FunctionDeclaration(
-        'searchProducts',
-        'Search for products by name, keywords, or category. Use this when user asks to "show", "find", "buy", "price of", or just names a product.',
-        Schema(
-          SchemaType.object,
-          properties: {
-            'query': Schema(
-              SchemaType.string,
-              description:
-                  'Product name, keywords, or "all" to show all products',
-              nullable: false,
-            ),
-            'categoryId': Schema(
-              SchemaType.string,
-              description: 'Optional category ID filter',
-              nullable: true,
-            ),
-            'limit': Schema(
-              SchemaType.integer,
-              description: 'Max results (default: 8, max: 20)',
-              nullable: true,
-            ),
-          },
-          requiredProperties: ['query'],
+    Tool(
+      functionDeclarations: [
+        FunctionDeclaration(
+          'searchProducts',
+          'Search for products by name, keywords, or category. Use this when user asks to "show", "find", "buy", "price of", or just names a product.',
+          Schema(
+            SchemaType.object,
+            properties: {
+              'query': Schema(
+                SchemaType.string,
+                description:
+                    'Product name, keywords, or "all" to show all products',
+                nullable: false,
+              ),
+              'categoryId': Schema(
+                SchemaType.string,
+                description: 'Optional category ID filter',
+                nullable: true,
+              ),
+              'limit': Schema(
+                SchemaType.integer,
+                description: 'Max results (default: 8, max: 20)',
+                nullable: true,
+              ),
+            },
+            requiredProperties: ['query'],
+          ),
         ),
-      ),
-      // ... all other function declarations
-      FunctionDeclaration(
-        'getAvailableCoupons',
-        'Get active discount coupons. Use when user asks about deals, discounts, or coupons.',
-        Schema(SchemaType.object, properties: {}),
-      ),
-    ])
+        // ... all other function declarations
+        FunctionDeclaration(
+          'getAvailableCoupons',
+          'Get active discount coupons. Use when user asks about deals, discounts, or coupons.',
+          Schema(SchemaType.object, properties: {}),
+        ),
+      ],
+    ),
   ];
 
   Future<void> saveMessage(ChatMessage message) async {
@@ -271,10 +275,12 @@ class AIChatService {
   Future<List<Content>> buildChatHistory(List<ChatMessage>? history) async {
     final List<Content> content = [];
     final messages = (history ?? context)
-        .where((m) =>
-            m.text.trim().isNotEmpty &&
-            m.messageType != MessageType.loading &&
-            m.messageType != MessageType.system)
+        .where(
+          (m) =>
+              m.text.trim().isNotEmpty &&
+              m.messageType != MessageType.loading &&
+              m.messageType != MessageType.system,
+        )
         .toList();
 
     for (var m in messages) {
@@ -338,8 +344,9 @@ class AIChatService {
       }
 
       final candidate = response.candidates.first;
-      final functionCalls =
-          candidate.content.parts.whereType<FunctionCall>().toList();
+      final functionCalls = candidate.content.parts
+          .whereType<FunctionCall>()
+          .toList();
 
       if (functionCalls.isEmpty) {
         final text = response.text ?? 'I couldn\'t generate a response.';
@@ -385,8 +392,9 @@ class AIChatService {
           break;
 
         case 'getProductDetails':
-          resultData =
-              await handleProductDetails(getString(args['productId']) ?? '');
+          resultData = await handleProductDetails(
+            getString(args['productId']) ?? '',
+          );
           break;
 
         case 'getOrders':
@@ -397,8 +405,9 @@ class AIChatService {
           break;
 
         case 'getOrderDetails':
-          resultData =
-              await handleOrderDetails(getString(args['orderId']) ?? '');
+          resultData = await handleOrderDetails(
+            getString(args['orderId']) ?? '',
+          );
           break;
 
         case 'getUserProfile':
@@ -462,8 +471,9 @@ class AIChatService {
       List<QueryDocumentSnapshot> results = [];
 
       // Build base query
-      Query queryRef =
-          firestore.collection('products').where('isActive', isEqualTo: true);
+      Query queryRef = firestore
+          .collection('products')
+          .where('isActive', isEqualTo: true);
 
       if (categoryId != null && categoryId.isNotEmpty) {
         queryRef = queryRef.where('categoryId', isEqualTo: categoryId);
@@ -474,23 +484,27 @@ class AIChatService {
         final lowerQuery = query.toLowerCase().trim();
 
         // Try single word search first
-        results = (await queryRef
-                .where('searchKeywords', arrayContains: lowerQuery)
-                .limit(limit)
-                .get())
-            .docs;
-
-        // 2️⃣ If no results, try word-by-word search
-        if (results.isEmpty) {
-          final words =
-              lowerQuery.split(' ').where((w) => w.length > 2).toList();
-
-          for (final word in words) {
-            results = (await queryRef
-                    .where('searchKeywords', arrayContains: word)
+        results =
+            (await queryRef
+                    .where('searchKeywords', arrayContains: lowerQuery)
                     .limit(limit)
                     .get())
                 .docs;
+
+        // 2️⃣ If no results, try word-by-word search
+        if (results.isEmpty) {
+          final words = lowerQuery
+              .split(' ')
+              .where((w) => w.length > 2)
+              .toList();
+
+          for (final word in words) {
+            results =
+                (await queryRef
+                        .where('searchKeywords', arrayContains: word)
+                        .limit(limit)
+                        .get())
+                    .docs;
 
             if (results.isNotEmpty) break;
           }
@@ -499,13 +513,14 @@ class AIChatService {
         // 3️⃣ If still no results, try name search (startAt/endAt)
         if (results.isEmpty) {
           try {
-            results = (await queryRef
-                    .orderBy('name')
-                    .startAt([lowerQuery])
-                    .endAt(['$lowerQuery\uf8ff'])
-                    .limit(limit)
-                    .get())
-                .docs;
+            results =
+                (await queryRef
+                        .orderBy('name')
+                        .startAt([lowerQuery])
+                        .endAt(['$lowerQuery\uf8ff'])
+                        .limit(limit)
+                        .get())
+                    .docs;
           } catch (e) {
             dev.log('⚠️ Name search failed: $e');
           }
@@ -516,28 +531,33 @@ class AIChatService {
           dev.log('🔄 Fallback: Local search');
           final allDocs = (await queryRef.limit(50).get()).docs;
 
-          results = allDocs.where((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            final name = (data['name'] as String?)?.toLowerCase() ?? '';
-            final desc = (data['description'] as String?)?.toLowerCase() ?? '';
+          results = allDocs
+              .where((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                final name = (data['name'] as String?)?.toLowerCase() ?? '';
+                final desc =
+                    (data['description'] as String?)?.toLowerCase() ?? '';
 
-            // Check if any word matches
-            for (final word in lowerQuery.split(' ')) {
-              if (word.length > 2 &&
-                  (name.contains(word) || desc.contains(word))) {
-                return true;
-              }
-            }
-            return false;
-          }).take(limit).toList();
+                // Check if any word matches
+                for (final word in lowerQuery.split(' ')) {
+                  if (word.length > 2 &&
+                      (name.contains(word) || desc.contains(word))) {
+                    return true;
+                  }
+                }
+                return false;
+              })
+              .take(limit)
+              .toList();
         }
       } else {
         // Show all products / featured
-        results = (await queryRef
-                .where('isFeatured', isEqualTo: true)
-                .limit(limit)
-                .get())
-            .docs;
+        results =
+            (await queryRef
+                    .where('isFeatured', isEqualTo: true)
+                    .limit(limit)
+                    .get())
+                .docs;
 
         if (results.isEmpty) {
           results = (await queryRef.limit(limit).get()).docs;
@@ -615,8 +635,10 @@ class AIChatService {
   }
 
   // ✅ ENHANCED: Better order retrieval
-  Future<Map<String, dynamic>> handleGetOrders(
-      {int limit = 5, String? status}) async {
+  Future<Map<String, dynamic>> handleGetOrders({
+    int limit = 5,
+    String? status,
+  }) async {
     final user = auth.currentUser;
     if (user == null) {
       return {
@@ -655,11 +677,7 @@ class AIChatService {
 
       dev.log('✅ Found ${orders.length} orders');
 
-      return {
-        'orders': orders,
-        'totalCount': orders.length,
-        'success': true,
-      };
+      return {'orders': orders, 'totalCount': orders.length, 'success': true};
     } catch (e, st) {
       dev.log('❌ Orders error', error: e, stackTrace: st);
       return {
@@ -676,8 +694,10 @@ class AIChatService {
       if (orderId.isEmpty) return {'error': 'Order ID required'};
 
       // Try finding by document ID first
-      DocumentSnapshot? doc =
-          await firestore.collection('orders').doc(orderId).get();
+      DocumentSnapshot? doc = await firestore
+          .collection('orders')
+          .doc(orderId)
+          .get();
 
       // If not found, try finding by order number
       if (!doc.exists) {
@@ -760,7 +780,7 @@ class AIChatService {
       return {
         'error': 'Failed to get categories',
         'categories': [],
-        'success': false
+        'success': false,
       };
     }
   }
@@ -779,21 +799,26 @@ class AIChatService {
       final now = DateTime.now();
 
       // Filter in memory
-      final coupons = snap.docs.where((doc) {
-        final data = doc.data();
-        final validTo = (data['validTo'] as Timestamp?)?.toDate();
-        return validTo != null && validTo.isAfter(now);
-      }).map((d) {
-        final data = d.data();
-        return {
-          'code': data['code'] ?? 'N/A',
-          'description': data['description'] ?? 'No description',
-          'discount': (data['discount'] as num?)?.toDouble() ?? 0,
-          'discountType': data['discountType'] ?? 'percent',
-          'minOrderAmount': (data['minOrderAmount'] as num?)?.toDouble() ?? 0,
-          'validTo': (data['validTo'] as Timestamp?)?.toDate().toString() ?? '',
-        };
-      }).toList();
+      final coupons = snap.docs
+          .where((doc) {
+            final data = doc.data();
+            final validTo = (data['validTo'] as Timestamp?)?.toDate();
+            return validTo != null && validTo.isAfter(now);
+          })
+          .map((d) {
+            final data = d.data();
+            return {
+              'code': data['code'] ?? 'N/A',
+              'description': data['description'] ?? 'No description',
+              'discount': (data['discount'] as num?)?.toDouble() ?? 0,
+              'discountType': data['discountType'] ?? 'percent',
+              'minOrderAmount':
+                  (data['minOrderAmount'] as num?)?.toDouble() ?? 0,
+              'validTo':
+                  (data['validTo'] as Timestamp?)?.toDate().toString() ?? '',
+            };
+          })
+          .toList();
 
       dev.log('✅ Found ${coupons.length} coupons');
       return {

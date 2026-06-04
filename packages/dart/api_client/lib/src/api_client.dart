@@ -16,6 +16,7 @@ class ApiClient {
     ApiStoreIdProvider? storeIdProvider,
     Map<String, String>? headers,
     RequestIdFactory? requestIdFactory,
+    bool attachSessionCookie = false,
     Dio? dio,
     Duration connectTimeout = const Duration(seconds: 30),
     Duration receiveTimeout = const Duration(seconds: 30),
@@ -27,6 +28,7 @@ class ApiClient {
        _storeIdProvider = storeIdProvider,
        _defaultHeaders = Map.unmodifiable(headers ?? const {}),
        _requestIdFactory = requestIdFactory,
+       _attachSessionCookie = attachSessionCookie,
        _maxRetries = maxRetries,
        _dio = dio ?? Dio() {
     if (baseUrl.trim().isEmpty) {
@@ -57,6 +59,7 @@ class ApiClient {
         storeIdProvider: _storeIdProvider,
         defaultHeaders: _defaultHeaders,
         requestIdFactory: _requestIdFactory,
+        attachSessionCookie: _attachSessionCookie,
       ),
     );
   }
@@ -82,6 +85,7 @@ class ApiClient {
   final ApiStoreIdProvider? _storeIdProvider;
   final Map<String, String> _defaultHeaders;
   final RequestIdFactory? _requestIdFactory;
+  final bool _attachSessionCookie;
   final Dio _dio;
   final int _maxRetries;
 
@@ -100,6 +104,7 @@ class ApiClient {
     ApiStoreIdProvider? storeIdProvider,
     Map<String, String>? headers,
     RequestIdFactory? requestIdFactory,
+    bool? attachSessionCookie,
     Dio? dio,
     int? maxRetries,
   }) {
@@ -112,6 +117,7 @@ class ApiClient {
       storeIdProvider: storeIdProvider ?? _storeIdProvider,
       headers: headers ?? _defaultHeaders,
       requestIdFactory: requestIdFactory ?? _requestIdFactory,
+      attachSessionCookie: attachSessionCookie ?? _attachSessionCookie,
       dio: dio ?? Dio(),
       maxRetries: maxRetries ?? _maxRetries,
     );
@@ -1173,6 +1179,7 @@ class _AuthHeaderInterceptor extends Interceptor {
     required this.storeIdProvider,
     required this.defaultHeaders,
     required this.requestIdFactory,
+    required this.attachSessionCookie,
   });
 
   final String? defaultToken;
@@ -1181,6 +1188,7 @@ class _AuthHeaderInterceptor extends Interceptor {
   final ApiStoreIdProvider? storeIdProvider;
   final Map<String, String> defaultHeaders;
   final RequestIdFactory? requestIdFactory;
+  final bool attachSessionCookie;
 
   @override
   Future<void> onRequest(
@@ -1208,6 +1216,13 @@ class _AuthHeaderInterceptor extends Interceptor {
 
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
+      if (attachSessionCookie) {
+        options.headers['X-LetBuyy-Session-Token'] = token;
+        options.headers['Cookie'] = _appendCookieHeader(
+          options.headers['Cookie']?.toString(),
+          'lb_session=$token',
+        );
+      }
     }
     if (storeId != null && storeId.isNotEmpty) {
       options.headers['X-Store-ID'] = storeId;
@@ -1222,6 +1237,12 @@ class _AuthHeaderInterceptor extends Interceptor {
 
     handler.next(options);
   }
+}
+
+String _appendCookieHeader(String? existing, String cookie) {
+  if (existing == null || existing.trim().isEmpty) return cookie;
+  if (existing.contains('lb_session=')) return existing;
+  return '$existing; $cookie';
 }
 
 String _requestIdFromResponse(Response<Object?> response) {

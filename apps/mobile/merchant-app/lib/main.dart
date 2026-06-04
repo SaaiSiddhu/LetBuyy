@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import 'firebase_options.dart';
 import 'config/supabase_config.dart';
 import 'app/app.dart';
@@ -19,13 +18,6 @@ import 'services/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ── Supabase (primary auth & data) ───────────────────────
-  await Supabase.initialize(
-    url: AppConfig.supabaseUrl,
-    anonKey: AppConfig.supabaseAnonKey,
-  );
-  if (kDebugMode) print('✅ Supabase initialized');
 
   // ── Firebase (FCM push notifications only) ───────────────
   try {
@@ -50,14 +42,20 @@ void main() async {
   GoogleFonts.config.allowRuntimeFetching = true;
 
   // Shared API gateway client injected into all services.
+  late final StoreAuthService authService;
   final apiClient = ApiClient(
     baseUrl: AppConfig.apiBaseUrl,
-    tokenProvider: () =>
-        Supabase.instance.client.auth.currentSession?.accessToken,
+    tokenProvider: () => authService.accessToken,
+    attachSessionCookie: true,
     headers: const {'X-Client': 'flutter-builder'},
     requestIdFactory: () =>
         'flutter-builder-${DateTime.now().microsecondsSinceEpoch}',
   );
+  authService = StoreAuthService(
+    api: apiClient,
+    identityBaseUrl: AppConfig.identityBaseUrl,
+  );
+  await authService.restoreSession();
 
   runApp(
     MultiProvider(
@@ -72,9 +70,7 @@ void main() async {
         Provider<ApiClient>.value(value: apiClient),
 
         // Auth
-        ChangeNotifierProvider<StoreAuthService>(
-          create: (_) => StoreAuthService(api: apiClient),
-        ),
+        ChangeNotifierProvider<StoreAuthService>.value(value: authService),
 
         // Data services
         ChangeNotifierProvider<StoreService>(

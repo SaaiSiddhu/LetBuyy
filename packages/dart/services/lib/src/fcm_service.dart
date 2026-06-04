@@ -1,8 +1,9 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+
+import 'auth_service.dart';
 
 // Background message handler
 @pragma('vm:entry-point')
@@ -18,13 +19,14 @@ class FCMService {
   final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
-  
+
   // Store the current token for later use
   String? _currentToken;
   String? get currentToken => _currentToken;
 
-  static const String _vapidKey =
-      String.fromEnvironment('FIREBASE_WEB_VAPID_KEY');
+  static const String _vapidKey = String.fromEnvironment(
+    'FIREBASE_WEB_VAPID_KEY',
+  );
 
   Future<void> initialize() async {
     print('🔔 Initializing FCM...');
@@ -43,9 +45,11 @@ class FCMService {
 
     // Initialize local notifications (for mobile)
     if (!kIsWeb) {
-      const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+      const androidSettings = AndroidInitializationSettings(
+        '@mipmap/ic_launcher',
+      );
       const iosSettings = DarwinInitializationSettings();
-      
+
       await _localNotifications.initialize(
         const InitializationSettings(
           android: androidSettings,
@@ -63,10 +67,10 @@ class FCMService {
     } else {
       token = await _messaging.getToken();
     }
-    
+
     _currentToken = token;
     print('🎫 FCM Token: $token');
-    
+
     if (token != null) {
       await _saveTokenToFirestore(token);
     }
@@ -79,7 +83,9 @@ class FCMService {
 
     // Handle background messages (mobile only)
     if (!kIsWeb) {
-      FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+      FirebaseMessaging.onBackgroundMessage(
+        _firebaseMessagingBackgroundHandler,
+      );
     }
 
     // Handle foreground messages
@@ -98,13 +104,10 @@ class FCMService {
 
   Future<void> _saveTokenToFirestore(String token) async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
+      final userId = AuthService().currentUserId;
+      if (userId == null) return;
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .set({
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'fcmTokens': FieldValue.arrayUnion([token]),
         'lastTokenUpdate': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
@@ -119,26 +122,23 @@ class FCMService {
   Future<void> saveSellerToken(String sellerId) async {
     try {
       // Get fresh token
-    String? token;
-    if (kIsWeb) {
-      token = _vapidKey.isEmpty
-          ? await _messaging.getToken()
-          : await _messaging.getToken(vapidKey: _vapidKey);
+      String? token;
+      if (kIsWeb) {
+        token = _vapidKey.isEmpty
+            ? await _messaging.getToken()
+            : await _messaging.getToken(vapidKey: _vapidKey);
       } else {
         token = await _messaging.getToken();
       }
-      
+
       if (token == null) {
         print('⚠️ No FCM token available for seller');
         return;
       }
 
       _currentToken = token;
-      
-      await FirebaseFirestore.instance
-          .collection('sellers')
-          .doc(sellerId)
-          .set({
+
+      await FirebaseFirestore.instance.collection('sellers').doc(sellerId).set({
         'fcmTokens': FieldValue.arrayUnion([token]),
         'lastTokenUpdate': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
@@ -153,13 +153,13 @@ class FCMService {
   Future<void> removeSellerToken(String sellerId) async {
     try {
       if (_currentToken == null) return;
-      
+
       await FirebaseFirestore.instance
           .collection('sellers')
           .doc(sellerId)
           .update({
-        'fcmTokens': FieldValue.arrayRemove([_currentToken]),
-      });
+            'fcmTokens': FieldValue.arrayRemove([_currentToken]),
+          });
 
       print('✅ Seller FCM token removed');
     } catch (e) {
@@ -183,10 +183,7 @@ class FCMService {
       message.hashCode,
       message.notification?.title,
       message.notification?.body,
-      const NotificationDetails(
-        android: androidDetails,
-        iOS: iosDetails,
-      ),
+      const NotificationDetails(android: androidDetails, iOS: iosDetails),
     );
   }
 }

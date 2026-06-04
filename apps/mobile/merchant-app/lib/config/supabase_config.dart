@@ -14,6 +14,12 @@ class AppConfig {
     defaultValue: 'https://api.letbuyy.store/v1',
   );
 
+  /// Base URL for the identity platform that issues `lb_session`.
+  static const String identityBaseUrl = String.fromEnvironment(
+    'IDENTITY_BASE_URL',
+    defaultValue: 'https://accounts.letbuyy.store',
+  );
+
   /// Storefront base URL used for merchant preview and live links.
   static const String storefrontBaseUrl = String.fromEnvironment(
     'STOREFRONT_BASE_URL',

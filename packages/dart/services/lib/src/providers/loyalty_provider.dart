@@ -1,9 +1,9 @@
 // Loyalty Provider - State management for loyalty system
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_models/letbuyy_models.dart';
 import '../loyalty_service.dart';
+import '../auth_service.dart';
 
 /// Provider for loyalty points and tier management
 class LoyaltyProvider with ChangeNotifier {
@@ -49,7 +49,7 @@ class LoyaltyProvider with ChangeNotifier {
 
   /// Initialize loyalty for current user
   Future<void> init() async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = AuthService().currentUserId;
     if (userId == null) {
       _loyalty = null;
       _transactions = [];
@@ -67,30 +67,34 @@ class LoyaltyProvider with ChangeNotifier {
 
       // Subscribe to loyalty updates
       _loyaltySubscription?.cancel();
-      _loyaltySubscription = _loyaltyService.getLoyaltyStream(userId).listen(
-        (loyalty) {
-          _loyalty = loyalty;
-          _isLoading = false;
-          notifyListeners();
-        },
-        onError: (e) {
-          _error = 'Failed to load loyalty: $e';
-          _isLoading = false;
-          notifyListeners();
-        },
-      );
+      _loyaltySubscription = _loyaltyService
+          .getLoyaltyStream(userId)
+          .listen(
+            (loyalty) {
+              _loyalty = loyalty;
+              _isLoading = false;
+              notifyListeners();
+            },
+            onError: (e) {
+              _error = 'Failed to load loyalty: $e';
+              _isLoading = false;
+              notifyListeners();
+            },
+          );
 
       // Subscribe to transactions
       _transactionsSubscription?.cancel();
-      _transactionsSubscription = _loyaltyService.getTransactionHistory(userId).listen(
-        (transactions) {
-          _transactions = transactions;
-          notifyListeners();
-        },
-        onError: (e) {
-          debugPrint('Error loading transactions: $e');
-        },
-      );
+      _transactionsSubscription = _loyaltyService
+          .getTransactionHistory(userId)
+          .listen(
+            (transactions) {
+              _transactions = transactions;
+              notifyListeners();
+            },
+            onError: (e) {
+              debugPrint('Error loading transactions: $e');
+            },
+          );
     } catch (e) {
       _error = 'Failed to initialize loyalty: $e';
       _isLoading = false;
@@ -110,7 +114,7 @@ class LoyaltyProvider with ChangeNotifier {
   /// Redeem points at checkout
   /// Returns true if successful
   Future<bool> redeemPoints(int pointsToRedeem, String orderId) async {
-    final userId = FirebaseAuth.instance.currentUser?.uid;
+    final userId = AuthService().currentUserId;
     if (userId == null) {
       _error = 'User not logged in';
       notifyListeners();
@@ -141,11 +145,11 @@ class LoyaltyProvider with ChangeNotifier {
       );
 
       _isLoading = false;
-      
+
       if (!success) {
         _error = 'Failed to redeem points';
       }
-      
+
       notifyListeners();
       return success;
     } catch (e) {
@@ -186,10 +190,7 @@ class LoyaltyProvider with ChangeNotifier {
   List<String> _getTierBenefits(LoyaltyTier tier) {
     switch (tier) {
       case LoyaltyTier.bronze:
-        return [
-          '1% cashback on all orders',
-          'Access to exclusive deals',
-        ];
+        return ['1% cashback on all orders', 'Access to exclusive deals'];
       case LoyaltyTier.silver:
         return [
           '1.5% cashback on all orders',

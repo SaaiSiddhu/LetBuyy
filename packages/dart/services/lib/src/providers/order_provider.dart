@@ -5,11 +5,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:letbuyy_models/src/order_model.dart';
 import 'package:letbuyy_models/src/order_timeline_model.dart';
 import '../auth_service.dart';
-
 
 class OrderProvider with ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -34,9 +32,8 @@ class OrderProvider with ChangeNotifier {
 
   void loadUserOrders() {
     try {
-      final userId = _authService.currentUserId ?? 
-                     FirebaseAuth.instance.currentUser?.uid;
-      
+      final userId = _authService.currentUserId;
+
       if (userId == null) {
         _error = '❌ User not authenticated';
         notifyListeners();
@@ -52,26 +49,26 @@ class OrderProvider with ChangeNotifier {
           .orderBy('createdAt', descending: true)
           .snapshots()
           .listen(
-        (snapshot) {
-          try {
-            _orders = snapshot.docs
-                .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
-                .toList();
-            _error = null;
-            debugPrint('✅ Loaded ${_orders.length} orders');
-            notifyListeners();
-          } catch (e) {
-            debugPrint('❌ Error parsing orders: $e');
-            _error = 'Failed to load orders';
-            notifyListeners();
-          }
-        },
-        onError: (error) {
-          debugPrint('❌ Error: $error');
-          _error = error.toString();
-          notifyListeners();
-        },
-      );
+            (snapshot) {
+              try {
+                _orders = snapshot.docs
+                    .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
+                    .toList();
+                _error = null;
+                debugPrint('✅ Loaded ${_orders.length} orders');
+                notifyListeners();
+              } catch (e) {
+                debugPrint('❌ Error parsing orders: $e');
+                _error = 'Failed to load orders';
+                notifyListeners();
+              }
+            },
+            onError: (error) {
+              debugPrint('❌ Error: $error');
+              _error = error.toString();
+              notifyListeners();
+            },
+          );
     } catch (e) {
       debugPrint('❌ Error: $e');
       _error = e.toString();
@@ -89,26 +86,26 @@ class OrderProvider with ChangeNotifier {
           .orderBy('createdAt', descending: true)
           .snapshots()
           .listen(
-        (snapshot) {
-          try {
-            _orders = snapshot.docs
-                .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
-                .toList();
-            _error = null;
-            debugPrint('✅ Loaded ${_orders.length} orders');
-            notifyListeners();
-          } catch (e) {
-            debugPrint('❌ Error: $e');
-            _error = 'Failed to load orders';
-            notifyListeners();
-          }
-        },
-        onError: (error) {
-          debugPrint('❌ Error: $error');
-          _error = error.toString();
-          notifyListeners();
-        },
-      );
+            (snapshot) {
+              try {
+                _orders = snapshot.docs
+                    .map((doc) => OrderModel.fromMap(doc.data(), doc.id))
+                    .toList();
+                _error = null;
+                debugPrint('✅ Loaded ${_orders.length} orders');
+                notifyListeners();
+              } catch (e) {
+                debugPrint('❌ Error: $e');
+                _error = 'Failed to load orders';
+                notifyListeners();
+              }
+            },
+            onError: (error) {
+              debugPrint('❌ Error: $error');
+              _error = error.toString();
+              notifyListeners();
+            },
+          );
     } catch (e) {
       debugPrint('❌ Error: $e');
       _error = e.toString();
@@ -131,10 +128,7 @@ class OrderProvider with ChangeNotifier {
 
       debugPrint('📦 Loading order: $orderId');
 
-      final orderDoc = await _firestore
-          .collection('orders')
-          .doc(orderId)
-          .get();
+      final orderDoc = await _firestore.collection('orders').doc(orderId).get();
 
       if (orderDoc.exists) {
         _selectedOrder = OrderModel.fromMap(orderDoc.data()!, orderId);
@@ -182,40 +176,46 @@ class OrderProvider with ChangeNotifier {
 
   List<OrderModel> getOrdersByStatus(String status) {
     return _orders
-        .where((order) => order.orderStatus.toLowerCase() == status.toLowerCase())
+        .where(
+          (order) => order.orderStatus.toLowerCase() == status.toLowerCase(),
+        )
         .toList();
   }
 
   List<OrderModel> get pendingOrders {
     return _orders
-        .where((order) =>
-            order.orderStatus == 'pending' ||
-            order.orderStatus == 'confirmed' ||
-            order.orderStatus == 'processing')
+        .where(
+          (order) =>
+              order.orderStatus == 'pending' ||
+              order.orderStatus == 'confirmed' ||
+              order.orderStatus == 'processing',
+        )
         .toList();
   }
 
   List<OrderModel> get activeOrders {
     return _orders
-        .where((order) =>
-            order.orderStatus != 'delivered' &&
-            order.orderStatus != 'cancelled' &&
-            order.orderStatus != 'refunded')
+        .where(
+          (order) =>
+              order.orderStatus != 'delivered' &&
+              order.orderStatus != 'cancelled' &&
+              order.orderStatus != 'refunded',
+        )
         .toList();
   }
 
   List<OrderModel> get completedOrders {
     return _orders
-        .where((order) =>
-            order.orderStatus == 'delivered' ||
-            order.orderStatus == 'completed')
+        .where(
+          (order) =>
+              order.orderStatus == 'delivered' ||
+              order.orderStatus == 'completed',
+        )
         .toList();
   }
 
   List<OrderModel> get cancelledOrders {
-    return _orders
-        .where((order) => order.orderStatus == 'cancelled')
-        .toList();
+    return _orders.where((order) => order.orderStatus == 'cancelled').toList();
   }
 
   List<OrderModel> get refundedOrders {
@@ -296,9 +296,11 @@ class OrderProvider with ChangeNotifier {
   List<OrderModel> searchOrders(String query) {
     final lowerQuery = query.toLowerCase();
     return _orders
-        .where((order) =>
-            order.orderNumber.toLowerCase().contains(lowerQuery) ||
-            order.id.toLowerCase().contains(lowerQuery))
+        .where(
+          (order) =>
+              order.orderNumber.toLowerCase().contains(lowerQuery) ||
+              order.id.toLowerCase().contains(lowerQuery),
+        )
         .toList();
   }
 

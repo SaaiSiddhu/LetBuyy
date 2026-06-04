@@ -71,6 +71,42 @@ void main() {
     },
   );
 
+  test('attaches lb_session transport headers when enabled', () async {
+    final dio = Dio();
+    late RequestOptions captured;
+    final client = ApiClient(
+      baseUrl: 'https://gateway.test/v1',
+      token: 'opaque-lb-session',
+      attachSessionCookie: true,
+      dio: dio,
+      maxRetries: 0,
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          captured = options;
+          handler.resolve(
+            Response<Object?>(
+              requestOptions: options,
+              statusCode: 200,
+              data: const {
+                'success': true,
+                'data': {'authenticated': true},
+              },
+            ),
+          );
+        },
+      ),
+    );
+
+    await client.auth.session();
+
+    expect(captured.headers['Authorization'], 'Bearer opaque-lb-session');
+    expect(captured.headers['X-LetBuyy-Session-Token'], 'opaque-lb-session');
+    expect(captured.headers['Cookie'], 'lb_session=opaque-lb-session');
+  });
+
   test('maps gateway failure payloads to ApiException', () async {
     final dio = Dio();
     final client = ApiClient(
