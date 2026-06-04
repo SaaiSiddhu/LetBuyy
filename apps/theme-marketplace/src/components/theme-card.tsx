@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Star, Download, Eye, Heart } from '@letbuyy/ui';
 import type { Theme } from '@letbuyy/theme-engine';
-import { formatPrice, formatCount, cn } from '@/lib/utils';
+import { CATEGORY_LABELS, formatPrice, formatCount, cn } from '@/lib/utils';
 
 interface ThemeCardProps {
     theme: Theme;
@@ -13,95 +13,113 @@ interface ThemeCardProps {
 
 export default function ThemeCard({ theme, featured = false }: ThemeCardProps) {
     const isFree = theme.letbuyy_pricing_type === 'free';
+    const priceLabel = formatPrice(theme.letbuyy_price_usd);
+    const pricingContext = isFree
+        ? 'No purchase required'
+        : theme.letbuyy_pricing_type === 'subscription'
+            ? 'Subscription theme'
+            : 'One-time purchase';
+    const ratingLabel = Number.isFinite(theme.rating) ? theme.rating.toFixed(1) : '0.0';
+    const categoryLabel = CATEGORY_LABELS[theme.category]?.label ?? theme.category;
+    const visibleTags = theme.tags.slice(0, 3);
 
     return (
         <Link
             href={`/themes/${theme.slug}`}
+            aria-label={`Open ${theme.name} theme details`}
             className={cn(
-                'group glass-card overflow-hidden flex flex-col',
+                'group glass-card flex min-h-full flex-col overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
                 featured && 'ring-1 ring-primary/20'
             )}
         >
-            {/* Thumbnail */}
-            <div className="relative aspect-[16/10] overflow-hidden">
+            <div className="relative aspect-video overflow-hidden bg-surface">
                 <Image
                     src={theme.thumbnail_url}
                     alt={theme.name}
                     fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105 group-focus-visible:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 />
 
-                {/* Overlay on Hover */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                    <div className="flex items-center gap-2 w-full">
-                        <span className="btn-primary text-xs py-1.5 px-3 flex items-center gap-1.5">
-                            <Eye className="w-3.5 h-3.5" />
-                            Preview
+                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/80 via-black/20 to-transparent p-4 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                    <div className="flex w-full items-center gap-2">
+                        <span className="inline-flex min-h-9 items-center gap-1.5 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-primary-cta)] px-3 text-xs font-semibold text-[color:var(--lb-color-primary-cta-text)] shadow-[var(--lb-shadow-md)]">
+                            <Eye className="h-3.5 w-3.5" aria-hidden="true" />
+                            Preview theme
                         </span>
-                        <span className="btn-secondary text-xs py-1.5 px-3 flex items-center gap-1.5 ml-auto">
-                            <Heart className="w-3.5 h-3.5" />
+                        <span className="ml-auto inline-flex h-9 w-9 items-center justify-center rounded-[var(--lb-radius-md)] border border-white/20 bg-white/15 text-white backdrop-blur-md">
+                            <Heart className="h-3.5 w-3.5" aria-hidden="true" />
+                            <span className="sr-only">Save theme</span>
                         </span>
                     </div>
                 </div>
 
-                {/* Price Badge */}
                 <div className="absolute top-3 right-3">
                     <span className={cn(
-                        'px-2.5 py-1 rounded-full text-xs font-bold backdrop-blur-md',
+                        'rounded-full border px-2.5 py-1 text-xs font-bold backdrop-blur-md',
                         isFree
                             ? 'bg-success/20 text-success border border-success/30'
                             : 'bg-primary/20 text-primary-light border border-primary/30'
                     )}>
-                        {formatPrice(theme.letbuyy_price_usd)}
+                        {priceLabel}
                     </span>
                 </div>
 
-                {/* Category Badge */}
                 <div className="absolute top-3 left-3">
-                    <span className="px-2 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider bg-black/50 text-white/80 backdrop-blur-md border border-white/10">
-                        {theme.category}
+                    <span className="rounded-full border border-white/10 bg-black/50 px-2 py-1 text-[10px] font-semibold uppercase text-white/80 backdrop-blur-md">
+                        {categoryLabel}
                     </span>
                 </div>
             </div>
 
-            {/* Info */}
-            <div className="p-4 flex flex-col flex-grow gap-2">
-                <div className="flex items-start justify-between gap-2">
-                    <h3 className="text-sm font-semibold text-text-heading group-hover:text-primary-light transition-colors line-clamp-1">
+            <div className="flex flex-grow flex-col gap-3 p-4">
+                <div className="flex items-start justify-between gap-3">
+                    <h3 className="line-clamp-2 text-sm font-semibold text-text-heading transition-colors group-hover:text-primary-light group-focus-visible:text-primary-light">
                         {theme.name}
                     </h3>
-                    <span className="text-[10px] text-text-subtle whitespace-nowrap">
+                    <span className="whitespace-nowrap text-[10px] text-text-subtle">
                         v{theme.version}
                     </span>
                 </div>
 
-                <p className="text-xs text-text-muted line-clamp-2 leading-relaxed">
+                <p className="line-clamp-2 text-xs leading-relaxed text-text-muted">
                     {theme.description}
                 </p>
 
-                {/* Tags */}
-                <div className="flex flex-wrap gap-1 mt-1">
-                    {theme.tags.slice(0, 3).map(tag => (
-                        <span
-                            key={tag}
-                            className="px-2 py-0.5 text-[10px] rounded-full bg-surface text-text-muted"
-                        >
-                            {tag}
-                        </span>
-                    ))}
-                </div>
-
-                {/* Bottom Stats */}
-                <div className="flex items-center justify-between mt-auto pt-3 border-t border-border">
-                    <div className="flex items-center gap-1">
-                        <Star className="w-3.5 h-3.5 text-warning fill-warning" />
-                        <span className="text-xs font-medium text-text-heading">{theme.rating}</span>
-                        <span className="text-[10px] text-text-subtle">({theme.review_count})</span>
+                {visibleTags.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                        {visibleTags.map(tag => (
+                            <span
+                                key={tag}
+                                className="rounded-full bg-surface px-2 py-0.5 text-[10px] text-text-muted"
+                            >
+                                {tag}
+                            </span>
+                        ))}
                     </div>
-                    <div className="flex items-center gap-1 text-text-subtle">
-                        <Download className="w-3 h-3" />
-                        <span className="text-[10px]">{formatCount(theme.install_count)}</span>
+                )}
+
+                <div className="mt-auto grid gap-2 border-t border-border pt-3">
+                    <div className="flex items-center justify-between gap-3">
+                        <div>
+                            <p className="m-0 text-sm font-semibold text-text-heading">{priceLabel}</p>
+                            <p className="m-0 text-[10px] text-text-subtle">{pricingContext}</p>
+                        </div>
+                        <div className="flex items-center gap-1 rounded-full bg-surface px-2 py-1" aria-label={`${ratingLabel} out of 5 from ${theme.review_count} reviews`}>
+                            <Star className="h-3.5 w-3.5 fill-warning text-warning" aria-hidden="true" />
+                            <span className="text-xs font-medium text-text-heading">{ratingLabel}</span>
+                            <span className="text-[10px] text-text-subtle">({theme.review_count})</span>
+                        </div>
+                    </div>
+                    <div className="flex items-center justify-between gap-3 text-[10px] text-text-subtle">
+                        <span
+                            className="inline-flex items-center gap-1"
+                            aria-label={`${formatCount(theme.install_count)} installs`}
+                        >
+                            <Download className="h-3 w-3" aria-hidden="true" />
+                            {formatCount(theme.install_count)} installs
+                        </span>
+                        <span className="truncate">{theme.author_name}</span>
                     </div>
                 </div>
             </div>
