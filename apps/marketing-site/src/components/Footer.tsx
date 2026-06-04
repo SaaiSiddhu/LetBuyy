@@ -41,11 +41,12 @@ export default function Footer() {
                     <div className="footer-brand">
                         <Link href="/" className="footer-logo">
                             <Image
-                                src="/icons/Logo-5.png"
+                                src="/icons/landscape_logo.png"
                                 alt="LetBuyy"
-                                width={180}
-                                height={50}
+                                width={700}
+                                height={300}
                                 className="footer-logo-image"
+                                unoptimized
                             />
                         </Link>
                         <p className="footer-tagline">

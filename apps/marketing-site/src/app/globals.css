@@ -218,20 +218,39 @@ html.lenis body {
   right: 0;
   z-index: 100;
   height: 72px;
-  padding-top: 8px;
+  padding-top: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Solid background - not transparent */
-  background: var(--bg-deep);
-  transition: height 0.4s var(--ease-smooth), background 0.4s var(--ease-smooth);
+  background: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.78);
+  box-shadow: 0 10px 36px rgba(15, 23, 42, 0.05);
+  backdrop-filter: blur(20px) saturate(1.08);
+  -webkit-backdrop-filter: blur(20px) saturate(1.08);
+  transition:
+    height 0.4s var(--ease-smooth),
+    background 0.4s var(--ease-smooth),
+    border-color 0.4s var(--ease-smooth),
+    box-shadow 0.4s var(--ease-smooth);
+}
+
+[data-theme="dark"] .header {
+  background: rgba(10, 15, 26, 0.9);
+  border-bottom-color: rgba(51, 65, 85, 0.55);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.26);
 }
 
 .header.scrolled {
   height: 64px;
-  background: var(--bg-deep);
-  border-bottom: 1px solid var(--border-subtle);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom-color: rgba(203, 213, 225, 0.86);
+  box-shadow: 0 12px 40px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="dark"] .header.scrolled {
+  background: rgba(10, 15, 26, 0.96);
+  border-bottom-color: rgba(51, 65, 85, 0.72);
+  box-shadow: 0 16px 52px rgba(0, 0, 0, 0.34);
 }
 
 /* Mobile Header */
@@ -271,6 +290,7 @@ html.lenis body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 24px;
   height: 100%;
 }
 
@@ -282,75 +302,75 @@ html.lenis body {
   position: relative;
   display: flex;
   align-items: center;
-  flex: 0 1 144px;
-  width: 144px;
+  flex: 0 0 164px;
+  width: 164px;
   min-width: 0;
   text-decoration: none;
-  /* No extra margin/padding - aligns with grid */
   margin: 0;
   padding: 0;
-  height: 100%;
-  overflow: hidden;
+  height: 56px;
+  overflow: visible;
+  isolation: isolate;
 }
 
 /* Subtle left-edge glow anchor behind logo */
 .header-logo::before {
   content: '';
   position: absolute;
-  left: -20px;
+  left: -18px;
   top: 50%;
   transform: translateY(-50%);
-  width: 120px;
-  height: 80px;
-  background: radial-gradient(ellipse at left center, var(--primary-glow) 0%, transparent 70%);
-  opacity: 0.5;
+  width: 104px;
+  height: 64px;
+  background: radial-gradient(ellipse at left center, rgba(59, 130, 246, 0.2) 0%, transparent 72%);
+  opacity: 0.7;
   pointer-events: none;
   z-index: -1;
 }
 
-/* Logo Image - Transform scale for large visual without affecting layout */
+/* Logo image uses a cropped transparent asset. Keep scaling smooth for raster clarity. */
 .header-logo-image {
-  width: 144px;
-  max-width: 100%;
+  display: block;
+  width: 100%;
   height: auto;
-  transform: none;
-  /* Crisp rendering */
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
-  /* Smooth transitions */
-  transition: filter 0.3s var(--ease-smooth);
-  /* Ensure no blur */
-  -webkit-font-smoothing: antialiased;
+  object-fit: contain;
+  object-position: left center;
+  filter:
+    drop-shadow(0 8px 18px rgba(59, 130, 246, 0.14))
+    drop-shadow(0 1px 1px rgba(15, 23, 42, 0.2))
+    saturate(1.1)
+    contrast(1.06);
+  transition: filter 0.3s var(--ease-smooth), transform 0.3s var(--ease-smooth);
   backface-visibility: hidden;
 }
 
-/* Tablet: Scale to ~176px: 44 * 4 = 176 */
+[data-theme="dark"] .header-logo-image {
+  filter:
+    drop-shadow(0 9px 22px rgba(37, 99, 235, 0.34))
+    drop-shadow(0 1px 0 rgba(255, 255, 255, 0.12))
+    brightness(1.08)
+    saturate(1.12);
+}
+
 @media (min-width: 768px) {
   .header-logo {
-    flex-basis: 176px;
-    width: 176px;
-  }
-
-  .header-logo-image {
-    width: 176px;
+    flex-basis: 188px;
+    width: 188px;
+    height: 62px;
   }
 }
 
-/* Desktop: Scale to ~211px: 42 * 5 = 210 */
 @media (min-width: 1024px) {
   .header-logo {
     flex-basis: 210px;
     width: 210px;
-  }
-
-  .header-logo-image {
-    width: 210px;
+    height: 68px;
   }
 }
 
 /* Hover: Subtle brightness increase - no movement */
 .header-logo:hover .header-logo-image {
-  filter: brightness(1.1);
+  transform: translateY(-1px);
 }
 
 /* ======================================
@@ -358,16 +378,27 @@ html.lenis body {
    ====================================== */
 
 .mobile-drawer-logo-image {
-  width: auto;
-  height: 32px;
-  transform: scale(1.15);
-  transform-origin: left center;
-  image-rendering: -webkit-optimize-contrast;
+  display: block;
+  width: 176px;
+  height: auto;
   transition: filter 0.3s var(--ease-smooth);
+  filter:
+    drop-shadow(0 6px 16px rgba(59, 130, 246, 0.14))
+    saturate(1.08);
+}
+
+[data-theme="dark"] .mobile-drawer-logo-image {
+  filter:
+    drop-shadow(0 7px 18px rgba(37, 99, 235, 0.3))
+    brightness(1.08)
+    saturate(1.12);
 }
 
 .mobile-drawer-logo:hover .mobile-drawer-logo-image {
-  filter: brightness(1.1);
+  filter:
+    drop-shadow(0 8px 20px rgba(59, 130, 246, 0.22))
+    brightness(1.06)
+    saturate(1.12);
 }
 
 .header-nav {
@@ -2917,8 +2948,8 @@ html.lenis body {
 }
 
 .mobile-drawer-logo-image {
-  height: 36px;
-  width: auto;
+  width: 176px;
+  height: auto;
 }
 
 .mobile-drawer-close {
@@ -3869,16 +3900,28 @@ html.lenis body {
 }
 
 .footer-logo .footer-logo-image {
-  width: 144px;
+  display: block;
+  width: 168px;
   max-width: 100%;
   height: auto;
   max-height: none;
   border-radius: 0;
+  filter:
+    drop-shadow(0 8px 18px rgba(59, 130, 246, 0.12))
+    saturate(1.08)
+    contrast(1.05);
+}
+
+[data-theme="dark"] .footer-logo .footer-logo-image {
+  filter:
+    drop-shadow(0 9px 22px rgba(37, 99, 235, 0.3))
+    brightness(1.08)
+    saturate(1.12);
 }
 
 @media (min-width: 768px) {
   .footer-logo .footer-logo-image {
-    width: 160px;
+    width: 188px;
   }
 }
 

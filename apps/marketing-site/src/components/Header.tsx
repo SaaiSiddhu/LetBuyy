@@ -84,8 +84,8 @@ export default function Header() {
                         <Image
                             src="/icons/landscape_logo.png"
                             alt="LetBuyy"
-                            width={320}
-                            height={80}
+                            width={700}
+                            height={300}
                             className="header-logo-image"
                             priority
                             unoptimized
@@ -103,14 +103,14 @@ export default function Header() {
 
                     {/* Desktop Actions */}
                     <div className="header-actions">
-                        <Link href="https://accounts.letbuyy.com/lookup" className="btn btn-ghost">
+                        <Link href="https://accounts.letbuyy.store/lookup" className="btn btn-ghost">
                             Sign In
                         </Link>
                         <motion.div
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                         >
-                            <Link href="https://accounts.letbuyy.com/signup" className="btn btn-primary">
+                            <Link href="https://accounts.letbuyy.store/signup" className="btn btn-primary">
                                 Get Started Free
                             </Link>
                         </motion.div>
@@ -160,8 +160,8 @@ export default function Header() {
                                     <Image
                                         src="/icons/landscape_logo.png"
                                         alt="LetBuyy"
-                                        width={240}
-                                        height={60}
+                                        width={700}
+                                        height={300}
                                         className="mobile-drawer-logo-image"
                                         unoptimized
                                     />
@@ -208,14 +208,14 @@ export default function Header() {
                             {/* Bottom Actions */}
                             <div className="mobile-drawer-actions">
                                 <Link
-                                    href="https://accounts.letbuyy.com/lookup"
+                                    href="https://accounts.letbuyy.store/lookup"
                                     className="btn btn-ghost btn-block"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     Sign In
                                 </Link>
                                 <Link
-                                    href="https://accounts.letbuyy.com/signup"
+                                    href="https://accounts.letbuyy.store/signup"
                                     className="btn btn-primary btn-block"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
