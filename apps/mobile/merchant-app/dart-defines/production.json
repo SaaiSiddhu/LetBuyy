@@ -1,0 +1,8 @@
+{
+  "SUPABASE_URL": "https://prod-project-ref.supabase.co",
+  "SUPABASE_ANON_KEY": "SKIP_NEEDS_HUMAN_PRODUCTION_SUPABASE_ANON_KEY",
+  "API_BASE_URL": "https://api.letbuyy.store/v1",
+  "STOREFRONT_BASE_URL": "https://letbuyy.store",
+  "RAZORPAY_KEY_ID": "SKIP_NEEDS_HUMAN_PRODUCTION_RAZORPAY_KEY_ID",
+  "ENVIRONMENT": "production"
+}

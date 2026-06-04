@@ -3,8 +3,8 @@
 ## CURRENT STATUS
 - Stage: STAGE 4 - WS4 Storefront.
 - Branch: `stream/master-execution`.
-- Active gate: SF5 Responsive Storefront commit and post-commit governance.
-- Active task: Commit SF5 and run post-commit governance.
+- Active gate: WS4 Storefront complete.
+- Active task: Stage 5 WS8 Mobile Parity is next in the master program.
 - Scope lock: source edits are limited to `apps/storefront-runtime/src/**`; root execution ledgers are bookkeeping exceptions. No services, packages, database, governance source, or other app roots may be changed in WS4.
 
 ## MISSION CONTEXT READ
@@ -162,8 +162,8 @@
   - Visual review completed for the mobile drawer, account settings, product detail, cart, and checkout screenshots; no text overlap, clipped active nav, or incoherent horizontal overflow found after fixing the account tab layout and waiting for the drawer animation in the proof script.
 
 ### GATE SF5 Responsive Storefront
-- Status: PASS; commit and post-commit governance pending.
-- Gate proof: 375px storefront product listing/detail, cart/checkout, customer account, and hamburger navigation screenshots passed automated overflow checks and visual review. Generated-artifact cleanup scan was empty and full governance passed 128/128 before commit.
+- Status: PASS.
+- Gate proof: 375px storefront product listing/detail, cart/checkout, customer account, and hamburger navigation screenshots passed automated overflow checks and visual review. Generated-artifact cleanup scan was empty, full governance passed 128/128 before commit, and post-commit governance passed 128/128 after commit `62dd4b8b`.
 
 ## VALIDATOR LEDGER
 - 2026-06-04T03:08:00Z [WS3 predecessor gate] Post-commit `pnpm run validate:governance` after `82ea1656` -> PASS (128/128 validators). WS4 started from a green governance baseline.
@@ -180,3 +180,4 @@
 - 2026-06-04T04:42:40Z [SF4 post-commit governance] Post-commit `pnpm run validate:governance` after `cdb34f92` -> PASS (128/128 validators).
 - 2026-06-04T04:55:17Z [SF5 scoped gate] `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf5-responsive-audit.mjs` -> PASS with 375px shop/product/cart/checkout/account/navigation screenshots and no overflow failures.
 - 2026-06-04T04:58:33Z [SF5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; exact pre-commit rerun `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T05:00:08Z [SF5 post-commit governance] Post-commit `pnpm run validate:governance` after `62dd4b8b` -> PASS (128/128 validators). WS4 Storefront is complete; advancing master program to Stage 5 WS8 Mobile Parity.
