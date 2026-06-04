@@ -2,7 +2,7 @@
 
 ## CURRENT STATUS
 - Stage: STAGE 5 - WS8 Mobile Parity.
-- Active gate: M2 identity/session migration pre-commit governance passed; commit pending.
+- Active gate: M3 contract conformance pre-commit governance passed; commit pending.
 - Scope lock: mobile source work is limited to `apps/mobile/merchant-app/**` and `packages/dart/**` unless the active mission explicitly allows a supporting config/documentation file. Web apps, backend services, database, package-core contracts, shared TypeScript packages, and governance validators remain out of scope for WS8 source changes.
 
 ## M0 BASELINE PROOF
@@ -52,7 +52,7 @@
   - Escalated `pnpm run federation:local:down` -> PASS after the real gateway proof.
 
 ## M2 IDENTITY / SESSION MIGRATION
-- Status: DONE / PRE-GOVERNANCE PROOF COMPLETE WITH BACKEND SKIP.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED WITH BACKEND SKIP.
 - Source changes:
   - Added `IDENTITY_BASE_URL` to merchant app dart-define contracts and `AppConfig`.
   - Added `flutter_secure_storage` to the merchant app and removed its direct `supabase_flutter` dependency.
@@ -75,6 +75,19 @@
   - Escalated `flutter build apk --debug --dart-define-from-file=dart-defines/local.json` in `apps/mobile/merchant-app` -> PASS, built `build/app/outputs/flutter-apk/app-debug.apk`.
   - Escalated `flutter build ios --no-codesign --debug --dart-define-from-file=dart-defines/local.json` in `apps/mobile/merchant-app` -> PASS, built `build/ios/iphoneos/Runner.app`.
 
+## M3 CONTRACT CONFORMANCE
+- Status: DONE / PRE-COMMIT GOVERNANCE PASSED.
+- Source changes:
+  - Added `packages/dart/models/lib/shared_contracts.dart` and `packages/dart/models/lib/src/shared_contracts.dart` as the canonical pure-Dart mirror of `packages/shared-types/src/index.ts` for Address, CustomerAddress, ProductOption, ProductVariant, Product, CollectionRule, Collection, Customer, CartLine, Cart, LineItem, Order, Payment, Coupon, Page, ThemeSettingField, ThemeSettings, ThemeBlock, ThemeSection, ThemeTemplate, ThemeBundle, and Theme.
+  - Exported the canonical contract layer from both `letbuyy_models.dart` and `merchant_contracts.dart` without removing legacy model exports; M4/M5 will migrate/delete the Firestore-era models safely.
+  - Added `packages/dart/models/test/shared_contracts_conformance_test.dart`, which reads the TypeScript `shared-types` file, extracts Zod/interface top-level fields, compares them with Dart field manifests, and verifies representative gateway JSON round-trips for product, order, and theme bundle data.
+- Scoped proof:
+  - Escalated `dart format` over the touched model/test files -> PASS after sandbox formatter completed changes but exited nonzero only on Dart telemetry file permissions.
+  - Escalated `flutter analyze` in `packages/dart/models` -> PASS with no issues.
+  - Escalated `flutter test` in `packages/dart/models` -> PASS: 2 conformance tests passed.
+  - Escalated `flutter analyze` in `packages/dart/services` -> PASS with no issues.
+  - Escalated `flutter analyze` in `apps/mobile/merchant-app` -> PASS with no issues.
+
 ## SKIPPED - NEEDS HUMAN
 - Staging Supabase project URL and anon key. Required: governed staging `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_STAGING_*` placeholders.
 - Production Supabase project URL and anon key. Required: governed production `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_PRODUCTION_*` placeholders.
@@ -94,3 +107,6 @@
 - 2026-06-04T05:47:27Z [M1 post-commit governance] Post-commit `pnpm run validate:governance` after `90c48342` -> PASS (128/128 validators). M1 is complete; advancing to M2 identity/session migration.
 - 2026-06-04T06:04:43Z [M2 scoped proof] Identity/session migration source proof complete: root `flutter pub get`, formatter, Firebase Auth/social-auth source scans, package/app analyzes, API client and merchant app tests, Android debug build, and iOS no-codesign debug build all passed. M2 live protected-gateway login remains `[SKIP - NEEDS BACKEND]` because mobile cannot safely generate the signed internal session headers the gateway currently requires for `lb_session`.
 - 2026-06-04T06:08:40Z [M2 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, or `.symlinks` directories; `pnpm run validate:governance` -> PASS (128/128 validators). M2 gate result: PASS WITH BACKEND SKIPS.
+- 2026-06-04T06:14:21Z [M2 post-commit governance] Post-commit `pnpm run validate:governance` after `705975f9` -> PASS (128/128 validators). M2 is complete with backend-only skips; advancing to M3 contract conformance.
+- 2026-06-04T06:24:11Z [M3 scoped proof] Contract conformance source proof complete: formatter, `packages/dart/models` analyze/test, `packages/dart/services` analyze, and merchant app analyze all passed. Full governance pending after generated-artifact cleanup.
+- 2026-06-04T06:25:59Z [M3 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M3 gate result: PASS.

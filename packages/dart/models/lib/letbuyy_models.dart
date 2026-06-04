@@ -1,6 +1,8 @@
 /// Shared data models for LetBuyy apps
 library;
 
+export 'shared_contracts.dart';
+
 // Address
 export 'src/address_model.dart';
 
