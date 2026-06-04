@@ -4,14 +4,14 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import { useParams, usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCustomerAuth } from '@/context/customer-auth-context';
 import {
     Package, Heart, MapPin, Settings, ChevronRight,
-    Loader2, User as UserIcon,
 } from '@letbuyy/ui';
+import { StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
 const navItems = [
     { href: 'orders', icon: Package, label: 'Orders' },
@@ -23,14 +23,10 @@ const navItems = [
 export default function AccountLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const params = useParams();
+    const currentPath = usePathname();
     const subdomain = params.subdomain as string;
     const basePath = `/store/${subdomain}`;
     const { isAuthenticated, isLoading, customer } = useCustomerAuth();
-    const [currentPath, setCurrentPath] = useState('');
-
-    useEffect(() => {
-        setCurrentPath(window.location.pathname);
-    }, []);
 
     // Redirect if not authenticated (after loading completes)
     useEffect(() => {
@@ -41,8 +37,8 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-[60vh]">
-                <Loader2 size={32} className="animate-spin" style={{ color: 'var(--primary)' }} />
+            <div className="container mx-auto px-4 py-8 md:py-12" style={{ marginTop: '80px' }}>
+                <StorefrontListLoadingState rows={4} />
             </div>
         );
     }
@@ -77,7 +73,6 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                             <Link
                                 key={href}
                                 href={itemHref}
-                                onClick={() => setCurrentPath(itemHref)}
                                 className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
                                 style={{
                                     backgroundColor: active ? 'var(--primary)' : 'var(--surface, #F3F4F6)',
@@ -119,7 +114,6 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                                     <Link
                                         key={href}
                                         href={itemHref}
-                                        onClick={() => setCurrentPath(itemHref)}
                                         className="flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-medium transition-colors"
                                         style={{
                                             backgroundColor: active ? 'var(--primary)' : 'transparent',

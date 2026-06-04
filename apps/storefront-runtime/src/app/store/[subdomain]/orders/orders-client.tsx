@@ -8,6 +8,7 @@ import {
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { OrderModel, OrderStatus } from '@letbuyy/checkout-core';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 interface OrdersClientProps {
     subdomain: string;
@@ -264,10 +265,14 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                     </div>
 
                     {orders.length === 0 ? (
-                        <div className="card-theme rounded-2xl p-12 text-center">
-                            <Package size={48} className="text-theme-hint mx-auto mb-4" />
-                            <p className="text-theme-secondary">No orders found</p>
-                        </div>
+                        <StorefrontEmptyState
+                            icon={<Package size={28} aria-hidden="true" />}
+                            title="No orders found"
+                            body="Orders placed with this email or phone will appear here."
+                            actionHref={`${basePath}/shop`}
+                            actionLabel="Continue shopping"
+                            actionIcon={<Package size={16} aria-hidden="true" />}
+                        />
                     ) : (
                         <div className="space-y-4">
                             {orders.map(order => {
@@ -320,13 +325,15 @@ export default function OrdersClient({ subdomain }: OrdersClientProps) {
                         </div>
                     )}
 
-                    <Link
-                        href={basePath}
-                        className="block text-center mt-6 font-medium"
-                        style={{ color: primaryColor }}
-                    >
-                        Continue Shopping
-                    </Link>
+                    {orders.length > 0 && (
+                        <Link
+                            href={basePath}
+                            className="block text-center mt-6 font-medium"
+                            style={{ color: primaryColor }}
+                        >
+                            Continue Shopping
+                        </Link>
+                    )}
                 </div>
             </div>
         );

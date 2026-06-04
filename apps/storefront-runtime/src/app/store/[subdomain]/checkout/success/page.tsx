@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle, Loader2, ArrowLeft } from '@letbuyy/ui';
+import { CheckCircle, ArrowLeft } from '@letbuyy/ui';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
+import { StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
 export default function StripeSuccessPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const searchParams = useSearchParams();
@@ -29,8 +30,10 @@ export default function StripeSuccessPage({ params }: { params: Promise<{ subdom
 
     if (status === 'loading') {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="animate-spin" size={32} />
+            <div className="min-h-screen flex items-center justify-center px-4">
+                <div className="w-full max-w-xl">
+                    <StorefrontListLoadingState rows={3} />
+                </div>
             </div>
         );
     }

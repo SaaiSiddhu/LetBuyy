@@ -10,6 +10,7 @@ import { useParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight, ShoppingBag, Heart, Star } from '@letbuyy/ui';
 import { useState, useRef } from 'react';
 import { useCart } from '@/context/cart-context';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 
@@ -85,7 +86,19 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
         return 0;
     };
 
-    if (products.length === 0) return null;
+    if (products.length === 0) {
+        return (
+            <section className="py-8 md:py-10 overflow-hidden" style={{ backgroundColor: colors.backgroundColor }}>
+                <div className="max-w-screen-xl mx-auto px-4">
+                    <StorefrontEmptyState
+                        icon={<ShoppingBag size={28} aria-hidden="true" />}
+                        title="No featured products"
+                        body="Featured products added to this store will appear here."
+                    />
+                </div>
+            </section>
+        );
+    }
 
     return (
         <section className="py-8 md:py-10 overflow-hidden" style={{ backgroundColor: colors.backgroundColor }}>
@@ -144,12 +157,12 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                 <Link href={`${basePath}/product/${product.id}`}>
                                     <div className="group">
                                         <div
-                                            className="card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                                            className="storefront-product-card card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                                             style={{ borderRadius: `${colors.borderRadius}px` }}
                                         >
                                             {/* Image with theme-colored background */}
                                             <div
-                                                className="relative aspect-square overflow-hidden"
+                                                className="storefront-product-card__media relative aspect-square overflow-hidden"
                                                 style={{ backgroundColor: getCardBgColor(i) }}
                                             >
                                                 <Image
@@ -184,17 +197,17 @@ export default function FeaturedProducts({ section, products, theme }: Props) {
                                                     <ShoppingBag size={16} /> Add
                                                 </button>
                                             </div>
-                                            <div className="p-3">
+                                            <div className="storefront-product-card__body p-3">
                                                 {/* Category label - uses primaryColor */}
                                                 {product.category && (
                                                     <span
-                                                        className="text-xs font-bold uppercase tracking-wide"
+                                                        className="storefront-product-card__category text-xs font-bold uppercase tracking-wide"
                                                         style={{ color: hexToRgba(colors.primaryColor, 0.6) }}
                                                     >
                                                         {product.category}
                                                     </span>
                                                 )}
-                                                <h3 className="text-sm font-medium truncate" style={{ color: colors.textColor }}>
+                                                <h3 className="storefront-product-card__title text-sm font-medium truncate" style={{ color: colors.textColor }}>
                                                     {product.name}
                                                 </h3>
                                                 <div className="flex items-center gap-1 mt-0.5">

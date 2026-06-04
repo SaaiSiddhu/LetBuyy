@@ -3,6 +3,8 @@
 import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { SkillItem } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
+import { Star } from '@letbuyy/ui';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 interface Props {
     section: SectionModel;
@@ -104,9 +106,11 @@ export default function SkillsSection({ section, theme }: Props) {
 
                 {/* Empty State */}
                 {skills.length === 0 && (
-                    <div className="text-center py-12 text-theme-muted">
-                        <p>No skills listed yet</p>
-                    </div>
+                    <StorefrontEmptyState
+                        icon={<Star size={28} aria-hidden="true" />}
+                        title="No skills listed yet"
+                        body="Skills added to this storefront will appear here."
+                    />
                 )}
             </div>
         </section>

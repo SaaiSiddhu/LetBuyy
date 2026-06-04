@@ -379,6 +379,164 @@ html[data-letbuyy-preview-viewport="mobile"] .storefront-preview-route__canvas .
   background: var(--lb-component-button-primary-hover, var(--primary));
 }
 
+.storefront-empty-state {
+  --lb-density-card-padding: clamp(1rem, 4vw, 1.5rem);
+  --lb-density-empty-state-min-height: 12rem;
+  --lb-density-section-gap: 0.75rem;
+  --lb-size-empty-state-measure: 28rem;
+  --lb-component-card-radius: 0.5rem;
+  --lb-component-empty-state-bg: var(--surface);
+  --lb-component-empty-state-border: var(--border);
+  --lb-component-empty-state-title: var(--text);
+  --lb-component-empty-state-body: var(--text-secondary);
+  width: min(100%, 32rem);
+  min-height: 12rem;
+  margin-inline: auto;
+  border-color: color-mix(in srgb, var(--primary) 18%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 96%, var(--primary));
+  padding: clamp(1rem, 4vw, 1.5rem);
+}
+
+.storefront-empty-state__icon {
+  display: inline-flex;
+  width: 3rem;
+  height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--primary) 10%, var(--surface));
+  color: var(--primary);
+}
+
+.storefront-empty-state h3,
+.storefront-empty-state p {
+  overflow-wrap: anywhere;
+}
+
+.storefront-empty-state__action {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: var(--lb-space-2, 0.5rem);
+  border-radius: var(--lb-component-button-radius, 0.5rem);
+  background: var(--primary);
+  color: var(--text-inverse);
+  font-size: var(--lb-font-size-button, 0.875rem);
+  font-weight: var(--lb-font-weight-semibold, 600);
+  line-height: 1;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+.storefront-empty-state__action:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.storefront-loading-state {
+  display: grid;
+  min-height: 100vh;
+  gap: var(--lb-space-8, 2rem);
+  overflow-x: hidden;
+  background: var(--background);
+  color: var(--text);
+  padding-bottom: var(--lb-space-8, 2rem);
+  padding-top: 4.5rem;
+}
+
+.storefront-loading-state__hero {
+  min-height: clamp(18rem, 42vw, 34rem);
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: var(--lb-space-6, 1.5rem);
+}
+
+.storefront-loading-state__hero-card {
+  height: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  opacity: 0.34;
+}
+
+.storefront-loading-state__section {
+  display: grid;
+  width: min(100% - 2rem, 72rem);
+  gap: var(--lb-space-5, 1.25rem);
+  margin-inline: auto;
+}
+
+.storefront-loading-state__section--muted {
+  min-height: 18rem;
+}
+
+.storefront-loading-state__heading {
+  max-width: 20rem;
+}
+
+.storefront-loading-state__grid {
+  display: grid;
+  gap: var(--lb-space-4, 1rem);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.storefront-loading-state__wide-card {
+  height: 16rem;
+}
+
+.storefront-list-loading-state {
+  display: grid;
+  gap: var(--lb-space-4, 1rem);
+  padding-block: var(--lb-space-6, 1.5rem);
+}
+
+.storefront-list-loading-state__heading {
+  max-width: 18rem;
+}
+
+.storefront-product-card,
+.storefront-collection-card {
+  min-width: 0;
+  isolation: isolate;
+}
+
+.storefront-product-card__media {
+  background: var(--card-bg-secondary);
+}
+
+.storefront-product-card__body {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.storefront-product-card__category,
+.storefront-product-card__title,
+.storefront-collection-card__title {
+  letter-spacing: 0;
+}
+
+.storefront-product-card__title,
+.storefront-collection-card__title {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 767px) {
+  .storefront-loading-state {
+    gap: var(--lb-space-6, 1.5rem);
+    padding-top: 3.5rem;
+  }
+
+  .storefront-loading-state__hero {
+    min-height: 16rem;
+  }
+
+  .storefront-loading-state__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .storefront-editor-section-frame:hover .storefront-editor-section-frame__label,
 .storefront-editor-section-frame:focus-visible .storefront-editor-section-frame__label,
 .storefront-editor-section-frame--selected .storefront-editor-section-frame__label {

@@ -74,7 +74,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                         <Link
                             key={category.slug}
                             href={`${basePath}/shop?category=${encodeURIComponent(category.slug)}`}
-                            className="group relative block aspect-[3/4] md:aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
+                            className="storefront-collection-card group relative block aspect-[3/4] md:aspect-[4/3] rounded-xl overflow-hidden bg-gray-100"
                         >
                             {category.image ? (
                                 <Image
@@ -95,7 +95,7 @@ export default function CategoryGrid({ section, basePath }: CategoryGridProps) {
                                         {category.tagline}
                                     </p>
                                 )}
-                                <h3 className="text-white text-sm md:text-xl font-bold tracking-tight">
+                                <h3 className="storefront-collection-card__title text-white text-sm md:text-xl font-bold tracking-tight">
                                     {category.name}
                                 </h3>
                                 <div className="flex items-center justify-between mt-2">

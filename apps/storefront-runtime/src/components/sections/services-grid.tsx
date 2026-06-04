@@ -4,6 +4,7 @@ import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ServiceItem } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
 import { Palette, Code, Globe, Smartphone, Camera, PenTool, BarChart3, Megaphone } from '@letbuyy/ui';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 interface Props {
     section: SectionModel;
@@ -89,10 +90,11 @@ export default function ServicesGrid({ section, theme }: Props) {
 
                 {/* Empty State */}
                 {services.length === 0 && (
-                    <div className="text-center py-12 text-theme-muted">
-                        <Globe size={40} className="mx-auto mb-3 opacity-30" />
-                        <p>No services listed yet</p>
-                    </div>
+                    <StorefrontEmptyState
+                        icon={<Globe size={28} aria-hidden="true" />}
+                        title="No services listed yet"
+                        body="Services added to this storefront will appear here."
+                    />
                 )}
             </div>
         </section>

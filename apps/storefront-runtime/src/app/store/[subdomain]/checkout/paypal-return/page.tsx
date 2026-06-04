@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle, Loader2, ArrowLeft, XCircle } from '@letbuyy/ui';
+import { CheckCircle, ArrowLeft, XCircle } from '@letbuyy/ui';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
@@ -10,6 +10,7 @@ import {
     storefrontBrowserApiFetch,
     storefrontApiErrorMessage,
 } from '@/lib/api/browser-client';
+import { StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
 export default function PayPalReturnPage({ params }: { params: Promise<{ subdomain: string }> }) {
     const searchParams = useSearchParams();
@@ -64,9 +65,10 @@ export default function PayPalReturnPage({ params }: { params: Promise<{ subdoma
 
     if (status === 'loading') {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-                <Loader2 className="animate-spin" size={32} style={{ color: 'var(--primary)' }} />
-                <p className="text-sm text-theme-secondary">Processing your PayPal payment...</p>
+            <div className="min-h-screen flex items-center justify-center px-4">
+                <div className="w-full max-w-xl">
+                    <StorefrontListLoadingState rows={3} />
+                </div>
             </div>
         );
     }

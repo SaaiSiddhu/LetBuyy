@@ -6,9 +6,9 @@
 
 import { useEffect, useState } from 'react';
 import type { LineItem, Order as SharedOrder } from '@letbuyy/shared-types';
-import { Package, ChevronRight, Loader2, ShoppingBag } from '@letbuyy/ui';
-import Link from 'next/link';
+import { Package, ChevronRight, ShoppingBag } from '@letbuyy/ui';
 import { useParams } from 'next/navigation';
+import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
 type OrderHistoryItem = Pick<SharedOrder, 'id' | 'order_number' | 'status' | 'total' | 'created_at'> & {
     items?: OrderHistoryLineItem[];
@@ -45,35 +45,19 @@ export default function OrdersPage() {
     }, []);
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-20">
-                <Loader2 size={28} className="animate-spin" style={{ color: 'var(--primary)' }} />
-            </div>
-        );
+        return <StorefrontListLoadingState rows={4} />;
     }
 
     if (orders.length === 0) {
         return (
-            <div className="text-center py-16">
-                <div
-                    className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}
-                >
-                    <ShoppingBag size={28} style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                </div>
-                <h2 className="text-lg font-semibold mb-1">No orders yet</h2>
-                <p className="text-sm mb-6" style={{ color: 'var(--text-secondary, #6B7280)' }}>
-                    When you place an order, it will appear here.
-                </p>
-                <Link
-                    href={`${basePath}/shop`}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold"
-                    style={{ backgroundColor: 'var(--primary)' }}
-                >
-                    <ShoppingBag size={18} />
-                    Start Shopping
-                </Link>
-            </div>
+            <StorefrontEmptyState
+                icon={<ShoppingBag size={28} aria-hidden="true" />}
+                title="No orders yet"
+                body="When you place an order, it will appear here."
+                actionHref={`${basePath}/shop`}
+                actionLabel="Start shopping"
+                actionIcon={<ShoppingBag size={18} aria-hidden="true" />}
+            />
         );
     }
 

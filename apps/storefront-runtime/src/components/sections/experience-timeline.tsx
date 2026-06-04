@@ -4,6 +4,7 @@ import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
 import type { ExperienceItem } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
 import { Briefcase, GraduationCap } from '@letbuyy/ui';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 interface Props {
     section: SectionModel;
@@ -103,10 +104,11 @@ export default function ExperienceTimeline({ section, theme }: Props) {
 
                 {/* Empty State */}
                 {experiences.length === 0 && (
-                    <div className="text-center py-12 text-theme-muted">
-                        <GraduationCap size={40} className="mx-auto mb-3 opacity-30" />
-                        <p>No experience listed yet</p>
-                    </div>
+                    <StorefrontEmptyState
+                        icon={<GraduationCap size={28} aria-hidden="true" />}
+                        title="No experience listed yet"
+                        body="Experience entries added to this storefront will appear here."
+                    />
                 )}
             </div>
         </section>

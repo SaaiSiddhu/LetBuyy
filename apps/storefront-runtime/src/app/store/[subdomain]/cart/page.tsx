@@ -6,6 +6,7 @@ import { Plus, Minus, ArrowRight, ArrowLeft, ShoppingBag, X, Shield, Truck, Pack
 import { useParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 
@@ -22,23 +23,15 @@ export default function CartPage() {
     if (items.length === 0) {
         return (
             <div className="min-h-screen pt-20">
-                <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-4">
-                    <motion.div
-                        initial={{ scale: 0.8, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="w-20 h-20 card-theme-secondary rounded-full flex items-center justify-center mb-6 shadow-inner"
-                    >
-                        <ShoppingBag size={32} className="text-theme-hint" />
-                    </motion.div>
-                    <h1 className="text-2xl font-bold mb-2 text-theme">Your Bag is Empty</h1>
-                    <p className="text-theme-secondary mb-6 text-sm max-w-xs">Start shopping to add items to your bag</p>
-                    <Link
-                        href={`${basePath}/shop`}
-                        className="inline-flex min-h-11 items-center justify-center rounded-xl px-6 py-3 font-semibold text-white shadow-lg transition-all hover:-translate-y-0.5"
-                        style={{ backgroundColor: primaryColor }}
-                    >
-                        Browse Products
-                    </Link>
+                <div className="min-h-[60vh] p-4">
+                    <StorefrontEmptyState
+                        icon={<ShoppingBag size={32} aria-hidden="true" />}
+                        title="Your bag is empty"
+                        body="Start shopping to add items to your bag."
+                        actionHref={`${basePath}/shop`}
+                        actionLabel="Browse products"
+                        actionIcon={<ShoppingBag size={18} aria-hidden="true" />}
+                    />
                 </div>
             </div>
         );

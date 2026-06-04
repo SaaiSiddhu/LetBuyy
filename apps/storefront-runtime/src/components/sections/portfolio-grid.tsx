@@ -5,6 +5,7 @@ import type { PortfolioProject } from '@letbuyy/cms-core';
 import { motion } from 'framer-motion';
 import { ExternalLink, ArrowUpRight } from '@letbuyy/ui';
 import Image from 'next/image';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 interface Props {
     section: SectionModel;
@@ -108,10 +109,11 @@ export default function PortfolioGrid({ section, theme }: Props) {
 
                 {/* Empty State */}
                 {projects.length === 0 && (
-                    <div className="text-center py-16 text-theme-muted">
-                        <ExternalLink size={40} className="mx-auto mb-3 opacity-30" />
-                        <p>No projects yet</p>
-                    </div>
+                    <StorefrontEmptyState
+                        icon={<ExternalLink size={28} aria-hidden="true" />}
+                        title="No projects yet"
+                        body="Portfolio projects added to this storefront will appear here."
+                    />
                 )}
             </div>
         </section>

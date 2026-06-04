@@ -15,6 +15,7 @@ import {
     storefrontBrowserApiFetch,
     storefrontApiErrorMessage,
 } from '@/lib/api/browser-client';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 interface RazorpaySuccessResponse {
     razorpay_order_id: string;
@@ -547,14 +548,15 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     // Empty Cart
     if (items.length === 0 && !isSuccess) {
         return (
-            <div className="min-h-screen pt-20 flex items-center justify-center">
-                <div className="text-center">
-                    <Package size={48} className="text-theme-hint mx-auto mb-4" />
-                    <p className="text-theme-secondary mb-4">Your cart is empty</p>
-                    <Link href={`${basePath}/shop`} className="font-semibold" style={{ color: primaryColor }}>
-                        Go Shopping
-                    </Link>
-                </div>
+            <div className="min-h-screen pt-20 flex items-center justify-center px-4">
+                <StorefrontEmptyState
+                    icon={<Package size={28} aria-hidden="true" />}
+                    title="Your cart is empty"
+                    body="Add products to your bag before checkout."
+                    actionHref={`${basePath}/shop`}
+                    actionLabel="Browse products"
+                    actionIcon={<Package size={16} aria-hidden="true" />}
+                />
             </div>
         );
     }

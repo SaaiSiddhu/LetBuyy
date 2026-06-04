@@ -9,6 +9,7 @@ import type { CustomerAddress } from '@letbuyy/shared-types';
 import {
     MapPin, Plus, Trash2, Edit3, Star, Loader2, X, Home, Briefcase, Check,
 } from '@letbuyy/ui';
+import { StorefrontEmptyState, StorefrontListLoadingState } from '@/components/storefront/storefront-states';
 
 type AddressRow = Pick<CustomerAddress, 'id' | 'full_name' | 'address_line1' | 'city' | 'state' | 'postal_code' | 'country' | 'is_default'> &
     Partial<Pick<CustomerAddress, 'label' | 'address_line2' | 'landmark'>> & {
@@ -129,11 +130,7 @@ export default function AddressesPage() {
     };
 
     if (loading) {
-        return (
-            <div className="flex items-center justify-center py-20">
-                <Loader2 size={28} className="animate-spin" style={{ color: 'var(--primary)' }} />
-            </div>
-        );
+        return <StorefrontListLoadingState rows={3} />;
     }
 
     return (
@@ -152,18 +149,11 @@ export default function AddressesPage() {
 
             {/* ── Address Cards ────────────────────────── */}
             {addresses.length === 0 && !showForm ? (
-                <div className="text-center py-16">
-                    <div
-                        className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                        style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}
-                    >
-                        <MapPin size={28} style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                    </div>
-                    <h2 className="text-lg font-semibold mb-1">No saved addresses</h2>
-                    <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
-                        Add an address for faster checkout.
-                    </p>
-                </div>
+                <StorefrontEmptyState
+                    icon={<MapPin size={28} aria-hidden="true" />}
+                    title="No saved addresses"
+                    body="Add an address for faster checkout."
+                />
             ) : (
                 <div className="grid gap-4 sm:grid-cols-2">
                     {addresses.map(addr => {

@@ -8,6 +8,7 @@ import { useWishlist } from '@/context/wishlist-context';
 import { Heart, ShoppingBag } from '@letbuyy/ui';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 export default function WishlistPage() {
     const { items, toggleWishlist } = useWishlist();
@@ -17,26 +18,14 @@ export default function WishlistPage() {
 
     if (items.length === 0) {
         return (
-            <div className="text-center py-16">
-                <div
-                    className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center"
-                    style={{ backgroundColor: 'var(--surface, #F3F4F6)' }}
-                >
-                    <Heart size={28} style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
-                </div>
-                <h2 className="text-lg font-semibold mb-1">Your wishlist is empty</h2>
-                <p className="text-sm mb-6" style={{ color: 'var(--text-secondary, #6B7280)' }}>
-                    Save items you love and come back to them anytime.
-                </p>
-                <Link
-                    href={`${basePath}/shop`}
-                    className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-white text-sm font-semibold"
-                    style={{ backgroundColor: 'var(--primary)' }}
-                >
-                    <ShoppingBag size={18} />
-                    Browse Products
-                </Link>
-            </div>
+            <StorefrontEmptyState
+                icon={<Heart size={28} aria-hidden="true" />}
+                title="Your wishlist is empty"
+                body="Save items you love and come back to them anytime."
+                actionHref={`${basePath}/shop`}
+                actionLabel="Browse products"
+                actionIcon={<ShoppingBag size={18} aria-hidden="true" />}
+            />
         );
     }
 

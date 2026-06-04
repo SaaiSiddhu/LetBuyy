@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { useCart } from '@/context/cart-context';
 import { useWishlist } from '@/context/wishlist-context';
+import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
 
 const productImageFallback = '/images/banners/new-arrivals-1.png';
 
@@ -113,12 +114,12 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                             >
                                 <Link href={`${basePath}/product/${product.id}`} className="group block">
                                     <div
-                                        className="card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+                                        className="storefront-product-card card-theme overflow-hidden shadow-sm hover:shadow-md transition-shadow"
                                         style={{ borderRadius: `${colors.borderRadius}px` }}
                                     >
                                         {/* Image with theme-colored background */}
                                         <div
-                                            className="relative aspect-square overflow-hidden"
+                                            className="storefront-product-card__media relative aspect-square overflow-hidden"
                                             style={{ backgroundColor: getCardBgColor(i) }}
                                         >
                                             <Image
@@ -158,17 +159,17 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                                             )}
                                         </div>
                                         {/* Info */}
-                                        <div className="p-3">
+                                        <div className="storefront-product-card__body p-3">
                                             {/* Category label - uses primaryColor */}
                                             {product.category && (
                                                 <span
-                                                    className="text-xs font-bold uppercase tracking-wide"
+                                                    className="storefront-product-card__category text-xs font-bold uppercase tracking-wide"
                                                     style={{ color: hexToRgba(colors.primaryColor, 0.6) }}
                                                 >
                                                     {product.category}
                                                 </span>
                                             )}
-                                            <h3 className="text-sm font-medium truncate" style={{ color: colors.textColor }}>
+                                            <h3 className="storefront-product-card__title text-sm font-medium truncate" style={{ color: colors.textColor }}>
                                                 {product.name}
                                             </h3>
                                             {showPrice && (
@@ -192,10 +193,11 @@ export default function ProductGrid({ section, products, theme, basePath: provid
                 </div>
 
                 {products.length === 0 && (
-                    <div className="text-center py-10 border border-dashed rounded-lg" style={{ borderColor: `${colors.primaryColor}30` }}>
-                        <ShoppingBag size={28} className="mx-auto mb-2" style={{ color: `${colors.primaryColor}50` }} />
-                        <p className="text-theme-muted text-sm">No products found.</p>
-                    </div>
+                    <StorefrontEmptyState
+                        icon={<ShoppingBag size={28} aria-hidden="true" />}
+                        title="No products found"
+                        body="Products added to this store will appear here."
+                    />
                 )}
             </div>
         </section>
