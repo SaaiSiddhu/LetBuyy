@@ -3,7 +3,7 @@
 ## CURRENT STATUS
 - Stage: WS6 Identity & Marketing.
 - Branch: `stream/master-execution`.
-- Active task: MK1.5 SEO.
+- Active task: COMPLETE - GATE MK1 passed; Stage 4 proceeds to WS3 Marketplace UX.
 - Source ownership: `apps/identity-platform/src/**` and `apps/marketing-site/src/**` only. Root ledgers are bookkeeping exceptions.
 
 ## BASELINE
@@ -101,6 +101,7 @@
 - 2026-06-04T00:08:09Z MK1.4 pricing route 768px screenshot - `.tmp/screenshots/ws6-mk1-responsive/mk1-responsive-final-v3-pricing-tablet768-pricing.png`.
 
 ## VALIDATOR LEDGER
+- 2026-06-04T00:20:46Z [MK1.5 post-commit governance / GATE MK1] Post-commit `pnpm run validate:governance` after `b8726f09` -> PASS (128/128 validators). MK1 marketing site redesign gate passed with landing, pricing, feature showcase, responsive proof, SEO metadata, scoped checks, build, screenshots, and governance proof. WS6 Identity/Marketing is complete except the already logged MK1.2 human-approved pricing terms.
 - 2026-06-04T00:18:12Z [MK1.5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-04T00:16:43Z [MK1.5 scoped] Escalated `pnpm install --frozen-lockfile --force` restored workspace links with lockfile unchanged and 0 downloads after generated-artifact cleanup had removed app-local links. `pnpm --filter @letbuyy/marketing-site typecheck` -> PASS. `pnpm --filter @letbuyy/marketing-site lint` -> PASS with 1 pre-existing `ThemeProvider` warning and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/marketing-site exec next build --webpack` -> PASS for `/`, `/_not-found`, `/create`, `/pricing`, `/robots.txt`, `/signup`, and `/sitemap.xml`.
 - 2026-06-04T00:12:24Z [MK1.4 post-commit governance] Post-commit `pnpm run validate:governance` after `7a0a57f5` -> PASS (128/128 validators).

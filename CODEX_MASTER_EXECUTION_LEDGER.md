@@ -2,7 +2,7 @@
 
 ## CURRENT STAGE
 - Stage: STAGE 4 - WS6 Identity/Marketing, WS3 Marketplaces, WS4 Storefront.
-- Active task: WS6 Identity/Marketing MK1.5 SEO on branch `stream/master-execution`.
+- Active task: WS3 Marketplace UX MK1.1 App listing migration on branch `stream/master-execution`.
 - Scope lock: Stage 1 WS7, Stage 2 WS1, and Stage 3 WS9/WS2/WS5 are complete except human-gated/backend/provider-only items already logged. Stage 4 must follow each active mission DO-NOT-TOUCH rules; missing backend data becomes graceful placeholder plus `[SKIP - NEEDS BACKEND]`.
 
 ## BASELINE CONTEXT
@@ -13,7 +13,7 @@
 - STAGE 1 WS7 Production Hardening: DONE / HUMAN-GATED FOR LIVE PROVIDERS ONLY. P1 real stack, P2 COD/GST/Cashfree code path, P3 build stability, and P4 queue-worker scaffold advancement are proven. Cashfree sandbox charge/webhook and live production provisioning remain `[SKIP - NEEDS HUMAN]`.
 - STAGE 2 WS1 Design System: DONE. Responsive shell primitives, checklist components, token docs, Storybook coverage, desktop/mobile visual proof, typecheck, lint, Storybook build, and 128/128 governance are proven.
 - STAGE 3 WS9/WS2/WS5: DONE. WS9 Settings Architecture, WS2 Merchant UX, and WS5 Operations OP1.1-OP1.5 plus OP2.1-OP2.5 are proven with recorded human/backend/seed-data skips only. WS5 OP2 gate governance passed 128/128.
-- STAGE 4 WS6/WS3/WS4: IN PROGRESS. WS6 Identity/Marketing ID1 auth-flow polish ID1.1-ID1.6 is DONE and GATE ID1 passed with 128/128 governance; MK1.1 Landing page redesign, MK1.2 Pricing page, MK1.3 Feature showcase, and MK1.4 Responsive design are DONE with 128/128 post-commit governance; MK1.5 SEO is implemented and pending pre-commit governance.
+- STAGE 4 WS6/WS3/WS4: IN PROGRESS. WS6 Identity/Marketing is DONE: ID1 auth-flow polish and MK1 marketing redesign gates passed with 128/128 governance, with only human-approved pricing terms still logged as a skip. WS3 Marketplace UX MK1.1 is next.
 - STAGE 5 WS8 Mobile Parity: PENDING.
 - STAGE 6 WS10 Developer Ecosystem: PENDING.
 
@@ -108,6 +108,7 @@
 - [SKIPPED — NEEDS HUMAN] WS6 MK1.2 exact commercial pricing - requires human-approved Free/Basic/Pro/Enterprise monthly/yearly prices, discount policy, transaction/platform fees, free-tier product/site limits, trial policy, support/SLA terms, and final pricing copy before exact amounts can be marked live.
 
 ## VALIDATOR LEDGER
+- 2026-06-04T00:20:46Z [Stage 4 WS6 MK1.5 post-commit / GATE MK1] Post-commit `pnpm run validate:governance` after `b8726f09` -> PASS (128/128 validators). WS6 Identity/Marketing is complete except human-approved pricing terms already logged.
 - 2026-06-04T00:18:12Z [Stage 4 WS6 MK1.5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-04T00:16:43Z [Stage 4 WS6 MK1.5 scoped] Escalated `pnpm install --frozen-lockfile --force` restored workspace links with lockfile unchanged and 0 downloads after generated-artifact cleanup had removed app-local links. `pnpm --filter @letbuyy/marketing-site typecheck` -> PASS. `pnpm --filter @letbuyy/marketing-site lint` -> PASS with 1 pre-existing `ThemeProvider` warning and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/marketing-site exec next build --webpack` -> PASS for `/`, `/_not-found`, `/create`, `/pricing`, `/robots.txt`, `/signup`, and `/sitemap.xml`.
 - 2026-06-04T00:12:24Z [Stage 4 WS6 MK1.4 post-commit] Post-commit `pnpm run validate:governance` after `7a0a57f5` -> PASS (128/128 validators).
