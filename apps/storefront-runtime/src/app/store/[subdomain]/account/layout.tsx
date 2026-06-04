@@ -55,17 +55,17 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
             <div className="md:hidden mb-6">
                 <div className="flex items-center gap-3 mb-4">
                     <div
-                        className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm"
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
                         style={{ backgroundColor: 'var(--primary)' }}
                     >
                         {initials}
                     </div>
-                    <div>
-                        <p className="font-semibold text-sm">{customer?.fullName || 'Customer'}</p>
-                        <p className="text-xs" style={{ color: 'var(--text-secondary, #6B7280)' }}>{customer?.email}</p>
+                    <div className="min-w-0">
+                        <p className="truncate text-sm font-semibold">{customer?.fullName || 'Customer'}</p>
+                        <p className="truncate text-xs" style={{ color: 'var(--text-secondary, #6B7280)' }}>{customer?.email}</p>
                     </div>
                 </div>
-                <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+                <div className="grid grid-cols-2 gap-2">
                     {navItems.map(({ href, icon: Icon, label }) => {
                         const itemHref = `${basePath}/account/${href}`;
                         const active = currentPath.includes(itemHref);
@@ -73,7 +73,7 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                             <Link
                                 key={href}
                                 href={itemHref}
-                                className="flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors"
+                                className="flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3 py-2 text-xs font-medium transition-colors"
                                 style={{
                                     backgroundColor: active ? 'var(--primary)' : 'var(--surface, #F3F4F6)',
                                     color: active ? '#FFFFFF' : 'var(--text, #1A1A2E)',
@@ -93,14 +93,14 @@ export default function AccountLayout({ children }: { children: React.ReactNode 
                     <div className="sticky top-24">
                         <div className="flex items-center gap-3 mb-6">
                             <div
-                                className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+                                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-bold text-white"
                                 style={{ backgroundColor: 'var(--primary)' }}
                             >
                                 {initials}
                             </div>
-                            <div>
-                                <p className="font-semibold">{customer?.fullName || 'Customer'}</p>
-                                <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
+                            <div className="min-w-0">
+                                <p className="truncate font-semibold">{customer?.fullName || 'Customer'}</p>
+                                <p className="truncate text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
                                     {customer?.email}
                                 </p>
                             </div>

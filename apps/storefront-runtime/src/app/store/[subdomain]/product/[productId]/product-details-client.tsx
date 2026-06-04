@@ -193,12 +193,19 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                             {/* Wishlist & Share */}
                             <div className="absolute top-3 right-3 flex flex-col gap-2">
                                 <button
+                                    type="button"
+                                    aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'}
+                                    aria-pressed={isWishlisted}
                                     onClick={() => setIsWishlisted(!isWishlisted)}
                                     className={`flex h-11 w-11 items-center justify-center rounded-full shadow transition-all ${isWishlisted ? 'bg-rose-500 text-white' : 'card-theme text-theme-secondary'}`}
                                 >
                                     <Heart size={18} fill={isWishlisted ? 'currentColor' : 'none'} />
                                 </button>
-                                <button className="flex h-11 w-11 items-center justify-center rounded-full shadow card-theme text-theme-secondary">
+                                <button
+                                    type="button"
+                                    aria-label="Share product"
+                                    className="flex h-11 w-11 items-center justify-center rounded-full shadow card-theme text-theme-secondary"
+                                >
                                     <Share2 size={18} />
                                 </button>
                             </div>
@@ -210,6 +217,9 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 {productImages.map((img, i) => (
                                     <button
                                         key={i}
+                                        type="button"
+                                        aria-label={`View product image ${i + 1}`}
+                                        aria-current={selectedImage === i}
                                         onClick={() => setSelectedImage(i)}
                                         className={`relative h-16 w-16 flex-shrink-0 overflow-hidden transition-all border-2 shadow-sm ${selectedImage === i
                                             ? 'opacity-100'
@@ -307,6 +317,8 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                                 return (
                                                     <motion.button
                                                         key={option}
+                                                        type="button"
+                                                        aria-pressed={isSelected}
                                                         onClick={() => selectVariant(groupName, option)}
                                                         whileTap={{ scale: 0.95 }}
                                                         className={`px-3 py-2 text-sm rounded-lg border-2 transition-all flex items-center gap-1 font-medium ${isSelected
@@ -336,6 +348,8 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 style={{ borderColor: `${colors.primaryColor}20` }}
                             >
                                 <button
+                                    type="button"
+                                    aria-expanded={specsOpen}
                                     onClick={() => setSpecsOpen(!specsOpen)}
                                     className="w-full flex items-center justify-between p-3 bg-surface hover:bg-surface-hover transition-colors"
                                 >
@@ -375,6 +389,8 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 style={{ borderColor: `${colors.primaryColor}30` }}
                             >
                                 <button
+                                    type="button"
+                                    aria-label="Decrease quantity"
                                     onClick={() => handleQuantity(-1)}
                                     disabled={quantity <= 1}
                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
@@ -382,12 +398,15 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                     <Minus size={16} />
                                 </button>
                                 <span
+                                    aria-live="polite"
                                     className="px-5 py-1.5 font-semibold min-w-[48px] text-center card-theme-secondary"
                                     style={{ color: colors.textColor }}
                                 >
                                     {quantity}
                                 </span>
                                 <button
+                                    type="button"
+                                    aria-label="Increase quantity"
                                     onClick={() => handleQuantity(1)}
                                     disabled={quantity >= product.stock}
                                     className="flex h-11 w-11 items-center justify-center hover:bg-surface-hover disabled:cursor-not-allowed disabled:opacity-50 transition-colors"
@@ -398,12 +417,13 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-3 pt-3">
+                        <div className="flex flex-col gap-3 pt-3 sm:flex-row">
                             <motion.button
+                                type="button"
                                 onClick={handleAddToCart}
                                 whileTap={{ scale: 0.98 }}
                                 disabled={product.stock === 0}
-                                className={`flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl border-2 py-3.5 font-semibold transition-all disabled:opacity-50 ${addedToCart
+                                className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 py-3.5 font-semibold transition-all disabled:opacity-50 sm:flex-1 ${addedToCart
                                     ? 'bg-green-500 border-green-500 text-white'
                                     : 'hover:bg-surface-hover'
                                     }`}
@@ -417,10 +437,11 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                             </motion.button>
 
                             <motion.button
+                                type="button"
                                 onClick={handleBuyNow}
                                 whileTap={{ scale: 0.98 }}
                                 disabled={product.stock === 0}
-                                className="flex min-h-11 flex-1 items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-lg disabled:opacity-50"
+                                className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl py-3.5 font-semibold text-white shadow-lg disabled:opacity-50 sm:flex-1"
                                 style={{ backgroundColor: colors.primaryColor }}
                             >
                                 <Zap size={18} />
@@ -436,16 +457,16 @@ export default function ProductDetailsClient({ product, subdomain, theme }: Prop
                                 { icon: RefreshCcw, title: 'Easy Returns', sub: '7 Days' },
                                 { icon: Package, title: 'Secure Pack', sub: 'Safe delivery' },
                             ].map(({ icon: Icon, title, sub }) => (
-                                <div key={title} className="flex items-center gap-2">
+                                <div key={title} className="flex min-w-0 items-center gap-2">
                                     <div
-                                        className="p-1.5 rounded-lg"
+                                        className="shrink-0 rounded-lg p-1.5"
                                         style={{ backgroundColor: `${colors.primaryColor}15` }}
                                     >
                                         <Icon size={14} style={{ color: colors.primaryColor }} />
                                     </div>
-                                    <div>
-                                        <p className="text-xs font-semibold" style={{ color: colors.textColor }}>{title}</p>
-                                        <p className="text-[10px] text-theme-muted">{sub}</p>
+                                    <div className="min-w-0">
+                                        <p className="truncate text-xs font-semibold" style={{ color: colors.textColor }}>{title}</p>
+                                        <p className="truncate text-[10px] text-theme-muted">{sub}</p>
                                     </div>
                                 </div>
                             ))}

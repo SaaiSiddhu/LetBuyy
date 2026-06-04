@@ -121,6 +121,17 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
         };
     }, [searchOpen]);
 
+    useEffect(() => {
+        if (!mobileMenuOpen) return;
+
+        const previousOverflow = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+
+        return () => {
+            document.body.style.overflow = previousOverflow;
+        };
+    }, [mobileMenuOpen]);
+
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (searchQuery.trim()) {
@@ -171,6 +182,10 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
 
                     {/* Mobile Menu Button */}
                     <motion.button
+                        type="button"
+                        aria-label="Open store menu"
+                        aria-expanded={mobileMenuOpen}
+                        aria-controls="mobile-storefront-menu"
                         onClick={() => setMobileMenuOpen(true)}
                         whileTap={{ scale: 0.95 }}
                         className="flex h-11 w-11 items-center justify-center rounded-lg transition-colors lg:hidden"
@@ -197,7 +212,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                     {/* Logo/Brand - HORIZONTAL FORCED */}
                     <Link
                         href={basePath}
-                        className={`flex items-center gap-2 ${logoPlacement === 'center' ? 'absolute left-1/2 -translate-x-1/2' : ''}`}
+                        className={`flex min-w-0 items-center gap-2 ${logoPlacement === 'center' ? 'absolute left-1/2 -translate-x-1/2' : ''}`}
                     >
                         {hasValidLogo && (displayMode === 'logo' || displayMode === 'both') && (
                             <div className="h-8 md:h-9 flex items-center">
@@ -214,7 +229,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                         )}
                         {(displayMode === 'name' || (displayMode === 'both' && !hasValidLogo) || displayMode === 'logo' && !hasValidLogo) && (
                             <span
-                                className="font-bold text-lg md:text-xl tracking-tight"
+                                className="max-w-[11rem] truncate font-bold text-lg tracking-tight md:max-w-none md:text-xl"
                                 style={{ color: scrolled ? 'var(--text)' : 'white' }}
                             >
                                 {brandName}
@@ -241,6 +256,8 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                     <div className="flex items-center gap-1" style={{ color: scrolled ? 'var(--text)' : 'white' }}>
                         {showSearch && (
                             <motion.button
+                                type="button"
+                                aria-label={searchOpen ? 'Close product search' : 'Open product search'}
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setSearchOpen(!searchOpen)}
                                 className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
@@ -250,6 +267,8 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                         )}
                         {isStoreSite && (
                             <motion.button
+                                type="button"
+                                aria-label="Open customer account menu"
                                 whileTap={{ scale: 0.9 }}
                                 onClick={() => setAccountOpen(true)}
                                 className={`flex h-11 w-11 items-center justify-center rounded-lg ${scrolled ? 'hover:bg-surface-hover' : 'hover:bg-white/10'}`}
@@ -311,6 +330,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                     {searchQuery && (
                                         <button
                                             type="button"
+                                            aria-label="Clear product search"
                                             onClick={() => setSearchQuery('')}
                                             className={`absolute right-3 top-1/2 -translate-y-1/2 ${scrolled ? 'text-theme-muted hover:text-theme-secondary' : 'text-white/60 hover:text-white'}`}
                                         >
@@ -396,12 +416,18 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                         animate={{ x: 0 }}
                         exit={{ x: '-100%' }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-                        className="fixed top-0 left-0 bottom-0 w-[280px] card-theme z-[70] shadow-2xl lg:hidden flex flex-col"
+                        id="mobile-storefront-menu"
+                        role="dialog"
+                        aria-modal="true"
+                        aria-label="Store menu"
+                        className="fixed bottom-0 left-0 top-0 z-[70] flex w-80 max-w-[calc(100vw-1.5rem)] flex-col overflow-hidden shadow-2xl card-theme lg:hidden"
                     >
                         {/* Minimal Header - Just Close Button */}
                         <div className="flex items-center justify-between px-4 py-3 border-b border-card">
                             <span className="text-sm font-medium text-card-muted uppercase tracking-wider">Menu</span>
                             <button
+                                type="button"
+                                aria-label="Close store menu"
                                 onClick={() => setMobileMenuOpen(false)}
                                 className="-mr-2 flex h-11 w-11 items-center justify-center rounded-lg text-card-muted hover:bg-surface-hover"
                             >
@@ -424,6 +450,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                             >
                                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-card-muted" />
                                 <input
+                                    aria-label="Search products"
                                     type="text"
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -447,13 +474,13 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                         onClick={() => setMobileMenuOpen(false)}
                                         className="flex min-h-11 items-center justify-between px-4 py-3 text-card hover:bg-surface-hover"
                                     >
-                                        <div className="flex items-center gap-3">
-                                            <span className="text-card-muted">
+                                        <div className="flex min-w-0 items-center gap-3">
+                                            <span className="shrink-0 text-card-muted">
                                                 {navIcons[page.id.toLowerCase()] || <FileText size={18} />}
                                             </span>
-                                            <span className="font-medium text-[15px]">{page.label}</span>
+                                            <span className="truncate font-medium text-[15px]">{page.label}</span>
                                         </div>
-                                        <ChevronRight size={16} className="text-card-muted" />
+                                        <ChevronRight size={16} className="shrink-0 text-card-muted" />
                                     </Link>
                                 </motion.div>
                             ))}
@@ -465,6 +492,7 @@ export default function DynamicHeader({ store, settings, products = [] }: Dynami
                                 <>
                                     <button
                                         type="button"
+                                        aria-label={`Open cart${cartCount > 0 ? ` with ${cartCount} items` : ''}`}
                                         onClick={() => {
                                             setMobileMenuOpen(false);
                                             setCartOpen(true);

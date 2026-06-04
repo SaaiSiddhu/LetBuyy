@@ -3,8 +3,8 @@
 ## CURRENT STATUS
 - Stage: STAGE 4 - WS4 Storefront.
 - Branch: `stream/master-execution`.
-- Active gate: SF4 Cart & Checkout Polish.
-- Active task: SF4 gate validation and commit.
+- Active gate: SF5 Responsive Storefront commit and post-commit governance.
+- Active task: Commit SF5 and run post-commit governance.
 - Scope lock: source edits are limited to `apps/storefront-runtime/src/**`; root execution ledgers are bookkeeping exceptions. No services, packages, database, governance source, or other app roots may be changed in WS4.
 
 ## MISSION CONTEXT READ
@@ -143,6 +143,28 @@
 - Status: PASS WITH BACKEND/PROVIDER SKIPS.
 - Gate proof: cart and checkout UX is polished within storefront scope; scoped storefront typecheck/lint/build and Playwright screenshots passed. Live saved-address data, real persisted order creation, and online provider payment attempts remain logged skips.
 
+## SF5 - RESPONSIVE STOREFRONT
+
+### SF5.1-SF5.4 Product, Cart, Account, and Mobile Navigation
+- Status: DONE.
+- Source changes:
+  - Updated `apps/storefront-runtime/src/components/layout/dynamic-header.tsx` with mobile menu body-scroll locking, stable drawer sizing, dialog semantics, accessible icon-button labels, long brand-name truncation, and no-overflow mobile menu rows.
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/product/[productId]/product-details-client.tsx` with accessible wishlist/share/thumbnail/variant/quantity controls, live quantity feedback, stacked mobile action buttons, and non-overflowing trust badges.
+  - Updated `apps/storefront-runtime/src/app/store/[subdomain]/account/layout.tsx` with long customer-name/email truncation and a two-column mobile account nav so active account tabs remain fully visible at 375px.
+  - Preserved existing storefront, API, customer-account, payment, backend, database, package, and contract boundaries.
+- Scoped proof:
+  - `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS.
+  - `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors.
+  - `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; route output includes shop, product detail, cart, checkout, account pages, mobile storefront routes, and `/preview`.
+  - Production server `pnpm --filter @letbuyy/storefront-runtime exec next start -p 3003` -> PASS after sandbox port binding escalation.
+  - Escalated `node .tmp/ws4-sf5-responsive-audit.mjs` -> PASS against `http://localhost:3003`; asserted no horizontal overflow at 375px for shop, product detail, cart, checkout, customer account settings, and mobile navigation.
+  - Screenshot paths: `.tmp/screenshots/ws4-sf5-audit/sf5-shop-375.png`, `.tmp/screenshots/ws4-sf5-audit/sf5-product-detail-375.png`, `.tmp/screenshots/ws4-sf5-audit/sf5-cart-375.png`, `.tmp/screenshots/ws4-sf5-audit/sf5-checkout-375.png`, `.tmp/screenshots/ws4-sf5-audit/sf5-account-settings-375.png`, `.tmp/screenshots/ws4-sf5-audit/sf5-navigation-375.png`.
+  - Visual review completed for the mobile drawer, account settings, product detail, cart, and checkout screenshots; no text overlap, clipped active nav, or incoherent horizontal overflow found after fixing the account tab layout and waiting for the drawer animation in the proof script.
+
+### GATE SF5 Responsive Storefront
+- Status: PASS; commit and post-commit governance pending.
+- Gate proof: 375px storefront product listing/detail, cart/checkout, customer account, and hamburger navigation screenshots passed automated overflow checks and visual review. Generated-artifact cleanup scan was empty and full governance passed 128/128 before commit.
+
 ## VALIDATOR LEDGER
 - 2026-06-04T03:08:00Z [WS3 predecessor gate] Post-commit `pnpm run validate:governance` after `82ea1656` -> PASS (128/128 validators). WS4 started from a green governance baseline.
 - 2026-06-04T03:33:58Z [SF2 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -155,3 +177,6 @@
 - 2026-06-04T04:18:54Z [SF3 post-commit governance] Post-commit `pnpm run validate:governance` after `7edc318f` -> PASS (128/128 validators).
 - 2026-06-04T04:38:14Z [SF4 scoped gate] `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf4-cart-checkout-proof.mjs` -> PASS with cart/checkout/COD screenshots and no overflow failures.
 - 2026-06-04T04:40:47Z [SF4 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T04:42:40Z [SF4 post-commit governance] Post-commit `pnpm run validate:governance` after `cdb34f92` -> PASS (128/128 validators).
+- 2026-06-04T04:55:17Z [SF5 scoped gate] `pnpm --filter @letbuyy/storefront-runtime typecheck` -> PASS; `pnpm --filter @letbuyy/storefront-runtime lint` -> PASS with 21 warnings and 0 errors; `pnpm --filter @letbuyy/storefront-runtime exec next build --webpack` -> PASS; `node .tmp/ws4-sf5-responsive-audit.mjs` -> PASS with 375px shop/product/cart/checkout/account/navigation screenshots and no overflow failures.
+- 2026-06-04T04:58:33Z [SF5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; exact pre-commit rerun `pnpm run validate:governance` -> PASS (128/128 validators).
