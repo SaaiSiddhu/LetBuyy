@@ -9,6 +9,18 @@ import { CATEGORY_LABELS } from '@/lib/utils';
 type SearchParamValue = string | string[] | undefined;
 type ThemesPageSearchParams = Record<string, SearchParamValue>;
 type PricingFilter = 'all' | 'free' | 'paid' | 'one_time' | 'subscription';
+type LayoutFilter = 'all' | 'product-grid' | 'editorial' | 'single-page' | 'conversion';
+
+interface NormalizedFilters {
+    query: string;
+    category: 'all' | ThemeCategory;
+    pricing: PricingFilter;
+    sort: NonNullable<ThemeSearchFilters['sort']>;
+    industry: string;
+    layout: LayoutFilter;
+    priceMin: string;
+    priceMax: string;
+}
 
 const CATEGORY_OPTIONS: Array<{ value: 'all' | ThemeCategory; label: string; description: string }> = [
     { value: 'all', label: 'All themes', description: 'Every storefront, portfolio, resume, and landing page template.' },
@@ -23,6 +35,14 @@ const PRICING_OPTIONS: Array<{ value: PricingFilter; label: string; description:
     { value: 'all', label: 'All prices', description: 'Free, one-time, and subscription themes.' },
     { value: 'free', label: 'Free', description: 'No marketplace purchase required.' },
     { value: 'paid', label: 'Paid', description: 'Commercial themes with purchase flow.' },
+];
+
+const LAYOUT_OPTIONS: Array<{ value: LayoutFilter; label: string; description: string }> = [
+    { value: 'all', label: 'All layouts', description: 'Do not narrow by layout type.' },
+    { value: 'product-grid', label: 'Product grid', description: 'Catalog-first sections and collection browsing.' },
+    { value: 'editorial', label: 'Editorial', description: 'Story-led layouts for portfolios and blogs.' },
+    { value: 'single-page', label: 'Single page', description: 'Resume, profile, and one-page sites.' },
+    { value: 'conversion', label: 'Conversion', description: 'Landing pages and campaign funnels.' },
 ];
 
 const SORT_OPTIONS: Array<{ value: NonNullable<ThemeSearchFilters['sort']>; label: string }> = [
@@ -69,6 +89,22 @@ function normalizeSort(value: SearchParamValue): NonNullable<ThemeSearchFilters[
     return SORT_OPTIONS.some((option) => option.value === sort) ? sort as NonNullable<ThemeSearchFilters['sort']> : 'popular';
 }
 
+function normalizeLayout(value: SearchParamValue): LayoutFilter {
+    const layout = firstParam(value);
+    return LAYOUT_OPTIONS.some((option) => option.value === layout) ? layout as LayoutFilter : 'all';
+}
+
+function normalizeIndustry(value: SearchParamValue): string {
+    return (firstParam(value) ?? '').trim().toLowerCase().replace(/[^a-z0-9 -]/g, '').slice(0, 60);
+}
+
+function normalizePriceRange(value: SearchParamValue): string {
+    const amount = (firstParam(value) ?? '').trim();
+    if (!amount) return '';
+    const numeric = Number(amount);
+    return Number.isFinite(numeric) && numeric >= 0 ? String(Math.floor(numeric)) : '';
+}
+
 function pricingForService(pricing: PricingFilter): string | undefined {
     if (pricing === 'all') return undefined;
     if (pricing === 'paid') return 'one_time';
@@ -76,8 +112,8 @@ function pricingForService(pricing: PricingFilter): string | undefined {
 }
 
 function buildThemesHref(
-    filters: { query: string; category: 'all' | ThemeCategory; pricing: PricingFilter; sort: NonNullable<ThemeSearchFilters['sort']> },
-    updates: Partial<{ query: string; category: 'all' | ThemeCategory; pricing: PricingFilter; sort: NonNullable<ThemeSearchFilters['sort']> }>,
+    filters: NormalizedFilters,
+    updates: Partial<NormalizedFilters>,
 ) {
     const next = { ...filters, ...updates };
     const params = new URLSearchParams();
@@ -85,6 +121,10 @@ function buildThemesHref(
     if (next.query) params.set('q', next.query);
     if (next.category !== 'all') params.set('category', next.category);
     if (next.pricing !== 'all') params.set('pricing', next.pricing);
+    if (next.industry) params.set('industry', next.industry);
+    if (next.layout !== 'all') params.set('layout', next.layout);
+    if (next.priceMin) params.set('price_min', next.priceMin);
+    if (next.priceMax) params.set('price_max', next.priceMax);
     if (next.sort !== 'popular') params.set('sort', next.sort);
 
     const query = params.toString();
@@ -178,14 +218,17 @@ function normalizeThemeRecord(record: Record<string, unknown>): Theme {
     };
 }
 
-function getActiveFilterSummary(category: 'all' | ThemeCategory, pricing: PricingFilter, query: string) {
-    const filters = [
-        category !== 'all' ? CATEGORY_LABELS[category]?.label ?? category : null,
-        pricing !== 'all' ? PRICING_OPTIONS.find((option) => option.value === pricing)?.label ?? pricing : null,
-        query ? `Search: ${query}` : null,
+function getActiveFilterSummary(filters: NormalizedFilters) {
+    const activeLabels = [
+        filters.category !== 'all' ? CATEGORY_LABELS[filters.category]?.label ?? filters.category : null,
+        filters.pricing !== 'all' ? PRICING_OPTIONS.find((option) => option.value === filters.pricing)?.label ?? filters.pricing : null,
+        filters.industry ? `Industry: ${filters.industry}` : null,
+        filters.layout !== 'all' ? LAYOUT_OPTIONS.find((option) => option.value === filters.layout)?.label ?? filters.layout : null,
+        filters.priceMin || filters.priceMax ? `Price: ${filters.priceMin || '0'}-${filters.priceMax || 'any'}` : null,
+        filters.query ? `Search: ${filters.query}` : null,
     ].filter((item): item is string => Boolean(item));
 
-    return filters.length ? filters.join(' / ') : 'All themes';
+    return activeLabels.length ? activeLabels.join(' / ') : 'All themes';
 }
 
 export default async function ThemesPage({
@@ -198,17 +241,33 @@ export default async function ThemesPage({
     const category = normalizeCategory(params?.category);
     const pricing = normalizePricing(params?.pricing ?? params?.pricingType);
     const sort = normalizeSort(params?.sort);
-    const filters = { query, category, pricing, sort };
+    const industry = normalizeIndustry(params?.industry);
+    const layout = normalizeLayout(params?.layout);
+    const priceMin = normalizePriceRange(params?.price_min);
+    const priceMax = normalizePriceRange(params?.price_max);
+    const filters: NormalizedFilters = { query, category, pricing, sort, industry, layout, priceMin, priceMax };
+    const industries = await ThemeService.getIndustries();
+    const selectedIndustry = industry && !industries.includes(industry) ? industry : '';
+    const industryOptions = selectedIndustry ? [selectedIndustry, ...industries] : industries;
+    const unsupportedFilterCount = [layout !== 'all', priceMin.length > 0 || priceMax.length > 0].filter(Boolean).length;
 
     const result = await ThemeService.listThemes({
         category: category === 'all' ? undefined : category,
         pricingType: pricingForService(pricing),
+        industry: industry || undefined,
         search: query || undefined,
         sort,
         limit: 30,
     });
     const themes = result.themes.map(normalizeThemeRecord);
-    const activeFilterCount = [category !== 'all', pricing !== 'all', query.length > 0].filter(Boolean).length;
+    const activeFilterCount = [
+        category !== 'all',
+        pricing !== 'all',
+        industry.length > 0,
+        layout !== 'all',
+        priceMin.length > 0 || priceMax.length > 0,
+        query.length > 0,
+    ].filter(Boolean).length;
 
     return (
         <Page className="theme-marketplace-page">
@@ -253,6 +312,10 @@ export default async function ThemesPage({
                                 </div>
                                 {category !== 'all' && <input type="hidden" name="category" value={category} />}
                                 {pricing !== 'all' && <input type="hidden" name="pricing" value={pricing} />}
+                                {industry && <input type="hidden" name="industry" value={industry} />}
+                                {layout !== 'all' && <input type="hidden" name="layout" value={layout} />}
+                                {priceMin && <input type="hidden" name="price_min" value={priceMin} />}
+                                {priceMax && <input type="hidden" name="price_max" value={priceMax} />}
                                 {sort !== 'popular' && <input type="hidden" name="sort" value={sort} />}
                                 <button
                                     type="submit"
@@ -285,14 +348,63 @@ export default async function ThemesPage({
 
                             <div className="space-y-[var(--lb-space-2)]">
                                 <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
-                                    Pricing
+                                    Free / paid
                                 </p>
-                                <div className="grid gap-[var(--lb-space-2)]">
+                                <div className="grid grid-cols-3 gap-[var(--lb-space-2)]">
                                     {PRICING_OPTIONS.map((option) => (
                                         <Link
                                             key={option.value}
                                             href={buildThemesHref(filters, { pricing: option.value })}
                                             aria-current={pricing === option.value ? 'page' : undefined}
+                                            className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-2)] py-[var(--lb-space-2)] text-center text-[length:var(--lb-font-size-small)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
+                                        >
+                                            <span className="block font-[var(--lb-font-weight-semibold)]">{option.label}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="space-y-[var(--lb-space-2)]">
+                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
+                                    Industry
+                                </p>
+                                {industryOptions.length > 0 ? (
+                                    <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                        <Link
+                                            href={buildThemesHref(filters, { industry: '' })}
+                                            aria-current={industry === '' ? 'page' : undefined}
+                                            className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
+                                        >
+                                            All
+                                        </Link>
+                                        {industryOptions.map((option) => (
+                                            <Link
+                                                key={option}
+                                                href={buildThemesHref(filters, { industry: option })}
+                                                aria-current={industry === option ? 'page' : undefined}
+                                                className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] capitalize text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
+                                            >
+                                                {option}
+                                            </Link>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="m-0 rounded-[var(--lb-radius-md)] border border-[var(--lb-component-banner-warning-border)] bg-[var(--lb-component-banner-warning-bg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-banner-warning-text)]">
+                                        Industry filters need seeded theme industry data.
+                                    </p>
+                                )}
+                            </div>
+
+                            <div className="space-y-[var(--lb-space-2)]">
+                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
+                                    Layout type
+                                </p>
+                                <div className="grid gap-[var(--lb-space-2)]">
+                                    {LAYOUT_OPTIONS.map((option) => (
+                                        <Link
+                                            key={option.value}
+                                            href={buildThemesHref(filters, { layout: option.value })}
+                                            aria-current={layout === option.value ? 'page' : undefined}
                                             className="rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-small)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] aria-[current=page]:border-[var(--lb-color-primary)] aria-[current=page]:bg-[var(--lb-color-primary-soft)]"
                                         >
                                             <span className="block font-[var(--lb-font-weight-semibold)]">{option.label}</span>
@@ -305,12 +417,64 @@ export default async function ThemesPage({
                             </div>
 
                             <form action="/themes" method="get" className="flex flex-col gap-[var(--lb-space-2)]">
+                                <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
+                                    Price range
+                                </p>
+                                {query && <input type="hidden" name="q" value={query} />}
+                                {category !== 'all' && <input type="hidden" name="category" value={category} />}
+                                {pricing !== 'all' && <input type="hidden" name="pricing" value={pricing} />}
+                                {industry && <input type="hidden" name="industry" value={industry} />}
+                                {layout !== 'all' && <input type="hidden" name="layout" value={layout} />}
+                                {sort !== 'popular' && <input type="hidden" name="sort" value={sort} />}
+                                <div className="grid grid-cols-2 gap-[var(--lb-space-2)]">
+                                    <label className="grid gap-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                        Min USD
+                                        <input
+                                            name="price_min"
+                                            type="number"
+                                            min="0"
+                                            inputMode="numeric"
+                                            defaultValue={priceMin}
+                                            className="h-[var(--lb-density-input-height)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none focus:border-[var(--lb-component-input-focus-border)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
+                                        />
+                                    </label>
+                                    <label className="grid gap-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                        Max USD
+                                        <input
+                                            name="price_max"
+                                            type="number"
+                                            min="0"
+                                            inputMode="numeric"
+                                            defaultValue={priceMax}
+                                            className="h-[var(--lb-density-input-height)] rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none focus:border-[var(--lb-component-input-focus-border)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
+                                        />
+                                    </label>
+                                </div>
+                                <button
+                                    type="submit"
+                                    className="inline-flex h-[var(--lb-density-button-height)] items-center justify-center rounded-[var(--lb-radius-md)] border border-[var(--lb-component-button-secondary-border)] bg-[var(--lb-component-button-secondary-bg)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-component-button-secondary-text)] transition-colors hover:bg-[var(--lb-component-button-secondary-hover)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                >
+                                    Apply range
+                                </button>
+                            </form>
+
+                            {unsupportedFilterCount > 0 && (
+                                <p className="m-0 rounded-[var(--lb-radius-md)] border border-[var(--lb-component-banner-warning-border)] bg-[var(--lb-component-banner-warning-bg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-banner-warning-text)]">
+                                    Layout and numeric price filters need backend support before they change API results.
+                                </p>
+                            )}
+
+                            <form action="/themes" method="get" className="flex flex-col gap-[var(--lb-space-2)]">
                                 <label htmlFor="theme-sort" className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
                                     Sort
                                 </label>
                                 {query && <input type="hidden" name="q" value={query} />}
                                 {category !== 'all' && <input type="hidden" name="category" value={category} />}
                                 {pricing !== 'all' && <input type="hidden" name="pricing" value={pricing} />}
+                                {industry && <input type="hidden" name="industry" value={industry} />}
+                                {layout !== 'all' && <input type="hidden" name="layout" value={layout} />}
+                                {priceMin && <input type="hidden" name="price_min" value={priceMin} />}
+                                {priceMax && <input type="hidden" name="price_max" value={priceMax} />}
                                 <select
                                     id="theme-sort"
                                     name="sort"
@@ -347,7 +511,7 @@ export default async function ThemesPage({
 
                     <Section
                         title={activeFilterCount > 0 ? 'Filtered theme results' : 'Theme directory'}
-                        description={`${result.total} theme${result.total === 1 ? '' : 's'} found. ${getActiveFilterSummary(category, pricing, query)}.`}
+                        description={`${result.total} theme${result.total === 1 ? '' : 's'} found. ${getActiveFilterSummary(filters)}.`}
                     >
                         {themes.length > 0 ? (
                             <div className="grid grid-cols-1 gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-3">
