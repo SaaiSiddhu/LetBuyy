@@ -73,8 +73,8 @@ mode = "smart"
 name = "letbuyy-api-staging"
 workers_dev = false
 routes = [
-  { pattern = "api-staging.letbuyy.store/*", zone_name = "letbuyy.store" },
-  { pattern = "api.staging.letbuyy.store/*", zone_name = "letbuyy.store" }
+  { pattern = "api-staging.letbuyy.store", custom_domain = true },
+  { pattern = "api.staging.letbuyy.store", custom_domain = true }
 ]
 
 [env.staging.observability]
@@ -165,7 +165,7 @@ mode = "smart"
 name = "letbuyy-api"
 workers_dev = false
 routes = [
-  { pattern = "api.letbuyy.store/*", zone_name = "letbuyy.store" }
+  { pattern = "api.letbuyy.store", custom_domain = true }
 ]
 
 [env.production.observability]

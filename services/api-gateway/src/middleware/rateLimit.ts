@@ -3,12 +3,11 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 
 // ============================================================
-// RATE LIMITER — Upstash Redis with in-memory fallback
-// Uses @upstash/ratelimit for distributed rate limiting
-// across Cloudflare Worker isolates.
+// RATE LIMITER — Upstash Redis with Cloudflare KV and in-memory fallback.
 //
-// Fallback: If Redis env vars are missing, uses in-memory store
-// (resets per isolate, suitable for development only).
+// Fallbacks:
+// - Cloudflare KV in deployed Workers when Redis env vars are not configured.
+// - In-memory store in local/non-production runtimes only.
 // ============================================================
 
 // ─── In-Memory Fallback Store ───────────────────────────────────────
@@ -56,6 +55,18 @@ function cleanupExpiredEntries(now: number) {
     for (const [key, entry] of memoryStore) {
         if (entry.resetAt < now) memoryStore.delete(key);
     }
+}
+
+function compactStorageKey(key: string): string {
+    if (key.length <= 400) return key;
+
+    let hash = 0x811c9dc5;
+    for (let index = 0; index < key.length; index += 1) {
+        hash ^= key.charCodeAt(index);
+        hash = Math.imul(hash, 0x01000193);
+    }
+
+    return `${key.slice(0, 240)}:${(hash >>> 0).toString(16)}`;
 }
 
 // ─── Rate Limit Options ─────────────────────────────────────────────
@@ -177,6 +188,42 @@ function checkMemoryRateLimit(
     };
 }
 
+async function checkKvRateLimit(
+    cache: KVNamespace,
+    key: string,
+    windowMs: number,
+    max: number
+): Promise<RateLimitResult> {
+    const now = Date.now();
+    const windowKey = compactStorageKey(`${key}:${Math.floor(now / windowMs)}`);
+    const resetAt = (Math.floor(now / windowMs) + 1) * windowMs;
+    const ttlSeconds = Math.max(60, Math.ceil(windowMs / 1000) + 30);
+
+    try {
+        const rawCount = await cache.get(windowKey);
+        const previousCount = rawCount ? Number.parseInt(rawCount, 10) : 0;
+        const count = Number.isFinite(previousCount) ? previousCount + 1 : 1;
+
+        await cache.put(windowKey, count.toString(), { expirationTtl: ttlSeconds });
+
+        return {
+            allowed: count <= max,
+            remaining: Math.max(0, max - count),
+            resetAt,
+        };
+    } catch (err) {
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'middleware.rate_limit',
+            status_code: 503,
+            reason: 'kv_unavailable',
+            error: err instanceof Error ? err.message : 'KV rate limit request failed',
+        }));
+        return { allowed: false, remaining: 0, resetAt: now + windowMs, unavailable: true };
+    }
+}
+
 function parseLimitFromQuery(queryString?: string): number {
     if (!queryString) return 0;
     const params = new URLSearchParams(queryString);
@@ -267,6 +314,47 @@ function checkMemoryQueryCostLimit(
     return result;
 }
 
+async function checkKvQueryCostLimit(
+    cache: KVNamespace,
+    key: string,
+    cost: number,
+    pointsPerSecond: number,
+    capacity: number
+): Promise<QueryCostRateLimitResult> {
+    const now = Date.now();
+    const storageKey = compactStorageKey(key);
+
+    try {
+        const rawEntry = await cache.get(storageKey);
+        const entry = rawEntry ? JSON.parse(rawEntry) as QueryCostLimitEntry : null;
+        const result = evaluateLeakyBucket({ entry, now, cost, pointsPerSecond, capacity });
+        const ttlSeconds = Math.max(60, Math.ceil((capacity / pointsPerSecond) * 2));
+
+        await cache.put(storageKey, JSON.stringify(result.entry), { expirationTtl: ttlSeconds });
+
+        return result;
+    } catch (err) {
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'middleware.query_cost_rate_limit',
+            status_code: 503,
+            reason: 'kv_unavailable',
+            error: err instanceof Error ? err.message : 'KV query cost rate limit request failed',
+        }));
+        return {
+            allowed: false,
+            remaining: 0,
+            resetAt: now + 1000,
+            unavailable: true,
+            cost,
+            limit: capacity,
+            policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
+            retryAfterMs: 1000,
+        };
+    }
+}
+
 async function checkRedisQueryCostLimit(
     redisUrl: string,
     redisToken: string,
@@ -348,7 +436,7 @@ async function checkRedisQueryCostLimit(
 }
 
 export async function checkRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
     options: DirectRateLimitOptions
 ): Promise<RateLimitResult> {
     const {
@@ -362,6 +450,10 @@ export async function checkRateLimitKey(
     const redisToken = env.UPSTASH_REDIS_REST_TOKEN;
     const useRedis = Boolean(redisUrl && redisToken);
     const isProduction = env.ENVIRONMENT === 'production';
+
+    if (!useRedis && env.CACHE) {
+        return checkKvRateLimit(env.CACHE, fullKey, windowMs, max);
+    }
 
     if (isProduction && !useRedis) {
         return {
@@ -384,7 +476,7 @@ export async function checkRateLimitKey(
 }
 
 export async function checkQueryCostRateLimitKey(
-    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT'>,
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
     options: DirectQueryCostRateLimitOptions
 ): Promise<QueryCostRateLimitResult> {
     const {
@@ -399,6 +491,10 @@ export async function checkQueryCostRateLimitKey(
     const redisToken = env.UPSTASH_REDIS_REST_TOKEN;
     const useRedis = Boolean(redisUrl && redisToken);
     const isProduction = env.ENVIRONMENT === 'production';
+
+    if (!useRedis && env.CACHE) {
+        return checkKvQueryCostLimit(env.CACHE, fullKey, cost, pointsPerSecond, capacity);
+    }
 
     if (isProduction && !useRedis) {
         return {

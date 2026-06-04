@@ -103,36 +103,7 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     const domainConfigured = !!storeData.custom_domain
 
     const apiClient = createMerchantApiClient()
-    let setupStatus: SetupStatus
-
-    if (storeData.site_type === 'store') {
-        const [productsPayload, shippingZones] = await Promise.all([
-            apiClient.products.list({ store_id: storeData.id, limit: 1 }).catch(() => null),
-            apiClient.shipping.zones.list({ store_id: storeData.id, limit: 1 }).catch(() => []),
-        ])
-        const productsCount = productsPayload?.total || 0
-        const shippingCount = shippingZones.length
-
-        setupStatus = {
-            primaryComplete: productsCount > 0,
-            secondaryComplete: shippingCount > 0,
-            themeCustomized: !!themeCustomized,
-            domainConfigured,
-            paymentConfigured: false,
-            hasShipping: shippingCount > 0,
-        }
-    } else {
-        const pagesPayload = await apiClient.pages.list({ store_id: storeData.id, limit: 1 }).catch(() => null)
-        const pagesCount = pagesPayload?.total || 0
-
-        setupStatus = {
-            primaryComplete: pagesCount > 0,
-            secondaryComplete: !!themeCustomized,
-            themeCustomized: !!themeCustomized,
-            domainConfigured,
-        }
-    }
-
+    const setupStatus = await loadSetupStatus(apiClient, storeData.id, storeData.site_type, !!themeCustomized, domainConfigured)
     const homeData = await loadDashboardHomeData(apiClient, storeData.id, storeData.site_type === 'store')
 
     return (
@@ -145,6 +116,58 @@ export default async function DashboardPage({ params }: DashboardPageProps) {
     )
 }
 
+async function loadSetupStatus(
+    apiClient: ReturnType<typeof createMerchantApiClient>,
+    storeId: string,
+    siteType: string,
+    themeCustomized: boolean,
+    domainConfigured: boolean,
+): Promise<SetupStatus> {
+    try {
+        if (siteType === 'store') {
+            const [productsPayload, shippingZonesPayload] = await Promise.all([
+                apiClient.products.list({ store_id: storeId, limit: 1 }).catch(() => null),
+                apiClient.shipping.zones.list({ store_id: storeId, limit: 1 }).catch(() => []),
+            ])
+            const productsCount = productsPayload?.total || 0
+            const shippingZones = Array.isArray(shippingZonesPayload) ? shippingZonesPayload : []
+            const shippingCount = shippingZones.length
+
+            return {
+                primaryComplete: productsCount > 0,
+                secondaryComplete: shippingCount > 0,
+                themeCustomized,
+                domainConfigured,
+                paymentConfigured: false,
+                hasShipping: shippingCount > 0,
+            }
+        }
+
+        const pagesPayload = await apiClient.pages.list({ store_id: storeId, limit: 1 }).catch(() => null)
+        const pagesCount = pagesPayload?.total || 0
+
+        return {
+            primaryComplete: pagesCount > 0,
+            secondaryComplete: themeCustomized,
+            themeCustomized,
+            domainConfigured,
+        }
+    } catch {
+        return defaultSetupStatus(siteType, themeCustomized, domainConfigured)
+    }
+}
+
+function defaultSetupStatus(siteType: string, themeCustomized: boolean, domainConfigured: boolean): SetupStatus {
+    return {
+        primaryComplete: false,
+        secondaryComplete: false,
+        themeCustomized,
+        domainConfigured,
+        paymentConfigured: siteType === 'store' ? false : undefined,
+        hasShipping: siteType === 'store' ? false : undefined,
+    }
+}
+
 async function loadDashboardHomeData(
     apiClient: ReturnType<typeof createMerchantApiClient>,
     storeId: string,
@@ -154,44 +177,50 @@ async function loadDashboardHomeData(
         return emptyDashboardHomeData()
     }
 
-    const [analyticsPayload, ordersBreakdown, recentOrdersPayload, recentProductsPayload] = await Promise.all([
-        apiClient.analytics.dashboard({ store_id: storeId, period: '30d' }).catch(() => null as AnalyticsDashboard | null),
-        apiClient.analytics.orders({ store_id: storeId }).catch(() => null as AnalyticsOrdersBreakdown | null),
-        apiClient.orders.list({
-            store_id: storeId,
-            status: 'all',
-            payment_status: 'all',
-            limit: 4,
-            sort: 'created_at',
-            order: 'desc',
-        }).catch(() => null),
-        apiClient.products.list({
-            store_id: storeId,
-            status: 'all',
-            limit: 4,
-            sort: 'created_at',
-            order: 'desc',
-        }).catch(() => null),
-    ])
+    try {
+        const [analyticsPayload, ordersBreakdown, recentOrdersPayload, recentProductsPayload] = await Promise.all([
+            apiClient.analytics.dashboard({ store_id: storeId, period: '30d' }).catch(() => null as AnalyticsDashboard | null),
+            apiClient.analytics.orders({ store_id: storeId }).catch(() => null as AnalyticsOrdersBreakdown | null),
+            apiClient.orders.list({
+                store_id: storeId,
+                status: 'all',
+                payment_status: 'all',
+                limit: 4,
+                sort: 'created_at',
+                order: 'desc',
+            }).catch(() => null),
+            apiClient.products.list({
+                store_id: storeId,
+                status: 'all',
+                limit: 4,
+                sort: 'created_at',
+                order: 'desc',
+            }).catch(() => null),
+        ])
 
-    const summary = analyticsPayload?.summary
-    const recentActivity = [
-        ...(recentOrdersPayload?.data || []).map((order) => orderActivity(order)),
-        ...(recentProductsPayload?.data || []).map((product) => productActivity(product)),
-    ]
-        .sort((first, second) => timestampValue(second.timestamp) - timestampValue(first.timestamp))
-        .slice(0, 5)
+        const summary = analyticsPayload?.summary
+        const recentOrders = Array.isArray(recentOrdersPayload?.data) ? recentOrdersPayload.data : []
+        const recentProducts = Array.isArray(recentProductsPayload?.data) ? recentProductsPayload.data : []
+        const recentActivity = [
+            ...recentOrders.map((order) => orderActivity(order)),
+            ...recentProducts.map((product) => productActivity(product)),
+        ]
+            .sort((first, second) => timestampValue(second.timestamp) - timestampValue(first.timestamp))
+            .slice(0, 5)
 
-    return {
-        totalRevenue: summary?.revenue?.value || 0,
-        revenueChangePct: summary?.revenue?.change_pct || 0,
-        totalOrders: summary?.orders?.value || 0,
-        ordersChangePct: summary?.orders?.change_pct || 0,
-        totalProducts: summary?.products || recentProductsPayload?.total || 0,
-        avgOrderValue: summary?.avg_order_value || 0,
-        ordersByStatus: ordersBreakdown?.breakdown || {},
-        recentActivity,
-        analyticsAvailable: Boolean(analyticsPayload),
+        return {
+            totalRevenue: summary?.revenue?.value || 0,
+            revenueChangePct: summary?.revenue?.change_pct || 0,
+            totalOrders: summary?.orders?.value || 0,
+            ordersChangePct: summary?.orders?.change_pct || 0,
+            totalProducts: summary?.products || recentProductsPayload?.total || 0,
+            avgOrderValue: summary?.avg_order_value || 0,
+            ordersByStatus: ordersBreakdown?.breakdown || {},
+            recentActivity,
+            analyticsAvailable: Boolean(analyticsPayload),
+        }
+    } catch {
+        return emptyDashboardHomeData()
     }
 }
 
@@ -212,10 +241,11 @@ function emptyDashboardHomeData(): DashboardHomeData {
 function orderActivity(order: Order): DashboardActivity {
     const customer = order.customer_name || order.customer_email || order.customer_phone || 'Customer'
     const amount = formatCurrency(order.total || 0)
-    const orderNumber = order.order_number || order.id.slice(0, 8)
+    const orderId = order.id || crypto.randomUUID()
+    const orderNumber = order.order_number || orderId.slice(0, 8)
 
     return {
-        id: `order-${order.id}`,
+        id: `order-${orderId}`,
         kind: 'order',
         title: `Order ${orderNumber}`,
         description: `${customer} placed a ${amount} order.`,
@@ -229,14 +259,15 @@ function orderActivity(order: Order): DashboardActivity {
 
 function productActivity(product: Product): DashboardActivity {
     const status = product.status || (product.is_active ? 'active' : 'draft')
+    const productId = product.id || crypto.randomUUID()
 
     return {
-        id: `product-${product.id}`,
+        id: `product-${productId}`,
         kind: 'product',
         title: product.name || 'Product added',
         description: `${product.vendor || product.product_type || product.category || 'Catalog'} item updated in products.`,
         timestamp: product.created_at || null,
-        href: `products/${product.id}`,
+        href: `products/${productId}`,
         icon: 'product',
         badgeLabel: titleize(status),
         badgeVariant: status === 'active' ? 'success' : status === 'archived' ? 'critical' : 'warning',
