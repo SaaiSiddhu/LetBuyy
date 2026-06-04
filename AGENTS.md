@@ -326,6 +326,10 @@ flowchart TB
 - Terraform DNS config lives in `infrastructure/dns/dns.tf` and includes service records for LetBuyy subdomains.
 - Wildcard tenant routing belongs to storefront middleware and Cloudflare DNS, not individual tenant Next routes.
 - Custom domains require ownership verification, CNAME/TXT validation, SSL issuance, tenant mapping, and takeover prevention before activation.
+- Cloudflare agent setup authority lives at `https://developers.cloudflare.com/agent-setup/prompt.md`. Before installing, repairing, or documenting Cloudflare agent tooling, fetch and re-verify that official prompt instead of relying on stale local notes.
+- Codex Cloudflare MCP setup should use the official remote servers: `cloudflare`, `cloudflare-docs`, `cloudflare-bindings`, `cloudflare-builds`, and `cloudflare-observability`. Authenticate with `codex mcp login cloudflare` when provider-backed tools are needed.
+- Prefer Cloudflare MCP/docs tools or official Cloudflare documentation for current Workers, DNS, bindings, builds, and observability behavior. Do not treat archived repo docs as source of truth for Cloudflare platform syntax.
+- Cloudflare OAuth, Wrangler state, MCP auth files, API tokens, account IDs, and DNS edit credentials must remain outside git. DNS mutations require a verified credential with Zone DNS Edit authority and must preserve Cloudflare/Vercel domain ownership boundaries.
 
 ## Payment and Checkout Governance
 
