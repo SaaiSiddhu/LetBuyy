@@ -338,8 +338,8 @@ html.lenis body {
 @media (max-width: 1023px) {
   .header-content {
     gap: 14px;
-    padding-left: 34px;
-    padding-right: 28px;
+    padding-left: 48px;
+    padding-right: 32px;
   }
 
   .mobile-start-link {
@@ -349,8 +349,8 @@ html.lenis body {
 
 @media (max-width: 520px) {
   .header-content {
-    padding-left: 28px;
-    padding-right: 22px;
+    padding-left: 36px;
+    padding-right: 24px;
   }
 }
 
@@ -441,6 +441,22 @@ html.lenis body {
     flex-basis: 152px;
     width: 152px;
     height: 49px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .header-logo {
+    flex-basis: 118px;
+    width: 118px;
+    height: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-logo {
+    flex-basis: 112px;
+    width: 112px;
+    height: 36px;
   }
 }
 
@@ -3332,7 +3348,7 @@ html.lenis body {
   align-items: center;
   gap: 14px;
   min-height: 60px;
-  padding: 0 34px;
+  padding: 0 46px;
   background: #05070c;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
@@ -3345,8 +3361,8 @@ html.lenis body {
 }
 
 .mobile-drawer-logo-image {
-  width: 126px;
-  height: 40px;
+  width: 118px;
+  height: 38px;
 }
 
 .mobile-drawer .brand-logo-image-light {
@@ -3425,8 +3441,8 @@ html.lenis body {
   background: transparent;
   color: #ffffff;
   font-family: var(--font-inter);
-  font-size: clamp(21px, 5.2vw, 30px);
-  font-weight: 560;
+  font-size: clamp(19px, 4.8vw, 27px);
+  font-weight: 550;
   line-height: 1.04;
   letter-spacing: 0;
   text-align: left;
@@ -3454,6 +3470,8 @@ html.lenis body {
 .mobile-drawer-link svg,
 .mobile-panel-back svg {
   flex: 0 0 auto;
+  width: 26px;
+  height: 26px;
   color: currentColor;
   transition: transform 0.2s ease;
 }
@@ -3617,13 +3635,13 @@ html.lenis body {
 @media (max-width: 520px) {
   .mobile-drawer-header {
     min-height: 60px;
-    padding: 0 28px;
+    padding: 0 36px;
     gap: 12px;
   }
 
   .mobile-drawer-logo-image {
-    width: 120px;
-    height: 39px;
+    width: 112px;
+    height: 36px;
   }
 
   .mobile-drawer-start {
@@ -3642,6 +3660,7 @@ html.lenis body {
 
   .mobile-drawer-link {
     padding: 17px 0;
+    font-size: clamp(18px, 5vw, 25px);
   }
 
   .mobile-mini-grid {
