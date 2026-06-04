@@ -3,8 +3,8 @@
 ## CURRENT STATUS
 - Stage: STAGE 4 - WS3 Marketplace UX.
 - Branch: `stream/master-execution`.
-- Active gate: MK1 App Marketplace.
-- Active task: MK1.6 Uninstall confirmation.
+- Active gate: MK2 Theme Marketplace.
+- Active task: MK2.1 Theme listing migration.
 - Scope lock: source edits are limited to `apps/app-marketplace/src/**` and `apps/theme-marketplace/src/**`; root execution ledgers are bookkeeping exceptions. No backend, DB, service, contract, governance, or shared UI package changes are allowed in this UI stage.
 
 ## MISSION CONTEXT READ
@@ -53,6 +53,13 @@
 - Local route proof: `curl -I http://127.0.0.1:3004/my-apps` and `curl -I http://localhost:3004/my-apps` against the local app-marketplace dev server both returned `307 Temporary Redirect` to `http://localhost:3001/lookup?return_to=http%3A%2F%2Flocalhost%3A3004%2Fmy-apps`, proving the route requires an authenticated merchant session before installed rows are available. Browser proof was attempted with the Browser in-app surface at `localhost`, `127.0.0.1`, and the advertised LAN address, but the browser surface reported `ERR_CONNECTION_REFUSED` while shell curl reached the route.
 - [SKIP - NEEDS BACKEND] Live uninstall-modal screenshot proof: the route needs an authenticated merchant session plus at least one installed app row from the existing app marketplace API before the `ConfirmDialog` can be opened with real data. Required backend/auth evidence: merchant login/session for `apps/app-marketplace`, one installed app row with `id`, `app_id`, `store_id`, `status`, and `marketplace_apps.name`, and the existing uninstall API accepting `DELETE /api/apps/:id/install` for that session.
 
+### MK1.7 Screenshots and MK1 Gate
+- Status: DONE WITH BACKEND-DATA SKIPS.
+- Available screenshot evidence: MK1.1 captured before/after empty/listing/filter states on desktop and mobile at `.tmp/screenshots/ws3-mk1/mk1-app-listing-before-home.png`, `.tmp/screenshots/ws3-mk1/mk1-app-listing-after-home.png`, `.tmp/screenshots/ws3-mk1/mk1-app-listing-after-filtered.png`, `.tmp/screenshots/ws3-mk1/mk1-app-listing-after-home-mobile.png`, and `.tmp/screenshots/ws3-mk1/mk1-app-listing-after-filtered-mobile.png`.
+- Available non-visual evidence: MK1.2-MK1.6 source-structure assertions, scoped typecheck/lint/build proof, authenticated redirect proof for `/my-apps`, and governance 128/128 proof are recorded above.
+- [SKIP - NEEDS BACKEND] Live browsing card, detail, consent, installed, post-install, and uninstall-modal screenshots: the app marketplace API client returned empty catalog arrays in this environment and `/my-apps` requires an authenticated merchant session with installed app rows. Required backend/auth evidence: seeded or live app catalog rows with slug, screenshots, pricing, rating, declared scopes, installable app id, and launch URL; merchant app-marketplace session; and at least one installed app row for `/my-apps`.
+- GATE MK1 result: PASS WITH BACKEND-DATA SKIPS. The App Marketplace UI has been redesigned across listing, cards, detail, consent, post-install, and uninstall management surfaces without backend/DB/contract/shared-UI changes. Missing live app/install data is explicitly logged as backend/auth-required work.
+
 ## VALIDATOR LEDGER
 - 2026-06-04T00:40:10Z [MK1.1 scoped] `pnpm --filter @letbuyy/app-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/app-marketplace lint` -> PASS with 8 pre-existing warnings and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/app-marketplace exec next build --webpack` -> PASS; route output includes dynamic `/` plus marketplace API/app/category/collection/developer routes.
 - 2026-06-04T00:43:20Z [MK1.1 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
@@ -71,3 +78,5 @@
 - 2026-06-04T01:25:30Z [MK1.5 post-commit governance] Post-commit `pnpm run validate:governance` after `5de786a0` -> PASS (128/128 validators).
 - 2026-06-04T01:25:30Z [MK1.6 scoped] Initial `pnpm --filter @letbuyy/app-marketplace typecheck` and lint failed only because generated-artifact cleanup had removed app-local dependency links; escalated `pnpm install --frozen-lockfile --force` restored workspace links with lockfile unchanged. Source-structure assertion for the uninstall confirmation requirements -> PASS. Rerun `pnpm --filter @letbuyy/app-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/app-marketplace lint` -> PASS with 8 warnings and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/app-marketplace exec next build --webpack` -> PASS; route output includes dynamic `/my-apps`. Local route proof with `curl -I` returned the expected authenticated redirect for `/my-apps`; Browser in-app proof could not reach the local dev server even though curl could.
 - 2026-06-04T01:28:14Z [MK1.6 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T01:31:00Z [MK1.6 post-commit governance] Post-commit `pnpm run validate:governance` after `4df4774c` -> PASS (128/128 validators).
+- 2026-06-04T01:32:00Z [MK1.7/GATE MK1 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
