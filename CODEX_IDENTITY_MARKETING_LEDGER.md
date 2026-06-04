@@ -3,7 +3,7 @@
 ## CURRENT STATUS
 - Stage: WS6 Identity & Marketing.
 - Branch: `stream/master-execution`.
-- Active task: MK1.4 Responsive design.
+- Active task: MK1.5 SEO.
 - Source ownership: `apps/identity-platform/src/**` and `apps/marketing-site/src/**` only. Root ledgers are bookkeeping exceptions.
 
 ## BASELINE
@@ -24,8 +24,10 @@
 - MK1.2 target page/components: `apps/marketing-site/src/components/Pricing.tsx`, `apps/marketing-site/src/app/pricing/page.tsx`, and `apps/marketing-site/src/app/globals.css`.
 - MK1.3 target component: `apps/marketing-site/src/components/Features.tsx` and `apps/marketing-site/src/app/globals.css`.
 - MK1.4 target: marketing-site mobile-first responsive layout across the homepage and pricing route.
+- MK1.5 target: marketing-site metadata, canonical links, social cards, robots, and structured data.
 
 ## PROGRESS LOG
+- 2026-06-04T00:16:43Z [MK1.5] SEO - DONE. Files: `apps/marketing-site/src/app/layout.tsx`, `apps/marketing-site/src/app/pricing/page.tsx`, `apps/marketing-site/src/app/robots.ts`, and `apps/marketing-site/src/app/sitemap.ts`. Added richer root metadata with canonical URL, robots policy, Open Graph/Twitter cards using the existing landscape logo asset, organization/website/software structured data, pricing route metadata, crawl rules, and a static sitemap for homepage, pricing, and create routes. Removed a draft SearchAction because the marketing site does not expose search. No auth pages, backend, DB, contract, service, package-core, or governance files changed.
 - 2026-06-04T00:08:09Z [MK1.4] Responsive design - DONE. Files: `apps/marketing-site/src/components/Features.tsx` and `apps/marketing-site/src/app/globals.css`. Replaced transform-scaled header/footer logo sizing with real responsive widths, isolated the MK1.3 feature showcase visuals under a dedicated CSS class namespace to avoid collision with the SiteTypes mockups, tightened 320px SiteTypes mockup sizing, disabled oversized decorative mockup glow through tablet widths, moved hero and HowItWorks multi-column breakpoints from cramped tablet widths to 960px, and aligned the HowItWorks connector breakpoint with the grid. No auth pages, backend, DB, contract, service, package-core, or governance files changed.
 - 2026-06-03T23:47:47Z [MK1.3] Feature showcase - DONE. Files: `apps/marketing-site/src/components/Features.tsx` and `apps/marketing-site/src/app/globals.css`. Rebuilt the feature section into a four-card product showcase for catalog operations, theme editing, app marketplace workflows, and India-first payment/GST readiness. Added self-contained CSS preview systems for product rows, theme editor framing, marketplace install cards, and payment/GST readiness without backend data claims. No auth pages, backend, DB, contract, service, package-core, or governance files changed.
 - 2026-06-03T23:28:21Z [MK1.2] Pricing page - DONE / HUMAN-GATED PRICES. Files: `apps/marketing-site/src/components/Pricing.tsx`, `apps/marketing-site/src/app/pricing/page.tsx`, and `apps/marketing-site/src/app/globals.css`. Replaced the fabricated USD and rupee paid-plan amounts with a governed Free / Basic / Pro / Enterprise comparison, explicit pricing-approval banner, approval-ready feature matrix, and responsive plan cards. The standalone `/pricing` route now uses the shared marketing shell (`Header`, `Pricing`, `FAQ`, `FinalCTA`, `Footer`) so homepage and route pricing stay aligned. Exact paid prices, billing periods, discounts, transaction/platform fees, free-tier limits, support/SLA terms, and final commercial copy are intentionally not invented. No auth pages, backend, DB, contract, service, package-core, or governance files changed.
@@ -39,7 +41,7 @@
 
 ## SKIP LIST
 - [SKIPPED — NEEDS HUMAN] MK1.2 exact commercial pricing - requires human-approved Free/Basic/Pro/Enterprise monthly/yearly prices, discount policy, transaction/platform fees, free-tier product/site limits, trial policy, support/SLA terms, and final pricing copy before exact amounts can be marked live.
-- None for ID1.1-ID1.6, MK1.1, MK1.3, and MK1.4.
+- None for ID1.1-ID1.6, MK1.1, MK1.3, MK1.4, and MK1.5.
 
 ## VISUAL LEDGER
 - 2026-06-03T22:05:00Z ID1.1 Signup before desktop screenshot - `.tmp/screenshots/ws6-id1-signup/before-desktop.png`.
@@ -99,6 +101,9 @@
 - 2026-06-04T00:08:09Z MK1.4 pricing route 768px screenshot - `.tmp/screenshots/ws6-mk1-responsive/mk1-responsive-final-v3-pricing-tablet768-pricing.png`.
 
 ## VALIDATOR LEDGER
+- 2026-06-04T00:18:12Z [MK1.5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-04T00:16:43Z [MK1.5 scoped] Escalated `pnpm install --frozen-lockfile --force` restored workspace links with lockfile unchanged and 0 downloads after generated-artifact cleanup had removed app-local links. `pnpm --filter @letbuyy/marketing-site typecheck` -> PASS. `pnpm --filter @letbuyy/marketing-site lint` -> PASS with 1 pre-existing `ThemeProvider` warning and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/marketing-site exec next build --webpack` -> PASS for `/`, `/_not-found`, `/create`, `/pricing`, `/robots.txt`, `/signup`, and `/sitemap.xml`.
+- 2026-06-04T00:12:24Z [MK1.4 post-commit governance] Post-commit `pnpm run validate:governance` after `7a0a57f5` -> PASS (128/128 validators).
 - 2026-06-04T00:09:37Z [MK1.4 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-04T00:08:09Z [MK1.4 scoped] Initial sandboxed `pnpm install --frozen-lockfile --force` failed with registry DNS `ENOTFOUND`; escalated rerun restored workspace links with lockfile unchanged and 0 downloads. Escalated responsive proof `node .tmp/ws6-mk1-responsive-proof.mjs mk1-responsive-final-v3` -> PASS for `/` and `/pricing` at 320px, 390px, and 768px: all required text present, document/body scroll widths matched viewport widths, no non-allowed element overflow or protruding elements, and final warmed viewport screenshots captured. Visual review confirmed mobile/tablet header, hero, feature card, pricing section, and pricing route screenshots fit without overlap or clipping. `pnpm --filter @letbuyy/marketing-site typecheck` -> PASS. `pnpm --filter @letbuyy/marketing-site lint` -> PASS with 1 pre-existing `ThemeProvider` warning and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/marketing-site exec next build --webpack` -> PASS for `/`, `/_not-found`, `/create`, `/pricing`, and `/signup`.
 - 2026-06-03T23:51:16Z [MK1.3 post-commit governance] Post-commit `pnpm run validate:governance` after `f72ef874` -> PASS (128/128 validators).
