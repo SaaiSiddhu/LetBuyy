@@ -3323,7 +3323,7 @@ html.lenis body {
   align-items: center;
   gap: 14px;
   min-height: 60px;
-  padding: 0 22px;
+  padding: 0 30px;
   background: #05070c;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
@@ -3336,8 +3336,8 @@ html.lenis body {
 }
 
 .mobile-drawer-logo-image {
-  width: 132px;
-  height: 42px;
+  width: 126px;
+  height: 40px;
 }
 
 .mobile-drawer .brand-logo-image-light {
@@ -3410,13 +3410,13 @@ html.lenis body {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 22px 0;
+  padding: 18px 0;
   border: 0;
   border-bottom: 1px solid rgba(139, 92, 246, 0.18);
   background: transparent;
   color: #ffffff;
-  font-size: clamp(24px, 6vw, 36px);
-  font-weight: 550;
+  font-size: clamp(21px, 5.2vw, 30px);
+  font-weight: 560;
   line-height: 1.04;
   letter-spacing: 0;
   text-align: left;
@@ -3581,14 +3581,14 @@ html.lenis body {
 
 .mobile-drawer-actions .btn-ghost {
   color: #ffffff;
-  background: transparent;
-  border: 2px solid #ffffff;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1.5px solid rgba(167, 139, 250, 0.72);
 }
 
 .mobile-drawer-actions .btn-primary {
-  color: #05070c;
-  background: #ffffff;
-  box-shadow: none;
+  color: #ffffff;
+  background: var(--gradient-primary);
+  box-shadow: 0 14px 36px rgba(139, 92, 246, 0.28);
 }
 
 .mobile-drawer-actions .btn-primary::before {
@@ -3598,13 +3598,13 @@ html.lenis body {
 @media (max-width: 520px) {
   .mobile-drawer-header {
     min-height: 60px;
-    padding: 0 22px;
+    padding: 0 26px;
     gap: 12px;
   }
 
   .mobile-drawer-logo-image {
-    width: 126px;
-    height: 41px;
+    width: 120px;
+    height: 39px;
   }
 
   .mobile-drawer-start {
@@ -3622,7 +3622,7 @@ html.lenis body {
   }
 
   .mobile-drawer-link {
-    padding: 20px 0;
+    padding: 17px 0;
   }
 
   .mobile-mini-grid {
