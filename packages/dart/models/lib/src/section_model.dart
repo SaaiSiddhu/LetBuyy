@@ -1,17 +1,32 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+
+DateTime _parseDateTime(dynamic value) {
+  if (value is DateTime) return value;
+  if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+  final dynamicValue = value;
+  if (dynamicValue != null &&
+      dynamicValue.runtimeType.toString().contains('Timestamp')) {
+    try {
+      return dynamicValue.toDate() as DateTime;
+    } catch (_) {
+      return DateTime.now();
+    }
+  }
+  return DateTime.now();
+}
+
 enum SectionType {
   // MVP (P0) - Core sections
   header,
   heroBanner,
   productGrid,
   footer,
-  
+
   // P1 - Enhanced sections
   featuredProducts,
   testimonials,
   aboutSection,
-  
+
   // Advanced sections
   collectionFilter,
   newsletter,
@@ -207,10 +222,10 @@ class SectionModel {
     required this.updatedAt,
   });
 
-  /// Create from Firestore document
+  /// Create from a gateway/template map.
   factory SectionModel.fromMap(Map<String, dynamic> map) {
     String typeStr = map['type'] as String? ?? '';
-    
+
     // Normalize legacy types
     final typeMap = {
       'hero': 'heroBanner',
@@ -220,7 +235,7 @@ class SectionModel {
     if (typeMap.containsKey(typeStr)) {
       typeStr = typeMap[typeStr]!;
     }
-    
+
     return SectionModel(
       id: map['id'] as String? ?? '',
       type: SectionType.values.firstWhere(
@@ -229,17 +244,20 @@ class SectionModel {
       ),
       order: map['order'] as int? ?? 0,
       settings: Map<String, dynamic>.from(map['settings'] as Map? ?? {}),
-      blocks: (map['blocks'] as List<dynamic>?)
-              ?.map((b) => BlockModel.fromMap(Map<String, dynamic>.from(b as Map)))
+      blocks:
+          (map['blocks'] as List<dynamic>?)
+              ?.map(
+                (b) => BlockModel.fromMap(Map<String, dynamic>.from(b as Map)),
+              )
               .toList() ??
           [],
       isVisible: map['isVisible'] as bool? ?? true,
-      createdAt: (map['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      updatedAt: (map['updatedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      createdAt: _parseDateTime(map['createdAt'] ?? map['created_at']),
+      updatedAt: _parseDateTime(map['updatedAt'] ?? map['updated_at']),
     );
   }
 
-  /// Convert to Firestore document
+  /// Convert to a gateway/template map.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -248,8 +266,8 @@ class SectionModel {
       'settings': settings,
       'blocks': blocks.map((b) => b.toMap()).toList(),
       'isVisible': isVisible,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 
@@ -290,9 +308,7 @@ class SectionModel {
 
   /// Remove a block from this section
   SectionModel removeBlock(String blockId) {
-    return copyWith(
-      blocks: blocks.where((b) => b.id != blockId).toList(),
-    );
+    return copyWith(blocks: blocks.where((b) => b.id != blockId).toList());
   }
 
   /// Reorder blocks within this section
@@ -300,22 +316,25 @@ class SectionModel {
     final newBlocks = List<BlockModel>.from(blocks);
     final block = newBlocks.removeAt(oldIndex);
     newBlocks.insert(newIndex, block);
-    
+
     // Update order values
     final reorderedBlocks = newBlocks.asMap().entries.map((entry) {
       return entry.value.copyWith(order: entry.key);
     }).toList();
-    
+
     return copyWith(blocks: reorderedBlocks);
   }
 
   @override
-  String toString() => 'SectionModel(id: $id, type: ${type.name}, order: $order)';
+  String toString() =>
+      'SectionModel(id: $id, type: ${type.name}, order: $order)';
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SectionModel && runtimeType == other.runtimeType && id == other.id;
+      other is SectionModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id;
 
   @override
   int get hashCode => id.hashCode;
@@ -331,23 +350,23 @@ enum BlockType {
   button,
   divider,
   spacer,
-  
+
   // Navigation blocks
   logo,
   navMenu,
   searchBar,
   cartIcon,
-  
+
   // Product blocks
   productCard,
   productCarousel,
-  
+
   // Interactive blocks
   socialLink,
   contactInfo,
   faqItem,
   testimonialCard,
-  
+
   // Form blocks
   emailInput,
   subscribeButton,
@@ -442,6 +461,7 @@ extension BlockTypeExtension on BlockType {
     }
   }
 }
+
 class BlockModel {
   final String id;
   final BlockType type;
@@ -457,7 +477,7 @@ class BlockModel {
     this.isVisible = true,
   });
 
-  /// Create from Firestore document
+  /// Create from a gateway/template map.
   factory BlockModel.fromMap(Map<String, dynamic> map) {
     return BlockModel(
       id: map['id'] as String? ?? '',
@@ -471,7 +491,7 @@ class BlockModel {
     );
   }
 
-  /// Convert to Firestore document
+  /// Convert to a gateway/template map.
   Map<String, dynamic> toMap() {
     return {
       'id': id,

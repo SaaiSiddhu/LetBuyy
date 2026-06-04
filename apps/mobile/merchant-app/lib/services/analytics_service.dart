@@ -103,7 +103,7 @@ class TopProduct {
 
 /// Service for fetching and managing store analytics via API.
 ///
-/// Replaces Firestore-based analytics with REST API calls.
+/// Replaces provider-local analytics with REST API calls.
 /// Some analytics data is computed from existing orders/products endpoints
 /// until dedicated analytics endpoints are added to the backend.
 class AnalyticsService extends ChangeNotifier {

@@ -5,7 +5,7 @@ import 'api_client.dart';
 
 /// Service for managing orders via the LetBuyy API.
 ///
-/// Replaces Firestore real-time streams with periodic API polling.
+/// Replaces legacy real-time streams with API-backed polling.
 class OrderService extends ChangeNotifier {
   final ApiClient _api;
 

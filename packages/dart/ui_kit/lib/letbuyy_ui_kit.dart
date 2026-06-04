@@ -20,7 +20,6 @@ export 'src/widgets/empty_state_widget.dart';
 export 'src/widgets/shimmer_loading.dart';
 export 'src/widgets/custom_button.dart';
 export 'src/widgets/custom_text_field.dart';
-export 'src/widgets/update_dialog.dart';
 export 'src/widgets/glass_container.dart';
 export 'src/widgets/custom_app_bar.dart';
 export 'src/widgets/custom_bottom_nav.dart';

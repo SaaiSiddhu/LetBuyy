@@ -19,21 +19,21 @@ class StoreModel {
   final String storeUrl; // https://myshop-letbuy-y.web.app
   final String? logoUrl;
   final String? bannerUrl;
-  
+
   // Theme
   final String themeId;
   final Map<String, dynamic> themeCustomization;
-  
+
   // Products
   final List<String> selectedProductIds;
-  
+
   // Template Configuration (Section-based builder)
   final StoreTemplateModel? templateConfig;
-  
+
   // Status
   final StoreStatus status;
   final StorePlan plan;
-  
+
   // Subscription System (SaaS)
   final SubscriptionPlan? subscriptionPlan;
   final SubscriptionStatus? subscriptionStatus;
@@ -42,40 +42,41 @@ class StoreModel {
   final int productLimit;
   final int currentProductCount;
   final double commissionPercent;
-  
+
   // Frozen State
   final bool isFrozen;
   final DateTime? frozenAt;
   final String? freezeReason;
-  
+
   // Payment Configuration
   final PaymentMode paymentMode;
-  
+
   // Team Access (Professional only)
   final int teamMemberCount;
-  
+
   // SEO
   final String? seoTitle;
   final String? seoDescription;
-  
+
   // Stats
   final int totalVisitors;
   final int totalOrders;
-  
+
   // Domain Management
   final String domainStatus; // "pending" | "active" | "rejected"
   final DateTime? domainConnectedAt;
   final String? domainConnectedBy;
   final String? customDomain; // e.g., "www.myfashion.com"
   final String? customDomainStatus; // "pending" | "active" | "rejected"
-  final Map<String, dynamic> dnsConfig; // e.g., { "txtRecord": "...", "cname": "..." }
+  final Map<String, dynamic>
+  dnsConfig; // e.g., { "txtRecord": "...", "cname": "..." }
   final bool sslActive;
   final String? customDomainHeader; // For debugging/tracking
-  
+
   // Payment Settings
   final bool codEnabled;
   final bool onlinePaymentEnabled;
-  
+
   // Timestamps
   final DateTime createdAt;
   final DateTime updatedAt;
@@ -131,8 +132,8 @@ class StoreModel {
   static String generateStoreUrl(String subdomain) {
     return 'https://$subdomain.letbuyy.store';
   }
-  
-  /// Generate legacy store URL (Firebase Hosting format)
+
+  /// Generate the public storefront URL.
   static String generateLegacyStoreUrl(String subdomain) {
     return 'https://$subdomain-letbuy-y.web.app';
   }
@@ -150,8 +151,12 @@ class StoreModel {
       logoUrl: data['logoUrl'] ?? data['logo_url'],
       bannerUrl: data['bannerUrl'] ?? data['banner_url'],
       themeId: data['themeId'] ?? data['theme_id'] ?? 'minimal_modern',
-      themeCustomization: Map<String, dynamic>.from(data['themeCustomization'] ?? data['theme_customization'] ?? {}),
-      selectedProductIds: List<String>.from(data['selectedProductIds'] ?? data['selected_product_ids'] ?? []),
+      themeCustomization: Map<String, dynamic>.from(
+        data['themeCustomization'] ?? data['theme_customization'] ?? {},
+      ),
+      selectedProductIds: List<String>.from(
+        data['selectedProductIds'] ?? data['selected_product_ids'] ?? [],
+      ),
       status: StoreStatus.values.firstWhere(
         (e) => e.name == (data['status'] ?? 'draft'),
         orElse: () => StoreStatus.draft,
@@ -160,42 +165,77 @@ class StoreModel {
         (e) => e.name == (data['plan'] ?? 'free'),
         orElse: () => StorePlan.free,
       ),
-      subscriptionPlan: data['subscriptionPlan'] != null || data['subscription_plan'] != null
-          ? _parseSubscriptionPlan(data['subscriptionPlan'] ?? data['subscription_plan'])
+      subscriptionPlan:
+          data['subscriptionPlan'] != null || data['subscription_plan'] != null
+          ? _parseSubscriptionPlan(
+              data['subscriptionPlan'] ?? data['subscription_plan'],
+            )
           : null,
-      subscriptionStatus: data['subscriptionStatus'] != null || data['subscription_status'] != null
-          ? _parseSubscriptionStatus(data['subscriptionStatus'] ?? data['subscription_status'])
+      subscriptionStatus:
+          data['subscriptionStatus'] != null ||
+              data['subscription_status'] != null
+          ? _parseSubscriptionStatus(
+              data['subscriptionStatus'] ?? data['subscription_status'],
+            )
           : null,
-      trialEndsAt: _parseTimestamp(data['trialEndsAt'] ?? data['trial_ends_at']),
-      subscriptionEndsAt: _parseTimestamp(data['subscriptionEndsAt'] ?? data['subscription_ends_at']),
+      trialEndsAt: _parseTimestamp(
+        data['trialEndsAt'] ?? data['trial_ends_at'],
+      ),
+      subscriptionEndsAt: _parseTimestamp(
+        data['subscriptionEndsAt'] ?? data['subscription_ends_at'],
+      ),
       productLimit: data['productLimit'] ?? data['product_limit'] ?? 50,
-      currentProductCount: data['currentProductCount'] ?? data['current_product_count'] ?? 0,
-      commissionPercent: (data['commissionPercent'] ?? data['commission_percent'] as num?)?.toDouble() ?? 3.0,
+      currentProductCount:
+          data['currentProductCount'] ?? data['current_product_count'] ?? 0,
+      commissionPercent:
+          (data['commissionPercent'] ?? data['commission_percent'] as num?)
+              ?.toDouble() ??
+          3.0,
       isFrozen: data['isFrozen'] ?? data['is_frozen'] ?? false,
       frozenAt: _parseTimestamp(data['frozenAt'] ?? data['frozen_at']),
       freezeReason: data['freezeReason'] ?? data['freeze_reason'],
-      paymentMode: _parsePaymentMode(data['paymentMode'] ?? data['payment_mode']),
-      teamMemberCount: data['teamMemberCount'] ?? data['team_member_count'] ?? 0,
+      paymentMode: _parsePaymentMode(
+        data['paymentMode'] ?? data['payment_mode'],
+      ),
+      teamMemberCount:
+          data['teamMemberCount'] ?? data['team_member_count'] ?? 0,
       seoTitle: data['seoTitle'] ?? data['seo_title'],
       seoDescription: data['seoDescription'] ?? data['seo_description'],
       totalVisitors: data['totalVisitors'] ?? data['total_visitors'] ?? 0,
       totalOrders: data['totalOrders'] ?? data['total_orders'] ?? 0,
       domainStatus: data['domainStatus'] ?? data['domain_status'] ?? 'pending',
-      domainConnectedAt: _parseTimestamp(data['domainConnectedAt'] ?? data['domain_connected_at']),
-      domainConnectedBy: data['domainConnectedBy'] ?? data['domain_connected_by'],
+      domainConnectedAt: _parseTimestamp(
+        data['domainConnectedAt'] ?? data['domain_connected_at'],
+      ),
+      domainConnectedBy:
+          data['domainConnectedBy'] ?? data['domain_connected_by'],
       customDomain: data['customDomain'] ?? data['custom_domain'],
-      customDomainStatus: data['customDomainStatus'] ?? data['custom_domain_status'],
-      dnsConfig: Map<String, dynamic>.from(data['dnsConfig'] ?? data['dns_config'] ?? {}),
+      customDomainStatus:
+          data['customDomainStatus'] ?? data['custom_domain_status'],
+      dnsConfig: Map<String, dynamic>.from(
+        data['dnsConfig'] ?? data['dns_config'] ?? {},
+      ),
       sslActive: data['sslActive'] ?? data['ssl_active'] ?? false,
-      customDomainHeader: data['customDomainHeader'] ?? data['custom_domain_header'],
+      customDomainHeader:
+          data['customDomainHeader'] ?? data['custom_domain_header'],
       codEnabled: data['codEnabled'] ?? data['cod_enabled'] ?? true,
-      onlinePaymentEnabled: data['onlinePaymentEnabled'] ?? data['online_payment_enabled'] ?? true,
-      createdAt: _parseTimestamp(data['createdAt'] ?? data['created_at']) ?? DateTime.now(),
-      updatedAt: _parseTimestamp(data['updatedAt'] ?? data['updated_at']) ?? DateTime.now(),
+      onlinePaymentEnabled:
+          data['onlinePaymentEnabled'] ??
+          data['online_payment_enabled'] ??
+          true,
+      createdAt:
+          _parseTimestamp(data['createdAt'] ?? data['created_at']) ??
+          DateTime.now(),
+      updatedAt:
+          _parseTimestamp(data['updatedAt'] ?? data['updated_at']) ??
+          DateTime.now(),
       publishedAt: _parseTimestamp(data['publishedAt'] ?? data['published_at']),
-      templateConfig: (data['templateConfig'] ?? data['template_config']) != null
+      templateConfig:
+          (data['templateConfig'] ?? data['template_config']) != null
           ? StoreTemplateModel.fromMap(
-              Map<String, dynamic>.from((data['templateConfig'] ?? data['template_config']) as Map),
+              Map<String, dynamic>.from(
+                (data['templateConfig'] ?? data['template_config']) as Map,
+              ),
             )
           : null,
     );
@@ -376,67 +416,67 @@ class StoreModel {
   // ============================================================
   // SUBSCRIPTION HELPERS
   // ============================================================
-  
+
   /// Check if store is currently frozen
   bool get isStoreFrozen => isFrozen;
-  
+
   /// Get effective product limit based on subscription plan
   /// Falls back to stored productLimit if plan-based limit not applicable
   int get effectiveProductLimit {
     final plan = subscriptionPlan ?? SubscriptionPlan.trial;
     return PlanConfig.productLimits[plan] ?? productLimit;
   }
-  
+
   /// Get effective commission based on subscription plan and Razorpay connection
   /// Professional: 0% if own Razorpay connected, 2% if using shared
   double get effectiveCommission {
     final plan = subscriptionPlan ?? SubscriptionPlan.trial;
-    
+
     // Professional plan special case
     if (plan == SubscriptionPlan.professional) {
       return isUsingOwnRazorpay ? 0.0 : 2.0;
     }
-    
+
     return PlanConfig.commissionPercents[plan] ?? commissionPercent;
   }
-  
+
   /// Check if using own Razorpay account
   bool get isUsingOwnRazorpay => paymentMode == PaymentMode.ownAccount;
-  
+
   /// Check if trial is active
   bool get isTrialActive {
     if (subscriptionPlan != SubscriptionPlan.trial) return false;
     if (trialEndsAt == null) return false;
     return DateTime.now().isBefore(trialEndsAt!);
   }
-  
+
   /// Days remaining in trial
   int get daysLeftInTrial {
     if (!isTrialActive || trialEndsAt == null) return 0;
     final diff = trialEndsAt!.difference(DateTime.now()).inDays;
     return diff > 0 ? diff : 0;
   }
-  
+
   /// Check if user can add more products
   bool get canAddProducts {
     if (isFrozen) return false;
     if (productLimit == -1) return true; // Unlimited
     return currentProductCount < productLimit;
   }
-  
+
   /// Products remaining before limit
   int get productsRemaining {
     if (productLimit == -1) return -1; // Unlimited
     return productLimit - currentProductCount;
   }
-  
+
   /// Product usage percentage (0-100)
   double get productUsagePercent {
     if (productLimit == -1) return 0; // Unlimited
     if (productLimit == 0) return 100;
     return (currentProductCount / productLimit * 100).clamp(0, 100);
   }
-  
+
   /// Get current plan display name
   String get currentPlanDisplayName {
     if (subscriptionPlan != null) {
@@ -444,14 +484,14 @@ class StoreModel {
     }
     return plan == StorePlan.premium ? 'Premium' : 'Free';
   }
-  
+
   /// Check if feature is enabled based on plan
   bool isFeatureEnabled(String feature) {
     if (subscriptionPlan == null) return false;
     final features = PlanConfig.getFeaturesForPlan(subscriptionPlan!);
     return features[feature] ?? false;
   }
-  
+
   /// Check specific features
   bool get hasCustomDomainFeature => isFeatureEnabled('customDomain');
   bool get hasInventoryFeature => isFeatureEnabled('inventory');
@@ -466,28 +506,39 @@ class StoreModel {
   // ============================================================
   // STATIC PARSE HELPERS
   // ============================================================
-  
+
   static SubscriptionPlan _parseSubscriptionPlan(String? plan) {
     switch (plan?.toLowerCase()) {
-      case 'trial': return SubscriptionPlan.trial;
-      case 'starter': return SubscriptionPlan.starter;
-      case 'business': return SubscriptionPlan.business;
-      case 'professional': return SubscriptionPlan.professional;
-      default: return SubscriptionPlan.trial;
+      case 'trial':
+        return SubscriptionPlan.trial;
+      case 'starter':
+        return SubscriptionPlan.starter;
+      case 'business':
+        return SubscriptionPlan.business;
+      case 'professional':
+        return SubscriptionPlan.professional;
+      default:
+        return SubscriptionPlan.trial;
     }
   }
-  
+
   static SubscriptionStatus _parseSubscriptionStatus(String? status) {
     switch (status?.toLowerCase()) {
-      case 'active': return SubscriptionStatus.active;
-      case 'expired': return SubscriptionStatus.expired;
-      case 'canceled': return SubscriptionStatus.canceled;
-      case 'frozen': return SubscriptionStatus.frozen;
-      case 'pastdue': return SubscriptionStatus.pastDue;
-      default: return SubscriptionStatus.active;
+      case 'active':
+        return SubscriptionStatus.active;
+      case 'expired':
+        return SubscriptionStatus.expired;
+      case 'canceled':
+        return SubscriptionStatus.canceled;
+      case 'frozen':
+        return SubscriptionStatus.frozen;
+      case 'pastdue':
+        return SubscriptionStatus.pastDue;
+      default:
+        return SubscriptionStatus.active;
     }
   }
-  
+
   static PaymentMode _parsePaymentMode(String? mode) {
     switch (mode?.toLowerCase()) {
       case 'ownaccount':
@@ -497,7 +548,7 @@ class StoreModel {
         return PaymentMode.shared;
     }
   }
-  
+
   /// Parse timestamp from ISO string or DateTime.
   static DateTime? _parseTimestamp(dynamic value) {
     if (value == null) return null;

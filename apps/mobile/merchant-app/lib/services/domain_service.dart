@@ -3,13 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'api_client.dart';
 
 /// Domain verification status
-enum DomainStatus {
-  pending,
-  verifying,
-  verified,
-  failed,
-  expired,
-}
+enum DomainStatus { pending, verifying, verified, failed, expired }
 
 /// Domain configuration model
 class DomainConfig {
@@ -70,9 +64,14 @@ class DomainConfig {
       ),
       verificationToken: map['verificationToken'] ?? map['verification_token'],
       verifiedAt: _parseTimestamp(map['verifiedAt'] ?? map['verified_at']),
-      createdAt: _parseTimestamp(map['createdAt'] ?? map['created_at']) ?? DateTime.now(),
-      updatedAt: _parseTimestamp(map['updatedAt'] ?? map['updated_at']) ?? DateTime.now(),
-      requiredRecords: (map['requiredRecords'] ?? map['required_records'] as List?)
+      createdAt:
+          _parseTimestamp(map['createdAt'] ?? map['created_at']) ??
+          DateTime.now(),
+      updatedAt:
+          _parseTimestamp(map['updatedAt'] ?? map['updated_at']) ??
+          DateTime.now(),
+      requiredRecords:
+          (map['requiredRecords'] ?? map['required_records'] as List?)
               ?.map((e) => DnsRecord.fromMap(e as Map<String, dynamic>))
               .toList() ??
           [],
@@ -157,7 +156,7 @@ class DnsRecord {
 
 /// Service for managing store domains via the API.
 ///
-/// Replaces direct Firestore access with REST calls to the Hono backend.
+/// Replaces direct database access with REST calls to the Hono backend.
 class DomainService {
   final ApiClient _api;
 
@@ -183,9 +182,10 @@ class DomainService {
         return false;
       }
 
-      final res = await _api.get('domains/check', query: {
-        'subdomain': subdomain.toLowerCase(),
-      });
+      final res = await _api.get(
+        'domains/check',
+        query: {'subdomain': subdomain.toLowerCase()},
+      );
       return res['available'] == true;
     } on ApiException catch (e) {
       if (e.statusCode == 404) return true; // not found → available
@@ -211,9 +211,10 @@ class DomainService {
     required String newSubdomain,
   }) async {
     try {
-      await _api.patch('stores/$storeId', body: {
-        'subdomain': newSubdomain.toLowerCase(),
-      });
+      await _api.patch(
+        'stores/$storeId',
+        body: {'subdomain': newSubdomain.toLowerCase()},
+      );
       return true;
     } catch (e) {
       debugPrint('Error updating subdomain: $e');
@@ -227,9 +228,10 @@ class DomainService {
     required String customDomain,
   }) async {
     try {
-      final res = await _api.post('stores/$storeId/domain', body: {
-        'custom_domain': customDomain.toLowerCase(),
-      });
+      final res = await _api.post(
+        'stores/$storeId/domain',
+        body: {'custom_domain': customDomain.toLowerCase()},
+      );
 
       if (res['data'] == null) return null;
       return DomainConfig.fromJson(res['data'] as Map<String, dynamic>);

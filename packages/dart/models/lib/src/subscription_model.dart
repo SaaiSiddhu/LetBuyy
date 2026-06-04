@@ -1,10 +1,8 @@
 // lib/models/subscription_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Helper to safely parse timestamps (handles Firestore Timestamp and String)
+// Helper to safely parse timestamps from gateway maps and legacy timestamp objects.
 DateTime? _parseTimestamp(dynamic value) {
   if (value == null) return null;
-  if (value is Timestamp) return value.toDate();
   if (value is String) {
     try {
       return DateTime.parse(value);
@@ -13,24 +11,31 @@ DateTime? _parseTimestamp(dynamic value) {
     }
   }
   if (value is DateTime) return value;
+  if (value.runtimeType.toString().contains('Timestamp')) {
+    try {
+      return value.toDate() as DateTime;
+    } catch (_) {
+      return null;
+    }
+  }
   return null;
 }
 
 /// Subscription plan types for store subscriptions
-enum SubscriptionPlan { 
-  trial,        // 30-day free trial, 50 products, 3% commission
-  starter,      // ₹99/month, 5 products, 5% commission
-  business,     // ₹399/month, 30 products, 3% commission
-  professional  // ₹799/month, unlimited products, 0% commission
+enum SubscriptionPlan {
+  trial, // 30-day free trial, 50 products, 3% commission
+  starter, // ₹99/month, 5 products, 5% commission
+  business, // ₹399/month, 30 products, 3% commission
+  professional, // ₹799/month, unlimited products, 0% commission
 }
 
 /// Subscription status
-enum SubscriptionStatus { 
-  active,       // Currently active subscription
-  expired,      // Subscription period ended (not renewed)
-  canceled,     // User canceled subscription
-  frozen,       // Store frozen due to non-payment or trial expiry
-  pastDue       // Payment failed, in grace period
+enum SubscriptionStatus {
+  active, // Currently active subscription
+  expired, // Subscription period ended (not renewed)
+  canceled, // User canceled subscription
+  frozen, // Store frozen due to non-payment or trial expiry
+  pastDue, // Payment failed, in grace period
 }
 
 /// Plan configuration constants
@@ -51,8 +56,8 @@ class PlanConfig {
 
   static const Map<SubscriptionPlan, int> pricesInPaise = {
     SubscriptionPlan.trial: 0,
-    SubscriptionPlan.starter: 9900,      // ₹99
-    SubscriptionPlan.business: 39900,    // ₹399
+    SubscriptionPlan.starter: 9900, // ₹99
+    SubscriptionPlan.business: 39900, // ₹399
     SubscriptionPlan.professional: 79900, // ₹799
   };
 
@@ -66,8 +71,9 @@ class PlanConfig {
   /// Features enabled for each plan
   static Map<String, bool> getFeaturesForPlan(SubscriptionPlan plan) {
     return {
-      'customDomain': plan == SubscriptionPlan.business || 
-                      plan == SubscriptionPlan.professional,
+      'customDomain':
+          plan == SubscriptionPlan.business ||
+          plan == SubscriptionPlan.professional,
       'inventory': plan != SubscriptionPlan.starter,
       'coupons': plan != SubscriptionPlan.starter,
       'analytics': plan != SubscriptionPlan.starter,
@@ -75,8 +81,9 @@ class PlanConfig {
       'teamAccess': plan == SubscriptionPlan.professional,
       'ownRazorpay': plan == SubscriptionPlan.professional,
       'apiAccess': plan == SubscriptionPlan.professional,
-      'removeBadge': plan == SubscriptionPlan.business || 
-                     plan == SubscriptionPlan.professional,
+      'removeBadge':
+          plan == SubscriptionPlan.business ||
+          plan == SubscriptionPlan.professional,
       'bulkUpload': plan != SubscriptionPlan.starter,
       'productVariants': plan != SubscriptionPlan.starter,
       'customerReviews': plan != SubscriptionPlan.starter,
@@ -90,7 +97,7 @@ class SubscriptionModel {
   final String storeId;
   final SubscriptionPlan plan;
   final SubscriptionStatus status;
-  
+
   // Timing
   final DateTime startDate;
   final DateTime? endDate;
@@ -98,21 +105,21 @@ class SubscriptionModel {
   final DateTime? nextBillingDate;
   final DateTime createdAt;
   final DateTime? updatedAt;
-  
+
   // Limits based on plan
   final int productLimit;
   final double commissionPercent;
-  
+
   // Razorpay subscription tracking
   final String? razorpaySubscriptionId;
   final String? razorpayPlanId;
   final DateTime? lastPaymentDate;
   final double lastPaymentAmount;
-  
+
   // Upgrade/downgrade tracking
   final String? previousPlan;
   final DateTime? planChangedAt;
-  
+
   // Current usage
   final int currentProductCount;
 
@@ -139,7 +146,7 @@ class SubscriptionModel {
   });
 
   // ============================================================
-  // FACTORY: From Firestore
+  // FACTORY: From gateway response
   // ============================================================
   factory SubscriptionModel.fromMap(Map<String, dynamic> map, String id) {
     return SubscriptionModel(
@@ -166,29 +173,27 @@ class SubscriptionModel {
   }
 
   // ============================================================
-  // TO FIRESTORE
+  // TO MAP
   // ============================================================
   Map<String, dynamic> toMap() {
     return {
       'storeId': storeId,
       'plan': plan.name,
       'status': status.name,
-      'startDate': Timestamp.fromDate(startDate),
-      'endDate': endDate != null ? Timestamp.fromDate(endDate!) : null,
-      'trialEndsAt': trialEndsAt != null ? Timestamp.fromDate(trialEndsAt!) : null,
-      'nextBillingDate': nextBillingDate != null ? Timestamp.fromDate(nextBillingDate!) : null,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate?.toIso8601String(),
+      'trialEndsAt': trialEndsAt?.toIso8601String(),
+      'nextBillingDate': nextBillingDate?.toIso8601String(),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt?.toIso8601String(),
       'productLimit': productLimit,
       'commissionPercent': commissionPercent,
       'razorpaySubscriptionId': razorpaySubscriptionId,
       'razorpayPlanId': razorpayPlanId,
-      'lastPaymentDate': lastPaymentDate != null 
-          ? Timestamp.fromDate(lastPaymentDate!) : null,
+      'lastPaymentDate': lastPaymentDate?.toIso8601String(),
       'lastPaymentAmount': lastPaymentAmount,
       'previousPlan': previousPlan,
-      'planChangedAt': planChangedAt != null 
-          ? Timestamp.fromDate(planChangedAt!) : null,
+      'planChangedAt': planChangedAt?.toIso8601String(),
       'currentProductCount': currentProductCount,
     };
   }
@@ -196,11 +201,11 @@ class SubscriptionModel {
   // ============================================================
   // COMPUTED PROPERTIES
   // ============================================================
-  
+
   /// Check if trial is still active
-  bool get isTrialActive => 
-      plan == SubscriptionPlan.trial && 
-      trialEndsAt != null && 
+  bool get isTrialActive =>
+      plan == SubscriptionPlan.trial &&
+      trialEndsAt != null &&
       DateTime.now().isBefore(trialEndsAt!);
 
   /// Days remaining in trial
@@ -211,7 +216,7 @@ class SubscriptionModel {
   }
 
   /// Check if user can add more products
-  bool get canAddProducts => 
+  bool get canAddProducts =>
       productLimit == -1 || currentProductCount < productLimit;
 
   /// Products remaining before limit
@@ -245,32 +250,43 @@ class SubscriptionModel {
   // ============================================================
   // HELPER: Parse Enums
   // ============================================================
-  
+
   static SubscriptionPlan _parsePlan(String? plan) {
     switch (plan?.toLowerCase()) {
-      case 'trial': return SubscriptionPlan.trial;
-      case 'starter': return SubscriptionPlan.starter;
-      case 'business': return SubscriptionPlan.business;
-      case 'professional': return SubscriptionPlan.professional;
-      default: return SubscriptionPlan.trial;
+      case 'trial':
+        return SubscriptionPlan.trial;
+      case 'starter':
+        return SubscriptionPlan.starter;
+      case 'business':
+        return SubscriptionPlan.business;
+      case 'professional':
+        return SubscriptionPlan.professional;
+      default:
+        return SubscriptionPlan.trial;
     }
   }
 
   static SubscriptionStatus _parseStatus(String? status) {
     switch (status?.toLowerCase()) {
-      case 'active': return SubscriptionStatus.active;
-      case 'expired': return SubscriptionStatus.expired;
-      case 'canceled': return SubscriptionStatus.canceled;
-      case 'frozen': return SubscriptionStatus.frozen;
-      case 'pastdue': return SubscriptionStatus.pastDue;
-      default: return SubscriptionStatus.active;
+      case 'active':
+        return SubscriptionStatus.active;
+      case 'expired':
+        return SubscriptionStatus.expired;
+      case 'canceled':
+        return SubscriptionStatus.canceled;
+      case 'frozen':
+        return SubscriptionStatus.frozen;
+      case 'pastdue':
+        return SubscriptionStatus.pastDue;
+      default:
+        return SubscriptionStatus.active;
     }
   }
 
   // ============================================================
   // COPY WITH
   // ============================================================
-  
+
   SubscriptionModel copyWith({
     SubscriptionPlan? plan,
     SubscriptionStatus? status,
@@ -301,7 +317,8 @@ class SubscriptionModel {
       updatedAt: updatedAt ?? this.updatedAt,
       productLimit: productLimit ?? this.productLimit,
       commissionPercent: commissionPercent ?? this.commissionPercent,
-      razorpaySubscriptionId: razorpaySubscriptionId ?? this.razorpaySubscriptionId,
+      razorpaySubscriptionId:
+          razorpaySubscriptionId ?? this.razorpaySubscriptionId,
       razorpayPlanId: razorpayPlanId ?? this.razorpayPlanId,
       lastPaymentDate: lastPaymentDate ?? this.lastPaymentDate,
       lastPaymentAmount: lastPaymentAmount ?? this.lastPaymentAmount,
@@ -314,10 +331,8 @@ class SubscriptionModel {
   // ============================================================
   // FACTORY: Create New Trial
   // ============================================================
-  
-  factory SubscriptionModel.createTrial({
-    required String storeId,
-  }) {
+
+  factory SubscriptionModel.createTrial({required String storeId}) {
     final now = DateTime.now();
     return SubscriptionModel(
       id: 'sub_${storeId}_${now.millisecondsSinceEpoch}',
@@ -335,9 +350,10 @@ class SubscriptionModel {
   // ============================================================
   // DEBUG INFO
   // ============================================================
-  
+
   @override
-  String toString() => '''
+  String toString() =>
+      '''
 SubscriptionModel(
   id: $id,
   storeId: $storeId,

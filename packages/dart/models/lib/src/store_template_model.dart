@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'section_model.dart';
 
 /// Model representing the complete template configuration for a store
@@ -20,7 +19,7 @@ class StoreTemplateModel {
     required this.updatedAt,
   });
 
-  /// Create from Firestore document
+  /// Create from a gateway/template map.
   factory StoreTemplateModel.fromMap(Map<String, dynamic> map) {
     return StoreTemplateModel(
       storeId: map['storeId'] as String? ?? '',
@@ -28,8 +27,12 @@ class StoreTemplateModel {
       themeSettings: ThemeSettings.fromMap(
         Map<String, dynamic>.from(map['themeSettings'] as Map? ?? {}),
       ),
-      sections: (map['sections'] as List<dynamic>?)
-              ?.map((s) => SectionModel.fromMap(Map<String, dynamic>.from(s as Map)))
+      sections:
+          (map['sections'] as List<dynamic>?)
+              ?.map(
+                (s) =>
+                    SectionModel.fromMap(Map<String, dynamic>.from(s as Map)),
+              )
               .toList() ??
           [],
       createdAt: _parseDateTime(map['createdAt']),
@@ -37,10 +40,10 @@ class StoreTemplateModel {
     );
   }
 
-  /// Helper to parse DateTime from Timestamp, String, or null
+  /// Helper to parse DateTime from gateway data or legacy timestamp objects.
   static DateTime _parseDateTime(dynamic value) {
     if (value == null) return DateTime.now();
-    if (value is Timestamp) return value.toDate();
+    if (value is DateTime) return value;
     if (value is String) {
       try {
         return DateTime.parse(value);
@@ -48,18 +51,25 @@ class StoreTemplateModel {
         return DateTime.now();
       }
     }
+    if (value.runtimeType.toString().contains('Timestamp')) {
+      try {
+        return value.toDate() as DateTime;
+      } catch (_) {
+        return DateTime.now();
+      }
+    }
     return DateTime.now();
   }
 
-  /// Convert to Firestore document
+  /// Convert to a gateway/template map.
   Map<String, dynamic> toMap() {
     return {
       'storeId': storeId,
       'themeId': themeId,
       'themeSettings': themeSettings.toMap(),
       'sections': sections.map((s) => s.toMap()).toList(),
-      'createdAt': Timestamp.fromDate(createdAt),
-      'updatedAt': Timestamp.fromDate(updatedAt),
+      'createdAt': createdAt.toIso8601String(),
+      'updatedAt': updatedAt.toIso8601String(),
     };
   }
 
@@ -111,10 +121,10 @@ class StoreTemplateModel {
   /// Add a new section
   StoreTemplateModel addSection(SectionModel section) {
     // Get the max order value and add 1
-    final maxOrder = sections.isEmpty 
-        ? 0 
+    final maxOrder = sections.isEmpty
+        ? 0
         : sections.map((s) => s.order).reduce((a, b) => a > b ? a : b);
-    
+
     final newSection = section.copyWith(order: maxOrder + 1);
     return copyWith(sections: [...sections, newSection]);
   }
@@ -130,7 +140,9 @@ class StoreTemplateModel {
   StoreTemplateModel removeSection(String sectionId) {
     final section = getSectionById(sectionId);
     if (section != null && section.type.isRequired) {
-      throw Exception('Cannot remove required section: ${section.type.displayName}');
+      throw Exception(
+        'Cannot remove required section: ${section.type.displayName}',
+      );
     }
     return copyWith(
       sections: sections.where((s) => s.id != sectionId).toList(),
@@ -142,12 +154,12 @@ class StoreTemplateModel {
     final sorted = sortedSections;
     final section = sorted.removeAt(oldIndex);
     sorted.insert(newIndex, section);
-    
+
     // Update order values
     final reorderedSections = sorted.asMap().entries.map((entry) {
       return entry.value.copyWith(order: entry.key);
     }).toList();
-    
+
     return copyWith(sections: reorderedSections);
   }
 
@@ -170,7 +182,7 @@ class StoreTemplateModel {
   }
 
   @override
-  String toString() => 
+  String toString() =>
       'StoreTemplateModel(storeId: $storeId, themeId: $themeId, sections: ${sections.length})';
 }
 
@@ -200,7 +212,7 @@ class ThemeSettings {
     this.enableShadows = true,
   });
 
-  /// Create from Firestore document
+  /// Create from a gateway/template map.
   factory ThemeSettings.fromMap(Map<String, dynamic> map) {
     return ThemeSettings(
       primaryColor: map['primaryColor'] as String? ?? '#00B3B3',
@@ -216,7 +228,7 @@ class ThemeSettings {
     );
   }
 
-  /// Convert to Firestore document
+  /// Convert to a gateway/template map.
   Map<String, dynamic> toMap() {
     return {
       'primaryColor': primaryColor,
@@ -276,7 +288,7 @@ class ThemeSettings {
   }
 
   @override
-  String toString() => 
+  String toString() =>
       'ThemeSettings(primary: $primaryColor, font: $fontFamily)';
 }
 

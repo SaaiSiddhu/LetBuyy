@@ -1,10 +1,8 @@
 // lib/models/payment_config_model.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-// Helper to safely parse timestamps (handles Firestore Timestamp and String)
+// Helper to safely parse timestamps from gateway maps and legacy timestamp objects.
 DateTime? _parseTimestamp(dynamic value) {
   if (value == null) return null;
-  if (value is Timestamp) return value.toDate();
   if (value is String) {
     try {
       return DateTime.parse(value);
@@ -13,6 +11,13 @@ DateTime? _parseTimestamp(dynamic value) {
     }
   }
   if (value is DateTime) return value;
+  if (value.runtimeType.toString().contains('Timestamp')) {
+    try {
+      return value.toDate() as DateTime;
+    } catch (_) {
+      return null;
+    }
+  }
   return null;
 }
 
@@ -69,7 +74,7 @@ class PaymentConfigModel {
   });
 
   // ============================================================
-  // FACTORY: From backend response or legacy Firestore document
+  // FACTORY: From backend response
   // ============================================================
   factory PaymentConfigModel.fromMap(Map<String, dynamic> map, String storeId) {
     final paymentSettings = map['payment_settings'];
@@ -105,7 +110,7 @@ class PaymentConfigModel {
   }
 
   // ============================================================
-  // TO FIRESTORE
+  // TO MAP
   // ============================================================
   Map<String, dynamic> toMap() {
     return {
@@ -113,15 +118,13 @@ class PaymentConfigModel {
       'razorpayKeyId': razorpayKeyId,
       'razorpayKeySecret': razorpayKeySecret,
       'verified': verified,
-      'verifiedAt': verifiedAt != null ? Timestamp.fromDate(verifiedAt!) : null,
+      'verifiedAt': verifiedAt?.toIso8601String(),
       'verificationError': verificationError,
       'testMode': testMode,
       'webhookSecret': webhookSecret,
       'webhookConfigured': webhookConfigured,
-      'connectedAt': connectedAt != null
-          ? Timestamp.fromDate(connectedAt!)
-          : null,
-      'lastUsedAt': lastUsedAt != null ? Timestamp.fromDate(lastUsedAt!) : null,
+      'connectedAt': connectedAt?.toIso8601String(),
+      'lastUsedAt': lastUsedAt?.toIso8601String(),
       'razorpayAccountId': razorpayAccountId,
       'businessName': businessName,
     };

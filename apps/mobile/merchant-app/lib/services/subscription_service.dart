@@ -5,7 +5,7 @@ import 'api_client.dart';
 
 /// Service for managing store subscriptions via the API.
 ///
-/// Replaces Firebase Functions + Firestore with REST calls to the Hono backend.
+/// Replaces provider-local functions and database access with REST calls.
 class SubscriptionService {
   final ApiClient _api;
 

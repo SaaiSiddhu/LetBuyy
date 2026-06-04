@@ -4,11 +4,9 @@ library;
 // Config
 export 'src/config/razorpay_config.dart';
 export 'src/config/gemini_config.dart';
-export 'src/config/supabase_config.dart';
 
 // Constants
 export 'src/constants/app_constants.dart';
-export 'src/constants/firebase_constants.dart';
 export 'src/constants/storage_constants.dart';
 export 'src/constants/api_constants.dart';
 

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Only import landing screen eagerly - it's the first screen users see
-import '../screens/landing/landing_screen.dart';
-
 // All other screens are imported but Flutter's tree-shaking
 // will handle optimization at build time
 
@@ -13,7 +10,6 @@ import '../screens/wizard/create_store_wizard.dart';
 import '../screens/wizard/store_published_screen.dart';
 import '../screens/main/store_main_screen.dart';
 import '../screens/premium/upgrade_screen.dart';
-import '../screens/download/download_screen.dart';
 import '../screens/preview/live_preview_screen.dart';
 import '../screens/settings/domain_settings_screen.dart';
 import '../screens/settings/seo_settings_screen.dart';
@@ -27,27 +23,25 @@ import 'auth_wrapper.dart';
 
 /// App route definitions
 class AppRoutes {
-  // Landing & Auth routes
+  // Auth routes
   static const String auth = '/'; // Auth wrapper is root route for mobile
-  static const String landing = '/landing'; // Landing is web-only
   static const String splash = '/splash';
   static const String login = '/login';
   static const String error = '/error';
-  
+
   // Wizard routes
   static const String createStore = '/create-store';
   static const String wizard = '/create-store'; // Alias
   static const String storePublished = '/store-published';
-  
+
   // Auth flow routes
   static const String setPassword = '/set-password';
   // Note: onboarding route kept for backwards compatibility - redirects to wizard
-  
+
   // Main app routes
   static const String main = '/main';
   static const String upgrade = '/upgrade';
-  static const String download = '/download';
-  
+
   // New supporting routes
   static const String livePreview = '/live-preview';
   static const String domainSettings = '/domain-settings';
@@ -65,17 +59,13 @@ class AppRoutes {
       case auth:
         // Auth wrapper is the primary mobile entry point
         return _buildFastRoute(const AuthWrapper(), settings);
-      
-      case landing:
-        // Landing page - web only
-        return _buildFastRoute(const LandingScreen(), settings);
-      
+
       case splash:
         return _buildRoute(const SplashScreen(), settings);
-      
+
       case login:
         return _buildRoute(const LoginScreen(), settings);
-      
+
       case error:
         final args = settings.arguments as Map<String, dynamic>?;
         return _buildRoute(
@@ -85,14 +75,14 @@ class AppRoutes {
           ),
           settings,
         );
-      
+
       case '/onboarding':
         // Backwards compatibility - redirect to wizard (handles onboarding now)
         return _buildRoute(const CreateStoreWizard(), settings);
-      
+
       case createStore:
         return _buildRoute(const CreateStoreWizard(), settings);
-      
+
       case storePublished:
         final args = settings.arguments as Map<String, dynamic>?;
         return _buildRoute(
@@ -103,16 +93,13 @@ class AppRoutes {
           ),
           settings,
         );
-      
+
       case main:
         return _buildRoute(const StoreMainScreen(), settings);
-      
+
       case upgrade:
         return _buildRoute(const UpgradeScreen(), settings);
-      
-      case download:
-        return _buildRoute(const DownloadScreen(), settings);
-        
+
       case livePreview:
         final args = settings.arguments as Map<String, dynamic>?;
         return _buildRoute(
@@ -122,44 +109,42 @@ class AppRoutes {
           ),
           settings,
         );
-        
+
       case domainSettings:
         return _buildRoute(const DomainSettingsScreen(), settings);
-        
+
       case seoSettings:
         return _buildRoute(const SEOSettingsScreen(), settings);
-        
+
       case storeDetails:
         return _buildRoute(const StoreDetailsScreen(), settings);
-        
+
       case help:
         return _buildRoute(const HelpScreen(), settings);
-        
+
       case analytics:
         return _buildRoute(const AnalyticsScreen(), settings);
-        
+
       case orders:
         return _buildRoute(const OrdersScreen(), settings);
-      
+
       case pricing:
         return _buildRoute(const PricingScreen(), settings);
-      
+
       case connectRazorpay:
         return _buildRoute(const ConnectRazorpayScreen(), settings);
-      
+
       default:
         return _buildRoute(
           Scaffold(
-            body: Center(
-              child: Text('Route not found: ${settings.name}'),
-            ),
+            body: Center(child: Text('Route not found: ${settings.name}')),
           ),
           settings,
         );
     }
   }
 
-  /// Fast route for landing page - no animation delay
+  /// Fast route for root auth wrapper - no animation delay
   static PageRoute _buildFastRoute(Widget page, RouteSettings settings) {
     return PageRouteBuilder(
       settings: settings,
@@ -171,9 +156,6 @@ class AppRoutes {
 
   /// Standard route with smooth animation
   static MaterialPageRoute _buildRoute(Widget page, RouteSettings settings) {
-    return MaterialPageRoute(
-      builder: (_) => page,
-      settings: settings,
-    );
+    return MaterialPageRoute(builder: (_) => page, settings: settings);
   }
 }

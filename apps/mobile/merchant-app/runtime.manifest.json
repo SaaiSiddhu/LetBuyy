@@ -35,7 +35,6 @@
       "letbuyy_core",
       "letbuyy_api_client",
       "letbuyy_models",
-      "letbuyy_services",
       "letbuyy_ui_kit"
     ],
     "runtimeImports": []

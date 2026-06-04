@@ -7,7 +7,7 @@ import 'api_client.dart';
 
 /// Service for managing products via the LetBuyy API.
 ///
-/// Replaces Firestore + Firebase Storage with REST calls.
+/// Replaces direct database/storage access with REST calls.
 class ProductService extends ChangeNotifier {
   final ApiClient _api;
 

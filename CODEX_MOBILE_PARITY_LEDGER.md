@@ -2,7 +2,7 @@
 
 ## CURRENT STATUS
 - Stage: STAGE 5 - WS8 Mobile Parity.
-- Active gate: M4 existing-screen API/model rewiring pre-commit governance passed; commit pending.
+- Active gate: M5 legacy deletion commit pending.
 - Scope lock: mobile source work is limited to `apps/mobile/merchant-app/**` and `packages/dart/**` unless the active mission explicitly allows a supporting config/documentation file. Web apps, backend services, database, package-core contracts, shared TypeScript packages, and governance validators remain out of scope for WS8 source changes.
 
 ## M0 BASELINE PROOF
@@ -89,7 +89,7 @@
   - Escalated `flutter analyze` in `apps/mobile/merchant-app` -> PASS with no issues.
 
 ## M4 EXISTING SCREEN API / MODEL REWIRING
-- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
 - Source changes:
   - Extended canonical Dart shared contracts with screen-needed Product, LineItem, and Order getters while preserving gateway JSON shape.
   - Rewired `ProductService`, `OrderService`, `StoreService`, `AnalyticsService`, and `SubscriptionService` onto shared `ApiClient` resource methods and canonical `ProductContract` / `OrderContract` parsing where applicable.
@@ -108,12 +108,43 @@
   - `rg "Supabase|supabase|FirebaseFirestore|cloud_firestore|Firestore|FirebaseFunctions|FirebaseStorage" ...M4 target screens/services...` -> PASS with no direct runtime usage matches; only historical service comments remain.
   - `rg "1250|\+8%|\+14%|\+23%|\+2\.1%|₹5\.2K|₹1\.5K|Product A|Product B|Product C|cname\.vercel-dns\.com" ...` -> PASS with no matches in the touched dashboard, analytics, revenue chart, or domain settings files.
 
+## M5 LEGACY DELETION
+- Status: DONE / PRE-COMMIT GOVERNANCE PASSED / COMMIT PENDING.
+- Source changes:
+  - Removed merchant app Firebase initialization and generated options, replaced the legacy Supabase app config with a provider-neutral `AppConfig`, and removed the app-local `supabase_config.dart` file.
+  - Removed routed legacy marketing/download surfaces from the active merchant app route table. Deleted `apps/mobile/merchant-app/lib/screens/download/download_screen.dart`; archived the modified landing tree from `apps/mobile/merchant-app/lib/screens/landing/**` to `docs/archive/flutter-legacy/merchant-app-landing/**` instead of force-deleting user-owned local edits.
+  - Removed the app dependency on `letbuyy_services`, removed the unused native `razorpay_flutter` plugin, and pruned Firebase/Messaging/Supabase/Razorpay native entries from the final Flutter and iOS dependency graph.
+  - Removed hardcoded Supabase/Firebase constants from `packages/dart/core` and removed their public exports.
+  - Reduced `packages/dart/services` to a compatibility facade that only re-exports `SharedPreferencesService`; deleted all legacy service/provider implementation files under `packages/dart/services/lib/src/**`.
+  - Slimmed `packages/dart/models` to canonical contracts plus remaining merchant compatibility models; removed Firestore-era exported models and converted remaining timestamp handling to gateway/string-compatible parsing.
+  - Removed the legacy update-dialog export and widget from `packages/dart/ui_kit`.
+- Deletion / archive log:
+  - DELETED `apps/mobile/merchant-app/lib/firebase_options.dart`.
+  - DELETED `apps/mobile/merchant-app/lib/config/supabase_config.dart`.
+  - DELETED `apps/mobile/merchant-app/lib/screens/download/download_screen.dart`.
+  - ARCHIVED `apps/mobile/merchant-app/lib/screens/landing/**` -> `docs/archive/flutter-legacy/merchant-app-landing/**` because the tree contained pre-existing modified local files.
+  - DELETED `packages/dart/core/lib/src/config/supabase_config.dart` and `packages/dart/core/lib/src/constants/firebase_constants.dart`.
+  - DELETED `packages/dart/services/lib/src/**` legacy service/provider files: ad/admin/AI/analytics/app-update/auth/cache/category/custom-payment/database/deals/FCM/fee/firestore-data/invoice/location/loyalty/notification/order/payment/product-stats/provider/reel/return/seller/stock/storage/Supabase/support/visual-search implementations.
+  - DELETED Firestore-era model files under `packages/dart/models/lib/src/**`: ad, address, analytics, app-update, banner, cart, category, chat, commission, coupon, deal, fee, India locations, loyalty, notification, order, payment settings, product, reel, return, review, seller, sponsored banner, support chat, team member, trending search, UPI app, user, timestamp parser, and wishlist models.
+  - DELETED `packages/dart/ui_kit/lib/src/widgets/update_dialog.dart`.
+- Scoped proof:
+  - `flutter pub get` at repository root -> PASS; final graph removed Firebase/Firestore/Firebase messaging/storage/analytics/functions, Supabase/Supabase Flutter, geolocation, legacy notification/update services, `letbuyy_services` app dependency, `razorpay_flutter`, and `eventify`.
+  - `HOME=/private/tmp DART_SUPPRESS_ANALYTICS=true dart format ...` over active changed Dart files -> PASS.
+  - Active-source scan for Firebase Auth, Firestore, Firebase storage/analytics/functions/core/messaging, `DefaultFirebaseOptions`, Supabase, hardcoded `rvzgkynwhbiksffusqnb`, and `verifyUpiPayment` in `apps/mobile/merchant-app/lib` and `packages/dart` -> PASS with no matches.
+  - Active-source/dependency scan for `screens/landing`, `LandingScreen`, `AppRoutes.download`, `DownloadScreen`, `razorpay_flutter`, and `eventify` -> PASS; only `packages/dart/services/pubspec.yaml:name: letbuyy_services` remains as the compatibility package name, with no live app import or dependency.
+  - Escalated `flutter analyze` in `apps/mobile/merchant-app`, `packages/dart/core`, `packages/dart/models`, `packages/dart/services`, and `packages/dart/ui_kit` -> PASS with no issues.
+  - Escalated `flutter test` in `packages/dart/models` -> PASS (2 conformance tests); escalated `flutter test` in `apps/mobile/merchant-app` -> PASS (placeholder widget test).
+  - Escalated `flutter build apk --debug --dart-define-from-file=dart-defines/local.json` in `apps/mobile/merchant-app` -> PASS, built `build/app/outputs/flutter-apk/app-debug.apk`.
+  - Escalated `flutter build ios --no-codesign --debug --dart-define-from-file=dart-defines/local.json` in `apps/mobile/merchant-app` -> PASS, built `build/ios/iphoneos/Runner.app`.
+  - Escalated `flutter run -d 720BBB11-3F5B-4257-930B-4926520FF590 --debug --dart-define-from-file=dart-defines/local.json` -> PASS after pruning unused `razorpay_flutter`; app built, synced to the iPhone 16e simulator, and exposed Dart VM/DevTools service URLs. Leftover smoke-test processes were terminated and verified.
+
 ## SKIPPED - NEEDS HUMAN
 - Staging Supabase project URL and anon key. Required: governed staging `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_STAGING_*` placeholders.
 - Production Supabase project URL and anon key. Required: governed production `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_PRODUCTION_*` placeholders.
 - Staging and production Razorpay public key IDs. Required: approved provider sandbox/live key IDs from the payment owner; do not hardcode private secrets in repository files.
 - iOS device signing, simulator/device release proof, and TestFlight/App Store upload. Required: Apple Developer team, signing certificate, provisioning profile, bundle identifier approval, and human permission to perform signed distribution. The no-codesign compile proof passed.
 - M4 live subscription pricing/copy and paid plan activation. Required: approved plan names/prices/features/commission policy, Razorpay subscription checkout credentials, signed Razorpay callback payloads, and permission to run provider-side payment attempts. Code now points to gateway `/payments/subscription*` contracts but does not assert unapproved pricing as final.
+- M5 Android emulator smoke. Required: a working Android emulator/device on the host. The configured AVD `Medium_Phone_API_36.1` exited with code 1 during startup on two attempts before Flutter could run against it; Android debug APK build passed.
 
 ## SKIPPED - NEEDS BACKEND
 - M2 live mobile merchant login against protected gateway endpoints. Current gateway auth accepts Supabase bearer tokens or signed internal SSO/session headers for `lb_session`; a mobile app must not possess the internal signing secret, and raw `lb_session` / cookie transport is not accepted by protected `/v1` merchant routes. Required: a mobile-safe gateway session bridge that validates `lb_session` without exposing internal signing secrets, plus refresh/expiry semantics for mobile clients.
@@ -138,3 +169,6 @@
 - 2026-06-04T06:28:01Z [M3 post-commit governance] First post-commit `pnpm run validate:governance` after `fdd9ef56` failed only at stale-artifact validation because app `.next` and app/package-local `node_modules` directories reappeared. Generated-artifact cleanup scan was rerun -> empty; second `pnpm run validate:governance` -> PASS (128/128 validators). M3 is complete; advancing to M4 existing-screen API/model rewiring.
 - 2026-06-04T06:53:50Z [M4 scoped proof] Existing-screen API/model rewiring proof complete: formatter, `packages/dart/models` analyze/test, `packages/dart/ui_kit` analyze, merchant app analyze/test, direct runtime source scan, and fabricated metric/DNS scan all passed. Full governance pending after generated-artifact cleanup.
 - 2026-06-04T06:57:46Z [M4 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M4 gate result: PASS WITH BACKEND/HUMAN SKIPS.
+- 2026-06-04T07:00:10Z [M4 post-commit governance] Post-commit `pnpm run validate:governance` after `7a310e1b` -> PASS (128/128 validators). M4 is complete with backend/human skips; advancing to M5 legacy deletion.
+- 2026-06-04T07:27:50Z [M5 scoped proof] Legacy deletion proof complete: active app/package scans removed Firebase/Firestore/Firebase plugin/Supabase/hardcoded legacy project/unused native Razorpay references; active route table no longer imports landing/download; `flutter analyze` passed for merchant app, core, models, services, and UI kit; model and app tests passed; Android debug APK build passed; iOS no-codesign build passed; iOS simulator smoke passed on iPhone 16e after pruning unused `razorpay_flutter`; Android emulator smoke is `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup.
+- 2026-06-04T07:29:52Z [M5 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M5 gate result: PASS WITH HUMAN ANDROID-EMULATOR SKIP.

@@ -16,9 +16,6 @@ dependencies:
   letbuyy_core:
     path: ../core
   
-  # Firebase (for Firestore types)
-  cloud_firestore: ^5.4.4
-  
   # Utilities
   equatable: ^2.0.7
   intl: ^0.20.2

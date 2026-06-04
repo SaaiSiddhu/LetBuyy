@@ -1,10 +1,7 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'firebase_options.dart';
-import 'config/supabase_config.dart';
+import 'config/app_config.dart';
 import 'app/app.dart';
 import 'services/api_client.dart';
 import 'services/store_service.dart';
@@ -18,26 +15,6 @@ import 'services/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // ── Firebase (FCM push notifications only) ───────────────
-  try {
-    if (Firebase.apps.isEmpty) {
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      if (kDebugMode) print('✅ Firebase initialized (FCM only)');
-    } else if (kDebugMode) {
-      print('✅ Firebase already initialized (FCM only)');
-    }
-  } on FirebaseException catch (e) {
-    if (e.code == 'duplicate-app') {
-      if (kDebugMode) print('✅ Firebase already initialized (FCM only)');
-    } else if (kDebugMode) {
-      print('⚠️ Firebase init error: $e');
-    }
-  } catch (e) {
-    if (kDebugMode) print('⚠️ Firebase init error: $e');
-  }
 
   GoogleFonts.config.allowRuntimeFetching = true;
 

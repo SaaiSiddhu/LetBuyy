@@ -1,13 +1,9 @@
 import 'package:flutter/foundation.dart';
-import '../config/supabase_config.dart';
+import '../config/app_config.dart';
 import '../models/store_model.dart';
 
 /// Device type for preview
-enum PreviewDevice {
-  mobile,
-  tablet,
-  desktop,
-}
+enum PreviewDevice { mobile, tablet, desktop }
 
 extension PreviewDeviceExtension on PreviewDevice {
   String get displayName {
@@ -75,17 +71,17 @@ class PreviewConfig {
   String get url {
     final cacheBuster = timestamp.millisecondsSinceEpoch;
     var previewUrl = baseUrl;
-    
+
     if (isDraft) {
       previewUrl += '?preview=true&v=$cacheBuster';
     } else {
       previewUrl += '?v=$cacheBuster';
     }
-    
+
     if (version != null) {
       previewUrl += '&version=$version';
     }
-    
+
     return previewUrl;
   }
 
@@ -106,18 +102,14 @@ class PreviewService {
     bool useProductionUrl = false,
   }) {
     String baseUrl;
-    
+
     if (useProductionUrl && store.subdomain.isNotEmpty) {
       baseUrl = 'https://${store.subdomain}.$_productionStoreHost';
     } else {
       baseUrl = _storefrontPathUrl(store);
     }
 
-    return PreviewConfig(
-      baseUrl: baseUrl,
-      storeId: store.id,
-      isDraft: isDraft,
-    );
+    return PreviewConfig(baseUrl: baseUrl, storeId: store.id, isDraft: isDraft);
   }
 
   /// Get live store URL
@@ -149,10 +141,7 @@ class PreviewService {
   }
 
   /// Generate embed code for the store
-  String getEmbedCode(StoreModel store, {
-    int width = 800,
-    int height = 600,
-  }) {
+  String getEmbedCode(StoreModel store, {int width = 800, int height = 600}) {
     final url = getShareableUrl(store);
     return '''
 <iframe 
@@ -183,8 +172,7 @@ class PreviewService {
   /// Clear preview cache for a store
   Future<void> clearPreviewCache(String storeId) async {
     try {
-      // This would typically trigger a CDN cache purge
-      // For Firebase Hosting, we rely on version-based cache busting
+      // The storefront runtime relies on version-based cache busting here.
       debugPrint('Preview cache cleared for store: $storeId');
     } catch (e) {
       debugPrint('Error clearing preview cache: $e');
@@ -193,22 +181,21 @@ class PreviewService {
 
   /// Get device frame dimensions
   Map<String, double> getDeviceFrame(PreviewDevice device) {
-    return {
-      'width': device.width,
-      'height': device.height,
-    };
+    return {'width': device.width, 'height': device.height};
   }
 
   /// Generate social share preview URLs
   Map<String, String> getSocialShareUrls(StoreModel store) {
     final storeUrl = Uri.encodeComponent(getShareableUrl(store));
     final storeName = Uri.encodeComponent(store.name);
-    
+
     return {
       'facebook': 'https://www.facebook.com/sharer/sharer.php?u=$storeUrl',
-      'twitter': 'https://twitter.com/intent/tweet?url=$storeUrl&text=Check%20out%20$storeName',
+      'twitter':
+          'https://twitter.com/intent/tweet?url=$storeUrl&text=Check%20out%20$storeName',
       'whatsapp': 'https://wa.me/?text=Check%20out%20$storeName%20$storeUrl',
-      'linkedin': 'https://www.linkedin.com/shareArticle?mini=true&url=$storeUrl&title=$storeName',
+      'linkedin':
+          'https://www.linkedin.com/shareArticle?mini=true&url=$storeUrl&title=$storeName',
       'telegram': 'https://t.me/share/url?url=$storeUrl&text=$storeName',
     };
   }

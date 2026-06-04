@@ -7,7 +7,7 @@ import 'api_client.dart';
 
 /// Service for managing stores via the LetBuyy API.
 ///
-/// Replaces direct Firestore access with REST calls to the Hono backend.
+/// Replaces direct database access with REST calls to the Hono backend.
 class StoreService extends ChangeNotifier {
   final ApiClient _api;
 
