@@ -19,9 +19,9 @@ export const metadata: Metadata = {
         url: '/pricing',
         images: [
             {
-                url: '/icons/landscape_logo.png',
-                width: 320,
-                height: 80,
+                url: '/icons/letbuyy-logo-light.svg',
+                width: 680,
+                height: 220,
                 alt: 'LetBuyy pricing',
             },
         ],
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
         title: 'LetBuyy pricing and plan comparison',
         description:
             'Compare LetBuyy Free, Basic, Pro and Enterprise packaging without fabricated paid prices.',
-        images: ['/icons/landscape_logo.png'],
+        images: ['/icons/letbuyy-logo-light.svg'],
     },
 }
 

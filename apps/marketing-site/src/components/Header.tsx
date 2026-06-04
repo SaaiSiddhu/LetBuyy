@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronRight, Monitor, Moon, Sun, X } from '@letbuyy/ui'
+import BrandLogo from './BrandLogo'
 import { useTheme } from './ThemeProvider'
 
 type ThemeMode = 'light' | 'dark' | 'system'
@@ -81,15 +81,7 @@ export default function Header() {
                 <div className="container header-content">
                     {/* Logo */}
                     <Link href="/" className="header-logo" aria-label="LetBuyy Home">
-                        <Image
-                            src="/icons/landscape_logo.png"
-                            alt="LetBuyy"
-                            width={700}
-                            height={300}
-                            className="header-logo-image"
-                            priority
-                            unoptimized
-                        />
+                        <BrandLogo className="header-logo-image" width={210} height={68} priority />
                     </Link>
 
                     {/* Desktop Navigation */}
@@ -157,14 +149,7 @@ export default function Header() {
                             {/* Drawer Header */}
                             <div className="mobile-drawer-header">
                                 <Link href="/" className="mobile-drawer-logo" onClick={() => setMobileMenuOpen(false)}>
-                                    <Image
-                                        src="/icons/landscape_logo.png"
-                                        alt="LetBuyy"
-                                        width={700}
-                                        height={300}
-                                        className="mobile-drawer-logo-image"
-                                        unoptimized
-                                    />
+                                    <BrandLogo className="mobile-drawer-logo-image" width={176} height={57} />
                                 </Link>
                                 <button
                                     className="mobile-drawer-close"

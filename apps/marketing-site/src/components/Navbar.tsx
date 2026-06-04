@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import Image from 'next/image'
+import BrandLogo from './BrandLogo'
 
 export default function Navbar() {
     return (
@@ -7,8 +7,7 @@ export default function Navbar() {
             <div className="container navbar-content">
                 {/* Logo */}
                 <Link href="/" className="navbar-logo">
-                    <Image src="/icons/app_icon.png" alt="LetBuyy" width={36} height={36} />
-                    <span>LetBuyy</span>
+                    <BrandLogo className="navbar-brand-logo" width={176} height={57} />
                 </Link>
 
                 {/* Navigation Links */}

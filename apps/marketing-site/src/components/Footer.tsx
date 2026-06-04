@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { Instagram, Linkedin, Twitter } from '@letbuyy/ui'
+import BrandLogo from './BrandLogo'
 
 const footerLinks = {
     Product: [
@@ -40,14 +40,7 @@ export default function Footer() {
                     {/* Brand */}
                     <div className="footer-brand">
                         <Link href="/" className="footer-logo">
-                            <Image
-                                src="/icons/landscape_logo.png"
-                                alt="LetBuyy"
-                                width={700}
-                                height={300}
-                                className="footer-logo-image"
-                                unoptimized
-                            />
+                            <BrandLogo className="footer-logo-image" width={188} height={61} />
                         </Link>
                         <p className="footer-tagline">
                             Build stores, portfolios, and resumes — all in one platform.

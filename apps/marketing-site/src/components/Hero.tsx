@@ -1,6 +1,5 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import {
@@ -13,6 +12,7 @@ import {
     Truck,
     type LucideIcon,
 } from '@letbuyy/ui'
+import BrandLogo from './BrandLogo'
 
 const launchProof = [
     'No credit card required',
@@ -58,14 +58,7 @@ function ProductPreview() {
     return (
         <div className="hero-product-preview" aria-label="LetBuyy merchant launch dashboard preview">
             <div className="hero-preview-topbar">
-                <Image
-                    src="/icons/landscape_logo.png"
-                    alt="LetBuyy"
-                    width={210}
-                    height={52}
-                    className="hero-preview-logo"
-                    unoptimized
-                />
+                <BrandLogo className="hero-preview-logo" width={120} height={39} />
                 <span className="hero-preview-status">
                     <CheckCircle2 width={14} height={14} aria-hidden="true" />
                     Live preview

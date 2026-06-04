@@ -30,7 +30,7 @@ const siteUrl = "https://letbuyy.com";
 const siteTitle = "LetBuyy - India-first commerce operating system";
 const siteDescription =
   "Launch stores, portfolios, resumes, blogs, and landing pages with one merchant workspace for themes, products, checkout readiness, and operations.";
-const socialImage = "/icons/landscape_logo.png";
+const socialImage = "/icons/letbuyy-logo-light.svg";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -71,7 +71,9 @@ export const metadata: Metadata = {
     },
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icons/letbuyy-mark.svg",
+    shortcut: "/icons/letbuyy-mark.svg",
+    apple: "/icons/letbuyy-mark.svg",
   },
   openGraph: {
     type: "website",
@@ -83,8 +85,8 @@ export const metadata: Metadata = {
     images: [
       {
         url: socialImage,
-        width: 320,
-        height: 80,
+        width: 680,
+        height: 220,
         alt: "LetBuyy commerce operating system",
       },
     ],
