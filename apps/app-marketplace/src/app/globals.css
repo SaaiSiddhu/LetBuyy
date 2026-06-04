@@ -1536,6 +1536,25 @@ body {
     font-size: 12px;
 }
 
+.app-install-scope-summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 11px 12px;
+    border: 1px solid var(--lb-color-border);
+    border-radius: var(--lb-radius-lg);
+    background: var(--lb-color-surface-subdued);
+    color: var(--lb-color-text-subdued);
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.app-install-scope-summary svg {
+    margin-top: 1px;
+    flex-shrink: 0;
+    color: var(--lb-color-primary);
+}
+
 .app-install-consent {
     display: flex;
     flex-direction: column;
@@ -1579,6 +1598,35 @@ body {
     color: var(--lb-color-text-subdued);
     font-size: 13px;
     line-height: 1.45;
+}
+
+.app-install-permission-list li {
+    align-items: flex-start;
+}
+
+.app-install-permission-list li > svg {
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.app-install-permission-list li span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.app-install-permission-list code {
+    width: fit-content;
+    max-width: 100%;
+    padding: 3px 6px;
+    overflow-wrap: anywhere;
+    border: 1px solid var(--lb-color-border);
+    border-radius: var(--lb-radius-sm);
+    background: var(--lb-color-surface-subdued);
+    color: var(--lb-color-text);
+    font-size: 11px;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
 }
 
 .app-install-policy-links {

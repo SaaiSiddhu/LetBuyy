@@ -6,6 +6,7 @@ import {
     ExternalLink,
     Lock,
     Loader2,
+    Modal,
     ShieldCheck,
 } from '@letbuyy/ui';
 import { formatScopeLabel } from '@/lib/marketplace-display';
@@ -21,7 +22,7 @@ interface AppInstallConsentPanelProps {
     termsUrl?: string | null;
 }
 
-type InstallMode = 'ready' | 'consent' | 'installing' | 'installed';
+type InstallMode = 'ready' | 'installing' | 'installed';
 
 interface InstallResponse {
     data?: {
@@ -52,6 +53,7 @@ function AppInstallConsentPanelInner({
     termsUrl,
 }: AppInstallConsentPanelProps) {
     const [mode, setMode] = useState<InstallMode>('ready');
+    const [consentOpen, setConsentOpen] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [installationId, setInstallationId] = useState<string | null>(null);
@@ -77,12 +79,20 @@ function AppInstallConsentPanelInner({
 
             setInstallationId(payload?.data?.installation?.id || null);
             setMode('installed');
+            setConsentOpen(false);
             setNotice(canLaunch ? 'The app is ready to launch.' : 'Open My Apps to manage this installation.');
         } catch (installError) {
             const message = installError instanceof Error ? installError.message : 'The app could not be installed right now.';
             setError(message);
-            setMode('consent');
+            setMode('ready');
+            setConsentOpen(true);
         }
+    };
+
+    const closeConsent = () => {
+        if (mode === 'installing') return;
+        setConsentOpen(false);
+        setError(null);
     };
 
     if (mode === 'installed') {
@@ -140,32 +150,68 @@ function AppInstallConsentPanelInner({
                 <span>{priceLabel}</span>
                 <p>{priceDetail}</p>
             </div>
-            {mode === 'ready' ? (
-                <button className="app-install-primary-button" type="button" onClick={() => setMode('consent')}>
-                    <ShieldCheck size={16} aria-hidden="true" />
-                    Review access and install
-                </button>
-            ) : (
+            <div className="app-install-scope-summary">
+                <ShieldCheck size={15} aria-hidden="true" />
+                <span>
+                    {scopes.length > 0
+                        ? `${scopes.length} declared permission${scopes.length === 1 ? '' : 's'} will be reviewed before install.`
+                        : 'No API permissions requested.'}
+                </span>
+            </div>
+            <button className="app-install-primary-button" type="button" onClick={() => setConsentOpen(true)}>
+                <ShieldCheck size={16} aria-hidden="true" />
+                Review access and install
+            </button>
+            <Modal
+                open={consentOpen}
+                title={`Approve ${appName} access`}
+                description="LetBuyy will send only these declared permissions to the app install endpoint."
+                onClose={closeConsent}
+                footer={(
+                    <>
+                        <button
+                            type="button"
+                            className="app-install-secondary-button"
+                            onClick={closeConsent}
+                            disabled={mode === 'installing'}
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="button"
+                            className="app-install-primary-button"
+                            onClick={installApp}
+                            disabled={mode === 'installing'}
+                        >
+                            {mode === 'installing' && <Loader2 size={15} className="app-install-spinner" aria-hidden="true" />}
+                            Grant access and install
+                        </button>
+                    </>
+                )}
+            >
                 <div className="app-install-consent">
                     <div className="app-install-consent__heading">
                         <Lock size={16} aria-hidden="true" />
                         <div>
-                            <h3>Approve app access</h3>
-                            <p>LetBuyy will grant this app only the permissions listed here.</p>
+                            <h3>Permissions requested</h3>
+                            <p>Review the exact scope names before granting access to your store.</p>
                         </div>
                     </div>
                     <ul className="app-install-permission-list">
                         {permissionLabels.length > 0 ? (
-                            permissionLabels.map((permission) => (
-                                <li key={permission}>
+                            scopes.map((scope, index) => (
+                                <li key={scope}>
                                     <ShieldCheck size={14} aria-hidden="true" />
-                                    {permission}
+                                    <span>
+                                        {permissionLabels[index]}
+                                        <code>{scope}</code>
+                                    </span>
                                 </li>
                             ))
                         ) : (
                             <li>
                                 <ShieldCheck size={14} aria-hidden="true" />
-                                No API permissions requested
+                                <span>No API permissions requested</span>
                             </li>
                         )}
                     </ul>
@@ -181,30 +227,8 @@ function AppInstallConsentPanelInner({
                             <span>{error}</span>
                         </div>
                     )}
-                    <div className="app-install-actions">
-                        <button
-                            type="button"
-                            className="app-install-secondary-button"
-                            onClick={() => {
-                                setMode('ready');
-                                setError(null);
-                            }}
-                            disabled={mode === 'installing'}
-                        >
-                            Cancel
-                        </button>
-                        <button
-                            type="button"
-                            className="app-install-primary-button"
-                            onClick={installApp}
-                            disabled={mode === 'installing'}
-                        >
-                            {mode === 'installing' && <Loader2 size={15} className="app-install-spinner" aria-hidden="true" />}
-                            Grant access
-                        </button>
-                    </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 }
