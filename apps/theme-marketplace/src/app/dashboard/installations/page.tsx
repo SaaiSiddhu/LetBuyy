@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Package, Globe, Palette, ExternalLink, CheckCircle, AlertCircle } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
 import { cn } from '@/lib/utils';
+import { ThemeInstallFeedbackToast } from '@/components/theme-action-feedback';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'My Installations' };
@@ -27,7 +28,15 @@ type InstallationRecord = Record<string, unknown> & {
     installed_at?: string;
 };
 
-export default async function InstallationsPage() {
+type InstallationsPageProps = {
+    searchParams?: Promise<{
+        installed?: string;
+    }>;
+};
+
+export default async function InstallationsPage({ searchParams }: InstallationsPageProps) {
+    const params = await searchParams;
+    const installedSlug = typeof params?.installed === 'string' ? params.installed : '';
     const installations: InstallationRecord[] = (await ThemeService.getUserInstallations()).map((inst: Record<string, unknown>) => {
         const site = (inst.sites && typeof inst.sites === 'object' ? inst.sites : {}) as Record<string, unknown>;
         const theme = (inst.themes && typeof inst.themes === 'object' ? inst.themes : {}) as ThemeRecord;
@@ -51,6 +60,7 @@ export default async function InstallationsPage() {
 
     return (
         <div>
+            <ThemeInstallFeedbackToast installed={installedSlug} themeName={installedSlug} />
             <div className="mb-8">
                 <h1 className="text-2xl font-bold mb-1">Active Installations</h1>
                 <p className="text-sm text-text-muted">{installations.length} themes installed across your stores</p>
@@ -73,7 +83,7 @@ export default async function InstallationsPage() {
                         const StatusIcon = statusConfig.icon;
 
                         return (
-                            <div key={inst.id} className="glass-card p-5" style={{ transform: 'none' }}>
+                            <div key={inst.id} className="glass-card p-5">
                                 <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                                     {/* Thumbnail */}
                                     <div

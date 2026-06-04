@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { ArrowLeft, CheckCircle, ExternalLink, Package, Store } from '@letbuyy/ui';
 import { ThemeService } from '@/lib/theme-service';
+import { ThemeInstallFeedbackToast, ThemeInstallSubmitButton } from '@/components/theme-action-feedback';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Install Theme' };
@@ -65,7 +66,7 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                     <ArrowLeft className="w-4 h-4" />
                     Back to themes
                 </Link>
-                <div className="glass-card p-8 text-center" style={{ transform: 'none' }}>
+                <div className="glass-card p-8 text-center">
                     <Package className="w-10 h-10 text-text-subtle mx-auto mb-4" />
                     <h1 className="text-2xl font-bold mb-2">Theme not found</h1>
                     <p className="text-sm text-text-muted mb-6">Choose an approved theme from the marketplace before installing.</p>
@@ -82,7 +83,8 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                 Back to {stringValue(theme.name) || 'theme'}
             </Link>
 
-            <div className="glass-card p-6 md:p-8" style={{ transform: 'none' }}>
+            <div className="glass-card p-6 md:p-8">
+                <ThemeInstallFeedbackToast error={error} themeName={stringValue(theme.name)} />
                 <div className="flex items-start gap-4 mb-8">
                     <div className="w-12 h-12 rounded-xl bg-primary/15 flex items-center justify-center flex-shrink-0">
                         <CheckCircle className="w-6 h-6 text-primary-light" />
@@ -144,10 +146,7 @@ export default async function InstallThemePage({ searchParams }: InstallPageProp
                             Your current storefront styling will be replaced for the selected store.
                         </div>
 
-                        <button type="submit" className="btn-primary w-full py-3 flex items-center justify-center gap-2">
-                            <Package className="w-4 h-4" />
-                            Install Theme
-                        </button>
+                        <ThemeInstallSubmitButton />
                     </form>
                 )}
             </div>

@@ -7,7 +7,7 @@ import Footer from '@/components/layout/footer';
 import ThemeProvider from '@/components/theme-provider';
 import AuthProvider from '@/components/auth-provider';
 import { LETBUYY_MERCHANT_SESSION_COOKIE, verifyLetbuyySessionCookieValue } from '@letbuyy/auth-core';
-import { DesignSystemRoot } from '@letbuyy/ui';
+import { DesignSystemRoot, ToastProvider } from '@letbuyy/ui';
 
 const letbuyySans = localFont({
     src: '../../../../packages/typescript/ui/assets/fonts/geist-sans-latin.woff2',
@@ -98,11 +98,13 @@ export default async function RootLayout({
                 <DesignSystemRoot surface="marketplace" className="min-h-screen flex flex-col">
                     <ThemeProvider>
                         <AuthProvider initialAuthenticated={session.accepted}>
-                            <Navbar />
-                            <main className="flex-grow pt-[72px]">
-                                {children}
-                            </main>
-                            <Footer />
+                            <ToastProvider>
+                                <Navbar />
+                                <main className="flex-grow pt-[72px]">
+                                    {children}
+                                </main>
+                                <Footer />
+                            </ToastProvider>
                         </AuthProvider>
                     </ThemeProvider>
                 </DesignSystemRoot>
