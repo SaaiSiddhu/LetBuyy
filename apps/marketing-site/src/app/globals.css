@@ -282,12 +282,15 @@ html.lenis body {
   position: relative;
   display: flex;
   align-items: center;
+  flex: 0 1 144px;
+  width: 144px;
+  min-width: 0;
   text-decoration: none;
   /* No extra margin/padding - aligns with grid */
   margin: 0;
   padding: 0;
   height: 100%;
-  overflow: visible;
+  overflow: hidden;
 }
 
 /* Subtle left-edge glow anchor behind logo */
@@ -307,12 +310,10 @@ html.lenis body {
 
 /* Logo Image - Transform scale for large visual without affecting layout */
 .header-logo-image {
-  /* Base size that fits in header */
-  width: auto;
-  height: 48px;
-  /* Scale up visually to ~144px: 48 * 3 = 144 */
-  transform: scale(3);
-  transform-origin: left center;
+  width: 144px;
+  max-width: 100%;
+  height: auto;
+  transform: none;
   /* Crisp rendering */
   image-rendering: -webkit-optimize-contrast;
   image-rendering: crisp-edges;
@@ -325,17 +326,25 @@ html.lenis body {
 
 /* Tablet: Scale to ~176px: 44 * 4 = 176 */
 @media (min-width: 768px) {
+  .header-logo {
+    flex-basis: 176px;
+    width: 176px;
+  }
+
   .header-logo-image {
-    height: 44px;
-    transform: scale(4);
+    width: 176px;
   }
 }
 
 /* Desktop: Scale to ~211px: 42 * 5 = 210 */
 @media (min-width: 1024px) {
+  .header-logo {
+    flex-basis: 210px;
+    width: 210px;
+  }
+
   .header-logo-image {
-    height: 42px;
-    transform: scale(5);
+    width: 210px;
   }
 }
 
@@ -422,6 +431,7 @@ html.lenis body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   padding: 10px 16px;
   font-size: 14px;
   font-weight: 600;
@@ -432,6 +442,10 @@ html.lenis body {
   transition: all 0.4s var(--ease-smooth);
   border: none;
   white-space: nowrap;
+}
+
+.btn svg {
+  flex-shrink: 0;
 }
 
 @media (min-width: 480px) {
@@ -1022,7 +1036,7 @@ html.lenis body {
 }
 
 .hero-copy .hero-cta .btn {
-  gap: 8px;
+  min-width: max-content;
 }
 
 .hero-proof-list {
@@ -1435,21 +1449,23 @@ html.lenis body {
     padding: 132px 0 40px;
   }
 
+  .hero-title {
+    font-size: 52px;
+  }
+
+  .hero-highlights {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
   .hero-shell {
     grid-template-columns: minmax(0, 0.95fr) minmax(360px, 1.05fr);
     gap: 36px;
   }
 
-  .hero-title {
-    font-size: 56px;
-  }
-
   .hero-preview-main {
     grid-template-columns: minmax(0, 1.2fr) minmax(220px, 0.8fr);
-  }
-
-  .hero-highlights {
-    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -1772,7 +1788,7 @@ html.lenis body {
   color: var(--success);
 }
 
-.feature-visual {
+.feature-showcase-visual {
   min-height: 260px;
   margin: 0 24px 24px;
   padding: 18px;
@@ -2047,7 +2063,7 @@ html.lenis body {
     padding: 24px 20px 0;
   }
 
-  .feature-visual {
+  .feature-showcase-visual {
     min-height: 240px;
     margin: 0 16px 16px;
     padding: 14px;
@@ -3178,6 +3194,12 @@ html.lenis body {
   pointer-events: none;
 }
 
+@media (max-width: 899px) {
+  .site-types .feature-visual::after {
+    content: none;
+  }
+}
+
 /* Mockup Header (Browser Chrome) */
 .mockup-header {
   display: flex;
@@ -3465,6 +3487,140 @@ html.lenis body {
   flex-shrink: 0;
 }
 
+@media (max-width: 479px) {
+  .site-types {
+    padding: 60px 0 72px;
+  }
+
+  .site-types .container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .site-types-header {
+    margin-bottom: 42px;
+  }
+
+  .site-types-features {
+    gap: 52px;
+  }
+
+  .feature-row {
+    gap: 20px;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .feature-visual-container,
+  .feature-content,
+  .feature-title,
+  .feature-description,
+  .feature-benefits {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .feature-visual-container {
+    overflow: hidden;
+  }
+
+  .site-types .feature-visual {
+    max-width: 100%;
+    aspect-ratio: 16 / 10;
+    border-radius: 8px;
+  }
+
+  .site-types .mockup-header {
+    padding: 9px 10px;
+  }
+
+  .feature-visual-ecommerce {
+    grid-template-columns: 34px minmax(0, 1fr);
+  }
+
+  .feature-visual-ecommerce .mockup-sidebar {
+    padding: 10px 6px;
+    gap: 8px;
+  }
+
+  .feature-visual-ecommerce .mockup-content {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .mockup-stats {
+    gap: 8px;
+  }
+
+  .mockup-stat-card {
+    height: 34px;
+  }
+
+  .mockup-products {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .mockup-product:nth-child(4) {
+    display: none;
+  }
+
+  .mockup-portfolio-grid {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .mockup-resume-content {
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .mockup-resume-header {
+    height: 32px;
+  }
+
+  .mockup-resume-btn {
+    width: 96px;
+    height: 28px;
+  }
+
+  .mockup-landing-hero {
+    gap: 8px;
+    padding: 14px 12px;
+  }
+
+  .mockup-landing-features {
+    gap: 8px;
+    padding: 10px 12px;
+  }
+
+  .feature-content {
+    gap: 10px;
+  }
+
+  .feature-title {
+    font-size: 24px;
+  }
+
+  .feature-description {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .feature-benefits {
+    gap: 8px;
+    margin-top: 4px;
+  }
+
+  .feature-benefits li {
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+}
+
 /* OLD STYLES - REMOVED */
 .site-types-grid {
   display: none;
@@ -3519,7 +3675,7 @@ html.lenis body {
   margin: 0 auto;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 960px) {
   .how-it-works-steps {
     grid-template-columns: repeat(3, 1fr);
     gap: 48px;
@@ -3573,7 +3729,7 @@ html.lenis body {
   display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 960px) {
   .step-connector {
     display: block;
     position: absolute;
@@ -3712,9 +3868,18 @@ html.lenis body {
   margin-bottom: 24px;
 }
 
-.footer-logo-image {
-  max-height: 40px;
-  width: auto;
+.footer-logo .footer-logo-image {
+  width: 144px;
+  max-width: 100%;
+  height: auto;
+  max-height: none;
+  border-radius: 0;
+}
+
+@media (min-width: 768px) {
+  .footer-logo .footer-logo-image {
+    width: 160px;
+  }
 }
 
 .footer-column-title {

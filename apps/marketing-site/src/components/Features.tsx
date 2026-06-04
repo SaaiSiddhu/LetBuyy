@@ -88,7 +88,7 @@ const cardVariants = {
 
 function ProductsVisual() {
     return (
-        <div className="feature-visual feature-products-visual" aria-label="Products catalog management preview">
+        <div className="feature-showcase-visual feature-products-visual" aria-label="Products catalog management preview">
             <div className="feature-visual-toolbar">
                 <span>Products</span>
                 <span>Live</span>
@@ -119,7 +119,7 @@ function ProductsVisual() {
 
 function ThemesVisual() {
     return (
-        <div className="feature-visual feature-themes-visual" aria-label="Theme editor preview">
+        <div className="feature-showcase-visual feature-themes-visual" aria-label="Theme editor preview">
             <div className="feature-theme-browser">
                 <div className="feature-theme-hero">
                     <Store width={18} height={18} aria-hidden="true" />
@@ -147,7 +147,7 @@ function ThemesVisual() {
 
 function AppsVisual() {
     return (
-        <div className="feature-visual feature-apps-visual" aria-label="App marketplace install preview">
+        <div className="feature-showcase-visual feature-apps-visual" aria-label="App marketplace install preview">
             <div className="feature-app-card feature-app-card-active">
                 <BadgeCheck width={18} height={18} aria-hidden="true" />
                 <div>
@@ -175,7 +175,7 @@ function AppsVisual() {
 
 function PaymentsVisual() {
     return (
-        <div className="feature-visual feature-payments-visual" aria-label="Payments and GST readiness preview">
+        <div className="feature-showcase-visual feature-payments-visual" aria-label="Payments and GST readiness preview">
             <div className="feature-payment-total">
                 <span>Checkout readiness</span>
                 <strong>COD + GST</strong>
