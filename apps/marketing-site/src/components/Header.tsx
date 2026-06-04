@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { ChevronRight, Monitor, Moon, Sun, X } from '@letbuyy/ui'
+import { ChevronDown, ChevronRight, Monitor, Moon, Sun, X } from '@letbuyy/ui'
 import BrandLogo from './BrandLogo'
 import { useTheme } from './ThemeProvider'
 
@@ -57,10 +57,10 @@ export default function Header() {
     }, [])
 
     const navLinks = [
-        { href: '#capabilities', label: 'Use cases' },
-        { href: '#features', label: 'Features' },
-        { href: '#how-it-works', label: 'Launch path' },
+        { href: '#capabilities', label: 'Why LetBuyy', hasDropdown: true },
+        { href: '#features', label: 'Products', hasDropdown: true },
         { href: '#pricing', label: 'Pricing' },
+        { href: '#how-it-works', label: 'Enterprise' },
     ]
 
     const cycleTheme = () => {
@@ -81,14 +81,17 @@ export default function Header() {
                 <div className="container header-content">
                     {/* Logo */}
                     <Link href="/" className="header-logo" aria-label="LetBuyy Home">
-                        <BrandLogo className="header-logo-image" width={210} height={68} priority />
+                        <BrandLogo className="header-logo-image" width={152} height={49} priority />
                     </Link>
 
                     {/* Desktop Navigation */}
                     <nav className="header-nav" aria-label="Main navigation">
                         {navLinks.map((link) => (
                             <Link key={link.href} href={link.href} className="header-nav-link">
-                                {link.label}
+                                <span>{link.label}</span>
+                                {link.hasDropdown ? (
+                                    <ChevronDown className="header-nav-chevron" width={15} height={15} aria-hidden="true" />
+                                ) : null}
                             </Link>
                         ))}
                     </nav>
@@ -96,17 +99,21 @@ export default function Header() {
                     {/* Desktop Actions */}
                     <div className="header-actions">
                         <Link href="https://accounts.letbuyy.store/lookup" className="btn btn-ghost">
-                            Sign In
+                            Log in
                         </Link>
                         <motion.div
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
                         >
                             <Link href="https://accounts.letbuyy.store/signup" className="btn btn-primary">
-                                Get Started Free
+                                Start for free
                             </Link>
                         </motion.div>
                     </div>
+
+                    <Link href="https://accounts.letbuyy.store/signup" className="mobile-start-link">
+                        Start for free
+                    </Link>
 
                     {/* Mobile Menu Button */}
                     <button
