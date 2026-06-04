@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "./**/*.{ts,tsx}";
+@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 /* ======================================
    LETBUYY APP STORE — DESIGN SYSTEM
@@ -1992,6 +1994,16 @@ body {
         max-width: unset;
     }
 
+    .appstore-header-left {
+        min-width: 0;
+    }
+
+    .appstore-header-brand {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
     .appstore-main {
         padding: 20px 16px;
     }
@@ -2061,6 +2073,21 @@ body {
 
     .my-apps-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .appstore-header-center,
+    .appstore-header-btn {
+        display: none;
+    }
+
+    .appstore-header {
+        gap: 10px;
+    }
+
+    .appstore-header-right {
+        flex-shrink: 0;
     }
 }
 
