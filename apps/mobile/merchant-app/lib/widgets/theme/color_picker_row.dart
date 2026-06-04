@@ -125,7 +125,7 @@ class ColorSection extends StatelessWidget {
           controller: controller,
           decoration: const InputDecoration(
             labelText: 'Hex Color',
-            hintText: '#00B3B3',
+            hintText: '#8B5CF6',
             prefixText: '#',
           ),
           maxLength: 6,

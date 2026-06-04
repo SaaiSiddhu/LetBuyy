@@ -189,7 +189,7 @@ export default function AISidebar({ store, storeData, onClose }: AISidebarProps)
             {/* Header */}
             <div className="admin-ai-panel-header">
                 <div className="admin-ai-panel-title">
-                    <MaterialIcon name="auto_awesome" className="admin-ai-panel-title-icon" size={18} />
+                    <MaterialIcon name="assistant" className="admin-ai-panel-title-icon" size={18} />
                     LetBuyy AI
                 </div>
                 <div className="admin-ai-panel-actions">

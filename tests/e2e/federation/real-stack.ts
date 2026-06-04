@@ -7,15 +7,15 @@ import {
 } from '@letbuyy/auth-core';
 
 export const federationUrls = {
-  gateway: process.env.LETBUYY_E2E_API_URL ?? 'http://127.0.0.1:8787',
-  marketing: process.env.LETBUYY_E2E_MARKETING_URL ?? 'http://127.0.0.1:3000',
-  identity: process.env.LETBUYY_E2E_IDENTITY_URL ?? 'http://127.0.0.1:3001',
-  merchant: process.env.LETBUYY_E2E_MERCHANT_URL ?? 'http://127.0.0.1:3002',
-  storefront: process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'http://127.0.0.1:3003',
-  appMarketplace: process.env.LETBUYY_E2E_APP_MARKETPLACE_URL ?? 'http://127.0.0.1:3004',
-  themeMarketplace: process.env.LETBUYY_E2E_THEME_MARKETPLACE_URL ?? 'http://127.0.0.1:3005',
-  platformConsole: process.env.LETBUYY_E2E_PLATFORM_CONSOLE_URL ?? 'http://127.0.0.1:3010',
-  operationsPortal: process.env.LETBUYY_E2E_OPERATIONS_PORTAL_URL ?? 'http://127.0.0.1:3011',
+  gateway: process.env.LETBUYY_E2E_API_URL ?? 'https://api.staging.letbuyy.store',
+  marketing: process.env.LETBUYY_E2E_MARKETING_URL ?? 'https://staging.letbuyy.store',
+  identity: process.env.LETBUYY_E2E_IDENTITY_URL ?? 'https://accounts.staging.letbuyy.store',
+  merchant: process.env.LETBUYY_E2E_MERCHANT_URL ?? 'https://merchant.staging.letbuyy.store',
+  storefront: process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'https://storefront.staging.letbuyy.store',
+  appMarketplace: process.env.LETBUYY_E2E_APP_MARKETPLACE_URL ?? 'https://apps.staging.letbuyy.store',
+  themeMarketplace: process.env.LETBUYY_E2E_THEME_MARKETPLACE_URL ?? 'https://themes.staging.letbuyy.store',
+  platformConsole: process.env.LETBUYY_E2E_PLATFORM_CONSOLE_URL ?? 'https://console.staging.letbuyy.store',
+  operationsPortal: process.env.LETBUYY_E2E_OPERATIONS_PORTAL_URL ?? 'https://operations.staging.letbuyy.store',
 };
 
 export const demo = {
@@ -29,7 +29,7 @@ export const demo = {
   storeSubdomain: process.env.LETBUYY_E2E_STORE_SUBDOMAIN ?? 'urban-kicks-demo',
   seededAppId: '00000000-0000-4000-8000-000000000202',
   seededAppClientId: 'demo-loyalty-rewards-client',
-  seededAppRedirectUri: 'http://127.0.0.1:3004/oauth/callback',
+  seededAppRedirectUri: 'https://apps.staging.letbuyy.store/oauth/callback',
   seededProductId: '00000000-0000-4000-8000-000000000101',
 };
 
@@ -41,8 +41,8 @@ const actorProfiles = {
   ops: { userId: demo.opsUserId, email: demo.opsEmail },
 } satisfies Record<DemoActor, { userId: string; email: string; storeId?: string }>;
 
-const localInternalSecret = process.env.LETBUYY_E2E_INTERNAL_API_SECRET ?? 'local-internal-api-placeholder';
-const localCustomerSecret = process.env.LETBUYY_E2E_CUSTOMER_SESSION_SECRET ?? 'local-customer-session-placeholder';
+const stagingInternalSecret = process.env.LETBUYY_E2E_INTERNAL_API_SECRET ?? 'staging-internal-api-placeholder';
+const stagingCustomerSecret = process.env.LETBUYY_E2E_CUSTOMER_SESSION_SECRET ?? 'staging-customer-session-placeholder';
 
 function forceLive(): boolean {
   return process.env.LETBUYY_E2E_REQUIRE_REAL_STACK === '1';
@@ -54,24 +54,25 @@ function skipOrThrow(condition: boolean, message: string): void {
   test.skip(true, message);
 }
 
-function assertLoopback(url: string, label: string): void {
-  const hostname = new URL(url).hostname;
+function assertDeployedHttps(url: string, label: string): void {
+  const parsed = new URL(url);
+  const hostname = parsed.hostname;
   skipOrThrow(
-    hostname !== '127.0.0.1' && hostname !== 'localhost' && !hostname.endsWith('.localhost'),
-    `${label} must point at the real local stack, got ${url}. Set LETBUYY_E2E_ALLOW_NON_LOCAL=1 only for an approved non-local execution.`,
+    parsed.protocol !== 'https:' || hostname === 'localhost' || hostname === '127.0.0.1' || hostname.endsWith('.localhost'),
+    `${label} must point at deployed staging or an approved HTTPS preview target, got ${url}.`,
   );
 }
 
 export async function requireRealStack(request: APIRequestContext): Promise<void> {
   for (const [label, url] of Object.entries(federationUrls)) {
-    assertLoopback(url, label);
+    assertDeployedHttps(url, label);
   }
 
   const health = await request.get(`${federationUrls.gateway}/health`, {
     failOnStatusCode: false,
     timeout: 3_000,
   }).catch(() => null);
-  skipOrThrow(!health, `Gateway is not reachable at ${federationUrls.gateway}. Run pnpm run federation:local:up first.`);
+  skipOrThrow(!health, `Gateway is not reachable at ${federationUrls.gateway}. Deploy staging and configure CI secrets before this suite.`);
   skipOrThrow(Boolean(health && health.status() >= 500), `Gateway health returned ${health?.status()}.`);
 
   const productProbe = await request.get(
@@ -84,14 +85,14 @@ export async function requireRealStack(request: APIRequestContext): Promise<void
   ).catch(() => null);
   skipOrThrow(
     !productProbe || productProbe.status() !== 200,
-    `Seeded storefront product query did not return 200. Run the real Supabase local stack seed before this suite.`,
+    `Seeded storefront product query did not return 200. Seed staging before this suite.`,
   );
 }
 
 export async function requireSurface(request: APIRequestContext, url: string, label: string): Promise<void> {
-  assertLoopback(url, label);
+  assertDeployedHttps(url, label);
   const response = await request.get(url, { failOnStatusCode: false, timeout: 3_000 }).catch(() => null);
-  skipOrThrow(!response, `${label} is not reachable at ${url}. Run pnpm run federation:local:up first.`);
+  skipOrThrow(!response, `${label} is not reachable at ${url}. Deploy staging and configure CI secrets before this suite.`);
   skipOrThrow(Boolean(response && response.status() >= 500), `${label} returned ${response?.status()} at ${url}.`);
 }
 
@@ -107,7 +108,7 @@ export async function internalHeaders(actor: DemoActor): Promise<Record<string, 
     userId: profile.userId,
     email: profile.email,
     storeId: profile.storeId,
-    secret: localInternalSecret,
+    secret: stagingInternalSecret,
   });
 
   if (!signed.ok || !signed.headers) {
@@ -128,7 +129,7 @@ export async function expectApiSuccess<T = unknown>(
   statuses: number[] = [200],
 ): Promise<T> {
   if (response.status() === 401 && !forceLive()) {
-    test.skip(true, `${label} rejected local internal auth. Check local stack secrets and rerun with LETBUYY_E2E_REQUIRE_REAL_STACK=1.`);
+    test.skip(true, `${label} rejected staging internal auth. Check staging secrets and rerun with LETBUYY_E2E_REQUIRE_REAL_STACK=1.`);
   }
 
   expect(statuses, `${label} returned ${response.status()}`).toContain(response.status());
@@ -179,11 +180,11 @@ export async function installCustomerSessionCookie(page: Page): Promise<void> {
     storeId: demo.storeId,
     email: 'buyer@letbuyy.local',
     fullName: 'Demo Buyer',
-  }, localCustomerSecret);
+  }, stagingCustomerSecret);
 
   await page.context().addCookies([
     federationUrls.storefront,
-    `http://${demo.storeSubdomain}.localhost:${new URL(federationUrls.storefront).port || '3003'}`,
+    `https://${demo.storeSubdomain}.staging.letbuyy.store`,
   ].map((url) => ({
     name: LETBUYY_CUSTOMER_SESSION_COOKIE,
     value: token,

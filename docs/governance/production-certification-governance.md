@@ -10,6 +10,6 @@ Rules:
 - Certification evidence must come from runtime projections or provider verification, not static markdown claims.
 - CI must run production readiness validation before accepting certification topology changes.
 - Certification docs must name execution mode, credentials required, and evidence authority.
-- Provider production certification cannot use local operational evidence as a substitute for live evidence.
+- Provider production certification cannot use staging operational evidence as a substitute for live production evidence.
 - Execute mode requires explicit operator approval, provider mutation approval, Node 22-compatible Wrangler, Cloudflare credentials, Supabase/Postgres access, operations API access, and telemetry ingestion endpoints.
 - Plan mode may emit missing capabilities and command plans, but it must record `certification: false` and `provider_certification: false`.

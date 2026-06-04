@@ -5,7 +5,7 @@ import { getStorefrontUrl, resolveSubdomainFromHost } from '@/lib/seo';
 
 function getSitemapUrl(host: string | null, protocol: string | null): string | undefined {
     if (!host) return undefined;
-    const scheme = protocol || (host.includes('localhost') || host.startsWith('127.0.0.1') ? 'http' : 'https');
+    const scheme = protocol || 'https';
     return `${scheme}://${host}/sitemap.xml`;
 }
 

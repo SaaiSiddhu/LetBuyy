@@ -15,6 +15,7 @@ export * from './theme-renderer';
 
 export type BuiltInSectionType =
   | 'header'
+  | 'announcementBar'
   | 'heroBanner'
   | 'productGrid'
   | 'footer'

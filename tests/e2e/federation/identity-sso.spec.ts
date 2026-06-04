@@ -37,7 +37,7 @@ test.describe('J1 Identity SSO federation', () => {
       headers: await internalHeaders('partner'),
     });
     if (partnerDenied.status() === 401) {
-      test.skip(true, 'Gateway rejected local internal auth before RBAC. Check local stack secrets and rerun with LETBUYY_E2E_REQUIRE_REAL_STACK=1.');
+      test.skip(true, 'Gateway rejected staging internal auth before RBAC. Check staging secrets and rerun with LETBUYY_E2E_REQUIRE_REAL_STACK=1.');
     }
     expect(partnerDenied.status()).toBe(403);
 

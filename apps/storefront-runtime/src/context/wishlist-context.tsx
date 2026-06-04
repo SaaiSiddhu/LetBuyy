@@ -24,7 +24,7 @@ const WishlistContext = createContext<WishlistContextType>({
 
 export const useWishlist = () => useContext(WishlistContext);
 
-const LOCAL_KEY = 'lb_wishlist';
+const WISHLIST_STORAGE_KEY = 'lb_wishlist';
 
 export function WishlistProvider({
     children,
@@ -45,7 +45,7 @@ export function WishlistProvider({
                 .catch(() => { });
         } else {
             try {
-                const stored = localStorage.getItem(LOCAL_KEY);
+                const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
                 setItems(stored ? JSON.parse(stored) : []);
             } catch {
                 setItems([]);
@@ -56,7 +56,7 @@ export function WishlistProvider({
     // Persist local wishlist for guests
     useEffect(() => {
         if (!isAuthenticated) {
-            localStorage.setItem(LOCAL_KEY, JSON.stringify(items));
+            localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(items));
         }
     }, [items, isAuthenticated]);
 

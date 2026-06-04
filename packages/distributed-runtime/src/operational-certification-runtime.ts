@@ -1,6 +1,6 @@
 import { replayPayloadChecksum } from './event-envelope-runtime';
 
-export type OperationalCertificationScope = 'local-executable' | 'live-provider';
+export type OperationalCertificationScope = 'staging-executable' | 'live-provider';
 
 export interface OperationalTelemetryEvent {
   traceId: string;
@@ -91,7 +91,7 @@ export function compileOperationalEvidenceManifest(input: {
 
 export function assertOperationalEvidenceManifest(manifest: OperationalEvidenceManifest): void {
   if (manifest.productionCertification && manifest.scope !== 'live-provider') {
-    throw new Error('Local operational evidence cannot be marked as production certification');
+    throw new Error('Staging operational evidence cannot be marked as production certification');
   }
   if (!manifest.traceId || !manifest.evidenceHash) {
     throw new Error('Operational evidence requires trace and evidence hashes');

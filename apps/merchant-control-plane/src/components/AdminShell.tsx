@@ -79,8 +79,8 @@ export default function AdminShell({ store, storeData, user, userStores, childre
                         onClick={() => setSidebarOpen(false)}
                     />
 
-                    {/* Sidebar — hidden on settings pages */}
-                    {!isSettingsPage && (
+                    {/* Sidebar — normal desktop rail outside settings, mobile drawer on settings */}
+                    {(!isSettingsPage || sidebarOpen) && (
                         <Sidebar
                             store={store}
                             storeData={storeData}
@@ -97,7 +97,9 @@ export default function AdminShell({ store, storeData, user, userStores, childre
                         {isDraft && (
                             <div className="admin-draft-banner">
                                 <MaterialIcon name="warning" size={16} />
-                                Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
+                                <span className="admin-draft-banner-message">
+                                    Your site is in <strong>draft</strong> mode. It is not visible to visitors yet.
+                                </span>
                             </div>
                         )}
 
@@ -127,6 +129,7 @@ export default function AdminShell({ store, storeData, user, userStores, childre
                 {cmdPaletteOpen && (
                     <CommandPalette
                         store={store}
+                        storeName={storeData.name || storeData.store_name || store}
                         siteType={storeData.site_type}
                         onClose={() => setCmdPaletteOpen(false)}
                     />

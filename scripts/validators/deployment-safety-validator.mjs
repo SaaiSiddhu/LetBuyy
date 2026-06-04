@@ -19,7 +19,7 @@ for (const fragment of [
 
 const productionDeploy = readFile("infrastructure/scripts/deploy/production-deploy.mjs");
 for (const fragment of [
-  "const supportedEnvironments = [\"dev\", \"staging\", \"production\"]",
+  "const supportedEnvironments = [\"staging\", \"production\"]",
   "run(\"pnpm\", [\"run\", \"validate:governance\"])",
   "materialize-wrangler-config.mjs",
   "deploy-worker-runtime.mjs",
@@ -52,8 +52,6 @@ for (const root of ["services/api-gateway", "services/webhook-service", "service
 
 const releasePromotion = readFile("infrastructure/deployment/release-promotion.yaml");
 for (const fragment of [
-  "local",
-  "dev:",
   "staging:",
   "production:",
   "rollbackCommand",

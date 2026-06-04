@@ -19,7 +19,7 @@
   "properties": {
     "$schema": { "const": "config/runtime/operational-certification-evidence.schema.json" },
     "contractVersion": { "type": "integer", "minimum": 1 },
-    "mode": { "const": "local-executable-evidence-not-production-certification" },
+    "mode": { "const": "staging-executable-evidence-not-production-certification" },
     "harness": { "type": "object" },
     "telemetry": { "type": "object" },
     "persistenceBackends": { "type": "object" },

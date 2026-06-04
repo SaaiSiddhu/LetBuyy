@@ -2,13 +2,13 @@
 
 Generated on 2026-05-25. This report is repository evidence, not live production certification.
 
-## 1. Local Development Lifecycle
+## 1. Staging Development Lifecycle
 
-Implemented through `infrastructure/local/docker-compose.yml`, local environment template, local schema/seed SQL, provider mocks, replay runtime, and `pnpm run local:*` scripts.
+Implemented through the staging lifecycle in `config/runtime/environment-lifecycle.json`, staging templates under `config/env/`, Cloudflare/Vercel/GitHub/Supabase secret stores, and `scripts/staging/seed.mjs`.
 
-## 2. Development Environment Lifecycle
+## 2. Retired Development Environment Lifecycle
 
-Defined in `config/runtime/environment-lifecycle.json` as unstable integration validation with isolated secrets, DB, queues, event store, telemetry, providers, feature flags, rollback, replay, and queue gates.
+The former development environment is retired. Staging now owns integration validation with isolated secrets, DB, queues, event store, telemetry, providers, feature flags, rollback, replay, and queue gates.
 
 ## 3. Staging Lifecycle
 
@@ -80,7 +80,7 @@ Provider isolation, feature flag auditing, and certification hard-fail policy we
 
 ## 20. Governance Operationalization
 
-Governance validation now includes operational lifecycle drift, local stack contracts, rollout controls, stale certification evidence, and environment isolation.
+Governance validation now includes operational lifecycle drift, staging lifecycle contracts, rollout controls, stale certification evidence, and environment isolation.
 
 ## 21. Live Provider Execution
 
@@ -92,7 +92,7 @@ Not certified in this repository state. Execute mode remains credential-gated an
 
 ## 23. Validator Hardening
 
-`operational-lifecycle-validator.mjs` hard-fails missing lifecycle files, stale live certification evidence, missing rollout controls, missing load tooling paths, and missing local stack contracts.
+`operational-lifecycle-validator.mjs` hard-fails missing lifecycle files, stale live certification evidence, missing rollout controls, missing load tooling paths, and missing staging lifecycle contracts.
 
 ## 24. Remaining Future Work
 

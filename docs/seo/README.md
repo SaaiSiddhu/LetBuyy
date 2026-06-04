@@ -36,7 +36,6 @@ This document is generated from the current LetBuyy repository scan. It is inten
 | `infrastructure/deployment/helm/letbuyy-production/templates/runtime-probe-configmap.yaml` | infrastructure as code | 15 | source | none |
 | `infrastructure/deployment/kubernetes/namespace.yaml` | infrastructure as code | 51 | source | none |
 | `infrastructure/deployment/kubernetes/runtime-health-probes.yaml` | infrastructure as code | 65 | source | webhook reference |
-| `infrastructure/local/postgres/seed/001-local-seed.sql` | infrastructure as code | 12 | source | none |
 | `packages/cms-core/src/index.ts` | cms core package | 313 | source | none |
 | `packages/orchestration/src/event-runtime.ts` | root or shared config | 204 | source | webhook reference |
 | `packages/runtime-composition/src/composition-runtime.ts` | root or shared config | 50 | source | none |

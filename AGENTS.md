@@ -353,7 +353,7 @@ flowchart TB
 ## Phase 4 Enterprise Lifecycle Finalization
 
 - Enterprise SDLC authority lives in `config/runtime/environment-lifecycle.json`, `config/runtime/rollout-lifecycle.json`, and `config/runtime/operational-certification-policy.json`.
-- Local development lifecycle authority lives in `infrastructure/local/docker-compose.yml`, `config/env/templates/local.env.example`, and `infrastructure/scripts/local/*`.
+- Staging development lifecycle authority lives in `scripts/staging/seed.mjs`, `config/env/staging.env.example`, and the staging entries in `config/runtime/environment-lifecycle.json`.
 - Feature flag evaluation authority lives in `packages/shared-types/src/index.ts`; persisted operational control evidence lives in migration `065_enterprise_sdlc_lifecycle.sql`.
 - Governance validation must run `scripts/validators/operational-lifecycle-validator.mjs`; stale live certification evidence is a hard failure.
 - Plan mode means executable workflows and evidence contracts only. Do not claim live deployment, live failover, live chaos, live load, or live certification until execute-mode provider evidence is recorded and fresh.

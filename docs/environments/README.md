@@ -7,7 +7,7 @@ This document is generated from the current LetBuyy repository scan. It is inten
 
 - Matching files: 127.
 - Matching ownership areas: api gateway service, app marketplace, billing core package, documentation, firebase legacy, identity platform, infrastructure as code, marketing site, merchant control plane, notification core package, platform console, platform operations portal, root or shared config, shared dart core package, storefront runtime, theme marketplace, webhook service.
-- Matching env names: AUTH_SECRET, CHAOS_DURATION_MS, CHAOS_OPERATION, CHAOS_PROVIDER, CHAOS_QUEUE_NAME, CHAOS_SCENARIO, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, DATABASE_URL, DEFAULT_EVENT_RETENTION_POLICIES, DEFAULT_RETRY_POLICY, ENVIRONMENT, FEATURE_MAGIC_LINK, FEATURE_MULTI_ACCOUNT, FEATURE_PASSKEY, FEATURE_TURNSTILE, GITHUB_SHA, GRAFANA_TOKEN, GRAFANA_URL, INTERNAL_API_SECRET, LETBUYY_API_BASE_URL, LETBUYY_ENVIRONMENT, LETBUYY_OPERATIONS_TOKEN, LOCAL_EVENT_STORE_URL, NEXT_PUBLIC_API_URL, NEXT_PUBLIC_SUPABASE_URL, NODE_ENV, OTEL_COLLECTOR_HEALTH_URL, PAYMENT_CONFIG_ENCRYPTION_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MODE, PAYPAL_WEBHOOK_ID, PORT, PRIMARY_REGION, PROMETHEUS_URL, R2_BUCKET, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RESEND_FROM_EMAIL, RUNTIME_NAME, SITE_TYPE_LABELS, STRIPE_SECRET_KEY, SUPABASE_DB_URL, TF_VAR_, UPSTASH_REDIS_REST_TOKEN, UPSTASH_REDIS_REST_URL, WRANGLER_LOG_PATH.
+- Matching env names: AUTH_SECRET, CHAOS_DURATION_MS, CHAOS_OPERATION, CHAOS_PROVIDER, CHAOS_QUEUE_NAME, CHAOS_SCENARIO, CLOUDFLARE_ACCOUNT_ID, CLOUDFLARE_API_TOKEN, DATABASE_URL, DEFAULT_EVENT_RETENTION_POLICIES, DEFAULT_RETRY_POLICY, ENVIRONMENT, FEATURE_MAGIC_LINK, FEATURE_MULTI_ACCOUNT, FEATURE_PASSKEY, FEATURE_TURNSTILE, GITHUB_SHA, GRAFANA_TOKEN, GRAFANA_URL, INTERNAL_API_SECRET, LETBUYY_API_BASE_URL, LETBUYY_ENVIRONMENT, LETBUYY_OPERATIONS_TOKEN, NEXT_PUBLIC_API_URL, NEXT_PUBLIC_SUPABASE_URL, NODE_ENV, OTEL_COLLECTOR_HEALTH_URL, PAYMENT_CONFIG_ENCRYPTION_KEY, PAYPAL_CLIENT_ID, PAYPAL_CLIENT_SECRET, PAYPAL_MODE, PAYPAL_WEBHOOK_ID, PORT, PRIMARY_REGION, PROMETHEUS_URL, R2_BUCKET, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, RESEND_FROM_EMAIL, RUNTIME_NAME, SITE_TYPE_LABELS, STRIPE_SECRET_KEY, SUPABASE_DB_URL, TF_VAR_, UPSTASH_REDIS_REST_TOKEN, UPSTASH_REDIS_REST_URL, WRANGLER_LOG_PATH.
 - Matching route files: 21.
 
 ## Source-Derived Files
@@ -48,8 +48,6 @@ This document is generated from the current LetBuyy repository scan. It is inten
 | `docs/runbooks/live-certification-execute.md` | documentation | 41 | source | none |
 | `infrastructure/deployment/helm/letbuyy-production/values.yaml` | infrastructure as code | 18 | source | webhook reference |
 | `infrastructure/deployment/release-promotion.yaml` | infrastructure as code | 81 | source | webhook reference |
-| `infrastructure/local/postgres/seed/001-local-seed.sql` | infrastructure as code | 12 | source | none |
-| `infrastructure/local/replay-runtime.mjs` | infrastructure as code | 64 | source | console.log |
 | `infrastructure/scripts/chaos/provider-outage.mjs` | infrastructure as code | 16 | source | payment provider reference |
 | `infrastructure/scripts/chaos/queue-outage.mjs` | infrastructure as code | 32 | source | none |
 | `infrastructure/scripts/chaos/run-chaos-experiment.mjs` | infrastructure as code | 67 | source | console.log |
@@ -85,7 +83,6 @@ This document is generated from the current LetBuyy repository scan. It is inten
 - `docs/governance/execution-context-governance.md`: webhook reference.
 - `infrastructure/deployment/helm/letbuyy-production/values.yaml`: webhook reference.
 - `infrastructure/deployment/release-promotion.yaml`: webhook reference.
-- `infrastructure/local/replay-runtime.mjs`: console.log.
 - `infrastructure/scripts/chaos/provider-outage.mjs`: payment provider reference.
 - `infrastructure/scripts/chaos/run-chaos-experiment.mjs`: console.log.
 - `infrastructure/scripts/cloudflare/verify-provider-contracts.mjs`: console.log, webhook reference.
@@ -94,12 +91,6 @@ This document is generated from the current LetBuyy repository scan. It is inten
 - `infrastructure/scripts/deploy/production-rollback.mjs`: console.log.
 - `infrastructure/scripts/deploy/verify-health-gates.mjs`: console.log, webhook reference.
 - `infrastructure/scripts/load/run-load-suite.mjs`: console.log.
-- `infrastructure/scripts/local/bootstrap-local.mjs`: console.log.
-- `infrastructure/scripts/local/common.mjs`: console.log.
-- `infrastructure/scripts/local/health-local-stack.mjs`: console.log.
-- `infrastructure/scripts/local/reset-local-stack.mjs`: console.log.
-- `infrastructure/scripts/local/seed-local-data.mjs`: console.log.
-- `infrastructure/scripts/local/start-local-stack.mjs`: console.log.
 
 ## AI Execution Notes
 

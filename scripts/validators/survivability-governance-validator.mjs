@@ -15,7 +15,6 @@ const requiredFiles = [
   "config/runtime/multi-region-runtime.schema.json",
   "config/runtime/multi-region-runtime.json",
   "infrastructure/scripts/operations/run-survivability-suite.mjs",
-  "infrastructure/scripts/operations/run-local-operational-proof.mjs",
   "infrastructure/scripts/operations/generate-certification-report.mjs",
   "infrastructure/scripts/operations/run-live-drills.mjs",
   "load/run-load-evidence.mjs",
@@ -138,29 +137,13 @@ for (const fragment of [
   reporter.assert(survivabilitySuite.includes(fragment), `Survivability suite missing execution-safety fragment: ${fragment}`);
 }
 
-const localProof = readFile("infrastructure/scripts/operations/run-local-operational-proof.mjs");
-for (const fragment of [
-  "scope: \"local-only\"",
-  "certification: false",
-  "runReplayProof",
-  "runQueueRecoveryProof",
-  "local-replay-dry-run",
-  "blocked_live_evidence",
-]) {
-  reporter.assert(localProof.includes(fragment), `Local operational proof runner missing non-certification fragment: ${fragment}`);
-}
-
 const gitignore = readFile(".gitignore");
 reporter.assert(
-  gitignore.includes("artifacts/local-operational-proof/"),
-  "Local operational proof evidence artifacts must be ignored",
+  gitignore.includes("artifacts/operational-certification/"),
+  "Operational certification evidence artifacts must be ignored",
 );
 
 const packageJson = readJson("package.json");
-reporter.assert(
-  packageJson?.scripts?.["proof:local"] === "node infrastructure/scripts/operations/run-local-operational-proof.mjs",
-  "Root package must expose proof:local",
-);
 reporter.assert(
   packageJson?.scripts?.["validate:operational-proof"] === "node scripts/validators/operational-proof-validator.mjs",
   "Root package must expose validate:operational-proof",

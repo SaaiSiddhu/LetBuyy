@@ -264,7 +264,7 @@ class _DeviceIconButton extends StatelessWidget {
         padding: const EdgeInsets.all(8),
         margin: const EdgeInsets.only(right: 4),
         decoration: BoxDecoration(
-          color: isActive ? const Color(0xFF6366F1) : Colors.transparent,
+          color: isActive ? const Color(0xFF8B5CF6) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Icon(

@@ -13,18 +13,19 @@ interface SettingsNavItem {
     href: string
     label: string
     icon: string
+    badge?: string
 }
 
 const settingsNav: SettingsNavItem[] = [
-    { href: 'general', label: 'General', icon: 'settings' },
-    { href: 'plan', label: 'Plan', icon: 'rocket_launch' },
+    { href: 'general', label: 'General', icon: 'storefront' },
+    { href: 'plan', label: 'Plan', icon: 'plan', badge: 'Ends in 14 days' },
     { href: 'billing', label: 'Billing', icon: 'receipt_long' },
-    { href: 'users', label: 'Users', icon: 'group' },
+    { href: 'users', label: 'Users', icon: 'manage_accounts' },
     { href: 'payments', label: 'Payments', icon: 'payments' },
-    { href: 'checkout', label: 'Checkout', icon: 'shopping_cart_checkout' },
+    { href: 'checkout', label: 'Checkout', icon: 'shopping_cart' },
     { href: 'shipping', label: 'Shipping and delivery', icon: 'local_shipping' },
     { href: 'taxes', label: 'Taxes and duties', icon: 'request_quote' },
-    { href: 'domains', label: 'Domains', icon: 'language' },
+    { href: 'domains', label: 'Domains', icon: 'domains' },
     { href: 'notifications', label: 'Notifications', icon: 'notifications' },
     { href: 'policies', label: 'Policies', icon: 'policy' },
 ]
@@ -83,7 +84,8 @@ export default function SettingsSidebar({ storeName, subdomain, userName, userEm
             <nav className="settings-sidebar-nav">
                 {filteredNav.map((item) => {
                     const href = `/${store}/settings/${item.href}`
-                    const isActive = pathname === href || pathname?.startsWith(`${href}/`)
+                    const isSettingsHome = pathname === `/${store}/settings`
+                    const isActive = pathname === href || pathname?.startsWith(`${href}/`) || (isSettingsHome && item.href === 'general')
                     return (
                         <Link
                             key={item.href}
@@ -91,7 +93,14 @@ export default function SettingsSidebar({ storeName, subdomain, userName, userEm
                             className={`settings-nav-item ${isActive ? 'active' : ''}`}
                         >
                             <MaterialIcon name={item.icon} />
-                            {item.label}
+                            <span className="settings-nav-label">{item.label}</span>
+                            {item.badge && (
+                                <span className="settings-nav-badge">
+                                    <span className="settings-nav-badge-dot" aria-hidden="true" />
+                                    {item.badge}
+                                </span>
+                            )}
+                            <MaterialIcon name="chevron_right" className="settings-nav-chevron" aria-hidden="true" />
                         </Link>
                     )
                 })}

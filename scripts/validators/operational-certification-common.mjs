@@ -29,15 +29,15 @@ export function validateOperationalCertification(kind) {
     reporter.assert(exists(file), `Missing operational certification source file: ${file}`);
   }
 
-  reporter.assert(evidence?.mode === "local-executable-evidence-not-production-certification", "Operational evidence contract must not claim production certification");
+  reporter.assert(evidence?.mode === "staging-executable-evidence-not-production-certification", "Operational evidence contract must not claim production certification");
   reporter.assert(evidence?.harness?.productionCertification === false, "Operational certification harness contract must mark productionCertification false");
   reporter.assert(evidence?.artifactPolicy?.trackedArtifactsForbidden === true, "Operational certification artifacts must be forbidden from tracking");
   reporter.assert(gitignore.includes("artifacts/operational-certification/"), "Operational certification evidence artifacts must be ignored");
-  reporter.assert(slo?.mode === "local-executable-evidence-not-production-certification", "Recovery SLO contract must be local evidence scoped");
+  reporter.assert(slo?.mode === "staging-executable-evidence-not-production-certification", "Recovery SLO contract must be staging evidence scoped");
   reporter.assert(slo?.failurePolicy === "fail-closed", "Recovery SLO contract must fail closed");
 
   for (const fragment of [
-    "scope: \"local-executable\"",
+    "scope: \"staging-executable\"",
     "certification: false",
     "production_certification: false",
     "blocked_live_evidence",
@@ -56,8 +56,8 @@ export function validateOperationalCertification(kind) {
     "Root package must expose the full operational certification validator chain",
   );
   reporter.assert(
-    packageJson?.scripts?.["certify:operational:local"] === "node infrastructure/scripts/operations/run-operational-certification.mjs --mode=local",
-    "Root package must expose local operational certification execution",
+    !Object.keys(packageJson?.scripts || {}).some((scriptName) => scriptName.includes("certify:operational") && scriptName.endsWith(":local")),
+    "Root package must not expose retired operational certification execution",
   );
 
   if (kind.category) {
@@ -110,7 +110,7 @@ export function validateOperationalCertification(kind) {
   if (kind.budget) {
     reporter.assert(harness.includes("assertSloBudgets"), "Operational certification harness must compare observed timings to recovery budgets");
     reporter.assert(harness.includes("within_budget"), "Operational certification evidence must record within_budget results");
-    reporter.assert(slo?.recoveryBudgetGovernance?.productionCertificationPolicy?.includes("not production SLO certification"), "Recovery budget governance must distinguish local evidence from production SLO certification");
+    reporter.assert(slo?.recoveryBudgetGovernance?.productionCertificationPolicy?.includes("not production SLO certification"), "Recovery budget governance must distinguish staging evidence from production SLO certification");
   }
 
   if (kind.finalValidator) {

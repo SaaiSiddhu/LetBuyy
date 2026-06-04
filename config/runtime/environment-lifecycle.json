@@ -1,7 +1,10 @@
 {
   "$schema": "config/runtime/environment-lifecycle.schema.json",
   "lifecycleVersion": 1,
-  "promotionOrder": ["local", "development", "staging", "production"],
+  "promotionOrder": [
+    "staging",
+    "production"
+  ],
   "isolationRules": {
     "mustSeparate": [
       "secrets",
@@ -24,118 +27,28 @@
   },
   "environments": [
     {
-      "name": "local",
-      "stability": "developer-isolated-and-resettable",
-      "credentialsMode": "placeholder-only-template-config/env/templates/local.env.example",
-      "dataIsolation": "local docker volumes only; no production data",
-      "regions": ["developer-machine"],
-      "topology": {
-        "compose": "infrastructure/local/docker-compose.yml",
-        "database": "postgres:16 local service",
-        "cache": "redis:7 local service",
-        "queue": "elasticmq queue emulator",
-        "eventStore": "postgres local_event_store table",
-        "replayRuntime": "infrastructure/local/replay-runtime.mjs",
-        "observability": ["otel-collector", "prometheus", "grafana", "loki", "tempo"],
-        "email": "mailpit",
-        "sms": "wiremock sms sandbox",
-        "featureFlags": "flipt local service",
-        "providerMocks": "wiremock sandbox mappings"
-      },
-      "providers": {
-        "payments": ["stripe-sandbox", "razorpay-sandbox", "paypal-sandbox"],
-        "email": "mailpit",
-        "sms": "wiremock",
-        "queues": "elasticmq",
-        "sideEffectPolicy": "sandbox-only"
-      },
-      "featureFlags": {
-        "runtime": "local Flipt plus @letbuyy/shared-types evaluator",
-        "exposureTelemetry": "local_feature_flag_exposures",
-        "instantDisablement": true
-      },
-      "observability": {
-        "traces": "tempo",
-        "metrics": "prometheus",
-        "logs": "loki and otel debug exporter",
-        "dashboard": "http://localhost:3009"
-      },
-      "deployment": {
-        "scripts": {
-          "bootstrap": "infrastructure/scripts/local/bootstrap-local.mjs",
-          "start": "infrastructure/scripts/local/start-local-stack.mjs",
-          "health": "infrastructure/scripts/local/health-local-stack.mjs",
-          "reset": "infrastructure/scripts/local/reset-local-stack.mjs",
-          "seed": "infrastructure/scripts/local/seed-local-data.mjs"
-        },
-        "rollback": "docker compose down --volumes followed by clean bootstrap"
-      },
-      "evidence": {
-        "mode": "local-only",
-        "certifiableAsLive": false,
-        "requiredHealthChecks": ["postgres", "redis", "queue-emulator", "replay-runtime", "feature-flags", "mail-sandbox", "provider-sandbox", "otel-collector", "prometheus", "grafana", "loki", "tempo"]
-      }
-    },
-    {
-      "name": "development",
-      "stability": "unstable-integration-validation",
-      "credentialsMode": "isolated development secret store",
-      "dataIsolation": "development database, queues, event store, telemetry, and providers only",
-      "regions": ["ap-south-1"],
-      "topology": {
-        "cloudflareEnvironment": "dev",
-        "apiWorker": "letbuyy-api-dev",
-        "apiRoute": "api-dev.letbuyy.store",
-        "webhookWorker": "letbuyy-webhooks-dev",
-        "webhookRoute": "webhooks-dev.letbuyy.store",
-        "database": "development Supabase project or equivalent isolated Postgres",
-        "queues": ["letbuyy-events-dev", "letbuyy-analytics-dev", "letbuyy-search-indexing-dev", "letbuyy-notifications-dev", "letbuyy-dead-letters-dev", "letbuyy-dev-queue", "letbuyy-dev-dead-letter-queue"],
-        "queueWorker": "letbuyy-queue-workers-dev",
-        "kvNamespace": "letbuyy-dev-kv",
-        "r2Bucket": "letbuyy-dev-r2",
-        "d1Database": "letbuyy-dev-d1",
-        "telemetryDataset": "letbuyy-dev-telemetry",
-        "eventStore": "development append-only event store",
-        "replayRuntime": "development replay workers",
-        "observability": "development telemetry project",
-        "controlPlane": "/v1/operations scoped to development"
-      },
-      "providers": {
-        "payments": "provider sandbox accounts only",
-        "email": "sandbox sender domain",
-        "sms": "sandbox gateway",
-        "sideEffectPolicy": "no production account access"
-      },
-      "featureFlags": {
-        "store": "development feature flag namespace",
-        "defaultRollout": "internal and tenant-scoped experimentation",
-        "auditing": true
-      },
-      "observability": {
-        "required": ["traces", "metrics", "structured logs", "queue lag", "replay health"],
-        "alerts": "non-paging development alerts"
-      },
-      "deployment": {
-        "strategy": "continuous integration with rollback support",
-        "gates": ["governance", "typecheck", "unit-or-contract-tests", "queue-validation", "replay-validation", "telemetry-validation"],
-        "rollback": "previous development release plus queue/replay cursor preservation"
-      },
-      "evidence": {
-        "mode": "integration-evidence",
-        "certifiableAsLive": false,
-        "requiredRecords": ["deployment_health_gate_results", "event_store_integrity_checks", "operational_dashboard_snapshots"]
-      }
-    },
-    {
       "name": "staging",
       "stability": "production-mirror-rehearsal",
       "credentialsMode": "isolated staging secret store",
       "dataIsolation": "staging-only traffic, data, queues, telemetry, providers, and feature flags",
-      "regions": ["ap-south-1", "ap-southeast-1", "us-east-1", "eu-west-1"],
+      "regions": [
+        "ap-south-1",
+        "ap-southeast-1",
+        "us-east-1",
+        "eu-west-1"
+      ],
       "topology": {
         "mirrorProductionTopology": true,
         "database": "staging primary plus rehearsal replicas",
-        "queues": ["letbuyy-events-staging", "letbuyy-analytics-queue-staging", "letbuyy-search-queue-staging", "letbuyy-notifications-queue-staging", "letbuyy-dead-letters-staging", "letbuyy-staging-queue", "letbuyy-staging-dead-letter-queue"],
+        "queues": [
+          "letbuyy-events-staging",
+          "letbuyy-analytics-queue-staging",
+          "letbuyy-search-queue-staging",
+          "letbuyy-notifications-queue-staging",
+          "letbuyy-dead-letters-staging",
+          "letbuyy-staging-queue",
+          "letbuyy-staging-dead-letter-queue"
+        ],
         "kvNamespace": "letbuyy-cache-staging",
         "r2Bucket": "letbuyy-media-staging",
         "d1Database": "letbuyy-staging-d1",
@@ -146,7 +59,11 @@
         "controlPlane": "/v1/operations scoped to staging"
       },
       "providers": {
-        "payments": ["Stripe test mode", "Razorpay test mode", "PayPal sandbox"],
+        "payments": [
+          "Stripe test mode",
+          "Razorpay test mode",
+          "PayPal sandbox"
+        ],
         "email": "staging sender domain",
         "sms": "sandbox gateway",
         "sideEffectPolicy": "no production mutation"
@@ -157,18 +74,45 @@
         "auditing": true
       },
       "observability": {
-        "required": ["traces", "metrics", "structured logs", "SLO burn rates", "queue lag", "replay integrity", "deployment scoring"],
+        "required": [
+          "traces",
+          "metrics",
+          "structured logs",
+          "SLO burn rates",
+          "queue lag",
+          "replay integrity",
+          "deployment scoring"
+        ],
         "alerts": "paging rehearsal alerts"
       },
       "deployment": {
         "strategy": "production-equivalent canary and blue/green rehearsal",
-        "gates": ["governance", "typecheck", "tests", "migration-rehearsal", "load-test", "chaos-drill", "failover-drill", "rollback-validation", "observability-validation"],
+        "gates": [
+          "governance",
+          "typecheck",
+          "tests",
+          "migration-rehearsal",
+          "load-test",
+          "chaos-drill",
+          "failover-drill",
+          "rollback-validation",
+          "observability-validation"
+        ],
         "rollback": "blue/green switchback and replay-safe queue cursor restore"
       },
       "evidence": {
         "mode": "staging-certification-evidence",
         "certifiableAsLive": false,
-        "requiredRecords": ["production_readiness_gate_runs", "deployment_health_gate_results", "failover_drill_runs", "chaos_experiment_runs", "load_test_runs", "event_store_integrity_checks", "operational_dashboard_snapshots", "sre_error_budget_snapshots"]
+        "requiredRecords": [
+          "production_readiness_gate_runs",
+          "deployment_health_gate_results",
+          "failover_drill_runs",
+          "chaos_experiment_runs",
+          "load_test_runs",
+          "event_store_integrity_checks",
+          "operational_dashboard_snapshots",
+          "sre_error_budget_snapshots"
+        ]
       }
     },
     {
@@ -176,11 +120,24 @@
       "stability": "customer-facing-live",
       "credentialsMode": "production secret stores only",
       "dataIsolation": "production data, queues, event store, telemetry, providers, and feature flags only",
-      "regions": ["ap-south-1", "ap-southeast-1", "us-east-1", "eu-west-1"],
+      "regions": [
+        "ap-south-1",
+        "ap-southeast-1",
+        "us-east-1",
+        "eu-west-1"
+      ],
       "topology": {
         "source": "config/runtime/production-topology.json",
         "database": "production Supabase/Postgres",
-        "queues": ["letbuyy-events-production", "letbuyy-analytics-queue-production", "letbuyy-search-queue-production", "letbuyy-notifications-queue-production", "letbuyy-dead-letters-production", "letbuyy-production-queue", "letbuyy-production-dead-letter-queue"],
+        "queues": [
+          "letbuyy-events-production",
+          "letbuyy-analytics-queue-production",
+          "letbuyy-search-queue-production",
+          "letbuyy-notifications-queue-production",
+          "letbuyy-dead-letters-production",
+          "letbuyy-production-queue",
+          "letbuyy-production-dead-letter-queue"
+        ],
         "kvNamespace": "letbuyy-cache-production",
         "r2Bucket": "letbuyy-media-production",
         "d1Database": "letbuyy-production-d1",
@@ -191,7 +148,11 @@
         "controlPlane": "/v1/operations scoped to production"
       },
       "providers": {
-        "payments": ["Stripe live", "Razorpay live", "PayPal live"],
+        "payments": [
+          "Stripe live",
+          "Razorpay live",
+          "PayPal live"
+        ],
         "email": "production sender domain",
         "sms": "production gateway",
         "sideEffectPolicy": "governed-live-only-after-execute-mode"
@@ -203,18 +164,50 @@
         "instantDisablement": true
       },
       "observability": {
-        "required": ["traces", "metrics", "structured logs", "SLO burn rates", "queue lag", "replay integrity", "deployment scoring", "incident timelines"],
+        "required": [
+          "traces",
+          "metrics",
+          "structured logs",
+          "SLO burn rates",
+          "queue lag",
+          "replay integrity",
+          "deployment scoring",
+          "incident timelines"
+        ],
         "alerts": "paging production alerts"
       },
       "deployment": {
         "strategy": "credential-gated canary, blue/green, shadow traffic, and rollback automation",
-        "gates": ["governance", "typecheck", "tests", "security", "migration", "load", "chaos", "failover", "observability", "SLO", "live-certification"],
+        "gates": [
+          "governance",
+          "typecheck",
+          "tests",
+          "security",
+          "migration",
+          "load",
+          "chaos",
+          "failover",
+          "observability",
+          "SLO",
+          "live-certification"
+        ],
         "rollback": "automated production rollback plus evidence recording"
       },
       "evidence": {
         "mode": "fresh-live-execution-evidence",
         "certifiableAsLive": true,
-        "requiredRecords": ["production_readiness_gate_runs", "deployment_health_gate_results", "failover_drill_runs", "chaos_experiment_runs", "load_test_runs", "security_enforcement_events", "event_store_integrity_checks", "operational_dashboard_snapshots", "sre_error_budget_snapshots", "operational_certification_reports"]
+        "requiredRecords": [
+          "production_readiness_gate_runs",
+          "deployment_health_gate_results",
+          "failover_drill_runs",
+          "chaos_experiment_runs",
+          "load_test_runs",
+          "security_enforcement_events",
+          "event_store_integrity_checks",
+          "operational_dashboard_snapshots",
+          "sre_error_budget_snapshots",
+          "operational_certification_reports"
+        ]
       }
     }
   ]

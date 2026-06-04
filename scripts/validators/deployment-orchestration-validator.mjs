@@ -16,7 +16,7 @@ reporter.assert(orchestration.engineSource === "packages/distributed-runtime/src
 reporter.assert(orchestration.topologyManifest === "config/runtime/deployment-topology.json", "Deployment orchestration must bind deployment topology");
 reporter.assert(orchestration.activationSource === "buildRuntimeStartupPlan", "Deployment orchestration must reuse runtime startup ordering");
 reporter.assert(orchestration.stageGatePolicy === "each-stage-must-have-fail-closed-gates", "Deployment stages must be fail-closed");
-reporter.assert((orchestration.promotionOrder || []).join(">") === "local>dev>staging>production", "Deployment promotion order must be local>dev>staging>production");
+reporter.assert((orchestration.promotionOrder || []).join(">") === "staging>production", "Deployment promotion order must be staging>production");
 
 const source = readFile(orchestration.engineSource || "");
 for (const fragment of [
@@ -35,7 +35,7 @@ const stages = orchestration.stages || [];
 const stageByEnvironment = new Map(stages.map((stage) => [stage.environment, stage]));
 
 let previousOrder = 0;
-for (const environment of ["local", "dev", "staging", "production"]) {
+for (const environment of ["staging", "production"]) {
   const stage = stageByEnvironment.get(environment);
   reporter.assert(Boolean(stage), `Missing deployment orchestration stage for ${environment}`);
   reporter.assert(stage?.order > previousOrder, `Deployment orchestration order must increase at ${environment}`);

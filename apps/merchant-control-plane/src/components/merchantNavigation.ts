@@ -8,9 +8,12 @@ export interface MerchantNavChild {
     keywords?: string[]
 }
 
+export type MerchantNavSection = 'primary' | 'sales' | 'apps' | 'bottom'
+
 export interface MerchantNavItem extends MerchantNavChild {
     icon: string
     children?: MerchantNavChild[]
+    section?: MerchantNavSection
 }
 
 export interface MerchantCommandItem {
@@ -23,44 +26,49 @@ export interface MerchantCommandItem {
     keywords: string[]
 }
 
-const settingsChildren: MerchantNavChild[] = [
-    { path: 'settings/general', label: 'General', icon: 'general' },
-    { path: 'settings/plan', label: 'Plan', icon: 'plan' },
-    { path: 'settings/billing', label: 'Billing', icon: 'receipt_long' },
-    { path: 'settings/domains', label: 'Domains', icon: 'language' },
-    { path: 'settings/payments', label: 'Payments', icon: 'payments' },
-    { path: 'settings/checkout', label: 'Checkout', icon: 'shopping_cart_checkout' },
-    { path: 'settings/shipping', label: 'Shipping', icon: 'shipping' },
-    { path: 'settings/taxes', label: 'Taxes', icon: 'taxes' },
-    { path: 'settings/policies', label: 'Policies', icon: 'policies' },
-    { path: 'settings/notifications', label: 'Notifications', icon: 'notifications' },
-    { path: 'settings/users', label: 'Users and permissions', icon: 'manage_accounts' },
+const ordersChildren: MerchantNavChild[] = [
+    { path: 'orders?view=drafts', label: 'Drafts', icon: 'arrow_forward' },
+    { path: 'orders?view=abandoned-checkouts', label: 'Abandoned checkouts', icon: 'arrow_forward' },
 ]
 
+const analyticsItem: MerchantNavItem = {
+    path: 'analytics',
+    label: 'Analytics',
+    icon: 'bar_chart',
+    shortcut: 'g a',
+}
+
+const appsItem: MerchantNavItem = {
+    path: 'apps',
+    label: 'Add',
+    icon: 'add_circle',
+    shortcut: 'g x',
+    section: 'apps',
+}
+
+const settingsItem: MerchantNavItem = {
+    path: 'settings',
+    label: 'Settings',
+    icon: 'settings',
+    shortcut: 'g s',
+    section: 'bottom',
+}
+
 const baseEndItems: MerchantNavItem[] = [
-    {
-        path: 'apps',
-        label: 'Apps',
-        icon: 'extension',
-        shortcut: 'g x',
-        children: [
-            { path: 'apps', label: 'Installed apps', icon: 'extension' },
-            { path: 'ai', label: 'LetBuyy AI', icon: 'auto_awesome' },
-        ],
-    },
-    { path: 'analytics', label: 'Analytics', icon: 'bar_chart', shortcut: 'g a' },
-    {
-        path: 'settings',
-        label: 'Settings',
-        icon: 'settings',
-        shortcut: 'g s',
-        children: settingsChildren,
-    },
+    analyticsItem,
+    appsItem,
+    settingsItem,
 ]
 
 const storeNavigation: MerchantNavItem[] = [
     { path: 'dashboard', label: 'Home', icon: 'home', shortcut: 'g h' },
-    { path: 'orders', label: 'Orders', icon: 'shopping_cart', shortcut: 'g o' },
+    {
+        path: 'orders',
+        label: 'Orders',
+        icon: 'shopping_bag',
+        shortcut: 'g o',
+        children: ordersChildren,
+    },
     {
         path: 'products',
         label: 'Products',
@@ -97,6 +105,7 @@ const storeNavigation: MerchantNavItem[] = [
             { path: 'comments', label: 'Comments', icon: 'comment' },
         ],
     },
+    analyticsItem,
     {
         path: 'online-store',
         label: 'Online Store',
@@ -107,8 +116,10 @@ const storeNavigation: MerchantNavItem[] = [
             { path: 'online-store/pages', label: 'Store pages', icon: 'web_asset' },
             { path: 'online-store/preferences', label: 'Preferences', icon: 'tune' },
         ],
+        section: 'sales',
     },
-    ...baseEndItems,
+    appsItem,
+    settingsItem,
 ]
 
 const portfolioNavigation: MerchantNavItem[] = [

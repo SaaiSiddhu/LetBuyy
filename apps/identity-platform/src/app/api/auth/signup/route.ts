@@ -6,6 +6,25 @@ import { createOTPToken } from '@/lib/auth/tokens'
 import { sendOTPEmail } from '@/lib/email/resend'
 import { validateCsrf } from '@/lib/auth/csrf'
 
+function verificationPayload(otp: string) {
+    const payload: {
+        success: true
+        needsVerification: true
+        message: string
+        devOtp?: string
+    } = {
+        success: true,
+        needsVerification: true,
+        message: 'Verification code sent to your email',
+    }
+
+    if (process.env.NODE_ENV !== 'production') {
+        payload.devOtp = otp
+    }
+
+    return payload
+}
+
 /**
  * POST /api/auth/signup
  * Create a new user account (unverified) and send a 6-digit OTP via email.
@@ -80,12 +99,11 @@ export async function POST(request: NextRequest) {
             }
             // If exists but unverified, resend OTP
             const otp = await createOTPToken(normalizedEmail, existing.id)
-            await sendOTPEmail(normalizedEmail, otp)
-            return NextResponse.json({
-                success: true,
-                needsVerification: true,
-                message: 'Verification code sent to your email',
-            })
+            const emailResult = await sendOTPEmail(normalizedEmail, otp)
+            if (!emailResult.success) {
+                return NextResponse.json({ error: 'Failed to send verification email. Please try again.' }, { status: 500 })
+            }
+            return NextResponse.json(verificationPayload(otp))
         }
 
         const createResponse = await identityApiRequest('/auth/custom/users/ensure', {
@@ -116,11 +134,7 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Failed to send verification email. Please try again.' }, { status: 500 })
         }
 
-        return NextResponse.json({
-            success: true,
-            needsVerification: true,
-            message: 'Verification code sent to your email',
-        })
+        return NextResponse.json(verificationPayload(otp))
     } catch (error) {
         console.error('Signup error:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })

@@ -25,7 +25,6 @@ for (const fragment of [
 
 reporter.assert(storageTerraform.includes('resource "cloudflare_d1_database" "runtime_d1"'), "Terraform must declare production D1 database");
 reporter.assert(storageTerraform.includes('resource "cloudflare_d1_database" "runtime_d1_staging"'), "Terraform must declare staging D1 database");
-reporter.assert(storageTerraform.includes('resource "cloudflare_d1_database" "runtime_d1_dev"'), "Terraform must declare dev D1 database");
 reporter.assert(storageTerraform.includes("letbuyy_runtime_d1_database_ids"), "Terraform must output D1 database IDs for materialization");
 reporter.assert(materializer.includes("LETBUYY_RUNTIME_D1_"), "Wrangler materializer must support D1 database IDs");
 
@@ -34,21 +33,20 @@ function envSection(text, environment) {
   const start = text.indexOf(marker);
   if (start < 0) return "";
   const rest = text.slice(start);
-  const next = rest.slice(marker.length).search(/\n\[env\.(dev|staging|production)\]/);
+  const next = rest.slice(marker.length).search(/\n\[env\.(staging|production)\]/);
   return next >= 0 ? rest.slice(0, marker.length + next) : rest;
 }
 
 function d1DatabaseId(sectionText) {
-  const match = sectionText.match(/\[\[env\.(?:dev|staging|production)\.d1_databases\]\][\s\S]*?binding\s*=\s*"RUNTIME_DB"[\s\S]*?database_id\s*=\s*"([^"]+)"/);
+  const match = sectionText.match(/\[\[env\.(?:staging|production)\.d1_databases\]\][\s\S]*?binding\s*=\s*"RUNTIME_DB"[\s\S]*?database_id\s*=\s*"([^"]+)"/);
   return match?.[1] || "";
 }
 
 function isGovernedD1DatabaseId(environment, value) {
-  if (environment === "dev") return value === "__LETBUYY_RUNTIME_D1_DEV_DATABASE_ID__";
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) && !value.startsWith("__");
 }
 
-for (const environment of ["dev", "staging", "production"]) {
+for (const environment of ["staging", "production"]) {
   const env = topology.environments[environment];
   const section = envSection(apiWrangler, environment);
   reporter.assert(section.includes("[[env." + environment + ".d1_databases]]"), `API Gateway missing D1 binding for ${environment}`);

@@ -12,8 +12,21 @@
     "crashRecoveryFunction": "recoverExecutionAfterInterruption",
     "integrityAssertion": "assertExecutionWalIntegrity",
     "walPolicy": "append-only-execution-journal",
-    "requiredStepFields": ["executionId", "orchestrationId", "executionSequence", "executionCheckpoint", "executionJournalEntry", "executionCausalityReference", "executionChecksum"],
-    "survives": ["process-restart", "runtime-interruption", "partial-execution-failure", "replay-reconstruction"],
+    "requiredStepFields": [
+      "executionId",
+      "orchestrationId",
+      "executionSequence",
+      "executionCheckpoint",
+      "executionJournalEntry",
+      "executionCausalityReference",
+      "executionChecksum"
+    ],
+    "survives": [
+      "process-restart",
+      "runtime-interruption",
+      "partial-execution-failure",
+      "replay-reconstruction"
+    ],
     "checkpointLineagePolicy": "previousWalChecksum-links-every-entry"
   },
   "leaseGovernance": {
@@ -53,7 +66,11 @@
     "timestampArbitration": "arbitrateCausalityTimestamp",
     "assertionFunction": "assertTemporalOrderingStable",
     "clockPolicy": "producer-time-plus-lamport-and-vector-clock",
-    "forbiddenTemporalSources": ["Date.now", "new Date()", "Math.random"],
+    "forbiddenTemporalSources": [
+      "Date.now",
+      "new Date()",
+      "Math.random"
+    ],
     "replayTemporalPolicy": "logical-clock-ordering-precedes-wall-clock-observation"
   },
   "executionIsolation": {
@@ -63,13 +80,25 @@
     "capabilityModel": "deny-by-default-capability-token",
     "authorityPolicy": "one-runtime-owner-per-operation",
     "sandboxPolicy": "manifest-granted-or-deny-by-default",
-    "trustDomains": ["worker-runtime", "queue-runtime", "replay-runtime", "projection-runtime", "deployment-runtime"]
+    "trustDomains": [
+      "worker-runtime",
+      "queue-runtime",
+      "replay-runtime",
+      "projection-runtime",
+      "deployment-runtime"
+    ]
   },
   "operationalStorage": {
     "engineSource": "packages/distributed-runtime/src/operational-storage-runtime.ts",
     "topologyCompiler": "compileOperationalStorageTopology",
     "assertionFunction": "assertOperationalStorageGovernance",
-    "stateClasses": ["execution-wal", "saga-wal", "replay-checkpoint", "lineage-archive", "lease-checkpoint"],
+    "stateClasses": [
+      "execution-wal",
+      "saga-wal",
+      "replay-checkpoint",
+      "lineage-archive",
+      "lease-checkpoint"
+    ],
     "retentionPolicy": "retention-days-required-for-every-state-class",
     "archivalPolicy": "wal-hot-then-cold-with-provenance-required",
     "persistenceProvenance": "archivalLineageChecksum"
@@ -78,7 +107,15 @@
     "engineSource": "packages/distributed-runtime/src/recovery-simulation-runtime.ts",
     "simulationFunction": "simulateRecoveryPlayback",
     "assertionFunction": "assertRecoverySimulationStable",
-    "simulationKinds": ["orchestration-recovery", "replay-restoration", "compensation-recovery", "checkpoint-restoration", "lease-failover", "wal-replay", "execution-continuation"],
+    "simulationKinds": [
+      "orchestration-recovery",
+      "replay-restoration",
+      "compensation-recovery",
+      "checkpoint-restoration",
+      "lease-failover",
+      "wal-replay",
+      "execution-continuation"
+    ],
     "playbackPolicy": "expected-checksum-must-match-deterministic-playback",
     "equilibriumPolicy": "all-recovery-paths-converge-before-execute-mode"
   },
@@ -86,7 +123,12 @@
     "engineSource": "packages/distributed-runtime/src/execution-reconciliation-runtime.ts",
     "reconciliationFunction": "reconcileExecutionState",
     "assertionFunction": "assertExecutionReconciliationStable",
-    "inputs": ["runtime-state", "execution-wal", "lease", "saga"],
+    "inputs": [
+      "runtime-state",
+      "execution-wal",
+      "lease",
+      "saga"
+    ],
     "fixedPointPolicy": "wal-runtime-lease-saga-fixed-point-required",
     "oscillationPolicy": "duplicate-reconciliation-actions-hard-fail"
   },
@@ -95,7 +137,15 @@
     "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
     "compiler": "compileCloudflareDurableExecutionLineage",
     "assertionFunction": "assertCloudflareDurableExecutionLineage",
-    "requiredExplicitBindings": ["vars", "kv_namespaces", "r2_buckets", "queues", "durable_objects", "services", "telemetry"],
+    "requiredExplicitBindings": [
+      "vars",
+      "kv_namespaces",
+      "r2_buckets",
+      "queues",
+      "durable_objects",
+      "services",
+      "telemetry"
+    ],
     "durableObjectPolicy": "namespace-and-migration-owned-per-environment",
     "executionLeaseOwnership": "durable-object-namespace-per-worker-environment",
     "remoteReconciliationPolicy": "plan-only-until-execute-mode-credentials-exist"
@@ -139,7 +189,12 @@
     "cursorPolicy": "persisted-orchestration-cursor-per-checkpoint",
     "continuationPolicy": "dependencies-completed-before-next-node",
     "branchPolicy": "execution-branch-continuation-checksum-required",
-    "survives": ["restart", "interruption", "partial-compensation", "replay-continuation"]
+    "survives": [
+      "restart",
+      "interruption",
+      "partial-compensation",
+      "replay-continuation"
+    ]
   },
   "distributedConflictArbitration": {
     "engineSource": "packages/distributed-runtime/src/distributed-conflict-arbitration-runtime.ts",
@@ -164,7 +219,11 @@
     "allocatorFunction": "allocateAdaptiveRecoveryBudgets",
     "assertionFunction": "assertAdaptiveRecoveryThrottling",
     "governorPolicy": "deterministic-token-bucket-recovery-governor",
-    "stormPrevention": ["replay", "compensation", "queue-rebuild"],
+    "stormPrevention": [
+      "replay",
+      "compensation",
+      "queue-rebuild"
+    ],
     "budgetPolicy": "weighted-by-backlog-error-rate-and-priority",
     "starvationPolicy": "at-least-one-token-per-active-kind"
   },
@@ -173,7 +232,10 @@
     "planFunction": "compileDurableObjectRecoveryPlan",
     "assertionFunction": "assertDurableObjectRecovery",
     "bindingOwnershipManifest": "config/runtime/cloudflare-binding-ownership.json",
-    "requiredEnvironments": ["dev", "staging", "production"],
+    "requiredEnvironments": [
+      "staging",
+      "production"
+    ],
     "migrationPolicy": "durable-object-migration-lineage-per-environment",
     "resurrectionPolicy": "snapshot-and-replay-cursor-required",
     "bindingPolicy": "non-inheritable-binding-explicit-per-environment"
@@ -191,7 +253,15 @@
     "engineSource": "packages/distributed-runtime/src/recovery-drill-runtime.ts",
     "runtimeFunction": "replayRecoveryDrill",
     "assertionFunction": "assertRecoveryDrillLineage",
-    "drillKinds": ["replay-restoration", "wal-corruption", "checkpoint-corruption", "lease-failover", "compensation-interruption", "queue-reconstruction", "orchestration-replay"],
+    "drillKinds": [
+      "replay-restoration",
+      "wal-corruption",
+      "checkpoint-corruption",
+      "lease-failover",
+      "compensation-interruption",
+      "queue-reconstruction",
+      "orchestration-replay"
+    ],
     "lineagePolicy": "deterministic-drill-lineage-checksum-required",
     "evidencePolicy": "governance-drills-are-not-live-operational-evidence"
   },

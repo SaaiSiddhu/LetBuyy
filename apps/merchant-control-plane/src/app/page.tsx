@@ -13,7 +13,7 @@ export default async function AdminRootPage() {
 
   if (!user) {
     const accountsUrl =
-      process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+      process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
     redirect(`${accountsUrl}/lookup`)
   }
 
@@ -23,7 +23,7 @@ export default async function AdminRootPage() {
   if (stores.length === 0) {
     // No stores → onboarding
     const accountsUrl =
-      process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+      process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
     redirect(`${accountsUrl}/onboarding`)
   }
 

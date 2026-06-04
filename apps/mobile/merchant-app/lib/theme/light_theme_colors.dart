@@ -15,8 +15,8 @@ class LightThemeColors {
   
   // Mesh gradient colors for premium backgrounds
   static const meshAccent1 = Color(0xFF8B5CF6);
-  static const meshAccent2 = Color(0xFF3B82F6);
-  static const meshAccent3 = Color(0xFF06B6D4);
+  static const meshAccent2 = Color(0xFF7C3AED);
+  static const meshAccent3 = Color(0xFF6D28D9);
   
   // ============================================
   // SEMANTIC ELEVATION SYSTEM
@@ -96,7 +96,7 @@ class LightThemeColors {
   // ============================================
   /// Primary hero gradient
   static const heroGradient = LinearGradient(
-    colors: [Color(0xFF8B5CF6), Color(0xFF6366F1), Color(0xFF3B82F6)],
+    colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED), Color(0xFF6D28D9)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );

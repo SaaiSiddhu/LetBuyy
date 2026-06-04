@@ -32,11 +32,6 @@ export async function proxy(req: NextRequest) {
         if (parts.length >= 3) {
             subdomain = parts[0]
         }
-    } else if (hostname.includes('localhost')) {
-        const parts = hostname.split('.')
-        if (parts.length > 1) {
-            subdomain = parts[0]
-        }
     } else if (hostname.includes('vercel.app') && (path === '/' || path === '')) {
         return NextResponse.next()
     }

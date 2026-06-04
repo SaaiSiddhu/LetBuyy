@@ -45,10 +45,10 @@ test('merchant publish proxy requires session and encodes store ids', () => {
     assert.match(routeSource, /workerFetch\(`\/stores\/\$\{encodedStoreId\}`,\s*\{\s*method:\s*'PATCH',\s*requireSession:\s*true/);
 });
 
-test('storefront proxy rewrites local wildcard hosts into store routes', () => {
+test('storefront proxy rewrites deployed wildcard hosts into store routes', () => {
     const proxySource = repositorySource('apps/storefront-runtime/src/proxy.ts');
 
-    assert.match(proxySource, /hostname\.includes\('localhost'\)/);
+    assert.match(proxySource, /hostname\.endsWith\('\.letbuyy\.store'\)/);
     assert.match(proxySource, /subdomain = parts\[0\]/);
     assert.match(proxySource, /NextResponse\.rewrite\(new URL\(`\/store\/\$\{subdomain\}\$\{path\}`,\s*req\.url\)\)/);
     assert.match(proxySource, /path\.startsWith\('\/store\/'\)/);

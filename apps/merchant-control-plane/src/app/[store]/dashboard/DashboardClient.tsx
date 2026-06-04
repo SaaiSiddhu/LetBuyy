@@ -77,6 +77,7 @@ export default function DashboardClient({ store, storeInfo, setupStatus, homeDat
                 eyebrow={formatSiteType(storeInfo.site_type)}
                 title={storeInfo.name || store}
                 description={`${config.dashboardDescription} Your current domain is ${currentDomain}.`}
+                showIcon={false}
                 primaryAction={{
                     label: config.primary.actionText,
                     href: `/${store}/${config.primary.actionLink}`,
@@ -134,6 +135,7 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
     const completedSteps = checklist.filter((item) => item.complete).length
     const completionPercent = totalSteps > 0 ? Math.round((completedSteps / totalSteps) * 100) : 0
     const nextStep = checklist.find((item) => !item.complete)
+    const blockers = checklist.filter((item) => !item.complete)
 
     const navigateTo = (path: string) => {
         router.push(`/${store}/${path}`)
@@ -160,6 +162,36 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
                     />
                 }
             >
+                <div className="grid gap-[var(--lb-space-5)] rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-5)] lg:grid-cols-[1fr_280px] lg:items-center">
+                    <div className="min-w-0 space-y-[var(--lb-space-2)]">
+                        <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] uppercase leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-primary)]">
+                            Welcome hero
+                        </p>
+                        <h2 className="m-0 text-[length:var(--lb-font-size-h2)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-h2)] text-[color:var(--lb-color-text)]">
+                            Launch checklist for {store}
+                        </h2>
+                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
+                            {nextStep
+                                ? `${nextStep.title} is the next action. ${blockers.length} ${blockers.length === 1 ? 'blocker remains' : 'blockers remain'} before launch readiness.`
+                                : 'All setup blockers are cleared. Review your storefront and keep monitoring incoming orders.'}
+                        </p>
+                    </div>
+                    <div className="rounded-[var(--lb-component-card-radius)] border border-[var(--lb-component-card-border)] bg-[var(--lb-component-card-bg)] p-[var(--lb-space-4)] shadow-[var(--lb-component-card-shadow)]">
+                        <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                            Setup progress
+                        </p>
+                        <p className="m-0 text-[length:var(--lb-font-size-h2)] font-[var(--lb-font-weight-bold)] leading-[var(--lb-line-height-h2)] text-[color:var(--lb-color-text)]">
+                            {completionPercent}%
+                        </p>
+                        <div className="mt-[var(--lb-space-3)] h-[var(--lb-space-2)] overflow-hidden rounded-[var(--lb-radius-full)] bg-[var(--lb-component-card-border)]">
+                            <div
+                                className="h-full rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary)] transition-[width] duration-[var(--lb-motion-slow)] ease-[var(--lb-ease-out)]"
+                                style={{ width: `${completionPercent}%` }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
                 <div
                     className="grid grid-cols-5 gap-[var(--lb-space-1)]"
                     role="progressbar"
@@ -187,29 +219,29 @@ function SetupCards({ store, siteType, setupStatus, currentDomain, storeStatus }
                             className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:grid-cols-[auto_1fr_auto] md:items-center"
                         >
                             <div className="flex items-start gap-[var(--lb-space-3)] md:contents">
-                                <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <div className="flex h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
                                     {item.complete ? (
                                         <MaterialIcon name="check" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
                                     ) : (
-                                        <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)]">
+                                        <span className="text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)]">
                                             {index + 1}
                                         </span>
                                     )}
                                 </div>
                                 <div className="min-w-0 space-y-[var(--lb-space-1)]">
                                     <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                                        <MaterialIcon name={item.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-text-subdued)]" />
-                                        <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                        <MaterialIcon name={item.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[color:var(--lb-color-text-subdued)]" />
+                                        <h3 className="m-0 text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
                                             {item.title}
                                         </h3>
                                         <Badge label={item.complete ? 'Done' : 'Next'} variant={item.complete ? 'success' : 'default'} />
                                     </div>
-                                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                         {item.description}
                                     </p>
                                     {item.detail && (
                                         <div className="flex max-w-[var(--lb-size-content-measure)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-2)]">
-                                            <span className="min-w-0 flex-1 truncate text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                            <span className="min-w-0 flex-1 truncate text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                                 {item.detail}
                                             </span>
                                             <Button
@@ -295,22 +327,22 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                             <a
                                 key={activity.id}
                                 href={`/${store}/${activity.href}`}
-                                className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-4)] text-[var(--lb-color-text)] no-underline transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] md:grid-cols-[auto_1fr_auto] md:items-center"
+                                className="grid gap-[var(--lb-space-3)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)] no-underline transition-colors duration-[var(--lb-motion-fast)] hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] md:grid-cols-[auto_1fr_auto] md:items-center"
                             >
-                                <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
+                                <span className="inline-flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] items-center justify-center rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-primary-soft)] text-[color:var(--lb-color-primary)]">
                                     <MaterialIcon name={activity.icon} className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
                                 </span>
                                 <span className="min-w-0">
-                                    <span className="block truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]">
+                                    <span className="block truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)]">
                                         {activity.title}
                                     </span>
-                                    <span className="mt-[var(--lb-space-1)] block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                    <span className="mt-[var(--lb-space-1)] block text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                         {activity.description}
                                     </span>
                                 </span>
                                 <span className="flex flex-wrap items-center gap-[var(--lb-space-2)] md:justify-end">
                                     <Badge label={activity.badgeLabel} variant={activity.badgeVariant} />
-                                    <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                    <span className="text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
                                         {formatRelativeTime(activity.timestamp)}
                                     </span>
                                 </span>
@@ -319,7 +351,8 @@ function RecentActivity({ store, activities }: { store: string; activities: Dash
                     </div>
                 ) : (
                     <EmptyState
-                        icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" />}
+                        kind="orders"
+                        icon={<MaterialIcon name="receipt_long" className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[color:var(--lb-color-primary)]" />}
                         title="Recent activity will appear here"
                         body="Orders and product updates will show up as soon as this store has merchant or shopper activity."
                         primaryAction={<Button type="button" onClick={() => { window.location.href = `/${store}/products/new` }}>Add product</Button>}
@@ -567,17 +600,17 @@ function PlanUpsell({ store }: { store: string }) {
             <Section>
                 <div className="grid items-center gap-[var(--lb-space-5)] md:grid-cols-[1fr_auto]">
                     <div className="space-y-[var(--lb-space-2)]">
-                        <h2 className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">
+                        <h2 className="m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
                             Your plan can pay for itself
                         </h2>
-                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text-subdued)]">
+                        <p className="m-0 max-w-[var(--lb-size-content-measure)] text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]">
                             Subscribe for ₹79/month for 3 months. Plus, earn 0.5% back in credits on every sale, up to ₹30,000.
                         </p>
                         <Button variant="outline" onClick={() => router.push(`/${store}/access_account/checkout/select-plan`)}>
                             Compare plans
                         </Button>
                     </div>
-                    <div className="flex h-[calc(var(--lb-size-control-lg)*2)] w-[calc(var(--lb-size-control-lg)*2)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-warning-soft)] text-[var(--lb-color-warning)]">
+                    <div className="flex h-[calc(var(--lb-size-control-lg)*2)] w-[calc(var(--lb-size-control-lg)*2)] items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-warning-soft)] text-[color:var(--lb-color-warning)]">
                         <MaterialIcon name="monetization_on" className="h-[var(--lb-size-control-lg)] w-[var(--lb-size-control-lg)]" />
                     </div>
                 </div>

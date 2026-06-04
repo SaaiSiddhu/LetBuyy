@@ -1,7 +1,7 @@
 {
   "$schema": "config/runtime/recovery-slo-contract.schema.json",
   "contractVersion": 1,
-  "mode": "local-executable-evidence-not-production-certification",
+  "mode": "staging-executable-evidence-not-production-certification",
   "budgets": {
     "replayRestorationMs": 1500,
     "queueRebuildMs": 1500,
@@ -20,8 +20,8 @@
   "recoveryBudgetGovernance": {
     "budgetSource": "config/runtime/recovery-slo-contract.json",
     "timingEvidenceSource": "artifacts/operational-certification/report.json",
-    "budgetComparison": "observed-local-duration-must-not-exceed-budget",
-    "productionCertificationPolicy": "local timing evidence is not production SLO certification"
+    "budgetComparison": "observed-staging-duration-must-not-exceed-budget",
+    "productionCertificationPolicy": "staging timing evidence is not production SLO certification"
   },
   "executionCertificationBudgets": {
     "replayThroughputEventsPerSecondMinimum": 1,

@@ -57,6 +57,7 @@ jobs:
 
       - name: Runtime and Cloudflare gates
         run: |
+          pnpm run validate:lifecycle
           pnpm run validate:runtime
           pnpm run validate:cloudflare
           pnpm run validate:deployment
@@ -66,6 +67,9 @@ jobs:
 
       - name: Typecheck
         run: pnpm run typecheck
+
+      - name: Staging operations validation
+        run: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=staging
 
       - name: Staging bootstrap plan
         if: ${{ !inputs.execute }}

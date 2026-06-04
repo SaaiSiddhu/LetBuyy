@@ -33,8 +33,8 @@ if (!versionId) {
   throw new Error("--version-id is required for deterministic Worker rollback lineage");
 }
 
-if (!["dev", "staging", "production"].includes(environment)) {
-  throw new Error("--environment must be dev, staging, or production");
+if (!["staging", "production"].includes(environment)) {
+  throw new Error("--environment must be staging or production");
 }
 
 if (!fs.existsSync(lineageManifest)) {

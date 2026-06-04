@@ -5,7 +5,7 @@ import fs from "node:fs";
 const args = new Set(process.argv.slice(2));
 const execute = args.has("--execute");
 const skipWorkers = args.has("--skip-workers");
-const environment = valueFor("--environment") || "dev";
+const environment = valueFor("--environment") || "staging";
 const topology = JSON.parse(fs.readFileSync("config/runtime/cloudflare-topology.json", "utf8"));
 
 function valueFor(prefix) {
@@ -30,7 +30,7 @@ function run(command, commandArgs, options = {}) {
   if (result.status !== 0) process.exit(result.status ?? 1);
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(topology.environments?.[environment], `Missing Cloudflare topology for ${environment}`);
 
 if (environment === "production" && execute) {

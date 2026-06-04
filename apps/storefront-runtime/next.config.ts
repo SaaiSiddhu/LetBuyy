@@ -2,8 +2,8 @@ import type { NextConfig } from "next";
 
 const frameAncestors = [
   "'self'",
-  "http://localhost:*",
-  "http://127.0.0.1:*",
+  "https://merchant.staging.letbuyy.store",
+  "https://console.staging.letbuyy.store",
   "https://admin.letbuyy.store",
   "https://console.letbuyy.store",
   process.env.NEXT_PUBLIC_ADMIN_URL,

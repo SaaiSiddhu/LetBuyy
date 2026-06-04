@@ -22,7 +22,7 @@ function section(text, environment) {
   const start = text.indexOf(marker);
   if (start < 0) return "";
   const rest = text.slice(start);
-  const next = rest.slice(marker.length).search(/\n\[env\.(dev|staging|production)\]/);
+  const next = rest.slice(marker.length).search(/\n\[env\.(staging|production)\]/);
   return next >= 0 ? rest.slice(0, marker.length + next) : rest;
 }
 
@@ -113,7 +113,7 @@ for (const environment of Object.keys(manifest?.environments || {})) {
       reporter.assert(!apiSection.includes(`queue = "${queue.names.production}"`), `Lower env API must not bind production queue ${queue.names.production}`);
       reporter.assert(!consumerSection.includes(`queue = "${queue.names.production}"`), `Lower env consumer must not bind production queue ${queue.names.production}`);
     } else {
-      for (const lower of ["dev", "staging"]) {
+      for (const lower of ["staging"]) {
         reporter.assert(!apiSection.includes(`queue = "${queue.names[lower]}"`), `Production API must not bind ${lower} queue ${queue.names[lower]}`);
         reporter.assert(!consumerSection.includes(`queue = "${queue.names[lower]}"`), `Production consumer must not bind ${lower} queue ${queue.names[lower]}`);
       }

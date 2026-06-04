@@ -5,9 +5,9 @@ import { getSessionCookie, clearSessionCookie } from '@/lib/auth/cookies'
 const ALLOWED_ORIGINS = [
     'https://admin.letbuyy.store',
     'https://accounts.letbuyy.store',
-    'http://localhost:3000',
-    'http://localhost:3001',
-    'http://localhost:3002',
+    'https://staging.letbuyy.store',
+    'https://accounts.staging.letbuyy.store',
+    'https://merchant.staging.letbuyy.store',
 ]
 
 function corsHeaders(request: NextRequest) {

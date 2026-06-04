@@ -43,7 +43,7 @@ Every evidence item must carry:
 - `result_checksum`
 - `causality_checksum`
 
-The lineage is intended to make local evidence reconstructable and tamper-detectable. It is not a replacement for live OpenTelemetry or provider telemetry.
+The lineage is intended to make staging evidence reconstructable and tamper-detectable. It is not a replacement for production OpenTelemetry or provider telemetry.
 
 ## Fail-Closed Behavior
 
@@ -56,15 +56,15 @@ Validators hard fail when:
 - Benchmark lineage is missing dataset, environment, timing, or evidence hash fields.
 - Harness safety markers are missing.
 - Telemetry lineage is incomplete.
-- Durable Object evidence does not distinguish local model execution from live provider recovery.
+- Durable Object evidence does not distinguish staging model execution from live provider recovery.
 - Evidence artifact directories are not ignored.
 
 ## Execution
 
-Run local evidence generation with:
+Run staging evidence generation with:
 
 ```bash
-pnpm run certify:operational:local
+pnpm run certify:production -- --environment=staging
 ```
 
-This writes ignored evidence under `artifacts/operational-certification/`. The final report may summarize the result, but checked-in source must not claim live operational success from local evidence.
+This writes ignored evidence under `artifacts/operational-certification/`. The final report may summarize the result, but checked-in source must not claim production operational success from staging evidence.

@@ -1,0 +1,815 @@
+# Shopify Settings Master Blueprint
+
+- Research date: 2026-06-02
+- Scope: Merchant-facing Shopify Admin product intelligence for LetBuyy.
+- Privacy: Store, user, email, account, domain, token, and merchant-specific values are redacted.
+- Method: Authenticated Chrome session, accessibility tree, visual review, redacted screenshots, non-persistent interactions only.
+-
+- This is intentionally the largest focused blueprint because settings architecture is the highest priority.
+## Settings IA Overview
+
+- Settings Root: `/settings` - Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- General: `/settings/general` - Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Plan: `/settings/plan` - Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Billing: `/settings/billing` - Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Users: `/settings/organization-account` - Invite users, list staff, manage roles and two-step authentication.
+- Roles: `/settings/roles` - Default and custom role management across organization, store, and POS scopes.
+- Security: `/settings/security` - User activity logs, collaborators, collaborator code, and account security operations.
+- Payments: `/settings/payments` - Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Checkout: `/settings/checkout` - Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Customer Accounts: `/settings/customer_accounts` - Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Shipping and Delivery: `/settings/shipping` - Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Taxes and Duties: `/settings/taxes` - Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Locations: `/settings/locations` - Manage fulfillment/store locations and POS subscriptions.
+- Apps Settings: `/settings/apps` - Installed apps, app discovery, and developer app entry.
+- Sales Channels: `/settings/sales_channels` - Installed sales channels and marketplace for channels.
+- Domains: `/settings/domains` - Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Customer Events: `/settings/customer_events` - Pixels and customer-event tracking via app pixels and custom pixels.
+- Notifications: `/settings/notifications` - Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Customer Notification Templates: `/settings/notifications/customer` - Customize customer email/SMS templates by lifecycle stage.
+- Metafields and Metaobjects: `/settings/custom_data` - Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Languages: `/settings/languages` - Published languages, domains, default language, and translation app recommendations.
+- Customer Privacy: `/settings/privacy` - Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Policies: `/settings/legal` - Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+
+## Deep Dive By Settings Page
+
+## Settings Root
+
+- Route: `/settings`
+- Purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - settings search
+  - store card
+  - category links
+  - close button
+- Dependencies observed:
+  - Authenticated merchant session
+  - store ownership
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: LetBuyy settings should become a real architecture, not scattered account/store pages.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## General
+
+- Route: `/settings/general`
+- Purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Business details
+  - Store contact details
+  - Store defaults
+  - Order ID prefix and suffix
+  - Order processing radios
+  - Auto archive checkbox
+  - Store assets links
+- Dependencies observed:
+  - Markets for currency display
+  - Account settings for email/preferences
+  - Brand/metafield systems
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Split General into store identity, operational defaults, order processing, and ownership controls with a single page overview.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Plan
+
+- Route: `/settings/plan`
+- Purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Trial status
+  - Choose plan
+  - Cancel trial
+  - Subscriptions link
+  - Terms links
+- Dependencies observed:
+  - Billing profile
+  - Payment method
+  - Entitlements
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Show entitlement effects across checkout, orders, domains, analytics, and channels before plan selection.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Billing
+
+- Route: `/settings/billing`
+- Purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Billing profile
+  - Upcoming bill
+  - Add payment method
+  - Past bills tabs
+  - Search/filter invoices
+  - Jurisdiction warning
+- Dependencies observed:
+  - Legal address
+  - Payment method
+  - Plan
+  - Tax/GST/VAT rules
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Billing should combine current bill, payment methods, invoice history, and compliance warnings.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Users
+
+- Route: `/settings/organization-account`
+- Purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Users table
+  - Export
+  - Add users
+  - Status
+  - Role
+  - Two-step authentication
+  - Store owner
+- Dependencies observed:
+  - Role definitions
+  - Security policy
+  - Owner account
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: LetBuyy needs role-aware staff list with MFA status and audit-ready owner visibility.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Roles
+
+- Route: `/settings/roles`
+- Purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Role table
+  - Export
+  - Add role
+  - Role name
+  - Category
+  - System role flags
+- Dependencies observed:
+  - Permissions matrix
+  - POS roles
+  - Organization ownership
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Roles require scope, default templates, non-editable system roles, and clear permission inheritance.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Security
+
+- Route: `/settings/security`
+- Purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - User activity logs
+  - Collaborator review link
+  - Collaborator code
+  - Generate new code
+  - Copy code
+  - Delete code
+- Dependencies observed:
+  - Audit log service
+  - External collaborator workflow
+  - User permissions
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Expose collaborator access as a governed security workflow with audit trail and code rotation.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Payments
+
+- Route: `/settings/payments`
+- Purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Provider setup
+  - Choose provider
+  - PayPal activation
+  - Add payment method
+  - Payment capture radios
+  - Manual payment menu
+  - Gift card expiration radios
+  - Apple Wallet customize
+- Dependencies observed:
+  - Plan activation
+  - Payment providers
+  - Order state machine
+  - Gift card legal rules
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Payment settings should isolate provider onboarding, capture policy, manual methods, and legal gift-card rules.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Checkout
+
+- Route: `/settings/checkout`
+- Purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Checkout configuration card
+  - Customize/Duplicate
+  - Phone or email radios
+  - Require sign-in
+  - Customer info controls
+  - Email/SMS marketing controls
+  - Subscription disclaimer radios
+  - Tipping checkbox
+  - Checkout language
+  - Address collection
+  - Add-to-cart limit
+  - Checkout rules apps
+- Dependencies observed:
+  - Customer accounts
+  - Notifications
+  - Subscriptions
+  - Markets
+  - Apps
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Checkout needs staged sections with risk-aware copy and app-powered extension points.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Customer Accounts
+
+- Route: `/settings/customer_accounts`
+- Purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Sign-in links toggle
+  - Customize apps/branding/features
+  - Manage sign-in methods
+  - Self-serve returns
+  - Store credit
+  - URL copy
+- Dependencies observed:
+  - Checkout sign-in requirement
+  - Returns rules
+  - Authentication providers
+  - Customer privacy
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Customer account should be a product surface, not just auth toggles.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Shipping and Delivery
+
+- Route: `/settings/shipping`
+- Purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - General profile
+  - Add custom profile
+  - Estimated delivery dates
+  - Packages
+  - Carrier accounts
+  - Local delivery
+  - Pickup in store
+  - Sender name
+  - Packing slip template
+  - Fulfillment service
+- Dependencies observed:
+  - Locations
+  - Products weight
+  - Markets
+  - Carrier providers
+  - Fulfillment apps
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Shipping settings must connect profiles, locations, packages, carrier accounts, and local methods.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Taxes and Duties
+
+- Route: `/settings/taxes`
+- Purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Tax service status
+  - Region table
+  - Search/sort/pagination
+  - Setup duties
+  - Country of origin
+  - HS codes
+  - Include tax in prices
+  - Charge tax on shipping
+  - VAT on digital goods
+- Dependencies observed:
+  - Markets
+  - Products category/HS code
+  - Shipping profiles
+  - Business entity
+  - Provider tax service
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Taxes should be a guided compliance cockpit with region state, product metadata dependencies, and global toggles.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Locations
+
+- Route: `/settings/locations`
+- Purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Locations usage count
+  - Add location
+  - Tabs
+  - Search/filter
+  - Location table
+  - Status
+  - POS app installed
+  - Open app
+- Dependencies observed:
+  - Inventory
+  - Shipping profiles
+  - POS sales channel
+  - Transfer workflow
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Locations should power inventory, shipping, pickup, POS, and transfer logic everywhere.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Apps Settings
+
+- Route: `/settings/apps`
+- Purpose: Installed apps, app discovery, and developer app entry.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Develop apps
+  - Explore apps
+  - Shopify App Store link
+  - Installed apps empty state
+- Dependencies observed:
+  - Partner permissions
+  - App billing
+  - OAuth installs
+  - App scopes
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Make app management permission- and billing-aware from day one.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Sales Channels
+
+- Route: `/settings/sales_channels`
+- Purpose: Installed sales channels and marketplace for channels.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Installed channel list
+  - Online Store row
+  - Point of Sale row
+  - More actions
+  - Sort
+  - App Store link
+- Dependencies observed:
+  - Apps
+  - Channel publish state
+  - POS app
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Channels should be distinct from apps because they alter where products can sell.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Domains
+
+- Route: `/settings/domains`
+- Purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Connect existing domain
+  - Transfer domain
+  - Buy new domain
+  - Domain credit banner
+  - Change system domain
+  - Domain table
+  - Status badges
+  - Domain actions
+  - Connect domain modal
+- Dependencies observed:
+  - Plan
+  - DNS ownership
+  - SSL issuance
+  - Markets
+  - Online store
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Domains need verification steps, takeover prevention, SSL status, and primary-domain promotion.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Customer Events
+
+- Route: `/settings/customer_events`
+- Purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - App pixels tab
+  - Custom pixels tab
+  - Search/sort
+  - Explore pixel apps
+  - No app pixels empty state
+- Dependencies observed:
+  - Customer privacy
+  - Consent mode
+  - App permissions
+  - Analytics
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Pixel management belongs near privacy and analytics, with app pixels preferred over custom code.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Notifications
+
+- Route: `/settings/notifications`
+- Purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Sender email warning
+  - Customer notifications
+  - Staff notifications
+  - Fulfillment request
+  - Webhooks
+- Dependencies observed:
+  - Domain/email authentication
+  - Order state machine
+  - Customer language
+  - Marketing consent
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Notifications should be event-template driven, localized, and tied to order/customer states.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Customer Notification Templates
+
+- Route: `/settings/notifications/customer`
+- Purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Customize email templates
+  - Order processing
+  - Local pickup
+  - Local delivery
+  - Gift cards
+  - Store credit
+  - Order exceptions
+  - Payments
+  - POS
+  - Shipping updated
+  - Returns
+  - Accounts and outreach
+  - Marketing double opt-in
+- Dependencies observed:
+  - Order events
+  - Delivery methods
+  - Returns
+  - B2B accounts
+  - Marketing consent
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Use categories and toggles to keep notification complexity navigable.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Metafields and Metaobjects
+
+- Route: `/settings/custom_data`
+- Purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Metafield resources
+  - Definition counts
+  - Metaobjects empty state
+  - Add definition
+- Dependencies observed:
+  - Theme editor
+  - Content metaobjects
+  - Product/customer/order models
+  - API/public exposure
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Custom data should be schema-first, typed, and reusable across admin, storefront, and apps.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Languages
+
+- Route: `/settings/languages`
+- Purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Add language
+  - Language table
+  - Status
+  - Domains
+  - Default badge
+  - Translate app card
+  - Install app
+- Dependencies observed:
+  - Markets
+  - Domains
+  - Theme content
+  - Checkout content
+  - Apps
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Language management should combine native status with translation app extension.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Customer Privacy
+
+- Route: `/settings/privacy`
+- Purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Privacy policy
+  - Cookie banner
+  - Data sharing opt-out
+  - Network intelligence
+  - Marketing settings links
+  - Data storage hosting location
+- Dependencies observed:
+  - Policies
+  - Customer events
+  - Marketing consent
+  - Legal region
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Privacy should be surfaced as active operational controls, not static policy text.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.
+
+## Policies
+
+- Route: `/settings/legal`
+- Purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary user: Store owner, administrator, or operations lead depending on permission scope.
+- Information architecture: grouped cards with clear labels, inline help, links to dependent areas, and restrained primary actions.
+- Visible fields and controls:
+  - Return rules
+  - Return and refund policy
+  - Privacy policy
+  - Terms of service
+  - Shipping policy
+  - Contact information
+  - Legal notice
+  - Online store menu help
+- Dependencies observed:
+  - Online store
+  - Customer privacy
+  - Returns
+  - Checkout legal links
+- Validation and business logic observations:
+  - Controls are disabled until required prerequisites exist or valid input is present.
+  - High-risk actions are framed as links/buttons with additional confirmation or dependent pages.
+  - Copy explains why a setting matters, not only what the setting is.
+  - External or app-powered features are explicitly labeled instead of pretending to be native.
+  - Status badges make current configuration visible without forcing entry into a detail page.
+- LetBuyy equivalent: Policies should distinguish generated, missing, required, published, and custom states.
+- Recommended LetBuyy design:
+  - Use a settings-shell navigation rail with search and stable categories.
+  - Expose prerequisites, linked dependencies, and current state on the overview card.
+  - Use disabled states and validation copy rather than allowing invalid mutation attempts.
+  - Separate destructive actions from ordinary configuration actions.
+  - Record ownership, audit, and tenant scope for every setting that changes runtime behavior.
+  - Keep policy, compliance, payment, tax, domain, and user-security pages auditable and permission-aware.

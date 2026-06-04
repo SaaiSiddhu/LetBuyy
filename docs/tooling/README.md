@@ -87,7 +87,7 @@ This document is generated from the current LetBuyy repository scan. It is inten
 - `docs/governance/execution-context-governance.md`: webhook reference.
 - `docs/governance/execution-observability-governance.md`: console.log, webhook reference.
 - `docs/governance/infrastructure-governance.md`: payment provider reference.
-- `docs/governance/local-development-governance.md`: rate limiting reference.
+- `docs/governance/staging-development-governance.md`: rate limiting reference.
 - `docs/governance/naming-governance.md`: webhook reference.
 - `docs/governance/observability-governance.md`: webhook reference.
 - `docs/governance/provider-isolation-governance.md`: payment provider reference.

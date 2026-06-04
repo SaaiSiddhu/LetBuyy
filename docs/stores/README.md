@@ -7,7 +7,7 @@ This document is generated from the current LetBuyy repository scan. It is inten
 
 - Matching files: 152.
 - Matching ownership areas: api gateway service, firebase legacy, identity platform, merchant control plane, mobile merchant app, platform console, platform operations portal, shared dart models package, shared dart services package, storefront runtime, supabase database.
-- Matching env names: DEFAULT_PREFS, EMPTY_PAGE, EMPTY_POLICY, EMPTY_TEMPLATE, EMPTY_THEME_SETTINGS_SCHEMA, FONT_MAP, NEXT_PUBLIC_ACCOUNTS_URL, NEXT_PUBLIC_ADMIN_URL, NEXT_PUBLIC_STOREFRONT_LOCAL_URL, NODE_ENV, PAYMENT_CONFIG_ENCRYPTION_KEY, SETUP_CONFIGS.
+- Matching env names: DEFAULT_PREFS, EMPTY_PAGE, EMPTY_POLICY, EMPTY_TEMPLATE, EMPTY_THEME_SETTINGS_SCHEMA, FONT_MAP, NEXT_PUBLIC_ACCOUNTS_URL, NEXT_PUBLIC_ADMIN_URL, NODE_ENV, PAYMENT_CONFIG_ENCRYPTION_KEY, SETUP_CONFIGS.
 - Matching route files: 129.
 
 ## Source-Derived Files

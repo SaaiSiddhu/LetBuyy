@@ -198,7 +198,7 @@ export const webhookGuide: GuideCard[] = [
     body: "Webhook deliveries include event, request, trace, and timestamp metadata so receivers can verify, deduplicate, and correlate processing.",
     bullets: [
       "Headers include event id, event type, request id, trace id, timestamp, and HMAC signature.",
-      "Webhook targets must be HTTPS, except localhost is allowed only in non-production mode.",
+      "Webhook targets must be HTTPS in staging and production.",
       "The service records response status, a response preview, and request errors.",
     ],
   },

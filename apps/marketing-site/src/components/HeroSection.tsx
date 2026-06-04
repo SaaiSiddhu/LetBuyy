@@ -25,7 +25,7 @@ export default function HeroSection() {
 
                 {/* CTA Buttons */}
                 <div className="hero-cta">
-                    <Link href="http://localhost:3001/signup" className="btn btn-primary btn-large">
+                    <Link href="https://accounts.staging.letbuyy.store/signup" className="btn btn-primary btn-large">
                         Start your free trial
                     </Link>
                     <Link href="#features" className="btn btn-outline btn-large">

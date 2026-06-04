@@ -894,7 +894,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           children: [
                             Text('₹${salePrice.toStringAsFixed(0)}',
                               style: const TextStyle(
-                                color: Color(0xFF00B3B3),
+                                color: Color(0xFF8B5CF6),
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),

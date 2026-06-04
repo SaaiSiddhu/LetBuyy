@@ -6,7 +6,7 @@ import path from "node:path";
 import { performance } from "node:perf_hooks";
 
 const args = process.argv.slice(2);
-const mode = valueFor("--mode") || "local";
+const mode = valueFor("--mode") || "staging";
 const output = valueFor("--output") || "artifacts/operational-certification/report.json";
 const replayEvents = Number(valueFor("--replay-events") || 6000);
 const queueMessages = Number(valueFor("--queue-messages") || 12000);
@@ -184,7 +184,7 @@ function certifyReplayExecution(count) {
   assert(first.projection_checksum === second.projection_checksum, "projection mismatch exists");
   for (const event of events) appendRecord("replay-events", event);
   appendRecord("replay-checkpoints", {
-    stream: "local-certification-orders",
+    stream: "staging-certification-orders",
     event_count: events.length,
     state_checksum: first.state_checksum,
     projection_checksum: first.projection_checksum,
@@ -270,7 +270,7 @@ function appendWalEntry(wal, kind, payload) {
 }
 
 function certifyWalRecovery(count) {
-  const wal = { execution_id: "local-certification-exec", append_only: true, entries: [], wal_checksum: sha256([]) };
+  const wal = { execution_id: "staging-certification-exec", append_only: true, entries: [], wal_checksum: sha256([]) };
   for (let index = 0; index < count; index += 1) {
     appendWalEntry(wal, index === count - 1 ? "checkpoint-written" : "step-applied", { operationId: `op_${index}` });
   }
@@ -334,7 +334,7 @@ function certifyLeaseFailover() {
 
 function certifyDurableObjectRecovery() {
   const ownership = readJson("config/runtime/cloudflare-binding-ownership.json");
-  const environments = ["dev", "staging", "production"];
+  const environments = ["staging", "production"];
   const workerNames = environments.map((env) => `letbuyy-api-gateway-${env}`);
   assert(new Set(workerNames).size === workerNames.length, "Durable Object worker ownership ambiguous");
   const snapshot = writeSnapshot("durable-object-recovery", {
@@ -345,7 +345,7 @@ function certifyDurableObjectRecovery() {
   appendRecord("durable-object-snapshots", snapshot);
   return {
     outcome: "verified",
-    local_model_only: true,
+    staging_model_only: true,
     production_certification: false,
     environments,
     binding_ownership_checksum: sha256(ownership),
@@ -357,7 +357,7 @@ function certifyDurableObjectRecovery() {
 }
 
 function certifyOrchestrationRecovery() {
-  const cursor = { executionId: "orchestration-local-certification", nextNode: "resume-traffic", completed: ["pause-traffic", "disable-release", "restore-worker"] };
+  const cursor = { executionId: "orchestration-staging-certification", nextNode: "resume-traffic", completed: ["pause-traffic", "disable-release", "restore-worker"] };
   appendRecord("orchestration-checkpoints", cursor);
   return {
     outcome: "verified",
@@ -396,8 +396,8 @@ function buildBenchmarkResults(measured) {
   return [
     {
       id: "replay-throughput",
-      dataset_version: "local-certification-v1",
-      execution_environment: "local-node-process",
+      dataset_version: "staging-certification-v1",
+      execution_environment: "staging-executable-process",
       observed_events: replay?.result?.event_count || 0,
       duration_ms: replay?.telemetry?.duration_ms || 0,
       throughput_per_second: Number(((replay?.result?.event_count || 0) / Math.max(0.001, (replay?.telemetry?.duration_ms || 0) / 1000)).toFixed(2)),
@@ -405,8 +405,8 @@ function buildBenchmarkResults(measured) {
     },
     {
       id: "queue-rebuild-throughput",
-      dataset_version: "local-certification-v1",
-      execution_environment: "local-node-process",
+      dataset_version: "staging-certification-v1",
+      execution_environment: "staging-executable-process",
       observed_messages: queue?.result?.total || 0,
       duration_ms: queue?.telemetry?.duration_ms || 0,
       throughput_per_second: Number(((queue?.result?.total || 0) / Math.max(0.001, (queue?.telemetry?.duration_ms || 0) / 1000)).toFixed(2)),
@@ -414,30 +414,30 @@ function buildBenchmarkResults(measured) {
     },
     {
       id: "wal-restoration",
-      dataset_version: "local-certification-v1",
-      execution_environment: "local-node-process",
+      dataset_version: "staging-certification-v1",
+      execution_environment: "staging-executable-process",
       restored_entries: wal?.result?.restored_entries || 0,
       duration_ms: wal?.telemetry?.duration_ms || 0,
       evidence_hash: wal?.telemetry?.result_checksum,
     },
     {
       id: "rollback-timing",
-      dataset_version: "local-certification-v1",
-      execution_environment: "local-node-process",
+      dataset_version: "staging-certification-v1",
+      execution_environment: "staging-executable-process",
       duration_ms: rollback?.telemetry?.duration_ms || 0,
       evidence_hash: rollback?.telemetry?.result_checksum,
     },
     {
       id: "lease-failover-timing",
-      dataset_version: "local-certification-v1",
-      execution_environment: "local-node-process",
+      dataset_version: "staging-certification-v1",
+      execution_environment: "staging-executable-process",
       duration_ms: failover?.telemetry?.duration_ms || 0,
       evidence_hash: failover?.telemetry?.result_checksum,
     },
     {
       id: "orchestration-recovery-timing",
-      dataset_version: "local-certification-v1",
-      execution_environment: "local-node-process",
+      dataset_version: "staging-certification-v1",
+      execution_environment: "staging-executable-process",
       duration_ms: orchestration?.telemetry?.duration_ms || 0,
       evidence_hash: orchestration?.telemetry?.result_checksum,
     },
@@ -485,10 +485,10 @@ function buildReport() {
   const evidence = {
     generated_at: new Date().toISOString(),
     deterministic_started_at: fixedStartedAt,
-    scope: "local-executable",
+    scope: "staging-executable",
     mode,
     certification: false,
-    certification_reason: "Executable local recovery evidence is not live production certification and does not prove provider failover.",
+    certification_reason: "Executable staging recovery evidence is not live production certification and does not prove provider failover.",
     production_certification: false,
     contract_checksum: sha256(contract),
     slo_checksum: sha256(slo),
@@ -497,7 +497,7 @@ function buildReport() {
     budget_results,
     benchmark_results,
     persistent_backend: {
-      backend: "local-jsonl-append-only",
+      backend: "staging-jsonl-append-only",
       storage_dir: storageDir,
       restart_restoration_hash: restartRestoration.restoration_hash,
       restart_backed: restartRestoration.restart_backed,
@@ -542,7 +542,7 @@ if (mode === "execute") {
   assert(process.env.LETBUYY_OPERATIONAL_CERTIFICATION_APPROVED === "true", "LETBUYY_OPERATIONAL_CERTIFICATION_APPROVED=true is required for execute mode");
   assert(process.env.LETBUYY_OPERATIONS_TOKEN, "LETBUYY_OPERATIONS_TOKEN is required for execute mode");
   assert(process.env.LETBUYY_API_BASE_URL, "LETBUYY_API_BASE_URL is required for execute mode");
-  throw new Error("Provider execute certification is owned by phase4-live-certify.mjs; this local harness refuses to record live operational evidence");
+  throw new Error("Provider execute certification is owned by phase4-live-certify.mjs; this staging harness refuses to record live operational evidence");
 }
 
 const report = buildReport();

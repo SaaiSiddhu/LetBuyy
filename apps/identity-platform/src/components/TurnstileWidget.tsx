@@ -25,7 +25,6 @@ interface TurnstileWidgetProps {
 /**
  * Invisible Cloudflare Turnstile widget.
  * Runs silently in the background — no UI, no checkboxes, no puzzles.
- * Automatically bypasses on localhost (Turnstile requires HTTPS).
  * 
  * Use the ref handle to call .reset() after a failed login attempt
  * or when the token expires.
@@ -77,10 +76,7 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
                     }
                 },
                 'error-callback': () => {
-                    // On error (e.g. localhost protocol mismatch), auto-bypass in dev
-                    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-                        onVerifyRef.current('dev-bypass-token')
-                    }
+                    onVerifyRef.current('')
                 },
             })
         }, []) // No dependencies — uses refs for callbacks
@@ -102,12 +98,6 @@ const TurnstileWidget = forwardRef<TurnstileHandle, TurnstileWidgetProps>(
         }), [renderWidget])
 
         useEffect(() => {
-            // Turnstile cannot work on localhost (HTTP vs HTTPS)
-            if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-                onVerifyRef.current('dev-bypass-token')
-                return
-            }
-
             const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
             if (!siteKey) {
                 onVerifyRef.current('dev-bypass-token')

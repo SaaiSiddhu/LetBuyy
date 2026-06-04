@@ -29,7 +29,7 @@ class LayersDrawer extends StatelessWidget {
     SectionModel? headerSection;
     SectionModel? footerSection;
     final bodySections = <SectionModel>[];
-    
+
     for (final section in sections) {
       if (section.type == SectionType.header) {
         headerSection = section;
@@ -60,7 +60,7 @@ class LayersDrawer extends StatelessWidget {
             ),
             child: Row(
               children: [
-                Icon(Icons.layers_outlined, 
+                Icon(Icons.layers_outlined,
                   color: colors.textPrimary, size: 20),
                 const SizedBox(width: 12),
                 Text(
@@ -73,14 +73,14 @@ class LayersDrawer extends StatelessWidget {
                 ),
                 const Spacer(),
                 IconButton(
-                  icon: Icon(Icons.close_rounded, 
+                  icon: Icon(Icons.close_rounded,
                     color: colors.textSecondary, size: 20),
                   onPressed: onClose,
                 ),
               ],
             ),
           ),
-          
+
           // Sections list
           Expanded(
             child: ListView(
@@ -95,14 +95,14 @@ class LayersDrawer extends StatelessWidget {
                     onTap: () => onSectionTap?.call(headerSection!),
                     onVisibilityToggle: () => onVisibilityToggle?.call(headerSection!),
                   ),
-                
+
                 // Divider
                 if (headerSection != null && bodySections.isNotEmpty)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: Row(
                       children: [
-                        Icon(Icons.drag_indicator, 
+                        Icon(Icons.drag_indicator,
                           size: 14, color: colors.textTertiary),
                         const SizedBox(width: 8),
                         Text(
@@ -115,7 +115,7 @@ class LayersDrawer extends StatelessWidget {
                       ],
                     ),
                   ),
-                
+
                 // Body sections (reorderable)
                 ReorderableListView.builder(
                   shrinkWrap: true,
@@ -126,7 +126,7 @@ class LayersDrawer extends StatelessWidget {
                     final reordered = List<SectionModel>.from(bodySections);
                     final item = reordered.removeAt(oldIndex);
                     reordered.insert(newIndex, item);
-                    
+
                     // Reconstruct full list
                     final fullList = <SectionModel>[
                       if (headerSection != null) headerSection,
@@ -146,7 +146,7 @@ class LayersDrawer extends StatelessWidget {
                     );
                   },
                 ),
-                
+
                 // Footer (fixed)
                 if (footerSection != null)
                   _LayerItem(
@@ -193,13 +193,13 @@ class _LayerItem extends StatelessWidget {
         margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected 
-              ? const Color(0xFF6366F1).withValues(alpha: 0.15) 
+          color: isSelected
+              ? const Color(0xFF8B5CF6).withValues(alpha: 0.15)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(10),
           border: Border.all(
-            color: isSelected 
-                ? const Color(0xFF6366F1) 
+            color: isSelected
+                ? const Color(0xFF8B5CF6)
                 : Colors.transparent,
           ),
         ),
@@ -207,25 +207,25 @@ class _LayerItem extends StatelessWidget {
           children: [
             // Drag handle or lock
             if (isFixed)
-              Icon(Icons.lock_outline, 
+              Icon(Icons.lock_outline,
                 size: 16, color: colors.textTertiary)
             else
-              Icon(Icons.drag_indicator, 
+              Icon(Icons.drag_indicator,
                 size: 16, color: colors.textTertiary),
-            
+
             const SizedBox(width: 12),
-            
+
             // Section icon
             Icon(
               section.type.icon,
               size: 18,
-              color: section.isVisible 
-                  ? const Color(0xFF6366F1) 
+              color: section.isVisible
+                  ? const Color(0xFF8B5CF6)
                   : colors.textTertiary,
             ),
-            
+
             const SizedBox(width: 10),
-            
+
             // Section name
             Expanded(
               child: Text(
@@ -233,16 +233,16 @@ class _LayerItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 13,
                   fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: section.isVisible 
-                      ? colors.textPrimary 
+                  color: section.isVisible
+                      ? colors.textPrimary
                       : colors.textTertiary,
-                  decoration: section.isVisible 
-                      ? null 
+                  decoration: section.isVisible
+                      ? null
                       : TextDecoration.lineThrough,
                 ),
               ),
             ),
-            
+
             // Visibility toggle
             GestureDetector(
               onTap: () {
@@ -250,12 +250,12 @@ class _LayerItem extends StatelessWidget {
                 onVisibilityToggle?.call();
               },
               child: Icon(
-                section.isVisible 
-                    ? Icons.visibility_outlined 
+                section.isVisible
+                    ? Icons.visibility_outlined
                     : Icons.visibility_off_outlined,
                 size: 18,
-                color: section.isVisible 
-                    ? colors.textSecondary 
+                color: section.isVisible
+                    ? colors.textSecondary
                     : colors.textTertiary,
               ),
             ),

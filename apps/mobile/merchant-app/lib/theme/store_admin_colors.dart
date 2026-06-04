@@ -2,27 +2,27 @@ import 'package:flutter/material.dart';
 
 /// Store Admin Colors
 /// Unified color system for LetBuyy Store Admin app (Landing Page + Dashboard)
-/// Based on Indigo/Violet/Pink palette with Slate neutrals
+/// Based on LetBuyy Purple/Violet/Pink palette with Slate neutrals
 class StoreAdminColors {
   StoreAdminColors._();
 
   // ============================================
-  // PRIMARY COLORS - Indigo
+  // PRIMARY COLORS - LetBuyy Brand Purple V1
   // ============================================
-  static const Color primary = Color(0xFF6366F1);        // Indigo 500
-  static const Color primaryLight = Color(0xFF818CF8);   // Indigo 400
-  static const Color primaryLighter = Color(0xFFA5B4FC); // Indigo 300
-  static const Color primaryDark = Color(0xFF4F46E5);    // Indigo 600
-  static const Color primaryDarker = Color(0xFF4338CA);  // Indigo 700
+  static const Color primary = Color(0xFF8B5CF6);
+  static const Color primaryLight = Color(0xFFA78BFA);
+  static const Color primaryLighter = Color(0xFFC4B5FD);
+  static const Color primaryDark = Color(0xFF7C3AED);
+  static const Color primaryDarker = Color(0xFF6D28D9);
 
   // ============================================
-  // SECONDARY COLORS - Violet
+  // SECONDARY COLORS - Purple support
   // ============================================
-  static const Color secondary = Color(0xFF8B5CF6);        // Violet 500
-  static const Color secondaryLight = Color(0xFFA78BFA);   // Violet 400
-  static const Color secondaryLighter = Color(0xFFC4B5FD); // Violet 300
-  static const Color secondaryDark = Color(0xFF7C3AED);    // Violet 600
-  static const Color secondaryDarker = Color(0xFF6D28D9);  // Violet 700
+  static const Color secondary = Color(0xFF7C3AED);
+  static const Color secondaryLight = Color(0xFFA78BFA);
+  static const Color secondaryLighter = Color(0xFFC4B5FD);
+  static const Color secondaryDark = Color(0xFF6D28D9);
+  static const Color secondaryDarker = Color(0xFF6D28D9);
 
   // ============================================
   // ACCENT COLORS - Pink
@@ -118,14 +118,14 @@ class StoreAdminColors {
   // GRADIENTS
   // ============================================
   
-  /// Primary CTA gradient (Indigo → Violet)
+  /// Primary CTA gradient (Purple → Purple hover)
   static const LinearGradient primaryGradient = LinearGradient(
     colors: [primary, secondary],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
-  /// Accent gradient (Indigo → Violet → Pink)
+  /// Accent gradient (Purple → Purple hover → Pink)
   static const LinearGradient accentGradient = LinearGradient(
     colors: [primary, secondary, accent],
     begin: Alignment.topLeft,

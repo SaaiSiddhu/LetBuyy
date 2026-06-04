@@ -1,9 +1,0 @@
-{
-  "SUPABASE_URL": "http://localhost:54321",
-  "SUPABASE_ANON_KEY": "dev-only-placeholder-SUPABASE_ANON_KEY",
-  "API_BASE_URL": "http://localhost:8787/v1",
-  "IDENTITY_BASE_URL": "http://127.0.0.1:3001",
-  "STOREFRONT_BASE_URL": "http://localhost:3003",
-  "RAZORPAY_KEY_ID": "dev-only-placeholder-RAZORPAY_KEY_ID",
-  "ENVIRONMENT": "local"
-}

@@ -13,7 +13,7 @@ import {
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8787';
+const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store';
 
 interface AppMarketplaceApiOptions {
     requireSession?: boolean;

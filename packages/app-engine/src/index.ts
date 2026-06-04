@@ -230,17 +230,13 @@ function firstRelatedAppRecord(value: unknown): MarketplaceAppAdminEmbedRecord {
   return parseAppStoreJsonRecordArray(value)[0] || parseAppStoreJsonRecord(value);
 }
 
-function safeAppAdminEmbedUrl(value: unknown, allowLocalhost = false): URL | null {
+function safeAppAdminEmbedUrl(value: unknown): URL | null {
   const href = appStoreStringOrNull(value);
   if (!href) return null;
 
   try {
     const parsed = new URL(href);
-    const isLocalHttp = allowLocalhost
-      && parsed.protocol === 'http:'
-      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
-
-    if (parsed.protocol === 'https:' || isLocalHttp) return parsed;
+    if (parsed.protocol === 'https:') return parsed;
   } catch {
     return null;
   }
@@ -269,7 +265,6 @@ function sortAppExtensions(left: AppEngineJsonRecord, right: AppEngineJsonRecord
 
 export function normalizeAppAdminEmbedSurface(
   installation: AppAdminEmbedInstallationRecord,
-  options: { allowLocalhost?: boolean } = {},
 ): AdminAppEmbedSurface | null {
   const installConfig = parseAppStoreJsonRecord(installation.config);
   const configuredEmbed = parseAppStoreJsonRecord(installConfig.admin_embed || installConfig.adminEmbed);
@@ -290,7 +285,6 @@ export function normalizeAppAdminEmbedSurface(
       || extensionConfig.embedUrl
       || extension.target
       || app.app_url,
-    options.allowLocalhost === true,
   );
 
   if (!url) return null;
@@ -371,7 +365,6 @@ export function appOAuthClientId(app: MarketplaceAppOAuthRecord): string {
 export function normalizeAppOAuthRedirectUri(
   requestedRedirectUri: unknown,
   allowedRedirectUris: unknown,
-  options: { allowLocalhost?: boolean } = {},
 ): AppEnginePlanResult<string> {
   const requested = appStoreStringOrNull(requestedRedirectUri);
   if (!requested) {
@@ -385,15 +378,12 @@ export function normalizeAppOAuthRedirectUri(
     return { ok: false, message: 'redirect_uri must be a valid URL' };
   }
 
-  const isLocalHttp = options.allowLocalhost === true
-    && parsed.protocol === 'http:'
-    && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
-  if (parsed.protocol !== 'https:' && !isLocalHttp) {
+  if (parsed.protocol !== 'https:') {
     return { ok: false, message: 'redirect_uri must use HTTPS' };
   }
 
   const allowed = new Set(appStoreStringArray(allowedRedirectUris));
-  if (allowed.has(parsed.toString()) || (isLocalHttp && allowed.size === 0)) {
+  if (allowed.has(parsed.toString())) {
     return { ok: true, value: parsed.toString() };
   }
 
@@ -410,13 +400,10 @@ export function buildAppOAuthRedirectUrl(
   return url.toString();
 }
 
-export function isSafeAppWebhookTarget(targetUrl: string, allowLocalhost = false): boolean {
+export function isSafeAppWebhookTarget(targetUrl: string): boolean {
   try {
     const url = new URL(targetUrl);
-    const isLocalHttp = allowLocalhost
-      && url.protocol === 'http:'
-      && (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
-    return (url.protocol === 'https:' || isLocalHttp) && url.hostname.length > 0;
+    return url.protocol === 'https:' && url.hostname.length > 0;
   } catch {
     return false;
   }
@@ -424,7 +411,6 @@ export function isSafeAppWebhookTarget(targetUrl: string, allowLocalhost = false
 
 export function normalizeAppWebhookDefinitions(
   value: unknown,
-  options: { allowLocalhost?: boolean } = {},
 ): AppWebhookDefinition[] {
   const values = Array.isArray(value) ? value : Object.values(parseAppStoreJsonRecord(value));
   const definitions: Array<AppWebhookDefinition | null> = values
@@ -432,7 +418,7 @@ export function normalizeAppWebhookDefinitions(
       const record = parseAppStoreJsonRecord(item);
       const event = appStoreStringOrNull(record.event || record.event_type);
       const url = appStoreStringOrNull(record.url || record.target_url || record.webhook_url);
-      if (!event || !url || record.is_active === false || !isSafeAppWebhookTarget(url, options.allowLocalhost === true)) {
+      if (!event || !url || record.is_active === false || !isSafeAppWebhookTarget(url)) {
         return null;
       }
 
@@ -532,10 +518,7 @@ function safeAppBlockIframeUrl(value: unknown): string | undefined {
 
   try {
     const parsed = new URL(href);
-    const isLocalHttp = parsed.protocol === 'http:'
-      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
-
-    if (parsed.protocol === 'https:' || isLocalHttp) {
+    if (parsed.protocol === 'https:') {
       return parsed.toString();
     }
   } catch {
@@ -643,9 +626,7 @@ function qualityGateHttpsUrl(value: unknown): boolean {
 
   try {
     const parsed = new URL(href);
-    const isLocalHttp = parsed.protocol === 'http:'
-      && (parsed.hostname === 'localhost' || parsed.hostname === '127.0.0.1');
-    return parsed.protocol === 'https:' || isLocalHttp;
+    return parsed.protocol === 'https:';
   } catch {
     return false;
   }
@@ -701,7 +682,7 @@ export function evaluateBuiltForLetBuyyQualityGate(input: AppEngineJsonRecord): 
     {
       key: 'privacy',
       passed: privacyOk,
-      message: 'App and privacy URLs must use HTTPS, with localhost allowed only for local testing.',
+      message: 'App and privacy URLs must use HTTPS.',
       value: privacyOk,
     },
   ];

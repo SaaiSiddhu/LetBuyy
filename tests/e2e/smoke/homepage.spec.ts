@@ -1,9 +1,9 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || process.env.LETBUYY_E2E_MARKETING_URL || 'http://127.0.0.1:3000';
-const ACCOUNTS_URL = process.env.ACCOUNTS_URL || process.env.LETBUYY_E2E_IDENTITY_URL || 'http://127.0.0.1:3001';
-const ADMIN_URL = process.env.ADMIN_URL || process.env.LETBUYY_E2E_MERCHANT_URL || 'http://127.0.0.1:3002';
-const API_URL = process.env.API_URL || process.env.LETBUYY_E2E_GATEWAY_URL || 'http://127.0.0.1:8787';
+const BASE_URL = process.env.BASE_URL || process.env.LETBUYY_E2E_MARKETING_URL || 'https://staging.letbuyy.store';
+const ACCOUNTS_URL = process.env.ACCOUNTS_URL || process.env.LETBUYY_E2E_IDENTITY_URL || 'https://accounts.staging.letbuyy.store';
+const ADMIN_URL = process.env.ADMIN_URL || process.env.LETBUYY_E2E_MERCHANT_URL || 'https://merchant.staging.letbuyy.store';
+const API_URL = process.env.API_URL || process.env.LETBUYY_E2E_GATEWAY_URL || 'https://api.staging.letbuyy.store';
 
 async function requireReachable(request: APIRequestContext, url: string, label: string): Promise<void> {
   const response = await request.get(url, { failOnStatusCode: false, timeout: 3_000 }).catch(() => null);

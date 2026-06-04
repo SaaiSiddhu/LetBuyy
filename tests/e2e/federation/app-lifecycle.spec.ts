@@ -45,7 +45,7 @@ test.describe('J2 App Store lifecycle federation', () => {
     const categoryRows = Array.isArray(categories) ? categories : categories.categories ?? [];
     const categoryId = categoryRows.find((category) => category.slug === 'marketing')?.id
       ?? categoryRows[0]?.id;
-    test.skip(!categoryId, 'No app category exists in the real local stack seed.');
+    test.skip(!categoryId, 'No app category exists in the staging seed.');
 
     const appSlug = uniqueSlug('f8-federated-app');
     const submitResponse = await request.post(`${federationUrls.gateway}/v1/app-store/developers/apps`, {
@@ -57,8 +57,8 @@ test.describe('J2 App Store lifecycle federation', () => {
         tagline: 'Cross-app federation proof.',
         description: 'Submitted by the F8 Playwright journey and reviewed through operations.',
         category_id: categoryId,
-        app_url: 'https://partner.localhost/f8-federated-app',
-        privacy_url: 'https://partner.localhost/privacy',
+        app_url: 'https://partner-apps.staging.letbuyy.store/f8-federated-app',
+        privacy_url: 'https://partner-apps.staging.letbuyy.store/privacy',
         pricing_model: 'free',
       },
     });
@@ -84,8 +84,8 @@ test.describe('J2 App Store lifecycle federation', () => {
         scopes: ['read_products', 'write_orders'],
         redirect_uri: demo.seededAppRedirectUri,
         state: 'f8-app-lifecycle',
-        webhook_url: 'http://127.0.0.1:8787/local-webhook-receiver',
-        webhook_secret: 'local-webhook-f8',
+        webhook_url: 'https://api.staging.letbuyy.store/app-webhook-receiver',
+        webhook_secret: 'staging-webhook-f8',
       },
     });
     const authorization = await expectApiSuccess<OAuthAuthorizeResult>(authorizeResponse, 'app OAuth authorization', [201]);

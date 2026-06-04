@@ -16,7 +16,7 @@ reporter.assert(Boolean(runtimeQueue), "Queue lifecycle manifest must include ru
 reporter.assert(runtimeQueue?.producerBinding === "RUNTIME_QUEUE", "Runtime provider queue must use RUNTIME_QUEUE binding");
 reporter.assert(runtimeQueue?.poisonMessagePolicy === "dead-letter-after-retry-exhaustion", "Runtime provider queue must dead-letter poison messages");
 
-for (const environment of ["dev", "staging", "production"]) {
+for (const environment of ["staging", "production"]) {
   const env = topology.environments[environment];
   reporter.assert(runtimeQueue.names[environment] === env.runtimeQueue, `Runtime queue name drift for ${environment}`);
   reporter.assert(runtimeQueue.deadLetterNames[environment] === env.deadLetterQueue, `Runtime queue DLQ name drift for ${environment}`);

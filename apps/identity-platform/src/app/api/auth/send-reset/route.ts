@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { identityApiRequest } from '@/lib/api/client'
+import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createVerificationToken } from '@/lib/auth/tokens'
@@ -51,7 +51,17 @@ export async function POST(request: NextRequest) {
             data?: {
                 id: string
             } | null
+            error?: {
+                code?: string
+                message?: string
+            }
         } | null
+
+        if (!userResponse.ok) {
+            const message = getIdentityApiFailureMessage(userPayload, 'Auth service is unavailable. Please try again.')
+            return NextResponse.json({ error: message }, { status: userResponse.status >= 500 ? 503 : userResponse.status })
+        }
+
         const user = userPayload?.data || null
 
         // Always return success (don't reveal if email exists)
@@ -60,7 +70,10 @@ export async function POST(request: NextRequest) {
         }
 
         const token = await createVerificationToken(normalizedEmail, 'password_reset', user.id)
-        await sendPasswordResetEmail(normalizedEmail, token)
+        const emailResult = await sendPasswordResetEmail(normalizedEmail, token)
+        if (!emailResult.success) {
+            return NextResponse.json({ error: 'Unable to send reset email right now. Please try again later.' }, { status: 502 })
+        }
 
         return NextResponse.json({ success: true })
     } catch (error) {

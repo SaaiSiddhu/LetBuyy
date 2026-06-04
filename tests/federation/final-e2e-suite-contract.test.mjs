@@ -19,7 +19,7 @@ test('F8 Playwright suite contains every required cross-app journey', () => {
   for (const [label, path] of SPECS) {
     const source = read(path);
     assert.match(source, new RegExp(label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-    assert.match(source, /requireRealStack\(request\)/, `${path} must require the real local stack`);
+    assert.match(source, /requireRealStack\(request\)/, `${path} must require the real staging stack`);
     assert.match(source, /federationUrls\.gateway/, `${path} must call the real gateway`);
   }
 });
@@ -32,12 +32,12 @@ test('F8 suite has no browser request interception or alternate gateway stand-in
   }
 });
 
-test('F8 real-stack helper defaults to local Supabase/gateway/app ports and records screenshot evidence', () => {
+test('F8 real-stack helper defaults to staging gateway/app URLs and records screenshot evidence', () => {
   const helper = read('tests/e2e/federation/real-stack.ts');
 
-  assert.match(helper, /127\.0\.0\.1:8787/);
-  assert.match(helper, /3001/);
-  assert.match(helper, /3011/);
+  assert.match(helper, /api\.staging\.letbuyy\.store/);
+  assert.match(helper, /accounts\.staging\.letbuyy\.store/);
+  assert.match(helper, /operations\.staging\.letbuyy\.store/);
   assert.match(helper, /\/v1\/storefront\/\$\{demo\.storeSubdomain\}\/products\?limit=1/);
   assert.match(helper, /recordJourneyEvidence/);
   assert.match(helper, /testInfo\.attach/);

@@ -41,7 +41,7 @@ function section(text, name) {
   const start = text.indexOf(name);
   if (start < 0) return "";
   const rest = text.slice(start + name.length);
-  const next = rest.search(/\n\[env\.(dev|staging|production)\]/);
+  const next = rest.search(/\n\[env\.(staging|production)\]/);
   return next >= 0 ? rest.slice(0, next) : rest;
 }
 
@@ -54,13 +54,6 @@ function exactQueue(queueName) {
 }
 
 const workloadQueues = {
-  dev: [
-    "letbuyy-events-dev",
-    "letbuyy-analytics-dev",
-    "letbuyy-search-indexing-dev",
-    "letbuyy-notifications-dev",
-    "letbuyy-dead-letters-dev",
-  ],
   staging: [
     "letbuyy-events-staging",
     "letbuyy-analytics-queue-staging",
@@ -78,44 +71,34 @@ const workloadQueues = {
 };
 
 const r2Buckets = {
-  dev: "letbuyy-dev-r2",
   staging: "letbuyy-media-staging",
   production: "letbuyy-media-production",
 };
 
-const kvPlaceholders = {
-  dev: "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__",
-};
-
 function cacheKvId(envSection) {
-  const kvMatch = envSection.match(/\[\[env\.(?:dev|staging|production)\.kv_namespaces\]\][\s\S]*?binding\s*=\s*"CACHE"[\s\S]*?id\s*=\s*"([^"]+)"/);
+  const kvMatch = envSection.match(/\[\[env\.(?:staging|production)\.kv_namespaces\]\][\s\S]*?binding\s*=\s*"CACHE"[\s\S]*?id\s*=\s*"([^"]+)"/);
   return kvMatch?.[1] || "";
 }
 
 function isGovernedCacheKvId(environment, value) {
-  if (environment === "dev") return value === kvPlaceholders.dev;
   return /^[a-f0-9]{32}$/i.test(value) && !value.includes("PLACEHOLDER") && !value.startsWith("__");
 }
 
 const foundationQueues = {
-  dev: ["letbuyy-dev-queue", "letbuyy-dev-dead-letter-queue"],
   staging: ["letbuyy-staging-queue", "letbuyy-staging-dead-letter-queue"],
   production: ["letbuyy-production-queue", "letbuyy-production-dead-letter-queue"],
 };
 
 const expectedWorkerNames = {
   "services/api-gateway": {
-    dev: "letbuyy-api-dev",
     staging: "letbuyy-api-staging",
     production: "letbuyy-api",
   },
   "services/webhook-service": {
-    dev: "letbuyy-webhooks-dev",
     staging: "letbuyy-webhook-staging",
     production: "letbuyy-webhook",
   },
   "services/queue-workers": {
-    dev: "letbuyy-queue-workers-dev",
     staging: "letbuyy-queue-workers-staging",
     production: "letbuyy-queue-workers",
   },
@@ -124,7 +107,7 @@ const expectedWorkerNames = {
 for (const worker of workerConfigs) {
   reporter.assert(exists(worker.config), `Missing Worker config: ${worker.config}`);
   const text = readFile(worker.config);
-  const topLevel = text.split(/\n\[env\.dev\]/)[0] ?? "";
+  const topLevel = text.split(/\n\[env\.staging\]/)[0] ?? "";
   const manifest = readJson(`${worker.root}/package.json`);
 
   reporter.assert(text.includes('compatibility_flags = ["nodejs_compat"]'), `Worker config must enable Node.js compatibility explicitly: ${worker.config}`);
@@ -134,10 +117,10 @@ for (const worker of workerConfigs) {
     `Worker deploy script must require explicit --env through deploy-worker-runtime.mjs: ${worker.root}/package.json`,
   );
 
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     const marker = `[env.${environment}]`;
     const envSection = section(text, marker);
-    const expectedEnvironmentName = environment === "dev" ? "development" : environment;
+    const expectedEnvironmentName = environment;
     reporter.assert(envSection.length > 0, `Worker config missing ${marker}: ${worker.config}`);
     reporter.assert(sectionName(envSection) === expectedWorkerNames[worker.root][environment], `Worker ${marker} must declare isolated Worker name ${expectedWorkerNames[worker.root][environment]}: ${worker.config}`);
     reporter.assert(envSection.includes(`[env.${environment}.vars]`), `Worker ${marker} must explicitly declare non-inheritable vars: ${worker.config}`);
@@ -200,11 +183,11 @@ for (const worker of workerConfigs) {
     reporter.assert(envSection.includes(`[[env.${environment}.analytics_engine_datasets]]`), `Worker ${marker} must declare isolated telemetry dataset binding: ${worker.config}`);
   }
 
-  if (topLevel.includes('ENVIRONMENT = "local"')) {
+  if (topLevel.includes('ENVIRONMENT = "staging"')) {
     for (const queue of workloadQueues.production) {
-      reporter.assert(!topLevel.includes(exactQueue(queue)), `Local top-level config must not bind production queue ${queue}: ${worker.config}`);
+      reporter.assert(!topLevel.includes(exactQueue(queue)), `Staging top-level config must not bind production queue ${queue}: ${worker.config}`);
     }
-    reporter.assert(!topLevel.includes(`bucket_name = "${r2Buckets.production}"`), `Local top-level config must not bind production R2 bucket: ${worker.config}`);
+    reporter.assert(!topLevel.includes(`bucket_name = "${r2Buckets.production}"`), `Staging top-level config must not bind production R2 bucket: ${worker.config}`);
   }
 }
 

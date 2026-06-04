@@ -210,10 +210,9 @@ function StoreFinder() {
     }, [status, store, countdown]);
 
     function navigateToStore(subdomain: string) {
-        const isDev = typeof window !== 'undefined' && window.location.hostname.includes('localhost');
-        const url = isDev
-            ? `/store/${subdomain}`
-            : `https://${subdomain}.letbuyy.store`;
+        const url = process.env.NODE_ENV === 'production'
+            ? `https://${subdomain}.letbuyy.store`
+            : `https://storefront.staging.letbuyy.store/store/${subdomain}`;
         window.location.href = url;
     }
 
@@ -317,10 +316,9 @@ function StoreFinder() {
 function StoreCard({ store }: { store: StoreShowcase }) {
     const theme = getThemeMeta(store.themeId);
     const isLive = store.status === 'published';
-    const isDev = typeof window !== 'undefined' && window.location.hostname.includes('localhost');
-    const storeUrl = isDev
-        ? `/store/${store.subdomain}`
-        : `https://${store.subdomain}.letbuyy.store`;
+    const storeUrl = process.env.NODE_ENV === 'production'
+        ? `https://${store.subdomain}.letbuyy.store`
+        : `https://storefront.staging.letbuyy.store/store/${store.subdomain}`;
 
     return (
         <article

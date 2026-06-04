@@ -20,7 +20,7 @@ function section(text, environment) {
   const start = text.indexOf(marker);
   if (start < 0) return "";
   const rest = text.slice(start);
-  const next = rest.slice(marker.length).search(/\n\[env\.(dev|staging|production)\]/);
+  const next = rest.slice(marker.length).search(/\n\[env\.(staging|production)\]/);
   return next >= 0 ? rest.slice(0, marker.length + next) : rest;
 }
 
@@ -61,7 +61,7 @@ for (const worker of manifest?.workers || []) {
   reporter.assert(exists(worker.config), `Missing Worker wrangler config: ${worker.config}`);
   const text = readFile(worker.config);
 
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     const expected = worker.environments?.[environment];
     const envSection = section(text, environment);
     reporter.assert(Boolean(expected), `Cloudflare binding manifest missing env: ${worker.runtimeRoot}/${environment}`);

@@ -9,7 +9,7 @@
 
 ## 0. PRIME DIRECTIVE
 
-Phase 1 collapsed `merchant-control-plane` and `storefront-runtime` onto one Commerce API. **Five web apps were never migrated and do not properly talk to each other:** `identity-platform`, `app-marketplace`, `theme-marketplace`, `platform-console`, `platform-operations-portal`. Finish the federation so LetBuyy is structurally Shopify‑for‑India: one identity, one API, one event spine, one design system, and Shopify‑equivalent flows between every app — **and prove it end‑to‑end against a REAL local stack, not mocks** (the gap the last run left open).
+Phase 1 collapsed `merchant-control-plane` and `storefront-runtime` onto one Commerce API. **Five web apps were never migrated and do not properly talk to each other:** `identity-platform`, `app-marketplace`, `theme-marketplace`, `platform-console`, `platform-operations-portal`. Finish the federation so LetBuyy is structurally Shopify‑for‑India: one identity, one API, one event spine, one design system, and Shopify‑equivalent flows between every app — **and prove it end‑to‑end against staging, not mocks** (the gap the last run left open).
 
 **SUCCESS CRITERIA — the mission is COMPLETE only when all are proven green with recorded command evidence:**
 
@@ -19,7 +19,7 @@ Phase 1 collapsed `merchant-control-plane` and `storefront-runtime` onto one Com
 4. **App Store federation:** an app can be created in `platform-console`, reviewed/approved in `platform-operations-portal`, installed by a merchant from `app-marketplace` via OAuth, render an app block in the storefront, and bill via the Billing API with a recorded payout ledger entry.
 5. **Theme Store federation:** a theme can be submitted in `platform-console`, reviewed/approved in `platform-operations-portal`, listed in `theme-marketplace`, installed into a store, and rendered — zero storefront code change.
 6. **One design system:** the 3 UI packages are consolidated into one shared package consumed by all 7 apps; the dead ones are archived.
-7. **REAL end‑to‑end:** the cross‑app E2E suite in section 5/F8 runs against a **real local Supabase + real gateway** (no mock Commerce API). If the sandbox truly cannot run a real DB after genuine attempts, the suite still must EXIST and pass its static/contract layer, and the live‑DB execution is the only part allowed to be `[SKIP — NEEDS HUMAN]` with exact run commands.
+7. **REAL end‑to‑end:** the cross‑app E2E suite in section 5/F8 runs against **staging Supabase + the staging gateway** (no mock Commerce API). If staging is not credentialed or deployed, the suite still must EXIST and pass its static/contract layer, and the staging execution is the only part allowed to be `[SKIP — NEEDS HUMAN: staging deploy + secrets]`.
 8. `pnpm turbo typecheck`, `pnpm run validate:governance` (128/128), `pnpm lint`, `pnpm turbo build`, and the full test + Playwright suites pass.
 9. `CODEX_FEDERATION_LEDGER.md` shows every task `DONE` (with evidence) or `[SKIP — NEEDS HUMAN]`; `CODEX_FEDERATION_STATUS.md` summarizes the run.
 
@@ -29,7 +29,7 @@ Phase 1 collapsed `merchant-control-plane` and `storefront-runtime` onto one Com
 
 1. **Continuous execution.** Finish a task → update ledger → immediately start the next unblocked task. Never pause to ask. Never end the session while unblocked tasks remain.
 2. **The Green Law.** After every commit the tree is green: run area validators + `pnpm turbo typecheck` + `pnpm lint` each increment, and the full `pnpm run validate:governance` at every phase gate. Never commit red. If a change can't be made green in 3 attempts, revert it, log `BLOCKED` with diagnosis, move on.
-3. **The REAL‑E2E Law (new, non‑negotiable).** UI and cross‑app verification must run against a **real local Supabase + real local gateway**, never a mock Commerce API. Before any smoke: bring up a real DB (`supabase start` or local Postgres via Docker), apply `database/supabase/migrations/*`, seed demo data, run the gateway worker against it, then drive Playwright/the browser against that real stack. Mock gateways are forbidden as proof of done. Only if a real DB genuinely cannot run in this environment (after escalation attempts) may you mark the *live execution* `[SKIP — NEEDS HUMAN]` — and you must still commit the runnable real‑stack test code and a `scripts/dev/local-stack-up.mjs` that a human can run.
+3. **The REAL‑E2E Law (new, non‑negotiable).** UI and cross‑app verification must run against **staging Supabase + the staging gateway**, never a mock Commerce API. Before any smoke: deploy staging, apply the governed migrations/baseline, seed demo data with `scripts/staging/seed.mjs`, then drive Playwright/the browser against staging or an approved staging preview. Mock gateways are forbidden as proof of done. If staging is not credentialed or deployed, mark the *live execution* `[SKIP — NEEDS HUMAN: staging deploy + secrets]` and still commit the runnable staging test code.
 4. **Small reversible increments.** One logical change → validate → commit. Prefer hundreds of small green commits over one big red one.
 5. **Human‑skip ledger (mark and continue).** Anything a local agent can't safely do → append to `CODEX_FEDERATION_LEDGER.md` under `## SKIPPED — NEEDS HUMAN` with the exact command/credential/decision + why, then continue. SKIP triggers: live secrets/keys (Razorpay live, Cloudflare, Supabase service‑role, Vercel, Resend), production DB mutations, remote git, irreversible deletes outside `docs/archive/`, paid 3rd‑party signups, policy/pricing/legal decisions, DNS/Vercel/Cloudflare resource creation.
 6. **Anti‑ceremony guardrails.** Do NOT add new validators, new top‑level docs (beyond the two ledger/status files), new runtime services, or new Next.js API routes that contain business logic. This mission REDUCES surface area and consolidates. Reuse existing packages (`event-core`, `notification-core`, `auth-core`, `app-engine`, `billing-core`, `api-client`).
@@ -83,7 +83,7 @@ Reference model from research. Build the LetBuyy‑native, India‑first equival
 
 ## BASELINE (F0)
 - typecheck / governance(128) / lint / build / test : <results>
-- real local stack up? supabase+gateway+apps : <yes/no + evidence or SKIP reason>
+- staging proof ready? Supabase+gateway+apps : <yes/no + evidence or SKIP reason>
 
 ## PROGRESS LOG (newest first)
 - <ts> [F#.#] <task> — DONE — evidence: <cmd> -> <result> — commit <sha>
@@ -103,13 +103,13 @@ Reference model from research. Build the LetBuyy‑native, India‑first equival
 
 ## 5. THE WORK — PHASES F0 → F8 (in order; don't start a phase until the prior gate is green)
 
-### F0 — Baseline + the REAL local stack (no mocks ever again)
+### F0 — Baseline + the REAL staging stack (no mocks ever again)
 
 - **F0.1 Baseline.** `pnpm install`; record `typecheck`, `validate:governance` (128), `lint`, `build --dry-run`, `test` in the ledger. _DoD: baseline recorded._
-- **F0.2 Real local stack harness.** Create `scripts/dev/local-stack-up.mjs` and `local-stack-down.mjs` that: start a real Supabase (`supabase start`, or Postgres via Docker), apply `database/supabase/migrations/*` (incl. `067`), seed demo data (≥1 store, products, ≥2 themes, a demo partner + app), then boot the `api-gateway` worker against that DB and all 7 apps on their local ports. _DoD: one command brings up a real, seeded stack; `/health` 200; a real product query returns seeded data — NOT a mock._ If a real DB cannot run here after genuine attempts (incl. escalation), `[SKIP — NEEDS HUMAN]` the live boot but still commit the scripts and seeds.
+- **F0.2 Real staging stack proof.** Maintain `scripts/staging/seed.mjs` so it seeds demo data (≥1 store, products, ≥2 themes, a demo partner + app) against an explicit staging database URL, then prove the staging gateway `/health` and a real product query. _DoD: staging deploy + seed returns real data — NOT a mock._ If staging secrets/deploy are not available, `[SKIP — NEEDS HUMAN: staging deploy + secrets]` the live proof but still commit the tests and seed logic.
 - **F0.3 Kill mock harnesses.** Remove/neutralize any `.codex/*mock*` or mock‑Commerce‑API smoke helpers from Phase 1 so no future task can "pass" against a mock. _DoD: grep shows no mock gateway used by tests._
 
-**GATE F0:** governance 128/128; real stack boots (or live‑boot SKIP recorded with scripts committed).
+**GATE F0:** governance 128/128; staging proof runs (or live‑proof SKIP recorded with scripts committed).
 
 ### F1 — Identity federation (the spine of "talk to each other")
 
@@ -171,7 +171,7 @@ For EACH app — `identity-platform`, `app-marketplace`, `theme-marketplace`, `p
 
 ### F8 — REAL end‑to‑end suite (the proof) + final gate
 
-Author cross‑app journeys under `tests/e2e/federation/*` that run against the **real local stack** (F0.2), no mocks:
+Author cross‑app journeys under `tests/e2e/federation/*` that run against the **real staging stack** (F0.2), no mocks:
 
 - **J1 Identity SSO:** one login → access merchant + all 5 federated apps; RBAC denies cross‑category access.
 - **J2 App lifecycle:** partner creates app (console) → ops approves → merchant installs via OAuth (marketplace) → app embeds via bridge → renders app block in storefront → bills → payout ledger entry → uninstall fires compliance webhook.
@@ -199,7 +199,7 @@ LETBUYY_DEEP_AUDIT_AND_SHOPIFY_BLUEPRINT.md in full.
 Execute CODEX_FEDERATION_MISSION.md, Phases F0→F8, continuously and autonomously.
 
 Hard rules (obey strictly):
-- REAL-E2E LAW: bring up a real local Supabase + real gateway and test against it.
+- REAL-E2E LAW: deploy and seed staging, then test against the staging gateway and staging Supabase.
   Mock Commerce APIs are forbidden as proof. If a real DB truly cannot run here,
   commit the runnable test code + local-stack scripts and mark only the live
   execution [SKIP — NEEDS HUMAN].
@@ -221,4 +221,3 @@ the real stack, write CODEX_FEDERATION_STATUS.md. Begin with F0.1 (baseline) now
 ## 8. ONE‑LINE NORTH STAR
 
 One identity, one API, one event spine, one design system — every app a thin client, every cross‑app flow a Shopify‑grade journey, all of it proven against a **real** database.
-

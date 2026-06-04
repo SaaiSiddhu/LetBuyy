@@ -13,7 +13,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 
 /* ─── Constants ─── */
-const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3000';
+const ACCOUNTS_URL = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://staging.letbuyy.store';
 
 const NAV_LINKS = [
     { label: 'Browse Themes', href: '/themes', icon: Sparkles },

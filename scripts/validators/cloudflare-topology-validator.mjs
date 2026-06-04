@@ -25,7 +25,7 @@ reporter.assert(topology?.wrangler?.requiredMajor === 4, "Cloudflare topology mu
 reporter.assert(topology?.wrangler?.nodeMajor === 22, "Cloudflare topology must require Node 22");
 reporter.assert(runtimeTopology?.cloudflareTopology === "config/runtime/cloudflare-topology.json", "Runtime topology must point at Cloudflare topology");
 reporter.assert(ownership?.sourceTopology === "config/runtime/cloudflare-topology.json", "Resource ownership must point at Cloudflare topology");
-reporter.assert(JSON.stringify(lineage?.promotionOrder) === JSON.stringify(["dev", "staging", "production"]), "Environment lineage must preserve dev -> staging -> production");
+reporter.assert(JSON.stringify(lineage?.promotionOrder) === JSON.stringify(["staging", "production"]), "Environment lineage must preserve staging -> production");
 
 const seenResourceNames = new Map();
 const resourceKeys = ["worker", "d1", "kv", "r2", "runtimeQueue", "deadLetterQueue", "durableObjectNamespace", "telemetryDataset", "replayStorage", "walStorage"];
@@ -35,28 +35,27 @@ function envSection(text, environment) {
   const start = text.indexOf(marker);
   if (start < 0) return "";
   const rest = text.slice(start);
-  const next = rest.slice(marker.length).search(/\n\[env\.(dev|staging|production)\]/);
+  const next = rest.slice(marker.length).search(/\n\[env\.(staging|production)\]/);
   return next >= 0 ? rest.slice(0, marker.length + next) : rest;
 }
 
 function extractCacheKvId(sectionText) {
-  const kvMatch = sectionText.match(/\[\[env\.(?:dev|staging|production)\.kv_namespaces\]\][\s\S]*?binding\s*=\s*"CACHE"[\s\S]*?id\s*=\s*"([^"]+)"/);
+  const kvMatch = sectionText.match(/\[\[env\.(?:staging|production)\.kv_namespaces\]\][\s\S]*?binding\s*=\s*"CACHE"[\s\S]*?id\s*=\s*"([^"]+)"/);
   return kvMatch?.[1] || "";
 }
 
 function isGovernedCacheKvId(environment, value) {
-  if (environment === "dev") return value === "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__";
   return /^[a-f0-9]{32}$/i.test(value) && !value.includes("PLACEHOLDER") && !value.startsWith("__");
 }
 
-for (const environment of ["dev", "staging", "production"]) {
+for (const environment of ["staging", "production"]) {
   const env = topology.environments?.[environment];
   reporter.assert(Boolean(env), `Cloudflare topology missing ${environment}`);
   reporter.assert(env.deploymentEnv === environment, `Cloudflare topology deploymentEnv drift for ${environment}`);
 
   for (const key of resourceKeys) {
     const value = env?.[key];
-    const environmentToken = environment === "dev" ? "dev" : environment;
+    const environmentToken = environment;
     const isEnvironmentScoped =
       typeof value === "string" &&
       (value.startsWith(env.resourcePrefix) || value.endsWith(`-${environmentToken}`) || value.includes(`-${environmentToken}-`));
@@ -87,8 +86,8 @@ for (const environment of ["dev", "staging", "production"]) {
   }
 }
 
-for (const lower of ["dev", "staging"]) {
-  const lowerSection = apiWrangler.slice(apiWrangler.indexOf(`[env.${lower}]`), apiWrangler.indexOf(lower === "dev" ? "[env.staging]" : "[env.production]"));
+for (const lower of ["staging"]) {
+  const lowerSection = apiWrangler.slice(apiWrangler.indexOf(`[env.${lower}]`), apiWrangler.indexOf("[env.production]"));
   const production = topology.environments.production;
   for (const key of ["d1", "r2", "runtimeQueue", "deadLetterQueue", "telemetryDataset"]) {
     reporter.assert(!lowerSection.includes(production[key]), `Lower environment ${lower} must not reference production ${key}: ${production[key]}`);

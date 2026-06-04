@@ -61,16 +61,19 @@ const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
 });
 
 test('admin app bridge resolves installed app embed surfaces safely', () => {
-  const localUrl = 'http://127.0.0.1:3002/example-app-bridge.html';
-  const exampleInstallation = appEngine.createExampleAdminAppInstallation(localUrl);
-  const localSurface = appEngine.normalizeAppAdminEmbedSurface(exampleInstallation, { allowLocalhost: true });
+  const stagingUrl = 'https://merchant.staging.letbuyy.store/example-app-bridge.html';
+  const exampleInstallation = appEngine.createExampleAdminAppInstallation(stagingUrl);
+  const stagingSurface = appEngine.normalizeAppAdminEmbedSurface(exampleInstallation);
 
-  assert.equal(localSurface.url, localUrl);
-  assert.equal(localSurface.origin, 'http://127.0.0.1:3002');
-  assert.equal(localSurface.title, 'Example App');
-  assert.deepEqual(Array.from(localSurface.capabilities), ['api.fetch', 'toast', 'resize']);
+  assert.equal(stagingSurface.url, stagingUrl);
+  assert.equal(stagingSurface.origin, 'https://merchant.staging.letbuyy.store');
+  assert.equal(stagingSurface.title, 'Example App');
+  assert.deepEqual(Array.from(stagingSurface.capabilities), ['api.fetch', 'toast', 'resize']);
 
-  assert.equal(appEngine.normalizeAppAdminEmbedSurface(exampleInstallation, { allowLocalhost: false }), null);
+  const insecureSurface = appEngine.normalizeAppAdminEmbedSurface(
+    appEngine.createExampleAdminAppInstallation('http://partner.example.com/example-app-bridge.html'),
+  );
+  assert.equal(insecureSurface, null);
 
   const productionSurface = appEngine.normalizeAppAdminEmbedSurface({
     id: 'install_prod',
@@ -90,7 +93,7 @@ test('admin app bridge resolves installed app embed surfaces safely', () => {
       slug: 'production-app',
       app_url: 'https://apps.example.com',
     },
-  }, { allowLocalhost: false });
+  });
 
   assert.equal(productionSurface.url, 'https://apps.example.com/merchant');
   assert.equal(productionSurface.origin, 'https://apps.example.com');

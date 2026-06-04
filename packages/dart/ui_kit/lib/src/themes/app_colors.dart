@@ -2,22 +2,24 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // ============================================
-  // PRIMARY COLORS - Bright Cyan Theme
-  // Updated: #00B3B3 (Primary) + #008080 (Secondary)
+  // PRIMARY COLORS - LetBuyy Brand Purple V1
   // ============================================
-  static const Color primary = Color(0xFF00B3B3); // Bright Cyan (Primary)
-  static const Color primaryLight = Color(0xFF4DD9D9); // Light Cyan
-  static const Color primaryDark = Color(0xFF008080); // Teal (Dark Primary)
-  static const Color primaryLighter = Color(0xFF80E5E5); // Soft Cyan Light
-  static const Color primaryDarker = Color(0xFF006666); // Deep Teal
+  static const Color brandPurple = Color(0xFF8B5CF6);
+  static const Color primary = Color(0xFF8B5CF6);
+  static const Color primaryLight = Color(0xFFA78BFA);
+  static const Color primaryDark = Color(0xFF6D28D9);
+  static const Color primaryHover = Color(0xFF7C3AED);
+  static const Color primaryActive = Color(0xFF6D28D9);
+  static const Color primaryLighter = Color(0xFFC4B5FD);
+  static const Color primaryDarker = Color(0xFF6D28D9);
 
   // ============================================
-  // SECONDARY COLORS - Teal Variations
+  // SECONDARY COLORS - Brand Purple Support
   // ============================================
-  static const Color secondary = Color(0xFF008080); // Teal
-  static const Color secondaryLight = Color(0xFF33A3A3);
-  static const Color secondaryDark = Color(0xFF005C5C);
-  static const Color secondaryLighter = Color(0xFF66C2C2);
+  static const Color secondary = primaryHover;
+  static const Color secondaryLight = primaryLight;
+  static const Color secondaryDark = primaryActive;
+  static const Color secondaryLighter = primaryLighter;
 
   // ============================================
   // ACCENT COLORS - Lime Green
@@ -27,12 +29,12 @@ class AppColors {
   static const Color accentDark = Color(0xFF798700);
 
   // ============================================
-  // EDITOR ACCENT - Lavender/Indigo
+  // EDITOR ACCENT - Compatibility aliases for Purple V1
   // ============================================
-  static const Color lavender = Color(0xFF818CF8); // Light Lavender
-  static const Color lavenderLight = Color(0xFFA5B4FC); // Lighter
-  static const Color lavenderDark = Color(0xFF6366F1); // Indigo
-  static const Color indigo = Color(0xFF6366F1); // Indigo (Same as lavenderDark)
+  static const Color lavender = primary;
+  static const Color lavenderLight = primaryLight;
+  static const Color lavenderDark = primaryActive;
+  static const Color indigo = primary;
 
   // ============================================
   // BACKGROUND COLORS - Light Theme
@@ -99,9 +101,9 @@ class AppColors {
   static const Color warningLight = Color(0xFFFDE68A);
   static const Color warningDark = Color(0xFFB45309);
 
-  static const Color info = Color(0xFF00B3B3); // Now matches primary
-  static const Color infoLight = Color(0xFF4DD9D9);
-  static const Color infoDark = Color(0xFF008080);
+  static const Color info = Color(0xFF3B82F6);
+  static const Color infoLight = Color(0xFF60A5FA);
+  static const Color infoDark = Color(0xFF2563EB);
   static const Color infoAccent = Color(0xFF33CCCC); // Accent variant for gradients
 
   // ============================================

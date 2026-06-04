@@ -85,7 +85,6 @@ const requiredTestFiles = [
   "tests/security/execution-mode.test.mjs",
   "tests/replay/replay-recovery-governance.test.mjs",
   "tests/survivability/survivability-governance.test.mjs",
-  "tests/survivability/local-operational-proof.test.mjs",
   "tests/survivability/operational-proof-surface.test.mjs",
   "tests/survivability/operational-certification-harness.test.mjs",
   "tests/survivability/persistence-certification.test.mjs",

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { identityApiRequest } from '@/lib/api/client'
+import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { createVerificationToken } from '@/lib/auth/tokens'
@@ -52,7 +52,17 @@ export async function POST(request: NextRequest) {
                 id: string
                 email_verified: boolean
             } | null
+            error?: {
+                code?: string
+                message?: string
+            }
         } | null
+
+        if (!userResponse.ok) {
+            const message = getIdentityApiFailureMessage(userPayload, 'Auth service is unavailable. Please try again.')
+            return NextResponse.json({ error: message }, { status: userResponse.status >= 500 ? 503 : userResponse.status })
+        }
+
         const user = userPayload?.data || null
 
         // Always return success (don't reveal if email exists)
@@ -64,12 +74,18 @@ export async function POST(request: NextRequest) {
         if (!user.email_verified) {
             const token = await createVerificationToken(normalizedEmail, 'email_verify', user.id)
             const { sendVerificationEmail } = await import('@/lib/email/resend')
-            await sendVerificationEmail(normalizedEmail, token)
+            const emailResult = await sendVerificationEmail(normalizedEmail, token)
+            if (!emailResult.success) {
+                return NextResponse.json({ error: 'Unable to send verification email right now. Please try again later.' }, { status: 502 })
+            }
             return NextResponse.json({ success: true })
         }
 
         const token = await createVerificationToken(normalizedEmail, 'magic_link', user.id)
-        await sendMagicLinkEmail(normalizedEmail, token)
+        const emailResult = await sendMagicLinkEmail(normalizedEmail, token)
+        if (!emailResult.success) {
+            return NextResponse.json({ error: 'Unable to send login email right now. Please try again later.' }, { status: 502 })
+        }
 
         return NextResponse.json({ success: true })
     } catch (error) {

@@ -2,13 +2,19 @@
   "$schema": "config/runtime/deployment-lineage-manifest.schema.json",
   "manifestVersion": 1,
   "mode": "governance-contract-not-live-evidence",
-  "promotionOrder": ["local", "dev", "staging", "production"],
+  "promotionOrder": [
+    "staging",
+    "production"
+  ],
   "deploymentWrappers": [
     {
       "name": "worker-deploy",
       "script": "infrastructure/scripts/deploy/deploy-worker-runtime.mjs",
       "requiresExplicitEnv": true,
-      "allowedEnvironments": ["dev", "staging", "production"],
+      "allowedEnvironments": [
+        "staging",
+        "production"
+      ],
       "rawWranglerDeployForbidden": true
     },
     {
@@ -31,7 +37,6 @@
     {
       "runtimeRoot": "services/api-gateway",
       "workerNames": {
-        "dev": "letbuyy-api-dev",
         "staging": "letbuyy-api-staging",
         "production": "letbuyy-api"
       },
@@ -46,7 +51,6 @@
     {
       "runtimeRoot": "services/webhook-service",
       "workerNames": {
-        "dev": "letbuyy-webhooks-dev",
         "staging": "letbuyy-webhook-staging",
         "production": "letbuyy-webhook"
       },
@@ -61,7 +65,6 @@
     {
       "runtimeRoot": "services/queue-workers",
       "workerNames": {
-        "dev": "letbuyy-queue-workers-dev",
         "staging": "letbuyy-queue-workers-staging",
         "production": "letbuyy-queue-workers"
       },

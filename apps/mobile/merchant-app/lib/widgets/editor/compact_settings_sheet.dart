@@ -55,7 +55,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     });
     widget.onUpdate(widget.section.copyWith(settings: _settings));
   }
-  
+
   /// Convert hex color string to Color
   Color _hexToColor(String hex) {
     hex = hex.replaceAll('#', '');
@@ -69,14 +69,14 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     final isHeader = widget.section.type == SectionType.header;
     final isFooter = widget.section.type == SectionType.footer;
     final isUnifiedSheet = isHeader || isFooter; // Both use unified full sheet
-    
+
     // Height: 85% for both header and footer, accounting for keyboard
     final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
     final availableHeight = MediaQuery.of(context).size.height - keyboardHeight;
-    final sheetHeight = (isHeader || isFooter) 
-        ? availableHeight * 0.85 
+    final sheetHeight = (isHeader || isFooter)
+        ? availableHeight * 0.85
         : null;
-    
+
     return Container(
       height: sheetHeight,
       decoration: BoxDecoration(
@@ -104,7 +104,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          
+
           // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 12, 8),
@@ -115,17 +115,17 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     widget.section.type.icon,
-                    color: const Color(0xFF6366F1),
+                    color: const Color(0xFF8B5CF6),
                     size: 20,
                   ),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Title
                 Expanded(
                   child: Column(
@@ -143,43 +143,43 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                         widget.section.isVisible ? 'Visible' : 'Hidden',
                         style: TextStyle(
                           fontSize: 12,
-                          color: widget.section.isVisible 
-                              ? colors.success 
+                          color: widget.section.isVisible
+                              ? colors.success
                               : colors.textTertiary,
                         ),
                       ),
                     ],
                   ),
                 ),
-                
+
                 // Expand button only for non-unified sheets
                 if (!isUnifiedSheet)
                   IconButton(
-                    icon: Icon(Icons.open_in_full_rounded, 
+                    icon: Icon(Icons.open_in_full_rounded,
                       color: colors.textSecondary, size: 20),
                     onPressed: widget.onExpand,
                     tooltip: 'Expand',
                   ),
-                
+
                 IconButton(
-                  icon: Icon(Icons.close_rounded, 
+                  icon: Icon(Icons.close_rounded,
                     color: colors.textSecondary, size: 20),
                   onPressed: widget.onClose,
                 ),
               ],
             ),
           ),
-          
+
           const Divider(color: Color(0xFF334155), height: 1),
-          
+
           // Sticky Preview Bar for Header (above scrollable content)
           if (isHeader)
             _buildHeaderPreviewBar(),
-          
+
           // Sticky Preview Bar for Footer (25% screen with live preview)
           if (isFooter)
             _buildFooterPreviewBar(),
-          
+
           // Content - scrollable for unified sheets, regular for others
           if (isHeader)
             Expanded(
@@ -202,7 +202,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               padding: const EdgeInsets.all(20),
               child: _buildQuickSettings(),
             ),
-          
+
           // Action buttons (only for non-unified sheets)
           if (!isUnifiedSheet)
             Padding(
@@ -211,8 +211,8 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 children: [
                   Expanded(
                     child: _ActionButton(
-                      icon: widget.section.isVisible 
-                          ? Icons.visibility_outlined 
+                      icon: widget.section.isVisible
+                          ? Icons.visibility_outlined
                           : Icons.visibility_off_outlined,
                       label: widget.section.isVisible ? 'Hide' : 'Show',
                       onTap: widget.onToggleVisibility,
@@ -231,7 +231,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 ],
               ),
             ),
-          
+
           // Safe area
           SizedBox(height: MediaQuery.of(context).padding.bottom),
         ],
@@ -256,7 +256,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         return _buildGenericSettings();
     }
   }
-  
+
   Widget _buildFooterQuickSettings() {
     // Quick settings version (not used since footer now uses unified sheet)
     final contactEmail = _settings['contactEmail'] as String? ?? '';
@@ -271,12 +271,12 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     final contactEmail = _settings['contactEmail']?.toString() ?? '';
     final showSocial = _settings['showSocial'] != false;
     final storeName = widget.store?.name ?? 'Store Name';
-    
+
     // Get theme colors from store's themeSettings
     final themeSettings = widget.store?.templateConfig?.themeSettings;
-    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#00B3B3');
+    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#8B5CF6');
     final accentColor = _hexToColor(themeSettings?.accentColor ?? '#A4E500');
-    
+
     // Collect active social links
     final activeSocials = <IconData>[];
     if ((_settings['instagramUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.instagram);
@@ -285,9 +285,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     if ((_settings['whatsappUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.whatsapp);
     if ((_settings['telegramUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.telegram);
     if ((_settings['youtubeUrl']?.toString() ?? '').isNotEmpty) activeSocials.add(FontAwesomeIcons.youtube);
-    
+
     final hasSocials = showSocial && activeSocials.isNotEmpty;
-    
+
     return ConstrainedBox(
       constraints: const BoxConstraints(maxHeight: 180), // Fixed max height to prevent overflow
       child: Container(
@@ -306,7 +306,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 gradient: LinearGradient(colors: [primaryColor, accentColor, primaryColor]),
               ),
             ),
-            
+
             // Main content - scrollable to fit
             Flexible(
               child: SingleChildScrollView(
@@ -324,9 +324,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                     fontSize: 13,
                   ),
                 ),
-                
+
                 const SizedBox(height: 8),
-                
+
                 // Social Icons Row (horizontal, below store name) - compact
                 if (hasSocials)
                   Row(
@@ -341,9 +341,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                       child: Center(child: FaIcon(icon, size: 8, color: Colors.white)),
                     )).toList(),
                   ),
-                
+
                 if (hasSocials) const SizedBox(height: 12),
-                
+
                 // Two Column Layout: Quick Links + Policies
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +362,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                         ],
                       ),
                     ),
-                    
+
                     // Policies
                     Expanded(
                       child: Column(
@@ -379,9 +379,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                     ),
                   ],
                 ),
-                
+
                 const SizedBox(height: 10),
-                
+
                 // Contact Section
                 Text('CONTACT', style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.w600)),
                 const SizedBox(height: 4),
@@ -407,7 +407,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             ),
           ),
         ), // Close Flexible
-          
+
         // Bottom bar - copyright (outside scrollable area)
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -437,7 +437,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
   ),
 );
   }
-  
+
   /// Footer settings content (unified full sheet like header)
   Widget _buildFooterSettingsContent() {
     // Social platform definitions matching storefront keys
@@ -449,7 +449,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
       {'key': 'telegramUrl', 'label': 'Telegram', 'icon': FontAwesomeIcons.telegram, 'hint': 't.me/yourstore'},
       {'key': 'youtubeUrl', 'label': 'YouTube', 'icon': FontAwesomeIcons.youtube, 'hint': 'youtube.com/@yourstore'},
     ];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -460,9 +460,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
           icon: FontAwesomeIcons.envelope,
           hint: 'help@yourstore.com',
         ),
-        
+
         const SizedBox(height: 16),
-        
+
         // Show Social Links toggle
         Container(
           padding: const EdgeInsets.symmetric(vertical: 4),
@@ -480,16 +480,16 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
                 value: _settings['showSocial'] != false,
                 onChanged: (value) => setState(() => _settings['showSocial'] = value),
                 activeColor: const Color(0xFF818CF8),
-                activeTrackColor: const Color(0xFF6366F1).withValues(alpha: 0.3),
+                activeTrackColor: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
                 inactiveThumbColor: colors.textTertiary,
                 inactiveTrackColor: colors.divider,
               ),
             ],
           ),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Social Links Section Label
         Text(
           'Social Links',
@@ -499,9 +499,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             color: colors.textSecondary,
           ),
         ),
-        
+
         const SizedBox(height: 12),
-        
+
         // Social Link Fields
         ...socialPlatforms.map((p) => Padding(
           padding: const EdgeInsets.only(bottom: 12),
@@ -512,9 +512,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             hint: p['hint'] as String,
           ),
         )),
-        
+
         const SizedBox(height: 8),
-        
+
         // Copyright Info
         Container(
           padding: const EdgeInsets.all(12),
@@ -536,12 +536,12 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 16),
       ],
     );
   }
-  
+
   /// Icon text field for footer (matching standard style)
   Widget _buildFooterTextField({
     required String key,
@@ -599,7 +599,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     final logoPlacement = _settings['logoPlacement'] ?? 'left';
     final displayMode = _settings['displayMode'] ?? 'both';
     final logoUrl = _settings['logoUrl'] ?? widget.store?.logoUrl;
-    
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       decoration: BoxDecoration(
@@ -681,7 +681,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     final logoPlacement = _settings['logoPlacement'] ?? 'left';
     final displayMode = _settings['displayMode'] ?? 'both';
     final logoUrl = _settings['logoUrl'] ?? widget.store?.logoUrl;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -700,9 +700,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Logo & Branding Section
         _buildSectionLabel('Logo & Branding'),
         Row(
@@ -723,7 +723,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
           ],
         ),
         const SizedBox(height: 12),
-        
+
         // Logo Upload Row
         Container(
           padding: const EdgeInsets.all(16),
@@ -769,8 +769,8 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               OutlinedButton(
                 onPressed: widget.onExpand,
                 style: OutlinedButton.styleFrom(
-                  foregroundColor: const Color(0xFF6366F1),
-                  side: const BorderSide(color: Color(0xFF6366F1)),
+                  foregroundColor: const Color(0xFF8B5CF6),
+                  side: const BorderSide(color: Color(0xFF8B5CF6)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 child: Text('Upload'),
@@ -778,9 +778,9 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             ],
           ),
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Header Icons
         _buildSectionLabel('Header Icons'),
         Row(
@@ -792,27 +792,27 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
             _buildIconToggle('showAccount', Icons.person_outline, 'Account', _settings['showAccount'] ?? false),
           ],
         ),
-        
+
         const SizedBox(height: 20),
-        
+
         // Navigation Section
         _buildSectionLabel('Navigation'),
-        
+
         // Nav Placement
         Row(
           children: [
-            _buildPlacementButton('left', 'Left Side', Icons.format_indent_decrease, 
+            _buildPlacementButton('left', 'Left Side', Icons.format_indent_decrease,
                 _settings['navPlacement'] ?? 'right', 'navPlacement'),
             const SizedBox(width: 8),
-            _buildPlacementButton('right', 'Right Side', Icons.format_indent_increase, 
+            _buildPlacementButton('right', 'Right Side', Icons.format_indent_increase,
                 _settings['navPlacement'] ?? 'right', 'navPlacement'),
           ],
         ),
         const SizedBox(height: 12),
-        
+
         // Nav Pages Editor
         _buildNavPagesEditor(),
-        
+
         const SizedBox(height: 24),
       ],
     );
@@ -831,7 +831,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     final pages = List<Map<String, dynamic>>.from(
       (_settings['navPages'] as List?) ?? _defaultNavPages
     );
-    
+
     return Container(
       decoration: BoxDecoration(
         color: colors.surfaceVariant,
@@ -881,13 +881,13 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
               ),
             );
           }),
-          
+
           // Add page button
           Divider(height: 1, color: colors.divider),
           TextButton.icon(
             onPressed: _addCustomPage,
-            icon: const Icon(Icons.add, color: Color(0xFF6366F1), size: 18),
-            label: Text('Add Custom Page', style: TextStyle(color: Color(0xFF6366F1), fontSize: 13)),
+            icon: const Icon(Icons.add, color: Color(0xFF8B5CF6), size: 18),
+            label: Text('Add Custom Page', style: TextStyle(color: Color(0xFF8B5CF6), fontSize: 13)),
           ),
         ],
       ),
@@ -946,14 +946,14 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF6366F1).withValues(alpha: 0.15) : Colors.transparent,
+          color: isSelected ? const Color(0xFF8B5CF6).withValues(alpha: 0.15) : Colors.transparent,
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
           children: [
             Icon(
               isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
-              color: isSelected ? const Color(0xFF6366F1) : colors.textTertiary,
+              color: isSelected ? const Color(0xFF8B5CF6) : colors.textTertiary,
               size: 18,
             ),
             const SizedBox(width: 10),
@@ -990,20 +990,20 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? const Color(0xFF6366F1).withValues(alpha: 0.15) : colors.surfaceVariant,
+            color: isSelected ? const Color(0xFF8B5CF6).withValues(alpha: 0.15) : colors.surfaceVariant,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isSelected ? const Color(0xFF6366F1) : colors.divider,
+              color: isSelected ? const Color(0xFF8B5CF6) : colors.divider,
             ),
           ),
           child: Column(
             children: [
-              Icon(icon, color: isSelected ? const Color(0xFF6366F1) : colors.textSecondary, size: 18),
+              Icon(icon, color: isSelected ? const Color(0xFF8B5CF6) : colors.textSecondary, size: 18),
               const SizedBox(height: 4),
               Text(label, style: TextStyle(
                 fontSize: 10,
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                color: isSelected ? const Color(0xFF6366F1) : colors.textSecondary,
+                color: isSelected ? const Color(0xFF8B5CF6) : colors.textSecondary,
               )),
             ],
           ),
@@ -1022,20 +1022,20 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 10),
           decoration: BoxDecoration(
-            color: isActive ? const Color(0xFF6366F1).withValues(alpha: 0.15) : colors.surfaceVariant,
+            color: isActive ? const Color(0xFF8B5CF6).withValues(alpha: 0.15) : colors.surfaceVariant,
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: isActive ? const Color(0xFF6366F1) : colors.divider,
+              color: isActive ? const Color(0xFF8B5CF6) : colors.divider,
             ),
           ),
           child: Column(
             children: [
-              Icon(icon, color: isActive ? const Color(0xFF6366F1) : colors.textSecondary, size: 18),
+              Icon(icon, color: isActive ? const Color(0xFF8B5CF6) : colors.textSecondary, size: 18),
               const SizedBox(height: 4),
               Text(label, style: TextStyle(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-                color: isActive ? const Color(0xFF6366F1) : colors.textSecondary,
+                color: isActive ? const Color(0xFF8B5CF6) : colors.textSecondary,
               )),
             ],
           ),
@@ -1048,7 +1048,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     // Get current banner settings
     String heading = '';
     String subheading = '';
-    
+
     final banners = _settings['banners'] as List?;
     if (banners != null && banners.isNotEmpty) {
       final firstBanner = banners.first as Map<String, dynamic>?;
@@ -1080,14 +1080,14 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
     final banners = List<Map<String, dynamic>>.from(
       (_settings['banners'] as List?) ?? []
     );
-    
+
     if (banners.isEmpty) {
       banners.add({field: value});
     } else {
       banners[0] = Map<String, dynamic>.from(banners[0]);
       banners[0][field] = value;
     }
-    
+
     _updateSetting('banners', banners);
   }
 
@@ -1112,7 +1112,7 @@ class _CompactSettingsSheetState extends State<CompactSettingsSheet> {
         const SizedBox(height: 16),
         Row(
           children: [
-            Text('Columns: ', 
+            Text('Columns: ',
               style: TextStyle(color: colors.textSecondary, fontSize: 14)),
             const SizedBox(width: 12),
             _ColumnSelector(
@@ -1230,7 +1230,7 @@ class _SettingsFieldState extends State<_SettingsField> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF6366F1), width: 2),
+              borderSide: const BorderSide(color: Color(0xFF8B5CF6), width: 2),
             ),
           ),
           onChanged: widget.onChanged,
@@ -1265,8 +1265,8 @@ class _ColumnSelector extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isSelected 
-                  ? const Color(0xFF6366F1) 
+              color: isSelected
+                  ? const Color(0xFF8B5CF6)
                   : colors.surfaceVariant,
               borderRadius: BorderRadius.circular(10),
             ),
@@ -1319,8 +1319,8 @@ class _ActionButton extends StatelessWidget {
             Icon(
               icon,
               size: 18,
-              color: isDestructive 
-                  ? colors.error 
+              color: isDestructive
+                  ? colors.error
                   : colors.textSecondary,
             ),
             const SizedBox(width: 8),
@@ -1329,8 +1329,8 @@ class _ActionButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: isDestructive 
-                    ? colors.error 
+                color: isDestructive
+                    ? colors.error
                     : colors.textSecondary,
               ),
             ),
@@ -1377,7 +1377,7 @@ class _AddPageDialogState extends State<_AddPageDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF6366F1)),
+                borderSide: const BorderSide(color: Color(0xFF8B5CF6)),
               ),
             ),
             style: TextStyle(color: colors.textPrimary),
@@ -1396,7 +1396,7 @@ class _AddPageDialogState extends State<_AddPageDialog> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
-                borderSide: const BorderSide(color: Color(0xFF6366F1)),
+                borderSide: const BorderSide(color: Color(0xFF8B5CF6)),
               ),
             ),
             style: TextStyle(color: colors.textPrimary),
@@ -1416,7 +1416,7 @@ class _AddPageDialogState extends State<_AddPageDialog> {
             }
           },
           style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF6366F1),
+            backgroundColor: const Color(0xFF8B5CF6),
             foregroundColor: Colors.white,
           ),
           child: Text('Add'),

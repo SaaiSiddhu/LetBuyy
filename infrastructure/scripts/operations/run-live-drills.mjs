@@ -17,7 +17,7 @@ function apiBase() {
   if (process.env.LETBUYY_API_BASE_URL) return process.env.LETBUYY_API_BASE_URL.replace(/\/$/, "");
   if (environment === "production") return "https://api.letbuyy.store";
   if (environment === "staging") return "https://api.staging.letbuyy.store";
-  return "https://api-dev.letbuyy.store";
+  return "https://api.staging.letbuyy.store";
 }
 
 async function sendOperations(method, path, body) {
@@ -35,7 +35,7 @@ async function sendOperations(method, path, body) {
   assert(response.ok, `operations evidence ${method} ${path} returned ${response.status}: ${text.slice(0, 500)}`);
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
 const timestamp = Date.now();
 const incidentId = `live-incident-sev2-${environment}-${timestamp}`;

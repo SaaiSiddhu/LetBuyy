@@ -7,11 +7,6 @@
   "producerConfig": "services/api-gateway/wrangler.toml",
   "consumerConfig": "services/queue-workers/wrangler.toml",
   "environments": {
-    "dev": {
-      "suffix": "-dev",
-      "deploymentEnv": "dev",
-      "mustNotReferenceProductionQueues": true
-    },
     "staging": {
       "suffix": "-staging",
       "deploymentEnv": "staging",
@@ -30,18 +25,19 @@
       "producerRoot": "services/api-gateway",
       "consumerRoot": "services/queue-workers",
       "names": {
-        "dev": "letbuyy-dev-queue",
         "staging": "letbuyy-staging-queue",
         "production": "letbuyy-production-queue"
       },
       "deadLetterNames": {
-        "dev": "letbuyy-dev-dead-letter-queue",
         "staging": "letbuyy-staging-dead-letter-queue",
         "production": "letbuyy-production-dead-letter-queue"
       },
       "orderingKey": "environment+runtimeName+traceId",
       "retry": {
-        "maxRetries": { "dev": 6, "staging": 8, "production": 10 },
+        "maxRetries": {
+          "staging": 8,
+          "production": 10
+        },
         "retryDelaySeconds": 30,
         "backoff": "provider-fixed-delay"
       },
@@ -54,18 +50,19 @@
       "producerRoot": "services/api-gateway",
       "consumerRoot": "services/queue-workers",
       "names": {
-        "dev": "letbuyy-events-dev",
         "staging": "letbuyy-events-staging",
         "production": "letbuyy-events-production"
       },
       "deadLetterNames": {
-        "dev": "letbuyy-dead-letters-dev",
         "staging": "letbuyy-dead-letters-staging",
         "production": "letbuyy-dead-letters-production"
       },
       "orderingKey": "siteId+aggregateId+streamPosition",
       "retry": {
-        "maxRetries": { "dev": 6, "staging": 10, "production": 10 },
+        "maxRetries": {
+          "staging": 10,
+          "production": 10
+        },
         "retryDelaySeconds": 30,
         "backoff": "provider-fixed-delay"
       },
@@ -78,18 +75,19 @@
       "producerRoot": "services/api-gateway",
       "consumerRoot": "services/queue-workers",
       "names": {
-        "dev": "letbuyy-analytics-dev",
         "staging": "letbuyy-analytics-queue-staging",
         "production": "letbuyy-analytics-queue-production"
       },
       "deadLetterNames": {
-        "dev": "letbuyy-dead-letters-dev",
         "staging": "letbuyy-dead-letters-staging",
         "production": "letbuyy-dead-letters-production"
       },
       "orderingKey": "siteId+eventType",
       "retry": {
-        "maxRetries": { "dev": 6, "staging": 8, "production": 8 },
+        "maxRetries": {
+          "staging": 8,
+          "production": 8
+        },
         "retryDelaySeconds": 30,
         "backoff": "provider-fixed-delay"
       },
@@ -102,18 +100,19 @@
       "producerRoot": "services/api-gateway",
       "consumerRoot": "services/queue-workers",
       "names": {
-        "dev": "letbuyy-search-indexing-dev",
         "staging": "letbuyy-search-queue-staging",
         "production": "letbuyy-search-queue-production"
       },
       "deadLetterNames": {
-        "dev": "letbuyy-dead-letters-dev",
         "staging": "letbuyy-dead-letters-staging",
         "production": "letbuyy-dead-letters-production"
       },
       "orderingKey": "siteId+objectType+objectId",
       "retry": {
-        "maxRetries": { "dev": 6, "staging": 8, "production": 8 },
+        "maxRetries": {
+          "staging": 8,
+          "production": 8
+        },
         "retryDelaySeconds": 45,
         "backoff": "provider-fixed-delay"
       },
@@ -126,18 +125,19 @@
       "producerRoot": "services/api-gateway",
       "consumerRoot": "services/queue-workers",
       "names": {
-        "dev": "letbuyy-notifications-dev",
         "staging": "letbuyy-notifications-queue-staging",
         "production": "letbuyy-notifications-queue-production"
       },
       "deadLetterNames": {
-        "dev": "letbuyy-dead-letters-dev",
         "staging": "letbuyy-dead-letters-staging",
         "production": "letbuyy-dead-letters-production"
       },
       "orderingKey": "siteId+recipientId+template",
       "retry": {
-        "maxRetries": { "dev": 5, "staging": 6, "production": 6 },
+        "maxRetries": {
+          "staging": 6,
+          "production": 6
+        },
         "retryDelaySeconds": 60,
         "backoff": "provider-fixed-delay"
       },
@@ -148,12 +148,14 @@
   "deadLetterQueue": {
     "logicalName": "dead-letters",
     "names": {
-      "dev": "letbuyy-dead-letters-dev",
       "staging": "letbuyy-dead-letters-staging",
       "production": "letbuyy-dead-letters-production"
     },
     "redrivePolicy": "operator-approved-dry-run-before-mutating-redrive",
-    "maxRetries": { "dev": 3, "staging": 3, "production": 3 },
+    "maxRetries": {
+      "staging": 3,
+      "production": 3
+    },
     "retryDelaySeconds": 300
   },
   "deterministicRecovery": {

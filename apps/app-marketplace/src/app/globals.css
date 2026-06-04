@@ -18,8 +18,17 @@
     --primary-light: #A78BFA;
     --primary-dark: #6D28D9;
     --primary-hover: #7C3AED;
+    --primary-active: #6D28D9;
+    --primary-subtle: rgba(139, 92, 246, 0.12);
     --accent-cyan: #06B6D4;
     --accent-blue: #3B82F6;
+    --lb-color-brand-purple: #8B5CF6;
+    --lb-color-primary: #8B5CF6;
+    --lb-color-primary-hover: #7C3AED;
+    --lb-color-primary-active: #6D28D9;
+    --lb-color-primary-subtle: rgba(139, 92, 246, 0.12);
+    --lb-color-primary-soft: rgba(139, 92, 246, 0.12);
+    --lb-color-focus-ring: #8B5CF6;
 
     /* — Backgrounds — */
     --bg: #FFFFFF;
@@ -57,10 +66,19 @@
 
 /* — Dark Mode — */
 .dark {
-    --primary: #A78BFA;
+    --primary: #8B5CF6;
     --primary-light: #C4B5FD;
-    --primary-dark: #8B5CF6;
-    --primary-hover: #8B5CF6;
+    --primary-dark: #6D28D9;
+    --primary-hover: #7C3AED;
+    --primary-active: #6D28D9;
+    --primary-subtle: rgba(139, 92, 246, 0.12);
+    --lb-color-brand-purple: #8B5CF6;
+    --lb-color-primary: #8B5CF6;
+    --lb-color-primary-hover: #7C3AED;
+    --lb-color-primary-active: #6D28D9;
+    --lb-color-primary-subtle: rgba(139, 92, 246, 0.12);
+    --lb-color-primary-soft: rgba(139, 92, 246, 0.12);
+    --lb-color-focus-ring: #8B5CF6;
 
     --bg: #0A0F1A;
     --bg-secondary: #0F172A;
@@ -212,7 +230,7 @@ body {
     width: 32px;
     height: 32px;
     border-radius: 10px;
-    background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
     display: flex;
     align-items: center;
     justify-content: center;
@@ -629,7 +647,7 @@ body {
     position: relative;
     border-radius: var(--lb-radius-lg);
     padding: 40px;
-    background: linear-gradient(135deg, var(--lb-color-primary) 0%, var(--lb-color-info) 100%);
+    background: linear-gradient(135deg, var(--lb-color-primary) 0%, var(--lb-color-primary-hover) 100%);
     color: var(--lb-color-text-inverse);
     overflow: hidden;
     margin-bottom: 48px;
@@ -757,7 +775,7 @@ body {
 }
 
 .app-icon-tone-0 {
-    background: linear-gradient(135deg, var(--lb-color-primary), var(--lb-color-info));
+    background: linear-gradient(135deg, var(--lb-color-primary), var(--lb-color-primary-hover));
 }
 
 .app-icon-tone-1 {
@@ -1853,7 +1871,7 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: linear-gradient(135deg, var(--primary), var(--accent-cyan));
+    background: linear-gradient(135deg, var(--primary), var(--primary-hover));
     display: flex;
     align-items: center;
     justify-content: center;

@@ -8,7 +8,7 @@ const apiBase = process.env.LETBUYY_API_BASE_URL || (
     ? "https://api.letbuyy.store"
     : environment === "staging"
       ? "https://api.staging.letbuyy.store"
-      : "https://api-dev.letbuyy.store"
+      : "https://api.staging.letbuyy.store"
 );
 
 const supportedTypes = new Set([
@@ -32,7 +32,7 @@ function assert(condition, message) {
 }
 
 assert(supportedTypes.has(experimentType), `--type must be one of: ${Array.from(supportedTypes).join(", ")}`);
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(process.env.LETBUYY_OPERATIONS_TOKEN, "LETBUYY_OPERATIONS_TOKEN is required");
 
 const experimentId = valueFor("--id") || `${experimentType}-${environment}-${Date.now()}`;

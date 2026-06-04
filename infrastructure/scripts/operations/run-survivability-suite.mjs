@@ -87,7 +87,7 @@ function run(command, commandArgs) {
   assert(result.status === 0, `${printable} failed with status ${result.status}`);
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(["auto", "plan", "execute"].includes(requestedMode), "--mode must be auto, plan, or execute");
 assert(fs.existsSync("config/runtime/survivability-execution.json"), "Missing survivability execution contract");
 

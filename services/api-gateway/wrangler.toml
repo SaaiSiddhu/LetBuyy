@@ -2,7 +2,7 @@ name = "letbuyy-api"
 main = "src/index.ts"
 compatibility_date = "2026-05-25"
 compatibility_flags = ["nodejs_compat"]
-workers_dev = true
+workers_dev = false
 
 [build]
 command = "pnpm build"
@@ -24,137 +24,49 @@ tag = "v1-runtime-coordinator"
 new_sqlite_classes = ["LetbuyyRuntimeDurableObject"]
 
 [vars]
-ENVIRONMENT = "local"
-APP_ENV = "local"
-NODE_ENV = "development"
-DEPLOYMENT_ENV = "local"
-TELEMETRY_ENV = "local"
-RUNTIME_NAME = "API Gateway"
+ENVIRONMENT = "staging"
+APP_ENV = "staging"
+NODE_ENV = "production"
+NEXT_PUBLIC_ENV = "staging"
+WORKER_ENV = "staging"
+DEPLOYMENT_ENV = "staging"
+TELEMETRY_ENV = "staging"
+RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
-ASSET_PUBLIC_BASE_URL = "http://localhost:8787/assets"
-EVENT_QUEUE_NAME = "letbuyy-events-local"
-ANALYTICS_QUEUE_NAME = "letbuyy-analytics-local"
-SEARCH_QUEUE_NAME = "letbuyy-search-indexing-local"
-NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-local"
-RUNTIME_QUEUE_NAME = "letbuyy-local-queue"
+ASSET_PUBLIC_BASE_URL = "https://cdn-staging.letbuyy.store"
+EVENT_QUEUE_NAME = "letbuyy-events-staging"
+ANALYTICS_QUEUE_NAME = "letbuyy-analytics-queue-staging"
+SEARCH_QUEUE_NAME = "letbuyy-search-queue-staging"
+NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-queue-staging"
+RUNTIME_QUEUE_NAME = "letbuyy-staging-queue"
 
 [[queues.producers]]
 binding = "EVENT_QUEUE"
-queue = "letbuyy-events-local"
+queue = "letbuyy-events-staging"
 
 [[queues.producers]]
 binding = "ANALYTICS_QUEUE"
-queue = "letbuyy-analytics-local"
+queue = "letbuyy-analytics-queue-staging"
 
 [[queues.producers]]
 binding = "SEARCH_QUEUE"
-queue = "letbuyy-search-indexing-local"
+queue = "letbuyy-search-queue-staging"
 
 [[queues.producers]]
 binding = "NOTIFICATION_QUEUE"
-queue = "letbuyy-notifications-local"
+queue = "letbuyy-notifications-queue-staging"
 
 [[queues.producers]]
 binding = "RUNTIME_QUEUE"
-queue = "letbuyy-local-queue"
+queue = "letbuyy-staging-queue"
 
 [[r2_buckets]]
 binding = "R2_BUCKET"
-bucket_name = "letbuyy-local-storage"
-preview_bucket_name = "letbuyy-local-storage"
+bucket_name = "letbuyy-media-staging"
+preview_bucket_name = "letbuyy-media-staging"
 
 [placement]
-mode = "smart"
-
-[dev]
-port = 8787
-inspector_port = 9231
-local_protocol = "http"
-
-[env.dev]
-name = "letbuyy-api-dev"
-workers_dev = false
-routes = [
-  { pattern = "api-dev.letbuyy.store", custom_domain = true }
-]
-
-[env.dev.observability]
-enabled = true
-head_sampling_rate = 1
-
-[env.dev.observability.logs]
-enabled = true
-head_sampling_rate = 1
-invocation_logs = true
-
-[env.dev.triggers]
-crons = ["*/1 * * * *"]
-
-[env.dev.vars]
-ENVIRONMENT = "development"
-APP_ENV = "development"
-NODE_ENV = "development"
-DEPLOYMENT_ENV = "dev"
-TELEMETRY_ENV = "development"
-RUNTIME_NAME = "API Gateway"
-PRIMARY_REGION = "ap-south-1"
-FAILOVER_REGION = "ap-southeast-1"
-ASSET_PUBLIC_BASE_URL = "https://cdn-dev.letbuyy.store"
-EVENT_QUEUE_NAME = "letbuyy-events-dev"
-ANALYTICS_QUEUE_NAME = "letbuyy-analytics-dev"
-SEARCH_QUEUE_NAME = "letbuyy-search-indexing-dev"
-NOTIFICATION_QUEUE_NAME = "letbuyy-notifications-dev"
-RUNTIME_QUEUE_NAME = "letbuyy-dev-queue"
-
-[[env.dev.queues.producers]]
-binding = "EVENT_QUEUE"
-queue = "letbuyy-events-dev"
-
-[[env.dev.queues.producers]]
-binding = "ANALYTICS_QUEUE"
-queue = "letbuyy-analytics-dev"
-
-[[env.dev.queues.producers]]
-binding = "SEARCH_QUEUE"
-queue = "letbuyy-search-indexing-dev"
-
-[[env.dev.queues.producers]]
-binding = "NOTIFICATION_QUEUE"
-queue = "letbuyy-notifications-dev"
-
-[[env.dev.queues.producers]]
-binding = "RUNTIME_QUEUE"
-queue = "letbuyy-dev-queue"
-
-[[env.dev.kv_namespaces]]
-binding = "CACHE"
-id = "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__"
-preview_id = "__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__"
-
-[[env.dev.r2_buckets]]
-binding = "R2_BUCKET"
-bucket_name = "letbuyy-dev-r2"
-
-[[env.dev.d1_databases]]
-binding = "RUNTIME_DB"
-database_name = "letbuyy-dev-d1"
-database_id = "__LETBUYY_RUNTIME_D1_DEV_DATABASE_ID__"
-migrations_dir = "../../database/cloudflare/d1/migrations"
-
-[[env.dev.durable_objects.bindings]]
-name = "RUNTIME_COORDINATOR"
-class_name = "LetbuyyRuntimeDurableObject"
-
-[[env.dev.services]]
-binding = "WEBHOOK_SERVICE"
-service = "letbuyy-webhooks-dev"
-
-[[env.dev.analytics_engine_datasets]]
-binding = "RUNTIME_TELEMETRY"
-dataset = "letbuyy-dev-telemetry"
-
-[env.dev.placement]
 mode = "smart"
 
 [env.staging]

@@ -2,16 +2,19 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { EmptyState, MaterialIcon, Search } from '@letbuyy/ui'
+import { MaterialIcon, Search } from '@letbuyy/ui'
 import { getMerchantCommandItems, normalizeSiteType, type MerchantCommandItem } from './merchantNavigation'
 
 interface CommandPaletteProps {
     store: string
+    storeName: string
     siteType: string
     onClose: () => void
 }
 
-export default function CommandPalette({ store, siteType, onClose }: CommandPaletteProps) {
+const searchChips = ['Apps', 'Customers', 'Orders', 'Products', 'Sales channels']
+
+export default function CommandPalette({ store, storeName, siteType, onClose }: CommandPaletteProps) {
     const [query, setQuery] = useState('')
     const [highlighted, setHighlighted] = useState(0)
     const [entityCommands, setEntityCommands] = useState<MerchantCommandItem[]>([])
@@ -39,7 +42,7 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
     const normalizedQuery = query.trim().toLowerCase()
     const routeCommands = normalizedQuery
         ? allCommands.filter((command) => command.keywords.some((keyword) => keyword.includes(normalizedQuery)))
-        : allCommands
+        : []
     const filtered = normalizedQuery.length >= 2
         ? [...routeCommands, ...entityCommands]
         : routeCommands
@@ -52,6 +55,7 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
     })
 
     const flatItems = Object.values(sections).flat()
+    const displayStoreName = storeName?.trim() || store
 
     const handleSelect = useCallback((item: MerchantCommandItem) => {
         onClose()
@@ -101,39 +105,63 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
         <div className="admin-cmd-overlay" onClick={onClose}>
             <div className="admin-cmd-modal" onClick={(e) => e.stopPropagation()}>
                 {/* Search input */}
-                <div className="admin-cmd-input-wrapper">
-                    <MaterialIcon name="search" />
-                    <input
-                        ref={inputRef}
-                        className="admin-cmd-input"
-                        type="text"
-                        placeholder="Search pages, actions, settings..."
-                        value={query}
-                        onChange={(e) => {
-                            const nextQuery = e.target.value
-                            setQuery(nextQuery)
-                            setHighlighted(0)
-                            if (nextQuery.trim().length < 2) {
-                                setEntityCommands([])
-                            }
-                        }}
-                        autoComplete="off"
-                    />
-                    {/* Mobile close button */}
-                    <button className="admin-cmd-close-mobile" onClick={onClose}>
-                        <MaterialIcon name="close" />
-                    </button>
+                <div className="admin-cmd-header">
+                    <div className="admin-cmd-input-wrapper">
+                        <MaterialIcon name="search" />
+                        <input
+                            ref={inputRef}
+                            className="admin-cmd-input"
+                            type="text"
+                            placeholder="Search"
+                            value={query}
+                            onChange={(e) => {
+                                const nextQuery = e.target.value
+                                setQuery(nextQuery)
+                                setHighlighted(0)
+                                if (nextQuery.trim().length < 2) {
+                                    setEntityCommands([])
+                                }
+                            }}
+                            autoComplete="off"
+                        />
+                        <button className="admin-cmd-filter" type="button" aria-label="Filter search">
+                            <MaterialIcon name="filter_list" />
+                        </button>
+                        <button className="admin-cmd-close-mobile" type="button" onClick={onClose} aria-label="Close search">
+                            <MaterialIcon name="close" />
+                        </button>
+                    </div>
+
+                    <div className="admin-cmd-chips" aria-label="Search categories">
+                        {searchChips.map((chip) => (
+                            <button
+                                key={chip}
+                                type="button"
+                                className="admin-cmd-chip"
+                                onClick={() => {
+                                    setQuery(chip)
+                                    setHighlighted(0)
+                                    inputRef.current?.focus()
+                                }}
+                            >
+                                {chip}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 {/* Results */}
                 <div className="admin-cmd-results">
-                    {flatItems.length === 0 ? (
-                        <EmptyState
-                            className="admin-cmd-empty-state"
-                            icon={<Search className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title="No results found"
-                            body="Try searching for a page, setting, or action."
-                        />
+                    {normalizedQuery.length === 0 ? (
+                        <div className="admin-cmd-empty-state">
+                            <Search aria-hidden="true" />
+                            <p>Find anything in {displayStoreName}</p>
+                        </div>
+                    ) : flatItems.length === 0 ? (
+                        <div className="admin-cmd-empty-state">
+                            <Search aria-hidden="true" />
+                            <p>No results for “{query.trim()}”</p>
+                        </div>
                     ) : (
                         Object.entries(sections).map(([section, items]) => (
                             <div key={section}>
@@ -159,14 +187,6 @@ export default function CommandPalette({ store, siteType, onClose }: CommandPale
                             </div>
                         ))
                     )}
-                </div>
-
-                {/* Footer — desktop only */}
-                <div className="admin-cmd-footer">
-                    <span><kbd>↑</kbd> <kbd>↓</kbd> Navigate</span>
-                    <span><kbd>↵</kbd> Select</span>
-                    <span><kbd>Esc</kbd> Close</span>
-                    <span><kbd>g</kbd> then <kbd>p/o/c/i</kbd> Jump</span>
                 </div>
             </div>
         </div>

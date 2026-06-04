@@ -139,8 +139,8 @@ Infrastructure and local development:
 - Supabase Postgres/Auth/Storage are the database/auth/storage authority.
 - Vercel is the implied Next app deployment target from config/env ownership and app manifests.
 - Cloudflare Workers deploy `services/api-gateway`, `services/webhook-service`, and `services/queue-workers`.
-- `infrastructure/local/docker-compose.yml` defines local Postgres 16, Redis 7, ElasticMQ, Mailpit, WireMock, Flipt, and replay runtime.
-- CI workflows exist for architecture governance, dev/staging runtime deployment, production rollout, environment lifecycle, and live production certification.
+- Staging is the development and integration proof environment; seeding is owned by `scripts/staging/seed.mjs`.
+- CI workflows exist for architecture governance, staging runtime deployment, production rollout, environment lifecycle, and live production certification.
 
 ## 4. DATABASE SCHEMA
 
@@ -1005,19 +1005,19 @@ Primary variables and status:
 
 | Variable | Owner/scope | Source status | Used by |
 |---|---|---|---|
-| `NEXT_PUBLIC_API_URL` | Public Next app config | Local values present; examples in templates | Marketing create flow and app clients. |
-| `NEXT_PUBLIC_API_BASE_URL` | Public Next app config | Local values present; examples in templates | API base for browser-safe calls. |
-| `LETBUYY_API_URL` / `LETBUYY_API_BASE_URL` / `API_URL` | Server Next config | Local values present; examples in templates | App server route proxies and worker clients. |
-| `NEXT_PUBLIC_ACCOUNTS_URL` | Public Next app config | Local values present; examples in templates | Marketing/merchant redirects to identity platform. |
-| `NEXT_PUBLIC_ADMIN_URL` | Public Next app config | Local values present; examples in templates | Identity redirect to merchant control plane. |
-| `NEXT_PUBLIC_STOREFRONT_URL` / `NEXT_PUBLIC_STOREFRONT_LOCAL_URL` | Public Next app config | Local values present; examples in templates | Preview and storefront links. |
-| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public Supabase config | URL local value present; anon key is placeholder in local app envs | Supabase browser clients. |
+| `NEXT_PUBLIC_API_URL` | Public Next app config | Staging/production placeholders in templates; values live in Vercel | Marketing create flow and app clients. |
+| `NEXT_PUBLIC_API_BASE_URL` | Public Next app config | Staging/production placeholders in templates; values live in Vercel | API base for browser-safe calls. |
+| `LETBUYY_API_URL` / `LETBUYY_API_BASE_URL` / `API_URL` | Server Next config | Staging/production placeholders in templates; values live in Vercel | App server route proxies and worker clients. |
+| `NEXT_PUBLIC_ACCOUNTS_URL` | Public Next app config | Staging/production placeholders in templates; values live in Vercel | Marketing/merchant redirects to identity platform. |
+| `NEXT_PUBLIC_ADMIN_URL` | Public Next app config | Staging/production placeholders in templates; values live in Vercel | Identity redirect to merchant control plane. |
+| `NEXT_PUBLIC_STOREFRONT_URL` | Public Next app config | Staging/production placeholders in templates; values live in Vercel | Preview and storefront links. |
+| `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public Supabase config | Public staging/production values live in Vercel/mobile build config | Supabase browser clients. |
 | `SUPABASE_URL` / `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` | Worker/server secret config | Required by worker adapters/templates; service role must never reach client | API/webhook workers and service adapters. |
-| `AUTH_SECRET` | Server/worker secret | Placeholder in local app envs | Identity sessions/internal signatures. |
+| `AUTH_SECRET` | Server/worker secret | Placeholder in templates; real values live in secret stores | Identity sessions/internal signatures. |
 | `INTERNAL_API_SECRET` / `LETBUYY_INTERNAL_API_SECRET` | Server/worker secret | Placeholder in local app envs | Internal app-to-worker HMAC calls. |
-| `CUSTOMER_SESSION_SECRET` | Storefront server secret | Placeholder in local app envs | Storefront customer session cookies. |
+| `CUSTOMER_SESSION_SECRET` | Storefront server secret | Placeholder in templates; real values live in secret stores | Storefront customer session cookies. |
 | `CSRF_SECRET` | Worker secret | Template/worker requirement | Worker CSRF/session security. |
-| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Server/worker secret | URL local value present; token placeholder in app envs | Auth and worker rate limits/cache. |
+| `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN` | Server/worker secret | Placeholder in templates; real values live in secret stores | Auth and worker rate limits/cache. |
 | `RESEND_API_KEY` / `RESEND_FROM_EMAIL` | Server/worker secret/config | API key placeholder; sender configured in local app envs | Email adapter, identity notifications, notification logs. |
 | `TURNSTILE_SECRET_KEY` / `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | Anti-abuse config | Placeholder in local app envs | Identity signup/login/lookup protections. |
 | `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` / `RAZORPAY_WEBHOOK_SECRET` | Payment provider secret/config | Template/worker requirement; no real values in audited local status | Razorpay order/verify/webhook and mobile build. |

@@ -6,7 +6,7 @@ const environmentLifecycle = JSON.parse(fs.readFileSync("config/runtime/environm
 const rolloutLifecycle = JSON.parse(fs.readFileSync("config/runtime/rollout-lifecycle.json", "utf8"));
 
 test("environment lifecycle preserves promotion order and isolation", () => {
-  assert.deepEqual(environmentLifecycle.promotionOrder, ["local", "development", "staging", "production"]);
+  assert.deepEqual(environmentLifecycle.promotionOrder, ["staging", "production"]);
   assert.ok(environmentLifecycle.isolationRules.mustSeparate.includes("secrets"));
   assert.ok(environmentLifecycle.isolationRules.mustSeparate.includes("queues"));
   assert.ok(environmentLifecycle.isolationRules.mustSeparate.includes("telemetry backends"));

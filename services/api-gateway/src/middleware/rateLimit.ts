@@ -41,6 +41,14 @@ const memoryStore = new Map<string, RateLimitEntry>();
 const queryCostMemoryStore = new Map<string, QueryCostLimitEntry>();
 let lastCleanupAt = 0;
 
+function isLocalRuntime(env: Pick<Env, 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>): boolean {
+    const values = [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV]
+        .filter((value): value is string => typeof value === 'string')
+        .map((value) => value.toLowerCase());
+
+    return values.includes('local') || values.includes('development');
+}
+
 function cleanupExpiredEntries(now: number) {
     if (now - lastCleanupAt < 60_000) return;
 
@@ -430,6 +438,11 @@ export function rateLimit(options: RateLimitOptions = {}) {
     } = options;
 
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        if (isLocalRuntime(c.env)) {
+            await next();
+            return;
+        }
+
         const clientKey = keyGenerator(c);
         const isProduction = c.env.ENVIRONMENT === 'production';
 
@@ -500,6 +513,11 @@ export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {
 
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
         if (c.req.method === 'OPTIONS') {
+            await next();
+            return;
+        }
+
+        if (isLocalRuntime(c.env)) {
             await next();
             return;
         }

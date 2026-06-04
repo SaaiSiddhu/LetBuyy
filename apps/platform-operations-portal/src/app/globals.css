@@ -7,6 +7,12 @@
   --font-mono-premium: var(--font-letbuyy-mono), "SFMono-Regular", Consolas, "Liberation Mono", monospace;
   --background: #ffffff;
   --foreground: #171717;
+  --lb-color-brand-purple: #8B5CF6;
+  --lb-color-primary: #8B5CF6;
+  --lb-color-primary-hover: #7C3AED;
+  --lb-color-primary-active: #6D28D9;
+  --lb-color-primary-subtle: rgba(139, 92, 246, 0.12);
+  --lb-color-focus-ring: #8B5CF6;
 }
 
 @theme inline {

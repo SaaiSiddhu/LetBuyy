@@ -145,8 +145,8 @@ class AppThemeColors {
   
   /// Bottom navigation selected item
   Color get bottomNavSelected => isDark 
-      ? Colors.white 
-      : const Color(0xFF0F172A);
+      ? const Color(0xFF8B5CF6)
+      : const Color(0xFF8B5CF6);
   
   /// Bottom navigation unselected item
   Color get bottomNavUnselected => isDark 
@@ -155,7 +155,7 @@ class AppThemeColors {
   
   /// Selected nav item background
   Color get bottomNavSelectedBg => isDark 
-      ? Colors.white.withValues(alpha: 0.15) 
+      ? const Color(0xFF8B5CF6).withValues(alpha: 0.12)
       : const Color(0xFF8B5CF6).withValues(alpha: 0.12);
   
   /// Snackbar background

@@ -11,7 +11,7 @@ import {
 } from '@letbuyy/auth-core'
 import { getSessionCookie } from '../auth/cookies'
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8787/v1'
+const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store/v1'
 
 interface IdentityApiRequestInit extends RequestInit {
     requireSession?: boolean

@@ -133,6 +133,64 @@ const productGrid: SectionSchema = {
     },
 }
 
+const announcementBar: SectionSchema = {
+    name: 'Announcement Bar',
+    type: 'announcementBar',
+    description: 'Slim promotional message above the storefront header',
+    defaults: {
+        text: 'Free shipping on fresh drops this week.',
+        linkLabel: 'Shop now',
+        linkHref: '/products',
+        alignment: 'center',
+        backgroundColor: '#0F172A',
+        textColor: '#FFFFFF',
+        visibleOnMobile: true,
+    },
+    presets: [
+        { name: 'Promo message', settings: { text: 'Free shipping on fresh drops this week.', linkLabel: 'Shop now', linkHref: '/products', alignment: 'center' } },
+        { name: 'Launch notice', settings: { text: 'New season collection is live.', linkLabel: 'Explore', linkHref: '/collections/new', alignment: 'center' } },
+    ],
+    settings_schema: {
+        text: { type: 'text', label: 'Message', maxLength: 120 },
+        linkLabel: { type: 'text', label: 'Link label', maxLength: 40 },
+        linkHref: { type: 'url', label: 'Link URL' },
+        alignment: { type: 'select', label: 'Alignment', default: 'center', options: ['left', 'center', 'right'] },
+        backgroundColor: { type: 'color', label: 'Background color', default: '#0F172A' },
+        textColor: { type: 'color', label: 'Text color', default: '#FFFFFF' },
+        visibleOnMobile: { type: 'toggle', label: 'Show on mobile', default: true },
+    },
+}
+
+const featuredProducts: SectionSchema = {
+    name: 'Featured Collection',
+    type: 'featuredProducts',
+    description: 'Editorial product collection highlight with a focused set of products',
+    defaults: {
+        title: 'Featured Collection',
+        subtitle: 'A tight edit of new arrivals and best sellers.',
+        collectionHandle: 'featured',
+        limit: 4,
+        columns: 4,
+        showViewAll: true,
+        viewAllLabel: 'View collection',
+        productCardStyle: 'editorial',
+    },
+    presets: [
+        { name: 'Editorial row', settings: { title: 'Featured Collection', subtitle: 'A tight edit of new arrivals and best sellers.', collectionHandle: 'featured', limit: 4, columns: 4, showViewAll: true } },
+        { name: 'New drops', settings: { title: 'New Drops', subtitle: 'Freshly added products ready for launch.', collectionHandle: 'new-arrivals', limit: 3, columns: 3, showViewAll: true } },
+    ],
+    settings_schema: {
+        title: { type: 'text', label: 'Heading', maxLength: 80 },
+        subtitle: { type: 'text', label: 'Subheading', maxLength: 160 },
+        collectionHandle: { type: 'text', label: 'Collection handle', maxLength: 80 },
+        limit: { type: 'range', label: 'Products shown', min: 2, max: 8, step: 1 },
+        columns: { type: 'range', label: 'Columns', min: 2, max: 4, step: 1 },
+        showViewAll: { type: 'toggle', label: 'Show view all link', default: true },
+        viewAllLabel: { type: 'text', label: 'View all label', maxLength: 40 },
+        productCardStyle: { type: 'select', label: 'Card style', default: 'editorial', options: ['editorial', 'minimal', 'boxed'] },
+    },
+}
+
 const categoryGridSchema: SectionSchema = {
     name: 'Category Grid',
     type: 'categoryGrid',
@@ -310,6 +368,11 @@ const header: SectionSchema = {
         showCart: { type: 'toggle', label: 'Show Cart Icon' },
         showAccount: { type: 'toggle', label: 'Show Account Icon' },
     },
+    sample_blocks: [
+        { type: 'navPage', settings: { label: 'Home', href: '/', isVisible: true } },
+        { type: 'navPage', settings: { label: 'Catalog', href: '/products', isVisible: true } },
+        { type: 'navPage', settings: { label: 'Contact', href: '/contact', isVisible: true } },
+    ],
     blocks_schema: {
         navPage: { name: 'Navigation Link', fields: { label: { type: 'text', label: 'Label', maxLength: 30 }, href: { type: 'url', label: 'URL' }, isVisible: { type: 'toggle', label: 'Visible' } } },
     },
@@ -354,7 +417,9 @@ const footer: SectionSchema = {
 // ---------- Registry ----------
 
 export const SECTION_SCHEMAS: Record<string, SectionSchema> = {
+    announcementBar,
     heroBanner,
+    featuredProducts,
     productGrid,
     categoryGrid: categoryGridSchema,
     brandMarquee,
@@ -559,6 +624,15 @@ export function getDefaultStorefrontThemeTemplate(
             },
             template: [
                 {
+                    id: 'announcement-default',
+                    type: 'announcementBar',
+                    order: 5,
+                    visible: true,
+                    settings: {
+                        ...announcementBar.defaults,
+                    },
+                },
+                {
                     id: 'hero-default',
                     type: 'heroBanner',
                     order: 10,
@@ -574,44 +648,14 @@ export function getDefaultStorefrontThemeTemplate(
                     },
                 },
                 {
-                    id: 'trust-badges-default',
-                    type: 'trustBadges',
+                    id: 'category-grid-default',
+                    type: 'categoryGrid',
                     order: 20,
                     visible: true,
                     settings: {
-                        ...trustBadges.defaults,
-                    },
-                },
-                {
-                    id: 'product-grid-default',
-                    type: 'productGrid',
-                    order: 30,
-                    visible: true,
-                    settings: {
-                        ...productGrid.defaults,
-                        title: 'Featured Products',
-                        subtitle: 'Products selected from your catalog',
-                        columns: 4,
-                        rows: 2,
-                    },
-                },
-                {
-                    id: 'brand-marquee-default',
-                    type: 'brandMarquee',
-                    order: 40,
-                    visible: true,
-                    settings: {
-                        ...brandMarquee.defaults,
-                        brands: ['LetBuyy', 'New Drops', 'Streetwear', 'Essentials', 'Limited Run'],
-                    },
-                },
-                {
-                    id: 'category-grid-default',
-                    type: 'categoryGrid',
-                    order: 50,
-                    visible: true,
-                    settings: {
                         ...categoryGridSchema.defaults,
+                        title: 'Shop by style',
+                        subtitle: 'Launch-ready groupings for daily buyers.',
                     },
                     blocks: [
                         {
@@ -650,9 +694,34 @@ export function getDefaultStorefrontThemeTemplate(
                     ],
                 },
                 {
+                    id: 'featured-collection-default',
+                    type: 'featuredProducts',
+                    order: 30,
+                    visible: true,
+                    settings: {
+                        ...featuredProducts.defaults,
+                        title: 'Drop-ready collection',
+                        subtitle: 'Curated items for the first storefront launch.',
+                        collectionHandle: 'new-arrivals',
+                    },
+                },
+                {
+                    id: 'product-grid-default',
+                    type: 'productGrid',
+                    order: 40,
+                    visible: true,
+                    settings: {
+                        ...productGrid.defaults,
+                        title: 'Featured Products',
+                        subtitle: 'Products selected from your catalog',
+                        columns: 4,
+                        rows: 2,
+                    },
+                },
+                {
                     id: 'newsletter-default',
                     type: 'newsletter',
-                    order: 60,
+                    order: 50,
                     visible: true,
                     settings: {
                         ...newsletter.defaults,

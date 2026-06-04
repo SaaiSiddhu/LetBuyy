@@ -26,7 +26,7 @@ export default async function DashboardLayout({
             <aside className="hidden w-64 border-r border-zinc-800 lg:block">
                 <div className="flex h-16 items-center border-b border-zinc-800 px-6">
                     <h1 className="text-lg font-bold text-zinc-50">LetBuyy</h1>
-                    <span className="ml-2 rounded bg-red-600/10 px-2 py-0.5 text-xs font-medium text-red-400">
+                    <span className="ml-2 rounded bg-[var(--lb-color-primary-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--lb-color-primary)]">
                         Console
                     </span>
                 </div>
@@ -51,7 +51,7 @@ export default async function DashboardLayout({
                     <form action="/api/console-auth/logout" method="post">
                         <button
                             type="submit"
-                            className="flex min-h-11 items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+                            className="flex min-h-11 items-center gap-2 rounded-lg border border-zinc-700 px-3 py-2 text-sm font-medium text-zinc-300 transition-colors hover:bg-zinc-800 hover:text-zinc-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
                         >
                             <LogOut size={16} />
                             Logout
@@ -68,7 +68,7 @@ function ConsoleNavLink({ href, label, icon }: { href: string; label: string; ic
     return (
         <a
             href={href}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-400"
+            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-zinc-800/50 hover:text-zinc-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
         >
             <span className="grid h-5 w-5 place-items-center">{icon}</span>
             {label}

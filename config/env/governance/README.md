@@ -4,7 +4,7 @@ This directory owns process rules for LetBuyy environment management. It is not 
 
 ## Rules
 
-- Runtime-local `.env`, `.env.local`, `.dev.vars`, and `all.env` files are ignored local state only.
+- Runtime `.env`, `.env.local`, `.dev.vars`, and `all.env` files must remain untracked and are not supported configuration sources.
 - Templates under `config/env/templates/` may include variable names and placeholder values only.
 - Schemas under `config/env/schemas/` define runtime class requirements for Next apps, Cloudflare Workers, and Flutter/mobile builds.
 - Ownership data under `config/env/ownership/` maps each runtime class to its secret store and validation owner.
@@ -13,7 +13,7 @@ This directory owns process rules for LetBuyy environment management. It is not 
 ## Runtime Classes
 
 - `next-app`: Vercel project environment. Public browser variables must use `NEXT_PUBLIC_*` and must not contain secrets.
-- `worker`: Cloudflare Worker secrets and bindings. `.dev.vars` remains local-only.
+- `worker`: Cloudflare Worker secrets and bindings managed through Cloudflare secret stores and IaC.
 - `mobile`: CI/app-store dart-define or platform secret injection. Mobile builds must never embed provider secret keys.
 
 ## Change Process

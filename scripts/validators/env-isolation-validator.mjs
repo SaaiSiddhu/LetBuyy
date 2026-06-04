@@ -8,8 +8,8 @@ const reporter = createReporter("Environment isolation validator");
 
 const lifecycle = readJson("config/runtime/environment-lifecycle.json");
 reporter.assert(
-  JSON.stringify(lifecycle?.promotionOrder) === JSON.stringify(["local", "development", "staging", "production"]),
-  "Environment lifecycle must preserve local -> development -> staging -> production promotion order",
+  JSON.stringify(lifecycle?.promotionOrder) === JSON.stringify(["staging", "production"]),
+  "Environment lifecycle must preserve staging -> production promotion order",
 );
 
 for (const resource of [
@@ -26,13 +26,13 @@ for (const resource of [
 }
 
 const environments = new Map((lifecycle?.environments || []).map((environment) => [environment.name, environment]));
-for (const name of ["local", "development", "staging", "production"]) {
+for (const name of ["staging", "production"]) {
   reporter.assert(environments.has(name), `Environment lifecycle missing ${name}`);
 }
 
-const local = environments.get("local");
-reporter.assert(local?.evidence?.certifiableAsLive === false, "Local environment must never be certifiable as live");
-reporter.assert(local?.providers?.sideEffectPolicy === "sandbox-only", "Local environment must be sandbox-only");
+const staging = environments.get("staging");
+reporter.assert(staging?.evidence?.certifiableAsLive === false, "Staging environment must not be certifiable as live production");
+reporter.assert(staging?.providers?.sideEffectPolicy === "no production mutation", "Staging environment must not mutate production providers");
 
 const production = environments.get("production");
 reporter.assert(production?.evidence?.certifiableAsLive === true, "Production environment must require live evidence before certification");
@@ -44,13 +44,13 @@ for (const file of [
   "services/queue-workers/wrangler.toml",
 ]) {
   const text = readFile(file);
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     reporter.assert(text.includes(`[env.${environment}.vars]`), `${file}: Cloudflare ${environment} vars must be explicit`);
     reporter.assert(text.includes(`[env.${environment}.placement]`), `${file}: Cloudflare ${environment} placement must be explicit`);
     reporter.assert(text.includes(`[env.${environment}.observability]`), `${file}: Cloudflare ${environment} telemetry config must be explicit`);
   }
 
-  const topLevel = text.split(/\n\[env\.dev\]/)[0] ?? "";
+  const topLevel = text.split(/\n\[env\.staging\]/)[0] ?? "";
   for (const forbiddenProductionResource of [
     'queue = "letbuyy-events-production"',
     'queue = "letbuyy-analytics-queue-production"',
@@ -61,7 +61,7 @@ for (const file of [
     'queue = "letbuyy-production-dead-letter-queue"',
     'bucket_name = "letbuyy-media-production"',
   ]) {
-    reporter.assert(!topLevel.includes(forbiddenProductionResource), `${file}: local/top-level config must not bind ${forbiddenProductionResource}`);
+    reporter.assert(!topLevel.includes(forbiddenProductionResource), `${file}: staging top-level config must not bind ${forbiddenProductionResource}`);
   }
 }
 

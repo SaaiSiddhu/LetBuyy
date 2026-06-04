@@ -47,7 +47,7 @@ for (const kind of ["worker", "queue", "projection", "replay-stream"]) {
   const sourceConfig = sourceByKind.get(kind);
   reporter.assert(Boolean(sourceConfig), `Runtime reconciliation missing desired resource source for ${kind}`);
   reporter.assert(exists(sourceConfig?.manifest || ""), `Runtime reconciliation source manifest missing for ${kind}: ${sourceConfig?.manifest}`);
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     reporter.assert((sourceConfig?.environments || []).includes(environment), `Runtime reconciliation ${kind} source missing ${environment}`);
   }
 }
@@ -57,7 +57,7 @@ const topologyRoots = new Set((topology?.nodes || []).map((node) => node.runtime
 const cloudflare = readJson("config/runtime/cloudflare-binding-ownership.json");
 for (const worker of cloudflare?.workers || []) {
   reporter.assert(topologyRoots.has(worker.runtimeRoot), `Cloudflare worker root missing from topology: ${worker.runtimeRoot}`);
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     reporter.assert(Boolean(worker.environments?.[environment]?.workerName), `Cloudflare worker missing env ownership for ${worker.runtimeRoot}/${environment}`);
   }
 }
@@ -66,7 +66,7 @@ const queues = readJson("config/runtime/queue-lifecycle-manifest.json");
 for (const queue of queues?.queues || []) {
   reporter.assert(topologyRoots.has(queue.consumerRoot), `Queue consumer root missing from topology: ${queue.consumerRoot}`);
   reporter.assert(topologyRoots.has(queue.producerRoot), `Queue producer root missing from topology: ${queue.producerRoot}`);
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     reporter.assert(Boolean(queue.names?.[environment]), `Queue missing environment name: ${queue.logicalName}/${environment}`);
   }
 }

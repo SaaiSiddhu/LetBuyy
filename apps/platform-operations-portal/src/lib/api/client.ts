@@ -10,7 +10,7 @@ import {
 } from '@letbuyy/auth-core';
 import { cookies } from 'next/headers';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8787';
+const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store';
 
 interface PlatformOperationsApiOptions {
     requireSession?: boolean;

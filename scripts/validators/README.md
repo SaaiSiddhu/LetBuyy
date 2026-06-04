@@ -4,7 +4,7 @@
 
 Shared helpers belong in `governance-common.mjs`. New validators must be wired through `scripts/validate-governance.mjs` before their enforcement is documented.
 
-`operational-lifecycle-validator.mjs` hard-fails enterprise SDLC drift: local stack contracts, development/staging/production isolation, rollout controls, feature flag evaluation, sandbox providers, shadow traffic contracts, load tooling, and stale live certification evidence.
+`operational-lifecycle-validator.mjs` hard-fails enterprise SDLC drift: staging lifecycle contracts, staging/production isolation, rollout controls, feature flag evaluation, sandbox providers, shadow traffic contracts, load tooling, and stale live certification evidence.
 
 Enterprise dependency and execution hardening is enforced by:
 

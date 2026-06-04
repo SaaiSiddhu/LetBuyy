@@ -345,11 +345,11 @@ export default function OnboardingPage() {
                 if (data.authenticated && data.user) {
                     setUser(data.user)
                 } else {
-                    window.location.href = '/lookup'
+                    setUser(null)
                 }
             })
             .catch(() => {
-                window.location.href = '/lookup'
+                setUser(null)
             })
             .finally(() => setAuthLoading(false))
     }, [])
@@ -495,12 +495,32 @@ export default function OnboardingPage() {
     }
 
     /* ——— Loading state ——— */
-    if (authLoading || !user) {
+    if (authLoading) {
         return (
             <div className="auth-container">
-                <div className="auth-card" style={{ textAlign: 'center', padding: '48px 20px' }}>
-                    <div className="onboard-spinner" style={{ margin: '0 auto 12px' }} />
-                    <p style={{ color: 'var(--text-hint)', fontSize: 14 }}>Loading...</p>
+                <div className="auth-card">
+                    <div className="auth-logo">
+                        <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                    </div>
+                    <div className="onboard-spinner" />
+                    <p className="auth-subtitle">Loading...</p>
+                </div>
+            </div>
+        )
+    }
+
+    if (!user) {
+        return (
+            <div className="auth-container">
+                <div className="auth-card">
+                    <div className="auth-logo">
+                        <img src="/icons/app_icon.png" alt="LetBuyy" width={48} height={48} />
+                    </div>
+                    <h1 className="auth-title">Sign in to continue</h1>
+                    <p className="auth-subtitle">Your session expired. Log in again to create your site.</p>
+                    <button className="auth-btn-primary" onClick={() => { window.location.href = '/lookup' }}>
+                        Log in
+                    </button>
                 </div>
             </div>
         )

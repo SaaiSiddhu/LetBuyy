@@ -4,7 +4,7 @@ Generated during environment setup Phase 0 from the current `wrangler.toml` file
 
 | Worker | Entry | R2 | KV | Queue | Hyperdrive | DO |
 |--------|-------|----|----|-------|------------|----|
-| `services/api-gateway` / `letbuyy-api` | `src/index.ts` | `R2_BUCKET` (`letbuyy-local-storage`, env buckets `letbuyy-dev-r2`, `letbuyy-media-staging`, `letbuyy-media-production`) | `CACHE` in dev/staging/production env blocks | Producers: `EVENT_QUEUE`, `ANALYTICS_QUEUE`, `SEARCH_QUEUE`, `NOTIFICATION_QUEUE`, `RUNTIME_QUEUE` | `HYPERDRIVE` in staging/production env blocks | `RUNTIME_COORDINATOR` -> `LetbuyyRuntimeDurableObject` |
+| `services/api-gateway` / `letbuyy-api` | `src/index.ts` | `R2_BUCKET` (`letbuyy-media-staging`, `letbuyy-media-production`) | `CACHE` in staging/production env blocks | Producers: `EVENT_QUEUE`, `ANALYTICS_QUEUE`, `SEARCH_QUEUE`, `NOTIFICATION_QUEUE`, `RUNTIME_QUEUE` | `HYPERDRIVE` in staging/production env blocks | `RUNTIME_COORDINATOR` -> `LetbuyyRuntimeDurableObject` |
 | `services/webhook-service` / `letbuyy-webhook` | `src/index.ts` | None | None | None | None | None |
 | `services/queue-workers` / `letbuyy-queue-workers` | `src/index.ts` | None | None | Consumers: events, analytics, search-indexing, notifications, dead-letter, runtime queue per env | None currently configured | None |
 
@@ -12,9 +12,9 @@ Generated during environment setup Phase 0 from the current `wrangler.toml` file
 
 | Worker | Routes / Domains | Service Bindings |
 |--------|------------------|------------------|
-| `api-gateway` | Dev: `api-dev.letbuyy.store`; staging: `api-staging.letbuyy.store`; production: `api.letbuyy.store` | `WEBHOOK_SERVICE` in dev/staging/production |
-| `webhook-service` | Dev: `webhooks-dev.letbuyy.store`; staging: `webhooks-staging.letbuyy.store`; production: `webhooks.letbuyy.store` | `API_GATEWAY_SERVICE` in dev/staging/production |
-| `queue-workers` | No HTTP route configured; queue consumer only | `API_GATEWAY_SERVICE` in dev/staging/production |
+| `api-gateway` | Staging: `api-staging.letbuyy.store`; production: `api.letbuyy.store` | `WEBHOOK_SERVICE` in staging/production |
+| `webhook-service` | Staging: `webhooks-staging.letbuyy.store`; production: `webhooks.letbuyy.store` | `API_GATEWAY_SERVICE` in staging/production |
+| `queue-workers` | No HTTP route configured; queue consumer only | `API_GATEWAY_SERVICE` in staging/production |
 
 ## Reserved Service Roots Without Wrangler Configs
 

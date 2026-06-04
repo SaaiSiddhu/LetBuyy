@@ -2,19 +2,18 @@
 
 LetBuyy is a governed multi-tenant commerce and site-builder SaaS. Runtime boundaries, tenant rules, and production constraints are defined in `AGENTS.md`.
 
-## Local Development Setup
+## Staging-First Development
 
 1. `pnpm install`
-2. `pnpm run setup:env`
-3. Fill in real provider credentials in `.env.local` files where needed
-4. `cd infrastructure/local && docker-compose up -d`
-5. `pnpm turbo dev`
+2. `pnpm turbo typecheck`
+3. `pnpm lint`
+4. `pnpm turbo build`
+5. `pnpm run validate:governance`
+6. Deploy the branch to staging or a PR preview, then run E2E against staging URLs.
 
-## Local Storefront Routing
+## Staging Storefront Routing
 
-The storefront runtime supports both path routing and local wildcard-style hosts:
+The storefront runtime is tested through deployed staging routes:
 
-- Path route: `http://localhost:3003/store/teststore`
-- Host route: `http://teststore.localhost:3003`
-
-Most modern browsers resolve `*.localhost` to loopback automatically. If your OS or browser does not, add `127.0.0.1 teststore.localhost` to `/etc/hosts` for the store handle you are testing.
+- Path route: `https://storefront.staging.letbuyy.store/store/teststore`
+- Host route: `https://teststore.staging.letbuyy.store`

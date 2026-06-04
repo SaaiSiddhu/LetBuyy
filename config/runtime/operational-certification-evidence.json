@@ -1,20 +1,20 @@
 {
   "$schema": "config/runtime/operational-certification-evidence.schema.json",
   "contractVersion": 1,
-  "mode": "local-executable-evidence-not-production-certification",
+  "mode": "staging-executable-evidence-not-production-certification",
   "harness": {
     "script": "infrastructure/scripts/operations/run-operational-certification.mjs",
-    "defaultMode": "local",
+    "defaultMode": "staging",
     "defaultOutput": "artifacts/operational-certification/report.json",
     "planMode": "prints executable certification plan without evidence claims",
-    "localMode": "executes deterministic persistent recovery scenarios and writes ignored local evidence",
-    "restoreMode": "restores append-only local evidence from persisted JSONL collections in a separate process",
+    "stagingMode": "executes deterministic persistent recovery scenarios and writes ignored staging evidence",
+    "restoreMode": "restores append-only staging evidence from persisted JSONL collections in a separate process",
     "executeMode": "refuses live evidence recording; provider execution remains owned by phase4-live-certify.mjs",
     "productionCertification": false
   },
   "persistenceBackends": {
-    "local": {
-      "kind": "local-jsonl-append-only",
+    "jsonlEvidence": {
+      "kind": "staging-jsonl-append-only",
       "storageCollections": [
         "wal",
         "replay-events",
@@ -32,7 +32,7 @@
     "sqlite": {
       "kind": "sqlite",
       "status": "adapter-contract",
-      "localCertificationCompatible": true
+      "stagingCertificationCompatible": true
     },
     "postgres": {
       "kind": "postgres",
@@ -139,7 +139,7 @@
     "ignoredDirectory": "artifacts/operational-certification/",
     "hashAlgorithm": "sha256",
     "liveCertificationRequiresProviderEvidence": true,
-    "localEvidenceCertification": false
+    "stagingEvidenceCertification": false
   },
   "benchmarkLineage": {
     "requiredFields": [

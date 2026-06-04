@@ -27,7 +27,7 @@ function requireFile(path) {
   assert(fs.existsSync(path), `missing Supabase operational file: ${path}`);
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
 for (const file of [
   "database/supabase/migrations/062_production_rollout_operations.sql",

@@ -40,7 +40,7 @@ function packageDirForConfig(config) {
   return segments[0] === "services" && segments[1] ? `${segments[0]}/${segments[1]}` : ".";
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
 for (const secretName of requiredSecretNames) {
   const envName = `ROTATE_SECRET_${secretName}`;

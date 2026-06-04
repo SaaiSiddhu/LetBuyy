@@ -113,7 +113,7 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFF6366F1).withValues(alpha: 0.3),
+                        const Color(0xFF8B5CF6).withValues(alpha: 0.3),
                         const Color(0xFF818CF8).withValues(alpha: 0.1),
                       ],
                     ),
@@ -193,7 +193,7 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
                 child: ElevatedButton(
                   onPressed: _save,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF6366F1), // Indigo accent
+                    backgroundColor: const Color(0xFF8B5CF6), // Indigo accent
                     foregroundColor: Colors.white,
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     elevation: 0,
@@ -901,7 +901,7 @@ class _SectionSettingsSheetState extends State<SectionSettingsSheet> {
             value: _settings[key] != false,
             onChanged: (value) => setState(() => _settings[key] = value),
             activeColor: const Color(0xFF818CF8),
-            activeTrackColor: const Color(0xFF6366F1).withValues(alpha: 0.3),
+            activeTrackColor: const Color(0xFF8B5CF6).withValues(alpha: 0.3),
             inactiveThumbColor: colors.textTertiary,
             inactiveTrackColor: colors.divider,
           ),

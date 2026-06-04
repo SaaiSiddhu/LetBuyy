@@ -17,30 +17,6 @@
     "sourceOfTruth": "service-wrangler-config-plus-cloudflare-topology"
   },
   "environments": {
-    "dev": {
-      "deploymentEnv": "dev",
-      "applicationEnv": "development",
-      "resourcePrefix": "letbuyy-dev",
-      "worker": "letbuyy-dev-worker",
-      "d1": "letbuyy-dev-d1",
-      "kv": "letbuyy-dev-kv",
-      "r2": "letbuyy-dev-r2",
-      "runtimeQueue": "letbuyy-dev-queue",
-      "deadLetterQueue": "letbuyy-dev-dead-letter-queue",
-      "durableObjectNamespace": "letbuyy-dev-runtime-coordinator",
-      "telemetryDataset": "letbuyy-dev-telemetry",
-      "replayStorage": "letbuyy-dev-replay",
-      "walStorage": "letbuyy-dev-wal",
-      "workers": {
-        "apiGateway": "letbuyy-api-dev",
-        "webhookService": "letbuyy-webhooks-dev",
-        "queueWorkers": "letbuyy-queue-workers-dev"
-      },
-      "routes": {
-        "apiGateway": "api-dev.letbuyy.store",
-        "webhookService": "webhooks-dev.letbuyy.store"
-      }
-    },
     "staging": {
       "deploymentEnv": "staging",
       "applicationEnv": "staging",
@@ -100,20 +76,26 @@
       "durableObjectBinding": "RUNTIME_COORDINATOR",
       "durableObjectClass": "LetbuyyRuntimeDurableObject",
       "runtimeQueueProducerBinding": "RUNTIME_QUEUE",
-      "serviceBindings": ["WEBHOOK_SERVICE"],
+      "serviceBindings": [
+        "WEBHOOK_SERVICE"
+      ],
       "telemetryBinding": "RUNTIME_TELEMETRY"
     },
     "webhookService": {
       "runtimeRoot": "services/webhook-service",
       "config": "services/webhook-service/wrangler.toml",
-      "serviceBindings": ["API_GATEWAY_SERVICE"],
+      "serviceBindings": [
+        "API_GATEWAY_SERVICE"
+      ],
       "telemetryBinding": "RUNTIME_TELEMETRY"
     },
     "queueWorkers": {
       "runtimeRoot": "services/queue-workers",
       "config": "services/queue-workers/wrangler.toml",
       "runtimeQueueConsumer": true,
-      "serviceBindings": ["API_GATEWAY_SERVICE"],
+      "serviceBindings": [
+        "API_GATEWAY_SERVICE"
+      ],
       "telemetryBinding": "RUNTIME_TELEMETRY"
     }
   },

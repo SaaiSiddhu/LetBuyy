@@ -17,7 +17,7 @@ reporter.assert(d1Migration.includes("replay_restoration_lineage"), "D1 migratio
 reporter.assert(d1Migration.includes("divergence_detected"), "Replay restoration lineage must record divergence");
 
 const seen = new Set();
-for (const environment of ["dev", "staging", "production"]) {
+for (const environment of ["staging", "production"]) {
   const env = cloudflareTopology.environments[environment];
   for (const key of ["replayStorage", "walStorage"]) {
     reporter.assert(env[key].startsWith(env.resourcePrefix), `${key} must be prefixed for ${environment}`);

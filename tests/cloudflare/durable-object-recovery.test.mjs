@@ -12,11 +12,11 @@ test("Durable Object recovery validator enforces per-environment recovery lineag
   assert.equal(result.status, 0, result.stderr || result.stdout);
 });
 
-test("Durable Object recovery contract requires explicit dev staging and production ownership", () => {
+test("Durable Object recovery contract requires explicit staging and production ownership", () => {
   const manifest = JSON.parse(fs.readFileSync("config/runtime/durable-execution-contract.json", "utf8"));
   const environments = new Set(manifest.durableObjectRecovery.requiredEnvironments);
 
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     assert.ok(environments.has(environment), `missing Durable Object recovery env ${environment}`);
   }
   assert.equal(manifest.durableObjectRecovery.bindingPolicy, "non-inheritable-binding-explicit-per-environment");

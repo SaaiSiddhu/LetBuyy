@@ -17,7 +17,7 @@ function valueFor(prefix) {
   return arg ? arg.slice(prefix.length + 1) : null;
 }
 
-reporter.assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+reporter.assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 reporter.assert(topology.mode === "governance-contract-not-live-evidence", "Checked-in provider topology must not claim live evidence");
 reporter.assert(topology.evidence?.liveEvidenceTracked === false, "Provider evidence artifacts must not be tracked source authority");
 reporter.assert(Array.isArray(topology.evidence?.executeModeRequires), "Provider execute-mode requirements must be declared");

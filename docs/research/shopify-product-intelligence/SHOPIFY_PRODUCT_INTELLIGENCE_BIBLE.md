@@ -1,0 +1,11103 @@
+# Shopify Product Intelligence Bible
+
+- Research date: 2026-06-02
+- Scope: Merchant-facing Shopify Admin product intelligence for LetBuyy.
+- Privacy: Store, user, email, account, domain, token, and merchant-specific values are redacted.
+- Method: Authenticated Chrome session, accessibility tree, visual review, redacted screenshots, non-persistent interactions only.
+-
+- Merged master research corpus. Minimum verified target: 10,000 lines.
+## Ethics, Scope, And Redaction
+
+- This is product research, not cloning or reverse engineering.
+- The goal is to understand product architecture, workflow design, interaction patterns, and merchant psychology.
+- No private merchant data, customer data, order data, addresses, phone numbers, tokens, or personal account details are included.
+- All Shopify Admin routes are written with `[store]` placeholders rather than real store identifiers.
+- All screenshots committed by this run are redacted copies only.
+- Every final action that could persist data was deliberately avoided.
+- Observations are tied to accessibility tree, visual review, route inventory, and non-persistent interaction sampling.
+
+## Executive Synthesis
+
+1. Shopify feels professional because it makes merchant operations look finite and governable.
+2. Shopify feels intuitive because each page starts with the merchant job, then reveals configuration depth.
+3. Shopify feels scalable because commerce domains are separated into stable, composable surfaces.
+4. Shopify feels trustworthy because risky actions are disabled, gated, explained, or confirmed.
+5. Shopify feels efficient because tables, search, filters, metrics, and contextual menus minimize page switching.
+6. Shopify feels sticky because settings, payments, themes, apps, markets, customers, products, and analytics become one operating system.
+
+## Complete Platform Navigation Map
+
+### Home
+- Home
+
+### Orders
+- Orders
+- Drafts
+- Abandoned checkouts
+
+### Products
+- Products
+- Collections
+- Inventory
+- Purchase orders
+- Transfers
+- Gift cards
+
+### Customers
+- Customers
+- Segments
+- Companies
+
+### Marketing
+- Marketing
+- Campaigns
+- Attribution
+
+### Discounts
+- Discounts
+
+### Content
+- Metaobjects
+- Files
+- Menus
+- Blog posts
+
+### Markets
+- Markets
+- Catalogs
+- Rollouts
+
+### Analytics
+- Analytics
+- Reports
+- Live View
+
+### Sales channels
+- Online Store
+- Agentic
+
+### Apps
+- Add
+
+### Settings
+- Settings Root
+- General
+- Plan
+- Billing
+- Users
+- Roles
+- Security
+- Payments
+- Checkout
+- Customer Accounts
+- Shipping and Delivery
+- Taxes and Duties
+- Locations
+- Apps Settings
+- Sales Channels
+- Domains
+- Customer Events
+- Notifications
+- Customer Notification Templates
+- Metafields and Metaobjects
+- Languages
+- Customer Privacy
+- Policies
+
+
+## Route Atlas
+
+### Route 1: Home
+
+- Route: `/`
+- Parent navigation: Home
+- Purpose: Onboarding dashboard and next-best-action launchpad.
+- Primary user: Store owner or operator
+- Frequency: Daily during setup, weekly after launch
+- Access status: Observed via redacted screenshot
+- Primary CTA: Add product / choose theme / activate payments depending on task card
+- Secondary actions: Setup domain, store name, shipping rates, plan selection
+- LetBuyy equivalent: Merchant home should be a readiness cockpit, not a generic dashboard.
+- Component evidence:
+  - onboarding cards
+  - task grid
+  - visual product illustrations
+  - trial card
+  - global search
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 2: Orders
+
+- Route: `/orders`
+- Parent navigation: Orders
+- Purpose: Order operations and fulfillment queue.
+- Primary user: Merchant operator
+- Frequency: High after launch
+- Access status: Observed authenticated, gated by plan
+- Primary CTA: Select plan when gated; otherwise operational order actions
+- Secondary actions: More actions menu with analytics bar control, learn more
+- LetBuyy equivalent: Orders should expose plan-gated readiness while preserving the route and education.
+- Component evidence:
+  - empty state
+  - gated CTA
+  - orders subnavigation
+  - analytics bar option
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 3: Draft Orders
+
+- Route: `/draft_orders`
+- Parent navigation: Orders > Drafts
+- Purpose: Manual order creation and invoice workflow.
+- Primary user: Merchant support and sales
+- Frequency: Medium
+- Access status: Route discovered through sidebar
+- Primary CTA: Create draft order when available
+- Secondary actions: Search, filters, export, app links
+- LetBuyy equivalent: Needed for assisted selling, B2B quotes, custom invoices, and payment links.
+- Component evidence:
+  - table shell
+  - saved views
+  - create form
+  - customer/product search
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 4: Abandoned Checkouts
+
+- Route: `/checkouts`
+- Parent navigation: Orders > Abandoned checkouts
+- Purpose: Recovery queue for incomplete checkout sessions.
+- Primary user: Growth operator
+- Frequency: Medium
+- Access status: Route discovered through sidebar
+- Primary CTA: Review or recover checkout where data exists
+- Secondary actions: Filters, customer communication, marketing links
+- LetBuyy equivalent: Treat abandoned checkout as a growth workflow tied to notifications and campaigns.
+- Component evidence:
+  - table shell
+  - status filters
+  - empty state
+  - email/recovery controls
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 5: Products
+
+- Route: `/products`
+- Parent navigation: Products
+- Purpose: Catalog creation and product management.
+- Primary user: Merchant catalog operator
+- Frequency: High
+- Access status: Observed via screenshot
+- Primary CTA: Add product
+- Secondary actions: Import, discover products to sell
+- LetBuyy equivalent: Catalog should blend create/import/source flows in one readiness page.
+- Component evidence:
+  - hero empty state
+  - sourcing app CTA
+  - product subnav
+  - illustration
+  - import action
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 6: Add Product
+
+- Route: `/products/new`
+- Parent navigation: Products > Add product
+- Purpose: Create or edit a product with inventory, publishing, pricing, variants, SEO, and organization.
+- Primary user: Catalog operator
+- Frequency: High
+- Access status: Observed via screenshot
+- Primary CTA: Save when valid
+- Secondary actions: Discard, upload/select media, add collections/tags, configure channels
+- LetBuyy equivalent: Product forms need a two-column operational grammar and durable save bar.
+- Component evidence:
+  - save bar
+  - title input
+  - rich text editor
+  - media dropzone
+  - category picker
+  - price card
+  - inventory card
+  - shipping card
+  - variant table
+  - right rail
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 7: Collections
+
+- Route: `/products/collections`
+- Parent navigation: Products > Collections
+- Purpose: Group products manually or by conditions for merchandising.
+- Primary user: Merchandiser
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Add collection
+- Secondary actions: Search/filter, display options, learn more
+- LetBuyy equivalent: Collections must support both storefront merchandising and operational filters.
+- Component evidence:
+  - table
+  - all view
+  - search/filter
+  - row image placeholder
+  - conditions column
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 8: Inventory
+
+- Route: `/products/inventory`
+- Parent navigation: Products > Inventory
+- Purpose: Search and adjust stock availability across products and locations.
+- Primary user: Inventory operator
+- Frequency: High for stock-based merchants
+- Access status: Observed via screenshot
+- Primary CTA: Clear search and filters when empty; import/export in header
+- Secondary actions: Search/filter, display options
+- LetBuyy equivalent: Inventory should be a first-class table separate from product editing.
+- Component evidence:
+  - inventory table shell
+  - empty search state
+  - import/export
+  - locations model
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 9: Purchase Orders
+
+- Route: `/products/purchase_orders`
+- Parent navigation: Products > Purchase orders
+- Purpose: Track ordered inventory from suppliers before receipt.
+- Primary user: Inventory and procurement operator
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Create purchase order
+- Secondary actions: Learn more
+- LetBuyy equivalent: Procurement is an advanced but important inventory confidence feature.
+- Component evidence:
+  - empty state
+  - procurement illustration
+  - supplier workflow
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 10: Create Purchase Order
+
+- Route: `/products/purchase_orders/new`
+- Parent navigation: Products > Purchase orders > Create
+- Purpose: Create a draft procurement document with supplier, destination, shipment, products, and cost summary.
+- Primary user: Inventory and procurement operator
+- Frequency: Medium
+- Access status: Observed via screenshot and modal
+- Primary CTA: Save as draft, not executed
+- Secondary actions: Discard, browse products, create supplier, manage taxes
+- LetBuyy equivalent: Separate receiving/procurement from selling inventory; compute costs live.
+- Component evidence:
+  - save bar
+  - supplier picker
+  - destination picker
+  - shipment fields
+  - product search
+  - cost summary
+  - additional details
+  - supplier modal
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 11: Transfers
+
+- Route: `/products/transfers`
+- Parent navigation: Products > Transfers
+- Purpose: Move inventory between locations with origin, in-transit, destination, references, notes, and tags.
+- Primary user: Inventory operator
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Save when valid, not executed
+- Secondary actions: Discard, import/download, add product
+- LetBuyy equivalent: Location-aware inventory movement needs a dedicated, guided workflow.
+- Component evidence:
+  - process row
+  - search products
+  - date chip
+  - reference name
+  - note
+  - tags
+  - save bar
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 12: Gift Cards
+
+- Route: `/products/gift_cards`
+- Parent navigation: Products > Gift cards
+- Purpose: Create sellable gift card products or issue customer gift cards.
+- Primary user: Merchant support and merchandising
+- Frequency: Low to medium
+- Access status: Observed via screenshot
+- Primary CTA: Add gift card product
+- Secondary actions: Create gift card, export disabled, terms link
+- LetBuyy equivalent: Gift cards combine product, liability, customer, and legal workflows.
+- Component evidence:
+  - empty state
+  - dual CTA
+  - legal agreement copy
+  - gift illustration
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 13: Create Gift Card
+
+- Route: `/products/gift_cards/new`
+- Parent navigation: Products > Gift cards > Create
+- Purpose: Issue a gift card code with value, expiry, customer, and notes.
+- Primary user: Support operator
+- Frequency: Low to medium
+- Access status: Observed via screenshot
+- Primary CTA: Save when valid, not executed
+- Secondary actions: Discard, add customer, edit notes
+- LetBuyy equivalent: Gift card issuance must make expiry and legal constraints explicit.
+- Component evidence:
+  - save bar
+  - code field
+  - value field
+  - expiry picker
+  - customer picker
+  - notes card
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 14: Customers
+
+- Route: `/customers`
+- Parent navigation: Customers
+- Purpose: Customer records, order history, segmentation, and acquisition via apps.
+- Primary user: Support and growth operator
+- Frequency: High after launch
+- Access status: Observed via screenshot
+- Primary CTA: Add customer
+- Secondary actions: Import customers, app recommendations, learn more
+- LetBuyy equivalent: Customer CRM needs a neutral operational surface with import and segmentation built in.
+- Component evidence:
+  - empty state
+  - customer illustration
+  - app recommendation band
+  - subnavigation
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 15: New Customer
+
+- Route: `/customers/new`
+- Parent navigation: Customers > Add customer
+- Purpose: Create customer profile with contact, language, marketing consent, address, tax, notes, and tags.
+- Primary user: Support operator
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Save when valid, not executed
+- Secondary actions: Add address, edit notes/tags
+- LetBuyy equivalent: Consent and contact availability should drive disabled states and validation.
+- Component evidence:
+  - profile card
+  - language selector
+  - email/phone fields
+  - marketing consent
+  - address card
+  - tax details
+  - right rail notes/tags
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 16: Segments
+
+- Route: `/customers/segments`
+- Parent navigation: Customers > Segments
+- Purpose: Saved customer cohorts for analysis and marketing.
+- Primary user: Growth operator
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Create segment
+- Secondary actions: Search, row actions
+- LetBuyy equivalent: Segments should be native query objects, not static tags.
+- Component evidence:
+  - table
+  - default segments
+  - percent customers
+  - last activity
+  - created by
+  - overflow actions
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 17: Companies
+
+- Route: `/customers/companies`
+- Parent navigation: Customers > Companies
+- Purpose: B2B customer accounts with company locations, payment terms, catalogs, permissions, and checkout rules.
+- Primary user: B2B merchant operator
+- Frequency: Medium for B2B merchants
+- Access status: Observed via screenshot
+- Primary CTA: Add company
+- Secondary actions: Dismiss banner, learn more
+- LetBuyy equivalent: B2B must be treated as account hierarchy, not just customer tags.
+- Component evidence:
+  - B2B banner
+  - empty state
+  - company illustration
+  - app behavior warning
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 18: New Company
+
+- Route: `/customers/companies/new`
+- Parent navigation: Customers > Companies > Add company
+- Purpose: Configure B2B account, contact, location, markets, catalogs, payment terms, checkout behavior, and tax.
+- Primary user: B2B operator
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Save when valid, not executed
+- Secondary actions: Clear address, add address, select contact
+- LetBuyy equivalent: B2B create should expose dependencies gradually but all in one reviewable form.
+- Component evidence:
+  - save bar
+  - company fields
+  - contact search
+  - shipping/billing address
+  - markets chip
+  - catalogs
+  - payment terms
+  - checkout radios
+  - tax fields
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 19: Marketing
+
+- Route: `/marketing`
+- Parent navigation: Marketing
+- Purpose: Marketing performance overview and acquisition workflow entry.
+- Primary user: Growth operator
+- Frequency: Weekly
+- Access status: Observed authenticated
+- Primary CTA: Create campaign
+- Secondary actions: Explore marketing apps, view report, date/comparison controls
+- LetBuyy equivalent: Marketing should connect attribution, campaigns, and app extension in one workspace.
+- Component evidence:
+  - metric bar
+  - channel table
+  - app banner
+  - campaign card
+  - app recommendation card
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 20: Marketing Campaigns
+
+- Route: `/marketing/campaigns`
+- Parent navigation: Marketing > Campaigns
+- Purpose: Create and track marketing campaigns across online/offline touchpoints.
+- Primary user: Growth operator
+- Frequency: Weekly
+- Access status: Observed authenticated
+- Primary CTA: Create campaign, not executed
+- Secondary actions: Learn more, browse marketing apps
+- LetBuyy equivalent: Campaign tracking can begin as a readiness and attribution shell before automation exists.
+- Component evidence:
+  - empty campaign card
+  - apps card
+  - subnav
+  - illustration
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 21: Marketing Attribution
+
+- Route: `/marketing/reports/channels`
+- Parent navigation: Marketing > Attribution
+- Purpose: Attribution model and channel performance report.
+- Primary user: Growth operator
+- Frequency: Weekly
+- Access status: Observed authenticated
+- Primary CTA: View report
+- Secondary actions: Date range, comparison, attribution model, dismiss app-data banner
+- LetBuyy equivalent: Attribution should reuse analytics primitives but remain domain-labeled for marketers.
+- Component evidence:
+  - metric cards
+  - attribution model control
+  - sortable channel table
+  - banner
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 22: Discounts
+
+- Route: `/discounts`
+- Parent navigation: Discounts
+- Purpose: Create and manage codes and automatic discounts.
+- Primary user: Merchant growth/operator
+- Frequency: Medium
+- Access status: Observed via screenshot
+- Primary CTA: Create discount
+- Secondary actions: Export disabled, learn more
+- LetBuyy equivalent: Discounts need clear taxonomy before asking for conditions.
+- Component evidence:
+  - empty state
+  - discount illustration
+  - top CTA
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 23: Discount Type Selector
+
+- Route: `/discounts/new`
+- Parent navigation: Discounts > Create discount
+- Purpose: Choose discount model before entering discount business logic.
+- Primary user: Growth operator
+- Frequency: Medium
+- Access status: Observed via screenshot modal
+- Primary CTA: Choose one of four discount types, not selected
+- Secondary actions: Cancel
+- LetBuyy equivalent: Start discount creation with a decision modal to prevent bloated forms.
+- Component evidence:
+  - modal
+  - four option rows
+  - icons
+  - descriptions
+  - chevrons
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 24: Content Metaobjects
+
+- Route: `/content/metaobjects`
+- Parent navigation: Content > Metaobjects
+- Purpose: Structured content definitions used by storefront/theme experiences.
+- Primary user: Content manager and developer-minded merchant
+- Frequency: Low to medium
+- Access status: Observed authenticated
+- Primary CTA: Add definition via settings custom data
+- Secondary actions: Manage, search, display options, filters
+- LetBuyy equivalent: CMS custom data should connect content authoring with schema governance.
+- Component evidence:
+  - table shell
+  - custom view popover
+  - no definitions empty state
+  - cross-link to settings
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 25: Files
+
+- Route: `/content/files`
+- Parent navigation: Content > Files
+- Purpose: Asset library for uploaded media and documents.
+- Primary user: Content manager
+- Frequency: Medium
+- Access status: Route discovered through content subnav
+- Primary CTA: Upload files where available
+- Secondary actions: Search/filter, sort, bulk actions
+- LetBuyy equivalent: Media library should be global, searchable, and reusable across products/content/themes.
+- Component evidence:
+  - asset table
+  - upload control
+  - filters
+  - file previews
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 26: Menus
+
+- Route: `/content/menus`
+- Parent navigation: Content > Menus
+- Purpose: Storefront navigation menu management.
+- Primary user: Storefront manager
+- Frequency: Medium
+- Access status: Route discovered through content subnav
+- Primary CTA: Create or edit menus
+- Secondary actions: Search, row actions
+- LetBuyy equivalent: Navigation is content, not theme-only configuration.
+- Component evidence:
+  - menu table
+  - nested item editor
+  - drag ordering
+  - link pickers
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 27: Blog Posts
+
+- Route: `/content/articles`
+- Parent navigation: Content > Blog posts
+- Purpose: Editorial content management for storefront blogs.
+- Primary user: Content marketer
+- Frequency: Medium
+- Access status: Route discovered through content subnav
+- Primary CTA: Create blog post where available
+- Secondary actions: Search/filter, status views
+- LetBuyy equivalent: Blog content should use the same save bar and publishing grammar as products/pages.
+- Component evidence:
+  - table shell
+  - editor
+  - publishing state
+  - SEO fields
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 28: Markets
+
+- Route: `/markets`
+- Parent navigation: Markets
+- Purpose: International and regional selling configuration.
+- Primary user: Store owner, operations lead
+- Frequency: Medium
+- Access status: Observed authenticated
+- Primary CTA: Create market
+- Secondary actions: Graph view, suggested market CTAs, filters
+- LetBuyy equivalent: Markets should be a top-level commerce operating model for currency/tax/shipping/catalogs.
+- Component evidence:
+  - market tree
+  - market table
+  - suggested markets
+  - customizations column
+  - search/sort
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 29: Catalogs
+
+- Route: `/markets/catalogs`
+- Parent navigation: Markets > Catalogs
+- Purpose: Market-specific or B2B-specific product catalogs.
+- Primary user: Merchandiser or B2B operator
+- Frequency: Medium
+- Access status: Route discovered through markets subnav
+- Primary CTA: Create catalog where available
+- Secondary actions: Search, assign markets/companies
+- LetBuyy equivalent: Catalogs are the bridge between products, markets, and B2B companies.
+- Component evidence:
+  - catalog table
+  - market links
+  - B2B dependencies
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 30: Rollouts
+
+- Route: `/markets/rollouts`
+- Parent navigation: Markets > Rollouts
+- Purpose: Controlled rollout of market changes.
+- Primary user: Operations lead
+- Frequency: Low
+- Access status: Route discovered through markets subnav
+- Primary CTA: Create or manage rollout where available
+- Secondary actions: Status review, audit, rollback
+- LetBuyy equivalent: Advanced market changes need staged rollout and rollback language.
+- Component evidence:
+  - status table
+  - gates
+  - timeline
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 31: Analytics
+
+- Route: `/analytics`
+- Parent navigation: Analytics
+- Purpose: Business reporting dashboard with metric cards and drill-through reports.
+- Primary user: Owner, analyst, operator
+- Frequency: Daily to weekly
+- Access status: Observed authenticated
+- Primary CTA: New exploration
+- Secondary actions: Create target, date range, comparison, currency, report links
+- LetBuyy equivalent: Analytics should be drill-through from every metric, not static charts.
+- Component evidence:
+  - metric cards
+  - time-series charts
+  - breakdown cards
+  - cohort tables
+  - report links
+  - date controls
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 32: Reports
+
+- Route: `/analytics/reports`
+- Parent navigation: Analytics > Reports
+- Purpose: Browse saved and standard reports.
+- Primary user: Analyst/operator
+- Frequency: Weekly
+- Access status: Route discovered through analytics subnav and card links
+- Primary CTA: Explore or open report
+- Secondary actions: Search/filter categories
+- LetBuyy equivalent: Reports should be first-class query artifacts with explainable source metrics.
+- Component evidence:
+  - report list
+  - saved views
+  - query links
+  - categories
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 33: Live View
+
+- Route: `/analytics/live`
+- Parent navigation: Analytics > Live View
+- Purpose: Real-time storefront traffic and conversion monitoring.
+- Primary user: Owner/operator
+- Frequency: Occasional
+- Access status: Route discovered through analytics subnav
+- Primary CTA: Monitor live activity
+- Secondary actions: Time range/context controls
+- LetBuyy equivalent: Live view is valuable as trust theater and launch monitoring, even with sparse data.
+- Component evidence:
+  - real-time cards
+  - map/traffic modules
+  - status indicators
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 34: Online Store Themes
+
+- Route: `/themes`
+- Parent navigation: Sales channels > Online Store
+- Purpose: Manage current theme, theme library, previews, password protection, and theme discovery.
+- Primary user: Storefront manager
+- Frequency: Medium
+- Access status: Observed authenticated
+- Primary CTA: Edit theme
+- Secondary actions: Preview, duplicate, rename, edit code/content, download, visit theme store, import theme, add theme
+- LetBuyy equivalent: Theme management needs library, current/live state, safe duplicate, and edit entry.
+- Component evidence:
+  - embedded channel frame
+  - current theme card
+  - theme preview images
+  - theme action menu
+  - discovery carousel
+  - plan/password banner
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 35: Theme Editor
+
+- Route: `/themes/[theme_id]/editor`
+- Parent navigation: Online Store > Themes > Edit theme
+- Purpose: Customize storefront sections, blocks, settings, app embeds, responsive preview, and publishing state.
+- Primary user: Storefront designer/merchant
+- Frequency: Medium
+- Access status: Observed authenticated, no save performed
+- Primary CTA: Save when changes exist, not executed
+- Secondary actions: Undo/redo, template selector, preview mode, app embeds, section actions
+- LetBuyy equivalent: Builder must support section tree plus live preview, not a form-only settings page.
+- Component evidence:
+  - section tree
+  - live preview
+  - template selector
+  - left mode rail
+  - drag handles
+  - visibility toggles
+  - inspector
+  - responsive preview
+  - save buttons
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 36: Apps Add
+
+- Route: `/apps`
+- Parent navigation: Apps > Add
+- Purpose: Entry into app marketplace and installed app management.
+- Primary user: Merchant owner/operator
+- Frequency: Low to medium
+- Access status: Observed via settings and sidebar links, external app store not installed
+- Primary CTA: Explore apps
+- Secondary actions: Develop apps, App Store search
+- LetBuyy equivalent: App ecosystem should start with discovery categories and permission transparency.
+- Component evidence:
+  - app empty state
+  - marketplace links
+  - installed apps table shell
+  - permission/install gates
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 37: Agentic Sales Channel
+
+- Route: `/apps/agentic`
+- Parent navigation: Sales channels > Agentic
+- Purpose: AI or agentic sales channel surface inside admin.
+- Primary user: Merchant experimenting with new sales channels
+- Frequency: Low
+- Access status: Route discovered through sidebar
+- Primary CTA: Configure channel where available
+- Secondary actions: Channel settings, app controls
+- LetBuyy equivalent: Sales channels and apps should share embedding rules but differ in IA placement.
+- Component evidence:
+  - embedded app frame
+  - channel nav
+  - gated setup
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 38: Settings - Settings Root
+
+- Route: `/settings`
+- Parent navigation: Settings
+- Purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: settings search
+- Secondary actions: store card, category links, close button
+- LetBuyy equivalent: LetBuyy settings should become a real architecture, not scattered account/store pages.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 39: Settings - General
+
+- Route: `/settings/general`
+- Parent navigation: Settings
+- Purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Business details
+- Secondary actions: Store contact details, Store defaults, Order ID prefix and suffix
+- LetBuyy equivalent: Split General into store identity, operational defaults, order processing, and ownership controls with a single page overview.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 40: Settings - Plan
+
+- Route: `/settings/plan`
+- Parent navigation: Settings
+- Purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Trial status
+- Secondary actions: Choose plan, Cancel trial, Subscriptions link
+- LetBuyy equivalent: Show entitlement effects across checkout, orders, domains, analytics, and channels before plan selection.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 41: Settings - Billing
+
+- Route: `/settings/billing`
+- Parent navigation: Settings
+- Purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Billing profile
+- Secondary actions: Upcoming bill, Add payment method, Past bills tabs
+- LetBuyy equivalent: Billing should combine current bill, payment methods, invoice history, and compliance warnings.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 42: Settings - Users
+
+- Route: `/settings/organization-account`
+- Parent navigation: Settings
+- Purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Users table
+- Secondary actions: Export, Add users, Status
+- LetBuyy equivalent: LetBuyy needs role-aware staff list with MFA status and audit-ready owner visibility.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 43: Settings - Roles
+
+- Route: `/settings/roles`
+- Parent navigation: Settings
+- Purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Role table
+- Secondary actions: Export, Add role, Role name
+- LetBuyy equivalent: Roles require scope, default templates, non-editable system roles, and clear permission inheritance.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 44: Settings - Security
+
+- Route: `/settings/security`
+- Parent navigation: Settings
+- Purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: User activity logs
+- Secondary actions: Collaborator review link, Collaborator code, Generate new code
+- LetBuyy equivalent: Expose collaborator access as a governed security workflow with audit trail and code rotation.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 45: Settings - Payments
+
+- Route: `/settings/payments`
+- Parent navigation: Settings
+- Purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Provider setup
+- Secondary actions: Choose provider, PayPal activation, Add payment method
+- LetBuyy equivalent: Payment settings should isolate provider onboarding, capture policy, manual methods, and legal gift-card rules.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 46: Settings - Checkout
+
+- Route: `/settings/checkout`
+- Parent navigation: Settings
+- Purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Checkout configuration card
+- Secondary actions: Customize/Duplicate, Phone or email radios, Require sign-in
+- LetBuyy equivalent: Checkout needs staged sections with risk-aware copy and app-powered extension points.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 47: Settings - Customer Accounts
+
+- Route: `/settings/customer_accounts`
+- Parent navigation: Settings
+- Purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Sign-in links toggle
+- Secondary actions: Customize apps/branding/features, Manage sign-in methods, Self-serve returns
+- LetBuyy equivalent: Customer account should be a product surface, not just auth toggles.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 48: Settings - Shipping and Delivery
+
+- Route: `/settings/shipping`
+- Parent navigation: Settings
+- Purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: General profile
+- Secondary actions: Add custom profile, Estimated delivery dates, Packages
+- LetBuyy equivalent: Shipping settings must connect profiles, locations, packages, carrier accounts, and local methods.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 49: Settings - Taxes and Duties
+
+- Route: `/settings/taxes`
+- Parent navigation: Settings
+- Purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Tax service status
+- Secondary actions: Region table, Search/sort/pagination, Setup duties
+- LetBuyy equivalent: Taxes should be a guided compliance cockpit with region state, product metadata dependencies, and global toggles.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 50: Settings - Locations
+
+- Route: `/settings/locations`
+- Parent navigation: Settings
+- Purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Locations usage count
+- Secondary actions: Add location, Tabs, Search/filter
+- LetBuyy equivalent: Locations should power inventory, shipping, pickup, POS, and transfer logic everywhere.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 51: Settings - Apps Settings
+
+- Route: `/settings/apps`
+- Parent navigation: Settings
+- Purpose: Installed apps, app discovery, and developer app entry.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Develop apps
+- Secondary actions: Explore apps, Shopify App Store link, Installed apps empty state
+- LetBuyy equivalent: Make app management permission- and billing-aware from day one.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 52: Settings - Sales Channels
+
+- Route: `/settings/sales_channels`
+- Parent navigation: Settings
+- Purpose: Installed sales channels and marketplace for channels.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Installed channel list
+- Secondary actions: Online Store row, Point of Sale row, More actions
+- LetBuyy equivalent: Channels should be distinct from apps because they alter where products can sell.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 53: Settings - Domains
+
+- Route: `/settings/domains`
+- Parent navigation: Settings
+- Purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Connect existing domain
+- Secondary actions: Transfer domain, Buy new domain, Domain credit banner
+- LetBuyy equivalent: Domains need verification steps, takeover prevention, SSL status, and primary-domain promotion.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 54: Settings - Customer Events
+
+- Route: `/settings/customer_events`
+- Parent navigation: Settings
+- Purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: App pixels tab
+- Secondary actions: Custom pixels tab, Search/sort, Explore pixel apps
+- LetBuyy equivalent: Pixel management belongs near privacy and analytics, with app pixels preferred over custom code.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 55: Settings - Notifications
+
+- Route: `/settings/notifications`
+- Parent navigation: Settings
+- Purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Sender email warning
+- Secondary actions: Customer notifications, Staff notifications, Fulfillment request
+- LetBuyy equivalent: Notifications should be event-template driven, localized, and tied to order/customer states.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 56: Settings - Customer Notification Templates
+
+- Route: `/settings/notifications/customer`
+- Parent navigation: Settings
+- Purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated drill-down
+- Primary CTA: Customize email templates
+- Secondary actions: Order processing, Local pickup, Local delivery
+- LetBuyy equivalent: Use categories and toggles to keep notification complexity navigable.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 57: Settings - Metafields and Metaobjects
+
+- Route: `/settings/custom_data`
+- Parent navigation: Settings
+- Purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Metafield resources
+- Secondary actions: Definition counts, Metaobjects empty state, Add definition
+- LetBuyy equivalent: Custom data should be schema-first, typed, and reusable across admin, storefront, and apps.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 58: Settings - Languages
+
+- Route: `/settings/languages`
+- Parent navigation: Settings
+- Purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Add language
+- Secondary actions: Language table, Status, Domains
+- LetBuyy equivalent: Language management should combine native status with translation app extension.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 59: Settings - Customer Privacy
+
+- Route: `/settings/privacy`
+- Parent navigation: Settings
+- Purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Privacy policy
+- Secondary actions: Cookie banner, Data sharing opt-out, Network intelligence
+- LetBuyy equivalent: Privacy should be surfaced as active operational controls, not static policy text.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+### Route 60: Settings - Policies
+
+- Route: `/settings/legal`
+- Parent navigation: Settings
+- Purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Access status: Observed authenticated
+- Primary CTA: Return rules
+- Secondary actions: Return and refund policy, Privacy policy, Terms of service
+- LetBuyy equivalent: Policies should distinguish generated, missing, required, published, and custom states.
+- Component evidence:
+  - settings card
+  - form controls
+  - links
+  - status badges
+- Route-specific interpretation:
+  - Observation 1: Information architecture places this route under a merchant-recognizable domain instead of an internal implementation category.
+  - Observation 2: The page starts with visible state before asking for action, which lowers ambiguity for new merchants.
+  - Observation 3: Primary action hierarchy is clear: one dominant next action, supporting secondary actions, then links/help below.
+  - Observation 4: The left rail remains stable so the merchant never loses the broader operating-system map.
+  - Observation 5: The top search remains available for expert navigation and object lookup.
+  - Observation 6: Cards use restrained borders and modest radius to make dense content scannable.
+  - Observation 7: Icons are functional labels, not decorative flourishes.
+  - Observation 8: Empty states describe the future completed state and then offer a safe first action.
+  - Observation 9: Disabled states are visible and understandable rather than silent failures.
+  - Observation 10: Context menus hold lower-frequency actions so the main surface stays calm.
+  - Observation 11: Tables expose scan-friendly columns and reserve bulk controls until row selection is meaningful.
+  - Observation 12: Forms divide fields into business concepts instead of one long undifferentiated stack.
+  - Observation 13: Right rails are used for status, publishing, organization, notes, tags, or customer context.
+  - Observation 14: Modals are used for short decision points or bounded creation tasks.
+  - Observation 15: Banners communicate plan, app, policy, tax, or compliance context without blocking unrelated reading.
+  - Observation 16: External app extension is labeled as app-powered rather than hidden behind native-looking controls.
+  - Observation 17: Links to learn more sit after primary workflows, preserving momentum while maintaining trust.
+  - Observation 18: Accessibility tree exposes headings, links, buttons, tables, rows, cells, and named controls.
+  - Observation 19: Business copy is concrete and avoids generic platform language.
+  - Observation 20: The route is safe for merchants with zero data because zero-data states are explicitly designed.
+- LetBuyy product decisions:
+  - Decision 1: Create a matching route in the merchant control plane only if the domain has clear ownership and tenant scope.
+  - Decision 2: Use `site_id` scoped data contracts and versioned API gateway calls for all merchant-owned records.
+  - Decision 3: Prefer shared UI primitives for cards, buttons, inputs, tables, filters, modals, banners, tabs, and skeletons.
+  - Decision 4: Ship loading, empty, error, disabled, permission, success, and destructive-confirmation states before calling the workflow production-ready.
+  - Decision 5: Use a stable primary CTA and make secondary actions visually quieter.
+  - Decision 6: Add route-level analytics and audit events for important merchant operations.
+  - Decision 7: Represent setup gaps as readiness cards instead of blocking pages.
+  - Decision 8: Keep extension/app-powered actions clearly labeled and permission-aware.
+  - Decision 9: Cross-link dependent settings rather than duplicating settings logic across pages.
+  - Decision 10: Add help text only where it explains business consequence or validation.
+  - Decision 11: Use role-aware controls for owner/admin/staff differences.
+  - Decision 12: Do not expose private values, tokens, service keys, or unredacted customer/store data in UI telemetry or docs.
+- Acceptance criteria for a Shopify-class LetBuyy equivalent:
+  - Criterion 1: The page has a clear owner, route, tenant scope, and permission model.
+  - Criterion 2: The empty state is useful and truthful before the merchant has data.
+  - Criterion 3: The primary workflow can be completed without unrelated navigation.
+  - Criterion 4: The route documents all dependencies and linked settings.
+  - Criterion 5: Visual hierarchy works at a glance on desktop and responsive layouts.
+  - Criterion 6: Keyboard access and screen-reader names exist for all interactive controls.
+  - Criterion 7: Mutation actions are validated server-side and protected by idempotency when needed.
+  - Criterion 8: The page can explain gated or missing prerequisites without breaking trust.
+- Research notes:
+  - No private customer or order data was collected for this page.
+  - No final save/install/publish/subscribe/pay action was performed.
+  - Route is included in platform map even when detailed inspection was limited to navigation discovery.
+  - Use future research passes to inspect data-populated states with synthetic data only.
+  - Evidence should remain redacted when exported outside the local research directory.
+
+
+## Settings Field Catalog
+
+### Settings Field 1: Settings Root - settings search
+
+- Settings page: Settings Root
+- Field/control: settings search
+- Business purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary dependency: Authenticated merchant session
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 2: Settings Root - store card
+
+- Settings page: Settings Root
+- Field/control: store card
+- Business purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary dependency: Authenticated merchant session
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 3: Settings Root - category links
+
+- Settings page: Settings Root
+- Field/control: category links
+- Business purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary dependency: Authenticated merchant session
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 4: Settings Root - close button
+
+- Settings page: Settings Root
+- Field/control: close button
+- Business purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary dependency: Authenticated merchant session
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 5: General - Business details
+
+- Settings page: General
+- Field/control: Business details
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 6: General - Store contact details
+
+- Settings page: General
+- Field/control: Store contact details
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 7: General - Store defaults
+
+- Settings page: General
+- Field/control: Store defaults
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 8: General - Order ID prefix and suffix
+
+- Settings page: General
+- Field/control: Order ID prefix and suffix
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 9: General - Order processing radios
+
+- Settings page: General
+- Field/control: Order processing radios
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 10: General - Auto archive checkbox
+
+- Settings page: General
+- Field/control: Auto archive checkbox
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 11: General - Store assets links
+
+- Settings page: General
+- Field/control: Store assets links
+- Business purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary dependency: Markets for currency display
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 12: Plan - Trial status
+
+- Settings page: Plan
+- Field/control: Trial status
+- Business purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary dependency: Billing profile
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 13: Plan - Choose plan
+
+- Settings page: Plan
+- Field/control: Choose plan
+- Business purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary dependency: Billing profile
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 14: Plan - Cancel trial
+
+- Settings page: Plan
+- Field/control: Cancel trial
+- Business purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary dependency: Billing profile
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 15: Plan - Subscriptions link
+
+- Settings page: Plan
+- Field/control: Subscriptions link
+- Business purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary dependency: Billing profile
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 16: Plan - Terms links
+
+- Settings page: Plan
+- Field/control: Terms links
+- Business purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary dependency: Billing profile
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 17: Billing - Billing profile
+
+- Settings page: Billing
+- Field/control: Billing profile
+- Business purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary dependency: Legal address
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 18: Billing - Upcoming bill
+
+- Settings page: Billing
+- Field/control: Upcoming bill
+- Business purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary dependency: Legal address
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 19: Billing - Add payment method
+
+- Settings page: Billing
+- Field/control: Add payment method
+- Business purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary dependency: Legal address
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 20: Billing - Past bills tabs
+
+- Settings page: Billing
+- Field/control: Past bills tabs
+- Business purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary dependency: Legal address
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 21: Billing - Search/filter invoices
+
+- Settings page: Billing
+- Field/control: Search/filter invoices
+- Business purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary dependency: Legal address
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 22: Billing - Jurisdiction warning
+
+- Settings page: Billing
+- Field/control: Jurisdiction warning
+- Business purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary dependency: Legal address
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 23: Users - Users table
+
+- Settings page: Users
+- Field/control: Users table
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 24: Users - Export
+
+- Settings page: Users
+- Field/control: Export
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 25: Users - Add users
+
+- Settings page: Users
+- Field/control: Add users
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 26: Users - Status
+
+- Settings page: Users
+- Field/control: Status
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 27: Users - Role
+
+- Settings page: Users
+- Field/control: Role
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 28: Users - Two-step authentication
+
+- Settings page: Users
+- Field/control: Two-step authentication
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 29: Users - Store owner
+
+- Settings page: Users
+- Field/control: Store owner
+- Business purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary dependency: Role definitions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 30: Roles - Role table
+
+- Settings page: Roles
+- Field/control: Role table
+- Business purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary dependency: Permissions matrix
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 31: Roles - Export
+
+- Settings page: Roles
+- Field/control: Export
+- Business purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary dependency: Permissions matrix
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 32: Roles - Add role
+
+- Settings page: Roles
+- Field/control: Add role
+- Business purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary dependency: Permissions matrix
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 33: Roles - Role name
+
+- Settings page: Roles
+- Field/control: Role name
+- Business purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary dependency: Permissions matrix
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 34: Roles - Category
+
+- Settings page: Roles
+- Field/control: Category
+- Business purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary dependency: Permissions matrix
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 35: Roles - System role flags
+
+- Settings page: Roles
+- Field/control: System role flags
+- Business purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary dependency: Permissions matrix
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 36: Security - User activity logs
+
+- Settings page: Security
+- Field/control: User activity logs
+- Business purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary dependency: Audit log service
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 37: Security - Collaborator review link
+
+- Settings page: Security
+- Field/control: Collaborator review link
+- Business purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary dependency: Audit log service
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 38: Security - Collaborator code
+
+- Settings page: Security
+- Field/control: Collaborator code
+- Business purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary dependency: Audit log service
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 39: Security - Generate new code
+
+- Settings page: Security
+- Field/control: Generate new code
+- Business purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary dependency: Audit log service
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 40: Security - Copy code
+
+- Settings page: Security
+- Field/control: Copy code
+- Business purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary dependency: Audit log service
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 41: Security - Delete code
+
+- Settings page: Security
+- Field/control: Delete code
+- Business purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary dependency: Audit log service
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 42: Payments - Provider setup
+
+- Settings page: Payments
+- Field/control: Provider setup
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 43: Payments - Choose provider
+
+- Settings page: Payments
+- Field/control: Choose provider
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 44: Payments - PayPal activation
+
+- Settings page: Payments
+- Field/control: PayPal activation
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 45: Payments - Add payment method
+
+- Settings page: Payments
+- Field/control: Add payment method
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 46: Payments - Payment capture radios
+
+- Settings page: Payments
+- Field/control: Payment capture radios
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 47: Payments - Manual payment menu
+
+- Settings page: Payments
+- Field/control: Manual payment menu
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 48: Payments - Gift card expiration radios
+
+- Settings page: Payments
+- Field/control: Gift card expiration radios
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 49: Payments - Apple Wallet customize
+
+- Settings page: Payments
+- Field/control: Apple Wallet customize
+- Business purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary dependency: Plan activation
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 50: Checkout - Checkout configuration card
+
+- Settings page: Checkout
+- Field/control: Checkout configuration card
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 51: Checkout - Customize/Duplicate
+
+- Settings page: Checkout
+- Field/control: Customize/Duplicate
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 52: Checkout - Phone or email radios
+
+- Settings page: Checkout
+- Field/control: Phone or email radios
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 53: Checkout - Require sign-in
+
+- Settings page: Checkout
+- Field/control: Require sign-in
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 54: Checkout - Customer info controls
+
+- Settings page: Checkout
+- Field/control: Customer info controls
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 55: Checkout - Email/SMS marketing controls
+
+- Settings page: Checkout
+- Field/control: Email/SMS marketing controls
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 56: Checkout - Subscription disclaimer radios
+
+- Settings page: Checkout
+- Field/control: Subscription disclaimer radios
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 57: Checkout - Tipping checkbox
+
+- Settings page: Checkout
+- Field/control: Tipping checkbox
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 58: Checkout - Checkout language
+
+- Settings page: Checkout
+- Field/control: Checkout language
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 59: Checkout - Address collection
+
+- Settings page: Checkout
+- Field/control: Address collection
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 60: Checkout - Add-to-cart limit
+
+- Settings page: Checkout
+- Field/control: Add-to-cart limit
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 61: Checkout - Checkout rules apps
+
+- Settings page: Checkout
+- Field/control: Checkout rules apps
+- Business purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary dependency: Customer accounts
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 62: Customer Accounts - Sign-in links toggle
+
+- Settings page: Customer Accounts
+- Field/control: Sign-in links toggle
+- Business purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary dependency: Checkout sign-in requirement
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 63: Customer Accounts - Customize apps/branding/features
+
+- Settings page: Customer Accounts
+- Field/control: Customize apps/branding/features
+- Business purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary dependency: Checkout sign-in requirement
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 64: Customer Accounts - Manage sign-in methods
+
+- Settings page: Customer Accounts
+- Field/control: Manage sign-in methods
+- Business purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary dependency: Checkout sign-in requirement
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 65: Customer Accounts - Self-serve returns
+
+- Settings page: Customer Accounts
+- Field/control: Self-serve returns
+- Business purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary dependency: Checkout sign-in requirement
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 66: Customer Accounts - Store credit
+
+- Settings page: Customer Accounts
+- Field/control: Store credit
+- Business purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary dependency: Checkout sign-in requirement
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 67: Customer Accounts - URL copy
+
+- Settings page: Customer Accounts
+- Field/control: URL copy
+- Business purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary dependency: Checkout sign-in requirement
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 68: Shipping and Delivery - General profile
+
+- Settings page: Shipping and Delivery
+- Field/control: General profile
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 69: Shipping and Delivery - Add custom profile
+
+- Settings page: Shipping and Delivery
+- Field/control: Add custom profile
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 70: Shipping and Delivery - Estimated delivery dates
+
+- Settings page: Shipping and Delivery
+- Field/control: Estimated delivery dates
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 71: Shipping and Delivery - Packages
+
+- Settings page: Shipping and Delivery
+- Field/control: Packages
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 72: Shipping and Delivery - Carrier accounts
+
+- Settings page: Shipping and Delivery
+- Field/control: Carrier accounts
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 73: Shipping and Delivery - Local delivery
+
+- Settings page: Shipping and Delivery
+- Field/control: Local delivery
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 74: Shipping and Delivery - Pickup in store
+
+- Settings page: Shipping and Delivery
+- Field/control: Pickup in store
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 75: Shipping and Delivery - Sender name
+
+- Settings page: Shipping and Delivery
+- Field/control: Sender name
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 76: Shipping and Delivery - Packing slip template
+
+- Settings page: Shipping and Delivery
+- Field/control: Packing slip template
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 77: Shipping and Delivery - Fulfillment service
+
+- Settings page: Shipping and Delivery
+- Field/control: Fulfillment service
+- Business purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary dependency: Locations
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 78: Taxes and Duties - Tax service status
+
+- Settings page: Taxes and Duties
+- Field/control: Tax service status
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 79: Taxes and Duties - Region table
+
+- Settings page: Taxes and Duties
+- Field/control: Region table
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 80: Taxes and Duties - Search/sort/pagination
+
+- Settings page: Taxes and Duties
+- Field/control: Search/sort/pagination
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 81: Taxes and Duties - Setup duties
+
+- Settings page: Taxes and Duties
+- Field/control: Setup duties
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 82: Taxes and Duties - Country of origin
+
+- Settings page: Taxes and Duties
+- Field/control: Country of origin
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 83: Taxes and Duties - HS codes
+
+- Settings page: Taxes and Duties
+- Field/control: HS codes
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 84: Taxes and Duties - Include tax in prices
+
+- Settings page: Taxes and Duties
+- Field/control: Include tax in prices
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 85: Taxes and Duties - Charge tax on shipping
+
+- Settings page: Taxes and Duties
+- Field/control: Charge tax on shipping
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 86: Taxes and Duties - VAT on digital goods
+
+- Settings page: Taxes and Duties
+- Field/control: VAT on digital goods
+- Business purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 87: Locations - Locations usage count
+
+- Settings page: Locations
+- Field/control: Locations usage count
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 88: Locations - Add location
+
+- Settings page: Locations
+- Field/control: Add location
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 89: Locations - Tabs
+
+- Settings page: Locations
+- Field/control: Tabs
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 90: Locations - Search/filter
+
+- Settings page: Locations
+- Field/control: Search/filter
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 91: Locations - Location table
+
+- Settings page: Locations
+- Field/control: Location table
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 92: Locations - Status
+
+- Settings page: Locations
+- Field/control: Status
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 93: Locations - POS app installed
+
+- Settings page: Locations
+- Field/control: POS app installed
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 94: Locations - Open app
+
+- Settings page: Locations
+- Field/control: Open app
+- Business purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary dependency: Inventory
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 95: Apps Settings - Develop apps
+
+- Settings page: Apps Settings
+- Field/control: Develop apps
+- Business purpose: Installed apps, app discovery, and developer app entry.
+- Primary dependency: Partner permissions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 96: Apps Settings - Explore apps
+
+- Settings page: Apps Settings
+- Field/control: Explore apps
+- Business purpose: Installed apps, app discovery, and developer app entry.
+- Primary dependency: Partner permissions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 97: Apps Settings - Shopify App Store link
+
+- Settings page: Apps Settings
+- Field/control: Shopify App Store link
+- Business purpose: Installed apps, app discovery, and developer app entry.
+- Primary dependency: Partner permissions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 98: Apps Settings - Installed apps empty state
+
+- Settings page: Apps Settings
+- Field/control: Installed apps empty state
+- Business purpose: Installed apps, app discovery, and developer app entry.
+- Primary dependency: Partner permissions
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 99: Sales Channels - Installed channel list
+
+- Settings page: Sales Channels
+- Field/control: Installed channel list
+- Business purpose: Installed sales channels and marketplace for channels.
+- Primary dependency: Apps
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 100: Sales Channels - Online Store row
+
+- Settings page: Sales Channels
+- Field/control: Online Store row
+- Business purpose: Installed sales channels and marketplace for channels.
+- Primary dependency: Apps
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 101: Sales Channels - Point of Sale row
+
+- Settings page: Sales Channels
+- Field/control: Point of Sale row
+- Business purpose: Installed sales channels and marketplace for channels.
+- Primary dependency: Apps
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 102: Sales Channels - More actions
+
+- Settings page: Sales Channels
+- Field/control: More actions
+- Business purpose: Installed sales channels and marketplace for channels.
+- Primary dependency: Apps
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 103: Sales Channels - Sort
+
+- Settings page: Sales Channels
+- Field/control: Sort
+- Business purpose: Installed sales channels and marketplace for channels.
+- Primary dependency: Apps
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 104: Sales Channels - App Store link
+
+- Settings page: Sales Channels
+- Field/control: App Store link
+- Business purpose: Installed sales channels and marketplace for channels.
+- Primary dependency: Apps
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 105: Domains - Connect existing domain
+
+- Settings page: Domains
+- Field/control: Connect existing domain
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 106: Domains - Transfer domain
+
+- Settings page: Domains
+- Field/control: Transfer domain
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 107: Domains - Buy new domain
+
+- Settings page: Domains
+- Field/control: Buy new domain
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 108: Domains - Domain credit banner
+
+- Settings page: Domains
+- Field/control: Domain credit banner
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 109: Domains - Change system domain
+
+- Settings page: Domains
+- Field/control: Change system domain
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 110: Domains - Domain table
+
+- Settings page: Domains
+- Field/control: Domain table
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 111: Domains - Status badges
+
+- Settings page: Domains
+- Field/control: Status badges
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 112: Domains - Domain actions
+
+- Settings page: Domains
+- Field/control: Domain actions
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 113: Domains - Connect domain modal
+
+- Settings page: Domains
+- Field/control: Connect domain modal
+- Business purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary dependency: Plan
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 114: Customer Events - App pixels tab
+
+- Settings page: Customer Events
+- Field/control: App pixels tab
+- Business purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary dependency: Customer privacy
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 115: Customer Events - Custom pixels tab
+
+- Settings page: Customer Events
+- Field/control: Custom pixels tab
+- Business purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary dependency: Customer privacy
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 116: Customer Events - Search/sort
+
+- Settings page: Customer Events
+- Field/control: Search/sort
+- Business purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary dependency: Customer privacy
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 117: Customer Events - Explore pixel apps
+
+- Settings page: Customer Events
+- Field/control: Explore pixel apps
+- Business purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary dependency: Customer privacy
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 118: Customer Events - No app pixels empty state
+
+- Settings page: Customer Events
+- Field/control: No app pixels empty state
+- Business purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary dependency: Customer privacy
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 119: Notifications - Sender email warning
+
+- Settings page: Notifications
+- Field/control: Sender email warning
+- Business purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary dependency: Domain/email authentication
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 120: Notifications - Customer notifications
+
+- Settings page: Notifications
+- Field/control: Customer notifications
+- Business purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary dependency: Domain/email authentication
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 121: Notifications - Staff notifications
+
+- Settings page: Notifications
+- Field/control: Staff notifications
+- Business purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary dependency: Domain/email authentication
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 122: Notifications - Fulfillment request
+
+- Settings page: Notifications
+- Field/control: Fulfillment request
+- Business purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary dependency: Domain/email authentication
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 123: Notifications - Webhooks
+
+- Settings page: Notifications
+- Field/control: Webhooks
+- Business purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary dependency: Domain/email authentication
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 124: Customer Notification Templates - Customize email templates
+
+- Settings page: Customer Notification Templates
+- Field/control: Customize email templates
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 125: Customer Notification Templates - Order processing
+
+- Settings page: Customer Notification Templates
+- Field/control: Order processing
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 126: Customer Notification Templates - Local pickup
+
+- Settings page: Customer Notification Templates
+- Field/control: Local pickup
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 127: Customer Notification Templates - Local delivery
+
+- Settings page: Customer Notification Templates
+- Field/control: Local delivery
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 128: Customer Notification Templates - Gift cards
+
+- Settings page: Customer Notification Templates
+- Field/control: Gift cards
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 129: Customer Notification Templates - Store credit
+
+- Settings page: Customer Notification Templates
+- Field/control: Store credit
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 130: Customer Notification Templates - Order exceptions
+
+- Settings page: Customer Notification Templates
+- Field/control: Order exceptions
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 131: Customer Notification Templates - Payments
+
+- Settings page: Customer Notification Templates
+- Field/control: Payments
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 132: Customer Notification Templates - POS
+
+- Settings page: Customer Notification Templates
+- Field/control: POS
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 133: Customer Notification Templates - Shipping updated
+
+- Settings page: Customer Notification Templates
+- Field/control: Shipping updated
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 134: Customer Notification Templates - Returns
+
+- Settings page: Customer Notification Templates
+- Field/control: Returns
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 135: Customer Notification Templates - Accounts and outreach
+
+- Settings page: Customer Notification Templates
+- Field/control: Accounts and outreach
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 136: Customer Notification Templates - Marketing double opt-in
+
+- Settings page: Customer Notification Templates
+- Field/control: Marketing double opt-in
+- Business purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary dependency: Order events
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 137: Metafields and Metaobjects - Metafield resources
+
+- Settings page: Metafields and Metaobjects
+- Field/control: Metafield resources
+- Business purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary dependency: Theme editor
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 138: Metafields and Metaobjects - Definition counts
+
+- Settings page: Metafields and Metaobjects
+- Field/control: Definition counts
+- Business purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary dependency: Theme editor
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 139: Metafields and Metaobjects - Metaobjects empty state
+
+- Settings page: Metafields and Metaobjects
+- Field/control: Metaobjects empty state
+- Business purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary dependency: Theme editor
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 140: Metafields and Metaobjects - Add definition
+
+- Settings page: Metafields and Metaobjects
+- Field/control: Add definition
+- Business purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary dependency: Theme editor
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 141: Languages - Add language
+
+- Settings page: Languages
+- Field/control: Add language
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 142: Languages - Language table
+
+- Settings page: Languages
+- Field/control: Language table
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 143: Languages - Status
+
+- Settings page: Languages
+- Field/control: Status
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 144: Languages - Domains
+
+- Settings page: Languages
+- Field/control: Domains
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 145: Languages - Default badge
+
+- Settings page: Languages
+- Field/control: Default badge
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 146: Languages - Translate app card
+
+- Settings page: Languages
+- Field/control: Translate app card
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 147: Languages - Install app
+
+- Settings page: Languages
+- Field/control: Install app
+- Business purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary dependency: Markets
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 148: Customer Privacy - Privacy policy
+
+- Settings page: Customer Privacy
+- Field/control: Privacy policy
+- Business purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary dependency: Policies
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 149: Customer Privacy - Cookie banner
+
+- Settings page: Customer Privacy
+- Field/control: Cookie banner
+- Business purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary dependency: Policies
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 150: Customer Privacy - Data sharing opt-out
+
+- Settings page: Customer Privacy
+- Field/control: Data sharing opt-out
+- Business purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary dependency: Policies
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 151: Customer Privacy - Network intelligence
+
+- Settings page: Customer Privacy
+- Field/control: Network intelligence
+- Business purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary dependency: Policies
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 152: Customer Privacy - Marketing settings links
+
+- Settings page: Customer Privacy
+- Field/control: Marketing settings links
+- Business purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary dependency: Policies
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 153: Customer Privacy - Data storage hosting location
+
+- Settings page: Customer Privacy
+- Field/control: Data storage hosting location
+- Business purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary dependency: Policies
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 154: Policies - Return rules
+
+- Settings page: Policies
+- Field/control: Return rules
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 155: Policies - Return and refund policy
+
+- Settings page: Policies
+- Field/control: Return and refund policy
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 156: Policies - Privacy policy
+
+- Settings page: Policies
+- Field/control: Privacy policy
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 157: Policies - Terms of service
+
+- Settings page: Policies
+- Field/control: Terms of service
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 158: Policies - Shipping policy
+
+- Settings page: Policies
+- Field/control: Shipping policy
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 159: Policies - Contact information
+
+- Settings page: Policies
+- Field/control: Contact information
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 160: Policies - Legal notice
+
+- Settings page: Policies
+- Field/control: Legal notice
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+### Settings Field 161: Policies - Online store menu help
+
+- Settings page: Policies
+- Field/control: Online store menu help
+- Business purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary dependency: Online store
+- UX rule: show current state, validation state, and business consequence before mutation.
+- LetBuyy rule: connect the control to a typed settings contract and audit sensitive changes.
+- Safety rule: do not expose sensitive values in client logs, docs, screenshots, or URLs.
+- Verification rule: cover default, changed, invalid, disabled, saved, and permission-denied states.
+
+
+## Component Intelligence Atlas
+
+### Component 1: Top App Frame
+
+- Purpose: Global orientation, search, AI assistant, alerts, account switching.
+- Usage: Every admin page; never competes with page content.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 2: Left Sidebar
+
+- Purpose: Durable information architecture and domain switching.
+- Usage: Persistent, icon plus label, inline expanded child routes.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 3: Search and Command Surface
+
+- Purpose: Cross-admin navigation and object discovery.
+- Usage: Search field exposes keyboard shortcut and category chips.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 4: Breadcrumb Header
+
+- Purpose: Task context and backtracking.
+- Usage: Create/edit pages and settings detail routes.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 5: Save Bar
+
+- Purpose: Unsaved-change protection.
+- Usage: Forms and editors with non-persistent local changes.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 6: Primary Button
+
+- Purpose: Highest-confidence next action.
+- Usage: Create, add, choose, activate, customize, explore.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 7: Secondary Button
+
+- Purpose: Safe alternate action.
+- Usage: Import, browse, learn more, duplicate, export.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 8: Disabled Button
+
+- Purpose: Clear gating and validation state.
+- Usage: Save, export, done, reset, next before requirements are met.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 9: Card
+
+- Purpose: Local grouping of related controls.
+- Usage: Settings, forms, metrics, onboarding tasks, empty states.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 10: Data Table
+
+- Purpose: Operational scanning and bulk work.
+- Usage: Collections, segments, users, roles, taxes, reports.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 11: Views and Filters
+
+- Purpose: Saved operational context.
+- Usage: All view, search/filter, sort, display options.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 12: Metric Card
+
+- Purpose: KPI discovery and report drill-through.
+- Usage: Analytics and marketing dashboards.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 13: Inline Chart
+
+- Purpose: Fast trend comprehension.
+- Usage: Analytics and marketing metric cards.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 14: Rich Text Editor
+
+- Purpose: Structured content input.
+- Usage: Product description and content surfaces.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 15: Media Dropzone
+
+- Purpose: Asset ingestion without page change.
+- Usage: Products and theme/editor flows.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 16: Combobox
+
+- Purpose: Large-option selection.
+- Usage: Product category, supplier, customer, market, country, language.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 17: Popover Menu
+
+- Purpose: Low-risk contextual actions.
+- Usage: More actions, manual payments, theme actions, table row actions.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 18: Modal Dialog
+
+- Purpose: Short focused task or decision.
+- Usage: Discount type selector, supplier creation, domain connection.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 19: Drawer/Panel
+
+- Purpose: Contextual configuration without full navigation.
+- Usage: Theme editor side panels and settings detail flyouts.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 20: Banner
+
+- Purpose: Important but dismissible guidance.
+- Usage: B2B app behavior, domain credits, tax/payment/legal warnings.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 21: Empty State
+
+- Purpose: Teach, reassure, and start the workflow.
+- Usage: Orders, products, customers, discounts, gift cards, apps.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 22: Skeleton/Loading
+
+- Purpose: Preserve perceived speed.
+- Usage: Theme editor and embedded app loads.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 23: Toast/Inline Status
+
+- Purpose: Micro-feedback after actions.
+- Usage: Save, publish, copy, install, delete; final actions not executed in research.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 24: Badge
+
+- Purpose: Compact state annotation.
+- Usage: Primary domain, connected, active, published, default, live.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 25: Toggle
+
+- Purpose: Binary configuration with immediate comprehension.
+- Usage: Gift card expiry, sign-in links, returns, store credit, local delivery.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 26: Radio Group
+
+- Purpose: Mutually exclusive business logic.
+- Usage: Order processing, capture method, checkout submission.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 27: Checkbox
+
+- Purpose: Optional policy or eligibility.
+- Usage: Marketing consent, tax inclusion, shipping address options.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 28: Date Picker
+
+- Purpose: Temporal business settings.
+- Usage: Gift card expiry and purchase order arrival.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 29: Stepper/Process Row
+
+- Purpose: Multi-location inventory movement.
+- Usage: Transfer origin, in-transit, destination.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+### Component 30: External App CTA
+
+- Purpose: Extend native capability without bloating core.
+- Usage: Marketing apps, pixel apps, translate app, sourcing apps.
+- State requirement: default must be intentionally designed when applicable.
+- State requirement: hover must be intentionally designed when applicable.
+- State requirement: focus-visible must be intentionally designed when applicable.
+- State requirement: active must be intentionally designed when applicable.
+- State requirement: disabled must be intentionally designed when applicable.
+- State requirement: loading must be intentionally designed when applicable.
+- State requirement: empty must be intentionally designed when applicable.
+- State requirement: success must be intentionally designed when applicable.
+- State requirement: warning must be intentionally designed when applicable.
+- State requirement: error must be intentionally designed when applicable.
+- State requirement: permission-denied must be intentionally designed when applicable.
+- LetBuyy component rule: Use semantic HTML role or equivalent accessible component behavior.
+- LetBuyy component rule: Use visible focus and keyboard activation.
+- LetBuyy component rule: Avoid inline one-off styling when a shared token/component should exist.
+- LetBuyy component rule: Expose analytics/audit hooks for critical merchant operations.
+- LetBuyy component rule: Make the component dense enough for repeated work but not cryptic for first-time merchants.
+
+
+## LetBuyy Gap And Roadmap Matrix
+
+### Gap: Navigation
+
+- Shopify state: Shopify exposes domain-specific child routes inline only after focus.
+- LetBuyy gap: LetBuyy should avoid flattening every merchant feature into one sidebar.
+- Priority: P0
+- Complexity: Medium
+- ROI: High
+- Recommended action: Create a Shopify-class navigation IA with expandable product, customer, order, content, market, analytics, and settings groups.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Home readiness
+
+- Shopify state: Shopify home is an onboarding grid with visual task cards and direct CTAs.
+- LetBuyy gap: LetBuyy needs a readiness cockpit with setup state rather than static dashboard cards.
+- Priority: P0
+- Complexity: Medium
+- ROI: High
+- Recommended action: Build a merchant home checklist from products, theme, payments, domain, shipping, policies, and plan state.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Save bar
+
+- Shopify state: Shopify uses global unsaved-state bars across forms and editors.
+- LetBuyy gap: LetBuyy needs a shared save/discard pattern for merchant forms and builder screens.
+- Priority: P0
+- Complexity: Medium
+- ROI: High
+- Recommended action: Add a save bar component with dirty-state detection, disabled save, discard, and leave-page guard.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Settings architecture
+
+- Shopify state: Shopify settings is a complete operating-system map.
+- LetBuyy gap: LetBuyy settings should be restructured into general, plan, billing, users, payments, checkout, customer accounts, shipping, taxes, domains, notifications, privacy, policies, apps, channels, custom data, languages.
+- Priority: P0
+- Complexity: High
+- ROI: Very high
+- Recommended action: Create settings IA and page templates before adding more merchant settings piecemeal.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Products
+
+- Shopify state: Shopify product form separates content, commerce, organization, channel publishing, variants, SEO.
+- LetBuyy gap: LetBuyy product screens need the same two-column grammar and progressive sections.
+- Priority: P0
+- Complexity: High
+- ROI: High
+- Recommended action: Refactor product create/edit into structured cards with right rail status/publishing/organization.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Orders
+
+- Shopify state: Shopify preserves orders route while gating transactional readiness by plan.
+- LetBuyy gap: LetBuyy should show order readiness and operational empty state instead of hiding missing capability.
+- Priority: P1
+- Complexity: Medium
+- ROI: High
+- Recommended action: Add order empty/gated states tied to payments, shipping, checkout, and plan readiness.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Inventory
+
+- Shopify state: Shopify separates inventory, transfers, purchase orders, and locations.
+- LetBuyy gap: LetBuyy needs inventory operations beyond product quantity fields.
+- Priority: P1
+- Complexity: High
+- ROI: High
+- Recommended action: Add inventory ledger, locations, transfers, and procurement roadmap.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Customers
+
+- Shopify state: Shopify connects customers, segments, companies, consent, tax, and address.
+- LetBuyy gap: LetBuyy customer CRM needs segmentation and B2B model readiness.
+- Priority: P1
+- Complexity: High
+- ROI: High
+- Recommended action: Add customer profile architecture with consent, address, tax, segments, and company hierarchy.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Marketing analytics
+
+- Shopify state: Shopify marketing blends attribution metrics, campaign tracking, and app discovery.
+- LetBuyy gap: LetBuyy analytics should support growth-specific reports, not only store totals.
+- Priority: P2
+- Complexity: Medium
+- ROI: Medium
+- Recommended action: Add marketing workspace with attribution table and app-powered acquisition placeholders.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Theme system
+
+- Shopify state: Shopify theme management includes current/live status, theme library, action menu, and section editor.
+- LetBuyy gap: LetBuyy builder should separate theme library from theme editor and support safe duplicate/publish flow.
+- Priority: P0
+- Complexity: Very high
+- ROI: Very high
+- Recommended action: Build theme library, editor shell, section tree, app blocks, draft/live state, rollback, and preview modes.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Apps
+
+- Shopify state: Shopify treats apps as extensions with marketplace, permissions, billing, and embedded navigation.
+- LetBuyy gap: LetBuyy app ecosystem needs install/billing/permission architecture before broad app claims.
+- Priority: P1
+- Complexity: Very high
+- ROI: High
+- Recommended action: Define app manifest, OAuth install, scopes, billing, embedded app shell, and app review process.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Custom data
+
+- Shopify state: Shopify custom data covers resources and metaobjects with typed definitions.
+- LetBuyy gap: LetBuyy needs typed metafields/metaobjects for extensibility.
+- Priority: P1
+- Complexity: High
+- ROI: High
+- Recommended action: Create typed custom data definitions with storefront/API exposure controls.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Privacy/policies
+
+- Shopify state: Shopify separates privacy controls, legal policies, marketing settings, and customer events.
+- LetBuyy gap: LetBuyy must make compliance operational and region-aware.
+- Priority: P0
+- Complexity: High
+- ROI: High
+- Recommended action: Add privacy center, policy states, cookie banner controls, consent events, and marketing opt-in settings.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+### Gap: Design system
+
+- Shopify state: Shopify uses dense operational components, disabled states, empty states, banners, tables, modals, popovers.
+- LetBuyy gap: LetBuyy needs stronger shared UI primitives and usage rules.
+- Priority: P0
+- Complexity: High
+- ROI: Very high
+- Recommended action: Expand shared UI package with merchant components and documented state variants.
+- Implementation guardrail: Preserve runtime boundaries and tenant isolation.
+- Implementation guardrail: Use shared contracts and API gateway boundaries for commerce behavior.
+- Implementation guardrail: Avoid turning research observations into active architecture until promoted through governance.
+- Implementation guardrail: Implement with tests, accessible states, loading states, and visual verification.
+- Implementation guardrail: Document any route, schema, or runtime changes in governance memory before merge.
+
+
+## Roadmap Detail
+
+### Quick Wins
+
+- Create merchant settings IA skeleton with all major categories and placeholder-safe empty states.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Add shared save bar, leave-page guard, disabled save state, and confirmation modal patterns.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Refactor merchant home into setup readiness cards for product, theme, payments, domain, shipping, policies, and plan.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Create redlined navigation tree: Orders, Products, Customers, Marketing, Discounts, Content, Markets, Analytics, Online Store, Apps, Settings.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Add consistent empty-state component with illustration slot, title, explanation, primary CTA, secondary CTA, learn-more link.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+
+### 30 Day Plan
+
+- Build settings shell and implement General, Payments, Checkout, Shipping, Taxes, Domains, Notifications, Policies, Privacy overview pages.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Refactor product create/edit into Shopify-class cards with right rail, media, pricing, inventory, shipping, variants, SEO, and publishing.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Add analytics card/report drill-through shell and marketing attribution overview.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Create theme library page with current theme card, actions, import/add theme, preview/edit paths.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Expand shared UI primitives for tables, filters, saved views, banners, modals, popovers, toggles, radios, badges, and skeletons.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+
+### 90 Day Plan
+
+- Implement inventory operations: inventory table, locations, transfers, purchase orders, stock ledger, and import/export.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Build customer CRM: customer create/edit, segments, B2B companies, addresses, consent, notes, tags, tax fields.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Implement app architecture contracts: manifests, scopes, OAuth install, billing hooks, embedded shell, uninstall, and settings management.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Build theme editor foundation: section tree, live preview, responsive mode, app blocks, draft/live/publish/rollback model.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Create notification template architecture tied to domain events, languages, checkout, marketing consent, and order states.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+
+### 12 Month Plan
+
+- Ship full commerce operating system: markets, catalogs, taxes/duties, shipping profiles, checkout rules, customer accounts, privacy center.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Launch theme marketplace and app marketplace with review, install, billing, permissions, and governance flows.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Add enterprise merchant productivity: saved views, bulk actions, advanced filters, keyboard shortcuts, background jobs, audit timelines.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Add live analytics, cohort reports, product/referrer/session breakdowns, marketing attribution, and campaign performance.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+- Complete B2B operating model: companies, contacts, locations, catalogs, payment terms, checkout rules, and tax handling.
+  - Owner needed.
+  - Data contract needed.
+  - UI primitive needed.
+  - QA state matrix needed.
+  - Tenant isolation review needed.
+
+## Route Workflow Expansion Appendix
+
+This appendix expands each route into operational workflow, accessibility, data, and LetBuyy implementation decisions. It exists to make the research actionable for product, design, and engineering without promoting observations into active architecture by itself.
+
+### Expanded Route 1: Home
+
+- Route: `/`
+- Parent navigation: Home
+- Purpose: Onboarding dashboard and next-best-action launchpad.
+- Primary user: Store owner or operator
+- Frequency: Daily during setup, weekly after launch
+- Primary action: Add product / choose theme / activate payments depending on task card
+- Access status: Observed via redacted screenshot
+- LetBuyy target: Merchant home should be a readiness cockpit, not a generic dashboard.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 2: Orders
+
+- Route: `/orders`
+- Parent navigation: Orders
+- Purpose: Order operations and fulfillment queue.
+- Primary user: Merchant operator
+- Frequency: High after launch
+- Primary action: Select plan when gated; otherwise operational order actions
+- Access status: Observed authenticated, gated by plan
+- LetBuyy target: Orders should expose plan-gated readiness while preserving the route and education.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 3: Draft Orders
+
+- Route: `/draft_orders`
+- Parent navigation: Orders > Drafts
+- Purpose: Manual order creation and invoice workflow.
+- Primary user: Merchant support and sales
+- Frequency: Medium
+- Primary action: Create draft order when available
+- Access status: Route discovered through sidebar
+- LetBuyy target: Needed for assisted selling, B2B quotes, custom invoices, and payment links.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 4: Abandoned Checkouts
+
+- Route: `/checkouts`
+- Parent navigation: Orders > Abandoned checkouts
+- Purpose: Recovery queue for incomplete checkout sessions.
+- Primary user: Growth operator
+- Frequency: Medium
+- Primary action: Review or recover checkout where data exists
+- Access status: Route discovered through sidebar
+- LetBuyy target: Treat abandoned checkout as a growth workflow tied to notifications and campaigns.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 5: Products
+
+- Route: `/products`
+- Parent navigation: Products
+- Purpose: Catalog creation and product management.
+- Primary user: Merchant catalog operator
+- Frequency: High
+- Primary action: Add product
+- Access status: Observed via screenshot
+- LetBuyy target: Catalog should blend create/import/source flows in one readiness page.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 6: Add Product
+
+- Route: `/products/new`
+- Parent navigation: Products > Add product
+- Purpose: Create or edit a product with inventory, publishing, pricing, variants, SEO, and organization.
+- Primary user: Catalog operator
+- Frequency: High
+- Primary action: Save when valid
+- Access status: Observed via screenshot
+- LetBuyy target: Product forms need a two-column operational grammar and durable save bar.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 7: Collections
+
+- Route: `/products/collections`
+- Parent navigation: Products > Collections
+- Purpose: Group products manually or by conditions for merchandising.
+- Primary user: Merchandiser
+- Frequency: Medium
+- Primary action: Add collection
+- Access status: Observed via screenshot
+- LetBuyy target: Collections must support both storefront merchandising and operational filters.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 8: Inventory
+
+- Route: `/products/inventory`
+- Parent navigation: Products > Inventory
+- Purpose: Search and adjust stock availability across products and locations.
+- Primary user: Inventory operator
+- Frequency: High for stock-based merchants
+- Primary action: Clear search and filters when empty; import/export in header
+- Access status: Observed via screenshot
+- LetBuyy target: Inventory should be a first-class table separate from product editing.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 9: Purchase Orders
+
+- Route: `/products/purchase_orders`
+- Parent navigation: Products > Purchase orders
+- Purpose: Track ordered inventory from suppliers before receipt.
+- Primary user: Inventory and procurement operator
+- Frequency: Medium
+- Primary action: Create purchase order
+- Access status: Observed via screenshot
+- LetBuyy target: Procurement is an advanced but important inventory confidence feature.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 10: Create Purchase Order
+
+- Route: `/products/purchase_orders/new`
+- Parent navigation: Products > Purchase orders > Create
+- Purpose: Create a draft procurement document with supplier, destination, shipment, products, and cost summary.
+- Primary user: Inventory and procurement operator
+- Frequency: Medium
+- Primary action: Save as draft, not executed
+- Access status: Observed via screenshot and modal
+- LetBuyy target: Separate receiving/procurement from selling inventory; compute costs live.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 11: Transfers
+
+- Route: `/products/transfers`
+- Parent navigation: Products > Transfers
+- Purpose: Move inventory between locations with origin, in-transit, destination, references, notes, and tags.
+- Primary user: Inventory operator
+- Frequency: Medium
+- Primary action: Save when valid, not executed
+- Access status: Observed via screenshot
+- LetBuyy target: Location-aware inventory movement needs a dedicated, guided workflow.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 12: Gift Cards
+
+- Route: `/products/gift_cards`
+- Parent navigation: Products > Gift cards
+- Purpose: Create sellable gift card products or issue customer gift cards.
+- Primary user: Merchant support and merchandising
+- Frequency: Low to medium
+- Primary action: Add gift card product
+- Access status: Observed via screenshot
+- LetBuyy target: Gift cards combine product, liability, customer, and legal workflows.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 13: Create Gift Card
+
+- Route: `/products/gift_cards/new`
+- Parent navigation: Products > Gift cards > Create
+- Purpose: Issue a gift card code with value, expiry, customer, and notes.
+- Primary user: Support operator
+- Frequency: Low to medium
+- Primary action: Save when valid, not executed
+- Access status: Observed via screenshot
+- LetBuyy target: Gift card issuance must make expiry and legal constraints explicit.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 14: Customers
+
+- Route: `/customers`
+- Parent navigation: Customers
+- Purpose: Customer records, order history, segmentation, and acquisition via apps.
+- Primary user: Support and growth operator
+- Frequency: High after launch
+- Primary action: Add customer
+- Access status: Observed via screenshot
+- LetBuyy target: Customer CRM needs a neutral operational surface with import and segmentation built in.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 15: New Customer
+
+- Route: `/customers/new`
+- Parent navigation: Customers > Add customer
+- Purpose: Create customer profile with contact, language, marketing consent, address, tax, notes, and tags.
+- Primary user: Support operator
+- Frequency: Medium
+- Primary action: Save when valid, not executed
+- Access status: Observed via screenshot
+- LetBuyy target: Consent and contact availability should drive disabled states and validation.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 16: Segments
+
+- Route: `/customers/segments`
+- Parent navigation: Customers > Segments
+- Purpose: Saved customer cohorts for analysis and marketing.
+- Primary user: Growth operator
+- Frequency: Medium
+- Primary action: Create segment
+- Access status: Observed via screenshot
+- LetBuyy target: Segments should be native query objects, not static tags.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 17: Companies
+
+- Route: `/customers/companies`
+- Parent navigation: Customers > Companies
+- Purpose: B2B customer accounts with company locations, payment terms, catalogs, permissions, and checkout rules.
+- Primary user: B2B merchant operator
+- Frequency: Medium for B2B merchants
+- Primary action: Add company
+- Access status: Observed via screenshot
+- LetBuyy target: B2B must be treated as account hierarchy, not just customer tags.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 18: New Company
+
+- Route: `/customers/companies/new`
+- Parent navigation: Customers > Companies > Add company
+- Purpose: Configure B2B account, contact, location, markets, catalogs, payment terms, checkout behavior, and tax.
+- Primary user: B2B operator
+- Frequency: Medium
+- Primary action: Save when valid, not executed
+- Access status: Observed via screenshot
+- LetBuyy target: B2B create should expose dependencies gradually but all in one reviewable form.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 19: Marketing
+
+- Route: `/marketing`
+- Parent navigation: Marketing
+- Purpose: Marketing performance overview and acquisition workflow entry.
+- Primary user: Growth operator
+- Frequency: Weekly
+- Primary action: Create campaign
+- Access status: Observed authenticated
+- LetBuyy target: Marketing should connect attribution, campaigns, and app extension in one workspace.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 20: Marketing Campaigns
+
+- Route: `/marketing/campaigns`
+- Parent navigation: Marketing > Campaigns
+- Purpose: Create and track marketing campaigns across online/offline touchpoints.
+- Primary user: Growth operator
+- Frequency: Weekly
+- Primary action: Create campaign, not executed
+- Access status: Observed authenticated
+- LetBuyy target: Campaign tracking can begin as a readiness and attribution shell before automation exists.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 21: Marketing Attribution
+
+- Route: `/marketing/reports/channels`
+- Parent navigation: Marketing > Attribution
+- Purpose: Attribution model and channel performance report.
+- Primary user: Growth operator
+- Frequency: Weekly
+- Primary action: View report
+- Access status: Observed authenticated
+- LetBuyy target: Attribution should reuse analytics primitives but remain domain-labeled for marketers.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 22: Discounts
+
+- Route: `/discounts`
+- Parent navigation: Discounts
+- Purpose: Create and manage codes and automatic discounts.
+- Primary user: Merchant growth/operator
+- Frequency: Medium
+- Primary action: Create discount
+- Access status: Observed via screenshot
+- LetBuyy target: Discounts need clear taxonomy before asking for conditions.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 23: Discount Type Selector
+
+- Route: `/discounts/new`
+- Parent navigation: Discounts > Create discount
+- Purpose: Choose discount model before entering discount business logic.
+- Primary user: Growth operator
+- Frequency: Medium
+- Primary action: Choose one of four discount types, not selected
+- Access status: Observed via screenshot modal
+- LetBuyy target: Start discount creation with a decision modal to prevent bloated forms.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 24: Content Metaobjects
+
+- Route: `/content/metaobjects`
+- Parent navigation: Content > Metaobjects
+- Purpose: Structured content definitions used by storefront/theme experiences.
+- Primary user: Content manager and developer-minded merchant
+- Frequency: Low to medium
+- Primary action: Add definition via settings custom data
+- Access status: Observed authenticated
+- LetBuyy target: CMS custom data should connect content authoring with schema governance.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 25: Files
+
+- Route: `/content/files`
+- Parent navigation: Content > Files
+- Purpose: Asset library for uploaded media and documents.
+- Primary user: Content manager
+- Frequency: Medium
+- Primary action: Upload files where available
+- Access status: Route discovered through content subnav
+- LetBuyy target: Media library should be global, searchable, and reusable across products/content/themes.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 26: Menus
+
+- Route: `/content/menus`
+- Parent navigation: Content > Menus
+- Purpose: Storefront navigation menu management.
+- Primary user: Storefront manager
+- Frequency: Medium
+- Primary action: Create or edit menus
+- Access status: Route discovered through content subnav
+- LetBuyy target: Navigation is content, not theme-only configuration.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 27: Blog Posts
+
+- Route: `/content/articles`
+- Parent navigation: Content > Blog posts
+- Purpose: Editorial content management for storefront blogs.
+- Primary user: Content marketer
+- Frequency: Medium
+- Primary action: Create blog post where available
+- Access status: Route discovered through content subnav
+- LetBuyy target: Blog content should use the same save bar and publishing grammar as products/pages.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 28: Markets
+
+- Route: `/markets`
+- Parent navigation: Markets
+- Purpose: International and regional selling configuration.
+- Primary user: Store owner, operations lead
+- Frequency: Medium
+- Primary action: Create market
+- Access status: Observed authenticated
+- LetBuyy target: Markets should be a top-level commerce operating model for currency/tax/shipping/catalogs.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 29: Catalogs
+
+- Route: `/markets/catalogs`
+- Parent navigation: Markets > Catalogs
+- Purpose: Market-specific or B2B-specific product catalogs.
+- Primary user: Merchandiser or B2B operator
+- Frequency: Medium
+- Primary action: Create catalog where available
+- Access status: Route discovered through markets subnav
+- LetBuyy target: Catalogs are the bridge between products, markets, and B2B companies.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 30: Rollouts
+
+- Route: `/markets/rollouts`
+- Parent navigation: Markets > Rollouts
+- Purpose: Controlled rollout of market changes.
+- Primary user: Operations lead
+- Frequency: Low
+- Primary action: Create or manage rollout where available
+- Access status: Route discovered through markets subnav
+- LetBuyy target: Advanced market changes need staged rollout and rollback language.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 31: Analytics
+
+- Route: `/analytics`
+- Parent navigation: Analytics
+- Purpose: Business reporting dashboard with metric cards and drill-through reports.
+- Primary user: Owner, analyst, operator
+- Frequency: Daily to weekly
+- Primary action: New exploration
+- Access status: Observed authenticated
+- LetBuyy target: Analytics should be drill-through from every metric, not static charts.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 32: Reports
+
+- Route: `/analytics/reports`
+- Parent navigation: Analytics > Reports
+- Purpose: Browse saved and standard reports.
+- Primary user: Analyst/operator
+- Frequency: Weekly
+- Primary action: Explore or open report
+- Access status: Route discovered through analytics subnav and card links
+- LetBuyy target: Reports should be first-class query artifacts with explainable source metrics.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 33: Live View
+
+- Route: `/analytics/live`
+- Parent navigation: Analytics > Live View
+- Purpose: Real-time storefront traffic and conversion monitoring.
+- Primary user: Owner/operator
+- Frequency: Occasional
+- Primary action: Monitor live activity
+- Access status: Route discovered through analytics subnav
+- LetBuyy target: Live view is valuable as trust theater and launch monitoring, even with sparse data.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 34: Online Store Themes
+
+- Route: `/themes`
+- Parent navigation: Sales channels > Online Store
+- Purpose: Manage current theme, theme library, previews, password protection, and theme discovery.
+- Primary user: Storefront manager
+- Frequency: Medium
+- Primary action: Edit theme
+- Access status: Observed authenticated
+- LetBuyy target: Theme management needs library, current/live state, safe duplicate, and edit entry.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 35: Theme Editor
+
+- Route: `/themes/[theme_id]/editor`
+- Parent navigation: Online Store > Themes > Edit theme
+- Purpose: Customize storefront sections, blocks, settings, app embeds, responsive preview, and publishing state.
+- Primary user: Storefront designer/merchant
+- Frequency: Medium
+- Primary action: Save when changes exist, not executed
+- Access status: Observed authenticated, no save performed
+- LetBuyy target: Builder must support section tree plus live preview, not a form-only settings page.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 36: Apps Add
+
+- Route: `/apps`
+- Parent navigation: Apps > Add
+- Purpose: Entry into app marketplace and installed app management.
+- Primary user: Merchant owner/operator
+- Frequency: Low to medium
+- Primary action: Explore apps
+- Access status: Observed via settings and sidebar links, external app store not installed
+- LetBuyy target: App ecosystem should start with discovery categories and permission transparency.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 37: Agentic Sales Channel
+
+- Route: `/apps/agentic`
+- Parent navigation: Sales channels > Agentic
+- Purpose: AI or agentic sales channel surface inside admin.
+- Primary user: Merchant experimenting with new sales channels
+- Frequency: Low
+- Primary action: Configure channel where available
+- Access status: Route discovered through sidebar
+- LetBuyy target: Sales channels and apps should share embedding rules but differ in IA placement.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 38: Settings - Settings Root
+
+- Route: `/settings`
+- Parent navigation: Settings
+- Purpose: Central configuration hub across store, billing, users, commerce, channels, apps, legal, and data.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: settings search
+- Access status: Observed authenticated
+- LetBuyy target: LetBuyy settings should become a real architecture, not scattered account/store pages.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 39: Settings - General
+
+- Route: `/settings/general`
+- Parent navigation: Settings
+- Purpose: Store identity, contact, defaults, order processing, order ID format, assets, and transfer controls.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Business details
+- Access status: Observed authenticated
+- LetBuyy target: Split General into store identity, operational defaults, order processing, and ownership controls with a single page overview.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 40: Settings - Plan
+
+- Route: `/settings/plan`
+- Parent navigation: Settings
+- Purpose: Trial, subscription plan, plan selection, cancellation, and linked subscriptions.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Trial status
+- Access status: Observed authenticated
+- LetBuyy target: Show entitlement effects across checkout, orders, domains, analytics, and channels before plan selection.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 41: Settings - Billing
+
+- Route: `/settings/billing`
+- Parent navigation: Settings
+- Purpose: Billing profile, upcoming bill, payment method, invoices, plan settings, and country-specific requirements.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Billing profile
+- Access status: Observed authenticated
+- LetBuyy target: Billing should combine current bill, payment methods, invoice history, and compliance warnings.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 42: Settings - Users
+
+- Route: `/settings/organization-account`
+- Parent navigation: Settings
+- Purpose: Invite users, list staff, manage roles and two-step authentication.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Users table
+- Access status: Observed authenticated
+- LetBuyy target: LetBuyy needs role-aware staff list with MFA status and audit-ready owner visibility.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 43: Settings - Roles
+
+- Route: `/settings/roles`
+- Parent navigation: Settings
+- Purpose: Default and custom role management across organization, store, and POS scopes.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Role table
+- Access status: Observed authenticated
+- LetBuyy target: Roles require scope, default templates, non-editable system roles, and clear permission inheritance.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 44: Settings - Security
+
+- Route: `/settings/security`
+- Parent navigation: Settings
+- Purpose: User activity logs, collaborators, collaborator code, and account security operations.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: User activity logs
+- Access status: Observed authenticated
+- LetBuyy target: Expose collaborator access as a governed security workflow with audit trail and code rotation.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 45: Settings - Payments
+
+- Route: `/settings/payments`
+- Parent navigation: Settings
+- Purpose: Payment providers, PayPal/digital wallet setup, capture method, manual payments, customizations, and gift card expiry.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Provider setup
+- Access status: Observed authenticated
+- LetBuyy target: Payment settings should isolate provider onboarding, capture policy, manual methods, and legal gift-card rules.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 46: Settings - Checkout
+
+- Route: `/settings/checkout`
+- Parent navigation: Settings
+- Purpose: Checkout configuration, customer contact, customer information, marketing opt-in, subscriptions disclaimer, tipping, language, address collection, and rules.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Checkout configuration card
+- Access status: Observed authenticated
+- LetBuyy target: Checkout needs staged sections with risk-aware copy and app-powered extension points.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 47: Settings - Customer Accounts
+
+- Route: `/settings/customer_accounts`
+- Parent navigation: Settings
+- Purpose: Sign-in links, account configuration, authentication methods, returns, store credit, and customer-account URL.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Sign-in links toggle
+- Access status: Observed authenticated
+- LetBuyy target: Customer account should be a product surface, not just auth toggles.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 48: Settings - Shipping and Delivery
+
+- Route: `/settings/shipping`
+- Parent navigation: Settings
+- Purpose: Shipping profiles, delivery dates, packages, shipping labels, carrier accounts, local delivery, pickup, packing slips, and fulfillment services.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: General profile
+- Access status: Observed authenticated
+- LetBuyy target: Shipping settings must connect profiles, locations, packages, carrier accounts, and local methods.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 49: Settings - Taxes and Duties
+
+- Route: `/settings/taxes`
+- Parent navigation: Settings
+- Purpose: Regional sales tax, tax services, duties/import taxes, customs, and global tax settings.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Tax service status
+- Access status: Observed authenticated
+- LetBuyy target: Taxes should be a guided compliance cockpit with region state, product metadata dependencies, and global toggles.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 50: Settings - Locations
+
+- Route: `/settings/locations`
+- Parent navigation: Settings
+- Purpose: Manage fulfillment/store locations and POS subscriptions.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Locations usage count
+- Access status: Observed authenticated
+- LetBuyy target: Locations should power inventory, shipping, pickup, POS, and transfer logic everywhere.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 51: Settings - Apps Settings
+
+- Route: `/settings/apps`
+- Parent navigation: Settings
+- Purpose: Installed apps, app discovery, and developer app entry.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Develop apps
+- Access status: Observed authenticated
+- LetBuyy target: Make app management permission- and billing-aware from day one.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 52: Settings - Sales Channels
+
+- Route: `/settings/sales_channels`
+- Parent navigation: Settings
+- Purpose: Installed sales channels and marketplace for channels.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Installed channel list
+- Access status: Observed authenticated
+- LetBuyy target: Channels should be distinct from apps because they alter where products can sell.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 53: Settings - Domains
+
+- Route: `/settings/domains`
+- Parent navigation: Settings
+- Purpose: Manage myshopify domain, custom domains, connection, transfer, purchase, primary domain, status, and DNS actions.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Connect existing domain
+- Access status: Observed authenticated
+- LetBuyy target: Domains need verification steps, takeover prevention, SSL status, and primary-domain promotion.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 54: Settings - Customer Events
+
+- Route: `/settings/customer_events`
+- Parent navigation: Settings
+- Purpose: Pixels and customer-event tracking via app pixels and custom pixels.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: App pixels tab
+- Access status: Observed authenticated
+- LetBuyy target: Pixel management belongs near privacy and analytics, with app pixels preferred over custom code.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 55: Settings - Notifications
+
+- Route: `/settings/notifications`
+- Parent navigation: Settings
+- Purpose: Sender email, customer/staff/fulfillment/webhook notification templates and delivery configuration.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Sender email warning
+- Access status: Observed authenticated
+- LetBuyy target: Notifications should be event-template driven, localized, and tied to order/customer states.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 56: Settings - Customer Notification Templates
+
+- Route: `/settings/notifications/customer`
+- Parent navigation: Settings
+- Purpose: Customize customer email/SMS templates by lifecycle stage.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Customize email templates
+- Access status: Observed authenticated drill-down
+- LetBuyy target: Use categories and toggles to keep notification complexity navigable.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 57: Settings - Metafields and Metaobjects
+
+- Route: `/settings/custom_data`
+- Parent navigation: Settings
+- Purpose: Define custom data models for products, variants, customers, orders, markets, shops, and structured content.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Metafield resources
+- Access status: Observed authenticated
+- LetBuyy target: Custom data should be schema-first, typed, and reusable across admin, storefront, and apps.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 58: Settings - Languages
+
+- Route: `/settings/languages`
+- Parent navigation: Settings
+- Purpose: Published languages, domains, default language, and translation app recommendations.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Add language
+- Access status: Observed authenticated
+- LetBuyy target: Language management should combine native status with translation app extension.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 59: Settings - Customer Privacy
+
+- Route: `/settings/privacy`
+- Parent navigation: Settings
+- Purpose: Privacy policy, cookie banner, data sharing opt-out, network intelligence, marketing settings, and data storage location.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Privacy policy
+- Access status: Observed authenticated
+- LetBuyy target: Privacy should be surfaced as active operational controls, not static policy text.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+### Expanded Route 60: Settings - Policies
+
+- Route: `/settings/legal`
+- Parent navigation: Settings
+- Purpose: Return rules and written policies for refund, privacy, terms, shipping, contact, and legal notices.
+- Primary user: Store owner or administrator
+- Frequency: Setup and periodic maintenance
+- Primary action: Return rules
+- Access status: Observed authenticated
+- LetBuyy target: Policies should distinguish generated, missing, required, published, and custom states.
+- Workflow checklist:
+  - Workflow 1: Entry point should explain why the merchant came here and what the next action is.
+  - Workflow 2: Primary action should be stable even when data is absent, gated, or still loading.
+  - Workflow 3: Secondary actions should be grouped by safety and frequency rather than visual prominence.
+  - Workflow 4: Search, filters, and saved views should appear before bulk data becomes overwhelming.
+  - Workflow 5: Empty state should teach the domain model and expose the first safe action.
+  - Workflow 6: Gated state should identify the prerequisite and preserve trust with clear copy.
+  - Workflow 7: Create/edit flow should expose a save bar when local unsaved state exists.
+  - Workflow 8: Leave-page guard should only appear when a non-persistent change would be lost.
+  - Workflow 9: Context menus should hold infrequent or advanced operations.
+  - Workflow 10: Cross-links should send the merchant to dependent settings instead of duplicating configuration.
+  - Workflow 11: Help links should follow the workflow, not interrupt the first action.
+  - Workflow 12: Every route should have an explicit loading, empty, populated, filtered-empty, error, and permission-denied state.
+- Accessibility checklist:
+  - Accessibility 1: Heading order should identify the page and major card groups.
+  - Accessibility 2: Icon-only buttons need accessible labels and tooltips where meaning is not obvious.
+  - Accessibility 3: Form controls need labels, help text, invalid text, and disabled explanations.
+  - Accessibility 4: Tables need column headers, row selection labels, sortable header announcements, and keyboard row actions.
+  - Accessibility 5: Modals need focus trap, Escape close where safe, labelled title, and a clear cancel path.
+  - Accessibility 6: Popovers need keyboard reachability and should return focus to the trigger.
+  - Accessibility 7: Save bars need keyboard access to discard and save, plus clear disabled state when invalid.
+  - Accessibility 8: Banners need severity and dismiss controls where dismissible.
+  - Accessibility 9: Date pickers and comboboxes need keyboard and screen-reader flows.
+  - Accessibility 10: Status badges need text labels, not color alone.
+- Data and governance checklist:
+  - Data 1: Tenant boundary must flow through `site_id` or an explicit store ownership check.
+  - Data 2: List data should be paginated, filterable, and traceable to the API gateway contract.
+  - Data 3: Mutation payloads should be validated with shared Zod schemas or domain package schemas.
+  - Data 4: Sensitive settings require audit events and permission checks.
+  - Data 5: Payment, checkout, tax, shipping, and order totals must be recomputed server-side.
+  - Data 6: External provider identifiers should never be trusted from the client without verification.
+  - Data 7: Idempotency is required when retries can duplicate side effects.
+  - Data 8: Background jobs should expose status rather than blocking the UI.
+  - Data 9: App-powered features should declare scopes, billing, and data access.
+  - Data 10: Generated records should avoid leaking internal IDs into merchant-facing docs or screenshots.
+- LetBuyy implementation checklist:
+  - Implementation 1: Create reusable page shell using top frame, sidebar, content header, and constrained content width.
+  - Implementation 2: Create shared card primitives with title, description, actions, status, and footer slots.
+  - Implementation 3: Create shared table primitive with saved views, filters, sorting, selection, pagination, and empty states.
+  - Implementation 4: Create shared modal/popover/dialog primitives with accessibility baked in.
+  - Implementation 5: Create shared form field primitives for text, select, combobox, money, date, phone, radio, checkbox, toggle, and rich text.
+  - Implementation 6: Create shared save bar and unsaved-change guard.
+  - Implementation 7: Create shared banner system for info, warning, critical, success, and gated states.
+  - Implementation 8: Document route ownership in the relevant runtime manifest and governance docs when implementation begins.
+  - Implementation 9: Keep UI copy merchant-facing and consequence-oriented.
+  - Implementation 10: Add Playwright or component tests for core states before marking route complete.
+- Product-review questions:
+  - Question: Does the page make the merchant job obvious in the first viewport?
+  - Question: Does the page still make sense with no data?
+  - Question: Does the route avoid final actions until validation and permissions are clear?
+  - Question: Does the page expose dependencies instead of hiding them?
+  - Question: Does the page use shared LetBuyy primitives rather than bespoke styling?
+  - Question: Does the page preserve tenant isolation and avoid client-side secrets?
+  - Question: Does the page provide an upgrade path from beginner setup to expert repeated work?
+  - Question: Does the page create trust through clear state, copy, and recovery options?
+
+## Settings Dependency Expansion Appendix
+
+### Settings Dependency 1: General
+
+- Dependency model: Store identity, order IDs, order processing, and store defaults depend on tenant ownership, markets, branding, and order workflow state.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 2: Plan
+
+- Dependency model: Plan status gates orders, payments, domains, app billing, checkout activation, and trial/entitlement copy.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 3: Billing
+
+- Dependency model: Billing depends on legal address, payment method, invoice events, tax jurisdiction, plan, and app/subscription charges.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 4: Users
+
+- Dependency model: Users depend on roles, ownership, MFA/security policy, invitations, audit logs, and store/organization scope.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 5: Roles
+
+- Dependency model: Roles depend on permission taxonomy, organization scope, POS scope, store scope, and system-role immutability.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 6: Security
+
+- Dependency model: Security depends on activity logs, collaborators, code rotation, staff permissioning, and owner controls.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 7: Payments
+
+- Dependency model: Payments depend on provider adapters, capture policy, manual methods, gift card law, plan readiness, and checkout/order state.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 8: Checkout
+
+- Dependency model: Checkout depends on customer accounts, payments, shipping, taxes, subscriptions, marketing consent, language, and app rules.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 9: Customer Accounts
+
+- Dependency model: Customer accounts depend on authentication, checkout sign-in requirements, returns, store credit, customer URL, and privacy.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 10: Shipping and Delivery
+
+- Dependency model: Shipping depends on locations, profiles, packages, product weight, fulfillment providers, markets, and local delivery/pickup.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 11: Taxes and Duties
+
+- Dependency model: Taxes depend on markets, product categories, HS codes, shipping charges, business registration, and tax provider logic.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 12: Locations
+
+- Dependency model: Locations depend on inventory, shipping, pickup, POS, transfers, fulfillment, and staff permissions.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 13: Apps
+
+- Dependency model: Apps depend on manifest, OAuth, scopes, billing, embedded navigation, uninstall, and data deletion.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 14: Sales Channels
+
+- Dependency model: Sales channels depend on publishing status, product availability, apps, checkout, and channel-specific settings.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 15: Domains
+
+- Dependency model: Domains depend on DNS verification, SSL, primary domain, markets, online store, and takeover prevention.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 16: Customer Events
+
+- Dependency model: Customer events depend on privacy, consent, pixels, analytics, apps, and storefront instrumentation.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 17: Notifications
+
+- Dependency model: Notifications depend on event taxonomy, sender email, templates, localization, order/customer events, and consent.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 18: Metafields and Metaobjects
+
+- Dependency model: Custom data depends on typed schema, resources, storefront exposure, theme usage, apps, and API contracts.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 19: Languages
+
+- Dependency model: Languages depend on markets, domains, checkout content, theme translations, and translation apps.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 20: Customer Privacy
+
+- Dependency model: Privacy depends on policies, customer events, marketing settings, cookie banner, data residency, and legal region.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.
+
+### Settings Dependency 21: Policies
+
+- Dependency model: Policies depend on legal obligations, checkout links, online store menus, privacy controls, returns, and publishing state.
+- LetBuyy settings rule: Show current configured state before edit.
+- LetBuyy settings rule: Show owner/admin permissions before sensitive mutation.
+- LetBuyy settings rule: Show related settings links where a dependency lives elsewhere.
+- LetBuyy settings rule: Show validation and required prerequisites before enabling save.
+- LetBuyy settings rule: Show audit and activity trail for sensitive business changes.
+- LetBuyy settings rule: Show safe disabled state when the plan or setup is incomplete.
+- LetBuyy settings rule: Show app-powered areas distinctly from native platform controls.
+- LetBuyy settings rule: Show legal/compliance copy in plain merchant language.
+- LetBuyy settings rule: Show recovery path for misconfiguration.
+- LetBuyy settings rule: Show documentation link only after immediate action and state are clear.

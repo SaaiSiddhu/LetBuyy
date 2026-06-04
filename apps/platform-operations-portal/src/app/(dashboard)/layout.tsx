@@ -11,7 +11,7 @@ export default function TeamDashboardLayout({
             <aside className="hidden w-64 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 lg:block">
                 <div className="flex h-16 items-center border-b border-zinc-200 px-6 dark:border-zinc-800">
                     <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">LetBuyy</h1>
-                    <span className="ml-2 rounded bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                    <span className="ml-2 rounded bg-[var(--lb-color-primary-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--lb-color-primary)]">
                         Team
                     </span>
                 </div>

@@ -35,7 +35,7 @@ class QuickActionsGrid extends StatelessWidget {
           icon: Icons.layers_outlined,
           label: 'Store Layout',
           subtitle: 'Manage sections',
-          color: const Color(0xFF6366F1), // Indigo
+          color: const Color(0xFF8B5CF6), // Indigo
           onTap: onEditSections,
         ),
         _ActionCard(

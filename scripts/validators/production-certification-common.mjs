@@ -28,7 +28,7 @@ export function validateProductionCertification(kind) {
   reporter.assert(contract?.runner?.providerCertification === false, "Production runner contract must not claim provider certification by default");
   reporter.assert(contract?.artifactPolicy?.trackedArtifactsForbidden === true, "Production evidence artifacts must not be tracked");
   reporter.assert(contract?.artifactPolicy?.liveCertificationRequiresProviderEvidence === true, "Live certification must require provider evidence");
-  reporter.assert(contract?.artifactPolicy?.localEvidenceCertification === false, "Local evidence must not certify production");
+  reporter.assert(contract?.artifactPolicy?.stagingEvidenceCertification === false, "Staging evidence must not certify production");
   reporter.assert(contract?.artifactPolicy?.requiresImmutableArchive === true, "Production evidence must require immutable archive governance");
   reporter.assert(gitignore.includes("artifacts/production-certification/"), "Production certification artifacts must be ignored");
   reporter.assert(contract?.failurePolicy === "fail-closed", "Production certification contract must fail closed");

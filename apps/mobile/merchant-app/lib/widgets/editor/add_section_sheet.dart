@@ -67,12 +67,12 @@ class AddSectionSheet extends StatelessWidget {
                   width: 44,
                   height: 44,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF6366F1).withValues(alpha: 0.2),
+                    color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: const Icon(
                     Icons.add_box_rounded,
-                    color: Color(0xFF6366F1),
+                    color: Color(0xFF8B5CF6),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -164,12 +164,12 @@ class _SectionTypeCard extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: const Color(0xFF6366F1).withValues(alpha: 0.15),
+                color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
                 type.icon,
-                color: const Color(0xFF6366F1),
+                color: const Color(0xFF8B5CF6),
                 size: 24,
               ),
             ),

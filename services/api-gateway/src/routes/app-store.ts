@@ -88,12 +88,6 @@ function getRequestId(c: { req: { header(name: string): string | undefined }; re
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
 }
 
-function isProductionEnv(env: Env): boolean {
-    return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase() === 'production' || String(value).toLowerCase() === 'prod');
-}
-
 function appPlatformTokenSecret(env: Env): string | undefined {
     return getLetbuyyInternalAuthSecret({
         INTERNAL_API_SECRET: env.INTERNAL_API_SECRET,
@@ -301,8 +295,8 @@ function bridgeTargetUrl(requestUrl: string, path: string, storeId: string): str
     return target.toString();
 }
 
-function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJsonRecord, allowLocalhost: boolean): AppWebhookDefinition[] {
-    const configured = normalizeAppWebhookDefinitions(appWebhooks, { allowLocalhost });
+function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJsonRecord): AppWebhookDefinition[] {
+    const configured = normalizeAppWebhookDefinitions(appWebhooks);
     const requestedUrl = stringOrNull(body.webhook_url || body.webhookUrl);
     if (!requestedUrl) return configured;
 
@@ -313,7 +307,7 @@ function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJso
             url: requestedUrl,
             secret: body.webhook_secret || body.webhookSecret,
             is_active: true,
-        }], { allowLocalhost }),
+        }]),
     ];
 }
 
@@ -715,7 +709,7 @@ router.post('/installations/:id/embed-session', authMiddleware, async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
-    const embed = normalizeAppAdminEmbedSurface(installation, { allowLocalhost: !isProductionEnv(c.env) });
+    const embed = normalizeAppAdminEmbedSurface(installation);
     if (!embed) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Installed app does not expose an admin embed surface' } }, 404);
     }
@@ -1177,9 +1171,7 @@ router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: scopes.message } }, 400);
     }
 
-    const redirect = normalizeAppOAuthRedirectUri(body.redirect_uri || body.redirectUri, app.oauth_redirect_uris, {
-        allowLocalhost: !isProductionEnv(c.env),
-    });
+    const redirect = normalizeAppOAuthRedirectUri(body.redirect_uri || body.redirectUri, app.oauth_redirect_uris);
     if (!redirect.ok) {
         return c.json({ error: { code: 'VALIDATION', message: redirect.message } }, 400);
     }
@@ -1226,8 +1218,7 @@ router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
     }, appSecret, { nowSeconds, tokenId: authorizationCodeId });
     const authorizationCodeHash = await sha256Hex(authorizationCode);
     const authorizationExpiresAt = new Date((nowSeconds + 15 * 60) * 1000).toISOString();
-    const allowLocalhost = !isProductionEnv(c.env);
-    const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body, allowLocalhost);
+    const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body);
     const defaultSigningSecret = stringOrNull(body.webhook_secret || body.webhookSecret) || crypto.randomUUID();
     const webhookSubscriptions = planAppWebhookSubscriptions({
         app,
@@ -1561,8 +1552,7 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         scopes: scopes.value,
         occurredAt: now.toISOString(),
     });
-    const allowLocalhost = !isProductionEnv(c.env);
-    const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body, allowLocalhost);
+    const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body);
     const defaultSigningSecret = stringOrNull(body.webhook_secret || body.webhookSecret) || crypto.randomUUID();
     const webhookSubscriptions = planAppWebhookSubscriptions({
         app,

@@ -51,9 +51,9 @@ class EditorToolbar extends StatelessWidget {
                 },
               ),
             ),
-            
+
             const SizedBox(width: 12),
-            
+
             // Layers Button
             _ToolbarIconButton(
               icon: Icons.layers_outlined,
@@ -62,9 +62,9 @@ class EditorToolbar extends StatelessWidget {
                 onShowLayers?.call();
               },
             ),
-            
+
             const SizedBox(width: 8),
-            
+
             // Undo
             _ToolbarIconButton(
               icon: Icons.undo_rounded,
@@ -74,9 +74,9 @@ class EditorToolbar extends StatelessWidget {
                 onUndo?.call();
               } : null,
             ),
-            
+
             const SizedBox(width: 8),
-            
+
             // Redo
             _ToolbarIconButton(
               icon: Icons.redo_rounded,
@@ -125,8 +125,8 @@ class _ToolbarButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isPrimary 
-              ? const Color(0xFF6366F1) 
+          color: isPrimary
+              ? const Color(0xFF8B5CF6)
               : colors.surfaceVariant,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -180,8 +180,8 @@ class _ToolbarIconButton extends StatelessWidget {
         child: Icon(
           icon,
           size: 20,
-          color: isEnabled 
-              ? colors.textSecondary 
+          color: isEnabled
+              ? colors.textSecondary
               : colors.textTertiary,
         ),
       ),

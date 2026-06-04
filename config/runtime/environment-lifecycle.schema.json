@@ -11,27 +11,46 @@
     "environments"
   ],
   "properties": {
-    "$schema": { "type": "string" },
-    "lifecycleVersion": { "type": "integer", "minimum": 1 },
+    "$schema": {
+      "type": "string"
+    },
+    "lifecycleVersion": {
+      "type": "integer",
+      "minimum": 1
+    },
     "promotionOrder": {
       "type": "array",
-      "items": { "enum": ["local", "development", "staging", "production"] },
-      "minItems": 4,
+      "items": {
+        "enum": [
+          "staging",
+          "production"
+        ]
+      },
+      "minItems": 2,
       "uniqueItems": true
     },
     "isolationRules": {
       "type": "object",
-      "required": ["mustSeparate", "forbidden"],
+      "required": [
+        "mustSeparate",
+        "forbidden"
+      ],
       "properties": {
         "mustSeparate": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         },
         "forbidden": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         }
@@ -39,8 +58,10 @@
     },
     "environments": {
       "type": "array",
-      "minItems": 4,
-      "items": { "$ref": "#/$defs/environment" }
+      "minItems": 2,
+      "items": {
+        "$ref": "#/$defs/environment"
+      }
     }
   },
   "$defs": {
@@ -61,22 +82,51 @@
         "evidence"
       ],
       "properties": {
-        "name": { "enum": ["local", "development", "staging", "production"] },
-        "stability": { "type": "string", "minLength": 1 },
-        "credentialsMode": { "type": "string", "minLength": 1 },
-        "dataIsolation": { "type": "string", "minLength": 1 },
+        "name": {
+          "enum": [
+            "staging",
+            "production"
+          ]
+        },
+        "stability": {
+          "type": "string",
+          "minLength": 1
+        },
+        "credentialsMode": {
+          "type": "string",
+          "minLength": 1
+        },
+        "dataIsolation": {
+          "type": "string",
+          "minLength": 1
+        },
         "regions": {
           "type": "array",
-          "items": { "type": "string", "minLength": 1 },
+          "items": {
+            "type": "string",
+            "minLength": 1
+          },
           "minItems": 1,
           "uniqueItems": true
         },
-        "topology": { "type": "object" },
-        "providers": { "type": "object" },
-        "featureFlags": { "type": "object" },
-        "observability": { "type": "object" },
-        "deployment": { "type": "object" },
-        "evidence": { "type": "object" }
+        "topology": {
+          "type": "object"
+        },
+        "providers": {
+          "type": "object"
+        },
+        "featureFlags": {
+          "type": "object"
+        },
+        "observability": {
+          "type": "object"
+        },
+        "deployment": {
+          "type": "object"
+        },
+        "evidence": {
+          "type": "object"
+        }
       }
     }
   }

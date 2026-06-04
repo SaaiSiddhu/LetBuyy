@@ -39,9 +39,8 @@ This document defines observability standards only. It does not implement teleme
 - Shared telemetry contracts may live in packages only after two or more runtimes need them.
 - Generated logs and local traces are not source authority and must not be committed.
 
-## Local and Staging Evidence
+## Staging Evidence
 
-- Local observability is implemented by `infrastructure/local/docker-compose.yml` with OpenTelemetry Collector, Prometheus, Grafana, Loki, and Tempo.
 - Staging must emit queue, replay, deployment, feature-flag exposure, shadow traffic, and SLO evidence before production promotion.
 - Production observability certification requires execute-mode evidence in `operational_dashboard_snapshots` and `sre_error_budget_snapshots`.
 

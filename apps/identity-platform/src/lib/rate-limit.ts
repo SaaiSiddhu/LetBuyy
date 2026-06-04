@@ -87,6 +87,10 @@ export async function checkRateLimit(
     endpoint: string,
     identifier: string
 ): Promise<{ allowed: boolean; retryAfter?: number }> {
+    if (process.env.NODE_ENV === 'development' && process.env.LETBUYY_REMOTE_RATE_LIMIT !== 'true') {
+        return { allowed: true }
+    }
+
     const response = await identityApiRequest<RateLimitPayload>('/auth/custom/rate-limit/check', {
         method: 'POST',
         body: JSON.stringify({ endpoint, identifier }),

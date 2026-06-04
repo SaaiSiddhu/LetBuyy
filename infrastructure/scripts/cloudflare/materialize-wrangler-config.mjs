@@ -5,7 +5,7 @@ import path from "node:path";
 
 const args = new Set(process.argv.slice(2));
 const configPath = valueFor("--config");
-const environment = valueFor("--environment") || "dev";
+const environment = valueFor("--environment") || "staging";
 const outputPath = valueFor("--output");
 const requireRealBindings = args.has("--require-real-bindings");
 
@@ -66,7 +66,7 @@ function d1DatabaseIdFor(envName) {
 
 assert(configPath, "--config is required");
 assert(outputPath, "--output is required");
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(fs.existsSync(configPath), `Wrangler config not found: ${configPath}`);
 
 const placeholder = `__LETBUYY_RUNTIME_CACHE_${environment.toUpperCase()}_NAMESPACE_ID__`;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { identityApiRequest } from '@/lib/api/client'
+import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
 import { verifyPassword } from '@/lib/auth/password'
@@ -60,7 +60,17 @@ export async function POST(request: NextRequest) {
                 full_name: string | null
                 avatar_url: string | null
             } | null
+            error?: {
+                code?: string
+                message?: string
+            }
         } | null
+
+        if (!userResponse.ok) {
+            const message = getIdentityApiFailureMessage(userPayload, 'Auth service is unavailable. Please try again.')
+            return NextResponse.json({ error: message }, { status: userResponse.status >= 500 ? 503 : userResponse.status })
+        }
+
         const user = userPayload?.data || null
 
         if (!user || !user.password_hash) {

@@ -32,7 +32,7 @@ class PreviewFooter extends StatelessWidget {
     final settings = section.settings;
     
     // Theme colors
-    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#6366F1');
+    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#8B5CF6');
     final fontFamily = themeSettings?.fontFamily ?? 'Inter';
     
     // Fixed dark background like storefront

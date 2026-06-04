@@ -17,7 +17,7 @@ export default async function StoreLayout({ children, params }: StoreLayoutProps
     // Validate session
     const user = await getSessionUser();
     if (!user) {
-        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001';
+        const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store';
         redirect(`${accountsUrl}/lookup`);
     }
 

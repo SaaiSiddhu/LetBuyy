@@ -16,7 +16,7 @@ reporter.assert(objectRecovery.engineSource === "packages/distributed-runtime/sr
 reporter.assert(objectRecovery.planFunction === "compileDurableObjectRecoveryPlan", "Durable Object recovery must name plan function");
 reporter.assert(objectRecovery.assertionFunction === "assertDurableObjectRecovery", "Durable Object recovery must name assertion function");
 reporter.assert(objectRecovery.bindingOwnershipManifest === "config/runtime/cloudflare-binding-ownership.json", "Durable Object recovery must bind Cloudflare ownership manifest");
-for (const env of ["dev", "staging", "production"]) {
+for (const env of ["staging", "production"]) {
   reporter.assert((objectRecovery.requiredEnvironments || []).includes(env), `Durable Object recovery environment missing: ${env}`);
 }
 reporter.assert(objectRecovery.migrationPolicy === "durable-object-migration-lineage-per-environment", "Durable Object recovery must govern migrations per environment");

@@ -81,33 +81,28 @@ const queueTerraform = read(topology.queueProvider.terraform);
 const storageTerraform = read("infrastructure/cloudflare/storage.tf");
 const cloudflareEnv = cloudflareTopology.environments?.[environment];
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(Boolean(cloudflareEnv), `Cloudflare topology missing environment ${environment}`);
 assert(deadLetterQueue, "production topology must declare a dead-letter queue");
 
 const queueFamilyNames = {
   "letbuyy-events-production": {
-    dev: "letbuyy-events-dev",
     staging: "letbuyy-events-staging",
     production: "letbuyy-events-production",
   },
   "letbuyy-analytics-queue-production": {
-    dev: "letbuyy-analytics-dev",
     staging: "letbuyy-analytics-queue-staging",
     production: "letbuyy-analytics-queue-production",
   },
   "letbuyy-search-queue-production": {
-    dev: "letbuyy-search-indexing-dev",
     staging: "letbuyy-search-queue-staging",
     production: "letbuyy-search-queue-production",
   },
   "letbuyy-notifications-queue-production": {
-    dev: "letbuyy-notifications-dev",
     staging: "letbuyy-notifications-queue-staging",
     production: "letbuyy-notifications-queue-production",
   },
   "letbuyy-dead-letters-production": {
-    dev: "letbuyy-dead-letters-dev",
     staging: "letbuyy-dead-letters-staging",
     production: "letbuyy-dead-letters-production",
   },
@@ -120,20 +115,18 @@ function environmentQueueName(queue) {
 function scriptName(base) {
   if (environment === "production") return base;
   if (base === "letbuyy-api") return `letbuyy-api-${environment}`;
-  if (base === "letbuyy-webhook") return environment === "dev" ? "letbuyy-webhooks-dev" : `letbuyy-webhook-${environment}`;
+  if (base === "letbuyy-webhook") return `letbuyy-webhook-${environment}`;
   return `letbuyy-queue-workers-${environment}`;
 }
 
 function apiRouteForEnvironment() {
   if (environment === "production") return "api.letbuyy.store";
-  if (environment === "staging") return "api-staging.letbuyy.store";
-  return "api-dev.letbuyy.store";
+  return "api.staging.letbuyy.store";
 }
 
 function webhookRouteForEnvironment() {
   if (environment === "production") return "webhooks.letbuyy.store";
-  if (environment === "staging") return "webhooks-staging.letbuyy.store";
-  return "webhooks-dev.letbuyy.store";
+  return "webhooks.staging.letbuyy.store";
 }
 
 function cacheTitleForEnvironment() {

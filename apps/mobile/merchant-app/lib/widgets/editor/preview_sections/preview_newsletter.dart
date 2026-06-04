@@ -29,7 +29,7 @@ class PreviewNewsletter extends StatelessWidget {
     
     // Theme colors
     final themeSettings = store?.templateConfig?.themeSettings;
-    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#6366F1');
+    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#8B5CF6');
     final fontFamily = themeSettings?.fontFamily ?? 'Inter';
     
     // Light background derived from primary

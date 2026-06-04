@@ -9,7 +9,6 @@
     "NEXT_PUBLIC_ACCOUNTS_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_ADMIN_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_STOREFRONT_URL": { "type": "string", "format": "uri" },
-    "NEXT_PUBLIC_STOREFRONT_LOCAL_URL": { "type": "string" },
     "NEXT_PUBLIC_APP_URL": { "type": "string", "format": "uri" },
     "NEXT_PUBLIC_ENV": { "type": "string" },
     "NEXT_PUBLIC_SUPABASE_URL": { "type": "string", "format": "uri" },

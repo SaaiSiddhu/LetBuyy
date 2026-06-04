@@ -77,7 +77,7 @@ export default function PricingSection() {
                                 ))}
                             </ul>
                             <Link
-                                href="http://localhost:3001/signup"
+                                href="https://accounts.staging.letbuyy.store/signup"
                                 className={`btn ${plan.popular ? 'btn-primary' : 'btn-outline'}`}
                                 style={{ width: '100%' }}
                             >

@@ -48,6 +48,27 @@ async function requireAccountsInternal(c: Context<{ Bindings: import('../index')
     return c.json({ error: { code: 'UNAUTHORIZED', message: 'Invalid internal auth signature' } }, 401);
 }
 
+function isLocalAuthRuntime(c: Context<{ Bindings: import('../index').Env }>): boolean {
+    return ['local', 'development'].includes(String(c.env.ENVIRONMENT || '').toLowerCase())
+        || ['local', 'development'].includes(String(c.env.APP_ENV || '').toLowerCase())
+        || String(c.env.NODE_ENV || '').toLowerCase() === 'development';
+}
+
+function isPlaceholderSecret(value: string | undefined): boolean {
+    const normalized = String(value || '').toLowerCase();
+    return !normalized
+        || normalized.includes('placeholder')
+        || normalized.includes('replace-with')
+        || normalized.includes('dev-only');
+}
+
+function isLocalEmailProviderFailure(error: string | undefined): boolean {
+    const normalized = String(error || '').toLowerCase();
+    return normalized.includes('api key is invalid')
+        || normalized.includes('api key')
+        || normalized.includes('resend');
+}
+
 function isAuthRateLimitEndpoint(endpoint: string): endpoint is keyof typeof AUTH_RATE_LIMITS {
     return endpoint in AUTH_RATE_LIMITS;
 }
@@ -154,6 +175,15 @@ auth.post('/custom/rate-limit/check', async (c) => {
     }
 
     const config = AUTH_RATE_LIMITS[endpoint];
+
+    if (isLocalAuthRuntime(c)) {
+        return c.json({
+            data: {
+                allowed: true,
+            },
+        });
+    }
+
     const result = await checkRateLimitKey(c.env, {
         key: identifier,
         max: config.limit,
@@ -190,6 +220,19 @@ auth.post('/custom/emails/send', async (c) => {
         return c.json({ error: { code: 'VALIDATION', message: 'to, subject, and html or text are required' } }, 400);
     }
 
+    if (isLocalAuthRuntime(c) && isPlaceholderSecret(c.env.RESEND_API_KEY)) {
+        console.info(JSON.stringify({
+            level: 'info',
+            service: 'letbuyy-api',
+            route: 'auth.custom.emails.send',
+            status_code: 200,
+            reason: 'local_email_sink',
+            to,
+            subject,
+        }));
+        return c.json({ data: { success: true, devOnly: true } });
+    }
+
     try {
         const result = await sendResendEmail({
             apiKey: c.env.RESEND_API_KEY,
@@ -200,8 +243,36 @@ auth.post('/custom/emails/send', async (c) => {
             text,
         });
 
+        if (!result.success && isLocalAuthRuntime(c) && isLocalEmailProviderFailure(result.error)) {
+            console.info(JSON.stringify({
+                level: 'info',
+                service: 'letbuyy-api',
+                route: 'auth.custom.emails.send',
+                status_code: 200,
+                reason: 'local_email_provider_failure_suppressed',
+                error: result.error,
+                to,
+                subject,
+            }));
+            return c.json({ data: { success: true, devOnly: true, suppressedError: result.error } });
+        }
+
         return c.json({ data: result });
     } catch (error) {
+        if (isLocalAuthRuntime(c) && isLocalEmailProviderFailure(error instanceof Error ? error.message : undefined)) {
+            console.info(JSON.stringify({
+                level: 'info',
+                service: 'letbuyy-api',
+                route: 'auth.custom.emails.send',
+                status_code: 200,
+                reason: 'local_email_exception_suppressed',
+                error: error instanceof Error ? error.message : 'Email provider request failed',
+                to,
+                subject,
+            }));
+            return c.json({ data: { success: true, devOnly: true } });
+        }
+
         console.error(JSON.stringify({
             level: 'error',
             service: 'letbuyy-api',

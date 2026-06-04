@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
+import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
 
 import '../../services/store_auth_service.dart';
 import '../../services/store_service.dart';
@@ -22,7 +23,8 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with TickerProviderStateMixin {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
@@ -52,15 +54,23 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
   @override
   void initState() {
     super.initState();
-    _emailFocus.addListener(() => setState(() => _emailFocused = _emailFocus.hasFocus));
-    _passwordFocus.addListener(() => setState(() => _passwordFocused = _passwordFocus.hasFocus));
-    _confirmPasswordFocus.addListener(() => setState(() => _confirmPasswordFocused = _confirmPasswordFocus.hasFocus));
+    _emailFocus.addListener(
+      () => setState(() => _emailFocused = _emailFocus.hasFocus),
+    );
+    _passwordFocus.addListener(
+      () => setState(() => _passwordFocused = _passwordFocus.hasFocus),
+    );
+    _confirmPasswordFocus.addListener(
+      () => setState(
+        () => _confirmPasswordFocused = _confirmPasswordFocus.hasFocus,
+      ),
+    );
     _loadSavedEmail();
     _initAnimations();
     _listenAuthState();
   }
 
-  /// Listen for auth state changes (handles OAuth redirect).
+  /// Listen for identity session changes.
   void _listenAuthState() {
     final authService = context.read<StoreAuthService>();
     _authSub = authService.authStateChanges.listen((state) {
@@ -112,7 +122,10 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     final email = _emailController.text.trim();
     final password = _passwordController.text;
 
-    setState(() { _isLoading = true; _errorMessage = null; });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
 
     try {
       final authService = context.read<StoreAuthService>();
@@ -141,10 +154,19 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         } catch (e) {
           final msg = e.toString().toLowerCase();
           // If user not found, switch to sign-up mode
-          if (msg.contains('invalid login') || msg.contains('user not found') || msg.contains('invalid_credentials')) {
+          if (msg.contains('invalid login') ||
+              msg.contains('user not found') ||
+              msg.contains('invalid_credentials')) {
             if (!_isSignUpMode) {
-              setState(() { _isSignUpMode = true; _isLoading = false; _errorMessage = null; });
-              Future.delayed(const Duration(milliseconds: 300), () => _confirmPasswordFocus.requestFocus());
+              setState(() {
+                _isSignUpMode = true;
+                _isLoading = false;
+                _errorMessage = null;
+              });
+              Future.delayed(
+                const Duration(milliseconds: 300),
+                () => _confirmPasswordFocus.requestFocus(),
+              );
               return;
             }
           }
@@ -153,7 +175,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       }
     } catch (e) {
       if (!mounted) return;
-      setState(() { _errorMessage = e.toString().replaceAll('Exception: ', ''); });
+      setState(() {
+        _errorMessage = e.toString().replaceAll('Exception: ', '');
+      });
       HapticFeedback.heavyImpact();
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -188,10 +212,12 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     final size = MediaQuery.of(context).size;
     final isKeyboardOpen = MediaQuery.of(context).viewInsets.bottom > 0;
 
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-      statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: isDark ? Brightness.light : Brightness.dark,
+      ),
+    );
 
     final colors = AppThemeColors.of(context);
 
@@ -206,7 +232,9 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               _buildTopBar(themeProvider, langService, isDark),
               Expanded(
                 child: SingleChildScrollView(
-                  padding: EdgeInsets.symmetric(horizontal: size.width > 600 ? 60 : 24),
+                  padding: EdgeInsets.symmetric(
+                    horizontal: size.width > 600 ? 60 : 24,
+                  ),
                   physics: const BouncingScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -233,7 +261,11 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildTopBar(ThemeProvider themeProvider, LanguageService langService, bool isDark) {
+  Widget _buildTopBar(
+    ThemeProvider themeProvider,
+    LanguageService langService,
+    bool isDark,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
@@ -241,8 +273,15 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         children: [
           if (_isSignUpMode)
             _buildGlassButton(
-              onTap: () => setState(() { _isSignUpMode = false; _confirmPasswordController.clear(); }),
-              child: Icon(Icons.arrow_back_ios_new_rounded, size: 18, color: isDark ? Colors.white70 : Colors.black87),
+              onTap: () => setState(() {
+                _isSignUpMode = false;
+                _confirmPasswordController.clear();
+              }),
+              child: Icon(
+                Icons.arrow_back_ios_new_rounded,
+                size: 18,
+                color: isDark ? Colors.white70 : Colors.black87,
+              ),
               isDark: isDark,
             )
           else
@@ -253,15 +292,28 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
     );
   }
 
-  Widget _buildGlassButton({required VoidCallback onTap, required Widget child, required bool isDark}) {
+  Widget _buildGlassButton({
+    required VoidCallback onTap,
+    required Widget child,
+    required bool isDark,
+  }) {
     return GestureDetector(
-      onTap: () { HapticFeedback.lightImpact(); onTap(); },
+      onTap: () {
+        HapticFeedback.lightImpact();
+        onTap();
+      },
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.7),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
         child: child,
       ),
@@ -277,32 +329,77 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       color: isDark ? const Color(0xFF1E1E2E) : Colors.white,
       elevation: 6,
       itemBuilder: (context) => [
-        _buildLanguageItem(AppLanguage.english, 'English', '🇬🇧', langService, isDark),
-        _buildLanguageItem(AppLanguage.tamil, 'தமிழ்', '🇮🇳', langService, isDark),
-        _buildLanguageItem(AppLanguage.hindi, 'हिंदी', '🇮🇳', langService, isDark),
+        _buildLanguageItem(
+          AppLanguage.english,
+          'English',
+          '🇬🇧',
+          langService,
+          isDark,
+        ),
+        _buildLanguageItem(
+          AppLanguage.tamil,
+          'தமிழ்',
+          '🇮🇳',
+          langService,
+          isDark,
+        ),
+        _buildLanguageItem(
+          AppLanguage.hindi,
+          'हिंदी',
+          '🇮🇳',
+          langService,
+          isDark,
+        ),
       ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.7),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.public_rounded, size: 16, color: isDark ? Colors.white70 : Colors.black87),
+            Icon(
+              Icons.public_rounded,
+              size: 16,
+              color: isDark ? Colors.white70 : Colors.black87,
+            ),
             const SizedBox(width: 6),
-            Text(langService.languageName, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontSize: 12, fontWeight: FontWeight.w600)),
+            Text(
+              langService.languageName,
+              style: TextStyle(
+                color: isDark ? Colors.white : Colors.black87,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
             const SizedBox(width: 4),
-            Icon(Icons.expand_more_rounded, size: 16, color: isDark ? Colors.white54 : Colors.black54),
+            Icon(
+              Icons.expand_more_rounded,
+              size: 16,
+              color: isDark ? Colors.white54 : Colors.black54,
+            ),
           ],
         ),
       ),
     );
   }
 
-  PopupMenuItem<AppLanguage> _buildLanguageItem(AppLanguage lang, String name, String flag, LanguageService langService, bool isDark) {
+  PopupMenuItem<AppLanguage> _buildLanguageItem(
+    AppLanguage lang,
+    String name,
+    String flag,
+    LanguageService langService,
+    bool isDark,
+  ) {
     final isSelected = langService.currentLanguage == lang;
     return PopupMenuItem(
       value: lang,
@@ -312,8 +409,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
         children: [
           Text(flag, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 10),
-          Text(name, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, fontSize: 13)),
-          if (isSelected) ...[const SizedBox(width: 12), const Icon(Icons.check_rounded, size: 16, color: Color(0xFF6366F1))],
+          Text(
+            name,
+            style: TextStyle(
+              color: isDark ? Colors.white : Colors.black87,
+              fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+              fontSize: 13,
+            ),
+          ),
+          if (isSelected) ...[
+            const SizedBox(width: 12),
+            const Icon(Icons.check_rounded, size: 16, color: AppColors.primary),
+          ],
         ],
       ),
     );
@@ -321,18 +428,27 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
 
   Widget _buildThemeToggle(ThemeProvider themeProvider, bool isDark) {
     return GestureDetector(
-      onTap: () { HapticFeedback.lightImpact(); themeProvider.toggleTheme(); },
+      onTap: () {
+        HapticFeedback.lightImpact();
+        themeProvider.toggleTheme();
+      },
       child: Container(
         padding: const EdgeInsets.all(10),
         decoration: BoxDecoration(
-          color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.white.withValues(alpha: 0.7),
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.white.withValues(alpha: 0.7),
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : Colors.black.withValues(alpha: 0.05),
+          ),
         ),
         child: Icon(
           isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
           size: 18,
-          color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF6366F1),
+          color: isDark ? const Color(0xFFFBBF24) : AppColors.primary,
         ),
       ),
     );
@@ -364,14 +480,24 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
           ).createShader(bounds),
           child: Text(
             title,
-            style: const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, color: Colors.white, letterSpacing: -1, height: 1.1),
+            style: const TextStyle(
+              fontSize: 34,
+              fontWeight: FontWeight.w800,
+              color: Colors.white,
+              letterSpacing: -1,
+              height: 1.1,
+            ),
             textAlign: TextAlign.center,
           ),
         ),
         const SizedBox(height: 12),
         Text(
           subtitle,
-          style: TextStyle(fontSize: 16, color: isDark ? Colors.white60 : const Color(0xFF64748B), height: 1.4),
+          style: TextStyle(
+            fontSize: 16,
+            color: isDark ? Colors.white60 : const Color(0xFF64748B),
+            height: 1.4,
+          ),
           textAlign: TextAlign.center,
         ),
       ],
@@ -383,12 +509,27 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       constraints: const BoxConstraints(maxWidth: 420),
       padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
-        color: isDark ? Colors.white.withValues(alpha: 0.05) : Colors.white.withValues(alpha: 0.85),
+        color: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : Colors.white.withValues(alpha: 0.85),
         borderRadius: BorderRadius.circular(28),
-        border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.08) : Colors.black.withValues(alpha: 0.06)),
+        border: Border.all(
+          color: isDark
+              ? Colors.white.withValues(alpha: 0.08)
+              : Colors.black.withValues(alpha: 0.06),
+        ),
         boxShadow: [
-          BoxShadow(color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08), blurRadius: 40, offset: const Offset(0, 20)),
-          if (!isDark) BoxShadow(color: const Color(0xFF6366F1).withValues(alpha: 0.05), blurRadius: 60, spreadRadius: -10),
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.08),
+            blurRadius: 40,
+            offset: const Offset(0, 20),
+          ),
+          if (!isDark)
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.05),
+              blurRadius: 60,
+              spreadRadius: -10,
+            ),
         ],
       ),
       child: Form(
@@ -407,7 +548,8 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               isDark: isDark,
               validator: (v) {
                 if (v == null || v.isEmpty) return lang.emailRequired;
-                if (!v.contains('@') || !v.contains('.')) return lang.validEmail;
+                if (!v.contains('@') || !v.contains('.'))
+                  return lang.validEmail;
                 return null;
               },
             ),
@@ -420,13 +562,19 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
               obscureText: _obscurePassword,
               isFocused: _passwordFocused,
               isDark: isDark,
-              suffixIcon: _buildVisibilityToggle(_obscurePassword, () => setState(() => _obscurePassword = !_obscurePassword), isDark),
+              suffixIcon: _buildVisibilityToggle(
+                _obscurePassword,
+                () => setState(() => _obscurePassword = !_obscurePassword),
+                isDark,
+              ),
               validator: (v) {
                 if (v == null || v.isEmpty) return lang.passwordRequired;
                 if (_isSignUpMode) {
                   if (v.length < 8) return lang.passwordMinLength;
-                  if (!RegExp(r'[a-zA-Z]').hasMatch(v)) return lang.passwordNeedsLetter;
-                  if (!RegExp(r'[0-9]').hasMatch(v)) return lang.passwordNeedsNumber;
+                  if (!RegExp(r'[a-zA-Z]').hasMatch(v))
+                    return lang.passwordNeedsLetter;
+                  if (!RegExp(r'[0-9]').hasMatch(v))
+                    return lang.passwordNeedsNumber;
                 }
                 return null;
               },
@@ -442,10 +590,18 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
                 obscureText: _obscureConfirmPassword,
                 isFocused: _confirmPasswordFocused,
                 isDark: isDark,
-                suffixIcon: _buildVisibilityToggle(_obscureConfirmPassword, () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword), isDark),
+                suffixIcon: _buildVisibilityToggle(
+                  _obscureConfirmPassword,
+                  () => setState(
+                    () => _obscureConfirmPassword = !_obscureConfirmPassword,
+                  ),
+                  isDark,
+                ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return lang.confirmPasswordRequired;
-                  if (v != _passwordController.text) return lang.passwordsDoNotMatch;
+                  if (v == null || v.isEmpty)
+                    return lang.confirmPasswordRequired;
+                  if (v != _passwordController.text)
+                    return lang.passwordsDoNotMatch;
                   return null;
                 },
                 onSubmitted: (_) => _handleSubmit(),
@@ -466,17 +622,35 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       decoration: BoxDecoration(
         color: const Color(0xFFEF4444).withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFFEF4444).withValues(alpha: 0.25)),
+        border: Border.all(
+          color: const Color(0xFFEF4444).withValues(alpha: 0.25),
+        ),
       ),
       child: Row(
         children: [
           Container(
             padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(color: const Color(0xFFEF4444).withValues(alpha: 0.15), shape: BoxShape.circle),
-            child: const Icon(Icons.error_outline_rounded, color: Color(0xFFEF4444), size: 16),
+            decoration: BoxDecoration(
+              color: const Color(0xFFEF4444).withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.error_outline_rounded,
+              color: Color(0xFFEF4444),
+              size: 16,
+            ),
           ),
           const SizedBox(width: 14),
-          Expanded(child: Text(_errorMessage!, style: const TextStyle(color: Color(0xFFEF4444), fontSize: 13, fontWeight: FontWeight.w500))),
+          Expanded(
+            child: Text(
+              _errorMessage!,
+              style: const TextStyle(
+                color: Color(0xFFEF4444),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -503,38 +677,90 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
       keyboardType: keyboardType,
       obscureText: obscureText,
       readOnly: readOnly,
-      style: TextStyle(fontSize: 14, color: readOnly ? (isDark ? Colors.white38 : Colors.black38) : (isDark ? Colors.white : Colors.black87), fontWeight: FontWeight.w500),
+      style: TextStyle(
+        fontSize: 14,
+        color: readOnly
+            ? (isDark ? Colors.white38 : Colors.black38)
+            : (isDark ? Colors.white : Colors.black87),
+        fontWeight: FontWeight.w500,
+      ),
       validator: validator,
       onFieldSubmitted: onSubmitted,
       onChanged: onChanged,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: TextStyle(color: isDark ? Colors.white30 : const Color(0xFF94A3B8), fontWeight: FontWeight.w400, fontSize: 14),
+        hintStyle: TextStyle(
+          color: isDark ? Colors.white30 : const Color(0xFF94A3B8),
+          fontWeight: FontWeight.w400,
+          fontSize: 14,
+        ),
         prefixIcon: Container(
           padding: const EdgeInsets.only(left: 14, right: 10),
-          child: Icon(icon, color: isFocused ? const Color(0xFF6366F1) : (isDark ? Colors.white30 : const Color(0xFF94A3B8)), size: 18),
+          child: Icon(
+            icon,
+            color: isFocused
+                ? AppColors.primary
+                : (isDark ? Colors.white30 : const Color(0xFF94A3B8)),
+            size: 18,
+          ),
         ),
         prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         suffixIcon: suffixIcon,
         filled: true,
-        fillColor: isDark ? Colors.white.withValues(alpha: 0.05) : const Color(0xFFF8FAFC),
+        fillColor: isDark
+            ? Colors.white.withValues(alpha: 0.05)
+            : const Color(0xFFF8FAFC),
         contentPadding: const EdgeInsets.symmetric(horizontal: 0, vertical: 14),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFFE2E8F0))),
-        enabledBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide(color: isDark ? Colors.white.withValues(alpha: 0.08) : const Color(0xFFE2E8F0))),
-        focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFF6366F1), width: 1.5)),
-        errorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFEF4444))),
-        focusedErrorBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5)),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.1)
+                : const Color(0xFFE2E8F0),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: isDark
+                ? Colors.white.withValues(alpha: 0.08)
+                : const Color(0xFFE2E8F0),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFEF4444)),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFFEF4444), width: 1.5),
+        ),
         errorStyle: const TextStyle(color: Color(0xFFEF4444), fontSize: 11),
       ),
     );
   }
 
-  Widget _buildVisibilityToggle(bool isHidden, VoidCallback onTap, bool isDark) {
+  Widget _buildVisibilityToggle(
+    bool isHidden,
+    VoidCallback onTap,
+    bool isDark,
+  ) {
     return GestureDetector(
-      onTap: () { HapticFeedback.selectionClick(); onTap(); },
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
       child: Padding(
         padding: const EdgeInsets.only(right: 16),
-        child: Icon(isHidden ? Icons.visibility_off_outlined : Icons.visibility_outlined, color: isDark ? Colors.white38 : const Color(0xFF94A3B8), size: 20),
+        child: Icon(
+          isHidden ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+          color: isDark ? Colors.white38 : const Color(0xFF94A3B8),
+          size: 20,
+        ),
       ),
     );
   }
@@ -554,21 +780,43 @@ class _LoginScreenState extends State<LoginScreen> with TickerProviderStateMixin
             gradient: const LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+              colors: [AppColors.primaryHover, AppColors.primary],
             ),
             boxShadow: [
-              BoxShadow(color: const Color(0xFF6366F1).withValues(alpha: 0.3), blurRadius: 12, offset: const Offset(0, 4)),
+              BoxShadow(
+                color: AppColors.primaryHover.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
             ],
           ),
           child: Center(
             child: _isLoading
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
                 : Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(buttonText, style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.w700)),
+                      Text(
+                        buttonText,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.arrow_forward_rounded, color: Colors.white, size: 18),
+                      const Icon(
+                        Icons.arrow_forward_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
                     ],
                   ),
           ),

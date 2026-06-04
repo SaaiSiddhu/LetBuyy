@@ -21,7 +21,7 @@ class PreviewHero extends StatelessWidget {
     
     // Get theme colors
     final themeSettings = store?.templateConfig?.themeSettings;
-    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#6366F1');
+    final primaryColor = _hexToColor(themeSettings?.primaryColor ?? '#8B5CF6');
     final secondaryColor = _hexToColor(themeSettings?.secondaryColor ?? '#8B5CF6');
     final fontFamily = themeSettings?.fontFamily ?? 'Inter';
     

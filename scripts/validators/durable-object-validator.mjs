@@ -19,7 +19,7 @@ reporter.assert(indexSource.includes("export { LetbuyyRuntimeDurableObject }"), 
 reporter.assert(durableSource.includes("blockConcurrencyWhile"), "Durable Object must initialize storage through blockConcurrencyWhile");
 reporter.assert(durableSource.includes("checkpoint"), "Durable Object must expose checkpoint state for replay recovery");
 
-for (const environment of ["dev", "staging", "production"]) {
+for (const environment of ["staging", "production"]) {
   const env = topology.environments[environment];
   const marker = `[[env.${environment}.durable_objects.bindings]]`;
   const start = apiWrangler.indexOf(marker);

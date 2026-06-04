@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 
 const args = new Set(process.argv.slice(2));
 const execute = args.has("--execute");
-const environment = valueFor("--environment") || "dev";
+const environment = valueFor("--environment") || "staging";
 const requiredWranglerMajor = 4;
 const requiredNodeMajor = 22;
 
@@ -29,7 +29,7 @@ function major(version) {
   return Number(String(version).replace(/^v/, "").split(".")[0]);
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(major(process.versions.node) >= requiredNodeMajor, `Node ${requiredNodeMajor}+ is required for Wrangler 4 provider execution. Current Node is ${process.versions.node}`);
 
 const pnpm = commandOutput("pnpm", ["-v"]);

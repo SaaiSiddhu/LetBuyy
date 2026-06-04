@@ -10,7 +10,7 @@ const skipValidation = args.has("--skip-validation");
 const environment = valueFor("--environment") || "production";
 const target = valueFor("--target") || "all";
 const wranglerLogPath = process.env.WRANGLER_LOG_PATH || path.join(os.tmpdir(), "letbuyy-wrangler-logs");
-const supportedEnvironments = ["dev", "staging", "production"];
+const supportedEnvironments = ["staging", "production"];
 
 fs.mkdirSync(wranglerLogPath, { recursive: true });
 
@@ -56,7 +56,7 @@ function cleanWranglerArtifacts() {
 }
 
 if (!supportedEnvironments.includes(environment)) {
-  throw new Error("--environment must be dev, staging, or production");
+  throw new Error("--environment must be staging or production");
 }
 
 cleanWranglerArtifacts();

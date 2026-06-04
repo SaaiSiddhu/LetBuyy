@@ -1,16 +1,9 @@
 /**
  * Server-side Cloudflare Turnstile token verification.
  * Call this in API routes before processing form submissions.
- * Automatically bypasses in development (localhost).
  */
 export async function verifyTurnstileToken(token: string, ip?: string): Promise<boolean> {
-    // Always bypass in development — Turnstile can't work on localhost
-    // due to HTTP/HTTPS protocol mismatch with Cloudflare's iframe
-    if (process.env.NODE_ENV === 'development') {
-        return true
-    }
-
-    // Also bypass if dev-bypass-token is sent (from TurnstileWidget in dev)
+    // Bypass only when the widget explicitly emitted a configuration fallback token.
     if (token === 'dev-bypass-token') {
         return true
     }

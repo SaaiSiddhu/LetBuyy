@@ -26,7 +26,6 @@ on:
       - ".github/CODEOWNERS"
       - ".github/workflows/architecture-governance.yml"
       - ".github/workflows/environment-lifecycle.yml"
-      - ".github/workflows/dev-runtime-deployment.yml"
       - ".github/workflows/live-production-certification.yml"
       - ".github/workflows/production-rollout.yml"
   push:

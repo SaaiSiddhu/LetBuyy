@@ -154,7 +154,7 @@ function plannedProviderSteps() {
 }
 
 assert(["auto", "plan", "execute"].includes(modeArg), "--mode must be auto, plan, or execute");
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 
 const capabilities = evaluateCapabilities();
 const executeReady = capabilities.every((capability) => capability.ready);

@@ -8,7 +8,7 @@ const config = flagValue("--config");
 const commandIndex = args.findIndex((arg) => !arg.startsWith("--"));
 const command = commandIndex >= 0 ? args[commandIndex] : null;
 const passthrough = commandIndex >= 0 ? args.slice(commandIndex + 1) : [];
-const allowedEnvironments = new Set(["dev", "staging", "production"]);
+const allowedEnvironments = new Set(["staging", "production"]);
 const envSensitiveCommands = new Set(["deploy", "dev", "types", "tail", "secret", "d1", "queues", "r2", "kv"]);
 
 function flagValue(name) {

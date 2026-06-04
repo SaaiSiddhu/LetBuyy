@@ -7,7 +7,7 @@ import {
 } from '@letbuyy/auth-core';
 import { createLetbuyyApiClient, type LetbuyyApiClient } from '@letbuyy/api-client';
 
-const DEFAULT_API_BASE_URL = 'http://localhost:8787';
+const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store';
 
 export interface ThemeMarketplaceApiClientOptions {
     requireSession?: boolean;

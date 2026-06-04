@@ -59,7 +59,7 @@ export default function AllStoresClient({ user, stores }: AllStoresClientProps) 
     const [tab, setTab] = useState<'active' | 'inactive'>('active')
     const [isDark, setIsDark] = useState(false)
 
-    const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+    const accountsUrl = process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
 
     useEffect(() => {
         const theme = localStorage.getItem('letbuyy_theme')

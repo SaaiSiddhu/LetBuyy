@@ -105,7 +105,7 @@ export default function DeveloperPortalPage() {
                         textAlign: 'center',
                         padding: '40px 24px',
                         borderRadius: 20,
-                        background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(6,182,212,0.1))',
+                        background: 'linear-gradient(135deg, rgba(139,92,246,0.1), rgba(124,58,237,0.1))',
                         border: '1px solid var(--border)',
                     }}>
                         <h2 style={{ fontSize: 22, fontWeight: 800, marginBottom: 8, color: 'var(--text-primary)' }}>

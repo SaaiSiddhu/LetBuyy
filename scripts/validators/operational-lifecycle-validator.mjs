@@ -14,30 +14,13 @@ import {
 const reporter = createReporter("Operational lifecycle validator");
 
 const requiredFiles = [
-  "config/env/templates/local.env.example",
   "config/runtime/environment-lifecycle.schema.json",
   "config/runtime/environment-lifecycle.json",
   "config/runtime/rollout-lifecycle.schema.json",
   "config/runtime/rollout-lifecycle.json",
   "config/runtime/operational-certification-policy.schema.json",
   "config/runtime/operational-certification-policy.json",
-  "infrastructure/local/docker-compose.yml",
-  "infrastructure/local/otel-collector.yaml",
-  "infrastructure/local/prometheus.yml",
-  "infrastructure/local/tempo.yaml",
-  "infrastructure/local/grafana/provisioning/datasources/datasources.yml",
-  "infrastructure/local/postgres/init/001-local-operational-schema.sql",
-  "infrastructure/local/postgres/seed/001-local-seed.sql",
-  "infrastructure/local/replay-runtime.mjs",
-  "infrastructure/local/wiremock/mappings/provider-sandbox-health.json",
-  "infrastructure/local/wiremock/mappings/provider-sandbox-payment.json",
-  "infrastructure/local/wiremock/mappings/provider-sandbox-sms.json",
-  "infrastructure/scripts/local/common.mjs",
-  "infrastructure/scripts/local/bootstrap-local.mjs",
-  "infrastructure/scripts/local/start-local-stack.mjs",
-  "infrastructure/scripts/local/health-local-stack.mjs",
-  "infrastructure/scripts/local/reset-local-stack.mjs",
-  "infrastructure/scripts/local/seed-local-data.mjs",
+  "scripts/staging/seed.mjs",
   "infrastructure/scripts/load/locust-checkout-concurrency.py",
   "infrastructure/scripts/load/gatling/CheckoutConcurrencySimulation.scala",
   activeSupabaseSchemaMigrationPath,
@@ -45,13 +28,11 @@ const requiredFiles = [
   ".github/workflows/environment-lifecycle.yml",
   "docs/governance/enterprise-engineering-model.md",
   "docs/governance/production-engineering-principles.md",
-  "docs/governance/local-development-governance.md",
   "docs/governance/environment-lifecycle-governance.md",
   "docs/governance/feature-flag-governance.md",
   "docs/governance/shadow-traffic-governance.md",
   "docs/governance/sandbox-provider-governance.md",
   "docs/governance/chaos-governance.md",
-  "docs/runbooks/local-development-lifecycle.md",
   "docs/runbooks/staging-rehearsal.md",
   "docs/runbooks/feature-flag-rollback.md",
   "docs/operations/phase4-enterprise-final-report.md",
@@ -62,14 +43,7 @@ for (const file of requiredFiles) {
 }
 
 const packageJson = readJson("package.json");
-for (const scriptName of [
-  "local:bootstrap",
-  "local:up",
-  "local:health",
-  "local:reset",
-  "local:seed",
-  "validate:lifecycle",
-]) {
+for (const scriptName of ["validate:lifecycle"]) {
   reporter.assert(Boolean(packageJson?.scripts?.[scriptName]), `package.json must define ${scriptName}`);
 }
 
@@ -79,40 +53,9 @@ reporter.assert(
   "Governance validation must run operational-lifecycle-validator.mjs",
 );
 
-const compose = readFile("infrastructure/local/docker-compose.yml");
-for (const serviceName of [
-  "postgres",
-  "redis",
-  "queue-emulator",
-  "mail-sandbox",
-  "provider-sandbox",
-  "feature-flags",
-  "replay-runtime",
-  "otel-collector",
-  "prometheus",
-  "grafana",
-  "loki",
-  "tempo",
-]) {
-  reporter.assert(compose.includes(`${serviceName}:`), `Local Docker Compose must define ${serviceName}`);
-}
-
-for (const localFragment of [
-  "local_event_store",
-  "local_queue_messages",
-  "local_replay_checkpoints",
-  "local_feature_flag_exposures",
-  "local_provider_sandbox_events",
-]) {
-  reporter.assert(
-    readFile("infrastructure/local/postgres/init/001-local-operational-schema.sql").includes(localFragment),
-    `Local operational schema must include ${localFragment}`,
-  );
-}
-
 const envLifecycle = readJson("config/runtime/environment-lifecycle.json");
 const environments = new Map((envLifecycle?.environments || []).map((environment) => [environment.name, environment]));
-for (const environmentName of ["local", "development", "staging", "production"]) {
+for (const environmentName of ["staging", "production"]) {
   reporter.assert(environments.has(environmentName), `Environment lifecycle must define ${environmentName}`);
 }
 
@@ -132,33 +75,6 @@ for (const separated of [
   );
 }
 
-reporter.assert(
-  environments.get("local")?.evidence?.certifiableAsLive === false,
-  "Local lifecycle must not be certifiable as live execution",
-);
-reporter.assert(
-  environments.get("development")?.stability?.includes("unstable"),
-  "Development lifecycle must be explicitly unstable",
-);
-reporter.assert(
-  environments.get("development")?.topology?.cloudflareEnvironment === "dev",
-  "Development lifecycle must map to the Cloudflare Wrangler dev environment",
-);
-for (const developmentResource of [
-  "api-dev.letbuyy.store",
-  "letbuyy-api-dev",
-  "letbuyy-events-dev",
-  "letbuyy-dead-letters-dev",
-  "letbuyy-dev-kv",
-  "letbuyy-dev-r2",
-  "letbuyy-dev-d1",
-  "letbuyy-dev-queue",
-]) {
-  reporter.assert(
-    JSON.stringify(environments.get("development")?.topology || {}).includes(developmentResource),
-    `Development lifecycle topology must declare isolated ${developmentResource}`,
-  );
-}
 reporter.assert(
   environments.get("staging")?.topology?.mirrorProductionTopology === true,
   "Staging lifecycle must mirror production topology",
@@ -301,10 +217,9 @@ for (const tool of ["k6", "locust", "gatling"]) {
 const environmentWorkflow = readFile(".github/workflows/environment-lifecycle.yml");
 for (const workflowFragment of [
   "operational-lifecycle-validator.mjs",
-  "local-stack-smoke",
-  "bootstrap-local.mjs",
-  "start-local-stack.mjs",
-  "health-local-stack.mjs",
+  "staging",
+  "validate:governance",
+  "typecheck",
 ]) {
   reporter.assert(
     environmentWorkflow.includes(workflowFragment),

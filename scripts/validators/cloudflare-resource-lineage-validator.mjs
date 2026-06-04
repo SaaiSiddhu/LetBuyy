@@ -40,7 +40,7 @@ for (const kind of ["worker", "var", "queue-producer", "queue-consumer", "kv", "
 
 const workerNames = new Set();
 for (const worker of ownership?.workers || []) {
-  for (const environment of ["dev", "staging", "production"]) {
+  for (const environment of ["staging", "production"]) {
     const env = worker.environments?.[environment];
     reporter.assert(Boolean(env?.workerName), `Cloudflare lineage missing Worker name: ${worker.runtimeRoot}/${environment}`);
     const key = `${environment}:${env?.workerName}`;

@@ -27,7 +27,7 @@ const requiredFiles = [
   "infrastructure/cloudflare/queues.tf",
   "infrastructure/cloudflare/storage.tf",
   "infrastructure/cloudflare/workers-topology.md",
-  ".github/workflows/dev-runtime-deployment.yml",
+  ".github/workflows/staging-runtime-deployment.yml",
   "infrastructure/deployment/kubernetes/namespace.yaml",
   "infrastructure/deployment/kubernetes/runtime-health-probes.yaml",
   "infrastructure/deployment/helm/letbuyy-production/Chart.yaml",
@@ -84,7 +84,7 @@ const requiredFiles = [
   "docs/runbooks/survivability-suite.md",
   "docs/runbooks/infra-recovery.md",
   "docs/operations/production-certification.md",
-  "docs/operations/dev-environment-operationalization-report.md",
+  "docs/operations/staging-environment-operationalization-report.md",
   "docs/operations/phase4-live-execution-evidence.md",
   "docs/governance/live-rollout-governance.md",
   "docs/governance/production-certification-governance.md",
@@ -341,13 +341,6 @@ function stringValue(block, key) {
 }
 
 const workloadQueuesByEnvironment = {
-  dev: {
-    events: "letbuyy-events-dev",
-    analytics: "letbuyy-analytics-dev",
-    search: "letbuyy-search-indexing-dev",
-    notifications: "letbuyy-notifications-dev",
-    deadLetters: "letbuyy-dead-letters-dev",
-  },
   staging: {
     events: "letbuyy-events-staging",
     analytics: "letbuyy-analytics-queue-staging",
@@ -382,7 +375,7 @@ for (const producerBinding of ["EVENT_QUEUE", "ANALYTICS_QUEUE", "SEARCH_QUEUE",
   );
 }
 
-for (const wranglerEnv of ["env.dev", "env.staging", "env.production"]) {
+for (const wranglerEnv of ["env.staging", "env.production"]) {
   reporter.assert(
     apiWrangler.includes(`[${wranglerEnv}]`) && queueWrangler.includes(`[${wranglerEnv}]`) && webhookWrangler.includes(`[${wranglerEnv}]`),
     `Wrangler config must define ${wranglerEnv} for API, webhook, and queue workers`,
@@ -397,15 +390,6 @@ const baseRuntimeQueues = [
   "deadLetters",
 ];
 const environmentRoutes = {
-  dev: {
-    api: "api-dev.letbuyy.store",
-    webhooks: "webhooks-dev.letbuyy.store",
-    cache: "letbuyy-dev-kv",
-    r2: "letbuyy-dev-r2",
-    d1: "letbuyy-dev-d1",
-    runtimeQueue: "letbuyy-dev-queue",
-    runtimeDlq: "letbuyy-dev-dead-letter-queue",
-  },
   staging: {
     api: "api-staging.letbuyy.store",
     webhooks: "webhooks-staging.letbuyy.store",
@@ -438,7 +422,7 @@ for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
     `API Gateway Worker name must be isolated for ${environmentName}`,
   );
   reporter.assert(
-    stringValue(webhookEnvBlock, "name") === (environmentName === "dev" ? "letbuyy-webhooks-dev" : environmentName === "production" ? "letbuyy-webhook" : `letbuyy-webhook-${environmentName}`),
+    stringValue(webhookEnvBlock, "name") === (environmentName === "production" ? "letbuyy-webhook" : `letbuyy-webhook-${environmentName}`),
     `Webhook Worker name must be isolated for ${environmentName}`,
   );
   reporter.assert(apiWrangler.includes(isolation.api), `API Gateway route missing for ${environmentName}: ${isolation.api}`);
@@ -479,20 +463,6 @@ for (const [environmentName, isolation] of Object.entries(environmentRoutes)) {
     seenQueueNames.set(queueName, environmentName);
   }
 }
-
-const devVars = tableBlock(apiWrangler, "env.dev.vars");
-for (const devVar of [
-  'APP_ENV = "development"',
-  'NODE_ENV = "development"',
-  'DEPLOYMENT_ENV = "dev"',
-  'TELEMETRY_ENV = "development"',
-]) {
-  reporter.assert(devVars.includes(devVar), `API Gateway dev vars must include ${devVar}`);
-}
-reporter.assert(
-  apiWrangler.includes('binding = "CACHE"') && apiWrangler.includes("__LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID__"),
-  "API Gateway dev Worker must declare an isolated CACHE KV binding resolved from Terraform output during deploy",
-);
 
 for (const requiredQueueSetting of ["max_concurrency", "retry_delay", "dead_letter_queue"]) {
   reporter.assert(
@@ -705,19 +675,19 @@ for (const ciFragment of [
   );
 }
 
-const devCi = readFile(".github/workflows/dev-runtime-deployment.yml");
+const stagingCi = readFile(".github/workflows/staging-runtime-deployment.yml");
 for (const ciFragment of [
-  "--environment=dev",
+  "--environment=staging",
   "production-deploy.mjs",
   "phase4-ultimate-validate.mjs",
   "validate:governance",
   "validate:lifecycle",
   "typecheck",
-  "LETBUYY_RUNTIME_CACHE_DEV_NAMESPACE_ID",
+  "staging",
 ]) {
   reporter.assert(
-    devCi.includes(ciFragment),
-    `Dev runtime deployment workflow must include ${ciFragment}`,
+    stagingCi.includes(ciFragment),
+    `Staging runtime deployment workflow must include ${ciFragment}`,
   );
 }
 
@@ -728,7 +698,7 @@ for (const deployFragment of [
   "--skip-validation",
   "WRANGLER_LOG_PATH",
   "materialize-wrangler-config.mjs",
-  '"dev"',
+  '"staging"',
 ]) {
   reporter.assert(
     deployScript.includes(deployFragment),

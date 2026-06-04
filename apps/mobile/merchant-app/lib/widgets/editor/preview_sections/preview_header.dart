@@ -237,7 +237,7 @@ class PreviewHeader extends StatelessWidget {
         }
       } catch (_) {}
     }
-    return const Color(0xFF6366F1);
+    return const Color(0xFF8B5CF6);
   }
 
   Color _getSecondaryColor() {

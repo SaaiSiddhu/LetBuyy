@@ -8,6 +8,6 @@
     "SUPABASE_ANON_KEY": { "type": "string" },
     "API_BASE_URL": { "type": "string", "format": "uri" },
     "RAZORPAY_KEY_ID": { "type": "string" },
-    "ENVIRONMENT": { "enum": ["local", "staging", "production"] }
+    "ENVIRONMENT": { "enum": ["staging", "production"] }
   }
 }

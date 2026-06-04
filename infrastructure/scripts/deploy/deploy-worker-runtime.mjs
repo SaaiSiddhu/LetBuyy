@@ -2,7 +2,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const governedEnvironments = new Set(["dev", "staging", "production"]);
+const governedEnvironments = new Set(["staging", "production"]);
 const args = process.argv.slice(2);
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 

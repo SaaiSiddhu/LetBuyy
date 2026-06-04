@@ -131,14 +131,13 @@ app.use(
                 'https://accounts.letbuyy.store',
                 'https://console.letbuyy.store',
                 'https://team.letbuyy.store',
-                'http://localhost:3000',
-                'http://localhost:3001',
-                'http://localhost:3002',
-                'http://localhost:3003',
-                'http://localhost:3004',
-                'http://localhost:3005',
-                'http://localhost:3010',
-                'http://localhost:3011',
+                'https://accounts.staging.letbuyy.store',
+                'https://merchant.staging.letbuyy.store',
+                'https://storefront.staging.letbuyy.store',
+                'https://apps.staging.letbuyy.store',
+                'https://themes.staging.letbuyy.store',
+                'https://console.staging.letbuyy.store',
+                'https://operations.staging.letbuyy.store',
             ];
             if (allowed.includes(origin)) return origin;
             // Allow all *.letbuyy.store subdomains (storefronts)

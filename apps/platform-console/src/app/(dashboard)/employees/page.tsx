@@ -92,7 +92,7 @@ export default async function EmployeesPage({ searchParams }: PageProps) {
                     <select
                         name="status"
                         defaultValue={status}
-                        className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-sky-500"
+                        className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                     >
                         <option value="">All status</option>
                         <option value="active">Active</option>

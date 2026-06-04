@@ -1,8 +1,8 @@
 import { expect, test, type APIRequestContext, type Locator, type Page } from '@playwright/test';
 
-const marketingUrl = process.env.LETBUYY_E2E_MARKETING_URL ?? 'http://127.0.0.1:3000';
-const identityUrl = process.env.LETBUYY_E2E_IDENTITY_URL ?? 'http://127.0.0.1:3001';
-const merchantUrl = process.env.LETBUYY_E2E_MERCHANT_URL ?? 'http://127.0.0.1:3002';
+const marketingUrl = process.env.LETBUYY_E2E_MARKETING_URL ?? 'https://staging.letbuyy.store';
+const identityUrl = process.env.LETBUYY_E2E_IDENTITY_URL ?? 'https://accounts.staging.letbuyy.store';
+const merchantUrl = process.env.LETBUYY_E2E_MERCHANT_URL ?? 'https://merchant.staging.letbuyy.store';
 const testEmail = process.env.LETBUYY_E2E_TEST_EMAIL ?? `e2e-${Date.now()}@letbuyy.local`;
 const testOtp = process.env.LETBUYY_E2E_TEST_OTP ?? '123456';
 

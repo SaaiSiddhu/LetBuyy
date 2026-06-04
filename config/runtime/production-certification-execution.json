@@ -134,7 +134,7 @@
     "ignoredDirectory": "artifacts/production-certification/",
     "hashAlgorithm": "sha256",
     "liveCertificationRequiresProviderEvidence": true,
-    "localEvidenceCertification": false,
+    "stagingEvidenceCertification": false,
     "requiresImmutableArchive": true
   },
   "validators": [

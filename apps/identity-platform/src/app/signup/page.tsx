@@ -151,6 +151,12 @@ function isValidEmail(value: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
 }
 
+function extractLocalDevOtp(payload: unknown): string | null {
+    if (!payload || typeof payload !== 'object') return null
+    const otp = (payload as { devOtp?: unknown }).devOtp
+    return typeof otp === 'string' && /^\d{6}$/.test(otp) ? otp : null
+}
+
 function SignupContent() {
     const searchParams = useSearchParams()
     const [step, setStep] = useState<Step>('email')
@@ -240,6 +246,7 @@ function SignupContent() {
 
         setLoading(true)
         setError(null)
+        setOtp(['', '', '', '', '', ''])
 
         try {
             const res = await fetch('/api/auth/signup', {
@@ -265,11 +272,20 @@ function SignupContent() {
             }
 
             if (data.needsVerification) {
+                const localDevOtp = extractLocalDevOtp(data)
                 setStep('otp')
                 setResendTimer(60)
                 setCanResend(false)
-                // Focus first OTP input after animation
-                setTimeout(() => otpRefs.current[0]?.focus(), 300)
+
+                if (localDevOtp) {
+                    setOtp(localDevOtp.split(''))
+                    setTimeout(() => {
+                        void handleOtpVerify(localDevOtp)
+                    }, 300)
+                } else {
+                    // Focus first OTP input after animation
+                    setTimeout(() => otpRefs.current[0]?.focus(), 300)
+                }
             }
         } catch {
             setError('Something went wrong. Please try again.')
@@ -371,7 +387,7 @@ function SignupContent() {
         setError(null)
 
         try {
-            await fetch('/api/auth/signup', {
+            const res = await fetch('/api/auth/signup', {
                 method: 'POST',
                 headers: getAuthHeaders(),
                 body: JSON.stringify({
@@ -379,6 +395,20 @@ function SignupContent() {
                     turnstileToken,
                 }),
             })
+
+            const data = await res.json().catch(() => null)
+            if (!res.ok) {
+                setError(data?.error || 'Unable to resend verification code')
+                return
+            }
+
+            const localDevOtp = extractLocalDevOtp(data)
+            if (localDevOtp) {
+                setOtp(localDevOtp.split(''))
+                setTimeout(() => {
+                    void handleOtpVerify(localDevOtp)
+                }, 300)
+            }
         } catch {
             // silent
         }

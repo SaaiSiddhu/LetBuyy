@@ -15,14 +15,14 @@ export async function POST() {
         const cookieStore = await cookies()
         const sessionToken = cookieStore.get(LETBUYY_MERCHANT_SESSION_COOKIE)?.value
         const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
 
         if (sessionToken) {
             await fetch(`${accountsUrl}/api/auth/logout`, {
                 method: 'POST',
                 headers: {
                     Cookie: `${LETBUYY_MERCHANT_SESSION_COOKIE}=${encodeURIComponent(sessionToken)}`,
-                    Origin: process.env.NEXT_PUBLIC_ADMIN_URL || 'http://localhost:3002',
+                    Origin: process.env.NEXT_PUBLIC_ADMIN_URL || 'https://merchant.staging.letbuyy.store',
                 },
                 cache: 'no-store',
             }).catch(() => null)
@@ -52,7 +52,7 @@ export async function POST() {
         console.error('Logout error:', error)
         // Even if DB delete fails, still redirect
         const accountsUrl =
-            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'http://localhost:3001'
+            process.env.NEXT_PUBLIC_ACCOUNTS_URL || 'https://accounts.staging.letbuyy.store'
         return NextResponse.json({
             success: true,
             redirectTo: `${accountsUrl}/lookup`,

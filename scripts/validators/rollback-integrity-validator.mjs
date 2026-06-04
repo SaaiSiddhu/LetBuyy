@@ -15,7 +15,7 @@ reporter.assert(exists(manifestPath), `Missing deployment lineage manifest: ${ma
 reporter.assert(exists(schemaPath), `Missing deployment lineage schema: ${schemaPath}`);
 reporter.assert(manifest?.$schema === schemaPath, "Deployment lineage manifest must reference its checked-in schema");
 reporter.assert(manifest?.mode === "governance-contract-not-live-evidence", "Deployment lineage manifest must not claim live evidence");
-reporter.assert(manifest?.promotionOrder?.join(">") === "local>dev>staging>production", "Deployment promotion order must be local>dev>staging>production");
+reporter.assert(manifest?.promotionOrder?.join(">") === "staging>production", "Deployment promotion order must be staging>production");
 reporter.assert(manifest?.integrityRules?.rollbackRequiresPriorDeploymentVersion === true, "Rollback must require an approved prior deployment version");
 reporter.assert(manifest?.integrityRules?.rollbackMustNotMutateEventStore === true, "Rollback must not mutate event store");
 reporter.assert(manifest?.integrityRules?.rollbackMustPreserveQueueNames === true, "Rollback must preserve queue names");

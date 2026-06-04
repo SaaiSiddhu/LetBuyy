@@ -1,33 +1,15 @@
 environments:
-  local:
-    promotionSource: developer-workspace
-    secrets: local-placeholders-only
-    deploy: no-live-deploy
-    deploymentCommand: pnpm run local:up
-    rollbackCommand: pnpm run local:reset
-    healthGates:
-      - local-bootstrap
-      - local-health
-      - replay-runtime-local-health
-  dev:
-    promotionSource: feature-branch
-    secrets: provider-dev
-    deploy: isolated-worker-dev
-    deploymentCommand: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute
-    rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=dev --worker=letbuyy-api-dev
+  staging:
+    promotionSource: feature-branch-or-main-preview
+    secrets: provider-staging
+    deploy: staging-preview
+    deploymentCommand: node infrastructure/scripts/deploy/production-deploy.mjs --environment=staging --target=all --execute
+    rollbackCommand: node infrastructure/scripts/deploy/production-rollback.mjs --environment=staging --worker=letbuyy-api-staging
     healthGates:
       - governance-validation
       - lifecycle-validation
       - typecheck
-      - cloudflare-provider-contract-validation-dev
-      - worker-health-dev
-  staging:
-    promotionSource: main
-    secrets: provider-staging
-    deploy: canary
-    healthGates:
-      - governance-validation
-      - typecheck
+      - staging-e2e
       - migration-plan
       - smoke-tests
   production:
@@ -52,15 +34,15 @@ environments:
       - chaos-suite-approved
       - load-suite-current
 startupSequence:
-  - name: dev-workers
-    command: node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=dev --target=workers --execute
+  - name: staging-workers
+    command: node infrastructure/scripts/deploy/production-deploy.mjs --environment=staging --target=cloudflare --execute && node infrastructure/scripts/deploy/production-deploy.mjs --environment=staging --target=workers --execute
     owns:
-      - dev-api-worker
-      - dev-queue-workers
-      - dev-webhook-worker
-      - dev-queue-bindings
-      - dev-kv-cache
-      - dev-r2-storage
+      - staging-api-worker
+      - staging-queue-workers
+      - staging-webhook-worker
+      - staging-queue-bindings
+      - staging-kv-cache
+      - staging-r2-storage
   - name: phase4-ultimate-preflight
     command: node infrastructure/scripts/operations/phase4-ultimate-validate.mjs --environment=production
     owns:

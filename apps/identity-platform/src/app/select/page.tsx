@@ -65,6 +65,7 @@ export default function SelectPage() {
     const [stores, setStores] = useState<UserStore[]>([])
     const [loading, setLoading] = useState<string | null>(null)
     const [initialLoading, setInitialLoading] = useState(true)
+    const [sessionExpired, setSessionExpired] = useState(false)
     const [isDark, setIsDark] = useState(false)
     const [lang, setLang] = useState<Lang>('en')
 
@@ -85,8 +86,8 @@ export default function SelectPage() {
                 if (redirecting) return
 
                 if (!data.authenticated) {
-                    redirecting = true
-                    window.location.href = '/lookup'
+                    setSessionExpired(true)
+                    setInitialLoading(false)
                     return
                 }
 
@@ -95,11 +96,11 @@ export default function SelectPage() {
                 if (userStores.length === 0) {
                     // No stores — redirect to onboarding
                     redirecting = true
-                    window.location.href = '/onboarding'
+                    window.location.replace('/onboarding')
                 } else if (userStores.length === 1) {
                     // Single store — go directly to admin
                     redirecting = true
-                    window.location.href = getAdminDashboardUrl(userStores[0].subdomain)
+                    window.location.replace(getAdminDashboardUrl(userStores[0].subdomain))
                 } else {
                     // Multiple stores — show picker
                     setStores(userStores)
@@ -108,8 +109,8 @@ export default function SelectPage() {
             })
             .catch(() => {
                 if (!redirecting) {
-                    redirecting = true
-                    window.location.href = '/lookup'
+                    setSessionExpired(true)
+                    setInitialLoading(false)
                 }
             })
     }, [])
@@ -193,6 +194,14 @@ export default function SelectPage() {
                     <div style={{ textAlign: 'center', padding: 40 }}>
                         <p style={{ color: 'var(--text-hint)' }}>Loading your sites...</p>
                     </div>
+                ) : sessionExpired ? (
+                    <>
+                        <h1 className="auth-title">Sign in to continue</h1>
+                        <p className="auth-subtitle">Your session expired. Log in again to choose a site.</p>
+                        <button className="auth-btn-primary" onClick={() => { window.location.href = '/lookup' }}>
+                            Log in
+                        </button>
+                    </>
                 ) : (
                     <>
                         <h1 className="auth-title">{t.title}</h1>

@@ -186,7 +186,7 @@ class WizardContainer extends StatelessWidget {
           Text(flag, style: const TextStyle(fontSize: 16)),
           const SizedBox(width: 10),
           Text(name, style: TextStyle(color: isDark ? Colors.white : Colors.black87, fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400, fontSize: 13)),
-          if (isSelected) ...[const SizedBox(width: 12), const Icon(Icons.check_rounded, size: 16, color: Color(0xFF6366F1))],
+          if (isSelected) ...[const SizedBox(width: 12), const Icon(Icons.check_rounded, size: 16, color: Color(0xFF8B5CF6))],
         ],
       ),
     );
@@ -205,7 +205,7 @@ class WizardContainer extends StatelessWidget {
         child: Icon(
           isDark ? Icons.light_mode_rounded : Icons.dark_mode_rounded,
           size: 18,
-          color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF6366F1),
+          color: isDark ? const Color(0xFFFBBF24) : const Color(0xFF8B5CF6),
         ),
       ),
     );
@@ -288,7 +288,7 @@ class WizardOptionCard extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
           color: isSelected 
-              ? (isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFF6366F1).withValues(alpha: 0.1))
+              ? (isDark ? Colors.white.withValues(alpha: 0.1) : const Color(0xFF8B5CF6).withValues(alpha: 0.1))
               : (isDark ? Colors.white.withValues(alpha: 0.04) : Colors.grey.withValues(alpha: 0.05)),
           borderRadius: BorderRadius.circular(14),
           border: Border.all(

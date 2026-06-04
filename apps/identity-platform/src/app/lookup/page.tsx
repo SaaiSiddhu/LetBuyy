@@ -7,6 +7,7 @@ import TurnstileWidget, { type TurnstileHandle } from '@/components/TurnstileWid
 import { features } from '@/lib/config/features'
 import { AuthIcon } from '@/components/AuthIcon'
 import { Globe, ShieldCheck } from '@letbuyy/ui'
+import { getAdminDashboardUrl } from '@/lib/config/urls'
 
 type Lang = 'en' | 'hi' | 'ta'
 
@@ -95,18 +96,22 @@ interface SavedAccount {
     lastLogin: string
 }
 
+interface UserStore {
+    id: string
+    subdomain: string
+}
+
 type ViewState = 'email' | 'password' | 'accounts'
 
 /**
- * Validate that a return_to URL is safe (must be on letbuyy.store or localhost).
+ * Validate that a return_to URL is safe for LetBuyy-owned domains.
  */
 function isValidReturnTo(url: string): boolean {
     try {
         const parsed = new URL(url)
         return (
             parsed.hostname.endsWith('.letbuyy.store') ||
-            parsed.hostname === 'letbuyy.store' ||
-            parsed.hostname === 'localhost'
+            parsed.hostname === 'letbuyy.store'
         )
     } catch {
         return false
@@ -177,9 +182,30 @@ function LookupContent() {
             const sessionData = await sessionRes.json()
             const accountsData = await accountsRes.json()
 
-            // If user has an active session, redirect to store selector
+            // If user has an active session, route from the same store verdict
+            // used by /select so zero-store users land on onboarding directly.
             if (sessionData.authenticated) {
-                window.location.href = '/select'
+                const storesRes = await fetch('/api/auth/stores')
+                const storesData = await storesRes.json().catch(() => null) as {
+                    authenticated?: boolean
+                    stores?: UserStore[]
+                } | null
+
+                if (storesData?.authenticated) {
+                    const stores = Array.isArray(storesData.stores) ? storesData.stores : []
+
+                    if (stores.length === 0) {
+                        window.location.replace('/onboarding')
+                        return
+                    }
+
+                    if (stores.length === 1 && stores[0]?.subdomain) {
+                        window.location.replace(getAdminDashboardUrl(stores[0].subdomain))
+                        return
+                    }
+                }
+
+                window.location.replace('/select')
                 return
             }
 

@@ -90,7 +90,7 @@ function apiBase() {
   if (process.env.LETBUYY_API_BASE_URL) return process.env.LETBUYY_API_BASE_URL.replace(/\/$/, "");
   if (environment === "production") return "https://api.letbuyy.store";
   if (environment === "staging") return "https://api.staging.letbuyy.store";
-  return "https://api-dev.letbuyy.store";
+  return "https://api.staging.letbuyy.store";
 }
 
 async function operationsRequest(method, path, body) {
@@ -204,7 +204,7 @@ function planEvidenceSummary(categories) {
   );
 }
 
-assert(["dev", "staging", "production"].includes(environment), "--environment must be dev, staging, or production");
+assert(["staging", "production"].includes(environment), "--environment must be staging or production");
 assert(["plan", "execute"].includes(requestedMode), "--mode must be plan or execute");
 
 const certification = readJson("config/runtime/live-production-certification.json");

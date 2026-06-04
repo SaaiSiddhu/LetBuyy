@@ -10,9 +10,9 @@ const reporter = createReporter("Tooling governance validator");
 
 const requiredScriptDirectories = [
   "scripts/cloudflare",
-  "scripts/dev",
   "scripts/github",
   "scripts/supabase",
+  "scripts/staging",
   "scripts/validators",
   "scripts/governance",
   "scripts/generators",
@@ -22,7 +22,6 @@ const requiredScriptDirectories = [
 
 const allowedRootScriptFiles = new Set([
   "generate-repository-intelligence.mjs",
-  "setup-local-env.mjs",
   "validate-architecture.mjs",
   "validate-governance.mjs",
 ]);

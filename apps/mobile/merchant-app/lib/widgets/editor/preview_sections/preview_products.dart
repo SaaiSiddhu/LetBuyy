@@ -16,7 +16,7 @@ class PreviewProducts extends StatelessWidget {
 
   // Theme color helpers
   Color get _primaryColor {
-    final hex = store?.templateConfig?.themeSettings.primaryColor ?? '#6366F1';
+    final hex = store?.templateConfig?.themeSettings.primaryColor ?? '#8B5CF6';
     return _hexToColor(hex);
   }
   

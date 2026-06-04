@@ -9,8 +9,8 @@ function valueFor(prefix) {
   return arg ? arg.slice(prefix.length + 1) : null;
 }
 
-if (!["dev", "staging", "production"].includes(environment)) {
-  throw new Error("--environment must be dev, staging, or production");
+if (!["staging", "production"].includes(environment)) {
+  throw new Error("--environment must be staging or production");
 }
 
 const tests = [
@@ -82,7 +82,7 @@ for (const test of tests) {
           ? "https://api.letbuyy.store"
           : environment === "staging"
             ? "https://api.staging.letbuyy.store"
-            : "https://api-dev.letbuyy.store"
+            : "https://api.staging.letbuyy.store"
       ),
     },
   });

@@ -1,6 +1,6 @@
 # LetBuyy Environment Configuration
 
-This directory is the source of truth for environment variable ownership, runtime boundaries, schemas, and safe local templates.
+This directory is the source of truth for environment variable ownership, runtime boundaries, schemas, and staging/production templates.
 
 ## Directory Contract
 
@@ -11,8 +11,8 @@ This directory is the source of truth for environment variable ownership, runtim
 
 ## Non-Negotiable Rules
 
-- Runtime env files such as `.env`, `.env.local`, `.dev.vars`, and `all.env` are local-only and must remain untracked.
-- Staging and production are the only deployment targets. Local execution is allowed only as a same-shape sandbox and must not reuse staging or production resources by default.
+- Runtime env files such as `.env`, `.env.local`, `.dev.vars`, and `all.env` must remain untracked and must not be used as supported configuration.
+- Staging and production are the only deployment targets and the only supported execution environments.
 - `NEXT_PUBLIC_*` variables are public browser configuration only. They must never contain secrets, provider private keys, service-role keys, webhook secrets, or internal API secrets.
 - Server secrets are owned by their deployment runtime: Vercel project env for Next apps, Cloudflare Worker secrets/bindings for Workers, and CI secret stores for automation.
 - Templates use placeholders only. Copy variable names from templates into the correct platform secret store; do not copy real secrets back into the repository.

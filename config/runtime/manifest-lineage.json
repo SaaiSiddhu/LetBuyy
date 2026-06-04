@@ -8,7 +8,7 @@
       "path": "config/runtime/runtime-orchestration-manifest.json",
       "owner": "runtime-orchestration",
       "compatibility": "additive-or-explicit-migration",
-      "checksum": "49346411a15c623cadc951fab7999c1c3089b24e945211b5779ee4e608e465d2"
+      "checksum": "896a7ca9afbb8a51658f24f2de35328bfefc34a7605a84f510c66ad71d5d37f1"
     },
     {
       "path": "config/runtime/runtime-survivability-intelligence.json",
@@ -32,19 +32,19 @@
       "path": "config/runtime/queue-lifecycle-manifest.json",
       "owner": "queue-runtime",
       "compatibility": "dead-letter-and-retry-compatible",
-      "checksum": "60a508cd8085747103c669763ad10655c6c99d08c1e80431d502a0d94be08457"
+      "checksum": "510951421a3fcf3108dcf6aab7b9d1c707f2856d16431b268893360a863e87d7"
     },
     {
       "path": "config/runtime/deployment-lineage-manifest.json",
       "owner": "deployment-runtime",
       "compatibility": "rollback-lineage-compatible",
-      "checksum": "0c7f959310f956a53b347ac0af3d2b2601718b40eea2556232d6807ddb1e7360"
+      "checksum": "f2afc759ea8b8a867161e6bc15d22e64dd6d9351fffa81dbf09d4b939a18eeab"
     },
     {
       "path": "config/runtime/cloudflare-binding-ownership.json",
       "owner": "cloudflare-runtime",
       "compatibility": "explicit-env-binding-compatible",
-      "checksum": "71c01605eee4f926bf176cfc882932600d85b2fd50607aef008170424fdca8a5"
+      "checksum": "d421dd2555354d3cb13941b157c7d21a7df5f4f6a0befba02dae641306506c84"
     },
     {
       "path": "config/runtime/deployment-topology.json",
@@ -62,7 +62,7 @@
       "path": "config/runtime/durable-execution-contract.json",
       "owner": "durable-distributed-execution",
       "compatibility": "wal-lease-fencing-and-recovery-compatible",
-      "checksum": "ded756199dd623947e846a41b3a7461c77f47c23151d40a49c59261d65455790"
+      "checksum": "f1ef985b74701390fd290b44aa5a1efc078028115221a9afdc3b71937935513d"
     },
     {
       "path": "config/runtime/distributed-consistency-contract.json",
@@ -110,19 +110,19 @@
       "path": "config/runtime/operational-certification-evidence.json",
       "owner": "operational-certification",
       "compatibility": "local-evidence-contract-compatible",
-      "checksum": "a0092f93511b9a16d1cc58b2c89711d43710a3fdc973be2d02420ec480f241a2"
+      "checksum": "bfb8a45ac274f15e0f5768e824a792853f997c6efd68560d3779547f48229b81"
     },
     {
       "path": "config/runtime/recovery-slo-contract.json",
       "owner": "recovery-slo",
       "compatibility": "bounded-recovery-budget-compatible",
-      "checksum": "f0db4771fa11360d36938c494529d66fc11713de60437c5c292bcc8b507abe75"
+      "checksum": "1382ceb8ea12dd145f9086317e70769f0cb26d6173fdb8bcbc392cd4436e8a9c"
     },
     {
       "path": "config/runtime/production-certification-execution.json",
       "owner": "provider-production-certification",
       "compatibility": "provider-evidence-execute-compatible",
-      "checksum": "7096fbc01ee60ffd36324f2a44ab73498a9830ca422de00db792bc3ae4aad539"
+      "checksum": "107092b6feaa35bb73ba5efb79557c40959e3eb4ce5a64d0a1b767ba5ef169cf"
     }
   ],
   "failurePolicy": "fail-closed"

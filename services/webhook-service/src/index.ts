@@ -719,12 +719,6 @@ app.get("/health", (c) => {
     });
 });
 
-function isProductionWebhookEnvironment(env: Env): boolean {
-    return [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV, env.DEPLOYMENT_ENV]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase() === "production" || String(value).toLowerCase() === "prod");
-}
-
 function internalDispatchSecret(env: Env): string | undefined {
     return env.INTERNAL_API_SECRET || env.AUTH_SECRET || undefined;
 }
@@ -774,9 +768,7 @@ app.post("/app-lifecycle/dispatch", async (c) => {
         signing_secret: signingSecret,
         request_id: typeof body.request_id === "string" ? body.request_id : null,
         trace_id: typeof body.trace_id === "string" ? body.trace_id : null,
-    }, fetch, {
-        allowLocalhost: !isProductionWebhookEnvironment(c.env),
-    });
+    }, fetch);
 
     return c.json({ data: result }, result.ok ? 200 : 502);
 });
@@ -802,9 +794,7 @@ async function dispatchWebhookDeliveries(
             signing_secret: delivery.signing_secret,
             request_id: delivery.request_id,
             trace_id: delivery.trace_id,
-        }, fetch, {
-            allowLocalhost: !isProductionWebhookEnvironment(env),
-        });
+        }, fetch);
 
         if (result.ok) {
             await callSupabaseRpc(env, "complete_webhook_delivery", {

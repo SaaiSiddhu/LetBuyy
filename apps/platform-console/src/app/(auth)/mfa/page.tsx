@@ -27,7 +27,7 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
         <div className="flex min-h-screen items-center justify-center bg-zinc-950">
             <div className="w-full max-w-md space-y-8 rounded-lg border border-zinc-800 bg-zinc-900 p-8">
                 <div className="text-center">
-                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-600/10 text-amber-400">
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[var(--lb-color-primary-subtle)] text-[var(--lb-color-primary)]">
                         <ShieldAlert size={24} />
                     </div>
                     <h1 className="text-2xl font-bold text-zinc-50">Two-Factor Authentication</h1>
@@ -57,12 +57,12 @@ export default async function MFAPage({ searchParams }: { searchParams: MfaSearc
                             maxLength={6}
                             required
                             placeholder="123456"
-                            className="mt-1 h-12 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 text-center font-mono text-lg text-zinc-100 outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                            className="mt-1 h-12 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-4 text-center font-mono text-lg text-zinc-100 outline-none focus:border-[var(--lb-color-primary)] focus:ring-2 focus:ring-[var(--lb-color-primary-subtle)]"
                         />
                     </div>
                     <button
                         type="submit"
-                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-amber-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-400"
+                        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[var(--lb-color-primary)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--lb-color-primary-hover)] active:bg-[var(--lb-color-primary-active)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--lb-color-focus-ring)]"
                     >
                         <KeyRound size={16} />
                         Verify

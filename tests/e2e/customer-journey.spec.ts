@@ -1,11 +1,11 @@
 import { expect, test, type APIRequestContext, type Locator, type Page } from '@playwright/test';
 
-const storefrontUrl = process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'http://127.0.0.1:3003';
+const storefrontUrl = process.env.LETBUYY_E2E_STOREFRONT_URL ?? 'https://storefront.staging.letbuyy.store';
 const storeSubdomain = process.env.LETBUYY_E2E_STORE_SUBDOMAIN ?? 'demo-urban-kicks-store';
 
 async function requireReachable(request: APIRequestContext, url: string, label: string): Promise<void> {
   const response = await request.get(url, { failOnStatusCode: false, timeout: 3_000 }).catch(() => null);
-  test.skip(!response, `${label} is not reachable at ${url}. Start the local dev stack before running live e2e.`);
+  test.skip(!response, `${label} is not reachable at ${url}. Deploy staging before running live e2e.`);
   test.skip(response !== null && response.status() >= 500, `${label} returned ${response?.status()} at ${url}.`);
 }
 
@@ -24,9 +24,8 @@ async function clickFirstVisible(locator: Locator): Promise<boolean> {
 }
 
 async function openStorefront(page: Page): Promise<void> {
-  const parsedStorefrontUrl = new URL(storefrontUrl);
-  parsedStorefrontUrl.hostname = `${storeSubdomain}.localhost`;
-  const subdomainUrl = parsedStorefrontUrl.toString().replace(/\/$/, '');
+  const subdomainUrl = process.env.LETBUYY_E2E_STORE_HOST_URL
+    ?? `https://${storeSubdomain}.staging.letbuyy.store`;
 
   await page.goto(`${subdomainUrl}/`, { waitUntil: 'domcontentloaded' }).catch(async () => {
     await page.goto(`${storefrontUrl}/store/${storeSubdomain}`, { waitUntil: 'domcontentloaded' });

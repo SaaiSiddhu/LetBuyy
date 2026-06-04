@@ -16,12 +16,7 @@ function getStorefrontBaseUrl() {
     const configured = process.env.NEXT_PUBLIC_STOREFRONT_URL?.replace(/\/$/, '')
     if (configured) return configured
 
-    if (typeof window === 'undefined') return ''
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-        return 'http://localhost:3003'
-    }
-
-    return window.location.origin
+    return 'https://storefront.staging.letbuyy.store'
 }
 
 export default function CenterPanel({

@@ -21,7 +21,6 @@ export interface AppLifecycleWebhookDispatchResult {
 }
 
 export interface AppLifecycleWebhookDispatchOptions {
-    allowLocalhost?: boolean;
     nowSeconds?: number;
 }
 
@@ -32,13 +31,10 @@ export interface LetBuyyWebhookHmacVerificationInput {
     signingSecret: string;
 }
 
-function isValidAppLifecycleTarget(targetUrl: string, allowLocalhost: boolean): boolean {
+function isValidAppLifecycleTarget(targetUrl: string): boolean {
     try {
         const url = new URL(targetUrl);
-        const localHttp = allowLocalhost
-            && url.protocol === "http:"
-            && (url.hostname === "localhost" || url.hostname === "127.0.0.1");
-        return (url.protocol === "https:" || localHttp) && url.hostname.length > 0;
+        return url.protocol === "https:" && url.hostname.length > 0;
     } catch {
         return false;
     }
@@ -76,7 +72,7 @@ export async function dispatchLetBuyyWebhook(
         return { ok: false, status: null, response_preview: null, error: "signing_secret is required" };
     }
 
-    if (!isValidAppLifecycleTarget(input.target_url, options.allowLocalhost === true)) {
+    if (!isValidAppLifecycleTarget(input.target_url)) {
         return { ok: false, status: null, response_preview: null, error: "Webhook target URL must be HTTPS" };
     }
 

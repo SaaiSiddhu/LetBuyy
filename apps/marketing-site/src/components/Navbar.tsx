@@ -20,10 +20,10 @@ export default function Navbar() {
 
                 {/* CTA Buttons */}
                 <div className="navbar-actions">
-                    <Link href="http://localhost:3001/lookup" className="btn btn-outline">
+                    <Link href="https://accounts.staging.letbuyy.store/lookup" className="btn btn-outline">
                         Log in
                     </Link>
-                    <Link href="http://localhost:3001/signup" className="btn btn-primary">
+                    <Link href="https://accounts.staging.letbuyy.store/signup" className="btn btn-primary">
                         Start free trial
                     </Link>
                 </div>
