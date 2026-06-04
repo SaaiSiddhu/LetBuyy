@@ -3598,9 +3598,9 @@ html.lenis body {
 
 .mobile-drawer-actions {
   display: grid;
-  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
-  gap: 10px;
-  padding: 12px 46px calc(12px + env(safe-area-inset-bottom, 0px));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 10px 36px calc(10px + env(safe-area-inset-bottom, 0px));
   flex-shrink: 0;
   background:
     linear-gradient(180deg, rgba(14, 12, 24, 0.96), rgba(10, 8, 18, 0.98)),
@@ -3612,12 +3612,12 @@ html.lenis body {
 .btn-block {
   width: 100%;
   min-width: 0;
-  min-height: 44px;
+  min-height: 38px;
   text-align: center;
   justify-content: center;
   border-radius: 999px;
-  font-size: clamp(13px, 3.4vw, 16px);
-  font-weight: 780;
+  font-size: clamp(12px, 3vw, 14px);
+  font-weight: 760;
   letter-spacing: 0;
 }
 
@@ -3679,14 +3679,14 @@ html.lenis body {
   }
 
   .mobile-drawer-actions {
-    gap: 8px;
-    padding-left: 30px;
-    padding-right: 30px;
+    gap: 7px;
+    padding-left: 24px;
+    padding-right: 24px;
   }
 
   .btn-block {
-    min-height: 42px;
-    font-size: clamp(12px, 3.7vw, 15px);
+    min-height: 36px;
+    font-size: clamp(11px, 3.5vw, 13px);
   }
 }
 

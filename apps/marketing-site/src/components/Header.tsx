@@ -436,6 +436,22 @@ export default function Header() {
         return () => window.removeEventListener('keydown', handleEscape)
     }, [])
 
+    useEffect(() => {
+        const desktopQuery = window.matchMedia('(min-width: 1024px)')
+        const handleNavigationModeChange = (event: MediaQueryListEvent) => {
+            if (event.matches) {
+                setMobileMenuOpen(false)
+                setMobilePanel(null)
+                return
+            }
+
+            setActiveDesktopMenu(null)
+        }
+
+        desktopQuery.addEventListener('change', handleNavigationModeChange)
+        return () => desktopQuery.removeEventListener('change', handleNavigationModeChange)
+    }, [])
+
     const closeAllMenus = () => {
         setActiveDesktopMenu(null)
         setMobileMenuOpen(false)
