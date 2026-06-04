@@ -231,6 +231,29 @@ function getActiveFilterSummary(filters: NormalizedFilters) {
     return activeLabels.length ? activeLabels.join(' / ') : 'All themes';
 }
 
+function buildThemeSearchSuggestions(themes: Theme[]): string[] {
+    const suggestions = new Map<string, string>();
+
+    const addSuggestion = (value: string | undefined) => {
+        const label = value?.trim();
+        if (!label) return;
+        const key = label.toLowerCase();
+        if (!suggestions.has(key)) {
+            suggestions.set(key, label.slice(0, 80));
+        }
+    };
+
+    themes.forEach((theme) => {
+        addSuggestion(theme.name);
+        addSuggestion(theme.author_name);
+        addSuggestion(CATEGORY_LABELS[theme.category]?.label ?? theme.category);
+        theme.tags.forEach(addSuggestion);
+        theme.industry.forEach(addSuggestion);
+    });
+
+    return Array.from(suggestions.values()).slice(0, 12);
+}
+
 export default async function ThemesPage({
     searchParams,
 }: {
@@ -268,6 +291,7 @@ export default async function ThemesPage({
         priceMin.length > 0 || priceMax.length > 0,
         query.length > 0,
     ].filter(Boolean).length;
+    const searchSuggestions = buildThemeSearchSuggestions(themes);
 
     return (
         <Page className="theme-marketplace-page">
@@ -305,10 +329,39 @@ export default async function ThemesPage({
                                         id="theme-search"
                                         name="q"
                                         type="search"
+                                        list="theme-search-suggestions"
+                                        autoComplete="off"
                                         defaultValue={query}
                                         placeholder="Search by name or tag"
                                         className="h-[var(--lb-density-input-height)] w-full rounded-[var(--lb-radius-md)] border border-[var(--lb-component-input-border)] bg-[var(--lb-component-input-bg)] pl-[calc(var(--lb-space-6)+var(--lb-space-1))] pr-[var(--lb-space-3)] text-[length:var(--lb-font-size-body)] text-[color:var(--lb-color-text)] outline-none transition-colors placeholder:text-[color:var(--lb-color-text-muted)] focus:border-[var(--lb-component-input-focus-border)] focus:ring-2 focus:ring-[var(--lb-color-focus-ring)]"
                                     />
+                                </div>
+                                <datalist id="theme-search-suggestions">
+                                    {searchSuggestions.map((suggestion) => (
+                                        <option key={suggestion} value={suggestion} />
+                                    ))}
+                                </datalist>
+                                <div className="space-y-[var(--lb-space-2)]" aria-label="Theme autocomplete suggestions">
+                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-text)]">
+                                        Autocomplete suggestions
+                                    </p>
+                                    {searchSuggestions.length > 0 ? (
+                                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                            {searchSuggestions.map((suggestion) => (
+                                                <Link
+                                                    key={suggestion}
+                                                    href={buildThemesHref(filters, { query: suggestion })}
+                                                    className="rounded-[var(--lb-radius-full)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-1)] text-[length:var(--lb-font-size-caption)] text-[color:var(--lb-color-text)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                >
+                                                    {suggestion}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p className="m-0 rounded-[var(--lb-radius-md)] border border-[var(--lb-component-banner-warning-border)] bg-[var(--lb-component-banner-warning-bg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-component-banner-warning-text)]">
+                                            Autocomplete suggestions need seeded theme catalog rows from the existing theme API.
+                                        </p>
+                                    )}
                                 </div>
                                 {category !== 'all' && <input type="hidden" name="category" value={category} />}
                                 {pricing !== 'all' && <input type="hidden" name="pricing" value={pricing} />}
