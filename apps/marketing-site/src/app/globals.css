@@ -335,13 +335,22 @@ html.lenis body {
   height: 100%;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .header-content {
     gap: 14px;
+    padding-left: 34px;
+    padding-right: 28px;
   }
 
   .mobile-start-link {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 520px) {
+  .header-content {
+    padding-left: 28px;
+    padding-right: 22px;
   }
 }
 
@@ -3323,7 +3332,7 @@ html.lenis body {
   align-items: center;
   gap: 14px;
   min-height: 60px;
-  padding: 0 30px;
+  padding: 0 34px;
   background: #05070c;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   flex-shrink: 0;
@@ -3415,6 +3424,7 @@ html.lenis body {
   border-bottom: 1px solid rgba(139, 92, 246, 0.18);
   background: transparent;
   color: #ffffff;
+  font-family: var(--font-inter);
   font-size: clamp(21px, 5.2vw, 30px);
   font-weight: 560;
   line-height: 1.04;
@@ -3422,9 +3432,18 @@ html.lenis body {
   text-align: left;
   text-decoration: none;
   cursor: pointer;
+  appearance: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
   transition:
     color 0.2s ease,
     opacity 0.2s ease;
+}
+
+.mobile-drawer-link span {
+  display: block;
+  font: inherit;
+  line-height: inherit;
 }
 
 .mobile-drawer-link:hover,
@@ -3598,7 +3617,7 @@ html.lenis body {
 @media (max-width: 520px) {
   .mobile-drawer-header {
     min-height: 60px;
-    padding: 0 26px;
+    padding: 0 28px;
     gap: 12px;
   }
 
