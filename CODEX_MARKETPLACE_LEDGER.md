@@ -4,7 +4,7 @@
 - Stage: STAGE 4 - WS3 Marketplace UX.
 - Branch: `stream/master-execution`.
 - Active gate: MK1 App Marketplace.
-- Active task: MK1.2 App card content grammar.
+- Active task: MK1.3 App detail page.
 - Scope lock: source edits are limited to `apps/app-marketplace/src/**` and `apps/theme-marketplace/src/**`; root execution ledgers are bookkeeping exceptions. No backend, DB, service, contract, governance, or shared UI package changes are allowed in this UI stage.
 
 ## MISSION CONTEXT READ
@@ -28,10 +28,18 @@
 - Proof: source-structure assertion `node -e "...required = ['Built for LetBuyy','app-card__category-tag','app-card__pricing-line','app-card__stars','aria-label','getAppPriceDisplay']..."` -> PASS with `missing: []`.
 - [SKIP - NEEDS BACKEND] Live app-card screenshot proof: the existing app marketplace API client still returns empty app arrays in this environment, so no live app rows are available to render committed `AppCard` instances on `/`. Required backend evidence: seeded or live app catalog rows with category, rating, pricing, developer, install count, and slug fields through the existing app marketplace API.
 
+### MK1.3 App Detail Page
+- Status: DONE WITH BACKEND-DATA SKIP.
+- Source changes: updated `apps/app-marketplace/src/app/(store)/apps/[slug]/page.tsx` to add a scroll-snap preview carousel, explicit pricing rows from existing `MarketplaceApp` pricing fields, permission review summary, scope checklist, and consent-panel install guidance without backend, DB, contract, service, shared UI package, or governance-source changes. Updated `apps/app-marketplace/src/app/globals.css` detail-page rules for the carousel, pricing cards, permission review, and mobile fit.
+- Proof: source-structure assertion for `app-preview-carousel`, `app-carousel-controls`, `app-pricing-grid`, `Permission review`, `AppInstallConsentPanel`, `getPricingRows`, and `app-permission-checklist` -> PASS with `missing: []`.
+- [SKIP - NEEDS BACKEND] Live app-detail screenshot proof: the existing app marketplace API client still returns empty app arrays in this environment, so there is no live app detail slug to render from real catalog data. Required backend evidence: seeded or live app catalog rows with slug, screenshots, description, reviews, scopes, pricing, install URL, developer, and category fields through the existing app marketplace API.
+
 ## VALIDATOR LEDGER
 - 2026-06-04T00:40:10Z [MK1.1 scoped] `pnpm --filter @letbuyy/app-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/app-marketplace lint` -> PASS with 8 pre-existing warnings and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/app-marketplace exec next build --webpack` -> PASS; route output includes dynamic `/` plus marketplace API/app/category/collection/developer routes.
 - 2026-06-04T00:43:20Z [MK1.1 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-04T00:45:00Z [MK1.1 post-commit governance] Post-commit `pnpm run validate:governance` after `dee79f82` -> PASS (128/128 validators).
 - 2026-06-04T00:50:31Z [MK1.2 scoped] Escalated `pnpm install --frozen-lockfile --force` restored workspace links after the sandboxed attempt failed with registry DNS `ENOTFOUND`. `pnpm --filter @letbuyy/app-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/app-marketplace lint` -> PASS with 8 pre-existing warnings and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/app-marketplace exec next build --webpack` -> PASS; route output includes dynamic `/` and app marketplace routes.
 - 2026-06-04T00:52:16Z [MK1.2 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).
-- Pending MK1.2 commit and post-commit governance.
+- 2026-06-04T01:00:14Z [MK1.2 post-commit governance] Post-commit `pnpm run validate:governance` after `b4baeb2e` -> PASS (128/128 validators).
+- 2026-06-04T01:03:27Z [MK1.3 scoped] Initial `pnpm --filter @letbuyy/app-marketplace typecheck` failed only because workspace dependency links were missing after generated-artifact cleanup. Sandboxed `pnpm install --frozen-lockfile --force` then failed with registry DNS `ENOTFOUND`; escalated rerun restored workspace links with lockfile unchanged. Source-structure assertion for required app-detail elements -> PASS with `missing: []`. `pnpm --filter @letbuyy/app-marketplace typecheck` -> PASS. `pnpm --filter @letbuyy/app-marketplace lint` -> PASS with 8 pre-existing warnings and no errors. `NEXT_TELEMETRY_DISABLED=1 pnpm --filter @letbuyy/app-marketplace exec next build --webpack` -> PASS; route output includes dynamic `/apps/[slug]`.
+- 2026-06-04T01:04:32Z [MK1.3 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, or `.wrangler` directories; `pnpm run validate:governance` -> PASS (128/128 validators).

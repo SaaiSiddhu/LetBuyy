@@ -21,9 +21,13 @@ import {
 } from '@/lib/marketplace-display';
 import {
     BadgeCheck,
+    CheckCircle2,
+    CreditCard,
     Download,
     ExternalLink,
     Image as ImageIcon,
+    IndianRupee,
+    ListChecks,
     ShieldCheck,
     Star,
     Tag,
@@ -40,6 +44,12 @@ type MarketplaceAppVersionFields = MarketplaceApp & {
     version?: string | null;
     documentation_url?: string | null;
 };
+
+interface PricingRow {
+    label: string;
+    value: string;
+    detail: string;
+}
 
 export async function generateMetadata({ params }: AppDetailPageProps) {
     const { slug } = await params;
@@ -79,6 +89,72 @@ function getInitials(name: string): string {
         .join('');
 }
 
+function formatCurrency(value: number | null | undefined, suffix = ''): string | null {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return null;
+    return `₹${value.toLocaleString('en-IN')}${suffix}`;
+}
+
+function formatPricingModel(model: string | null | undefined): string {
+    if (!model) return 'Free';
+    return model
+        .replace(/_/g, ' ')
+        .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+function getPricingRows(app: MarketplaceApp, price: ReturnType<typeof getAppPriceDisplay>): PricingRow[] {
+    const monthly = formatCurrency(app.price_monthly, '/mo');
+    const yearly = formatCurrency(app.price_yearly, '/yr');
+    const oneTime = formatCurrency(app.price_inr);
+    const trialDays = typeof app.trial_days === 'number' && app.trial_days > 0 ? app.trial_days : null;
+
+    const rows: PricingRow[] = [
+        {
+            label: 'Listed price',
+            value: price.label,
+            detail: price.detail,
+        },
+        {
+            label: 'Billing model',
+            value: formatPricingModel(app.pricing_model),
+            detail: trialDays ? `${trialDays} day trial available` : 'Merchant approval required before paid charges.',
+        },
+    ];
+
+    if (monthly) {
+        rows.push({
+            label: 'Monthly plan',
+            value: monthly,
+            detail: 'Billed monthly after merchant approval.',
+        });
+    }
+
+    if (yearly) {
+        rows.push({
+            label: 'Annual plan',
+            value: yearly,
+            detail: 'Billed yearly after merchant approval.',
+        });
+    }
+
+    if (!monthly && !yearly && oneTime && app.pricing_model === 'one_time') {
+        rows.push({
+            label: 'One-time charge',
+            value: oneTime,
+            detail: 'Single charge after merchant approval.',
+        });
+    }
+
+    if (app.pricing_model === 'usage_based') {
+        rows.push({
+            label: 'Usage charges',
+            value: 'Usage-based',
+            detail: 'Charges depend on app usage and must be approved in billing.',
+        });
+    }
+
+    return rows;
+}
+
 export default async function AppDetailPage({ params }: AppDetailPageProps) {
     const { slug } = await params;
     const app = await AppService.getAppBySlug(slug);
@@ -102,6 +178,7 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
     const version = app.current_version || appWithVersion.version || '1.0.0';
     const privacyUrl = app.privacy_policy_url || app.privacy_url || null;
     const termsUrl = app.terms_url || null;
+    const pricingRows = getPricingRows(app, price);
 
     return (
         <>
@@ -162,19 +239,97 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
                                 <h2>Preview</h2>
                                 <p>Review screenshots and expected merchant surfaces before granting access.</p>
                             </div>
-                            <div className="app-screenshots">
-                                {screenshots.map((item, index) => (
-                                    <div key={`${item || 'placeholder'}-${index}`} className="app-screenshot">
-                                        {typeof item === 'string' ? (
-                                            <img src={item} alt={`${app.name} screenshot ${index + 1}`} />
-                                        ) : (
-                                            <div className="app-screenshot-placeholder">
-                                                <ImageIcon size={28} aria-hidden="true" />
-                                                <span>Screenshot {index + 1}</span>
-                                            </div>
-                                        )}
-                                    </div>
+                            <div className="app-preview-carousel" aria-label={`${app.name} screenshots`}>
+                                <div className="app-screenshots">
+                                    {screenshots.map((item, index) => (
+                                        <figure
+                                            id={`screenshot-${index + 1}`}
+                                            key={`${item || 'placeholder'}-${index}`}
+                                            className="app-screenshot"
+                                        >
+                                            {typeof item === 'string' ? (
+                                                <img src={item} alt={`${app.name} screenshot ${index + 1}`} />
+                                            ) : (
+                                                <div className="app-screenshot-placeholder">
+                                                    <ImageIcon size={28} aria-hidden="true" />
+                                                    <span>Screenshot {index + 1}</span>
+                                                    <small>Awaiting approved media from the app partner.</small>
+                                                </div>
+                                            )}
+                                            <figcaption>
+                                                <span>Preview {index + 1}</span>
+                                                <span>{typeof item === 'string' ? 'Partner media' : 'Media pending'}</span>
+                                            </figcaption>
+                                        </figure>
+                                    ))}
+                                </div>
+                                <div className="app-carousel-controls" aria-label="Screenshot navigation">
+                                    {screenshots.map((item, index) => (
+                                        <a key={`control-${item || 'placeholder'}-${index}`} href={`#screenshot-${index + 1}`}>
+                                            <span>{index + 1}</span>
+                                        </a>
+                                    ))}
+                                </div>
+                            </div>
+                        </section>
+
+                        <section className="marketplace-card marketplace-section">
+                            <div className="marketplace-section-header">
+                                <h2>Pricing</h2>
+                                <p>Charges are shown from the app listing and still require merchant approval before billing.</p>
+                            </div>
+                            <div className="app-pricing-grid">
+                                {pricingRows.map((row) => (
+                                    <article key={row.label} className="app-pricing-card">
+                                        <div className="app-pricing-card__icon">
+                                            {row.label.includes('Billing') ? (
+                                                <CreditCard size={16} aria-hidden="true" />
+                                            ) : (
+                                                <IndianRupee size={16} aria-hidden="true" />
+                                            )}
+                                        </div>
+                                        <div>
+                                            <span>{row.label}</span>
+                                            <strong>{row.value}</strong>
+                                            <p>{row.detail}</p>
+                                        </div>
+                                    </article>
                                 ))}
+                            </div>
+                            <div className="marketplace-banner marketplace-banner--info">
+                                <strong>Billing approval required</strong>
+                                <span>Paid app charges are not activated until the merchant reviews and approves the billing terms.</span>
+                            </div>
+                        </section>
+
+                        <section className="marketplace-card marketplace-section">
+                            <div className="marketplace-section-header">
+                                <h2>Permission review</h2>
+                                <p>Confirm the API access this app is requesting before installation.</p>
+                            </div>
+                            <div className="app-permission-review-grid">
+                                <article className="app-permission-summary">
+                                    <div className="app-permission-summary__icon">
+                                        <ShieldCheck size={18} aria-hidden="true" />
+                                    </div>
+                                    <div>
+                                        <span>Requested permissions</span>
+                                        <strong>{scopes.length}</strong>
+                                        <p>{scopes.length > 0 ? 'Grant only if these permissions match the app use case.' : 'This app does not request API permissions.'}</p>
+                                    </div>
+                                </article>
+                                <div className="app-permission-checklist">
+                                    {(scopes.length > 0 ? scopes : ['No API permissions requested']).map((scope) => (
+                                        <span key={scope}>
+                                            <CheckCircle2 size={14} aria-hidden="true" />
+                                            {scopes.length > 0 ? formatScopeLabel(scope) : scope}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="app-permission-note">
+                                <ListChecks size={15} aria-hidden="true" />
+                                <span>Installation uses the consent panel in the sidebar and sends the approved scope list to the app install endpoint.</span>
                             </div>
                         </section>
 
