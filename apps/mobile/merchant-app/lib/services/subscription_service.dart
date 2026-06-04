@@ -21,12 +21,98 @@ class SubscriptionService {
     required SubscriptionPlan plan,
   }) async {
     try {
-      final res = await _api.post('stores/$storeId/subscription', body: {
-        'plan': plan.name,
-      });
-      return Map<String, dynamic>.from(res['data'] ?? res);
+      return await _api.requestJson(
+        'payments/subscription/order',
+        options: ApiRequestOptions(
+          method: HttpMethod.post,
+          body: {
+            'store_id': storeId,
+            'site_type': 'store',
+            'plan_slug': _planSlug(plan),
+            'billing_period': 'monthly',
+          },
+        ),
+      );
     } catch (e) {
       debugPrint('Error creating subscription: $e');
+      rethrow;
+    }
+  }
+
+  /// Start a subscription checkout order using the gateway billing contract.
+  Future<Map<String, dynamic>> createSubscriptionOrder({
+    required String storeId,
+    required SubscriptionPlan plan,
+    String billingPeriod = 'monthly',
+  }) async {
+    try {
+      return await _api.requestJson(
+        'payments/subscription/order',
+        options: ApiRequestOptions(
+          method: HttpMethod.post,
+          body: {
+            'store_id': storeId,
+            'site_type': 'store',
+            'plan_slug': _planSlug(plan),
+            'billing_period': billingPeriod,
+          },
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error creating subscription order: $e');
+      rethrow;
+    }
+  }
+
+  /// Verify a Razorpay subscription payment and activate the plan.
+  Future<Map<String, dynamic>> verifySubscriptionPayment({
+    required String storeId,
+    required SubscriptionPlan plan,
+    required String razorpayPaymentId,
+    required String razorpaySignature,
+    String? razorpayOrderId,
+    String? razorpaySubscriptionId,
+    String billingPeriod = 'monthly',
+  }) async {
+    try {
+      return await _api.requestJson(
+        'payments/subscription/verify',
+        options: ApiRequestOptions(
+          method: HttpMethod.post,
+          body: {
+            'store_id': storeId,
+            'site_type': 'store',
+            'plan_slug': _planSlug(plan),
+            'billing_period': billingPeriod,
+            'razorpay_payment_id': razorpayPaymentId,
+            'razorpay_signature': razorpaySignature,
+            if (razorpayOrderId != null) 'razorpay_order_id': razorpayOrderId,
+            if (razorpaySubscriptionId != null)
+              'razorpay_subscription_id': razorpaySubscriptionId,
+          },
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error verifying subscription payment: $e');
+      rethrow;
+    }
+  }
+
+  /// Cancel the active store subscription through the gateway.
+  Future<Map<String, dynamic>> cancelSubscription({
+    required String storeId,
+    String? reason,
+  }) async {
+    try {
+      return await _api.requestJson(
+        'payments/subscription/cancel',
+        options: ApiRequestOptions(
+          method: HttpMethod.post,
+          body: {'store_id': storeId, if (reason != null) 'reason': reason},
+        ),
+      );
+    } catch (e) {
+      debugPrint('Error cancelling subscription: $e');
       rethrow;
     }
   }
@@ -42,11 +128,12 @@ class SubscriptionService {
     String? paymentId,
   }) async {
     try {
-      final res = await _api.patch('stores/$storeId/subscription', body: {
-        'plan': newPlan.name,
-        if (paymentId != null) 'payment_id': paymentId,
-      });
-      return Map<String, dynamic>.from(res['data'] ?? res);
+      if (paymentId != null) {
+        throw UnsupportedError(
+          'Subscription payment verification requires Razorpay signature payload.',
+        );
+      }
+      return createSubscriptionOrder(storeId: storeId, plan: newPlan);
     } catch (e) {
       debugPrint('Error upgrading subscription: $e');
       rethrow;
@@ -60,13 +147,11 @@ class SubscriptionService {
   /// Get current subscription for a store
   Future<SubscriptionModel?> getSubscription(String storeId) async {
     try {
-      final res = await _api.get('stores/$storeId/subscription');
-      final data = res['data'];
-      if (data == null) return null;
-      return SubscriptionModel.fromMap(
-        data as Map<String, dynamic>,
-        data['id'] ?? '',
+      final data = await _api.requestJson(
+        'payments/subscription',
+        options: ApiRequestOptions(query: {'store_id': storeId}),
       );
+      return _subscriptionModelFromGateway(storeId, data);
     } catch (e) {
       debugPrint('Error getting subscription: $e');
       return null;
@@ -85,7 +170,7 @@ class SubscriptionService {
     bool testMode = false,
   }) async {
     try {
-      final res = await _api.post('stores/$storeId/payment-config', body: {
+      final res = await _api.stores.paymentConfig.save(storeId, {
         'key_id': keyId,
         'key_secret': keySecret,
         'test_mode': testMode,
@@ -104,8 +189,7 @@ class SubscriptionService {
   /// Get payment configuration for order creation
   Future<Map<String, dynamic>> getPaymentConfig(String storeId) async {
     try {
-      final res = await _api.get('stores/$storeId/payment-config');
-      return Map<String, dynamic>.from(res['data'] ?? res);
+      return await _api.stores.paymentConfig.get(storeId);
     } catch (e) {
       debugPrint('Error getting payment config: $e');
       rethrow;
@@ -119,12 +203,11 @@ class SubscriptionService {
   /// Get payment config document
   Future<PaymentConfigModel?> getPaymentConfigModel(String storeId) async {
     try {
-      final res = await _api.get('stores/$storeId/payment-config');
-      final data = res['data'];
-      if (data == null) {
+      final data = await _api.stores.paymentConfig.get(storeId);
+      if (data.isEmpty) {
         return PaymentConfigModel.defaultShared(storeId);
       }
-      return PaymentConfigModel.fromMap(data as Map<String, dynamic>, storeId);
+      return PaymentConfigModel.fromMap(data, storeId);
     } catch (e) {
       debugPrint('Error getting payment config model: $e');
       return null;
@@ -146,7 +229,7 @@ class SubscriptionService {
           'productLimit': 50,
           'commission': 3.0,
           'badge': '🎁',
-          'color': 0xFF6366F1,
+          'color': 0xFF8B5CF6,
           'features': [
             '50 products',
             '3% commission',
@@ -217,9 +300,67 @@ class SubscriptionService {
 
   /// Get all plans info for comparison
   static List<Map<String, dynamic>> getAllPlansInfo() {
-    return SubscriptionPlan.values.map((p) => {
-      ...getPlanInfo(p),
-      'plan': p,
-    }).toList();
+    return SubscriptionPlan.values
+        .map((p) => {...getPlanInfo(p), 'plan': p})
+        .toList();
+  }
+
+  static String _planSlug(SubscriptionPlan plan) => plan.name;
+
+  SubscriptionModel? _subscriptionModelFromGateway(
+    String storeId,
+    Map<String, dynamic> data,
+  ) {
+    final store = Map<String, dynamic>.from(data['store'] as Map? ?? {});
+    final subscription = data['subscription'];
+    if (subscription is! Map) {
+      if (store.isEmpty) return null;
+      return SubscriptionModel.fromMap({
+        'storeId': storeId,
+        'plan': 'trial',
+        'status': store['trial_status'] ?? 'active',
+        'trialEndsAt': store['trial_ends_at'],
+        'startDate': DateTime.now().toIso8601String(),
+        'createdAt': DateTime.now().toIso8601String(),
+        'productLimit': PlanConfig.productLimits[SubscriptionPlan.trial],
+        'commissionPercent':
+            PlanConfig.commissionPercents[SubscriptionPlan.trial],
+      }, '$storeId-trial');
+    }
+
+    final row = Map<String, dynamic>.from(subscription);
+    final plan = _parsePlan(row['plan']);
+
+    return SubscriptionModel.fromMap({
+      'storeId': storeId,
+      'plan': plan.name,
+      'status': _normalizeStatus(row['status']),
+      'startDate': row['created_at'] ?? DateTime.now().toIso8601String(),
+      'endDate': row['current_period_end'],
+      'trialEndsAt': store['trial_ends_at'],
+      'nextBillingDate': row['current_period_end'],
+      'createdAt': row['created_at'] ?? DateTime.now().toIso8601String(),
+      'updatedAt': row['updated_at'],
+      'productLimit': PlanConfig.productLimits[plan],
+      'commissionPercent': PlanConfig.commissionPercents[plan],
+      'razorpaySubscriptionId': row['external_subscription_id'],
+      'lastPaymentAmount': ((row['amount_paid'] as num?) ?? 0).toDouble() / 100,
+      'currentProductCount': store['current_product_count'] ?? 0,
+    }, '${row['id'] ?? '$storeId-${plan.name}'}');
+  }
+
+  SubscriptionPlan _parsePlan(dynamic value) {
+    final text = value?.toString().toLowerCase();
+    return SubscriptionPlan.values.firstWhere(
+      (plan) => plan.name == text,
+      orElse: () => SubscriptionPlan.trial,
+    );
+  }
+
+  String _normalizeStatus(dynamic value) {
+    final status = value?.toString().toLowerCase();
+    if (status == 'cancelled') return 'canceled';
+    if (status == 'past_due') return 'pastDue';
+    return status ?? 'active';
   }
 }

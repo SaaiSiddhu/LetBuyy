@@ -9,10 +9,10 @@ import '../../services/store_service.dart';
 /// Product Form Screen for Store Builder
 /// Simplified product creation with essential fields
 class ProductFormScreen extends StatefulWidget {
-  final ProductModel? product; // null for new, populated for edit
-  
+  final ProductContract? product; // null for new, populated for edit
+
   const ProductFormScreen({super.key, this.product});
-  
+
   @override
   State<ProductFormScreen> createState() => _ProductFormScreenState();
 }
@@ -21,7 +21,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
   bool _isLoading = false;
-  
+
   // Form Controllers
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -29,7 +29,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _originalPriceController = TextEditingController();
   final _stockController = TextEditingController();
   final _skuController = TextEditingController();
-  
+
   // Form Data
   List<String> _images = [];
   String _categoryId = '';
@@ -37,7 +37,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   bool _isFeatured = false;
   bool _isTrending = false;
   bool _isNew = true;
-  
+
   // Specifications form
   final _specKeyController = TextEditingController();
   final _specValueController = TextEditingController();
@@ -47,21 +47,26 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     super.initState();
     _initData();
   }
-  
+
   void _initData() {
     final p = widget.product;
     if (p != null) {
       _nameController.text = p.name;
       _descriptionController.text = p.description;
-      _salePriceController.text = p.salePrice.toString();
-      _originalPriceController.text = p.originalPrice?.toString() ?? '';
+      _salePriceController.text = p.price.toString();
+      _originalPriceController.text = p.comparePrice?.toString() ?? '';
       _stockController.text = p.stock.toString();
       _images = List.from(p.images);
-      _categoryId = p.categoryId;
-      _specifications = Map.from(p.specifications ?? {});
+      _categoryId = p.category ?? '';
+      final specifications = p.metadata['specifications'];
+      _specifications = specifications is Map
+          ? specifications.map(
+              (key, value) => MapEntry(key.toString(), value.toString()),
+            )
+          : {};
       _isFeatured = p.isFeatured;
-      _isTrending = p.isTrending;
-      _isNew = p.isNew;
+      _isTrending = p.boolValue('is_trending');
+      _isNew = p.boolValue('is_new', fallback: true);
     }
   }
 
@@ -81,7 +86,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   @override
   Widget build(BuildContext context) {
     final isEdit = widget.product != null;
-    
+
     return Scaffold(
       backgroundColor: AppColors.background,
       appBar: AppBar(
@@ -92,12 +97,22 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           if (_isLoading)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             )
           else
             TextButton(
               onPressed: _submitProduct,
-              child: Text(isEdit ? 'Update' : 'Save', style: TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold)),
+              child: Text(
+                isEdit ? 'Update' : 'Save',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
         ],
       ),
@@ -135,14 +150,18 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             // Step 1: Basic Info
             Step(
               title: const Text('Basic Info'),
-              subtitle: _nameController.text.isNotEmpty 
-                  ? Text(_nameController.text, maxLines: 1, overflow: TextOverflow.ellipsis) 
+              subtitle: _nameController.text.isNotEmpty
+                  ? Text(
+                      _nameController.text,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    )
                   : null,
               isActive: _currentStep >= 0,
               state: _currentStep > 0 ? StepState.complete : StepState.indexed,
               content: _buildBasicInfoStep(),
             ),
-            
+
             // Step 2: Images
             Step(
               title: const Text('Images'),
@@ -151,18 +170,18 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               state: _currentStep > 1 ? StepState.complete : StepState.indexed,
               content: _buildImagesStep(),
             ),
-            
+
             // Step 3: Pricing & Stock
             Step(
               title: const Text('Pricing'),
-              subtitle: _salePriceController.text.isNotEmpty 
+              subtitle: _salePriceController.text.isNotEmpty
                   ? Text('₹${_salePriceController.text}')
                   : null,
               isActive: _currentStep >= 2,
               state: _currentStep > 2 ? StepState.complete : StepState.indexed,
               content: _buildPricingStep(),
             ),
-            
+
             // Step 4: Details
             Step(
               title: const Text('Details'),
@@ -188,11 +207,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             hintText: 'e.g., Urban Runner X',
             border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
           ),
-          validator: (value) => value?.isEmpty ?? true ? 'Name is required' : null,
+          validator: (value) =>
+              value?.isEmpty ?? true ? 'Name is required' : null,
           onChanged: (_) => setState(() {}),
         ),
         const SizedBox(height: 16),
-        
+
         TextFormField(
           controller: _descriptionController,
           decoration: InputDecoration(
@@ -202,10 +222,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             alignLabelWithHint: true,
           ),
           maxLines: 4,
-          validator: (value) => value?.isEmpty ?? true ? 'Description is required' : null,
+          validator: (value) =>
+              value?.isEmpty ?? true ? 'Description is required' : null,
         ),
         const SizedBox(height: 16),
-        
+
         DropdownButtonFormField<String>(
           value: _categoryId.isNotEmpty ? _categoryId : null,
           decoration: InputDecoration(
@@ -230,21 +251,29 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('Add up to 5 product images', style: TextStyle(color: Colors.grey)),
+        const Text(
+          'Add up to 5 product images',
+          style: TextStyle(color: Colors.grey),
+        ),
         const SizedBox(height: 16),
-        
+
         Wrap(
           spacing: 12,
           runSpacing: 12,
           children: [
-            ..._images.asMap().entries.map((entry) => _buildImageTile(entry.key, entry.value)),
+            ..._images.asMap().entries.map(
+              (entry) => _buildImageTile(entry.key, entry.value),
+            ),
             if (_images.length < 5) _buildAddImageButton(),
           ],
         ),
-        
+
         if (_images.isNotEmpty) ...[
           const SizedBox(height: 16),
-          Text('Drag to reorder. First image is the primary.', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+          Text(
+            'Drag to reorder. First image is the primary.',
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
+          ),
         ],
       ],
     );
@@ -258,11 +287,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           height: 100,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            image: DecorationImage(
-              image: NetworkImage(url),
-              fit: BoxFit.cover,
-            ),
-            border: index == 0 
+            image: DecorationImage(image: NetworkImage(url), fit: BoxFit.cover),
+            border: index == 0
                 ? Border.all(color: AppColors.primary, width: 2)
                 : null,
           ),
@@ -292,7 +318,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 color: AppColors.primary,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Text('Main', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+              child: const Text(
+                'Main',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 10,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
             ),
           ),
       ],
@@ -313,9 +346,16 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.add_photo_alternate_outlined, color: Colors.grey[600], size: 32),
+            Icon(
+              Icons.add_photo_alternate_outlined,
+              color: Colors.grey[600],
+              size: 32,
+            ),
             const SizedBox(height: 4),
-            Text('Add Image', style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            Text(
+              'Add Image',
+              style: TextStyle(color: Colors.grey[600], fontSize: 12),
+            ),
           ],
         ),
       ),
@@ -324,7 +364,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
   void _showAddImageDialog() {
     final urlController = TextEditingController();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -362,7 +402,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     final discount = originalPrice > salePrice && originalPrice > 0
         ? ((originalPrice - salePrice) / originalPrice * 100).round()
         : 0;
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -374,11 +414,14 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 decoration: InputDecoration(
                   labelText: 'Sale Price *',
                   prefixText: '₹ ',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) => value?.isEmpty ?? true ? 'Required' : null,
+                validator: (value) =>
+                    value?.isEmpty ?? true ? 'Required' : null,
                 onChanged: (_) => setState(() {}),
               ),
             ),
@@ -389,7 +432,9 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                 decoration: InputDecoration(
                   labelText: 'Original Price',
                   prefixText: '₹ ',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                   suffixText: discount > 0 ? '$discount% OFF' : null,
                 ),
                 keyboardType: TextInputType.number,
@@ -400,7 +445,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           ],
         ),
         const SizedBox(height: 16),
-        
+
         TextFormField(
           controller: _stockController,
           decoration: InputDecoration(
@@ -420,9 +465,12 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Badges
-        const Text('Badges', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        const Text(
+          'Badges',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+        ),
         const SizedBox(height: 8),
-        
+
         Wrap(
           spacing: 8,
           children: [
@@ -449,14 +497,17 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             ),
           ],
         ),
-        
+
         const SizedBox(height: 24),
-        
+
         // Specifications
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text('Specifications', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            const Text(
+              'Specifications',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             TextButton.icon(
               onPressed: _showAddSpecDialog,
               icon: const Icon(Icons.add, size: 18),
@@ -464,7 +515,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
             ),
           ],
         ),
-        
+
         if (_specifications.isEmpty)
           Container(
             padding: const EdgeInsets.all(16),
@@ -472,18 +523,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
               color: Colors.grey[100],
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Center(child: Text('No specifications added', style: TextStyle(color: Colors.grey))),
+            child: const Center(
+              child: Text(
+                'No specifications added',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ),
           )
         else
           ...List.generate(_specifications.entries.length, (index) {
             final entry = _specifications.entries.elementAt(index);
             return ListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(entry.key, style: const TextStyle(fontWeight: FontWeight.w600)),
+              title: Text(
+                entry.key,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
               subtitle: Text(entry.value),
               trailing: IconButton(
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
-                onPressed: () => setState(() => _specifications.remove(entry.key)),
+                onPressed: () =>
+                    setState(() => _specifications.remove(entry.key)),
               ),
             );
           }),
@@ -494,7 +554,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   void _showAddSpecDialog() {
     _specKeyController.clear();
     _specValueController.clear();
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -504,21 +564,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           children: [
             TextField(
               controller: _specKeyController,
-              decoration: const InputDecoration(labelText: 'Name (e.g., Material)'),
+              decoration: const InputDecoration(
+                labelText: 'Name (e.g., Material)',
+              ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _specValueController,
-              decoration: const InputDecoration(labelText: 'Value (e.g., Cotton)'),
+              decoration: const InputDecoration(
+                labelText: 'Value (e.g., Cotton)',
+              ),
             ),
           ],
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
           ElevatedButton(
             onPressed: () {
-              if (_specKeyController.text.isNotEmpty && _specValueController.text.isNotEmpty) {
-                setState(() => _specifications[_specKeyController.text] = _specValueController.text);
+              if (_specKeyController.text.isNotEmpty &&
+                  _specValueController.text.isNotEmpty) {
+                setState(
+                  () => _specifications[_specKeyController.text] =
+                      _specValueController.text,
+                );
                 Navigator.pop(context);
               }
             },
@@ -548,32 +619,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       );
       return;
     }
-    
+
     if (_images.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please add at least one image')),
       );
       return;
     }
-    
+
     setState(() => _isLoading = true);
-    
+
     try {
       final productService = context.read<ProductService>();
       final storeService = context.read<StoreService>();
-      
+
       // Get current store for storeId
       final store = await storeService.getFirstStore();
       if (store == null) throw Exception('No store found');
-      
+
       if (widget.product != null) {
         // Update existing
         await productService.updateProduct(widget.product!.id, {
           'name': _nameController.text,
           'description': _descriptionController.text,
           'price': double.parse(_salePriceController.text),
-          'compare_price': _originalPriceController.text.isNotEmpty 
-              ? double.parse(_originalPriceController.text) 
+          'compare_price': _originalPriceController.text.isNotEmpty
+              ? double.parse(_originalPriceController.text)
               : null,
           'stock': int.parse(_stockController.text),
           'category': _categoryId,
@@ -587,8 +658,8 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           name: _nameController.text,
           description: _descriptionController.text,
           price: double.parse(_salePriceController.text),
-          comparePrice: _originalPriceController.text.isNotEmpty 
-              ? double.parse(_originalPriceController.text) 
+          comparePrice: _originalPriceController.text.isNotEmpty
+              ? double.parse(_originalPriceController.text)
               : null,
           stock: int.parse(_stockController.text),
           category: _categoryId.isNotEmpty ? _categoryId : 'other',
@@ -596,17 +667,21 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
           isFeatured: _isFeatured,
         );
       }
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.product != null ? 'Product updated!' : 'Product created!')),
+          SnackBar(
+            content: Text(
+              widget.product != null ? 'Product updated!' : 'Product created!',
+            ),
+          ),
         );
         Navigator.pop(context, true); // Return true to indicate success
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }

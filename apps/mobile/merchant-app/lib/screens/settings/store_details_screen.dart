@@ -56,24 +56,27 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         name: _nameController.text,
         tagline: _taglineController.text,
       );
-      
-      await storeService.updateStore(updatedStore.id, updatedStore.toJson());
-      
+
+      await storeService.updateStore(updatedStore.id, {
+        'name': updatedStore.name,
+        'tagline': updatedStore.tagline,
+      });
+
       setState(() {
         _store = updatedStore;
         _hasChanges = false;
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Store details saved!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Store details saved!')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       setState(() => _isSaving = false);
@@ -90,9 +93,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -171,10 +172,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           const SizedBox(height: 8),
           Text(
             'Subdomain cannot be changed after creation',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[500],
-            ),
+            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
           ),
           const SizedBox(height: 100),
         ],
@@ -217,10 +215,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           const SizedBox(height: 8),
           Text(
             'Tap to change logo',
-            style: TextStyle(
-              color: Colors.grey[600],
-              fontSize: 12,
-            ),
+            style: TextStyle(color: Colors.grey[600], fontSize: 12),
           ),
         ],
       ),
@@ -230,10 +225,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   Widget _buildSectionTitle(String title) {
     return Text(
       title,
-      style: const TextStyle(
-        fontWeight: FontWeight.w600,
-        fontSize: 16,
-      ),
+      style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
     );
   }
 
@@ -249,10 +241,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -261,9 +250,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
           decoration: InputDecoration(
             hintText: hint,
             prefixIcon: Icon(icon, size: 20),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
@@ -280,11 +267,11 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
   Future<void> _pickLogo() async {
     final picker = ImagePicker();
     final image = await picker.pickImage(source: ImageSource.gallery);
-    
+
     if (image != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Logo upload coming soon!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Logo upload coming soon!')));
     }
   }
 }

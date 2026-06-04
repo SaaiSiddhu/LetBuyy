@@ -14,17 +14,17 @@ class StoreTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.light(
-        primary: AppColors.primary,
+        primary: LetbuyyColorTokens.primary,
         onPrimary: Colors.white,
-        secondary: AppColors.secondary,
+        secondary: LetbuyyColorTokens.primaryHover,
         onSecondary: Colors.white,
-        tertiary: AppColors.accent,
-        surface: AppColors.surface,
-        onSurface: AppColors.textPrimary,
-        error: AppColors.error,
+        tertiary: LetbuyyColorTokens.info,
+        surface: LetbuyyColorTokens.surfaceLight,
+        onSurface: LetbuyyColorTokens.textPrimaryLight,
+        error: LetbuyyColorTokens.danger,
         onError: Colors.white,
       ),
-      scaffoldBackgroundColor: AppColors.background,
+      scaffoldBackgroundColor: LetbuyyColorTokens.backgroundLight,
 
       // App Bar
       appBarTheme: AppBarTheme(
@@ -38,9 +38,7 @@ class StoreTheme {
           fontWeight: FontWeight.w600,
           color: AppColors.textPrimary,
         ),
-        iconTheme: const IconThemeData(
-          color: AppColors.textPrimary,
-        ),
+        iconTheme: const IconThemeData(color: AppColors.textPrimary),
       ),
 
       // Text Theme
@@ -142,7 +140,10 @@ class StoreTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceVariant,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -163,10 +164,7 @@ class StoreTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
-        hintStyle: GoogleFonts.inter(
-          color: AppColors.textHint,
-          fontSize: 14,
-        ),
+        hintStyle: GoogleFonts.inter(color: AppColors.textHint, fontSize: 14),
         labelStyle: GoogleFonts.inter(
           color: AppColors.textSecondary,
           fontSize: 14,
@@ -191,9 +189,7 @@ class StoreTheme {
           fontSize: 13,
           fontWeight: FontWeight.w500,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
 
       // Bottom Navigation
@@ -207,9 +203,7 @@ class StoreTheme {
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: GoogleFonts.inter(
-          fontSize: 12,
-        ),
+        unselectedLabelStyle: GoogleFonts.inter(fontSize: 12),
       ),
 
       // Floating Action Button
@@ -252,9 +246,7 @@ class StoreTheme {
       // Dialog
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -273,13 +265,8 @@ class StoreTheme {
       // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceDark,
-        contentTextStyle: GoogleFonts.inter(
-          color: Colors.white,
-          fontSize: 14,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        contentTextStyle: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),
     );
@@ -292,17 +279,17 @@ class StoreTheme {
     return ThemeData(
       useMaterial3: true,
       colorScheme: ColorScheme.dark(
-        primary: AppColors.primary,
+        primary: LetbuyyColorTokens.primary,
         onPrimary: Colors.white,
-        secondary: AppColors.secondary,
+        secondary: LetbuyyColorTokens.primaryHover,
         onSecondary: Colors.white,
-        tertiary: AppColors.accent,
-        surface: AppColors.surfaceDark,
-        onSurface: AppColors.textLight,
-        error: AppColors.error,
+        tertiary: LetbuyyColorTokens.info,
+        surface: LetbuyyColorTokens.surfaceDark,
+        onSurface: LetbuyyColorTokens.textPrimaryDark,
+        error: LetbuyyColorTokens.danger,
         onError: Colors.white,
       ),
-      scaffoldBackgroundColor: AppColors.backgroundDark,
+      scaffoldBackgroundColor: LetbuyyColorTokens.backgroundDark,
 
       // App Bar
       appBarTheme: AppBarTheme(
@@ -316,9 +303,7 @@ class StoreTheme {
           fontWeight: FontWeight.w600,
           color: AppColors.textLight,
         ),
-        iconTheme: const IconThemeData(
-          color: AppColors.textLight,
-        ),
+        iconTheme: const IconThemeData(color: AppColors.textLight),
       ),
 
       // Text Theme - MUST match light theme structure exactly
@@ -353,10 +338,7 @@ class StoreTheme {
           fontWeight: FontWeight.w600,
           color: AppColors.textLight,
         ),
-        bodyLarge: GoogleFonts.inter(
-          fontSize: 16,
-          color: AppColors.textLight,
-        ),
+        bodyLarge: GoogleFonts.inter(fontSize: 16, color: AppColors.textLight),
         bodyMedium: GoogleFonts.inter(
           fontSize: 14,
           color: AppColors.textLightSecondary,
@@ -420,7 +402,10 @@ class StoreTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.surfaceDarkVariant,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -470,9 +455,7 @@ class StoreTheme {
           fontWeight: FontWeight.w500,
           color: AppColors.textLight,
         ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
       ),
 
       // Bottom Navigation
@@ -486,9 +469,7 @@ class StoreTheme {
           fontSize: 12,
           fontWeight: FontWeight.w600,
         ),
-        unselectedLabelStyle: GoogleFonts.inter(
-          fontSize: 12,
-        ),
+        unselectedLabelStyle: GoogleFonts.inter(fontSize: 12),
       ),
 
       // Floating Action Button
@@ -531,9 +512,7 @@ class StoreTheme {
       // Dialog
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surfaceDark,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         titleTextStyle: GoogleFonts.inter(
           fontSize: 18,
           fontWeight: FontWeight.w600,
@@ -552,13 +531,8 @@ class StoreTheme {
       // Snackbar
       snackBarTheme: SnackBarThemeData(
         backgroundColor: AppColors.surfaceDarkVariant,
-        contentTextStyle: GoogleFonts.inter(
-          color: Colors.white,
-          fontSize: 14,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        contentTextStyle: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,
       ),
     );

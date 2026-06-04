@@ -258,9 +258,14 @@ class ProductContract extends SharedTypeContract {
   String get storeId => stringValue('store_id');
   String get name => stringValue('name');
   String get slug => stringValue('slug');
+  String get description => stringValue('description');
   String get status => stringValue('status', fallback: 'draft');
   double get price => numberValue('price');
+  double? get comparePrice =>
+      this['compare_price'] == null ? null : numberValue('compare_price');
   String get currency => stringValue('currency', fallback: 'INR');
+  String? get sku => optionalString('sku');
+  String? get category => optionalString('category');
   int get stock => intValue('stock');
   bool get isActive => boolValue('is_active');
   bool get isFeatured => boolValue('is_featured');
@@ -451,9 +456,16 @@ class LineItemContract extends SharedTypeContract {
 
   factory LineItemContract.fromJson(JsonMap json) => LineItemContract(json);
 
+  String get id => stringValue('id');
+  String? get productId => optionalString('product_id');
+  String? get variantId => optionalString('variant_id');
   String get name => stringValue('name');
+  String? get sku => optionalString('sku');
   int get quantity => intValue('quantity');
+  double get unitPrice => numberValue('unit_price');
   double get total => numberValue('total');
+  String get currency => stringValue('currency', fallback: 'INR');
+  String? get imageUrl => optionalString('image_url');
 }
 
 class OrderContract extends SharedTypeContract {
@@ -504,10 +516,17 @@ class OrderContract extends SharedTypeContract {
   String get id => stringValue('id');
   String get storeId => stringValue('store_id');
   String get orderNumber => stringValue('order_number');
+  String? get customerName => optionalString('customer_name');
+  String? get customerEmail => optionalString('customer_email');
+  String? get customerPhone => optionalString('customer_phone');
   String get status => stringValue('status');
   String get paymentStatus => stringValue('payment_status');
   String get fulfillmentStatus => stringValue('fulfillment_status');
   String get currency => stringValue('currency', fallback: 'INR');
+  double get subtotal => numberValue('subtotal');
+  double get discountAmount => numberValue('discount_amount');
+  double get shippingAmount => numberValue('shipping_amount');
+  double get taxAmount => numberValue('tax_amount');
   double get total => numberValue('total');
   List<LineItemContract> get lineItems =>
       contractList('line_items', LineItemContract.fromJson);

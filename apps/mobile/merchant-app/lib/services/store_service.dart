@@ -32,11 +32,8 @@ class StoreService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await _api.get('stores');
-      final items = res['data'] as List? ?? [];
-      _stores = items
-          .map((e) => StoreModel.fromJson(e as Map<String, dynamic>))
-          .toList();
+      final page = await _api.stores.list();
+      _stores = page.data.map(StoreModel.fromJson).toList();
       if (_stores.isNotEmpty && _currentStore == null) {
         _currentStore = _stores.first;
       }
@@ -52,8 +49,7 @@ class StoreService extends ChangeNotifier {
 
   /// Get a single store by ID.
   Future<StoreModel> fetchStore(String id) async {
-    final res = await _api.get('stores/$id');
-    final store = StoreModel.fromJson(res['data'] as Map<String, dynamic>);
+    final store = StoreModel.fromJson(await _api.stores.get(id));
     _currentStore = store;
     notifyListeners();
     return store;
@@ -62,10 +58,9 @@ class StoreService extends ChangeNotifier {
   /// Get the first store for the current user (used after login).
   Future<StoreModel?> getFirstStore() async {
     try {
-      final res = await _api.get('stores', query: {'limit': '1'});
-      final items = res['data'] as List? ?? [];
-      if (items.isEmpty) return null;
-      final store = StoreModel.fromJson(items.first as Map<String, dynamic>);
+      final page = await _api.stores.list(query: {'limit': '1'});
+      if (page.data.isEmpty) return null;
+      final store = StoreModel.fromJson(page.data.first);
       _currentStore = store;
       notifyListeners();
       return store;
@@ -86,15 +81,19 @@ class StoreService extends ChangeNotifier {
     String? themeId,
     Map<String, dynamic>? templateConfig,
   }) async {
-    final res = await _api.post('stores', body: {
-      'name': name,
-      'subdomain': subdomain.toLowerCase().replaceAll(RegExp(r'[^a-z0-9-]'), ''),
-      'site_type': siteType,
-      if (tagline != null) 'tagline': tagline,
-      'theme_id': themeId ?? 'modern',
-      if (templateConfig != null) 'template_config': templateConfig,
-    });
-    final store = StoreModel.fromJson(res['data'] as Map<String, dynamic>);
+    final store = StoreModel.fromJson(
+      await _api.stores.create({
+        'name': name,
+        'subdomain': subdomain.toLowerCase().replaceAll(
+          RegExp(r'[^a-z0-9-]'),
+          '',
+        ),
+        'site_type': siteType,
+        if (tagline != null) 'tagline': tagline,
+        'theme_id': themeId ?? 'modern',
+        if (templateConfig != null) 'template_config': templateConfig,
+      }),
+    );
     _stores.add(store);
     _currentStore = store;
     notifyListeners();
@@ -105,8 +104,7 @@ class StoreService extends ChangeNotifier {
 
   /// Update store fields.
   Future<StoreModel> updateStore(String id, Map<String, dynamic> fields) async {
-    final res = await _api.patch('stores/$id', body: fields);
-    final store = StoreModel.fromJson(res['data'] as Map<String, dynamic>);
+    final store = StoreModel.fromJson(await _api.stores.update(id, fields));
     final idx = _stores.indexWhere((s) => s.id == id);
     if (idx != -1) _stores[idx] = store;
     if (_currentStore?.id == id) _currentStore = store;
@@ -118,8 +116,7 @@ class StoreService extends ChangeNotifier {
 
   /// Publish the store (sets status to 'published').
   Future<StoreModel> publishStore(String id) async {
-    final res = await _api.post('stores/$id/publish');
-    final store = StoreModel.fromJson(res['data'] as Map<String, dynamic>);
+    final store = StoreModel.fromJson(await _api.stores.publish(id));
     final idx = _stores.indexWhere((s) => s.id == id);
     if (idx != -1) _stores[idx] = store;
     if (_currentStore?.id == id) _currentStore = store;
@@ -131,7 +128,7 @@ class StoreService extends ChangeNotifier {
 
   /// Soft-delete the store.
   Future<void> deleteStore(String id) async {
-    await _api.delete('stores/$id');
+    await _api.stores.remove(id);
     _stores.removeWhere((s) => s.id == id);
     if (_currentStore?.id == id) {
       _currentStore = _stores.isNotEmpty ? _stores.first : null;

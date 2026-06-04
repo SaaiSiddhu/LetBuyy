@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
 
@@ -35,11 +36,13 @@ class StoreAnalytics {
       averageOrderValue: (json['averageOrderValue'] as num?)?.toDouble() ?? 0,
       conversionRate: (json['conversionRate'] as num?)?.toDouble() ?? 0,
       ordersByStatus: Map<String, int>.from(json['ordersByStatus'] ?? {}),
-      dailyStats: (json['dailyStats'] as List?)
+      dailyStats:
+          (json['dailyStats'] as List?)
               ?.map((e) => DailyStats.fromJson(e))
               .toList() ??
           [],
-      topProducts: (json['topProducts'] as List?)
+      topProducts:
+          (json['topProducts'] as List?)
               ?.map((e) => TopProduct.fromJson(e))
               .toList() ??
           [],
@@ -123,32 +126,47 @@ class AnalyticsService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Fetch orders to compute stats
-      final ordersRes = await _api.get('orders', query: {
-        'store_id': storeId,
-        'limit': '100',
-      });
-      final ordersList = ordersRes['data'] as List? ?? [];
+      final ordersPage = await _api.orders.list(
+        query: {'store_id': storeId, 'limit': '100'},
+      );
+      final orders = ordersPage.data
+          .map(OrderContract.fromJson)
+          .toList(growable: false);
 
-      // Fetch products count
-      final productsRes = await _api.get('products', query: {
-        'store_id': storeId,
-        'limit': '1',
-      });
-      final totalProducts = productsRes['pagination']?['total'] as int? ?? 0;
+      final productsPage = await _api.products.list(
+        query: {'store_id': storeId, 'limit': '1'},
+      );
+      final totalProducts = productsPage.total;
 
       // Compute stats from orders
       double totalRevenue = 0;
       final ordersByStatus = <String, int>{};
+      final topProductRows = <String, _TopProductAccumulator>{};
 
-      for (final order in ordersList) {
-        totalRevenue += (order['total'] as num?)?.toDouble() ?? 0;
-        final status = order['status'] as String? ?? 'unknown';
+      for (final order in orders) {
+        totalRevenue += order.total;
+        final status = order.status.isEmpty ? 'unknown' : order.status;
         ordersByStatus[status] = (ordersByStatus[status] ?? 0) + 1;
+
+        for (final line in order.lineItems) {
+          final key = line.productId ?? line.name;
+          if (key.isEmpty) continue;
+          final row = topProductRows.putIfAbsent(
+            key,
+            () => _TopProductAccumulator(
+              id: line.productId ?? key,
+              name: line.name.isEmpty ? 'Untitled product' : line.name,
+            ),
+          );
+          row.orders += line.quantity;
+          row.revenue += line.total;
+        }
       }
 
-      final totalOrders = ordersList.length;
+      final totalOrders = orders.length;
       final avgOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0.0;
+      final topProducts = topProductRows.values.toList()
+        ..sort((a, b) => b.revenue.compareTo(a.revenue));
 
       _analytics = StoreAnalytics(
         totalRevenue: totalRevenue,
@@ -156,6 +174,17 @@ class AnalyticsService extends ChangeNotifier {
         totalProducts: totalProducts,
         averageOrderValue: avgOrderValue,
         ordersByStatus: ordersByStatus,
+        topProducts: topProducts
+            .take(5)
+            .map(
+              (row) => TopProduct(
+                id: row.id,
+                name: row.name,
+                orders: row.orders,
+                revenue: row.revenue,
+              ),
+            )
+            .toList(growable: false),
       );
 
       return _analytics!;
@@ -167,4 +196,13 @@ class AnalyticsService extends ChangeNotifier {
       notifyListeners();
     }
   }
+}
+
+class _TopProductAccumulator {
+  _TopProductAccumulator({required this.id, required this.name});
+
+  final String id;
+  final String name;
+  int orders = 0;
+  double revenue = 0;
 }

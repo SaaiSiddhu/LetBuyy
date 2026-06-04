@@ -32,9 +32,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
       final store = await storeService.getFirstStore();
       setState(() {
         _store = store;
-        // Custom domain stored in themeCustomization for now
-        _customDomainController.text = 
-            store?.themeCustomization['customDomain'] as String? ?? '';
+        _customDomainController.text = store?.customDomain ?? '';
       });
     } catch (e) {
       debugPrint('Error loading store: $e');
@@ -52,9 +50,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final subdomain = _store?.subdomain ?? 'mystore';
@@ -90,10 +86,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                       color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Icon(
-                      Icons.link_rounded,
-                      color: AppColors.primary,
-                    ),
+                    child: Icon(Icons.link_rounded, color: AppColors.primary),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -134,7 +127,9 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                   IconButton(
                     icon: const Icon(Icons.copy_rounded, size: 20),
                     onPressed: () {
-                      Clipboard.setData(ClipboardData(text: 'https://$defaultUrl'));
+                      Clipboard.setData(
+                        ClipboardData(text: 'https://$defaultUrl'),
+                      );
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(content: Text('URL copied!')),
                       );
@@ -146,7 +141,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // Custom domain
           _buildSection(
             title: 'Custom Domain',
@@ -169,7 +164,11 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                   child: ElevatedButton.icon(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Coming soon!')),
+                        const SnackBar(
+                          content: Text(
+                            'Custom domain verification needs backend ownership checks.',
+                          ),
+                        ),
                       );
                     },
                     icon: const Icon(Icons.check_circle_rounded, size: 18),
@@ -188,11 +187,12 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          
+
           // DNS instructions
           _buildSection(
             title: 'DNS Configuration',
-            description: 'Add these records to your domain',
+            description:
+                'Records appear after backend domain verification is available',
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -200,17 +200,16 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: Colors.grey[200]!),
               ),
-              child: Column(
-                children: [
-                  _buildDnsRow('Type', 'CNAME'),
-                  const Divider(),
-                  _buildDnsRow('Name', 'www'),
-                  const Divider(),
-                  _buildDnsRow('Value', 'cname.vercel-dns.com'),
-                  const Divider(),
-                  _buildDnsRow('TTL', '3600'),
-                ],
-              ),
+              child: _store?.dnsConfig.isEmpty ?? true
+                  ? _buildDnsPlaceholder()
+                  : Column(
+                      children: _store!.dnsConfig.entries
+                          .map(
+                            (entry) =>
+                                _buildDnsRow(entry.key, '${entry.value}'),
+                          )
+                          .toList(),
+                    ),
             ),
           ),
         ],
@@ -228,18 +227,12 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
       children: [
         Text(
           title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
         ),
         const SizedBox(height: 4),
         Text(
           description,
-          style: TextStyle(
-            color: Colors.grey[600],
-            fontSize: 13,
-          ),
+          style: TextStyle(color: Colors.grey[600], fontSize: 13),
         ),
         const SizedBox(height: 12),
         child,
@@ -256,10 +249,7 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             width: 60,
             child: Text(
               label,
-              style: TextStyle(
-                color: Colors.grey[600],
-                fontSize: 13,
-              ),
+              style: TextStyle(color: Colors.grey[600], fontSize: 13),
             ),
           ),
           Expanded(
@@ -275,9 +265,9 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
             icon: const Icon(Icons.copy_rounded, size: 16),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: value));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('$label copied!')),
-              );
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(SnackBar(content: Text('$label copied!')));
             },
             constraints: const BoxConstraints(),
             padding: EdgeInsets.zero,
@@ -285,6 +275,28 @@ class _DomainSettingsScreenState extends State<DomainSettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildDnsPlaceholder() {
+    return Column(
+      children: [
+        Icon(Icons.dns_outlined, color: Colors.grey[500], size: 32),
+        const SizedBox(height: 8),
+        Text(
+          'No DNS records available',
+          style: TextStyle(
+            color: Colors.grey[700],
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Domain ownership, TXT/CNAME records, and SSL activation require a gateway domain-verification endpoint.',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.grey[600], fontSize: 12),
+        ),
+      ],
     );
   }
 }

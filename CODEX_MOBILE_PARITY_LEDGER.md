@@ -2,7 +2,7 @@
 
 ## CURRENT STATUS
 - Stage: STAGE 5 - WS8 Mobile Parity.
-- Active gate: M3 contract conformance pre-commit governance passed; commit pending.
+- Active gate: M4 existing-screen API/model rewiring pre-commit governance passed; commit pending.
 - Scope lock: mobile source work is limited to `apps/mobile/merchant-app/**` and `packages/dart/**` unless the active mission explicitly allows a supporting config/documentation file. Web apps, backend services, database, package-core contracts, shared TypeScript packages, and governance validators remain out of scope for WS8 source changes.
 
 ## M0 BASELINE PROOF
@@ -76,7 +76,7 @@
   - Escalated `flutter build ios --no-codesign --debug --dart-define-from-file=dart-defines/local.json` in `apps/mobile/merchant-app` -> PASS, built `build/ios/iphoneos/Runner.app`.
 
 ## M3 CONTRACT CONFORMANCE
-- Status: DONE / PRE-COMMIT GOVERNANCE PASSED.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED.
 - Source changes:
   - Added `packages/dart/models/lib/shared_contracts.dart` and `packages/dart/models/lib/src/shared_contracts.dart` as the canonical pure-Dart mirror of `packages/shared-types/src/index.ts` for Address, CustomerAddress, ProductOption, ProductVariant, Product, CollectionRule, Collection, Customer, CartLine, Cart, LineItem, Order, Payment, Coupon, Page, ThemeSettingField, ThemeSettings, ThemeBlock, ThemeSection, ThemeTemplate, ThemeBundle, and Theme.
   - Exported the canonical contract layer from both `letbuyy_models.dart` and `merchant_contracts.dart` without removing legacy model exports; M4/M5 will migrate/delete the Firestore-era models safely.
@@ -88,15 +88,40 @@
   - Escalated `flutter analyze` in `packages/dart/services` -> PASS with no issues.
   - Escalated `flutter analyze` in `apps/mobile/merchant-app` -> PASS with no issues.
 
+## M4 EXISTING SCREEN API / MODEL REWIRING
+- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Source changes:
+  - Extended canonical Dart shared contracts with screen-needed Product, LineItem, and Order getters while preserving gateway JSON shape.
+  - Rewired `ProductService`, `OrderService`, `StoreService`, `AnalyticsService`, and `SubscriptionService` onto shared `ApiClient` resource methods and canonical `ProductContract` / `OrderContract` parsing where applicable.
+  - Migrated the orders screen to `OrderContract` instead of the legacy merchant-only `OrderModel` / enum, including status, date, customer, total, and item-count helpers.
+  - Removed fabricated dashboard revenue/trend/chart data and analytics mock top products/traffic sources; dashboard and analytics now use gateway-derived `StoreAnalytics` where available and render backend-needed placeholders otherwise.
+  - Added a Dart design-token mirror in `packages/dart/ui_kit` for web token color, typography, spacing, radius, shadow, and density values; exported it and applied token colors to the merchant app theme shell.
+  - Narrowed store details and SEO saves to gateway-supported fields, and replaced hardcoded domain DNS records with a backend-needed domain verification placeholder.
+  - Moved subscription service calls from legacy `/stores/:id/subscription` paths to the gateway `/payments/subscription*` contracts; live paid activation still requires provider payloads and approved pricing.
+- Scoped proof:
+  - `HOME=/private/tmp DART_SUPPRESS_ANALYTICS=true dart format ...` over touched Dart files -> PASS.
+  - Escalated `flutter analyze` in `packages/dart/models` -> PASS with no issues.
+  - Escalated `flutter analyze` in `packages/dart/ui_kit` -> PASS with no issues.
+  - Escalated `flutter analyze` in `apps/mobile/merchant-app` -> PASS with no issues.
+  - Escalated `flutter test` in `packages/dart/models` -> PASS: 2 conformance tests passed.
+  - Escalated `flutter test` in `apps/mobile/merchant-app` -> PASS: placeholder widget test passed.
+  - `rg "Supabase|supabase|FirebaseFirestore|cloud_firestore|Firestore|FirebaseFunctions|FirebaseStorage" ...M4 target screens/services...` -> PASS with no direct runtime usage matches; only historical service comments remain.
+  - `rg "1250|\+8%|\+14%|\+23%|\+2\.1%|₹5\.2K|₹1\.5K|Product A|Product B|Product C|cname\.vercel-dns\.com" ...` -> PASS with no matches in the touched dashboard, analytics, revenue chart, or domain settings files.
+
 ## SKIPPED - NEEDS HUMAN
 - Staging Supabase project URL and anon key. Required: governed staging `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_STAGING_*` placeholders.
 - Production Supabase project URL and anon key. Required: governed production `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_PRODUCTION_*` placeholders.
 - Staging and production Razorpay public key IDs. Required: approved provider sandbox/live key IDs from the payment owner; do not hardcode private secrets in repository files.
 - iOS device signing, simulator/device release proof, and TestFlight/App Store upload. Required: Apple Developer team, signing certificate, provisioning profile, bundle identifier approval, and human permission to perform signed distribution. The no-codesign compile proof passed.
+- M4 live subscription pricing/copy and paid plan activation. Required: approved plan names/prices/features/commission policy, Razorpay subscription checkout credentials, signed Razorpay callback payloads, and permission to run provider-side payment attempts. Code now points to gateway `/payments/subscription*` contracts but does not assert unapproved pricing as final.
 
 ## SKIPPED - NEEDS BACKEND
 - M2 live mobile merchant login against protected gateway endpoints. Current gateway auth accepts Supabase bearer tokens or signed internal SSO/session headers for `lb_session`; a mobile app must not possess the internal signing secret, and raw `lb_session` / cookie transport is not accepted by protected `/v1` merchant routes. Required: a mobile-safe gateway session bridge that validates `lb_session` without exposing internal signing secrets, plus refresh/expiry semantics for mobile clients.
 - M2 production mobile signup/login CAPTCHA proof. Identity-platform login/signup routes are CSRF + Turnstile protected; local development can use `dev-bypass-token`, but production mobile proof needs an approved mobile Turnstile token flow or a backend-owned mobile identity endpoint that preserves bot protection.
+- M4 protected real-gateway screen smoke for merchant dashboard/products/orders/settings remains blocked by the M2 mobile-safe gateway session bridge skip; the screens are rewired to the shared gateway client but cannot be proven against protected `/v1` merchant routes with raw `lb_session`.
+- M4 traffic-source and daily revenue chart data. Required: gateway analytics endpoints for source attribution and periodized daily revenue/visitor series; mobile now renders explicit placeholders instead of fabricated sources or chart values.
+- M4 custom-domain verification. Required: gateway-owned domain ownership verification, TXT/CNAME record issuance, SSL activation status, and takeover-prevention workflow before mobile can verify or activate custom domains.
+- M4 store selected-product membership/import persistence. Required: gateway-supported store product-selection contract or field in `UpdateStoreSchema`; current gateway `PATCH /stores/:id` rejects unsupported `selected_product_ids`, so import/remove membership remains backend-gated.
 
 ## VALIDATOR LEDGER
 - 2026-06-04T05:16:22Z [M0 baseline] Flutter version/pub get/analyze/test/Android debug build/iOS no-codesign build all passed as recorded above.
@@ -110,3 +135,6 @@
 - 2026-06-04T06:14:21Z [M2 post-commit governance] Post-commit `pnpm run validate:governance` after `705975f9` -> PASS (128/128 validators). M2 is complete with backend-only skips; advancing to M3 contract conformance.
 - 2026-06-04T06:24:11Z [M3 scoped proof] Contract conformance source proof complete: formatter, `packages/dart/models` analyze/test, `packages/dart/services` analyze, and merchant app analyze all passed. Full governance pending after generated-artifact cleanup.
 - 2026-06-04T06:25:59Z [M3 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M3 gate result: PASS.
+- 2026-06-04T06:28:01Z [M3 post-commit governance] First post-commit `pnpm run validate:governance` after `fdd9ef56` failed only at stale-artifact validation because app `.next` and app/package-local `node_modules` directories reappeared. Generated-artifact cleanup scan was rerun -> empty; second `pnpm run validate:governance` -> PASS (128/128 validators). M3 is complete; advancing to M4 existing-screen API/model rewiring.
+- 2026-06-04T06:53:50Z [M4 scoped proof] Existing-screen API/model rewiring proof complete: formatter, `packages/dart/models` analyze/test, `packages/dart/ui_kit` analyze, merchant app analyze/test, direct runtime source scan, and fabricated metric/DNS scan all passed. Full governance pending after generated-artifact cleanup.
+- 2026-06-04T06:57:46Z [M4 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M4 gate result: PASS WITH BACKEND/HUMAN SKIPS.

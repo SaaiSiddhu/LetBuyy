@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:letbuyy_models/letbuyy_models.dart';
 
 import 'api_client.dart';
 
@@ -13,6 +14,10 @@ class ProductService extends ChangeNotifier {
   ProductService({required ApiClient api}) : _api = api;
 
   // ── Cached state ─────────────────────────────────────────
+
+  List<ProductContract> _productContracts = [];
+  List<ProductContract> get productContracts =>
+      List.unmodifiable(_productContracts);
 
   List<Map<String, dynamic>> _products = [];
   List<Map<String, dynamic>> get products => List.unmodifiable(_products);
@@ -32,12 +37,15 @@ class ProductService extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final res = await _api.get('products', query: {
-        'store_id': storeId,
-        'page': page,
-        'limit': limit,
-      });
-      _products = List<Map<String, dynamic>>.from(res['data'] ?? []);
+      final pageResult = await _api.products.list(
+        query: {'store_id': storeId, 'page': page, 'limit': limit},
+      );
+      _productContracts = pageResult.data
+          .map(ProductContract.fromJson)
+          .toList(growable: false);
+      _products = _productContracts
+          .map(_toLegacyProductMap)
+          .toList(growable: false);
       return _products;
     } catch (e) {
       debugPrint('❌ fetchProducts error: $e');
@@ -50,8 +58,8 @@ class ProductService extends ChangeNotifier {
 
   /// Get a single product by ID.
   Future<Map<String, dynamic>> fetchProduct(String id) async {
-    final res = await _api.get('products/$id');
-    return res['data'] as Map<String, dynamic>;
+    final product = ProductContract.fromJson(await _api.products.get(id));
+    return _toLegacyProductMap(product);
   }
 
   // ── Create ───────────────────────────────────────────────
@@ -71,21 +79,24 @@ class ProductService extends ChangeNotifier {
     List<String>? tags,
     List<Map<String, dynamic>>? variants,
   }) async {
-    final res = await _api.post('products', body: {
-      'store_id': storeId,
-      'name': name,
-      if (description != null) 'description': description,
-      'price': price,
-      if (comparePrice != null) 'compare_price': comparePrice,
-      'images': images ?? [],
-      if (category != null) 'category': category,
-      'stock': stock,
-      'is_active': isActive,
-      'is_featured': isFeatured,
-      'tags': tags ?? [],
-      if (variants != null) 'variants': variants,
-    });
-    final product = res['data'] as Map<String, dynamic>;
+    final created = ProductContract.fromJson(
+      await _api.products.create({
+        'store_id': storeId,
+        'name': name,
+        if (description != null) 'description': description,
+        'price': price,
+        if (comparePrice != null) 'compare_price': comparePrice,
+        'images': images ?? [],
+        if (category != null) 'category': category,
+        'stock': stock,
+        'is_active': isActive,
+        'is_featured': isFeatured,
+        'tags': tags ?? [],
+        if (variants != null) 'variants': variants,
+      }),
+    );
+    final product = _toLegacyProductMap(created);
+    _productContracts = [..._productContracts, created];
     _products.add(product);
     notifyListeners();
     return product;
@@ -98,8 +109,12 @@ class ProductService extends ChangeNotifier {
     String id,
     Map<String, dynamic> fields,
   ) async {
-    final res = await _api.patch('products/$id', body: fields);
-    final updated = res['data'] as Map<String, dynamic>;
+    final contract = ProductContract.fromJson(
+      await _api.products.update(id, fields),
+    );
+    final updated = _toLegacyProductMap(contract);
+    final contractIdx = _productContracts.indexWhere((p) => p.id == id);
+    if (contractIdx != -1) _productContracts[contractIdx] = contract;
     final idx = _products.indexWhere((p) => p['id'] == id);
     if (idx != -1) _products[idx] = updated;
     notifyListeners();
@@ -110,7 +125,10 @@ class ProductService extends ChangeNotifier {
 
   /// Soft-delete a product.
   Future<void> deleteProduct(String id) async {
-    await _api.delete('products/$id');
+    await _api.products.remove(id);
+    _productContracts = _productContracts
+        .where((product) => product.id != id)
+        .toList(growable: false);
     _products.removeWhere((p) => p['id'] == id);
     notifyListeners();
   }
@@ -123,7 +141,7 @@ class ProductService extends ChangeNotifier {
     required List<String> productIds,
     String? storeId,
   }) async {
-    final res = await _api.post('products/bulk', body: {
+    final res = await _api.products.bulk({
       'action': action,
       'product_ids': productIds,
       if (storeId != null) 'store_id': storeId,
@@ -142,5 +160,41 @@ class ProductService extends ChangeNotifier {
   /// Upload a product image and return the CDN URL.
   Future<String> uploadProductImage(File file) async {
     return _api.uploadFile(file, folder: 'products');
+  }
+
+  Map<String, dynamic> _toLegacyProductMap(ProductContract product) {
+    final json = product.toJson();
+    final comparePrice = product.comparePrice;
+    final metadata = product.metadata;
+    final specifications = metadata['specifications'];
+
+    return {
+      ...json,
+      'id': product.id,
+      'storeId': product.storeId,
+      'name': product.name,
+      'slug': product.slug,
+      'description': product.description,
+      'salePrice': product.price,
+      'price': product.price,
+      'originalPrice': comparePrice,
+      'comparePrice': comparePrice,
+      'currency': product.currency,
+      'sku': product.sku ?? '',
+      'stock': product.stock,
+      'category': product.category,
+      'categoryId': product.category ?? '',
+      'images': product.images,
+      'tags': product.tags,
+      'isActive': product.isActive,
+      'isFeatured': product.isFeatured,
+      'isTrending': product.boolValue('is_trending'),
+      'isNew': product.boolValue('is_new', fallback: true),
+      'createdAt': product.optionalString('created_at'),
+      'updatedAt': product.optionalString('updated_at'),
+      'specifications': specifications is Map
+          ? Map<String, dynamic>.from(specifications)
+          : const <String, dynamic>{},
+    };
   }
 }

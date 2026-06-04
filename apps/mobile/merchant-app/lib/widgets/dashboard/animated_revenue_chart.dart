@@ -14,7 +14,7 @@ class AnimatedRevenueChart extends StatefulWidget {
   const AnimatedRevenueChart({
     super.key,
     this.totalRevenue = 0,
-    this.revenueData = const [3, 1, 4, 2, 5, 3, 4],
+    this.revenueData = const [],
     this.currency = '₹',
   });
 
@@ -31,51 +31,58 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
   late AppThemeColors colors;
   int? _touchedIndex;
 
-  // Sample data for different periods
-  Map<int, List<double>> get _periodData => {
-    0: [2.1, 3.2, 2.8, 4.1, 3.5, 4.8, 5.2], // 7 days - 7 points
-    1: [1.5, 2.0, 2.3, 2.8, 3.1], // 30 days - 5 weeks
-    2: [1.0, 1.5, 2.0], // 90 days - 3 months
-    3: [0.8, 1.2, 1.8, 2.2, 2.5, 3.0, 3.5, 3.8, 4.2, 4.5, 4.8, 5.5], // 1 year - 12 months
-  };
-
   // Month abbreviations
-  static const _months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  static const _months = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   static const _days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   // X-axis labels for different periods - dynamic based on current date
   List<String> get _xLabels {
     final now = DateTime.now();
-    
+
     switch (_selectedPeriod) {
       case 0: // 7 Days - Last 7 days from today
         return List.generate(7, (i) {
           final day = now.subtract(Duration(days: 6 - i));
           return _days[day.weekday - 1];
         });
-        
+
       case 1: // 30 Days - Date ranges from current date backwards
         final labels = <String>[];
         for (int i = 4; i >= 0; i--) {
           final endDay = now.subtract(Duration(days: i * 6));
           final startDay = endDay.subtract(const Duration(days: 5));
           // Show "Dec\n11-16" format
-          labels.add('${_months[startDay.month - 1]}\n${startDay.day}-${endDay.day}');
+          labels.add(
+            '${_months[startDay.month - 1]}\n${startDay.day}-${endDay.day}',
+          );
         }
         return labels;
-        
+
       case 2: // 90 Days - Last 3 months
         return List.generate(3, (i) {
           final month = DateTime(now.year, now.month - 2 + i);
           return _months[month.month - 1];
         });
-        
+
       case 3: // 1 Year - Last 12 months
         return List.generate(12, (i) {
           final month = DateTime(now.year, now.month - 11 + i);
           return _months[month.month - 1];
         });
-        
+
       default:
         return _days;
     }
@@ -101,7 +108,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     super.dispose();
   }
 
-  List<double> get _currentData => _periodData[_selectedPeriod] ?? widget.revenueData;
+  List<double> get _currentData => widget.revenueData;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +138,11 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                   ),
                   borderRadius: BorderRadius.circular(8),
                 ),
-                child: const Icon(Icons.show_chart_rounded, color: Colors.white, size: 12),
+                child: const Icon(
+                  Icons.show_chart_rounded,
+                  color: Colors.white,
+                  size: 12,
+                ),
               ),
               const SizedBox(width: 8),
               // Title + Value
@@ -148,9 +159,11 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                       ),
                     ),
                     const SizedBox(width: 8),
-                    // Trend Badge
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF8B5CF6).withValues(alpha: 0.15),
                         borderRadius: BorderRadius.circular(6),
@@ -158,10 +171,14 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.trending_up_rounded, color: const Color(0xFF8B5CF6), size: 10),
+                          Icon(
+                            Icons.payments_outlined,
+                            color: const Color(0xFF8B5CF6),
+                            size: 10,
+                          ),
                           const SizedBox(width: 2),
                           Text(
-                            '+14.2%',
+                            'Live total',
                             style: TextStyle(
                               fontSize: 9,
                               fontWeight: FontWeight.w700,
@@ -178,41 +195,56 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               _buildPeriodSelector(),
             ],
           ),
-          
+
           const SizedBox(height: 10),
-          
+
           // High/Low Row
           Row(
             children: [
               Text(
                 'vs last ${_periods[_selectedPeriod].toLowerCase()}',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: colors.textSecondary,
-                ),
+                style: TextStyle(fontSize: 10, color: colors.textSecondary),
               ),
               const Spacer(),
-              // High
-              Text('High ', style: TextStyle(fontSize: 9, color: colors.textSecondary)),
-              Text('₹5.2K', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFF8B5CF6))),
-              const SizedBox(width: 12),
-              // Low
-              Text('Low ', style: TextStyle(fontSize: 9, color: colors.textSecondary)),
-              Text('₹1.5K', style: TextStyle(fontSize: 10, fontWeight: FontWeight.w700, color: const Color(0xFFF59E0B))),
+              Text(
+                _currentData.isEmpty
+                    ? 'Revenue history unavailable'
+                    : 'Recorded history',
+                style: TextStyle(fontSize: 10, color: colors.textSecondary),
+              ),
             ],
           ),
-          
+
           const SizedBox(height: 12),
-          
+
           // Chart - Increased height
           SizedBox(
             height: 200,
-            child: AnimatedBuilder(
-              animation: _chartAnimation,
-              builder: (context, child) {
-                return LineChart(_buildChartData(_chartAnimation.value));
-              },
-            ),
+            child: _currentData.length < 2
+                ? _buildEmptyHistory()
+                : AnimatedBuilder(
+                    animation: _chartAnimation,
+                    builder: (context, child) {
+                      return LineChart(_buildChartData(_chartAnimation.value));
+                    },
+                  ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyHistory() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.show_chart_rounded, size: 36, color: colors.textSecondary),
+          const SizedBox(height: 8),
+          Text(
+            'Revenue chart needs daily gateway analytics.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: colors.textSecondary, fontSize: 12),
           ),
         ],
       ),
@@ -236,7 +268,11 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
                     ),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.show_chart_rounded, color: Colors.white, size: 14),
+                  child: const Icon(
+                    Icons.show_chart_rounded,
+                    color: Colors.white,
+                    size: 14,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 Text(
@@ -268,9 +304,12 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
   }
 
   Widget _buildStatsRow() {
+    final data = _currentData;
+    final high = data.isEmpty ? null : data.reduce(math.max);
+    final low = data.isEmpty ? null : data.reduce(math.min);
+
     return Row(
       children: [
-        // Trend Badge
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
@@ -288,10 +327,14 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.trending_up_rounded, color: const Color(0xFF8B5CF6), size: 12),
+              Icon(
+                Icons.payments_outlined,
+                color: const Color(0xFF8B5CF6),
+                size: 12,
+              ),
               const SizedBox(width: 4),
               Text(
-                '+14.2%',
+                'Recorded',
                 style: TextStyle(
                   fontSize: 11,
                   fontWeight: FontWeight.w700,
@@ -303,17 +346,17 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         ),
         const SizedBox(width: 12),
         Text(
-          'vs last ${_periods[_selectedPeriod].toLowerCase()}',
-          style: TextStyle(
-            fontSize: 11,
-            color: colors.textSecondary,
-          ),
+          data.isEmpty
+              ? 'history pending'
+              : 'last ${_periods[_selectedPeriod].toLowerCase()}',
+          style: TextStyle(fontSize: 11, color: colors.textSecondary),
         ),
         const Spacer(),
-        // High/Low
-        _buildMiniStat('High', '₹5.2K', const Color(0xFF8B5CF6)),
-        const SizedBox(width: 16),
-        _buildMiniStat('Low', '₹1.5K', const Color(0xFFF59E0B)),
+        if (high != null && low != null) ...[
+          _buildMiniStat('High', '$high', const Color(0xFF8B5CF6)),
+          const SizedBox(width: 16),
+          _buildMiniStat('Low', '$low', const Color(0xFFF59E0B)),
+        ],
       ],
     );
   }
@@ -364,7 +407,7 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
               duration: const Duration(milliseconds: 200),
               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
-                gradient: isSelected 
+                gradient: isSelected
                     ? const LinearGradient(
                         colors: [Color(0xFF8B5CF6), Color(0xFF7C3AED)],
                       )
@@ -390,10 +433,10 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     final data = _currentData;
     final maxY = (data.reduce(math.max) * 1.3).ceilToDouble();
     final labels = _xLabels;
-    
+
     // Calculate interval for x-axis labels
     final labelInterval = (data.length / 7).ceil().toDouble();
-    
+
     return LineChartData(
       gridData: FlGridData(
         show: true,
@@ -409,7 +452,9 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
       ),
       titlesData: FlTitlesData(
         show: true,
-        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+        rightTitles: const AxisTitles(
+          sideTitles: SideTitles(showTitles: false),
+        ),
         topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
         leftTitles: AxisTitles(
           sideTitles: SideTitles(
@@ -437,7 +482,8 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
             showTitles: true,
             reservedSize: 44,
             interval: 1,
-            getTitlesWidget: (value, meta) => _bottomTitleWidgets(value, meta, labels),
+            getTitlesWidget: (value, meta) =>
+                _bottomTitleWidgets(value, meta, labels),
           ),
         ),
       ),
@@ -495,7 +541,8 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         handleBuiltInTouches: true,
         touchCallback: (event, response) {
           setState(() {
-            if (response?.lineBarSpots != null && response!.lineBarSpots!.isNotEmpty) {
+            if (response?.lineBarSpots != null &&
+                response!.lineBarSpots!.isNotEmpty) {
               _touchedIndex = response.lineBarSpots!.first.spotIndex;
             } else {
               _touchedIndex = null;
@@ -505,17 +552,17 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
         touchTooltipData: LineTouchTooltipData(
           getTooltipColor: (_) => const Color(0xFF1E1B4B),
           tooltipRoundedRadius: 12,
-          tooltipPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+          tooltipPadding: const EdgeInsets.symmetric(
+            horizontal: 14,
+            vertical: 10,
+          ),
           tooltipMargin: 12,
           getTooltipItems: (spots) => spots.map((spot) {
             final index = spot.x.toInt();
             final labels = _xLabels;
             final label = index < labels.length ? labels[index] : '';
             return LineTooltipItem(
-              '${widget.currency}${(spot.y * 1000).toInt().toString().replaceAllMapped(
-                RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-                (match) => '${match[1]},',
-              )}',
+              '${widget.currency}${(spot.y * 1000).toInt().toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (match) => '${match[1]},')}',
               TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w700,
@@ -538,10 +585,14 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     );
   }
 
-  Widget _bottomTitleWidgets(double value, TitleMeta meta, List<String> labels) {
+  Widget _bottomTitleWidgets(
+    double value,
+    TitleMeta meta,
+    List<String> labels,
+  ) {
     final index = value.toInt();
     final data = _currentData;
-    
+
     // Show limited labels based on data length
     int showEvery;
     if (data.length <= 7) {
@@ -551,23 +602,25 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
     } else {
       showEvery = 3;
     }
-    
+
     if (index % showEvery != 0 && index != data.length - 1) {
       return const SizedBox.shrink();
     }
-    
+
     if (index < 0 || index >= labels.length) return const SizedBox.shrink();
-    
+
     final isSelected = index == _touchedIndex;
-    
+
     return SideTitleWidget(
       axisSide: meta.axisSide,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-        decoration: isSelected ? BoxDecoration(
-          color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
-          borderRadius: BorderRadius.circular(4),
-        ) : null,
+        decoration: isSelected
+            ? BoxDecoration(
+                color: const Color(0xFF8B5CF6).withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(4),
+              )
+            : null,
         child: Text(
           labels[index],
           style: TextStyle(
@@ -581,7 +634,8 @@ class _AnimatedRevenueChartState extends State<AnimatedRevenueChart>
   }
 
   String _formatNumber(int number) {
-    if (number >= 10000000) return '${(number / 10000000).toStringAsFixed(1)}Cr';
+    if (number >= 10000000)
+      return '${(number / 10000000).toStringAsFixed(1)}Cr';
     if (number >= 100000) return '${(number / 100000).toStringAsFixed(1)}L';
     if (number >= 1000) return '${(number / 1000).toStringAsFixed(1)}K';
     return number.toString();

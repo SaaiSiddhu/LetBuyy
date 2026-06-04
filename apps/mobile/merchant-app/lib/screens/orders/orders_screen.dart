@@ -6,8 +6,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import 'package:letbuyy_models/letbuyy_models.dart';
 import 'package:provider/provider.dart';
-import '../../models/order_model.dart';
 import '../../services/order_service.dart';
 import '../../services/store_service.dart';
 import '../../theme/app_theme_colors.dart';
@@ -24,25 +24,26 @@ class _OrdersScreenState extends State<OrdersScreen> {
   // Services
   late final OrderService _orderService;
   String? _storeId;
-  
+
   // Data State
-  List<OrderModel> _orders = [];
+  List<OrderContract> _orders = [];
   bool _isLoading = true;
-  
+
   // Search & Filter State
   String _searchQuery = '';
-  String _statusFilter = 'all'; // all, pending, confirmed, shipped, delivered, cancelled
+  String _statusFilter =
+      'all'; // all, pending, confirmed, shipped, delivered, cancelled
   String _sortBy = 'newest'; // newest, oldest, amount_high, amount_low
   String _dateFilter = 'all'; // all, today, week, month
-  
+
   // Selection State
   bool _isSelectionMode = false;
   Set<String> _selectedOrderIds = {};
-  
+
   // Controllers
   final TextEditingController _searchController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  
+
   late AppThemeColors colors;
 
   @override
@@ -85,72 +86,82 @@ class _OrdersScreenState extends State<OrdersScreen> {
   // ============================================
   // COMPUTED PROPERTIES
   // ============================================
-  
-  List<OrderModel> get _filteredOrders {
-    var orders = List<OrderModel>.from(_orders);
-    
+
+  List<OrderContract> get _filteredOrders {
+    var orders = List<OrderContract>.from(_orders);
+
     // Apply status filter
     if (_statusFilter != 'all') {
-      final status = OrderStatus.values.firstWhere(
-        (s) => s.name == _statusFilter,
-        orElse: () => OrderStatus.pending,
-      );
-      orders = orders.where((o) => o.status == status).toList();
+      orders = orders.where((o) => _orderStatus(o) == _statusFilter).toList();
     }
-    
+
     // Apply date filter
     final now = DateTime.now();
     if (_dateFilter == 'today') {
-      orders = orders.where((o) => 
-        o.createdAt.day == now.day && 
-        o.createdAt.month == now.month && 
-        o.createdAt.year == now.year
-      ).toList();
+      orders = orders
+          .where(
+            (o) =>
+                _orderCreatedAt(o)?.day == now.day &&
+                _orderCreatedAt(o)?.month == now.month &&
+                _orderCreatedAt(o)?.year == now.year,
+          )
+          .toList();
     } else if (_dateFilter == 'week') {
       final weekAgo = now.subtract(const Duration(days: 7));
-      orders = orders.where((o) => o.createdAt.isAfter(weekAgo)).toList();
+      orders = orders
+          .where((o) => (_orderCreatedAt(o)?.isAfter(weekAgo) ?? false))
+          .toList();
     } else if (_dateFilter == 'month') {
       final monthAgo = now.subtract(const Duration(days: 30));
-      orders = orders.where((o) => o.createdAt.isAfter(monthAgo)).toList();
+      orders = orders
+          .where((o) => (_orderCreatedAt(o)?.isAfter(monthAgo) ?? false))
+          .toList();
     }
-    
+
     // Apply search
     if (_searchQuery.isNotEmpty) {
       final query = _searchQuery.toLowerCase();
-      orders = orders.where((o) =>
-        o.orderNumber.toLowerCase().contains(query) ||
-        o.customer.name.toLowerCase().contains(query) ||
-        o.customer.phone.contains(query)
-      ).toList();
+      orders = orders
+          .where(
+            (o) =>
+                o.orderNumber.toLowerCase().contains(query) ||
+                _orderCustomerName(o).toLowerCase().contains(query) ||
+                _orderCustomerPhone(o).toLowerCase().contains(query) ||
+                (o.customerEmail ?? '').toLowerCase().contains(query),
+          )
+          .toList();
     }
-    
+
     // Apply sorting
     orders.sort((a, b) {
       switch (_sortBy) {
         case 'newest':
-          return b.createdAt.compareTo(a.createdAt);
+          return _compareDatesDesc(_orderCreatedAt(a), _orderCreatedAt(b));
         case 'oldest':
-          return a.createdAt.compareTo(b.createdAt);
+          return _compareDatesAsc(_orderCreatedAt(a), _orderCreatedAt(b));
         case 'amount_high':
-          return b.pricing.total.compareTo(a.pricing.total);
+          return _orderTotal(b).compareTo(_orderTotal(a));
         case 'amount_low':
-          return a.pricing.total.compareTo(b.pricing.total);
+          return _orderTotal(a).compareTo(_orderTotal(b));
         default:
           return 0;
       }
     });
-    
+
     return orders;
   }
 
-  int get _pendingCount => _orders.where((o) => o.status == OrderStatus.pending).length;
-  int get _confirmedCount => _orders.where((o) => o.status == OrderStatus.confirmed).length;
-  int get _shippedCount => _orders.where((o) => o.status == OrderStatus.shipped).length;
-  int get _deliveredCount => _orders.where((o) => o.status == OrderStatus.delivered).length;
-  
+  int get _pendingCount => _countStatus('pending');
+  int get _confirmedCount => _countStatus('confirmed');
+  int get _shippedCount => _countStatus('shipped');
+  int get _deliveredCount => _countStatus('delivered');
+
   double get _totalRevenue => _orders
-    .where((o) => o.status == OrderStatus.delivered)
-    .fold(0.0, (sum, o) => sum + o.pricing.total);
+      .where((o) => _orderStatus(o) == 'delivered')
+      .fold(0.0, (sum, o) => sum + _orderTotal(o));
+
+  int _countStatus(String status) =>
+      _orders.where((o) => _orderStatus(o) == status).length;
 
   // ============================================
   // ACTIONS
@@ -185,25 +196,27 @@ class _OrdersScreenState extends State<OrdersScreen> {
     setState(() => _selectedOrderIds.clear());
   }
 
-  Future<void> _bulkUpdateStatus(OrderStatus newStatus) async {
+  Future<void> _bulkUpdateStatus(String newStatus) async {
     if (_selectedOrderIds.isEmpty) return;
-    
+
     final confirm = await _showConfirmDialog(
       title: 'Update ${_selectedOrderIds.length} Orders?',
-      message: 'Mark all selected orders as ${newStatus.displayName}?',
+      message: 'Mark all selected orders as ${_statusLabel(newStatus)}?',
       confirmText: 'Update',
-      confirmColor: Color(int.parse(newStatus.color.replaceFirst('#', '0xFF'))),
+      confirmColor: _statusColor(newStatus),
     );
-    
+
     if (confirm != true) return;
-    
+
     try {
       for (final orderId in _selectedOrderIds) {
-        await _orderService.updateOrderStatus(orderId, status: newStatus.name);
+        await _orderService.updateOrderStatus(orderId, status: newStatus);
       }
-      
+
       HapticFeedback.mediumImpact();
-      _showSnackBar('${_selectedOrderIds.length} orders updated to ${newStatus.displayName}');
+      _showSnackBar(
+        '${_selectedOrderIds.length} orders updated to ${_statusLabel(newStatus)}',
+      );
       _clearSelection();
       _toggleSelectionMode();
       _loadOrders();
@@ -212,9 +225,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
     }
   }
 
-  void _handleStatusChange(OrderModel order, OrderStatus newStatus) async {
+  void _handleStatusChange(OrderContract order, String newStatus) async {
     try {
-      if (newStatus == OrderStatus.shipped) {
+      if (newStatus == 'shipped') {
         final result = await _showTrackingDialog();
         if (result != null) {
           await _orderService.fulfillOrder(
@@ -226,10 +239,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
           return;
         }
       } else {
-        await _orderService.updateOrderStatus(order.id, status: newStatus.name);
+        await _orderService.updateOrderStatus(order.id, status: newStatus);
       }
       if (mounted) {
-        _showSnackBar('Order ${order.orderNumber} → ${newStatus.displayName}');
+        _showSnackBar(
+          'Order ${order.orderNumber} → ${_statusLabel(newStatus)}',
+        );
         _loadOrders();
       }
     } catch (e) {
@@ -252,9 +267,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Export Orders', style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: colors.textPrimary,
-            )),
+            Text(
+              'Export Orders',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 16),
             _buildExportOption(
               icon: Icons.table_chart_rounded,
@@ -274,7 +294,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
         ),
       ),
     );
-    
+
     if (format != null) {
       _showSnackBar('Export to $format coming soon!');
     }
@@ -311,12 +331,17 @@ class _OrdersScreenState extends State<OrdersScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(
-                    color: colors.textPrimary, fontWeight: FontWeight.w600,
-                  )),
-                  Text(subtitle, style: TextStyle(
-                    color: colors.textSecondary, fontSize: 12,
-                  )),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: colors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    subtitle,
+                    style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -336,7 +361,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
       builder: (context) => AlertDialog(
         backgroundColor: colors.card,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Add Tracking Info', style: TextStyle(color: colors.textPrimary)),
+        title: Text(
+          'Add Tracking Info',
+          style: TextStyle(color: colors.textPrimary),
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -366,7 +394,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
@@ -401,7 +432,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: Text('Cancel', style: TextStyle(color: colors.textSecondary)),
+            child: Text(
+              'Cancel',
+              style: TextStyle(color: colors.textSecondary),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
@@ -431,13 +465,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   Widget build(BuildContext context) {
     colors = AppThemeColors.of(context);
-    
+
     if (_storeId == null && _isLoading == false) {
       return Scaffold(
         backgroundColor: colors.bgStart,
         body: Center(
-          child: Text('Please login to view orders', 
-            style: TextStyle(color: colors.textSecondary)),
+          child: Text(
+            'Please login to view orders',
+            style: TextStyle(color: colors.textSecondary),
+          ),
         ),
       );
     }
@@ -454,7 +490,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
               _buildActionToolbar(),
               _buildStatsRow(),
               _buildFilterSortBar(),
-              Expanded(child: _isLoading ? _buildLoading() : _buildOrdersList()),
+              Expanded(
+                child: _isLoading ? _buildLoading() : _buildOrdersList(),
+              ),
               if (_isSelectionMode && _selectedOrderIds.isNotEmpty)
                 _buildBulkActionsBar(),
             ],
@@ -483,12 +521,18 @@ class _OrdersScreenState extends State<OrdersScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('Orders', style: TextStyle(
-                  fontSize: 22, fontWeight: FontWeight.bold, color: colors.textPrimary,
-                )),
-                Text('Manage your store orders', style: TextStyle(
-                  fontSize: 12, color: colors.textSecondary,
-                )),
+                Text(
+                  'Orders',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
+                ),
+                Text(
+                  'Manage your store orders',
+                  style: TextStyle(fontSize: 12, color: colors.textSecondary),
+                ),
               ],
             ),
           ),
@@ -500,15 +544,27 @@ class _OrdersScreenState extends State<OrdersScreen> {
           PopupMenuButton<String>(
             icon: Icon(Icons.more_vert, color: colors.textSecondary),
             color: colors.card,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
             itemBuilder: (context) => [
-              PopupMenuItem(value: 'settings', child: Row(
-                children: [
-                  Icon(Icons.settings_rounded, size: 20, color: colors.textSecondary),
-                  const SizedBox(width: 12),
-                  Text('Settings', style: TextStyle(color: colors.textPrimary)),
-                ],
-              )),
+              PopupMenuItem(
+                value: 'settings',
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.settings_rounded,
+                      size: 20,
+                      color: colors.textSecondary,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Settings',
+                      style: TextStyle(color: colors.textPrimary),
+                    ),
+                  ],
+                ),
+              ),
             ],
             onSelected: (value) {},
           ),
@@ -546,7 +602,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           _buildToolbarDivider(),
           _buildToolbarButton(
-            icon: _isSelectionMode ? Icons.close_rounded : Icons.checklist_rounded,
+            icon: _isSelectionMode
+                ? Icons.close_rounded
+                : Icons.checklist_rounded,
             label: _isSelectionMode ? 'Cancel' : 'Select',
             onTap: _toggleSelectionMode,
             isActive: _isSelectionMode,
@@ -563,8 +621,11 @@ class _OrdersScreenState extends State<OrdersScreen> {
     bool isPrimary = false,
     bool isActive = false,
   }) {
-    final color = isPrimary ? AppColors.lavender : 
-                  isActive ? AppColors.lavender : colors.textSecondary;
+    final color = isPrimary
+        ? AppColors.lavender
+        : isActive
+        ? AppColors.lavender
+        : colors.textSecondary;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(10),
@@ -575,9 +636,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
           children: [
             Icon(icon, color: color, size: 22),
             const SizedBox(height: 4),
-            Text(label, style: TextStyle(
-              color: color, fontSize: 11, fontWeight: FontWeight.w500,
-            )),
+            Text(
+              label,
+              style: TextStyle(
+                color: color,
+                fontSize: 11,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),
@@ -601,13 +667,29 @@ class _OrdersScreenState extends State<OrdersScreen> {
           children: [
             _buildStatChip('Total', '${_orders.length}', AppColors.lavender),
             const SizedBox(width: 8),
-            _buildStatChip('Pending', '$_pendingCount', const Color(0xFFF59E0B)),
+            _buildStatChip(
+              'Pending',
+              '$_pendingCount',
+              const Color(0xFFF59E0B),
+            ),
             const SizedBox(width: 8),
-            _buildStatChip('Confirmed', '$_confirmedCount', const Color(0xFF3B82F6)),
+            _buildStatChip(
+              'Confirmed',
+              '$_confirmedCount',
+              const Color(0xFF3B82F6),
+            ),
             const SizedBox(width: 8),
-            _buildStatChip('Shipped', '$_shippedCount', const Color(0xFF8B5CF6)),
+            _buildStatChip(
+              'Shipped',
+              '$_shippedCount',
+              const Color(0xFF8B5CF6),
+            ),
             const SizedBox(width: 8),
-            _buildStatChip('Delivered', '$_deliveredCount', const Color(0xFF10B981)),
+            _buildStatChip(
+              'Delivered',
+              '$_deliveredCount',
+              const Color(0xFF10B981),
+            ),
           ],
         ),
       ),
@@ -626,13 +708,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Container(
-            width: 6, height: 6,
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(color: color, shape: BoxShape.circle),
           ),
           const SizedBox(width: 6),
-          Text('$value $label', style: TextStyle(
-            color: color, fontSize: 11, fontWeight: FontWeight.w600,
-          )),
+          Text(
+            '$value $label',
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -669,7 +757,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
             children: [
               // Sort dropdown
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: colors.surfaceVariant,
                   borderRadius: BorderRadius.circular(8),
@@ -681,12 +772,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     isDense: true,
                     dropdownColor: colors.card,
                     style: TextStyle(color: colors.textPrimary, fontSize: 12),
-                    icon: Icon(Icons.keyboard_arrow_down, color: colors.textSecondary, size: 18),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: colors.textSecondary,
+                      size: 18,
+                    ),
                     items: const [
                       DropdownMenuItem(value: 'newest', child: Text('Newest')),
                       DropdownMenuItem(value: 'oldest', child: Text('Oldest')),
-                      DropdownMenuItem(value: 'amount_high', child: Text('Amount ↓')),
-                      DropdownMenuItem(value: 'amount_low', child: Text('Amount ↑')),
+                      DropdownMenuItem(
+                        value: 'amount_high',
+                        child: Text('Amount ↓'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'amount_low',
+                        child: Text('Amount ↑'),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) setState(() => _sortBy = value);
@@ -697,7 +798,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
               const SizedBox(width: 8),
               // Date dropdown
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: colors.surfaceVariant,
                   borderRadius: BorderRadius.circular(8),
@@ -709,12 +813,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     isDense: true,
                     dropdownColor: colors.card,
                     style: TextStyle(color: colors.textPrimary, fontSize: 12),
-                    icon: Icon(Icons.keyboard_arrow_down, color: colors.textSecondary, size: 18),
+                    icon: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: colors.textSecondary,
+                      size: 18,
+                    ),
                     items: const [
                       DropdownMenuItem(value: 'all', child: Text('All Time')),
                       DropdownMenuItem(value: 'today', child: Text('Today')),
                       DropdownMenuItem(value: 'week', child: Text('This Week')),
-                      DropdownMenuItem(value: 'month', child: Text('This Month')),
+                      DropdownMenuItem(
+                        value: 'month',
+                        child: Text('This Month'),
+                      ),
                     ],
                     onChanged: (value) {
                       if (value != null) setState(() => _dateFilter = value);
@@ -738,11 +849,22 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     style: TextStyle(color: colors.textPrimary, fontSize: 13),
                     decoration: InputDecoration(
                       hintText: 'Search...',
-                      hintStyle: TextStyle(color: colors.textTertiary, fontSize: 13),
-                      prefixIcon: Icon(Icons.search, color: colors.textTertiary, size: 18),
+                      hintStyle: TextStyle(
+                        color: colors.textTertiary,
+                        fontSize: 13,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search,
+                        color: colors.textTertiary,
+                        size: 18,
+                      ),
                       suffixIcon: _searchQuery.isNotEmpty
                           ? IconButton(
-                              icon: Icon(Icons.close, color: colors.textTertiary, size: 16),
+                              icon: Icon(
+                                Icons.close,
+                                color: colors.textTertiary,
+                                size: 16,
+                              ),
                               onPressed: () {
                                 _searchController.clear();
                                 setState(() => _searchQuery = '');
@@ -779,11 +901,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
             color: isActive ? AppColors.lavender : colors.divider,
           ),
         ),
-        child: Text(label, style: TextStyle(
-          color: isActive ? Colors.white : colors.textSecondary,
-          fontSize: 12,
-          fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
-        )),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isActive ? Colors.white : colors.textSecondary,
+            fontSize: 12,
+            fontWeight: isActive ? FontWeight.w600 : FontWeight.w500,
+          ),
+        ),
       ),
     );
   }
@@ -804,8 +929,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
           children: [
             Icon(Icons.search_off, size: 64, color: colors.textTertiary),
             const SizedBox(height: 16),
-            Text('No orders match your filters', 
-              style: TextStyle(color: colors.textSecondary)),
+            Text(
+              'No orders match your filters',
+              style: TextStyle(color: colors.textSecondary),
+            ),
             const SizedBox(height: 8),
             TextButton(
               onPressed: () => setState(() {
@@ -814,7 +941,10 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 _searchQuery = '';
                 _searchController.clear();
               }),
-              child: Text('Clear Filters', style: TextStyle(color: AppColors.lavender)),
+              child: Text(
+                'Clear Filters',
+                style: TextStyle(color: AppColors.lavender),
+              ),
             ),
           ],
         ),
@@ -835,8 +965,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  Widget _buildOrderCard(OrderModel order) {
-    final statusColor = Color(int.parse(order.status.color.replaceFirst('#', '0xFF')));
+  Widget _buildOrderCard(OrderContract order) {
+    final status = _orderStatus(order);
+    final statusColor = _statusColor(status);
     final isSelected = _selectedOrderIds.contains(order.id);
 
     return GestureDetector(
@@ -863,13 +994,15 @@ class _OrdersScreenState extends State<OrdersScreen> {
             color: isSelected ? AppColors.lavender : colors.cardBorder,
             width: isSelected ? 2 : 1,
           ),
-          boxShadow: isSelected ? [
-            BoxShadow(
-              color: AppColors.lavender.withValues(alpha: 0.2),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ] : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: AppColors.lavender.withValues(alpha: 0.2),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Column(
           children: [
@@ -883,18 +1016,27 @@ class _OrdersScreenState extends State<OrdersScreen> {
                     GestureDetector(
                       onTap: () => _toggleOrderSelection(order.id),
                       child: Container(
-                        width: 22, height: 22,
+                        width: 22,
+                        height: 22,
                         margin: const EdgeInsets.only(right: 12),
                         decoration: BoxDecoration(
-                          color: isSelected ? AppColors.lavender : Colors.transparent,
+                          color: isSelected
+                              ? AppColors.lavender
+                              : Colors.transparent,
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: isSelected ? AppColors.lavender : colors.divider,
+                            color: isSelected
+                                ? AppColors.lavender
+                                : colors.divider,
                             width: 2,
                           ),
                         ),
                         child: isSelected
-                            ? const Icon(Icons.check, color: Colors.white, size: 14)
+                            ? const Icon(
+                                Icons.check,
+                                color: Colors.white,
+                                size: 14,
+                              )
                             : null,
                       ),
                     ),
@@ -906,26 +1048,42 @@ class _OrdersScreenState extends State<OrdersScreen> {
                       children: [
                         Row(
                           children: [
-                            Text(order.orderNumber, style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 14, color: colors.textPrimary,
-                            )),
+                            Text(
+                              _orderNumber(order),
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: colors.textPrimary,
+                              ),
+                            ),
                             const SizedBox(width: 8),
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 3,
+                              ),
                               decoration: BoxDecoration(
                                 color: statusColor.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(6),
                               ),
-                              child: Text(order.status.displayName, style: TextStyle(
-                                color: statusColor, fontSize: 10, fontWeight: FontWeight.w600,
-                              )),
+                              child: Text(
+                                _statusLabel(status),
+                                style: TextStyle(
+                                  color: statusColor,
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             ),
                           ],
                         ),
                         const SizedBox(height: 2),
                         Text(
-                          DateFormat('MMM d, h:mm a').format(order.createdAt),
-                          style: TextStyle(color: colors.textSecondary, fontSize: 11),
+                          _formatOrderDate(order),
+                          style: TextStyle(
+                            color: colors.textSecondary,
+                            fontSize: 11,
+                          ),
                         ),
                       ],
                     ),
@@ -934,55 +1092,85 @@ class _OrdersScreenState extends State<OrdersScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('₹${order.pricing.total.toStringAsFixed(0)}', style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.lavender,
-                      )),
-                      Text('${order.itemCount} items', style: TextStyle(
-                        color: colors.textSecondary, fontSize: 10,
-                      )),
+                      Text(
+                        '₹${_orderTotal(order).toStringAsFixed(0)}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppColors.lavender,
+                        ),
+                      ),
+                      Text(
+                        '${_orderItemCount(order)} items',
+                        style: TextStyle(
+                          color: colors.textSecondary,
+                          fontSize: 10,
+                        ),
+                      ),
                     ],
                   ),
                 ],
               ),
             ),
-            
+
             // Customer + Actions row
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
               decoration: BoxDecoration(
                 color: colors.surfaceVariant.withValues(alpha: 0.5),
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(13)),
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(13),
+                ),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.person_outline, size: 16, color: colors.textSecondary),
+                  Icon(
+                    Icons.person_outline,
+                    size: 16,
+                    color: colors.textSecondary,
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
-                      '${order.customer.name} • ${order.customer.phone}',
-                      style: TextStyle(color: colors.textSecondary, fontSize: 12),
+                      '${_orderCustomerName(order)} • ${_orderCustomerPhone(order)}',
+                      style: TextStyle(
+                        color: colors.textSecondary,
+                        fontSize: 12,
+                      ),
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
                   // Quick action
-                  if (!_isSelectionMode && order.status != OrderStatus.delivered && order.status != OrderStatus.cancelled)
-                    PopupMenuButton<OrderStatus>(
-                      icon: Icon(Icons.more_horiz, color: colors.textSecondary, size: 20),
+                  if (!_isSelectionMode &&
+                      status != 'delivered' &&
+                      status != 'cancelled')
+                    PopupMenuButton<String>(
+                      icon: Icon(
+                        Icons.more_horiz,
+                        color: colors.textSecondary,
+                        size: 20,
+                      ),
                       padding: EdgeInsets.zero,
-                      itemBuilder: (context) => _getStatusOptions(order.status)
-                          .map((status) => PopupMenuItem(
-                                value: status,
-                                child: Row(
-                                  children: [
-                                    Icon(_getStatusIcon(status), size: 18,
-                                      color: Color(int.parse(status.color.replaceFirst('#', '0xFF')))),
-                                    const SizedBox(width: 8),
-                                    Text(status.displayName),
-                                  ],
-                                ),
-                              ))
+                      itemBuilder: (context) => _getStatusOptions(status)
+                          .map(
+                            (option) => PopupMenuItem(
+                              value: option,
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    _getStatusIcon(option),
+                                    size: 18,
+                                    color: _statusColor(option),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(_statusLabel(option)),
+                                ],
+                              ),
+                            ),
+                          )
                           .toList(),
-                      onSelected: (status) => _handleStatusChange(order, status),
+                      onSelected: (option) =>
+                          _handleStatusChange(order, option),
                     ),
                 ],
               ),
@@ -993,31 +1181,124 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  List<OrderStatus> _getStatusOptions(OrderStatus currentStatus) {
+  List<String> _getStatusOptions(String currentStatus) {
     switch (currentStatus) {
-      case OrderStatus.pending:
-        return [OrderStatus.confirmed, OrderStatus.cancelled];
-      case OrderStatus.confirmed:
-        return [OrderStatus.shipped, OrderStatus.cancelled];
-      case OrderStatus.shipped:
-        return [OrderStatus.delivered];
+      case 'pending':
+        return ['confirmed', 'cancelled'];
+      case 'confirmed':
+        return ['shipped', 'cancelled'];
+      case 'shipped':
+        return ['delivered'];
       default:
         return [];
     }
   }
 
-  IconData _getStatusIcon(OrderStatus status) {
+  IconData _getStatusIcon(String status) {
     switch (status) {
-      case OrderStatus.pending:
+      case 'pending':
         return Icons.schedule_rounded;
-      case OrderStatus.confirmed:
+      case 'confirmed':
         return Icons.check_circle_outline;
-      case OrderStatus.shipped:
+      case 'shipped':
         return Icons.local_shipping_outlined;
-      case OrderStatus.delivered:
+      case 'delivered':
         return Icons.inventory_2_outlined;
-      case OrderStatus.cancelled:
+      case 'cancelled':
         return Icons.cancel_outlined;
+      default:
+        return Icons.help_outline_rounded;
+    }
+  }
+
+  String _orderStatus(OrderContract order) {
+    final status = order.status.trim().toLowerCase();
+    return status.isEmpty ? 'unknown' : status;
+  }
+
+  String _orderNumber(OrderContract order) {
+    return order.orderNumber.isNotEmpty ? order.orderNumber : order.id;
+  }
+
+  String _orderCustomerName(OrderContract order) {
+    return order.customerName?.trim().isNotEmpty == true
+        ? order.customerName!.trim()
+        : 'Customer';
+  }
+
+  String _orderCustomerPhone(OrderContract order) {
+    final phone = order.customerPhone?.trim();
+    return phone?.isNotEmpty == true ? phone! : 'No phone';
+  }
+
+  double _orderTotal(OrderContract order) {
+    if (order.total > 0) return order.total;
+    return order.lineItems.fold(0.0, (sum, line) => sum + line.total);
+  }
+
+  int _orderItemCount(OrderContract order) {
+    final count = order.lineItems.fold(0, (sum, line) => sum + line.quantity);
+    return count == 0 ? order.lineItems.length : count;
+  }
+
+  DateTime? _orderCreatedAt(OrderContract order) {
+    final raw = order['created_at'] ?? order['createdAt'];
+    if (raw is DateTime) return raw;
+    return DateTime.tryParse(raw?.toString() ?? '');
+  }
+
+  String _formatOrderDate(OrderContract order) {
+    final createdAt = _orderCreatedAt(order);
+    return createdAt == null
+        ? 'Date unavailable'
+        : DateFormat('MMM d, h:mm a').format(createdAt);
+  }
+
+  int _compareDatesDesc(DateTime? a, DateTime? b) {
+    if (a == null && b == null) return 0;
+    if (a == null) return 1;
+    if (b == null) return -1;
+    return b.compareTo(a);
+  }
+
+  int _compareDatesAsc(DateTime? a, DateTime? b) {
+    if (a == null && b == null) return 0;
+    if (a == null) return 1;
+    if (b == null) return -1;
+    return a.compareTo(b);
+  }
+
+  String _statusLabel(String status) {
+    switch (status) {
+      case 'pending':
+        return 'Pending';
+      case 'confirmed':
+        return 'Confirmed';
+      case 'shipped':
+        return 'Shipped';
+      case 'delivered':
+        return 'Delivered';
+      case 'cancelled':
+        return 'Cancelled';
+      default:
+        return status.isEmpty ? 'Unknown' : status;
+    }
+  }
+
+  Color _statusColor(String status) {
+    switch (status) {
+      case 'pending':
+        return const Color(0xFFF59E0B);
+      case 'confirmed':
+        return const Color(0xFF3B82F6);
+      case 'shipped':
+        return const Color(0xFF8B5CF6);
+      case 'delivered':
+        return const Color(0xFF22C55E);
+      case 'cancelled':
+        return const Color(0xFFEF4444);
+      default:
+        return colors.textTertiary;
     }
   }
 
@@ -1034,14 +1315,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 color: AppColors.lavender.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.inbox_outlined, size: 56, color: AppColors.lavender),
+              child: Icon(
+                Icons.inbox_outlined,
+                size: 56,
+                color: AppColors.lavender,
+              ),
             ),
             const SizedBox(height: 20),
-            Text('No Orders Yet', style: TextStyle(
-              fontSize: 18, fontWeight: FontWeight.bold, color: colors.textPrimary,
-            )),
+            Text(
+              'No Orders Yet',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: colors.textPrimary,
+              ),
+            ),
             const SizedBox(height: 8),
-            Text('Orders will appear here once customers place them',
+            Text(
+              'Orders will appear here once customers place them',
               textAlign: TextAlign.center,
               style: TextStyle(color: colors.textSecondary, fontSize: 14),
             ),
@@ -1058,7 +1349,9 @@ class _OrdersScreenState extends State<OrdersScreen> {
   Widget _buildBulkActionsBar() {
     return Container(
       padding: EdgeInsets.only(
-        left: 20, right: 20, top: 16,
+        left: 20,
+        right: 20,
+        top: 16,
         bottom: MediaQuery.of(context).padding.bottom + 16,
       ),
       decoration: BoxDecoration(
@@ -1095,13 +1388,19 @@ class _OrdersScreenState extends State<OrdersScreen> {
           ),
           const Spacer(),
           // Action buttons
-          _buildBulkButton(Icons.check_circle_outline, 'Confirm', 
-            () => _bulkUpdateStatus(OrderStatus.confirmed),
-            color: const Color(0xFF3B82F6)),
+          _buildBulkButton(
+            Icons.check_circle_outline,
+            'Confirm',
+            () => _bulkUpdateStatus('confirmed'),
+            color: const Color(0xFF3B82F6),
+          ),
           const SizedBox(width: 8),
-          _buildBulkButton(Icons.local_shipping_outlined, 'Ship', 
-            () => _bulkUpdateStatus(OrderStatus.shipped),
-            color: const Color(0xFF8B5CF6)),
+          _buildBulkButton(
+            Icons.local_shipping_outlined,
+            'Ship',
+            () => _bulkUpdateStatus('shipped'),
+            color: const Color(0xFF8B5CF6),
+          ),
           const SizedBox(width: 8),
           _buildBulkButton(Icons.more_horiz, 'More', () {
             _showSnackBar('More actions coming soon');
@@ -1111,7 +1410,12 @@ class _OrdersScreenState extends State<OrdersScreen> {
     );
   }
 
-  Widget _buildBulkButton(IconData icon, String label, VoidCallback onTap, {Color? color}) {
+  Widget _buildBulkButton(
+    IconData icon,
+    String label,
+    VoidCallback onTap, {
+    Color? color,
+  }) {
     final buttonColor = color ?? colors.textSecondary;
     return InkWell(
       onTap: onTap,
@@ -1127,9 +1431,14 @@ class _OrdersScreenState extends State<OrdersScreen> {
           children: [
             Icon(icon, size: 18, color: buttonColor),
             const SizedBox(width: 4),
-            Text(label, style: TextStyle(
-              color: buttonColor, fontSize: 12, fontWeight: FontWeight.w500,
-            )),
+            Text(
+              label,
+              style: TextStyle(
+                color: buttonColor,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ],
         ),
       ),

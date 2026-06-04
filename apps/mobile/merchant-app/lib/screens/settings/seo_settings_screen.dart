@@ -55,24 +55,27 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
         seoTitle: _titleController.text,
         seoDescription: _descriptionController.text,
       );
-      
-      await storeService.updateStore(updatedStore.id, updatedStore.toJson());
-      
+
+      await storeService.updateStore(updatedStore.id, {
+        'seo_title': updatedStore.seoTitle,
+        'seo_description': updatedStore.seoDescription,
+      });
+
       setState(() {
         _store = updatedStore;
         _hasChanges = false;
       });
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('SEO settings saved!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('SEO settings saved!')));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       setState(() => _isSaving = false);
@@ -89,9 +92,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -178,13 +179,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
             ),
           ),
           const SizedBox(height: 12),
-          Text(
-            url,
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.green[700],
-            ),
-          ),
+          Text(url, style: TextStyle(fontSize: 12, color: Colors.green[700])),
           const SizedBox(height: 4),
           Text(
             title,
@@ -199,10 +194,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
           const SizedBox(height: 4),
           Text(
             description,
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[600],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[600]),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
@@ -224,10 +216,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
+          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
         ),
         const SizedBox(height: 8),
         TextField(
@@ -237,9 +226,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
           decoration: InputDecoration(
             hintText: hint,
             helperText: helperText,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
+            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 14,
@@ -296,10 +283,7 @@ class _SEOSettingsScreenState extends State<SEOSettingsScreen> {
           Expanded(
             child: Text(
               text,
-              style: TextStyle(
-                fontSize: 13,
-                color: Colors.blue[800],
-              ),
+              style: TextStyle(fontSize: 13, color: Colors.blue[800]),
             ),
           ),
         ],

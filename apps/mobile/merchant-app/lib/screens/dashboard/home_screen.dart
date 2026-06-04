@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import '../../services/analytics_service.dart';
 import '../../services/store_service.dart';
 import '../../services/store_auth_service.dart';
 import '../../models/store_model.dart';
@@ -26,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   StoreModel? _store;
+  StoreAnalytics? _analytics;
   bool _isLoading = true;
   bool _isPublishing = false;
   String _selectedPeriod = '30 Days';
@@ -41,7 +43,20 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final storeService = context.read<StoreService>();
       final store = await storeService.getFirstStore();
-      setState(() => _store = store);
+      StoreAnalytics? analytics;
+      if (store != null) {
+        try {
+          analytics = await context.read<AnalyticsService>().getStoreAnalytics(
+            store.id,
+          );
+        } catch (analyticsError) {
+          debugPrint('Error loading dashboard analytics: $analyticsError');
+        }
+      }
+      setState(() {
+        _store = store;
+        _analytics = analytics;
+      });
     } catch (e) {
       debugPrint('Error loading store: $e');
     } finally {
@@ -51,7 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future<void> _togglePublish() async {
     if (_store == null || _isPublishing) return;
-    
+
     setState(() => _isPublishing = true);
     try {
       final storeService = context.read<StoreService>();
@@ -64,9 +79,9 @@ class _HomeScreenState extends State<HomeScreen> {
       HapticFeedback.mediumImpact();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
       }
     } finally {
       setState(() => _isPublishing = false);
@@ -76,7 +91,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
-    
+
     return Scaffold(
       backgroundColor: colors.bgStart,
       body: Container(
@@ -100,14 +115,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            
+
             // Main content
             SafeArea(
-              child: _isLoading 
-                  ? const SkeletonLoader() 
-                  : _store == null 
-                      ? _buildNoStore(colors) 
-                      : _buildDashboard(colors),
+              child: _isLoading
+                  ? const SkeletonLoader()
+                  : _store == null
+                  ? _buildNoStore(colors)
+                  : _buildDashboard(colors),
             ),
           ],
         ),
@@ -117,42 +132,53 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildDashboard(AppThemeColors colors) {
     final authService = context.read<StoreAuthService>();
-    final userName = authService.currentUser?.userMetadata?['full_name'] as String?
-        ?? authService.currentUser?.email?.split('@').first
-        ?? 'there';
+    final userName =
+        authService.currentUser?.userMetadata?['full_name'] as String? ??
+        authService.currentUser?.email?.split('@').first ??
+        'there';
     final firstName = userName.split(' ').first;
-    
-    // Calculate metrics
-    final revenue = _store!.totalOrders * 1250;
-    final convRate = _store!.totalVisitors > 0 
-        ? (_store!.totalOrders / _store!.totalVisitors * 100).toStringAsFixed(1) 
+
+    final analytics = _analytics;
+    final totalOrders = analytics?.totalOrders ?? _store!.totalOrders;
+    final totalProducts = analytics?.totalProducts ?? _store!.productCount;
+    final totalVisitors = (analytics?.totalViews ?? 0) > 0
+        ? analytics!.totalViews
+        : _store!.totalVisitors;
+    final revenue = analytics?.totalRevenue ?? 0.0;
+    final averageOrderValue =
+        analytics?.averageOrderValue ??
+        (totalOrders > 0 ? revenue / totalOrders : 0.0);
+    final convRate = totalVisitors > 0
+        ? (totalOrders / totalVisitors * 100).toStringAsFixed(1)
         : '0';
-    
+
     // Build activity items
     final activities = <ActivityItem>[];
     if (_store!.isPublished) {
       activities.add(ActivityItems.storePublished(_store!.publishedAt));
     }
     if (_store!.totalOrders > 0) {
-      activities.add(ActivityItems.ordersReceived(_store!.totalOrders));
+      activities.add(ActivityItems.ordersReceived(totalOrders));
     }
-    if (_store!.totalVisitors > 0) {
-      activities.add(ActivityItems.visitorMilestone(_store!.totalVisitors));
+    if (totalVisitors > 0) {
+      activities.add(ActivityItems.visitorMilestone(totalVisitors));
     }
 
     return RefreshIndicator(
       onRefresh: _loadStore,
       color: AppColors.lavender,
       child: SingleChildScrollView(
-        physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Premium Header
             _buildHeader(firstName, colors),
-            
+
             const SizedBox(height: 20),
-            
+
             // Hero Store Card
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -160,14 +186,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 store: _store!,
                 onPublishToggle: _togglePublish,
                 isPublishing: _isPublishing,
-              ).animate()
-                .fadeIn(duration: 400.ms)
-                .slideY(begin: 0.1, end: 0),
+              ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.1, end: 0),
             ),
-            
+
             const SizedBox(height: 24),
-            
-            // Stats Section Title  
+
+            // Stats Section Title
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Row(
@@ -185,7 +209,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   GestureDetector(
                     onTap: () => _showPeriodPicker(colors),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
                       decoration: BoxDecoration(
                         color: colors.glassMedium,
                         borderRadius: BorderRadius.circular(8),
@@ -213,12 +240,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
-              ).animate()
-                .fadeIn(delay: 100.ms, duration: 300.ms),
+              ).animate().fadeIn(delay: 100.ms, duration: 300.ms),
             ),
-            
+
             const SizedBox(height: 12),
-            
+
             // Stats 2x3 Horizontal Scroll
             SizedBox(
               height: 180,
@@ -229,19 +255,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Column 1
                   Column(
                     children: [
-                      _buildCompactStatCard(colors: colors, 
+                      _buildCompactStatCard(
+                        colors: colors,
                         icon: Icons.shopping_bag_outlined,
                         label: 'Orders',
-                        value: _store!.totalOrders.toString(),
-                        trend: '+8%',
+                        value: totalOrders.toString(),
+                        trend: analytics == null ? 'Store' : 'Gateway',
                         color: const Color(0xFF3B82F6),
                       ),
                       const SizedBox(height: 8),
-                      _buildCompactStatCard(colors: colors, 
+                      _buildCompactStatCard(
+                        colors: colors,
                         icon: Icons.account_balance_wallet_outlined,
                         label: 'Revenue',
-                        value: '₹${_formatNumber(revenue)}',
-                        trend: '+14%',
+                        value: '₹${_formatMoney(revenue)}',
+                        trend: analytics == null ? 'Pending' : 'Gateway',
                         color: const Color(0xFF10B981),
                       ),
                     ],
@@ -250,21 +278,23 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Column 2
                   Column(
                     children: [
-                      _buildCompactStatCard(colors: colors, 
+                      _buildCompactStatCard(
+                        colors: colors,
                         icon: Icons.visibility_outlined,
                         label: 'Visitors',
-                        value: _formatNumber(_store!.totalVisitors),
-                        trend: '+23%',
+                        value: _formatNumber(totalVisitors),
+                        trend: totalVisitors > 0 ? 'Store' : 'Pending',
                         color: const Color(0xFF8B5CF6),
                       ),
                       const SizedBox(height: 8),
-                      _buildCompactStatCard(colors: colors, 
+                      _buildCompactStatCard(
+                        colors: colors,
                         icon: Icons.inventory_2_outlined,
                         label: 'Products',
-                        value: _store!.productCount.toString(),
-                        trend: _store!.productCount > 0 ? 'Live' : 'Add',
+                        value: totalProducts.toString(),
+                        trend: totalProducts > 0 ? 'Catalog' : 'Add',
                         color: const Color(0xFFF59E0B),
-                        isPositive: _store!.productCount > 0,
+                        isPositive: totalProducts > 0,
                       ),
                     ],
                   ),
@@ -272,19 +302,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Column 3
                   Column(
                     children: [
-                      _buildCompactStatCard(colors: colors, 
+                      _buildCompactStatCard(
+                        colors: colors,
                         icon: Icons.speed_outlined,
                         label: 'Conv. Rate',
                         value: '$convRate%',
-                        trend: '+2.1%',
+                        trend: totalVisitors > 0 ? 'Computed' : 'Pending',
                         color: const Color(0xFFEC4899),
                       ),
                       const SizedBox(height: 8),
-                      _buildCompactStatCard(colors: colors, 
+                      _buildCompactStatCard(
+                        colors: colors,
                         icon: Icons.receipt_long_outlined,
                         label: 'Avg. Order',
-                        value: '₹${revenue > 0 && _store!.totalOrders > 0 ? _formatNumber(revenue ~/ _store!.totalOrders) : 0}',
-                        trend: '+5%',
+                        value: '₹${_formatMoney(averageOrderValue)}',
+                        trend: totalOrders > 0 ? 'Computed' : 'Pending',
                         color: const Color(0xFF06B6D4),
                       ),
                     ],
@@ -292,22 +324,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Revenue Chart
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: AnimatedRevenueChart(
-                totalRevenue: revenue.toDouble(),
-                revenueData: const [3, 1, 4, 2, 5, 3, 4.5],
-              ).animate(delay: 200.ms)
-                .fadeIn(duration: 400.ms)
-                .slideY(begin: 0.1, end: 0),
+              child: AnimatedRevenueChart(totalRevenue: revenue)
+                  .animate(delay: 200.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.1, end: 0),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Quick Actions & Activity Row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -317,37 +347,47 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Quick Actions (2/3 width)
                   Expanded(
                     flex: 2,
-                    child: QuickActionsGrid(
-                      productCount: _store!.selectedProductIds.length,
-                      onEditorTap: () => _showTabHint('Editor'),
-                      onProductsTap: () => _showTabHint('Products'),
-                      onOrdersTap: () => Navigator.pushNamed(context, AppRoutes.orders),
-                      onAnalyticsTap: () => Navigator.pushNamed(context, AppRoutes.analytics),
-                      onSettingsTap: () => _showTabHint('Settings'),
-                    ).animate(delay: 300.ms)
-                      .fadeIn(duration: 400.ms)
-                      .slideY(begin: 0.1, end: 0),
+                    child:
+                        QuickActionsGrid(
+                              productCount: _store!.selectedProductIds.length,
+                              onEditorTap: () => _showTabHint('Editor'),
+                              onProductsTap: () => _showTabHint('Products'),
+                              onOrdersTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.orders,
+                              ),
+                              onAnalyticsTap: () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.analytics,
+                              ),
+                              onSettingsTap: () => _showTabHint('Settings'),
+                            )
+                            .animate(delay: 300.ms)
+                            .fadeIn(duration: 400.ms)
+                            .slideY(begin: 0.1, end: 0),
                   ),
                 ],
               ),
             ),
-            
+
             const SizedBox(height: 24),
-            
+
             // Activity Timeline
             if (activities.isNotEmpty || !_store!.isPublished)
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: ActivityTimeline(
-                  activities: activities.isEmpty 
-                      ? [ActivityItems.readyToLaunch()] 
-                      : activities,
-                  showEmpty: !_store!.isPublished && activities.isEmpty,
-                ).animate(delay: 400.ms)
-                  .fadeIn(duration: 400.ms)
-                  .slideY(begin: 0.1, end: 0),
+                child:
+                    ActivityTimeline(
+                          activities: activities.isEmpty
+                              ? [ActivityItems.readyToLaunch()]
+                              : activities,
+                          showEmpty: !_store!.isPublished && activities.isEmpty,
+                        )
+                        .animate(delay: 400.ms)
+                        .fadeIn(duration: 400.ms)
+                        .slideY(begin: 0.1, end: 0),
               ),
-            
+
             const SizedBox(height: 100),
           ],
         ),
@@ -357,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildHeader(String firstName, AppThemeColors colors) {
     final greetingTime = _getGreetingTime();
-    
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
       child: Row(
@@ -395,10 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Text(
                   greetingTime,
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: colors.textSecondary,
-                  ),
+                  style: TextStyle(fontSize: 13, color: colors.textSecondary),
                 ),
                 Text(
                   firstName,
@@ -422,17 +459,17 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: IconButton(
               padding: EdgeInsets.zero,
-              icon: Icon(Icons.notifications_outlined, 
-                  size: 20,
-                  color: colors.textSecondary),
+              icon: Icon(
+                Icons.notifications_outlined,
+                size: 20,
+                color: colors.textSecondary,
+              ),
               onPressed: () {},
             ),
           ),
         ],
       ),
-    ).animate()
-      .fadeIn(duration: 300.ms)
-      .slideX(begin: -0.1, end: 0);
+    ).animate().fadeIn(duration: 300.ms).slideX(begin: -0.1, end: 0);
   }
 
   String _getGreetingTime() {
@@ -458,7 +495,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void _showPeriodPicker(AppThemeColors colors) {
     final periods = ['7 Days', '30 Days', '3 Months', '6 Months', '1 Year'];
-    
+
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
@@ -489,34 +526,42 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             const SizedBox(height: 16),
-            ...periods.map((period) => ListTile(
-              onTap: () {
-                setState(() => _selectedPeriod = period);
-                Navigator.pop(context);
-              },
-              leading: Icon(
-                _selectedPeriod == period 
-                    ? Icons.radio_button_checked_rounded 
-                    : Icons.radio_button_off_rounded,
-                color: _selectedPeriod == period 
-                    ? const Color(0xFF8B5CF6) 
-                    : colors.textSecondary,
-                size: 20,
-              ),
-              title: Text(
-                period,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: _selectedPeriod == period ? FontWeight.w600 : FontWeight.w500,
-                  color: _selectedPeriod == period 
-                      ? colors.textPrimary 
+            ...periods.map(
+              (period) => ListTile(
+                onTap: () {
+                  setState(() => _selectedPeriod = period);
+                  Navigator.pop(context);
+                },
+                leading: Icon(
+                  _selectedPeriod == period
+                      ? Icons.radio_button_checked_rounded
+                      : Icons.radio_button_off_rounded,
+                  color: _selectedPeriod == period
+                      ? const Color(0xFF8B5CF6)
                       : colors.textSecondary,
+                  size: 20,
                 ),
+                title: Text(
+                  period,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: _selectedPeriod == period
+                        ? FontWeight.w600
+                        : FontWeight.w500,
+                    color: _selectedPeriod == period
+                        ? colors.textPrimary
+                        : colors.textSecondary,
+                  ),
+                ),
+                trailing: _selectedPeriod == period
+                    ? const Icon(
+                        Icons.check_rounded,
+                        color: Color(0xFF8B5CF6),
+                        size: 18,
+                      )
+                    : null,
               ),
-              trailing: _selectedPeriod == period 
-                  ? const Icon(Icons.check_rounded, color: Color(0xFF8B5CF6), size: 18) 
-                  : null,
-            )),
+            ),
             SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
           ],
         ),
@@ -528,6 +573,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (number >= 100000) return '${(number / 100000).toStringAsFixed(1)}L';
     if (number >= 1000) return '${(number / 1000).toStringAsFixed(1)}K';
     return number.toString();
+  }
+
+  String _formatMoney(double amount) {
+    if (amount >= 100000) return '${(amount / 100000).toStringAsFixed(1)}L';
+    if (amount >= 1000) return '${(amount / 1000).toStringAsFixed(1)}K';
+    return amount.toStringAsFixed(0);
   }
 
   Widget _buildCompactStatCard({
@@ -546,10 +597,7 @@ class _HomeScreenState extends State<HomeScreen> {
       decoration: BoxDecoration(
         color: colors.glassMedium,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: color.withValues(alpha: 0.2),
-          width: 1,
-        ),
+        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -570,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isPositive 
+                  color: isPositive
                       ? colors.success.withValues(alpha: 0.15)
                       : colors.warning.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(6),
@@ -617,73 +665,75 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildNoStore(AppThemeColors colors) {
     return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Container(
-              padding: const EdgeInsets.all(32),
-              decoration: BoxDecoration(
-                gradient: colors.heroGradient,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: colors.accent.withValues(alpha: 0.3),
-                    blurRadius: 24,
-                    offset: const Offset(0, 12),
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(32),
+                  decoration: BoxDecoration(
+                    gradient: colors.heroGradient,
+                    borderRadius: BorderRadius.circular(28),
+                    boxShadow: [
+                      BoxShadow(
+                        color: colors.accent.withValues(alpha: 0.3),
+                        blurRadius: 24,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-              child: const Icon(
-                Icons.store_rounded,
-                color: Colors.white,
-                size: 48,
-              ),
-            ),
-            const SizedBox(height: 32),
-            Text(
-              'Create Your Store',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: colors.textPrimary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Set up your online store in minutes\nand start selling today',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: colors.textSecondary,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 32),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: () => Navigator.pushNamed(context, AppRoutes.createStore),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: colors.accent,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                  child: const Icon(
+                    Icons.store_rounded,
+                    color: Colors.white,
+                    size: 48,
                   ),
                 ),
-                child: Text(
-                  'Get Started',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                const SizedBox(height: 32),
+                Text(
+                  'Create Your Store',
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: colors.textPrimary,
+                  ),
                 ),
-              ),
+                const SizedBox(height: 12),
+                Text(
+                  'Set up your online store in minutes\nand start selling today',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: colors.textSecondary,
+                    height: 1.5,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () =>
+                        Navigator.pushNamed(context, AppRoutes.createStore),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: colors.accent,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                    ),
+                    child: Text(
+                      'Get Started',
+                      style: TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    ).animate()
-      .fadeIn(duration: 500.ms)
-      .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1));
+          ),
+        )
+        .animate()
+        .fadeIn(duration: 500.ms)
+        .scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1));
   }
 }

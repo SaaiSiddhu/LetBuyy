@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:letbuyy_ui_kit/letbuyy_ui_kit.dart';
+import '../../services/analytics_service.dart';
 import '../../services/store_service.dart';
 
 import '../../models/store_model.dart';
@@ -16,6 +17,7 @@ class AnalyticsScreen extends StatefulWidget {
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
   StoreModel? _store;
+  StoreAnalytics? _analytics;
   bool _isLoading = true;
   String _selectedPeriod = '7d';
 
@@ -30,7 +32,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     try {
       final storeService = context.read<StoreService>();
       final store = await storeService.getFirstStore();
-      setState(() => _store = store);
+      final analytics = store == null
+          ? null
+          : await context.read<AnalyticsService>().getStoreAnalytics(store.id);
+      setState(() {
+        _store = store;
+        _analytics = analytics;
+      });
     } catch (e) {
       debugPrint('Error loading store: $e');
     } finally {
@@ -41,9 +49,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   @override
   Widget build(BuildContext context) {
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -98,10 +104,13 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
         children: [
           // Stats overview
           StatsRow(
-            views: _store?.totalVisitors ?? 0,
-            sales: _store?.totalOrders ?? 0,
-            revenue: 0, // No revenue field in model
-            products: _store?.selectedProductIds.length ?? 0,
+            views: _analytics?.totalViews ?? _store?.totalVisitors ?? 0,
+            sales: _analytics?.totalOrders ?? _store?.totalOrders ?? 0,
+            revenue: (_analytics?.totalRevenue ?? 0).round(),
+            products:
+                _analytics?.totalProducts ??
+                _store?.selectedProductIds.length ??
+                0,
           ),
           const SizedBox(height: 24),
 
@@ -113,7 +122,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
           const SizedBox(height: 16),
 
-          // Sales chart placeholder  
+          // Sales chart placeholder
           _buildChartCard(
             title: 'Sales',
             icon: Icons.shopping_bag_rounded,
@@ -124,10 +133,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           // Top products
           const Text(
             'Top Products',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 12),
           _buildTopProductsList(),
@@ -136,10 +142,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           // Traffic sources
           const Text(
             'Traffic Sources',
-            style: TextStyle(
-              fontWeight: FontWeight.w600,
-              fontSize: 16,
-            ),
+            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
           ),
           const SizedBox(height: 12),
           _buildTrafficSourcesList(),
@@ -165,11 +168,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
   String _getPeriodLabel(String period) {
     switch (period) {
-      case '24h': return 'Last 24h';
-      case '7d': return 'Last 7 days';
-      case '30d': return 'Last 30 days';
-      case 'all': return 'All time';
-      default: return 'Last 7 days';
+      case '24h':
+        return 'Last 24h';
+      case '7d':
+        return 'Last 7 days';
+      case '30d':
+        return 'Last 30 days';
+      case 'all':
+        return 'All time';
+      default:
+        return 'Last 7 days';
     }
   }
 
@@ -237,12 +245,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
   }
 
   Widget _buildTopProductsList() {
-    // Mock data - replace with real analytics
-    final products = [
-      {'name': 'Product A', 'views': 152, 'sales': 23},
-      {'name': 'Product B', 'views': 98, 'sales': 15},
-      {'name': 'Product C', 'views': 76, 'sales': 12},
-    ];
+    final products = _analytics?.topProducts ?? const <TopProduct>[];
 
     return Container(
       decoration: BoxDecoration(
@@ -256,68 +259,77 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
         ],
       ),
-      child: Column(
-        children: products.asMap().entries.map((entry) {
-          final index = entry.key;
-          final product = entry.value;
-          return ListTile(
-            leading: Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: _getRankColor(index).withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Center(
-                child: Text(
-                  '${index + 1}',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: _getRankColor(index),
+      child: products.isEmpty
+          ? _buildMetricPlaceholder(
+              icon: Icons.inventory_2_outlined,
+              title: 'No product sales yet',
+              body:
+                  'Product ranking appears after order line items are recorded.',
+            )
+          : Column(
+              children: products.asMap().entries.map((entry) {
+                final index = entry.key;
+                final product = entry.value;
+                return ListTile(
+                  leading: Container(
+                    width: 32,
+                    height: 32,
+                    decoration: BoxDecoration(
+                      color: _getRankColor(index).withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Center(
+                      child: Text(
+                        '${index + 1}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: _getRankColor(index),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-              ),
+                  title: Text(product.name),
+                  subtitle: Text(
+                    '₹${product.revenue.toStringAsFixed(0)} revenue',
+                  ),
+                  trailing: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.green[50],
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${product.orders} sold',
+                      style: TextStyle(
+                        color: Colors.green[700],
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
-            title: Text(product['name'] as String),
-            subtitle: Text('${product['views']} views'),
-            trailing: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: Colors.green[50],
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: Text(
-                '${product['sales']} sales',
-                style: TextStyle(
-                  color: Colors.green[700],
-                  fontWeight: FontWeight.w600,
-                  fontSize: 12,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
     );
   }
 
   Color _getRankColor(int index) {
     switch (index) {
-      case 0: return Colors.amber;
-      case 1: return Colors.grey;
-      case 2: return Colors.orange;
-      default: return Colors.grey;
+      case 0:
+        return Colors.amber;
+      case 1:
+        return Colors.grey;
+      case 2:
+        return Colors.orange;
+      default:
+        return Colors.grey;
     }
   }
 
   Widget _buildTrafficSourcesList() {
-    final sources = [
-      {'name': 'Direct', 'percent': 45, 'icon': Icons.link_rounded},
-      {'name': 'Google', 'percent': 30, 'icon': Icons.search_rounded},
-      {'name': 'Social', 'percent': 15, 'icon': Icons.share_rounded},
-      {'name': 'Other', 'percent': 10, 'icon': Icons.more_horiz_rounded},
-    ];
-
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -331,49 +343,38 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
           ),
         ],
       ),
+      child: _buildMetricPlaceholder(
+        icon: Icons.query_stats_rounded,
+        title: 'Traffic sources unavailable',
+        body:
+            'The mobile app needs a gateway analytics endpoint for source attribution.',
+      ),
+    );
+  }
+
+  Widget _buildMetricPlaceholder({
+    required IconData icon,
+    required String title,
+    required String body,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 20),
       child: Column(
-        children: sources.map((source) {
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: Row(
-              children: [
-                Icon(
-                  source['icon'] as IconData,
-                  size: 20,
-                  color: Colors.grey[600],
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        source['name'] as String,
-                        style: const TextStyle(fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 4),
-                      LinearProgressIndicator(
-                        value: (source['percent'] as int) / 100,
-                        backgroundColor: Colors.grey[200],
-                        valueColor: AlwaysStoppedAnimation(AppColors.primary),
-                        minHeight: 6,
-                        borderRadius: BorderRadius.circular(3),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Text(
-                  '${source['percent']}%',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }).toList(),
+        children: [
+          Icon(icon, size: 36, color: Colors.grey[500]),
+          const SizedBox(height: 10),
+          Text(
+            title,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            body,
+            textAlign: TextAlign.center,
+            style: TextStyle(color: Colors.grey[600], fontSize: 13),
+          ),
+        ],
       ),
     );
   }
