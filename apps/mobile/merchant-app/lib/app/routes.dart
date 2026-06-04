@@ -19,6 +19,8 @@ import '../screens/analytics/analytics_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
 import '../screens/subscription/connect_razorpay_screen.dart';
+import '../screens/parity/merchant_feature_definitions.dart';
+import '../screens/parity/merchant_feature_screen.dart';
 import 'auth_wrapper.dart';
 
 /// App route definitions
@@ -55,6 +57,11 @@ class AppRoutes {
 
   /// Generate routes with optimized page transitions
   static Route<dynamic> generateRoute(RouteSettings settings) {
+    final feature = MerchantFeatureDefinitions.byRoute[settings.name];
+    if (feature != null) {
+      return _buildRoute(MerchantFeatureScreen(feature: feature), settings);
+    }
+
     switch (settings.name) {
       case auth:
         // Auth wrapper is the primary mobile entry point

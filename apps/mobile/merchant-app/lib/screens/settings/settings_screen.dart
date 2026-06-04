@@ -9,6 +9,7 @@ import '../../services/subscription_service.dart';
 import '../../services/theme_provider.dart';
 import '../../models/store_model.dart';
 import '../../app/routes.dart';
+import '../parity/merchant_feature_definitions.dart';
 import '../../theme/app_theme_colors.dart';
 import '../../widgets/settings/store_info_card.dart';
 import '../../widgets/settings/settings_tile.dart';
@@ -54,7 +55,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
       confirmLabel: 'Logout',
       isDestructive: true,
     );
-    
+
     if (confirm == true && mounted) {
       final authService = context.read<StoreAuthService>();
       await authService.signOut();
@@ -72,7 +73,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     final colors = AppThemeColors.of(context);
     final themeProvider = context.watch<ThemeProvider>();
-    
+
     if (_isLoading) {
       return Scaffold(
         backgroundColor: colors.bgStart,
@@ -95,7 +96,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             // Header
             _buildHeader(colors),
-            
+
             // Content
             Expanded(
               child: ListView(
@@ -106,13 +107,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     Padding(
                       padding: const EdgeInsets.only(top: 8, bottom: 4),
                       child: GestureDetector(
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.storeDetails),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.storeDetails,
+                        ),
                         child: StoreInfoCard(
                           storeName: _store!.name,
                           storeUrl: 'https://$storeUrl',
                           logoUrl: _store!.logoUrl,
                           isPublished: _store!.isPublished,
-                          onEdit: () => Navigator.pushNamed(context, AppRoutes.storeDetails),
+                          onEdit: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.storeDetails,
+                          ),
                         ),
                       ),
                     ),
@@ -122,11 +129,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: 'Appearance',
                     children: [
                       SettingsTile(
-                        icon: themeProvider.themeMode == ThemeMode.dark 
-                            ? Icons.dark_mode_outlined 
-                            : themeProvider.themeMode == ThemeMode.light 
-                                ? Icons.light_mode_outlined 
-                                : Icons.brightness_auto_outlined,
+                        icon: themeProvider.themeMode == ThemeMode.dark
+                            ? Icons.dark_mode_outlined
+                            : themeProvider.themeMode == ThemeMode.light
+                            ? Icons.light_mode_outlined
+                            : Icons.brightness_auto_outlined,
                         title: 'Theme',
                         iconColor: const Color(0xFF8B5CF6),
                         trailing: _buildThemeSelector(themeProvider, colors),
@@ -134,7 +141,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-        
+
                   // Store Settings Section
                   SettingsSection(
                     title: 'Store Settings',
@@ -142,24 +149,57 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsTile(
                         icon: Icons.storefront_outlined,
                         title: 'Store Details',
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.storeDetails),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.storeDetails,
+                        ),
                       ),
                       SettingsTile(
                         icon: Icons.link_outlined,
                         title: 'Domain Settings',
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.domainSettings),
+                        onTap: () => Navigator.pushNamed(
+                          context,
+                          AppRoutes.domainSettings,
+                        ),
                       ),
                       SettingsTile(
                         icon: Icons.search_outlined,
                         title: 'SEO Settings',
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.seoSettings),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.seoSettings),
                       ),
                       SettingsTile(
                         icon: Icons.bar_chart_outlined,
                         title: 'Analytics',
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.analytics),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.analytics),
                       ),
                     ],
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Commerce',
+                    features: MerchantFeatureDefinitions.commerce,
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Online Store',
+                    features: MerchantFeatureDefinitions.onlineStore,
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Apps',
+                    features: MerchantFeatureDefinitions.apps,
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Settings Hub',
+                    features: MerchantFeatureDefinitions.settingsHub,
+                  ),
+
+                  _buildFeatureSection(
+                    title: 'Forms & Analytics',
+                    features: MerchantFeatureDefinitions.other,
                   ),
 
                   // Payment Options Section
@@ -169,7 +209,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsTile(
                         icon: Icons.local_shipping_outlined,
                         title: 'Cash on Delivery (COD)',
-                        subtitle: _store?.codEnabled == true ? 'Enabled' : 'Disabled',
+                        subtitle: _store?.codEnabled == true
+                            ? 'Enabled'
+                            : 'Disabled',
                         trailing: Switch(
                           value: _store?.codEnabled ?? true,
                           activeColor: AppColors.lavender,
@@ -188,7 +230,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsTile(
                         icon: Icons.credit_card_outlined,
                         title: 'Online Payment (Razorpay)',
-                        subtitle: _store?.onlinePaymentEnabled == true ? 'Enabled' : 'Disabled',
+                        subtitle: _store?.onlinePaymentEnabled == true
+                            ? 'Enabled'
+                            : 'Disabled',
                         trailing: Switch(
                           value: _store?.onlinePaymentEnabled ?? true,
                           activeColor: AppColors.lavender,
@@ -206,7 +250,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-        
+
                   // Plan Section
                   SettingsSection(
                     title: 'Plan & Billing',
@@ -218,21 +262,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         title: 'View All Plans',
                         subtitle: 'Compare features & upgrade',
                         iconColor: const Color(0xFF8B5CF6),
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.pricing),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.pricing),
                       ),
-                      if (_store?.subscriptionPlan == SubscriptionPlan.professional)
+                      if (_store?.subscriptionPlan ==
+                          SubscriptionPlan.professional)
                         SettingsTile(
                           icon: Icons.account_balance_outlined,
                           title: 'Connect Your Razorpay',
-                          subtitle: _store?.isUsingOwnRazorpay == true 
-                              ? 'Connected - 0% commission' 
+                          subtitle: _store?.isUsingOwnRazorpay == true
+                              ? 'Connected - 0% commission'
                               : 'Get 0% platform fee',
                           iconColor: const Color(0xFF2563EB),
-                          onTap: () => Navigator.pushNamed(context, AppRoutes.connectRazorpay),
+                          onTap: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.connectRazorpay,
+                          ),
                         ),
                     ],
                   ),
-        
+
                   // Support Section
                   SettingsSection(
                     title: 'Support',
@@ -240,7 +289,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       SettingsTile(
                         icon: Icons.help_outline_rounded,
                         title: 'Help & Support',
-                        onTap: () => Navigator.pushNamed(context, AppRoutes.help),
+                        onTap: () =>
+                            Navigator.pushNamed(context, AppRoutes.help),
                       ),
                       SettingsTile(
                         icon: Icons.description_outlined,
@@ -251,7 +301,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-        
+
                   // Other Information
                   SettingsSection(
                     title: 'Other Information',
@@ -271,7 +321,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 50),
                 ],
               ),
@@ -293,7 +343,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () => StoreMainScreen.navigateToHome(),
           ),
           const SizedBox(width: 8),
-          
+
           // Title
           Text(
             'Settings',
@@ -305,6 +355,25 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildFeatureSection({
+    required String title,
+    required List<MerchantFeatureDefinition> features,
+  }) {
+    return SettingsSection(
+      title: title,
+      children: features
+          .map(
+            (feature) => SettingsTile(
+              icon: feature.icon,
+              title: feature.title,
+              iconColor: AppColors.primary,
+              onTap: () => Navigator.pushNamed(context, feature.route),
+            ),
+          )
+          .toList(growable: false),
     );
   }
 
@@ -339,7 +408,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.brightness_auto_outlined, size: 16, color: colors.textSecondary),
+                Icon(
+                  Icons.brightness_auto_outlined,
+                  size: 16,
+                  color: colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Text('System', style: TextStyle(color: colors.textPrimary)),
               ],
@@ -350,7 +423,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.light_mode_outlined, size: 16, color: colors.textSecondary),
+                Icon(
+                  Icons.light_mode_outlined,
+                  size: 16,
+                  color: colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Text('Light', style: TextStyle(color: colors.textPrimary)),
               ],
@@ -361,7 +438,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.dark_mode_outlined, size: 16, color: colors.textSecondary),
+                Icon(
+                  Icons.dark_mode_outlined,
+                  size: 16,
+                  color: colors.textSecondary,
+                ),
                 const SizedBox(width: 6),
                 Text('Dark', style: TextStyle(color: colors.textPrimary)),
               ],
@@ -429,7 +510,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return SettingsTile(
       icon: Icons.inventory_2_outlined,
       title: 'Product Usage',
-      subtitle: isUnlimited ? '$used products (Unlimited)' : '$used / $limit products',
+      subtitle: isUnlimited
+          ? '$used products (Unlimited)'
+          : '$used / $limit products',
       trailing: SizedBox(
         width: 60,
         child: Column(

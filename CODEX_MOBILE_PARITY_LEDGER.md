@@ -139,7 +139,7 @@
   - Escalated `flutter run -d 720BBB11-3F5B-4257-930B-4926520FF590 --debug --dart-define-from-file=dart-defines/local.json` -> PASS after pruning unused `razorpay_flutter`; app built, synced to the iPhone 16e simulator, and exposed Dart VM/DevTools service URLs. Leftover smoke-test processes were terminated and verified.
 
 ## M6 THEME EDITOR UNIFICATION
-- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
 - Source changes:
   - Added `ThemesApi.catalogPayload` to the shared Dart API client so mobile can preserve store-scoped `/v1/themes` metadata such as `current_theme` while still using the package API surface.
   - Registered `ThemeService` in the merchant app provider graph and rewired it to typed `ApiClient.themes` methods for catalog, install, editor load, draft save/delete, preview-session, releases, rollback, publish, and duplicate-draft behavior.
@@ -163,6 +163,38 @@
   - Escalated `flutter run -d 720BBB11-3F5B-4257-930B-4926520FF590 --debug --pid-file /private/tmp/letbuyy-m6-ios.pid` -> PASS; app built, synced, and launched on the iPhone 16e simulator with VM service at `http://127.0.0.1:57506/dMDjtzgAdn4=/`.
   - Escalated `xcrun simctl io 720BBB11-3F5B-4257-930B-4926520FF590 screenshot /private/tmp/letbuyy-m6-ios-smoke.png` -> PASS; screenshot shows the merchant app launched to the auth screen as expected without a seeded mobile session.
 
+## M7 MISSING FEATURE SCREENS
+- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Required mission scope:
+  - Commerce: Customers `/v1/customers`, Collections `/v1/categories`, Inventory `/v1/inventory`, Coupons `/v1/coupons`, Gift cards, Reviews management `/v1/reviews`, and Order detail timeline/fulfill/refund over `/v1/orders`.
+  - Online store: Theme Marketplace browse/install, CMS Pages `/v1/pages`, Blog `/v1/blog`, Navigation menus, and Media `/v1/media`.
+  - Apps: App Marketplace browse/install/consent over `/v1/app-store`.
+  - Settings hub parity: Checkout, Shipping `/v1/shipping-tax`, Taxes/GST, Notifications `/v1/notifications`, Users & permissions `/v1/employees`, Policies `/v1/pages`, Payments `/v1/payments`, Plan & Billing `/v1/billing`, Business, Localization, and Security.
+  - Other: Form submissions `/v1/form-submissions` and real Analytics `/v1/analytics`.
+  - Gate M7: all missing screens present as real thin Flutter screens or `[SKIP - NEEDS BACKEND]` placeholders; navigation mirrors web mobile IA; both-platform screenshot/build proof; 128/128 governance.
+- Source changes:
+  - Added `MerchantFeatureDefinitions`, a single mobile IA registry for 26 missing feature routes grouped as Commerce, Online Store, Apps, Settings Hub, and Forms & Analytics.
+  - Added `MerchantFeatureScreen`, a reusable thin Flutter screen that calls the shared `ApiClient.get` against `/v1` endpoint definitions, adds `store_id` from `StoreService` for store-scoped routes, extracts list/map responses into bounded rows, supports refresh, and renders explicit `[SKIP - NEEDS BACKEND]` copy for unavailable contracts.
+  - Registered the `/features/*` route map in `AppRoutes.generateRoute` without creating app-local service logic or backend changes.
+  - Added grouped Settings navigation for the 26 parity routes, preserving existing Settings tiles and payment/plan surfaces.
+  - Endpoint-backed routes cover customers, collections/categories, inventory levels, coupons, reviews, orders, themes, pages, blog posts, navigation, media, app marketplace apps, shipping zones, taxes, notification preferences, employees, policies, payment subscription, subscription history, form submissions, and analytics dashboard.
+  - Backend-needed placeholders cover gift cards, checkout settings, business details, localization, security, and full billing parity where governed mobile-safe contracts are not present.
+- Scoped proof:
+  - Escalated `dart format` over the M7 Dart files -> PASS.
+  - Source assertion `rg -o "route: '/features/[^']+'" ... | wc -l` -> PASS with `26`.
+  - Source assertion for `endpoint: 'employees'` and `Requires /v1/employees` -> PASS.
+  - Source assertion for `MerchantFeatureDefinitions.byRoute`, `MerchantFeatureScreen`, and Settings groups `commerce`, `onlineStore`, `apps`, `settingsHub`, `other` -> PASS.
+  - Escalated `flutter analyze apps/mobile/merchant-app` -> PASS with no issues.
+  - Escalated `flutter test apps/mobile/merchant-app` -> PASS; placeholder widget test passed.
+  - Escalated `flutter build apk --debug` in `apps/mobile/merchant-app` -> PASS, built `build/app/outputs/flutter-apk/app-debug.apk`.
+  - Escalated `flutter build ios --debug --no-codesign` in `apps/mobile/merchant-app` -> PASS, built `build/ios/iphoneos/Runner.app`.
+  - Escalated `flutter run -d 720BBB11-3F5B-4257-930B-4926520FF590 --debug --route /features/customers --pid-file /private/tmp/letbuyy-m7-ios.pid` -> PASS; route opened on the iPhone 16e simulator and attempted store context through `StoreService`.
+  - Escalated `xcrun simctl io 720BBB11-3F5B-4257-930B-4926520FF590 screenshot /private/tmp/letbuyy-m7-ios-feature-customers.png` -> PASS; screenshot shows the Customers feature screen, `/v1/customers` endpoint summary, and authenticated-store placeholder instead of a crash.
+  - Escalated `flutter devices` -> PASS; detected iPhone 16e simulator, macOS, and Chrome, but no Android device.
+  - Escalated `flutter emulators` -> PASS; configured Android AVD `Medium_Phone_API_36.1` exists.
+  - Escalated `flutter emulators --launch Medium_Phone_API_36.1` -> LOCAL DEVICE BLOCKER; emulator reported `The Android emulator exited with code 1 during startup`.
+  - Escalated post-launch `flutter devices` -> PASS; still no Android device available.
+
 ## SKIPPED - NEEDS HUMAN
 - Staging Supabase project URL and anon key. Required: governed staging `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_STAGING_*` placeholders.
 - Production Supabase project URL and anon key. Required: governed production `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_PRODUCTION_*` placeholders.
@@ -171,6 +203,7 @@
 - M4 live subscription pricing/copy and paid plan activation. Required: approved plan names/prices/features/commission policy, Razorpay subscription checkout credentials, signed Razorpay callback payloads, and permission to run provider-side payment attempts. Code now points to gateway `/payments/subscription*` contracts but does not assert unapproved pricing as final.
 - M5 Android emulator smoke. Required: a working Android emulator/device on the host. The configured AVD `Medium_Phone_API_36.1` exited with code 1 during startup on two attempts before Flutter could run against it; Android debug APK build passed.
 - M6 Android emulator smoke. Required: a working Android emulator/device on the host. `flutter devices` detected no Android device, and `flutter emulators --launch Medium_Phone_API_36.1` reported `The Android emulator exited with code 1 during startup`; Android debug APK build passed.
+- M7 Android emulator smoke. Required: a working Android emulator/device on the host. `flutter devices` detected no Android device, and `flutter emulators --launch Medium_Phone_API_36.1` again reported `The Android emulator exited with code 1 during startup`; Android debug APK build passed.
 
 ## SKIPPED - NEEDS BACKEND
 - M2 live mobile merchant login against protected gateway endpoints. Current gateway auth accepts Supabase bearer tokens or signed internal SSO/session headers for `lb_session`; a mobile app must not possess the internal signing secret, and raw `lb_session` / cookie transport is not accepted by protected `/v1` merchant routes. Required: a mobile-safe gateway session bridge that validates `lb_session` without exposing internal signing secrets, plus refresh/expiry semantics for mobile clients.
@@ -180,6 +213,8 @@
 - M4 custom-domain verification. Required: gateway-owned domain ownership verification, TXT/CNAME record issuance, SSL activation status, and takeover-prevention workflow before mobile can verify or activate custom domains.
 - M4 store selected-product membership/import persistence. Required: gateway-supported store product-selection contract or field in `UpdateStoreSchema`; current gateway `PATCH /stores/:id` rejects unsupported `selected_product_ids`, so import/remove membership remains backend-gated.
 - M6 protected real-stack theme parity proof. Required: the M2 mobile-safe gateway session bridge plus a seeded mobile merchant session/store/theme draft. The M6 code now calls protected `/v1/themes` editor/draft/preview/publish contracts, but live phone-edited theme parity with web/storefront cannot be proven from the app because the simulator only reaches the auth screen without a backend-accepted mobile session.
+- M7 protected real-stack feature data proof. Required: the M2 mobile-safe gateway session bridge plus a seeded mobile merchant session, owned store, and rows for customers/categories/inventory/coupons/reviews/orders/pages/blog/navigation/media/apps/shipping/taxes/notifications/employees/policies/payments/forms/analytics. The M7 screens call governed `/v1` endpoint definitions and degrade safely, but authenticated live data cannot be proven from the simulator because the gateway rejects raw mobile `lb_session` without the backend bridge.
+- M7 missing dedicated mobile-safe contracts. Required: governed `/v1` contracts for gift cards, checkout settings, full business/compliance settings, localization/markets, merchant security/session inventory, and full billing/invoice parity. Current M7 screens render `[SKIP - NEEDS BACKEND]` placeholders for these surfaces rather than fabricating data.
 
 ## VALIDATOR LEDGER
 - 2026-06-04T05:16:22Z [M0 baseline] Flutter version/pub get/analyze/test/Android debug build/iOS no-codesign build all passed as recorded above.
@@ -202,3 +237,6 @@
 - 2026-06-04T07:32:49Z [M5 post-commit governance] Post-commit `pnpm run validate:governance` after `25824c40` -> PASS (128/128 validators). M5 is complete; advancing to M6 theme editor unification.
 - 2026-06-04T07:54:01Z [M6 scoped proof] Theme editor unification proof complete: formatter, old mock-preview/store-mutation scans, merchant app analyze/test, shared API-client analyze, Android debug APK build, iOS no-codesign build, and iOS simulator launch+screenshot passed. Android emulator runtime smoke remains `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup. Protected live theme parity remains `[SKIP - NEEDS BACKEND]` until the M2 mobile-safe gateway session bridge exists.
 - 2026-06-04T07:56:34Z [M6 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M6 gate result: PASS WITH BACKEND/HUMAN SKIPS.
+- 2026-06-04T07:58:24Z [M6 post-commit governance] Post-commit `pnpm run validate:governance` after `0e87c63a` -> PASS (128/128 validators). M6 is complete with backend/human skips; advancing to M7 missing feature screens.
+- 2026-06-04T08:12:22Z [M7 scoped proof] Missing feature screen proof complete: formatter, 26-route source assertion, `/v1/employees` endpoint assertion, route/settings wiring assertion, merchant app analyze/test, Android debug APK build, iOS no-codesign build, and iOS simulator `/features/customers` route screenshot passed. Android runtime smoke remains `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup. Protected live feature data and dedicated gift-card/checkout/business/localization/security/full-billing contracts remain `[SKIP - NEEDS BACKEND]`.
+- 2026-06-04T08:14:23Z [M7 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M7 gate result: PASS WITH BACKEND/HUMAN SKIPS.
