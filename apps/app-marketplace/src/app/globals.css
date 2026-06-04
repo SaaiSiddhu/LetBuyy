@@ -1733,6 +1733,11 @@ body {
     background: var(--lb-color-surface-subdued);
 }
 
+.app-install-launch:focus-visible {
+    outline: 2px solid var(--lb-color-primary);
+    outline-offset: 3px;
+}
+
 .app-install-launch__header {
     display: flex;
     align-items: center;

@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
     CheckCircle2,
     ExternalLink,
@@ -57,8 +57,20 @@ function AppInstallConsentPanelInner({
     const [error, setError] = useState<string | null>(null);
     const [notice, setNotice] = useState<string | null>(null);
     const [installationId, setInstallationId] = useState<string | null>(null);
+    const launchRef = useRef<HTMLDivElement>(null);
     const permissionLabels = useMemo(() => scopes.map(formatScopeLabel), [scopes]);
     const canLaunch = Boolean(launchUrl);
+
+    useEffect(() => {
+        if (mode !== 'installed' || !canLaunch) return;
+
+        const timer = window.setTimeout(() => {
+            launchRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            launchRef.current?.focus({ preventScroll: true });
+        }, 100);
+
+        return () => window.clearTimeout(timer);
+    }, [canLaunch, mode]);
 
     const installApp = async () => {
         setMode('installing');
@@ -80,7 +92,7 @@ function AppInstallConsentPanelInner({
             setInstallationId(payload?.data?.installation?.id || null);
             setMode('installed');
             setConsentOpen(false);
-            setNotice(canLaunch ? 'The app is ready to launch.' : 'Open My Apps to manage this installation.');
+            setNotice(canLaunch ? 'Launching the embedded app view.' : 'Open My Apps to manage this installation.');
         } catch (installError) {
             const message = installError instanceof Error ? installError.message : 'The app could not be installed right now.';
             setError(message);
@@ -110,7 +122,12 @@ function AppInstallConsentPanelInner({
                     </div>
                 </div>
                 {canLaunch ? (
-                    <div className="app-install-launch">
+                    <div
+                        ref={launchRef}
+                        className="app-install-launch"
+                        tabIndex={-1}
+                        aria-label={`${appName} embedded app view`}
+                    >
                         <div className="app-install-launch__header">
                             <span>Embedded launch</span>
                             <a href={launchUrl || '#'} target="_blank" rel="noreferrer">
