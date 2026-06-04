@@ -49,6 +49,7 @@ class _OrdersScreenState extends State<OrdersScreen> {
   @override
   void initState() {
     super.initState();
+    _orderService = context.read<OrderService>();
     _loadOrders();
   }
 
@@ -60,16 +61,24 @@ class _OrdersScreenState extends State<OrdersScreen> {
   }
 
   Future<void> _loadOrders() async {
-    // Lazily init service + storeId
-    _orderService = context.read<OrderService>();
-    if (_storeId == null) {
-      final store = await context.read<StoreService>().getFirstStore();
-      _storeId = store?.id;
-    }
-    if (_storeId == null) return;
-
     setState(() => _isLoading = true);
     try {
+      // Lazily resolve store context.
+      if (_storeId == null) {
+        final store = await context.read<StoreService>().getFirstStore();
+        _storeId = store?.id;
+      }
+
+      if (_storeId == null) {
+        if (mounted) {
+          setState(() {
+            _orders = [];
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+
       final orders = await _orderService.fetchOrders(_storeId!);
       if (mounted) {
         setState(() {

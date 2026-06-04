@@ -164,7 +164,7 @@
   - Escalated `xcrun simctl io 720BBB11-3F5B-4257-930B-4926520FF590 screenshot /private/tmp/letbuyy-m6-ios-smoke.png` -> PASS; screenshot shows the merchant app launched to the auth screen as expected without a seeded mobile session.
 
 ## M7 MISSING FEATURE SCREENS
-- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
 - Required mission scope:
   - Commerce: Customers `/v1/customers`, Collections `/v1/categories`, Inventory `/v1/inventory`, Coupons `/v1/coupons`, Gift cards, Reviews management `/v1/reviews`, and Order detail timeline/fulfill/refund over `/v1/orders`.
   - Online store: Theme Marketplace browse/install, CMS Pages `/v1/pages`, Blog `/v1/blog`, Navigation menus, and Media `/v1/media`.
@@ -195,6 +195,41 @@
   - Escalated `flutter emulators --launch Medium_Phone_API_36.1` -> LOCAL DEVICE BLOCKER; emulator reported `The Android emulator exited with code 1 during startup`.
   - Escalated post-launch `flutter devices` -> PASS; still no Android device available.
 
+## M8 CROSS-PLATFORM AND ENVIRONMENT HARDENING
+- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Required mission scope:
+  - M8.1 full Android emulator smoke: login -> product -> order -> theme edit -> settings with screenshots.
+  - M8.2 full iOS simulator smoke for the same journey with screenshots; iOS device/TestFlight signing remains `[SKIP - NEEDS HUMAN]`.
+  - M8.3 verify `local`, `staging`, and `production` dart-define builds compile and target the correct gateway/Supabase; real staging/production keys remain `[SKIP - NEEDS HUMAN]`.
+  - Final M8 gate: both platforms run the end-to-end merchant journey on the real stack where unblocked; three env builds verified; `flutter analyze` clean; `flutter test` green; 128/128 governance; `CODEX_MOBILE_PARITY_STATUS.md` written.
+- Source changes:
+  - Fixed `OrdersScreen._loadOrders` so missing/failed store lookup clears `_isLoading` and renders the existing no-store fallback instead of a permanent spinner.
+  - Moved `OrderService` initialization into `initState` so later reload paths do not reassign a `late final` service.
+  - Added `CODEX_MOBILE_PARITY_STATUS.md` with the M0-M8 result, final proof, and human/backend skip list.
+- Scoped proof:
+  - Escalated `dart format apps/mobile/merchant-app/lib/screens/orders/orders_screen.dart` -> PASS.
+  - Escalated `flutter analyze apps/mobile/merchant-app` -> PASS with no issues.
+  - Escalated `flutter test apps/mobile/merchant-app` -> PASS; placeholder widget test passed.
+  - `node -e` dart-define contract assertion for `local`, `staging`, and `production` -> PASS.
+  - Escalated iOS simulator route smoke with local dart-defines:
+    - `/login` -> PASS, screenshot `/private/tmp/letbuyy-m8-ios-login.png`.
+    - `/orders` after fallback fix -> PASS, screenshot `/private/tmp/letbuyy-m8-ios-orders-fixed.png`.
+    - `/features/inventory` -> PASS, screenshot `/private/tmp/letbuyy-m8-ios-inventory.png`.
+    - `/features/theme-marketplace` -> PASS, screenshot `/private/tmp/letbuyy-m8-ios-theme-marketplace.png`.
+    - `/features/shipping` -> PASS, screenshot `/private/tmp/letbuyy-m8-ios-shipping.png`.
+  - Escalated Android env builds -> PASS:
+    - `flutter build apk --debug --dart-define-from-file=dart-defines/local.json`.
+    - `flutter build apk --debug --dart-define-from-file=dart-defines/staging.json`.
+    - `flutter build apk --debug --dart-define-from-file=dart-defines/production.json`.
+  - Escalated iOS env builds -> PASS:
+    - `flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/local.json`.
+    - `flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/staging.json`.
+    - `flutter build ios --debug --no-codesign --dart-define-from-file=dart-defines/production.json`.
+  - Escalated `flutter devices` -> PASS; detected iPhone 16e simulator, macOS, and Chrome, but no Android device.
+  - Escalated `flutter emulators` -> PASS; configured Android AVD `Medium_Phone_API_36.1` exists.
+  - Escalated `flutter emulators --launch Medium_Phone_API_36.1` -> LOCAL DEVICE BLOCKER; emulator reported `The Android emulator exited with code 1 during startup`.
+  - Escalated post-launch `flutter devices` -> PASS; still no Android device available.
+
 ## SKIPPED - NEEDS HUMAN
 - Staging Supabase project URL and anon key. Required: governed staging `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_STAGING_*` placeholders.
 - Production Supabase project URL and anon key. Required: governed production `SUPABASE_URL` and public anon key from the secret manager before replacing `SKIP_NEEDS_HUMAN_PRODUCTION_*` placeholders.
@@ -204,6 +239,7 @@
 - M5 Android emulator smoke. Required: a working Android emulator/device on the host. The configured AVD `Medium_Phone_API_36.1` exited with code 1 during startup on two attempts before Flutter could run against it; Android debug APK build passed.
 - M6 Android emulator smoke. Required: a working Android emulator/device on the host. `flutter devices` detected no Android device, and `flutter emulators --launch Medium_Phone_API_36.1` reported `The Android emulator exited with code 1 during startup`; Android debug APK build passed.
 - M7 Android emulator smoke. Required: a working Android emulator/device on the host. `flutter devices` detected no Android device, and `flutter emulators --launch Medium_Phone_API_36.1` again reported `The Android emulator exited with code 1 during startup`; Android debug APK build passed.
+- M8 Android emulator full-journey smoke. Required: a working Android emulator/device on the host. `flutter devices` detected no Android device, and `flutter emulators --launch Medium_Phone_API_36.1` again reported `The Android emulator exited with code 1 during startup`; local/staging/production Android debug APK builds passed.
 
 ## SKIPPED - NEEDS BACKEND
 - M2 live mobile merchant login against protected gateway endpoints. Current gateway auth accepts Supabase bearer tokens or signed internal SSO/session headers for `lb_session`; a mobile app must not possess the internal signing secret, and raw `lb_session` / cookie transport is not accepted by protected `/v1` merchant routes. Required: a mobile-safe gateway session bridge that validates `lb_session` without exposing internal signing secrets, plus refresh/expiry semantics for mobile clients.
@@ -215,6 +251,7 @@
 - M6 protected real-stack theme parity proof. Required: the M2 mobile-safe gateway session bridge plus a seeded mobile merchant session/store/theme draft. The M6 code now calls protected `/v1/themes` editor/draft/preview/publish contracts, but live phone-edited theme parity with web/storefront cannot be proven from the app because the simulator only reaches the auth screen without a backend-accepted mobile session.
 - M7 protected real-stack feature data proof. Required: the M2 mobile-safe gateway session bridge plus a seeded mobile merchant session, owned store, and rows for customers/categories/inventory/coupons/reviews/orders/pages/blog/navigation/media/apps/shipping/taxes/notifications/employees/policies/payments/forms/analytics. The M7 screens call governed `/v1` endpoint definitions and degrade safely, but authenticated live data cannot be proven from the simulator because the gateway rejects raw mobile `lb_session` without the backend bridge.
 - M7 missing dedicated mobile-safe contracts. Required: governed `/v1` contracts for gift cards, checkout settings, full business/compliance settings, localization/markets, merchant security/session inventory, and full billing/invoice parity. Current M7 screens render `[SKIP - NEEDS BACKEND]` placeholders for these surfaces rather than fabricating data.
+- M8 protected full merchant journey. Required: the M2 mobile-safe gateway session bridge plus seeded merchant/store/product/order/theme/settings data. M8 iOS route-level smoke is proven, but login -> product -> order -> theme edit -> settings cannot be live-certified as a single authenticated real-stack journey until the gateway accepts mobile `lb_session` and seeded store state exists.
 
 ## VALIDATOR LEDGER
 - 2026-06-04T05:16:22Z [M0 baseline] Flutter version/pub get/analyze/test/Android debug build/iOS no-codesign build all passed as recorded above.
@@ -240,3 +277,6 @@
 - 2026-06-04T07:58:24Z [M6 post-commit governance] Post-commit `pnpm run validate:governance` after `0e87c63a` -> PASS (128/128 validators). M6 is complete with backend/human skips; advancing to M7 missing feature screens.
 - 2026-06-04T08:12:22Z [M7 scoped proof] Missing feature screen proof complete: formatter, 26-route source assertion, `/v1/employees` endpoint assertion, route/settings wiring assertion, merchant app analyze/test, Android debug APK build, iOS no-codesign build, and iOS simulator `/features/customers` route screenshot passed. Android runtime smoke remains `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup. Protected live feature data and dedicated gift-card/checkout/business/localization/security/full-billing contracts remain `[SKIP - NEEDS BACKEND]`.
 - 2026-06-04T08:14:23Z [M7 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M7 gate result: PASS WITH BACKEND/HUMAN SKIPS.
+- 2026-06-04T08:16:05Z [M7 post-commit governance] Post-commit `pnpm run validate:governance` after `701abefc` -> PASS (128/128 validators). M7 is complete with backend/human skips; advancing to M8 cross-platform and environment hardening.
+- 2026-06-04T08:43:11Z [M8 scoped proof] Cross-platform/environment proof complete: Orders no-store fallback fix, mobile parity status file, formatter, merchant app analyze/test, dart-define JSON assertion, local/staging/production Android APK builds, local/staging/production iOS no-codesign builds, and iOS simulator route screenshots all passed. Android full-journey runtime smoke remains `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup. Protected full merchant journey remains `[SKIP - NEEDS BACKEND]` until the mobile-safe gateway session bridge and seeded store data exist.
+- 2026-06-04T08:48:05Z [M8 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M8 gate result: PASS WITH BACKEND/HUMAN SKIPS.
