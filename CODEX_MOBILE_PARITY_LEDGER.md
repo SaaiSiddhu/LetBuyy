@@ -2,7 +2,7 @@
 
 ## CURRENT STATUS
 - Stage: STAGE 5 - WS8 Mobile Parity.
-- Active gate: M6 theme editor unification.
+- Active gate: DONE. M0-M8 completed with backend/human skips recorded; post-commit governance after `00a311d7` passed 128/128.
 - Scope lock: mobile source work is limited to `apps/mobile/merchant-app/**` and `packages/dart/**` unless the active mission explicitly allows a supporting config/documentation file. Web apps, backend services, database, package-core contracts, shared TypeScript packages, and governance validators remain out of scope for WS8 source changes.
 
 ## M0 BASELINE PROOF
@@ -196,7 +196,7 @@
   - Escalated post-launch `flutter devices` -> PASS; still no Android device available.
 
 ## M8 CROSS-PLATFORM AND ENVIRONMENT HARDENING
-- Status: DONE / PRE-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
+- Status: DONE / COMMITTED / POST-COMMIT GOVERNANCE PASSED WITH BACKEND/HUMAN SKIPS.
 - Required mission scope:
   - M8.1 full Android emulator smoke: login -> product -> order -> theme edit -> settings with screenshots.
   - M8.2 full iOS simulator smoke for the same journey with screenshots; iOS device/TestFlight signing remains `[SKIP - NEEDS HUMAN]`.
@@ -280,3 +280,4 @@
 - 2026-06-04T08:16:05Z [M7 post-commit governance] Post-commit `pnpm run validate:governance` after `701abefc` -> PASS (128/128 validators). M7 is complete with backend/human skips; advancing to M8 cross-platform and environment hardening.
 - 2026-06-04T08:43:11Z [M8 scoped proof] Cross-platform/environment proof complete: Orders no-store fallback fix, mobile parity status file, formatter, merchant app analyze/test, dart-define JSON assertion, local/staging/production Android APK builds, local/staging/production iOS no-codesign builds, and iOS simulator route screenshots all passed. Android full-journey runtime smoke remains `[SKIP - NEEDS HUMAN]` because the configured AVD exits with code 1 during startup. Protected full merchant journey remains `[SKIP - NEEDS BACKEND]` until the mobile-safe gateway session bridge and seeded store data exist.
 - 2026-06-04T08:48:05Z [M8 pre-commit governance] Generated artifact cleanup scan -> no app/service/package `.next`, `.turbo`, nested `node_modules`, `.dart_tool`, `build`, `dist`, `.wrangler`, `Pods`, `.symlinks`, or Flutter plugin metadata files; `pnpm run validate:governance` -> PASS (128/128 validators). M8 gate result: PASS WITH BACKEND/HUMAN SKIPS.
+- 2026-06-04T08:52:48Z [M8 post-commit governance / WS8 gate] Post-commit `pnpm run validate:governance` after `00a311d7` -> PASS (128/128 validators). WS8 Mobile Parity is complete for all unblocked client work with backend/human skips recorded in `CODEX_MOBILE_PARITY_STATUS.md`.

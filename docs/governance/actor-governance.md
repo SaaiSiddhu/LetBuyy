@@ -8,7 +8,7 @@ LetBuyy separates four primary actor classes:
 |---|---|---|
 | Shoppers | `apps/storefront-runtime` | Merchant sessions, operator tools, draft/private tenant data |
 | Merchants | `apps/merchant-control-plane`, `apps/identity-platform` | Other merchant tenants, platform operator controls |
-| Partners | `apps/app-marketplace`, `apps/theme-marketplace` | Merchant-owned records without install/acquisition authority |
+| Partners | `apps/app-marketplace`, `apps/developer-portal`, `apps/theme-marketplace` | Merchant-owned records without install/acquisition authority |
 | Platform operators | `apps/platform-console`, `apps/platform-operations-portal` | Direct data mutation without RBAC, audit, and reason capture |
 
 ## Isolation Rules
@@ -28,4 +28,3 @@ Every feature must answer:
 - Which runtime enforces the boundary?
 - Which package owns the domain decision?
 - Which audit, event, or webhook record proves the operation happened?
-

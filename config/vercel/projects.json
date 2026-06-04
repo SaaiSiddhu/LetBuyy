@@ -91,6 +91,21 @@
       }
     },
     {
+      "name": "letbuyy-developer-portal",
+      "directory": "apps/developer-portal",
+      "framework": "nextjs",
+      "staging": {
+        "project_id": "STAGING_DEVELOPER_PORTAL_PROJECT_ID",
+        "url": "https://developers-staging.letbuyy.store",
+        "branch": "develop"
+      },
+      "production": {
+        "project_id": "PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID",
+        "url": "https://developers.letbuyy.store",
+        "branch": "main"
+      }
+    },
+    {
       "name": "letbuyy-theme-marketplace",
       "directory": "apps/theme-marketplace",
       "framework": "nextjs",

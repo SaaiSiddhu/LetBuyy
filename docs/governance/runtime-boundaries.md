@@ -6,6 +6,7 @@
 - `apps/merchant-control-plane`: merchant operational UI and app-boundary API proxies.
 - `apps/identity-platform`: merchant identity, onboarding, store selection, password and OTP flows.
 - `apps/app-marketplace`: partner extension marketplace.
+- `apps/developer-portal`: developer documentation, API reference, SDK quick-starts, and partner dashboard shell.
 - `apps/theme-marketplace`: partner theme marketplace.
 - `apps/marketing-site`: public marketing and pricing.
 - `apps/platform-console`: platform super admin.

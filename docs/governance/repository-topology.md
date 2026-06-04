@@ -105,6 +105,7 @@ docs/
 | Merchant control plane | Merchants | `apps/merchant-control-plane` | Merchant dashboard, CMS, products, orders, settings, themes, analytics |
 | Identity platform | Merchants and operators | `apps/identity-platform` | Login, signup, onboarding, store selection, password and OTP flows |
 | App marketplace | Partners and merchants | `apps/app-marketplace` | App catalog, developer submission, app install workflows |
+| Developer portal | Partners and developers | `apps/developer-portal` | API, OAuth, webhook, SDK, and developer dashboard documentation |
 | Theme marketplace | Partners and merchants | `apps/theme-marketplace` | Theme catalog, purchases, acquisition and install workflows |
 | Marketing site | Public visitors | `apps/marketing-site` | Public marketing and pricing surface |
 | Platform console | Platform operators | `apps/platform-console` | Super admin platform operations |

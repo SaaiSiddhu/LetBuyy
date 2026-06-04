@@ -12,6 +12,7 @@ Active app runtimes are:
 - `apps/merchant-control-plane`
 - `apps/identity-platform`
 - `apps/app-marketplace`
+- `apps/developer-portal`
 - `apps/theme-marketplace`
 - `apps/marketing-site`
 - `apps/platform-console`

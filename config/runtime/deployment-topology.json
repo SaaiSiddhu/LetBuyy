@@ -154,6 +154,16 @@
       "health": { "path": "/", "checkName": "app-marketplace.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
     },
     {
+      "runtimeName": "Developer Portal",
+      "runtimeRoot": "apps/developer-portal",
+      "deploymentKind": "next-app",
+      "platform": "vercel",
+      "regions": ["global-edge"],
+      "startupOrder": 5,
+      "scaling": { "minInstances": 1, "maxInstances": 50, "concurrency": 100, "scaleMetric": "request-rate" },
+      "health": { "path": "/", "checkName": "developer-portal.http.health", "timeoutMs": 1500, "degradedAfterFailures": 2, "unavailableAfterFailures": 5 }
+    },
+    {
       "runtimeName": "Theme Marketplace",
       "runtimeRoot": "apps/theme-marketplace",
       "deploymentKind": "next-app",
@@ -232,6 +242,7 @@
     { "fromRuntime": "Merchant Control Plane", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "merchant-control-plane.api-gateway" },
     { "fromRuntime": "Storefront Runtime", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "storefront-runtime.api-gateway" },
     { "fromRuntime": "App Marketplace", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "app-marketplace.api-gateway" },
+    { "fromRuntime": "Developer Portal", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "developer-portal.api-gateway" },
     { "fromRuntime": "Theme Marketplace", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "theme-marketplace.api-gateway" },
     { "fromRuntime": "Platform Console", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "platform-console.api-gateway" },
     { "fromRuntime": "Platform Operations Portal", "toRuntime": "API Gateway", "dependencyType": "api", "requiredForStartup": true, "healthCheckName": "platform-operations-portal.api-gateway" },
