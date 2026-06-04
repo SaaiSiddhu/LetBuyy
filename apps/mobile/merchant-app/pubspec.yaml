@@ -16,6 +16,8 @@ dependencies:
   # Internal packages
   letbuyy_core:
     path: ../../../packages/dart/core
+  letbuyy_api_client:
+    path: ../../../packages/dart/api_client
   letbuyy_models:
     path: ../../../packages/dart/models
   letbuyy_services:

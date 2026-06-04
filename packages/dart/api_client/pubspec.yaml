@@ -1,0 +1,15 @@
+name: letbuyy_api_client
+description: Typed Dart client for the LetBuyy API gateway
+version: 1.0.0
+publish_to: none
+resolution: workspace
+
+environment:
+  sdk: '^3.10.0'
+
+dependencies:
+  dio: ^5.7.0
+
+dev_dependencies:
+  test: ^1.25.8
+  flutter_lints: ^5.0.0

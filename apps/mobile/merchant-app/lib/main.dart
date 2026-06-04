@@ -49,8 +49,15 @@ void main() async {
 
   GoogleFonts.config.allowRuntimeFetching = true;
 
-  // Shared API client – injected into all services
-  final apiClient = ApiClient();
+  // Shared API gateway client injected into all services.
+  final apiClient = ApiClient(
+    baseUrl: AppConfig.apiBaseUrl,
+    tokenProvider: () =>
+        Supabase.instance.client.auth.currentSession?.accessToken,
+    headers: const {'X-Client': 'flutter-builder'},
+    requestIdFactory: () =>
+        'flutter-builder-${DateTime.now().microsecondsSinceEpoch}',
+  );
 
   runApp(
     MultiProvider(
@@ -61,8 +68,8 @@ void main() async {
           create: (_) => LanguageService()..loadLanguage(),
         ),
 
-        // API client (shared singleton)
-        ChangeNotifierProvider<ApiClient>.value(value: apiClient),
+        // API gateway client (shared singleton)
+        Provider<ApiClient>.value(value: apiClient),
 
         // Auth
         ChangeNotifierProvider<StoreAuthService>(

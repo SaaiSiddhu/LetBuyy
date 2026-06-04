@@ -12,6 +12,7 @@ workspace:
   - apps/mobile/merchant-app
   - apps/mobile/operator-app
   - packages/dart/core
+  - packages/dart/api_client
   - packages/dart/models
   - packages/dart/services
   - packages/dart/ui_kit
