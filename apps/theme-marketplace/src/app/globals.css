@@ -1,4 +1,6 @@
 @import "tailwindcss";
+@source "./**/*.{ts,tsx}";
+@source "../../../../packages/typescript/ui/src/**/*.{ts,tsx}";
 
 /* ═══════════════════════════════════════════════════
    THEME MARKETPLACE — Design Tokens (Shared)
