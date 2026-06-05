@@ -1,3 +1,12 @@
+import {
+    ConsoleWorkspace,
+    LeadershipMetric,
+    MetricGrid,
+    ModuleCard,
+    ModuleGrid,
+    Panel,
+    SkipBackendPanel,
+} from '@/components/_local-ui/console-workspace';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, formatMoneyFromPaise, type ConsoleDataResponse } from '@/lib/console-api';
 
@@ -12,38 +21,113 @@ type ConsoleSummary = {
     monthly_revenue_paise: number;
 };
 
+type ConsoleAnalytics = {
+    period_days: number;
+    new_signups: number;
+    stores_created: number;
+    subscriptions_created: number;
+    audit_events: number;
+    signup_to_store_conversion_percent: number;
+};
+
 export default async function ConsoleDashboardRoutePage() {
-    const result = await fetchConsoleApi<ConsoleDataResponse<ConsoleSummary>>('/internal/console/summary');
-    const summary = result.data?.data;
+    const [summaryResult, analyticsResult] = await Promise.all([
+        fetchConsoleApi<ConsoleDataResponse<ConsoleSummary>>('/internal/console/summary'),
+        fetchConsoleApi<ConsoleDataResponse<ConsoleAnalytics>>('/internal/console/analytics'),
+    ]);
+    const summary = summaryResult.data?.data;
+    const analytics = analyticsResult.data?.data;
+    const activeStoreRatio = `${summary?.active_stores || 0}/${summary?.total_stores || 0}`;
+    const activeSubscriptionRatio = `${summary?.active_subscriptions || 0}/${summary?.total_subscriptions || 0}`;
 
     return (
-        <div className="space-y-6 p-8">
-            <div>
-                <h1 className="text-2xl font-bold text-zinc-50">Platform Dashboard</h1>
-                <p className="mt-1 text-sm text-zinc-400">Live platform overview from service-role console projections.</p>
-            </div>
+        <ConsoleWorkspace
+            eyebrow="Platform command"
+            title="Leadership Home"
+            description="CEO, CTO, and partner-facing operating view for merchants, revenue, governance, trust, analytics, and platform reliability."
+        >
+            {summaryResult.error ? (
+                <ConsoleApiErrorPanel title="Summary API unavailable" message={summaryResult.error} />
+            ) : null}
 
-            {result.error ? (
-                <ConsoleApiErrorPanel title="Summary API unavailable" message={result.error} />
+            <MetricGrid>
+                <LeadershipMetric label="Merchant stores" value={activeStoreRatio} detail="Published / total sites" tone="success" />
+                <LeadershipMetric label="Monthly revenue" value={formatMoneyFromPaise(summary?.monthly_revenue_paise || 0)} detail="Active subscription value" />
+                <LeadershipMetric label="Subscriptions" value={activeSubscriptionRatio} detail="Active / total plans" />
+                <LeadershipMetric label="Audit events" value={String(summary?.total_audit_logs || 0)} detail="Governance evidence trail" />
+            </MetricGrid>
+
+            {analyticsResult.error ? (
+                <ConsoleApiErrorPanel title="Analytics API unavailable" message={analyticsResult.error} />
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                    <PlatformStatCard title="Total Users" value={String(summary?.total_users || 0)} />
-                    <PlatformStatCard title="Active Stores" value={`${summary?.active_stores || 0}/${summary?.total_stores || 0}`} />
-                    <PlatformStatCard title="Monthly Revenue" value={formatMoneyFromPaise(summary?.monthly_revenue_paise || 0)} />
-                    <PlatformStatCard title="Active Subscriptions" value={`${summary?.active_subscriptions || 0}/${summary?.total_subscriptions || 0}`} />
-                    <PlatformStatCard title="Employees" value={String(summary?.total_employees || 0)} />
-                    <PlatformStatCard title="Audit Events" value={String(summary?.total_audit_logs || 0)} />
-                </div>
+                <Panel
+                    title="Launch Pulse"
+                    description={`Last ${analytics?.period_days || 30} days from /internal/console/analytics.`}
+                >
+                    <MetricGrid>
+                        <LeadershipMetric label="New signups" value={String(analytics?.new_signups || 0)} />
+                        <LeadershipMetric label="Stores created" value={String(analytics?.stores_created || 0)} />
+                        <LeadershipMetric label="New subscriptions" value={String(analytics?.subscriptions_created || 0)} />
+                        <LeadershipMetric label="Signup to store" value={`${analytics?.signup_to_store_conversion_percent || 0}%`} />
+                    </MetricGrid>
+                </Panel>
             )}
-        </div>
-    );
-}
 
-function PlatformStatCard({ title, value }: { title: string; value: string }) {
-    return (
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-            <p className="text-sm font-medium text-zinc-400">{title}</p>
-            <p className="mt-2 text-3xl font-bold text-zinc-50">{value}</p>
-        </section>
+            <ModuleGrid>
+                <ModuleCard
+                    href="/stores"
+                    title="Merchant Directory"
+                    description="Search and review every tenant site surfaced as a merchant store."
+                    status="live"
+                    details="Contract: /v1/internal/console/stores"
+                />
+                <ModuleCard
+                    href="/revenue"
+                    title="Revenue"
+                    description="Track subscription value and billing health for leadership reviews."
+                    status="partial"
+                    details="Contracts: /summary and /subscriptions"
+                />
+                <ModuleCard
+                    href="/subscriptions"
+                    title="Subscriptions"
+                    description="Inspect plan, status, period, and payment gateway records."
+                    status="live"
+                    details="Contract: /v1/internal/console/subscriptions"
+                />
+                <ModuleCard
+                    href="/marketplace-governance"
+                    title="Marketplace Governance"
+                    description="Review partner app/theme governance readiness and missing backend contracts."
+                    status="blocked"
+                    details="Needs platform-console marketplace governance endpoint."
+                />
+                <ModuleCard
+                    href="/trust-safety"
+                    title="Trust & Safety"
+                    description="Monitor audit events and security enforcement signals."
+                    status="partial"
+                    details="Contracts: /audit-logs and /operations/runtime/overview"
+                />
+                <ModuleCard
+                    href="/analytics"
+                    title="Analytics"
+                    description="Inspect growth conversion and operational event volume."
+                    status="live"
+                    details="Contract: /v1/internal/console/analytics"
+                />
+                <ModuleCard
+                    href="/operations"
+                    title="Platform Ops"
+                    description="Runtime health, queues, incidents, deployments, SLOs, and certification."
+                    status="live"
+                    details="Contract: /v1/operations/runtime/overview"
+                />
+            </ModuleGrid>
+
+            <SkipBackendPanel title="Leadership exports and board packs" contract="/v1/internal/console/leadership-reports">
+                PDF/CSV exports, investor-ready cohorts, and board-pack snapshots are not exposed by the current gateway.
+            </SkipBackendPanel>
+        </ConsoleWorkspace>
     );
 }

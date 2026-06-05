@@ -1,4 +1,8 @@
 import {
+    ConsoleWorkspace,
+    SkipBackendPanel,
+} from '@/components/_local-ui/console-workspace';
+import {
     ConsoleApiErrorPanel,
     ConsoleDataTable,
     ConsoleSearchForm,
@@ -78,17 +82,17 @@ export default async function StoresPage({ searchParams }: PageProps) {
     });
 
     return (
-        <div className="space-y-6 p-8">
+        <ConsoleWorkspace
+            eyebrow="Merchant operations"
+            title="Merchant Directory"
+            description="Tenant sites remain stored as sites in the database and are presented as stores in platform UI."
+        >
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-zinc-50">Stores</h1>
-                    <p className="mt-1 text-sm text-zinc-400">All tenant sites exposed as stores in merchant UI.</p>
-                </div>
                 <ConsoleSearchForm placeholder="Search stores..." defaultValue={q}>
                     <select
                         name="status"
                         defaultValue={status}
-                        className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-sky-500"
+                        className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                     >
                         <option value="">All status</option>
                         <option value="draft">Draft</option>
@@ -111,6 +115,9 @@ export default async function StoresPage({ searchParams }: PageProps) {
                     getRowKey={(row) => row.id}
                 />
             )}
-        </div>
+            <SkipBackendPanel title="Merchant suspension actions" contract="/v1/internal/console/stores/:id/moderation">
+                Search and directory review are available. Freeze, unfreeze, risk score, and escalation actions need a mutation endpoint with idempotency and audit writes.
+            </SkipBackendPanel>
+        </ConsoleWorkspace>
     );
 }

@@ -1,4 +1,10 @@
 import {
+    ConsoleWorkspace,
+    LeadershipMetric,
+    MetricGrid,
+    SkipBackendPanel,
+} from '@/components/_local-ui/console-workspace';
+import {
     ConsoleApiErrorPanel,
     ConsoleDataTable,
     ConsoleSearchForm,
@@ -92,17 +98,17 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
     const pageRevenuePaise = rows.reduce((total, row) => total + Number(row.amount_paid || 0), 0);
 
     return (
-        <div className="space-y-6 p-8">
+        <ConsoleWorkspace
+            eyebrow="Billing control"
+            title="Subscriptions"
+            description="Plan status, paid value, payment gateway, and current billing periods from the console subscription list endpoint."
+        >
             <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-zinc-50">Subscriptions & Billing</h1>
-                    <p className="mt-1 text-sm text-zinc-400">Revenue, invoices, and plan management.</p>
-                </div>
                 <ConsoleSearchForm placeholder="Search subscriptions..." defaultValue={q}>
                     <select
                         name="status"
                         defaultValue={status}
-                        className="min-h-11 rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-zinc-100 outline-none transition-colors focus:border-sky-500"
+                        className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none transition-colors focus:border-[var(--lb-color-primary)]"
                     >
                         <option value="">All status</option>
                         <option value="active">Active</option>
@@ -113,11 +119,12 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
                 </ConsoleSearchForm>
             </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-                <MetricTile label="Page Revenue" value={formatMoneyFromPaise(pageRevenuePaise)} />
-                <MetricTile label="Active On Page" value={String(rows.filter((row) => row.status === 'active').length)} />
-                <MetricTile label="Total Records" value={String(result.data?.meta.total || 0)} />
-            </div>
+            <MetricGrid>
+                <LeadershipMetric label="Page revenue" value={formatMoneyFromPaise(pageRevenuePaise)} />
+                <LeadershipMetric label="Active on page" value={String(rows.filter((row) => row.status === 'active').length)} />
+                <LeadershipMetric label="Total records" value={String(result.data?.meta.total || 0)} />
+                <LeadershipMetric label="Past due on page" value={String(rows.filter((row) => row.status === 'past_due').length)} tone="warning" />
+            </MetricGrid>
 
             {result.error ? (
                 <ConsoleApiErrorPanel title="Subscriptions API unavailable" message={result.error} />
@@ -132,15 +139,9 @@ export default async function SubscriptionsPage({ searchParams }: PageProps) {
                     getRowKey={(row) => row.id}
                 />
             )}
-        </div>
-    );
-}
-
-function MetricTile({ label, value }: { label: string; value: string }) {
-    return (
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-            <p className="text-sm font-medium text-zinc-400">{label}</p>
-            <p className="mt-2 text-2xl font-bold text-zinc-50">{value}</p>
-        </section>
+            <SkipBackendPanel title="Invoices and subscription mutations" contract="/v1/internal/console/invoices and /v1/internal/console/subscriptions/:id">
+                The gateway exposes read-only subscription listing. Invoice download, plan override, cancellation, and retry actions need audited backend mutations.
+            </SkipBackendPanel>
+        </ConsoleWorkspace>
     );
 }

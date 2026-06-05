@@ -142,9 +142,9 @@ export function ConsoleSearchForm({
 
 export function ConsoleApiErrorPanel({ title, message }: { title: string; message: string }) {
     return (
-        <section className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-5 text-amber-100">
-            <h2 className="text-sm font-semibold">{title}</h2>
-            <p className="mt-1 text-sm text-amber-100/80">{message}</p>
+        <section className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] p-[var(--lb-space-5)]">
+            <h2 className="m-0 text-sm font-semibold text-[var(--lb-color-warning)]">{title}</h2>
+            <p className="m-0 mt-[var(--lb-space-1)] text-sm text-[var(--lb-color-text)]">{message}</p>
         </section>
     );
 }

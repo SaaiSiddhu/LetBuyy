@@ -1,3 +1,9 @@
+import {
+    ConsoleWorkspace,
+    LeadershipMetric,
+    MetricGrid,
+    SkipBackendPanel,
+} from '@/components/_local-ui/console-workspace';
 import { ConsoleApiErrorPanel } from '@/components/ConsoleDataTable';
 import { fetchConsoleApi, type ConsoleDataResponse } from '@/lib/console-api';
 
@@ -15,35 +21,25 @@ export default async function ConsoleAnalyticsPage() {
     const analytics = result.data?.data;
 
     return (
-        <div className="space-y-6 p-8">
-            <div>
-                <h1 className="text-2xl font-bold text-zinc-50">Platform Analytics</h1>
-                <p className="mt-1 text-sm text-zinc-400">Growth metrics from the last {analytics?.period_days || 30} days.</p>
-            </div>
-
+        <ConsoleWorkspace
+            eyebrow="Analytics"
+            title="Platform Analytics"
+            description={`Growth metrics from the last ${analytics?.period_days || 30} days.`}
+        >
             {result.error ? (
                 <ConsoleApiErrorPanel title="Analytics API unavailable" message={result.error} />
             ) : (
-                <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                    <AnalyticsTile label="New Signups" value={String(analytics?.new_signups || 0)} />
-                    <AnalyticsTile label="Stores Created" value={String(analytics?.stores_created || 0)} />
-                    <AnalyticsTile label="New Subscriptions" value={String(analytics?.subscriptions_created || 0)} />
-                    <AnalyticsTile label="Audit Events" value={String(analytics?.audit_events || 0)} />
-                    <AnalyticsTile
-                        label="Signup To Store"
-                        value={`${analytics?.signup_to_store_conversion_percent || 0}%`}
-                    />
-                </div>
+                <MetricGrid>
+                    <LeadershipMetric label="New signups" value={String(analytics?.new_signups || 0)} />
+                    <LeadershipMetric label="Stores created" value={String(analytics?.stores_created || 0)} />
+                    <LeadershipMetric label="New subscriptions" value={String(analytics?.subscriptions_created || 0)} />
+                    <LeadershipMetric label="Audit events" value={String(analytics?.audit_events || 0)} />
+                    <LeadershipMetric label="Signup to store" value={`${analytics?.signup_to_store_conversion_percent || 0}%`} />
+                </MetricGrid>
             )}
-        </div>
-    );
-}
-
-function AnalyticsTile({ label, value }: { label: string; value: string }) {
-    return (
-        <section className="rounded-lg border border-zinc-800 bg-zinc-900 p-5">
-            <p className="text-sm font-medium text-zinc-400">{label}</p>
-            <p className="mt-2 text-2xl font-bold text-zinc-50">{value}</p>
-        </section>
+            <SkipBackendPanel title="Funnels, cohorts, and segmented dashboards" contract="/v1/internal/console/analytics/funnels">
+                The gateway exposes 30-day growth counters only. Product funnels, retention cohorts, marketplace analytics, and partner scorecards need aggregate endpoints.
+            </SkipBackendPanel>
+        </ConsoleWorkspace>
     );
 }
