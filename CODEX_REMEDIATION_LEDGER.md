@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 6 — P4 Product.
-- Current work item: P4-4 API-ownership consolidation and validator.
+- Current work item: P4-5 developer-portal deployment decision.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -479,6 +479,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and declaration artifacts were removed.
 
+### P4-4 — API ownership consolidation and validator
+
+- Added `docs/governance/app-api-route-ownership.md` as the app-local API ownership source of truth, classifying routes as gateway proxies, local auth/session routes, operator auth, or blocked local safety routes.
+- Extended `scripts/validators/domain-boundary-validator.mjs` to inventory all 115 app-local API route handlers, require classification, ban direct app-local database/provider mutation access, and reject app-local commerce/payment/customer mutation logic.
+- Migrated storefront customer app routes off `@/lib/customer-service` and onto the typed gateway client for customer bootstrap, status, login, reset confirmation, wishlist, wishlist sync, and order history.
+- Removed the client-controlled `orderId`/`orderTotal` forwarding path from checkout auto-create and deleted the local `updateCustomerStats` helper so order counters stay under the gateway boundary.
+- Kept the three legacy storefront order-lookup adapters explicitly classified as temporary presentation adapters until their remaining order-service dependency is retired.
+
+Evidence:
+- `node scripts/validators/domain-boundary-validator.mjs` — PASS, 115 app API route ownership records checked.
+- `node --test tests/federation/app-api-route-ownership.test.mjs` — PASS, 3/3 tests.
+- `node --test tests/federation/app-api-route-ownership.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs` — PASS, 8/8 tests.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck` — PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/storefront-runtime lint` — PASS with 21 pre-existing warnings, 0 errors.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and `tsconfig.tsbuildinfo` were removed.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -628,6 +645,13 @@ Evidence:
 - `node scripts/validators/migration-safety-validator.mjs` — PASS after `087_theme_template_drafts.sql`.
 - `git diff --check` — PASS after P4-1 multi-template editor.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-1 multi-template editor and generated artifact cleanup.
+- `node scripts/validators/domain-boundary-validator.mjs` — PASS, 115 app API route ownership records checked.
+- `node --test tests/federation/app-api-route-ownership.test.mjs` — PASS, 3/3 tests.
+- `node --test tests/federation/app-api-route-ownership.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs` — PASS, 8/8 tests.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck` — PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/storefront-runtime lint` — PASS, warnings only.
+- `git diff --check` — PASS after P4-4 API ownership consolidation.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-4 API ownership consolidation and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 

@@ -1,17 +1,19 @@
 // GET/POST/DELETE /api/customer/wishlist — Wishlist CRUD (protected)
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/session';
-import {
-    getCustomerWishlist,
-    addToWishlist,
-    removeFromWishlist,
-} from '@/lib/customer-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 // GET — Fetch wishlist
 export async function GET() {
     try {
         const session = await requireSession();
-        const items = await getCustomerWishlist(session.sub!, session.storeId);
+        const payload = await createStorefrontApiClient()
+            .storefront
+            .customerWishlist({
+                customer_id: session.sub!,
+                store_id: session.storeId,
+            });
+        const items = Array.isArray(payload.product_ids) ? payload.product_ids : [];
         return NextResponse.json({ productIds: items });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === 'Authentication required') {
@@ -31,7 +33,14 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'productId is required' }, { status: 400 });
         }
 
-        await addToWishlist(session.sub!, session.storeId, productId, variantId);
+        await createStorefrontApiClient()
+            .storefront
+            .addCustomerWishlistItem({
+                customer_id: session.sub!,
+                store_id: session.storeId,
+                product_id: productId,
+                variant_id: variantId || null,
+            });
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === 'Authentication required') {
@@ -51,7 +60,13 @@ export async function DELETE(request: NextRequest) {
             return NextResponse.json({ error: 'productId is required' }, { status: 400 });
         }
 
-        await removeFromWishlist(session.sub!, productId, session.storeId);
+        await createStorefrontApiClient()
+            .storefront
+            .removeCustomerWishlistItem({
+                customer_id: session.sub!,
+                store_id: session.storeId,
+                product_id: productId,
+            });
         return NextResponse.json({ success: true });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === 'Authentication required') {

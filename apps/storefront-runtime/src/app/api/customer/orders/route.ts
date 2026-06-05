@@ -1,12 +1,18 @@
 // GET /api/customer/orders — Customer's order history (protected)
 import { NextResponse } from 'next/server';
 import { requireSession } from '@/lib/session';
-import { getCustomerOrders } from '@/lib/customer-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 export async function GET() {
     try {
         const session = await requireSession();
-        const orders = await getCustomerOrders(session.storeId, session.email);
+        const payload = await createStorefrontApiClient()
+            .storefront
+            .customerOrders({
+                store_id: session.storeId,
+                email: session.email,
+            });
+        const orders = Array.isArray(payload.orders) ? payload.orders : [];
         return NextResponse.json({ orders });
     } catch (error: unknown) {
         if (error instanceof Error && error.message === 'Authentication required') {

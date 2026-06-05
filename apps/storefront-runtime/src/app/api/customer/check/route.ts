@@ -1,6 +1,6 @@
 // GET /api/customer/check — Check if customer exists and has a password
 import { NextRequest, NextResponse } from 'next/server';
-import { checkCustomerStatus } from '@/lib/customer-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 export async function GET(request: NextRequest) {
     try {
@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
             );
         }
 
-        const result = await checkCustomerStatus(storeId, email);
+        const result = await createStorefrontApiClient()
+            .storefront
+            .customerStatus({ store_id: storeId, email });
         return NextResponse.json(result);
     } catch (error) {
         console.error('[API] /customer/check error:', error);

@@ -1,11 +1,11 @@
 // POST /api/customer/auto-create — Auto-create customer record after checkout
 // Called by checkout-client.tsx after successful order placement
 import { NextRequest, NextResponse } from 'next/server';
-import { findOrCreateCustomer, updateCustomerStats } from '@/lib/customer-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 
 export async function POST(request: NextRequest) {
     try {
-        const { storeId, email, fullName, phone, orderTotal, orderId } = await request.json();
+        const { storeId, email, fullName, phone } = await request.json();
 
         if (!storeId || !email) {
             return NextResponse.json(
@@ -14,13 +14,12 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Find or create the customer
-        await findOrCreateCustomer(storeId, email, fullName, phone);
-
-        // Update stats if order info is provided
-        if (orderTotal !== undefined && orderTotal !== null && orderId) {
-            await updateCustomerStats(storeId, email, Number(orderTotal), orderId);
-        }
+        await createStorefrontApiClient().storefront.findOrCreateCustomer({
+            store_id: storeId,
+            email,
+            full_name: fullName || null,
+            phone: phone || null,
+        });
 
         return NextResponse.json({ success: true });
     } catch {

@@ -173,6 +173,94 @@ const themeMarketplaceService = readFile("apps/theme-marketplace/src/lib/theme-s
 reporter.assert(themeMarketplaceService.includes("@letbuyy/theme-engine"), "Theme marketplace service query contracts must consume theme-engine contracts");
 reporter.assert(!/\bexport\s+interface\s+Theme(SearchResult|Filters)\b/.test(themeMarketplaceService), "Theme marketplace service must not define reusable theme query DTOs locally");
 
+const appApiOwnershipDoc = readFile("docs/governance/app-api-route-ownership.md");
+reporter.assert(appApiOwnershipDoc.includes("P4-4 API Ownership Consolidation"), "App API route ownership governance doc must declare P4-4 authority");
+reporter.assert(appApiOwnershipDoc.includes("gateway-proxy"), "App API route ownership governance doc must classify gateway-proxy routes");
+reporter.assert(appApiOwnershipDoc.includes("app-local-session"), "App API route ownership governance doc must classify app-local session routes");
+reporter.assert(appApiOwnershipDoc.includes("blocked-local-safety"), "App API route ownership governance doc must classify blocked local safety routes");
+
+const appApiRoutes = listWorkspaceFiles(["apps"])
+  .filter((file) => /^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file))
+  .sort();
+
+function classifyAppApiRoute(file) {
+  if (file.startsWith("apps/identity-platform/src/app/api/auth/")) return "app-local-auth";
+  if (file.startsWith("apps/identity-platform/src/app/api/email/")) return "identity-gateway-proxy";
+  if (file.startsWith("apps/platform-console/src/app/api/console-auth/")) return "app-local-operator-auth";
+  if (file === "apps/merchant-control-plane/src/app/api/auth/logout/route.ts") return "app-local-session";
+  if (file.startsWith("apps/merchant-control-plane/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/app-marketplace/src/app/api/")) return "gateway-proxy";
+  if (file.startsWith("apps/theme-marketplace/src/app/api/")) return "gateway-proxy";
+  if (file === "apps/storefront-runtime/src/app/api/customer/session/route.ts") return "app-local-session";
+  if (file === "apps/storefront-runtime/src/app/api/customer/logout/route.ts") return "app-local-session";
+  if (file === "apps/storefront-runtime/src/app/api/seed/route.ts") return "blocked-local-safety";
+  if (file === "apps/storefront-runtime/src/app/api/themes/install/route.ts") return "blocked-local-safety";
+  if (file.startsWith("apps/storefront-runtime/src/app/api/")) return "gateway-proxy";
+  return null;
+}
+
+const routeOwnershipCounts = new Map();
+for (const file of appApiRoutes) {
+  const classification = classifyAppApiRoute(file);
+  reporter.assert(Boolean(classification), `App-local API route lacks ownership classification: ${file}`);
+  routeOwnershipCounts.set(classification, (routeOwnershipCounts.get(classification) || 0) + 1);
+}
+
+reporter.assert(appApiRoutes.length === 115, `App-local API route inventory changed without updating P4-4 classification: expected 115, found ${appApiRoutes.length}`);
+
+function appLocalOwnershipForFile(file) {
+  if (/^apps\/[^/]+\/src\/app\/api\/.+\/route\.ts$/.test(file)) {
+    return classifyAppApiRoute(file);
+  }
+  if (file.startsWith("apps/identity-platform/src/lib/")) return "app-local-auth";
+  if (file === "apps/platform-console/src/lib/console-auth-server.ts") return "app-local-operator-auth";
+  return null;
+}
+
+function isAuthOwnedLocalFile(file) {
+  const ownership = appLocalOwnershipForFile(file);
+  return ownership === "app-local-auth" || ownership === "app-local-operator-auth";
+}
+
+const appApiAndLibFiles = listWorkspaceFiles(["apps"])
+  .filter((file) => /^apps\/[^/]+\/src\/(?:app\/api|lib)\//.test(file) && /\.(ts|tsx)$/.test(file))
+  .sort();
+
+const directDbOrProviderMutationPattern =
+  /from\s+['"]@supabase\/|from\s+['"][^'"]*\/supabase(?:['"]|\/)|\bSUPABASE_SERVICE_ROLE\b|\bservice_role\b|\bcreateServerClient\b|\bcreateClient\s*\(|\.from\s*\(\s*['"`]|\bprisma\.|\bdrizzle\b|\bsql`/;
+const appLocalCommerceLogicPattern =
+  /\borderTotal\b|\border_total\b|\bupdateCustomerStats\b|\binventory.*(?:decrement|increment)\b/i;
+const appLocalCredentialStoragePattern = /\bpassword_hash\b/i;
+const appLocalProviderSignaturePattern = /\brazorpay_signature\b|\bstripe\.webhooks\b|\bcreateHmac\b|\btimingSafeEqual\b/i;
+
+for (const file of appApiAndLibFiles) {
+  const content = readFile(file);
+  reporter.assert(!directDbOrProviderMutationPattern.test(content), `App-local API/lib file must not access databases or provider mutation SDKs directly: ${file}`);
+  reporter.assert(!appLocalCommerceLogicPattern.test(content), `App-local API/lib file must not own commerce/payment/customer mutation logic: ${file}`);
+  reporter.assert(!appLocalCredentialStoragePattern.test(content) || isAuthOwnedLocalFile(file), `App-local API/lib file must not handle password hashes outside auth-owned routes: ${file}`);
+  reporter.assert(!appLocalProviderSignaturePattern.test(content) || isAuthOwnedLocalFile(file), `App-local API/lib file must not verify provider signatures outside auth-owned routes: ${file}`);
+}
+
+const storefrontRoutesUsingCustomerService = appApiRoutes.filter((file) => readFile(file).includes("@/lib/customer-service"));
+reporter.assert(
+  storefrontRoutesUsingCustomerService.length === 0,
+  `Storefront app API routes must call the typed gateway client directly, not customer-service helpers: ${storefrontRoutesUsingCustomerService.join(", ")}`,
+);
+
+const allowedOrderPresentationAdapters = new Set([
+  "apps/storefront-runtime/src/app/api/orders/check/route.ts",
+  "apps/storefront-runtime/src/app/api/orders/login/route.ts",
+  "apps/storefront-runtime/src/app/api/orders/set-password/route.ts",
+]);
+const appRoutesUsingOrderService = appApiRoutes.filter((file) => readFile(file).includes("@/lib/order-service"));
+for (const file of appRoutesUsingOrderService) {
+  reporter.assert(
+    allowedOrderPresentationAdapters.has(file),
+    `Only the classified storefront order lookup adapter may import order-service; use the typed gateway client instead: ${file}`,
+  );
+}
+reporter.assert(appRoutesUsingOrderService.length === allowedOrderPresentationAdapters.size, "Classified storefront order lookup adapter inventory changed; update P4-4 ownership governance");
+
 const mobileMerchantModelFacades = [
   "apps/mobile/merchant-app/lib/models/order_model.dart",
   "apps/mobile/merchant-app/lib/models/store_auth_request_model.dart",
@@ -187,4 +275,4 @@ for (const file of mobileMerchantModelFacades) {
   reporter.assert(!/\b(class|enum)\s+\w+/.test(content), `Mobile merchant app must not define shared model classes locally: ${file}`);
 }
 
-reporter.finish(`${Object.keys(domainPackages).length} domain packages and ${Object.keys(extractedSchemaFacades).length} schema facades checked`);
+reporter.finish(`${Object.keys(domainPackages).length} domain packages, ${Object.keys(extractedSchemaFacades).length} schema facades, and ${appApiRoutes.length} app API route ownership records checked`);

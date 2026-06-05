@@ -1,7 +1,11 @@
 // POST /api/customer/login — Authenticate with email/password
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyCustomerPassword } from '@/lib/customer-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 import { createSession } from '@/lib/session';
+
+function stringValue(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -14,7 +18,14 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const customer = await verifyCustomerPassword(storeId, email, password, turnstileToken);
+        const { customer } = await createStorefrontApiClient()
+            .storefront
+            .verifyCustomerPassword({
+                store_id: storeId,
+                email,
+                password,
+                turnstile_token: turnstileToken || null,
+            });
 
         if (!customer) {
             return NextResponse.json(
@@ -23,20 +34,29 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const customerId = stringValue(customer.id);
+        const customerStoreId = stringValue(customer.store_id || storeId);
+        const customerEmail = stringValue(customer.email || email);
+        const fullName = stringValue(customer.full_name) || null;
+
+        if (!customerId || !customerStoreId || !customerEmail) {
+            return NextResponse.json({ error: 'Invalid customer session response' }, { status: 502 });
+        }
+
         await createSession({
-            id: customer.id,
-            storeId: customer.storeId,
-            email: customer.email,
-            fullName: customer.fullName,
+            id: customerId,
+            storeId: customerStoreId,
+            email: customerEmail,
+            fullName,
         });
 
         return NextResponse.json({
             success: true,
             customer: {
-                id: customer.id,
-                email: customer.email,
-                fullName: customer.fullName,
-                storeId: customer.storeId,
+                id: customerId,
+                email: customerEmail,
+                fullName,
+                storeId: customerStoreId,
             },
         });
     } catch (error: unknown) {
