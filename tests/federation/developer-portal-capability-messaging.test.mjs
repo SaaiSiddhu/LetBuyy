@@ -12,8 +12,8 @@ const sdkPage = read('apps/developer-portal/src/app/sdk/page.tsx');
 const appEngine = read('packages/app-engine/src/index.ts');
 const themeRenderer = read('packages/theme-engine/src/theme-renderer.ts');
 const storefrontGraphQL = read('services/api-gateway/src/graphql/storefront.ts');
-const ws12Ledger = read('CODEX_WS12_LEDGER.md');
-const masterLedger = read('CODEX_MASTER_EXECUTION_LEDGER.md');
+const ws12Ledger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_WS12_LEDGER.md');
+const masterLedger = read('docs/archive/root-residue/2026-06-06-foundation-v2/CODEX_MASTER_EXECUTION_LEDGER.md');
 const ctoReport = read('docs/LETBUYY_CTO_WAR_ROOM_REPORT.md');
 const deepAuditReport = read('docs/LETBUYY_DEEP_AUDIT_REPORT.md');
 

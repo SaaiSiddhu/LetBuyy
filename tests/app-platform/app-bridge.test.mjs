@@ -3,10 +3,9 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { readAppStoreRouteSource, readStorefrontRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
-const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
-const STOREFRONT_ROUTE_SOURCE = 'services/api-gateway/src/routes/storefront.ts';
 const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
 const EXTENSION_HOST_SOURCE = 'packages/extension-host/src/index.ts';
 const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
@@ -111,7 +110,7 @@ test('admin app bridge resolves installed app embed surfaces safely', () => {
 
 test('admin app bridge sends iframe API calls through the gateway with the app session token', () => {
   const bridgeClient = readFileSync(EMBEDDED_BRIDGE_CLIENT_SOURCE, 'utf8');
-  const appStoreRoute = readFileSync(APP_STORE_ROUTE_SOURCE, 'utf8');
+  const appStoreRoute = readAppStoreRouteSource();
   const sharedTypes = readFileSync(SHARED_TYPES_SOURCE, 'utf8');
 
   assert.match(sharedTypes, /api_base_url: UrlSchema/);
@@ -195,7 +194,7 @@ test('WS13 X3 checkout UI extension host normalizes public registrations and mou
   const checkoutHostSource = readFileSync(CHECKOUT_EXTENSION_HOST_SOURCE, 'utf8');
   const checkoutClientSource = readFileSync(CHECKOUT_CLIENT_SOURCE, 'utf8');
   const checkoutPageSource = readFileSync(CHECKOUT_PAGE_SOURCE, 'utf8');
-  const storefrontRouteSource = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+  const storefrontRouteSource = readStorefrontRouteSource();
   const apiClientSource = readFileSync('packages/typescript/api-client/src/index.ts', 'utf8');
   const sharedTypes = readFileSync(SHARED_TYPES_SOURCE, 'utf8');
 
@@ -275,7 +274,7 @@ test('WS13 X3 checkout UI extension host normalizes public registrations and mou
 });
 
 test('WS13 X4 theme app blocks load from the per-store extension registry into WS11 slots', () => {
-  const storefrontRouteSource = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+  const storefrontRouteSource = readStorefrontRouteSource();
 
   assert.match(storefrontRouteSource, /function loadRegisteredThemeAppBlocks/);
   assert.match(storefrontRouteSource, /function appBlockFromRegistryRegistration/);
@@ -293,7 +292,7 @@ test('WS13 X4 theme app blocks load from the per-store extension registry into W
 test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisions', () => {
   const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
   const functionRuntimeSource = readFileSync(APP_FUNCTION_RUNTIME_SOURCE, 'utf8');
-  const storefrontRouteSource = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+  const storefrontRouteSource = readStorefrontRouteSource();
 
   assert.match(appEngineSource, /AppFunctionRuntimeInputSchema/);
   assert.match(appEngineSource, /AppFunctionRuntimeOutputSchema/);

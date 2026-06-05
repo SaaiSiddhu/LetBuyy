@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const BILLING_CORE_SOURCE = readFileSync('packages/billing-core/src/index.ts', 'utf8');
 const SHARED_TYPES_SOURCE = readFileSync('packages/shared-types/src/index.ts', 'utf8');
 const API_CLIENT_SOURCE = readFileSync('packages/typescript/api-client/src/index.ts', 'utf8');
-const APP_STORE_ROUTE_SOURCE = readFileSync('services/api-gateway/src/routes/app-store.ts', 'utf8');
+const APP_STORE_ROUTE_SOURCE = readAppStoreRouteSource();
 const EVENT_CORE_SOURCE = readFileSync('packages/event-core/src/index.ts', 'utf8');
 const QUEUE_EXECUTION_SOURCE = readFileSync('services/api-gateway/src/execution/queue-execution.adapter.ts', 'utf8');
 const BASELINE_SCHEMA = readFileSync('database/supabase/migrations/000_baseline.sql', 'utf8');

@@ -118,7 +118,19 @@ Started: 2026-06-05T13:54:14Z
 - Post-split `pnpm run test:contracts`: PASS - 25/25.
 - `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
 - `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/public-routes.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts services/api-gateway/src/routes/storefront/internal-payment-routes.ts`: `storefront.ts` 1,330 lines; public module 992 lines; checkout module 1,223 lines; customer module 1,500 lines; internal payment module 231 lines.
-- H-9 remains in progress because `app-store.ts` is still above the 1,500-line target.
+- App-store routes moved from `services/api-gateway/src/routes/app-store.ts` into `services/api-gateway/src/routes/app-store/extension-routes.ts`, `billing-oauth-routes.ts`, `install-lifecycle-routes.ts`, `developer-routes.ts`, and `shared.ts`; root `app-store.ts` now only owns marketplace catalog/review routes and registration order.
+- `tests/contracts/app-store-route-split.test.ts`: added before extraction and kept green after extraction; it verifies app-store route order and critical install/bridge/event/partner safeguards.
+- Existing app-platform/federation source tests now read combined effective app-store/storefront route sources after route modules are introduced.
+- Post-split `pnpm run test:contracts`: PASS - 28/28.
+- Post-split `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 106/106.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `find services/api-gateway/src/routes -name '*.ts' -type f -print0 | xargs -0 wc -l | sort -nr | head`: largest route file is `services/api-gateway/src/routes/storefront/customer-engagement-routes.ts` at 1,500 lines; all API gateway route files are <=1,500.
+- `node scripts/validators/route-line-count-validator.mjs`: PASS - 42 api-gateway route files checked at <=1,500 lines.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators, including `route-line-count-validator.mjs`.
+- H-9 is DONE for F1.6 after route-size governance is locked by `route-line-count-validator.mjs`.
 
 ## V2 P-1 gate evidence
 
@@ -145,6 +157,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the F1.6 storefront public route split.
-- Continue F1.6 by splitting `services/api-gateway/src/routes/app-store.ts` under characterization coverage.
-- Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.
+- Commit the completed F1.6 god-file split.
+- Continue to F2 after the F1.6 commit.
+- Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

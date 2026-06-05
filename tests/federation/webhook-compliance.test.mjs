@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
+import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const APP_ENGINE = 'packages/app-engine/src/index.ts';
-const APP_STORE_ROUTE = 'services/api-gateway/src/routes/app-store.ts';
 const OUTBOX_ADAPTER = 'services/api-gateway/src/execution/outbox-execution.adapter.ts';
 const WEBHOOK_SERVICE = 'services/webhook-service/src/index.ts';
 const WEBHOOK_DISPATCH = 'services/webhook-service/src/app-lifecycle-dispatch.ts';
@@ -15,7 +15,7 @@ function source(path) {
 
 test('app installs auto-subscribe app webhooks to mandatory compliance topics', () => {
   const appEngine = source(APP_ENGINE);
-  const appStore = source(APP_STORE_ROUTE);
+  const appStore = readAppStoreRouteSource();
 
   assert.match(appEngine, /MANDATORY_COMPLIANCE_WEBHOOK_TOPICS/);
   assert.match(appEngine, /'customers\/data_request'/);

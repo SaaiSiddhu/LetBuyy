@@ -3,15 +3,15 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
 import ts from 'typescript';
+import { readAppStoreRouteSource } from '../helpers/app-store-route-source.mjs';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
-const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
 const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
 const DEVELOPER_REFERENCE_SOURCE = 'apps/developer-portal/src/lib/reference.ts';
 const OPERATIONS_REVIEW_PAGE_SOURCE = 'apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx';
 const APP_EXTENSION_REGISTRY_MIGRATION = 'database/supabase/migrations/076_app_extension_registry.sql';
 const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
-const appStoreRouteSource = readFileSync(APP_STORE_ROUTE_SOURCE, 'utf8');
+const appStoreRouteSource = readAppStoreRouteSource();
 const appFunctionRuntimeSource = readFileSync(APP_FUNCTION_RUNTIME_SOURCE, 'utf8');
 const developerReferenceSource = readFileSync(DEVELOPER_REFERENCE_SOURCE, 'utf8');
 const operationsReviewPageSource = readFileSync(OPERATIONS_REVIEW_PAGE_SOURCE, 'utf8');

@@ -19,6 +19,7 @@
 
 ## PROGRESS LOG
 
+- 2026-06-05T20:27:14Z [F1.6-GATE] H-9/C-1 god-file split - DONE - evidence: `services/api-gateway/src/routes/app-store.ts` split into `routes/app-store/{extension-routes,billing-oauth-routes,install-lifecycle-routes,developer-routes,shared}.ts`; `tests/contracts/app-store-route-split.test.ts` added before extraction and kept green after extraction; existing app-platform/federation source tests read combined effective app-store/storefront route sources; `node scripts/validators/route-line-count-validator.mjs` -> PASS across 42 api-gateway route files; `find services/api-gateway/src/routes -name '*.ts' -type f -print0 | xargs -0 wc -l | sort -nr | head` -> largest route file is `storefront/customer-engagement-routes.ts` at 1,500 lines and all route files are <=1,500; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm run test:contracts` -> 28/28 PASS; `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs` -> 106/106 PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; generated artifacts cleaned; `pnpm run validate:governance` -> 136/136 PASS.
 - 2026-06-05T20:11:31Z [F1.6] H-9 storefront public route split - DONE for `storefront.ts` - evidence: pre-split `pnpm run test:contracts` -> 25/25 PASS with new `tests/contracts/storefront-public-routes.test.ts`; extracted remaining public storefront lookup/directory/store/bootstrap/status/catalog/CMS/blog/contact route band to `services/api-gateway/src/routes/storefront/public-routes.ts`; post-split `pnpm run test:contracts` -> 25/25 PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/public-routes.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts services/api-gateway/src/routes/storefront/internal-payment-routes.ts` -> `storefront.ts` 1,330 lines, public module 992 lines, checkout module 1,223 lines, customer module 1,500 lines, internal payment module 231 lines. H-9 remains IN PROGRESS because `app-store.ts` is still 2,797 lines.
 - 2026-06-05T20:05:55Z [F1.6] H-9 storefront checkout/payment route split - IN PROGRESS - evidence: pre-split `pnpm run test:contracts` -> 22/22 PASS with new `tests/contracts/storefront-checkout-payment-routes.test.ts`; extracted checkout order creation and Razorpay/Cashfree/Stripe/PayPal storefront payment routes to `services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`; post-split `pnpm run test:contracts` -> 22/22 PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts` -> `storefront.ts` 2,206 lines, extracted module 1,223 lines. H-9 remains IN PROGRESS because `storefront.ts` and `app-store.ts` remain above 1,500 lines.
 - 2026-06-05T20:02:06Z [F1.6] H-9 storefront customer engagement route split - IN PROGRESS - evidence: pre-split `pnpm run test:contracts` -> 19/19 PASS with new `tests/contracts/storefront-customer-engagement-routes.test.ts`; extracted customer/password/login/order-credential/wishlist/order-contact/review/address routes to `services/api-gateway/src/routes/storefront/customer-engagement-routes.ts`; post-split `pnpm run test:contracts` -> 19/19 PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts` -> `storefront.ts` 3,372 lines, extracted module 1,500 lines. H-9 remains IN PROGRESS because `storefront.ts` and `app-store.ts` remain above 1,500 lines.
@@ -70,7 +71,7 @@
 | N-4 | DONE - internal domain-event ingress rejects uncontracted types; payment/refund/subscription topics are contracted | P1.4 |
 | N-5 | DONE - gateway event emission client single-sourced in `@letbuyy/infrastructure/gateway-events-adapter` | P1.5 |
 | N-6 | DONE - source-tree CODEX ledger residue archived and orphan `webhook-deliveries` queue producer removed | P1.6 |
-| C-1 | IN PROGRESS - modular-monolith default; extraction skipped pending human decision | F1 |
+| C-1 | DONE - modular-monolith default kept; storefront/app-store god-files split under characterization coverage; service extraction remains SKIPPED pending human architecture decision | F1.6 |
 | C-2 | DONE | F0.2 |
 | C-3 | PENDING | F2.1 |
 | C-4 | PENDING | F2.3 |
@@ -92,7 +93,7 @@
 | H-6 | PENDING | F2.2 |
 | H-7 | PENDING | F4.1 |
 | H-8 | PENDING | F7.2 |
-| H-9 | IN PROGRESS - `storefront.ts` split below target; `app-store.ts` 2,797 lines remains above target | F1.6 |
+| H-9 | DONE - all api-gateway route files are <=1,500 lines and the route-size invariant is validator-guarded | F1.6 |
 | H-10 | DONE | F1.3 |
 | H-11 | SKIPPED -- NEEDS HUMAN: payout rail/policy/credentials required for release or failure emitter | F1.4 |
 | H-12 | DONE | F1.5 |
@@ -114,3 +115,4 @@
 - 2026-06-05T15:09:20Z `pnpm run validate:governance` -> 129/129 PASS after moving `outbox_events` emission behind gateway-owned internal events and expanding Single-Writer checks to 106 service source files.
 - 2026-06-05T15:18:13Z `pnpm run validate:governance` -> 129/129 PASS after splitting storefront internal payment routes and adding characterization coverage.
 - 2026-06-05T19:51:04Z `pnpm run validate:governance` -> 135/135 PASS after adding fail-closed internal routes, replayable-secret persistence, contracted-domain-event ingress, shared gateway-events client, orphan webhook-deliveries queue, and source-ledger residue validators.
+- 2026-06-05T20:27:14Z `pnpm run validate:governance` -> 136/136 PASS after adding `route-line-count-validator.mjs` and completing the storefront/app-store god-file split.
