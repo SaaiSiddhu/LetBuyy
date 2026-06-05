@@ -18,7 +18,7 @@ export async function POST(
             csv: body.csv,
         })
 
-        return NextResponse.json({ data: payload }, { status: 201 })
+        return NextResponse.json({ data: payload }, { status: 202 })
     } catch (err) {
         return merchantApiErrorResponse(err, 'Unable to import products')
     }

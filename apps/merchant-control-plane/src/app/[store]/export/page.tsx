@@ -324,12 +324,14 @@ export default function ExportPage() {
                 throw new Error(getErrorMessage(payload, 'Unable to import products'))
             }
 
-            const imported = Number(payload?.data?.imported || 0)
-            const message = `Successfully imported ${imported.toLocaleString('en-IN')} products.`
+            const jobId = typeof payload?.data?.job?.id === 'string' ? payload.data.job.id : null
+            const message = jobId
+                ? `Product import queued. Job ${jobId.slice(0, 8)} will finish in the background.`
+                : 'Product import queued and will finish in the background.'
             clearImportFile()
             setImportResult({ tone: 'success', message })
             notify({
-                title: 'Products imported',
+                title: 'Import queued',
                 description: message,
                 variant: 'success',
             })

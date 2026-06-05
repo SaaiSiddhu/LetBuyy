@@ -647,9 +647,19 @@ export type ProductImportInput = {
   store_id: string;
   csv: string;
 };
+export interface ExportJobSummary extends JsonRecord {
+  id: string;
+  type: 'products' | 'orders' | 'product_import';
+  status: 'queued' | 'running' | 'completed' | 'failed';
+  row_count: number;
+  filename: string;
+  download_url: string;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+}
 export type ProductImportResult = {
-  imported: number;
-  products: Array<{ id: string; name: string }>;
+  job: ExportJobSummary;
 };
 export type ThemeInstallInput = {
   store_id: string;

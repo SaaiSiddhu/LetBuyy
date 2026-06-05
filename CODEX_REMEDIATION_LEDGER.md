@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 4 — P2 Performance.
-- Current work item: P2-6 async R2 export.
+- Current work item: P2-7 variant diff + checkout deferral.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -322,6 +322,22 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P2-6 — Async R2 CSV export and capped import
+
+- Replaced synchronous gateway `/export/products` and `/export/orders` CSV responses with `202` async export jobs.
+- Export jobs write status JSON and streamed CSV results to `R2_BUCKET`, use selected columns, read in bounded `EXPORT_BATCH_SIZE` pages, and return signed download URLs through `/export/jobs/:id/download`.
+- Added product import jobs backed by R2 source objects and `waitUntil` processing, capped at 500 rows per job.
+- Updated the API client import result contract and merchant-control-plane import proxy/page to report queued background imports instead of synchronous completion.
+- Added static regression coverage that rejects `select('*')`, in-memory CSV joins, uncapped import, and missing R2/signed-download job plumbing.
+
+Evidence:
+- `node --test tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 21/21 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after rebuilding referenced declarations.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck` — PASS after restoring workspace dependency links.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -412,6 +428,12 @@ Evidence:
 - `node scripts/validators/migration-safety-validator.mjs` — PASS after `084_trigram_search_indexes.sql`.
 - `git diff --check` — PASS after trigram search index migration.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after trigram search index migration.
+- `node --test tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 21/21 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after async export route changes.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after async import contract update and referenced declaration rebuild.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck` — PASS after import UI queued-state update and workspace link restore.
+- `git diff --check` — PASS after async export/import changes.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after async export/import changes and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -424,3 +446,4 @@ Evidence:
 - SKIP: Run the full release smoke suite with `LETBUYY_E2E_REQUIRE_REAL_STACK=1` on deployed staging and production — Reason: seeded smoke merchant credentials, smoke store/subdomain, live Worker redeploy with webhook secrets, and protected staging/production environments are human-controlled. Local-safe smoke currently skips the live checks; the reachable staging webhook returned 500 for bad Razorpay signature until secrets/redeploy are fixed. Resume point: Phase 2 release smoke proof; expected result is identity login, product read, checkout create, bad-signature 400, and queue health all green.
 - SKIP: Configure and prove full-fidelity Cloudflare Logpush/error export for api-gateway, queue-workers, and webhook-service — Reason: Cloudflare account log destination, dataset selection, and provider credentials are human-controlled. Resume point: P1-5 observability cost proof; expected result is Worker head sampling at 10% plus provider-backed error/full-fidelity export evidence.
 - SKIP: Apply `084_trigram_search_indexes.sql` to staging and capture `EXPLAIN (ANALYZE, BUFFERS)` proof for merchant search paths — Reason: live Supabase staging credentials and representative seeded datasets are human-controlled. Resume point: P2-5 search proof; expected result is Bitmap Index Scan/BitmapOr over trigram indexes for product/order/app/theme/internal-console search queries.
+- SKIP: Run 100k-row products/orders export and capped product import against deployed staging R2 — Reason: representative staging dataset, live R2 bucket, and deployed Worker credentials are human-controlled. Resume point: P2-6 export proof; expected result is queued job completion, streamed R2 CSV download, no request-path memory spike, and import jobs capped at 500 rows.
