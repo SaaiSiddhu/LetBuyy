@@ -650,7 +650,7 @@ Because the gateway exposes hundreds of routes, the table below groups endpoints
 | Storefront customer lookup | `/customer/find-or-create`, `/password`, `/by-email`, `/status`, `/orders` | Public | Partial/manual | `store_customers`, `orders` | None | Critical: weak customer session enforcement and enumeration risk. |
 | Merchant products | `GET/POST/PATCH/DELETE /v1/products` | Protected | Zod schemas from `commerce-core` | `products`, `product_options`, `product_variants`, inventory RPC, usage meters, outbox | None | Product create/update can be multi-write; variant update deletes/reinserts. |
 | Merchant orders | `GET/POST/PATCH /v1/orders`, fulfill/refund | Protected | Zod schemas | `orders`, `order_items`, idempotency, RPCs, outbox, logistics label | Logistics provider adapter in test mode | Good idempotency, but list joins and searches need indexes. |
-| Themes | `/themes`, `/schema`, `/editor`, `/draft`, `/publish`, `/preview-session`, `/releases`, `/packages/upload` | Mixed | Zod theme schemas | themes, store_themes, theme_instances, drafts, releases, packages, manifests | Razorpay for paid theme purchase | Strong JSON-contract flow; Liquid unsupported. |
+| Themes | `/themes`, `/schema`, `/editor`, `/draft`, `/publish`, `/preview-session`, `/releases`, `/packages/upload` | Mixed | Zod theme schemas | themes, store_themes, theme_instances, drafts, releases, packages, manifests | Razorpay for paid theme purchase | Strong JSON-contract flow with implemented LiquidJS rendering; messaging should describe both accurately. |
 | App marketplace | `/app-store/apps`, `/install`, `/oauth/*`, `/bridge/fetch`, `/charges` | Mixed | Some Zod, some manual | marketplace apps, installations, app charges, subscriptions, outbox | App webhooks via webhook worker | App bridge is useful but not full app runtime. |
 | Operations | `/operations/*` | Protected | Mixed | outbox, webhooks, queues, runtime evidence tables | Webhook service, queue drains | Powerful routes need strict role and approval enforcement. |
 | Analytics | `/analytics/dashboard`, `/revenue`, `/top-products`, `/orders` | Protected | Manual query | orders/products/customers | None | Some endpoints aggregate in app memory from selected rows. |
@@ -1021,13 +1021,13 @@ This is a solid start for a governed JSON theme ecosystem.
 
 ### Liquid Equivalent
 
-There is no implemented Liquid equivalent. `packages/theme-engine/src/theme-renderer.ts` defines:
+Remediation update: `packages/theme-engine/src/theme-renderer.ts` now implements a LiquidJS-backed `LiquidRenderer` alongside the JSON-contract renderer.
 
 - `ThemeRendererEngine = 'json-contract' | 'liquid'`
 - `JsonContractThemeRenderer` returns `status: 'rendered'`
-- `LiquidRenderer` returns `status: 'unsupported'` with warning that Liquid is reserved and not implemented in the JSON-contract phase.
+- `LiquidRenderer` imports `liquidjs` and returns `status: 'rendered'`
 
-This is the clearest theme-system gap against Shopify.
+The remaining theme-system gap is packaging, tooling, and public messaging around the Liquid plus JSON-contract model, not a missing Liquid renderer.
 
 ### Section and Block System
 

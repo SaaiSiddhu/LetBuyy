@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 6 — P4 Product.
-- Current work item: P4-3 docs and messaging alignment.
+- Current work item: No unblocked local remediation remains. Status is `BLOCKED — AWAITING HUMAN` for live credential, migration, staging, and production proof gates.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -479,6 +479,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and declaration artifacts were removed.
 
+### P4-3 — Developer capability messaging alignment
+
+- Updated the developer portal landing page, SDK guide, and API reference to describe the implemented LiquidJS-backed theme renderer plus JSON-contract bundle model.
+- Added public GraphQL capability messaging that says Storefront GraphQL `cart` returns `CART_NOT_SUPPORTED` until governed server-side cart persistence exists.
+- Documented checkout functions as advisory only: coupons, shipping method selection, payment method restriction, and validation errors; no arbitrary totals, taxes, line prices, or payment amounts.
+- Refreshed stale internal docs and WS12 ledgers that still described Liquid as unsupported or GraphQL cart as a silent `null` stub.
+- Added a source regression test to keep developer-facing capability messaging aligned with current theme, app-function, and GraphQL cart behavior.
+
+Evidence:
+- `node --test tests/federation/developer-portal-capability-messaging.test.mjs tests/api-graphql/schema-contract.test.mjs tests/theme-engine/liquid-renderer-contract.test.mjs tests/app-platform/app-bridge.test.mjs` — PASS, 24/24 tests.
+- `rg -n 'Liquid unsupported|unsupported Liquid|Liquid.*coming soon|coming soon.*Liquid|GraphQL cart.*null|returns .*cart: null|data\.cart\s*=\s*null' CODEX_WS12_LEDGER.md CODEX_MASTER_EXECUTION_LEDGER.md docs/P4_PRODUCT_MASTER.md docs/LETBUYY_MASTER_EXECUTION_PLAN.md docs/LETBUYY_CTO_WAR_ROOM_REPORT.md docs/LETBUYY_DEEP_AUDIT_REPORT.md apps/developer-portal/src || true` — PASS; remaining matches are historical/remediated provenance only.
+- `pnpm --filter @letbuyy/developer-portal typecheck` — PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/developer-portal lint` — PASS.
+- `find apps services packages -maxdepth 3 \( -name node_modules -o -name dist -o -name tsconfig.tsbuildinfo \) -print | sort` — PASS, no generated workspace artifacts after cleanup.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
+
 ### P4-4 — API ownership consolidation and validator
 
 - Added `docs/governance/app-api-route-ownership.md` as the app-local API ownership source of truth, classifying routes as gateway proxies, local auth/session routes, operator auth, or blocked local safety routes.
@@ -512,6 +529,16 @@ Evidence:
 - `pnpm --filter @letbuyy/developer-portal lint` — PASS.
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and `tsconfig.tsbuildinfo` were removed.
+
+### P4-6 — Shopify-depth roadmap
+
+- Revalidated `docs/P4_PRODUCT_MASTER.md` as the sequenced Shopify-depth roadmap and kept the advanced features explicitly out of the 100-merchant beta blocker set.
+- Confirmed the beta positioning remains narrow and honest: India-first store, themes, products, checkout, payments, orders, policies, and basic analytics, not Shopify parity.
+- No code change was required for this item because the acceptance criteria are roadmap communication and beta-scope discipline.
+
+Evidence:
+- `sed -n '100,125p' docs/P4_PRODUCT_MASTER.md` — PASS, roadmap tiers remain sequenced and marked non-blocking for the 100-merchant beta.
+- `rg -n "Shopify depth gaps|P4-6|100-merchant beta markets" docs/LETBUYY_MASTER_EXECUTION_PLAN.md docs/P4_PRODUCT_MASTER.md` — PASS, master and P4 docs preserve the narrow beta scope and depth-roadmap framing.
 
 ## VALIDATOR LEDGER
 
@@ -675,6 +702,11 @@ Evidence:
 - `pnpm --filter @letbuyy/developer-portal lint` — PASS.
 - `git diff --check` — PASS after P4-5 developer-portal deployment decision.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-5 developer-portal deployment decision and generated artifact cleanup.
+- `node --test tests/federation/developer-portal-capability-messaging.test.mjs tests/api-graphql/schema-contract.test.mjs tests/theme-engine/liquid-renderer-contract.test.mjs tests/app-platform/app-bridge.test.mjs` — PASS, 24/24 tests after P4-3 developer capability messaging alignment.
+- `pnpm --filter @letbuyy/developer-portal typecheck` — PASS after P4-3 developer capability messaging alignment and workspace dependency link restore.
+- `pnpm --filter @letbuyy/developer-portal lint` — PASS after P4-3 developer capability messaging alignment.
+- `git diff --check` — PASS after P4-3 developer capability messaging alignment.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-3 developer capability messaging alignment and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 

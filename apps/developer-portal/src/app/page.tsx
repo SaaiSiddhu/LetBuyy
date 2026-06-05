@@ -12,7 +12,7 @@ export default function HomePage() {
             <span className="developer-kicker">developers.letbuyy.store</span>
             <h1 className="developer-title">Build apps, themes, and automations on the real LetBuyy platform.</h1>
             <p className="developer-lede">
-              The developer portal is a docs-first workbench for the current `/v1` gateway, app OAuth, lifecycle webhooks, JSON-contract themes, and partner dashboard contracts.
+              The developer portal is a docs-first workbench for the current `/v1` gateway, app OAuth, lifecycle webhooks, Liquid plus JSON-contract themes, GraphQL rollout status, and partner dashboard contracts.
             </p>
             <div className="developer-actions">
               <Link className="developer-action primary" href="/api">Read API reference</Link>
@@ -52,6 +52,13 @@ export default function HomePage() {
               <h3>App installation</h3>
             </div>
             <p>Authorize a published marketplace app, persist an active installation, mint a short-lived authorization code, then exchange it for a scoped app access token.</p>
+          </article>
+          <article className="developer-card">
+            <div className="developer-icon-line">
+              <Badge label="Partial" variant="warning" />
+              <h3>Storefront GraphQL cart</h3>
+            </div>
+            <p>Storefront GraphQL is mounted, but `cart` returns `CART_NOT_SUPPORTED` until server-side cart persistence exists. Cart clients should use REST storefront checkout flows for now.</p>
           </article>
           <article className="developer-card">
             <div className="developer-icon-line">

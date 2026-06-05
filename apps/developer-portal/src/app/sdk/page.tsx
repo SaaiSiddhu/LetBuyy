@@ -7,7 +7,7 @@ export default function SdkPage() {
       <SectionHeading
         kicker="Theme SDK and App SDK"
         title="Quick-starts for the contracts that exist now"
-        description="Theme packages use the theme-engine JSON-contract bundle. Apps use app-engine registration, app extension, app block, OAuth scope, and webhook contracts. CLI and package SDKs are marked planned until they exist in the active workspace."
+        description="Theme packages use the theme-engine JSON-contract bundle with LiquidJS rendering support. Apps use app-engine registration, app extension, app block, checkout-function, OAuth scope, and webhook contracts. CLI and package SDKs are marked planned until they exist in the active workspace."
       />
 
       <section className="developer-two-column">
@@ -39,11 +39,11 @@ export default function SdkPage() {
         <div className="developer-grid three">
           <article className="developer-card">
             <h3>1. Theme</h3>
-            <p>Create a JSON-contract bundle with package metadata, settings schema/data, templates, sections, blocks, locales, and renderer manifest.</p>
+            <p>Create a JSON-contract bundle with package metadata, settings schema/data, templates, Liquid or JSON sections, blocks, locales, and renderer manifest.</p>
           </article>
           <article className="developer-card">
             <h3>2. App</h3>
-            <p>Register a developer profile, submit a marketplace app with scopes and extension config, then install through app OAuth authorization code flow.</p>
+            <p>Register a developer profile, submit a marketplace app with scopes and extension config, then install through app OAuth authorization code flow. Checkout Functions can advise coupons, shipping, payment method availability, and validation only.</p>
           </article>
           <article className="developer-card">
             <h3>3. Webhooks</h3>

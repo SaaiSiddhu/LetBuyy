@@ -124,7 +124,7 @@
 - [SKIP - NEEDS HUMAN] WS12 deployed staging GraphQL/bulk proof - requires staging gateway deployment credentials, seeded staging merchant/store/catalog/order/theme/app data, and R2/queue bindings for bulk JSONL result proof. Local source inventory is complete; staging proof resumes when credentials are available.
 
 ## SKIPPED - NEEDS BACKEND
-- [SKIP - NEEDS BACKEND] WS12 G3 persisted Storefront GraphQL cart read - the current gateway has checkout/order creation endpoints but no server-side persisted cart read endpoint to delegate `StorefrontQuery.cart(id:)` to. G3 returns `cart: null` rather than fabricating state; G4/G6 must add a governed cart persistence/read contract before live cart GraphQL proof can be marked complete.
+- [SKIP - NEEDS BACKEND] WS12 G3 persisted Storefront GraphQL cart read - the current gateway has checkout/order creation endpoints but no server-side persisted cart read endpoint to delegate `StorefrontQuery.cart(id:)` to. The resolver now fails loudly with `CART_NOT_SUPPORTED` instead of returning silent `null`; G4/G6 must add a governed cart persistence/read contract before live cart GraphQL proof can be marked complete.
 
 ## VALIDATOR LEDGER
 - 2026-06-05T04:45:55Z G6 post-commit gate: `pnpm run validate:governance` after `a57821bc` first failed only on generated local `scripts/.DS_Store`; after `rm -rf scripts/.DS_Store`, rerun `pnpm run validate:governance` -> PASS (128/128 validators; 2807 tracked files scanned).
