@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F2.5 app function Wasm limits complete; continue F2.6 developer tooling no-credential parts.
-- Findings resolved: 13/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F2.5 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F2.6 developer tooling no-credential parts complete; continue F3.1 real web theme-editor preview.
+- Findings resolved: 14/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F2.6 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -219,6 +219,27 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F2.6 developer tooling no-credential evidence
+
+- `packages/app-engine` now validates submitted LetBuyy app manifests, rejects listing/manifest slug drift, and plans extension/function registry records from package-owned contracts.
+- `POST /v1/app-store/developers/apps/manifest/validate` validates manifests for authenticated developers without persisting an app.
+- `POST /v1/app-store/developers/apps` accepts an optional manifest, persists the normalized extension/function records into existing app extension storage, and issues show-once OAuth/API credentials while persisting only SHA-256 hashes and non-secret metadata.
+- `POST /v1/app-store/developers/apps/:id/api-key` rotates a show-once API key for developer-owned apps and keeps persisted credential state hash-only.
+- `packages/typescript/api-client` exposes `validateDeveloperAppManifest`, `rotateDeveloperAppKey`, and a minimal `createLetbuyyAppSdk` wrapper over scoped app API products, orders, and installation-metadata calls.
+- `apps/developer-portal` documents the implemented manifest validation, hash-only credential issuance, key rotation backend, and minimal SDK honestly; full CLI/dedicated browser bridge SDK remains future work.
+- `pnpm run test:contracts`: PASS - 49/49, including `tests/contracts/developer-tooling-no-cred.test.ts`.
+- `node --test tests/federation/marketplace-submission-review.test.mjs`: PASS - 4/4 after updating source-shape expectations for credential and manifest response fields.
+- `pnpm --filter @letbuyy/shared-types build`: PASS.
+- `pnpm --filter @letbuyy/app-engine typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-client typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck`: PASS.
+- `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 108/108.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -242,8 +263,9 @@ Started: 2026-06-05T13:54:14Z
 - C-7 third-party section runtime/upload model requires product and sandbox scope decisions.
 - H-11 live payout release/failure emitters require payout policy, Razorpay Route/RazorpayX credentials, and an operations approval/runbook for release/failure transitions.
 - C-5 live app-charge payout release requires the same payout rail/policy/credentials; provider-verified app charge activation is implemented, but fund release remains human-gated.
+- H-13 staging proof that a developer registers an app, receives credentials, installs/exchanges for an app access token, and calls the SDK requires staging merchant/developer credentials plus staging gateway/session access. Exact proof path once supplied: authenticate a staging merchant/developer, `POST /v1/app-store/developers/register`, `POST /v1/app-store/developers/apps/manifest/validate`, `POST /v1/app-store/developers/apps`, complete the app install/OAuth token flow, then call `createLetbuyyAppSdk({ baseUrl: "https://api.staging.letbuyy.store", accessToken }).products()`.
 
 ## Next work
 
-- Continue to F2.6 developer tooling no-credential parts.
+- Continue to F3.1 real web theme-editor preview.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

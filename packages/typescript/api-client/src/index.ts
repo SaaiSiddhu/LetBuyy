@@ -257,6 +257,31 @@ export interface AppSubmissionInput extends JsonRecord {
   pricing_model: string;
   price_monthly?: number | string | null;
   save_as_draft?: boolean;
+  manifest?: JsonRecord;
+  oauth_redirect_uris?: string[];
+}
+export interface AppManifestValidationInput extends JsonRecord {
+  manifest: JsonRecord;
+}
+export interface AppManifestValidationResult extends JsonRecord {
+  valid: true;
+  schema_version: string;
+  manifest: JsonRecord;
+  extension_records: JsonRecord[];
+  function_records: JsonRecord[];
+  counts: {
+    extensions: number;
+    functions: number;
+  };
+}
+export interface AppDeveloperCredentialsResult extends JsonRecord {
+  oauth_client_id: string;
+  client_secret?: string;
+  api_key?: string;
+  api_key_prefix: string;
+  issued_at: string;
+  persisted: 'hash_only';
+  show_once: true;
 }
 export interface AppDeveloperProfileResult extends JsonRecord {
   developer: MarketplaceAppDeveloper | null;
@@ -269,6 +294,8 @@ export interface AppDeveloperAppsResult extends JsonRecord {
 export interface AppSubmissionResult extends JsonRecord {
   app: JsonRecord;
   review_record?: MarketplaceReviewRecord | null;
+  manifest?: JsonRecord | null;
+  credentials?: AppDeveloperCredentialsResult;
 }
 export type MarketplaceReviewDecision = Extract<MarketplaceReviewStatus, 'approved' | 'rejected' | 'changes_requested'>;
 export interface MarketplaceReviewListQuery extends QueryParams {
@@ -992,8 +1019,15 @@ export class LetbuyyApiClient {
       this.requestData<AppDeveloperProfileResult>('/app-store/developers/register', { ...options, method: 'POST', body: input }),
     developerApps: (options?: LetbuyyRequestOptions) =>
       this.requestData<AppDeveloperAppsResult>('/app-store/developers/apps', options),
+    validateDeveloperAppManifest: (input: AppManifestValidationInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppManifestValidationResult>('/app-store/developers/apps/manifest/validate', { ...options, method: 'POST', body: input }),
     submitDeveloperApp: (input: AppSubmissionInput, options?: LetbuyyRequestOptions) =>
       this.requestData<AppSubmissionResult>('/app-store/developers/apps', { ...options, method: 'POST', body: input }),
+    rotateDeveloperAppKey: (appId: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppDeveloperCredentialsResult>(
+        `/app-store/developers/apps/${encodePathSegment(appId)}/api-key`,
+        { ...options, method: 'POST' },
+      ),
     partnerDashboard: (options?: LetbuyyRequestOptions) =>
       this.requestData<PartnerDashboard>('/app-store/partners/dashboard', options),
     collaboratorCode: (options?: LetbuyyRequestOptions) =>
@@ -1542,6 +1576,29 @@ export class LetbuyyApiClient {
 
 export function createLetbuyyApiClient(options: LetbuyyApiClientOptions): LetbuyyApiClient {
   return new LetbuyyApiClient(options);
+}
+
+export interface LetbuyyAppSdkOptions extends Omit<LetbuyyApiClientOptions, 'token'> {
+  accessToken: string;
+}
+
+export interface LetbuyyAppSdk {
+  products: LetbuyyApiClient['appApi']['products'];
+  orders: LetbuyyApiClient['appApi']['orders'];
+  updateInstallationMetadata: LetbuyyApiClient['appApi']['updateInstallationMetadata'];
+}
+
+export function createLetbuyyAppSdk(options: LetbuyyAppSdkOptions): LetbuyyAppSdk {
+  const client = createLetbuyyApiClient({
+    ...options,
+    token: options.accessToken,
+  });
+
+  return {
+    products: client.appApi.products,
+    orders: client.appApi.orders,
+    updateInstallationMetadata: client.appApi.updateInstallationMetadata,
+  };
 }
 
 export * from './graphql';

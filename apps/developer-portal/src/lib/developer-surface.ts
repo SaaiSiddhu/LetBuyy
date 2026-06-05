@@ -865,11 +865,27 @@ export const appStoreEndpoints: EndpointDoc[] = [
   },
   {
     method: "POST",
+    path: "/v1/app-store/developers/apps/manifest/validate",
+    auth: "merchant session",
+    status: "available",
+    summary: "Validates a LetBuyy app manifest against app-engine, returning normalized extension and function registration plans without creating an app.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
+  },
+  {
+    method: "POST",
     path: "/v1/app-store/developers/apps",
     auth: "merchant session",
     status: "available",
-    summary: "Submits a marketplace app for review after developer registration and optional Built-for-LetBuyy quality gate checks.",
+    summary: "Submits a marketplace app for review after developer registration, optional Built-for-LetBuyy quality gate checks, optional manifest persistence, and show-once hash-only credential issuance.",
     source: "services/api-gateway/src/routes/app-store.ts:2085"
+  },
+  {
+    method: "POST",
+    path: "/v1/app-store/developers/apps/:id/api-key",
+    auth: "merchant session",
+    status: "available",
+    summary: "Rotates a show-once developer API key for an app owned by the current developer profile; plaintext is returned once and only hashes are persisted.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   }
 ];
 
@@ -2039,9 +2055,9 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
   },
   {
     capability: "Published App SDK package",
-    currentStatus: "[SKIP — NEEDS BACKEND/SDK] App bridge contracts exist in @letbuyy/app-engine, but no dedicated @letbuyy/app-sdk package or browser client exists.",
+    currentStatus: "PARTIAL: @letbuyy/api-client exports createLetbuyyAppSdk for scoped app API reads and app-owned metadata writes; no dedicated @letbuyy/app-sdk browser bridge package exists yet.",
     blockedUntil: "A package-owned SDK exports bridge fetch, session, toast, resize, and navigation helpers.",
-    source: "packages/app-engine/src/index.ts:190 + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    source: "packages/typescript/api-client/src/index.ts"
   },
   {
     capability: "Theme CLI scaffolder",
@@ -2057,9 +2073,9 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
   },
   {
     capability: "Credential rotation console",
-    currentStatus: "[SKIP — NEEDS BACKEND/SDK] OAuth and app tokens exist, but no public credential rotation or API key console route exists for developers in this branch.",
-    blockedUntil: "Backend exposes credential create/list/revoke flows and the dashboard shell receives an authenticated adapter.",
-    source: "services/api-gateway/src/routes/app-store.ts:1311 + apps/developer-portal/CODEX_WS10_LEDGER.md"
+    currentStatus: "PARTIAL: backend app submission and API-key rotation routes exist with show-once credentials and hash-only persistence; dashboard inventory/revoke UI is not present.",
+    blockedUntil: "The dashboard shell receives an authenticated adapter for list/revoke and key history views.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   },
   {
     capability: "Write-capable app bridge",
@@ -2072,7 +2088,7 @@ export const sdkToolingGaps: ToolingGapDoc[] = [
 export const skipItems: SkipItem[] = [
   {
     title: "Published JavaScript App SDK package",
-    reason: "[SKIP — NEEDS BACKEND/SDK] No dedicated @letbuyy/app-sdk package or browser bridge client exists in this branch."
+    reason: "[SKIP — NEEDS SDK/CLI] A minimal createLetbuyyAppSdk wrapper exists in @letbuyy/api-client, but no dedicated @letbuyy/app-sdk browser bridge package exists in this branch."
   },
   {
     title: "Theme CLI scaffolder",
@@ -2183,7 +2199,7 @@ export const dashboardSurfaces: DashboardSurfaceDoc[] = [
     route: "Portal control",
     auth: "planned",
     status: "skip",
-    currentPayload: "[SKIP — NEEDS BACKEND/SDK] No public credential rotation or API key console exists in this branch.",
-    source: "apps/developer-portal/CODEX_WS10_LEDGER.md"
+    currentPayload: "[SKIP — NEEDS UI] Backend show-once app credential issuance and API-key rotation exist, but no authenticated portal inventory/revoke UI exists in this branch.",
+    source: "services/api-gateway/src/routes/app-store/developer-routes.ts"
   }
 ];

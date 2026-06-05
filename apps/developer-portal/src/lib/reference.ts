@@ -264,6 +264,7 @@ export const sdkGuides: GuideCard[] = [
     status: "Live contract",
     body: "App-engine publishes manifest schema `2026-06-05.ws13`, the extension registry, and lifecycle contract `2026-06-05.ws13.lifecycle` for Admin UI, Checkout UI, theme app blocks, and Wasm Functions.",
     bullets: [
+      "`POST /v1/app-store/developers/apps/manifest/validate` validates and normalizes manifests without creating an app.",
       "Admin UI and Checkout UI extensions render through `@letbuyy/extension-host` sandbox policies.",
       "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
       "Checkout Functions are advisory only: they can apply discount codes, select shipping methods, restrict payment methods, and return validation errors; they cannot set arbitrary totals, taxes, line prices, or payment amounts.",
@@ -283,6 +284,16 @@ export const sdkGuides: GuideCard[] = [
     ],
   },
   {
+    title: "Minimal App SDK wrapper",
+    status: "Live contract",
+    body: "`@letbuyy/api-client` exports `createLetbuyyAppSdk`, a small scoped-app wrapper over the versioned app API for installed app bearer tokens.",
+    bullets: [
+      "`sdk.products()` calls `/v1/app/products` with `read_products` scope.",
+      "`sdk.orders()` calls `/v1/app/orders` with `read_orders` scope.",
+      "`sdk.updateInstallationMetadata()` calls `/v1/app/installation/metadata` with `write_app_metadata` scope.",
+    ],
+  },
+  {
     title: "LetBuyy CLI",
     status: "SKIP - NEEDS SDK/CLI",
     body: "No tracked `@letbuyy/cli`, theme CLI, app CLI, or `create-letbuyy` package exists in the active workspace.",
@@ -294,12 +305,12 @@ export const sdkGuides: GuideCard[] = [
   },
   {
     title: "Partner API keys",
-    status: "SKIP - NEEDS BACKEND",
-    body: "The gateway exposes OAuth tokens and bridge tokens for installed apps, but a self-serve API key inventory/rotation endpoint is not present.",
+    status: "Live contract",
+    body: "The gateway issues show-once app developer credentials during app submission and can rotate a show-once app API key for an owned app. Plaintext keys are never documented as persisted; the backend stores hash-only credential metadata.",
     bullets: [
-      "Dashboard shell renders this as a planned capability.",
-      "Do not claim key creation, key reveal, or rotation until backend endpoints exist.",
-      "Future data must remain behind versioned `/v1` contracts.",
+      "`POST /v1/app-store/developers/apps` returns `credentials` with `oauth_client_id`, show-once `client_secret`, and show-once `api_key`.",
+      "`POST /v1/app-store/developers/apps/:id/api-key` rotates the show-once API key for an app owned by the current developer profile.",
+      "Credential metadata is stored hash-only in gateway-owned app records; plaintext keys must be copied by the developer at creation time.",
     ],
   },
 ];
@@ -327,12 +338,12 @@ export const dashboardShell: GuideCard[] = [
   },
   {
     title: "API keys",
-    status: "SKIP - NEEDS BACKEND",
-    body: "No partner API key inventory, create, revoke, or rotate endpoint is present in the gateway.",
+    status: "Partial",
+    body: "Gateway-backed app credential issuance and key rotation exist, but a full dashboard inventory/revoke UI is still planned.",
     bullets: [
-      "OAuth access tokens exist for app installs.",
-      "Embedded bridge tokens exist for installed embedded apps.",
-      "Long-lived partner key management needs a governed backend contract.",
+      "`POST /v1/app-store/developers/apps` returns show-once credentials for the submitted app.",
+      "`POST /v1/app-store/developers/apps/:id/api-key` rotates a show-once API key.",
+      "List/revoke UI and CLI commands remain planned SDK/portal work.",
     ],
   },
   {

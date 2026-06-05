@@ -12,14 +12,18 @@ import {
 } from '../../lib/marketplace-review-records';
 import {
     LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
+    LETBUYY_APP_MANIFEST_SCHEMA_VERSION,
     createAppExtensionDeveloperHandoff,
     createAppExtensionReviewChecklist,
     appStoreStringOrNull as stringOrNull,
     parseAppStoreJsonRecord as parseJsonRecord,
     planAppDeveloperRegistration,
+    planAppManifestRegistration,
     planMarketplaceAppSubmission,
     type AppEngineJsonRecord,
+    type AppManifestRegistrationPlan,
 } from '@letbuyy/app-engine';
+import { sha256Hex } from '@letbuyy/auth-core';
 import {
     getRequestId,
     partnerRequestCode,
@@ -27,6 +31,174 @@ import {
     partnerStoreFromOwnedSite,
     sumMinor,
 } from './shared';
+
+const DEVELOPER_CREDENTIAL_TARGET = '/v1/app';
+const DEVELOPER_KEY_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._~-';
+
+function randomDeveloperCredential(prefix: string, length = 64): string {
+    const bytes = new Uint8Array(length);
+    crypto.getRandomValues(bytes);
+    let token = '';
+    for (const byte of bytes) token += DEVELOPER_KEY_ALPHABET[byte % DEVELOPER_KEY_ALPHABET.length];
+    return `${prefix}_${token}`;
+}
+
+function developerManifestInput(body: AppEngineJsonRecord): unknown | null {
+    const config = parseJsonRecord(body.config);
+    return body.manifest
+        || body.app_manifest
+        || body.appManifest
+        || config.manifest
+        || config.app_manifest
+        || config.appManifest
+        || null;
+}
+
+function normalizeDeveloperRedirectUris(value: unknown): string[] {
+    const raw = Array.isArray(value) ? value : (typeof value === 'string' ? [value] : []);
+    const uris = raw
+        .map((item) => stringOrNull(item))
+        .filter((item): item is string => Boolean(item))
+        .map((item) => {
+            try {
+                const url = new URL(item);
+                return url.protocol === 'https:' ? url.toString() : null;
+            } catch {
+                return null;
+            }
+        })
+        .filter((item): item is string => Boolean(item));
+    return [...new Set(uris)].slice(0, 20);
+}
+
+async function mintDeveloperAppCredentials(input: {
+    scopes: string[];
+    issuedAt: string;
+}): Promise<{
+    oauthClientId: string;
+    clientSecret: string;
+    apiKey: string;
+    apiKeyPrefix: string;
+    persistedConfig: AppEngineJsonRecord;
+}> {
+    const oauthClientId = `lb_app_${crypto.randomUUID().replace(/-/g, '').slice(0, 24)}`;
+    const clientSecret = randomDeveloperCredential('lb_client_secret', 72);
+    const apiKey = randomDeveloperCredential('lb_app_key', 72);
+    const apiKeyPrefix = apiKey.slice(0, 18);
+
+    return {
+        oauthClientId,
+        clientSecret,
+        apiKey,
+        apiKeyPrefix,
+        persistedConfig: {
+            credential_kind: 'developer_api_credentials',
+            oauth_client_id: oauthClientId,
+            client_secret_hash: await sha256Hex(clientSecret),
+            api_key_hash: await sha256Hex(apiKey),
+            api_key_prefix: apiKeyPrefix,
+            scopes: input.scopes,
+            issued_at: input.issuedAt,
+            plaintext_persisted: false,
+        },
+    };
+}
+
+async function persistDeveloperAppCredentials(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        appId: string;
+        credentialConfig: AppEngineJsonRecord;
+    },
+): Promise<{ ok: true } | { ok: false; message: string }> {
+    const { data: existing, error: existingError } = await db
+        .from('app_extensions')
+        .select('id')
+        .eq('app_id', input.appId)
+        .eq('type', 'api_endpoint')
+        .eq('target', DEVELOPER_CREDENTIAL_TARGET)
+        .limit(1)
+        .maybeSingle();
+
+    if (existingError) return { ok: false, message: existingError.message };
+
+    if (existing?.id) {
+        const { error } = await db
+            .from('app_extensions')
+            .update({
+                label: 'App API credentials',
+                config: input.credentialConfig,
+            })
+            .eq('id', existing.id);
+        return error ? { ok: false, message: error.message } : { ok: true };
+    }
+
+    const { error } = await db
+        .from('app_extensions')
+        .insert({
+            app_id: input.appId,
+            type: 'api_endpoint',
+            target: DEVELOPER_CREDENTIAL_TARGET,
+            label: 'App API credentials',
+            sort_order: -100,
+            config: input.credentialConfig,
+        });
+
+    return error ? { ok: false, message: error.message } : { ok: true };
+}
+
+async function persistSubmittedAppManifest(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        appId: string;
+        plan: AppManifestRegistrationPlan;
+    },
+): Promise<{ ok: true; extensionRows: AppEngineJsonRecord[]; functionRows: AppEngineJsonRecord[] } | { ok: false; message: string }> {
+    const extensionRows = input.plan.extensionRecords.map((record) => ({
+        ...record,
+        app_id: input.appId,
+    }));
+    const functionRows = input.plan.functionRecords.map((record, index) => ({
+        app_id: input.appId,
+        type: 'api_endpoint',
+        target: `app-function:${record.handle}`,
+        label: record.name,
+        sort_order: 1000 + index,
+        config: {
+            manifest_schema_version: input.plan.manifest.schema_version,
+            manifest_app_slug: input.plan.manifest.app.slug,
+            manifest_app_version: input.plan.manifest.app.version,
+            function_handle: record.handle,
+            hooks: record.hooks,
+            runtime: 'wasm',
+            wasm_module_url: record.wasm_module_url,
+            wasm_sha256: record.wasm_sha256,
+            timeout_ms: record.timeout_ms,
+            memory_limit_kb: record.memory_limit_kb,
+            input_schema: record.config.input_schema,
+            output_schema: record.config.output_schema,
+        },
+    }));
+    const rows = [...extensionRows, ...functionRows];
+
+    if (rows.length === 0) {
+        return { ok: true, extensionRows: [], functionRows: [] };
+    }
+
+    const { data, error } = await db
+        .from('app_extensions')
+        .insert(rows)
+        .select();
+
+    if (error) return { ok: false, message: error.message };
+
+    const inserted = Array.isArray(data) ? data as AppEngineJsonRecord[] : [];
+    return {
+        ok: true,
+        extensionRows: inserted.filter((row) => stringOrNull(row.target)?.startsWith('app-function:') !== true),
+        functionRows: inserted.filter((row) => stringOrNull(row.target)?.startsWith('app-function:') === true),
+    };
+}
 
 export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>): void {
     // GET /app-store/developers/me — Get current user's developer profile
@@ -82,6 +254,50 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
         }
 
         return c.json(success({ developer }), 201);
+    });
+
+    // POST /app-store/developers/apps/manifest/validate — Validate an app manifest without creating a marketplace listing
+    router.post('/developers/apps/manifest/validate', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const body = await c.req.json() as AppEngineJsonRecord;
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        const manifestInput = developerManifestInput(body) || body;
+        const plan = planAppManifestRegistration('manifest_validation_preview', manifestInput);
+        if (!plan.ok) {
+            return c.json({ error: { code: 'VALIDATION', message: plan.message } }, 400);
+        }
+
+        return c.json(success({
+            valid: true,
+            schema_version: LETBUYY_APP_MANIFEST_SCHEMA_VERSION,
+            manifest: plan.value.manifest,
+            extension_records: plan.value.extensionRecords,
+            function_records: plan.value.functionRecords,
+            counts: {
+                extensions: plan.value.extensionRecords.length,
+                functions: plan.value.functionRecords.length,
+            },
+        }));
     });
 
     // GET /app-store/developers/apps — List current developer profile and submitted apps
@@ -362,6 +578,7 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
         const body = await c.req.json() as AppEngineJsonRecord;
         const db = getSupabaseAdmin(c);
         const customUser = await resolveCustomUser(db, auth.user);
+        const issuedAt = new Date().toISOString();
 
         if (!customUser) {
             return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
@@ -382,6 +599,12 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             return c.json({ error: { code: 'VALIDATION', message: submission.message } }, 400);
         }
 
+        const manifestInput = developerManifestInput(body);
+        const manifestPlan = manifestInput ? planAppManifestRegistration('pending_app_id', manifestInput) : null;
+        if (manifestPlan && !manifestPlan.ok) {
+            return c.json({ error: { code: 'VALIDATION', message: manifestPlan.message } }, 400);
+        }
+
         const { data: existingSlug } = await db
             .from('marketplace_apps')
             .select('id')
@@ -392,14 +615,51 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             return c.json({ error: { code: 'CONFLICT', message: 'This app slug is already taken' } }, 409);
         }
 
+        const credentials = await mintDeveloperAppCredentials({
+            scopes: submission.value.api_scopes || [],
+            issuedAt,
+        });
+        const redirectUris = normalizeDeveloperRedirectUris(body.oauth_redirect_uris || body.redirect_uris || body.redirectUris);
         const { data: app, error } = await db
             .from('marketplace_apps')
-            .insert(submission.value)
-            .select('id, name, status')
+            .insert({
+                ...submission.value,
+                oauth_client_id: credentials.oauthClientId,
+                oauth_redirect_uris: redirectUris,
+            })
+            .select('id, name, status, slug, oauth_client_id, oauth_redirect_uris, api_scopes, version')
             .single();
 
         if (error) {
             return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+        }
+
+        const credentialPersistence = await persistDeveloperAppCredentials(db, {
+            appId: app.id,
+            credentialConfig: credentials.persistedConfig,
+        });
+
+        if (!credentialPersistence.ok) {
+            return c.json({ error: { code: 'DB_ERROR', message: credentialPersistence.message } }, 500);
+        }
+
+        let manifestPersistence: { extensionRows: AppEngineJsonRecord[]; functionRows: AppEngineJsonRecord[] } | null = null;
+        if (manifestInput && manifestPlan?.ok) {
+            const concretePlan = planAppManifestRegistration(app.id, manifestInput);
+            if (!concretePlan.ok) {
+                return c.json({ error: { code: 'VALIDATION', message: concretePlan.message } }, 400);
+            }
+            const persistedManifest = await persistSubmittedAppManifest(db, {
+                appId: app.id,
+                plan: concretePlan.value,
+            });
+            if (!persistedManifest.ok) {
+                return c.json({ error: { code: 'DB_ERROR', message: persistedManifest.message } }, 500);
+            }
+            manifestPersistence = {
+                extensionRows: persistedManifest.extensionRows,
+                functionRows: persistedManifest.functionRows,
+            };
         }
 
         let reviewRecord: MarketplaceReviewRecord | null = null;
@@ -474,7 +734,108 @@ export function registerAppStoreDeveloperRoutes(router: Hono<{ Bindings: Env }>)
             }
         }
 
-        return c.json(success({ app, review_record: reviewRecord }), 201);
+        return c.json(success({
+            app,
+            review_record: reviewRecord,
+            manifest: manifestPlan?.ok ? {
+                schema_version: manifestPlan.value.manifest.schema_version,
+                app: manifestPlan.value.manifest.app,
+                scopes: manifestPlan.value.manifest.scopes,
+                extension_count: manifestPlan.value.extensionRecords.length,
+                function_count: manifestPlan.value.functionRecords.length,
+                persisted_extension_records: manifestPersistence?.extensionRows.length || 0,
+                persisted_function_records: manifestPersistence?.functionRows.length || 0,
+            } : null,
+            credentials: {
+                oauth_client_id: credentials.oauthClientId,
+                client_secret: credentials.clientSecret,
+                api_key: credentials.apiKey,
+                api_key_prefix: credentials.apiKeyPrefix,
+                issued_at: issuedAt,
+                persisted: 'hash_only',
+                show_once: true,
+            },
+        }), 201);
+    });
+
+    // POST /app-store/developers/apps/:id/api-key — Rotate a show-once developer API key for an owned app
+    router.post('/developers/apps/:id/api-key', authMiddleware, async (c) => {
+        const auth = c.get('auth');
+        const appId = c.req.param('id');
+        const db = getSupabaseAdmin(c);
+        const customUser = await resolveCustomUser(db, auth.user);
+        const issuedAt = new Date().toISOString();
+
+        if (!customUser) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+        }
+
+        const { data: developer, error: developerError } = await db
+            .from('app_developers')
+            .select('id')
+            .eq('user_id', customUser.id)
+            .maybeSingle();
+
+        if (developerError) {
+            return c.json({ error: { code: 'DB_ERROR', message: developerError.message } }, 500);
+        }
+
+        if (!developer) {
+            return c.json({ error: { code: 'FORBIDDEN', message: 'You must register as a developer first' } }, 403);
+        }
+
+        const { data: app, error: appError } = await db
+            .from('marketplace_apps')
+            .select('id, oauth_client_id, api_scopes')
+            .eq('id', appId)
+            .eq('developer_id', developer.id)
+            .maybeSingle();
+
+        if (appError) {
+            return c.json({ error: { code: 'DB_ERROR', message: appError.message } }, 500);
+        }
+
+        if (!app) {
+            return c.json({ error: { code: 'NOT_FOUND', message: 'App not found for this developer' } }, 404);
+        }
+
+        const credentials = await mintDeveloperAppCredentials({
+            scopes: Array.isArray(app.api_scopes) ? app.api_scopes.filter((scope): scope is string => typeof scope === 'string') : [],
+            issuedAt,
+        });
+        const oauthClientId = stringOrNull(app.oauth_client_id) || credentials.oauthClientId;
+
+        const credentialPersistence = await persistDeveloperAppCredentials(db, {
+            appId: app.id,
+            credentialConfig: {
+                ...credentials.persistedConfig,
+                oauth_client_id: oauthClientId,
+            },
+        });
+
+        if (!credentialPersistence.ok) {
+            return c.json({ error: { code: 'DB_ERROR', message: credentialPersistence.message } }, 500);
+        }
+
+        if (!stringOrNull(app.oauth_client_id)) {
+            const { error: updateError } = await db
+                .from('marketplace_apps')
+                .update({ oauth_client_id: oauthClientId })
+                .eq('id', app.id);
+            if (updateError) {
+                return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+            }
+        }
+
+        return c.json(success({
+            app_id: app.id,
+            oauth_client_id: oauthClientId,
+            api_key: credentials.apiKey,
+            api_key_prefix: credentials.apiKeyPrefix,
+            issued_at: issuedAt,
+            persisted: 'hash_only',
+            show_once: true,
+        }));
     });
 
     // GET /app-store/developers/:id — Get developer profile + apps

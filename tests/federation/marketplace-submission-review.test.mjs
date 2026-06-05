@@ -66,7 +66,9 @@ test('app submissions create a review record and app.submitted event', () => {
   assert.match(route, /review_records: reviewRecords \|\| \[\]/);
   assert.match(route, /eventType: 'app\.submitted'/);
   assert.match(route, /review_id: reviewRecord\.id/);
-  assert.match(route, /success\(\{ app, review_record: reviewRecord \}\)/);
+  assert.match(route, /review_record: reviewRecord/);
+  assert.match(route, /credentials: \{/);
+  assert.match(route, /manifest: manifestPlan\?\.ok/);
 });
 
 test('theme uploads create a review record and include it in theme.submitted payloads', () => {
