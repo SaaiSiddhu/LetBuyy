@@ -8,7 +8,7 @@ export interface EvidenceSource {
 export interface EndpointDoc {
   method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   path: string;
-  auth: "public" | "merchant session" | "app bearer" | "internal" | "HMAC signature";
+  auth: "public" | "merchant session" | `app bearer${string}` | "internal" | "HMAC signature";
   status: CapabilityStatus;
   summary: string;
   source: string;
@@ -710,6 +710,17 @@ export const contractCards: ContractCard[] = [
     ]
   },
   {
+    title: "Scoped app API",
+    status: "available",
+    source: "services/api-gateway/src/routes/app-api.ts:1",
+    points: [
+      "App bearer tokens are accepted only on /v1/app routes and do not satisfy merchant dashboard auth middleware.",
+      "GET /v1/app/products requires read_products and is pinned to the token installation store.",
+      "GET /v1/app/orders requires read_orders and is pinned to the token installation store.",
+      "PATCH /v1/app/installation/metadata requires write_app_metadata and can update non-secret app-owned metadata only."
+    ]
+  },
+  {
     title: "Theme package upload body",
     status: "available",
     source: "packages/theme-engine/src/theme-bundle.ts:117",
@@ -786,6 +797,30 @@ export const appStoreEndpoints: EndpointDoc[] = [
     status: "partial",
     summary: "Proxies scoped GET reads for embedded apps. Allowed first segments map to read_products, read_orders, read_customers, read_themes, and read_storefront.",
     source: "services/api-gateway/src/routes/app-store.ts:781"
+  },
+  {
+    method: "GET",
+    path: "/v1/app/products",
+    auth: "app bearer: read_products",
+    status: "available",
+    summary: "Lists products for the installed app token's store. A mismatched store_id is rejected instead of broadening access.",
+    source: "services/api-gateway/src/routes/app-api.ts:152"
+  },
+  {
+    method: "GET",
+    path: "/v1/app/orders",
+    auth: "app bearer: read_orders",
+    status: "available",
+    summary: "Lists orders for the installed app token's store. A mismatched store_id is rejected instead of broadening access.",
+    source: "services/api-gateway/src/routes/app-api.ts:209"
+  },
+  {
+    method: "PATCH",
+    path: "/v1/app/installation/metadata",
+    auth: "app bearer: write_app_metadata",
+    status: "available",
+    summary: "Updates non-secret metadata owned by the active app installation without mutating merchant product, order, customer, or theme records.",
+    source: "services/api-gateway/src/routes/app-api.ts:271"
   },
   {
     method: "POST",
@@ -1226,6 +1261,11 @@ export const oauthSteps: GuideStep[] = [
     title: "5. App bridge reads are scoped and GET-only",
     body: "POST /v1/app-store/bridge/fetch accepts a Bearer app token and only proxies GET reads to approved first segments. Mutating bridge calls are not implemented.",
     source: "services/api-gateway/src/routes/app-store.ts:781"
+  },
+  {
+    title: "6. Server-to-server app API calls are scoped",
+    body: "Call /v1/app/products or /v1/app/orders with the app Bearer token for direct scoped reads. Metadata writes are limited to PATCH /v1/app/installation/metadata and require write_app_metadata.",
+    source: "services/api-gateway/src/routes/app-api.ts:152"
   }
 ];
 

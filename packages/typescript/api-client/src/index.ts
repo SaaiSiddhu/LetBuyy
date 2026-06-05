@@ -212,6 +212,18 @@ export interface AppBridgeFetchInput extends JsonRecord {
   path: string;
   store_id?: string;
 }
+export type AppApiProductListQuery = Omit<ProductListQuery, 'store_id'>;
+export type AppApiOrderListQuery = Omit<OrderListQuery, 'store_id' | 'customer_id'>;
+export interface AppApiInstallationMetadataInput extends JsonRecord {
+  metadata: JsonRecord;
+}
+export interface AppApiInstallationMetadataResult extends JsonRecord {
+  installation_id: string;
+  app_id: string;
+  store_id: string;
+  metadata: JsonRecord;
+  updated_at: string;
+}
 export type AppBillingChargeCreateInput = AppBillingChargeCreate;
 export type AppBillingChargeApproveInput = AppBillingChargeApprove;
 export type AppBillingChargeApprovalResult = AppBillingChargeResult & {
@@ -976,6 +988,15 @@ export class LetbuyyApiClient {
       this.requestData<PartnerDashboard>('/app-store/partners/dashboard', options),
     collaboratorCode: (options?: LetbuyyRequestOptions) =>
       this.requestData<PartnerDashboard['collaborator_access']>('/app-store/partners/collaborator-code', { ...options, method: 'POST' }),
+  };
+
+  readonly appApi = {
+    products: (query?: AppApiProductListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<Product>('/app/products', { ...options, query }),
+    orders: (query?: AppApiOrderListQuery, options?: LetbuyyRequestOptions) =>
+      this.requestPaginated<Order>('/app/orders', { ...options, query }),
+    updateInstallationMetadata: (input: AppApiInstallationMetadataInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppApiInstallationMetadataResult>('/app/installation/metadata', { ...options, method: 'PATCH', body: input }),
   };
 
   readonly operations = {

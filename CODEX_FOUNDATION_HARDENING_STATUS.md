@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: V2 P-1 regression gate complete; resume F1.6 storefront god-file split next.
-- Findings resolved: 6/31 original Critical/High complete (`C-2`, `C-12`, `C-13`, `H-1`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after V2 P-1 (`pnpm run validate:governance` -> 135/135 PASS).
+- Phase: F2.1 scoped app API complete; continue F2.2 OAuth client auth + PKCE/refresh next.
+- Findings resolved: 9/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-12`, `C-13`, `H-1`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F2.1 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -132,6 +132,25 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 136/136 validators, including `route-line-count-validator.mjs`.
 - H-9 is DONE for F1.6 after route-size governance is locked by `route-line-count-validator.mjs`.
 
+## F2.1 scoped app API evidence
+
+- `services/api-gateway/src/middleware/app-auth.ts` verifies scoped app JWTs against `@letbuyy/auth-core`, requires configured app-token secrets, checks active `app_installations`, enforces granted-scope containment, and rejects revoked/replaced token hashes.
+- `/v1/app/products` requires `read_products` and is store-bound to the token installation.
+- `/v1/app/orders` requires `read_orders` and is store-bound to the token installation.
+- `/v1/app/installation/metadata` requires `write_app_metadata`, updates only app-owned installation metadata, and rejects token/secret/password/private-key-like metadata keys.
+- `/v1/app` is mounted before merchant `authMiddleware`, so app JWTs cannot satisfy merchant dashboard routes by accident.
+- `packages/typescript/api-client` exposes `appApi.products`, `appApi.orders`, and `appApi.updateInstallationMetadata` using shared `Product` and `Order` contracts.
+- `apps/developer-portal/src/lib/developer-surface.ts` documents the scoped app API as available and source-derived from `services/api-gateway/src/routes/app-api.ts`.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm run test:contracts`: PASS - 31/31, including app token allow/deny, missing-scope, revoked-token, inactive-installation, route mount, API client, and docs checks.
+- `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 106/106.
+- `pnpm install --frozen-lockfile --force`: PASS after escalated registry access restored missing workspace links needed for cache-miss developer-portal checks.
+- `pnpm --filter @letbuyy/developer-portal typecheck`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -157,6 +176,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the completed F1.6 god-file split.
-- Continue to F2 after the F1.6 commit.
+- Commit the completed F2.1 scoped app API increment.
+- Continue to F2.2 OAuth client auth with client proof/PKCE, refresh grant, and used-code replay coverage.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
