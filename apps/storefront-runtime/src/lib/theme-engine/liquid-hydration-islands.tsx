@@ -1,8 +1,13 @@
 'use client';
 
 import { useEffect } from 'react';
+import {
+    readStorefrontApiJson,
+    storefrontBrowserApiFetch,
+} from '@/lib/api/browser-client';
 
 const CART_STORAGE_KEY = 'lb_cart';
+const CART_TOKEN_STORAGE_KEY = 'lb_cart_token';
 const CART_OPEN_EVENT = 'letbuyy:cart:open';
 const CART_CHANGED_EVENT = 'letbuyy:cart:changed';
 const VARIANT_CHANGED_EVENT = 'letbuyy:variant:changed';
@@ -17,6 +22,21 @@ interface LiquidCartItem {
     slug?: string;
     selectedVariant?: Record<string, string>;
 }
+
+type LiquidServerCartLine = {
+    product_id: string;
+    title: string;
+    image_url?: string | null;
+    quantity: number;
+    unit_price: number;
+    currency: string;
+    properties?: Record<string, unknown>;
+};
+
+type LiquidServerCart = {
+    cart_token: string;
+    lines: LiquidServerCartLine[];
+};
 
 interface LiquidHydrationIslandsProps {
     basePath: string;
@@ -42,9 +62,70 @@ function readCart(): LiquidCartItem[] {
     }
 }
 
-function writeCart(items: LiquidCartItem[]) {
+function getLiquidStorefrontSubdomain(): string | null {
+    const match = window.location.pathname.match(/^\/store\/([^/?#]+)/);
+    if (match?.[1]) return decodeURIComponent(match[1]);
+
+    const querySubdomain = new URLSearchParams(window.location.search).get('subdomain');
+    if (querySubdomain) return querySubdomain;
+
+    const hostname = window.location.hostname.split('.')[0];
+    return hostname && !['localhost', '127', '0', 'www'].includes(hostname) ? hostname : null;
+}
+
+function liquidCartLineInputFromItem(item: LiquidCartItem) {
+    return {
+        product_id: item.id,
+        variant_id: null,
+        quantity: item.quantity,
+        properties: item.selectedVariant || {},
+    };
+}
+
+function liquidCartItemsFromServer(cart: LiquidServerCart): LiquidCartItem[] {
+    return cart.lines.map((line) => ({
+        id: line.product_id,
+        name: line.title,
+        price: line.unit_price,
+        quantity: line.quantity,
+        images: line.image_url ? [line.image_url] : [],
+        currency: line.currency || 'INR',
+        selectedVariant: line.properties && typeof line.properties === 'object' && !Array.isArray(line.properties)
+            ? Object.fromEntries(Object.entries(line.properties).filter(([, value]) => typeof value === 'string')) as Record<string, string>
+            : undefined,
+    }));
+}
+
+async function storefrontBrowserCartFetch(subdomain: string, cartToken: string | null, items: LiquidCartItem[]) {
+    return storefrontBrowserApiFetch(subdomain, cartToken ? `/cart/${cartToken}` : '/cart', {
+        method: cartToken ? 'PATCH' : 'POST',
+        body: JSON.stringify({
+            lines: items.map(liquidCartLineInputFromItem),
+        }),
+    });
+}
+
+async function syncLiquidCartToServer(items: LiquidCartItem[]) {
+    const subdomain = getLiquidStorefrontSubdomain();
+    if (!subdomain) return;
+
+    const cartToken = window.localStorage.getItem(CART_TOKEN_STORAGE_KEY);
+    try {
+        const response = await storefrontBrowserCartFetch(subdomain, cartToken, items);
+        const payload = await readStorefrontApiJson<LiquidServerCart>(response);
+        if (!response.ok || !payload.success || !payload.data) return;
+
+        window.localStorage.setItem(CART_TOKEN_STORAGE_KEY, payload.data.cart_token);
+        writeCart(liquidCartItemsFromServer(payload.data), { sync: false });
+    } catch {
+        // Browser cart remains available from local storage while sync retries on the next mutation.
+    }
+}
+
+function writeCart(items: LiquidCartItem[], options: { sync?: boolean } = {}) {
     window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
     window.dispatchEvent(new CustomEvent(CART_CHANGED_EVENT, { detail: { items } }));
+    if (options.sync) void syncLiquidCartToServer(items);
 }
 
 function addCartItem(item: LiquidCartItem) {
@@ -64,7 +145,7 @@ function addCartItem(item: LiquidCartItem) {
         items.push(item);
     }
 
-    writeCart(items);
+    writeCart(items, { sync: true });
     window.dispatchEvent(new CustomEvent(CART_OPEN_EVENT, { detail: { source: 'liquid-add-to-cart' } }));
 }
 
@@ -194,7 +275,7 @@ class LbCartDrawerElement extends HTMLElement {
 
         const removeButton = target.closest<HTMLElement>('[data-lb-cart-remove]');
         if (removeButton?.dataset.productId) {
-            writeCart(readCart().filter((item) => item.id !== removeButton.dataset.productId));
+            writeCart(readCart().filter((item) => item.id !== removeButton.dataset.productId), { sync: true });
         }
     };
 

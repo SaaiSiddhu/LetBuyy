@@ -4,6 +4,7 @@ import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../../lib/s
 import { cachedJson, storefrontRequestCacheKey, STOREFRONT_CACHE_SWR_SECONDS, STOREFRONT_CACHE_TTL_SECONDS } from '../../lib/storefront-cache';
 import { validate } from '../../middleware/validation';
 import { StorefrontProductReviewsQuery } from '../../schemas/review.schema';
+import { registerStorefrontCartRoutes } from './cart-routes';
 import { registerStorefrontCheckoutPaymentRoutes } from './checkout-payment-routes';
 import { registerStorefrontCustomerEngagementRoutes } from './customer-engagement-routes';
 import { planCouponValidation, storefrontCouponValidationError, type CouponRecord } from '@letbuyy/checkout-core';
@@ -134,6 +135,12 @@ export function registerStorefrontPublicRoutes(
         getRequestId,
         emitStorefrontOrderPaidEvent,
     } = dependencies;
+
+    registerStorefrontCartRoutes(router, {
+        loadPublishedStore,
+        queryPublicProducts,
+        normalizePublicRouteToken,
+    });
 
     router.get('/lookup', async (c) => {
         const query = normalizeStorefrontHandle(c.req.query('q') || '');

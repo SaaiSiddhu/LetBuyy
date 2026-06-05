@@ -55,20 +55,20 @@ test('developer portal limits checkout functions to advisory operations', () => 
   assert.doesNotMatch(reference, /can override payment amounts/i);
 });
 
-test('GraphQL cart messaging points to CART_NOT_SUPPORTED instead of silent null', () => {
-  assert.match(storefrontGraphQL, /CART_NOT_SUPPORTED/);
+test('GraphQL cart messaging points to the persisted cart-token contract', () => {
+  assert.match(storefrontGraphQL, /cartTokenFromVariables/);
+  assert.match(storefrontGraphQL, /\/cart\/\$\{encodeURIComponent\(cartToken\)\}/);
+  assert.doesNotMatch(storefrontGraphQL, /CART_NOT_SUPPORTED/);
   assert.doesNotMatch(storefrontGraphQL, /data\.cart\s*=\s*null/);
 
   for (const marker of [
-    'StorefrontQuery.cart -> CART_NOT_SUPPORTED',
-    'no longer return silent null data',
+    'StorefrontQuery.cart -> persisted cart token',
+    'GET|POST|PATCH|DELETE /v1/storefront/:subdomain/cart',
   ]) {
     assert.ok(reference.includes(marker), `developer reference is missing ${marker}`);
   }
 
-  assert.ok(homePage.includes('`cart` returns `CART_NOT_SUPPORTED`'));
-  assert.ok(ws12Ledger.includes('fails loudly with `CART_NOT_SUPPORTED`'));
-  assert.ok(masterLedger.includes('fails loudly with `CART_NOT_SUPPORTED`'));
+  assert.ok(homePage.includes('persisted cart token'));
   assert.doesNotMatch(ws12Ledger, /returns `cart: null`/);
   assert.doesNotMatch(masterLedger, /returns `cart: null`/);
 });

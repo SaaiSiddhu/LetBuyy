@@ -105,7 +105,7 @@ function variableString(variables: GraphQLVariables | undefined, keys: string[])
         const direct = stringValue(variables?.[key]);
         if (direct) return direct;
 
-        for (const fieldName of ['store', 'product', 'products', 'collection', 'page', 'policy', 'navigationMenu', 'blogPost', 'reviews', 'customer', 'order']) {
+        for (const fieldName of ['store', 'product', 'products', 'collection', 'page', 'policy', 'navigationMenu', 'blogPost', 'reviews', 'customer', 'order', 'cart']) {
             const nested = fieldVariables(variables, fieldName);
             const value = stringValue(nested?.[key]);
             if (value) return value;
@@ -126,6 +126,13 @@ function storefrontHandle(document: string, variables: GraphQLVariables | undefi
     return variableString(variables, ['subdomain', 'storeHandle', 'handle'])
         || readStringArgument(document, 'store', 'subdomain')
         || readStringArgument(document, 'store', 'customDomain');
+}
+
+function cartTokenFromVariables(document: string, variables: GraphQLVariables | undefined): string | null {
+    return variableString(variables, ['cartToken', 'cart_token', 'cartId', 'cart_id', 'id'])
+        || readStringArgument(document, 'cart', 'cartToken')
+        || readStringArgument(document, 'cart', 'cart_token')
+        || readStringArgument(document, 'cart', 'id');
 }
 
 function storeIdFromVariables(variables: GraphQLVariables | undefined): string | null {
@@ -384,11 +391,16 @@ async function resolveStorefrontData(
     }
 
     if (hasField(document, 'cart')) {
-        throw new StorefrontGraphQLError(
-            'Storefront GraphQL cart reads are not supported until server-side cart persistence is enabled.',
-            'CART_NOT_SUPPORTED',
-            'cart',
-        );
+        const handle = requireStorefrontHandle(document, variables, 'cart');
+        const cartToken = cartTokenFromVariables(document, variables);
+        if (!cartToken) {
+            throw new StorefrontGraphQLError(
+                'Storefront GraphQL cart reads require a persisted cart token.',
+                'GRAPHQL_CART_TOKEN_REQUIRED',
+                'cart',
+            );
+        }
+        data.cart = (await restGet(c, delegate, `/storefront/${encodeURIComponent(handle)}/cart/${encodeURIComponent(cartToken)}`, undefined, 'cart')).data;
     }
 
     if (hasField(document, 'store')) {

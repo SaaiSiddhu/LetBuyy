@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.4 app embeds and bounded Liquid commerce drops complete; continue F3.5 server-side cart.
-- Findings resolved: 18/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.4 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.5 server-side cart complete locally; continue F3.6 theme-marketplace checkout.
+- Findings resolved: 19/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.5 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -313,6 +313,29 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F3.5 server-side cart evidence
+
+- `services/api-gateway/src/routes/storefront/cart-routes.ts` adds gateway-owned persisted cart routes for `POST /:subdomain/cart`, `GET|PATCH|DELETE /:subdomain/cart/:cartToken`.
+- Cart tokens are opaque `ct_*` values stored in `public.carts.session_id`; cart lines are rehydrated through existing published product reads and totals are rebuilt from product price data.
+- Storefront GraphQL `cart` no longer throws `CART_NOT_SUPPORTED`; token-based reads delegate to the same persisted cart REST endpoint.
+- `apps/storefront-runtime/src/context/cart-context.tsx` stores `lb_cart_token`, syncs cart mutations to the gateway, and keeps localStorage only as a cache.
+- Liquid add-to-cart hydration islands sync through the same cart API and preserve `lb_cart_token`.
+- Developer portal API/GraphQL docs now describe the active persisted cart-token contract.
+- Pre-change `pnpm run test:contracts`: FAIL - 63/68 at new `tests/contracts/server-side-cart.test.ts` because cart routes, GraphQL delegation, runtime sync, Liquid sync, and docs were absent.
+- Post-change `pnpm run test:contracts`: PASS - 68/68.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm install --frozen-lockfile --force`: PASS to restore workspace dependency links after generated artifact cleanup.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck`: PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck`: PASS.
+- `pnpm --filter @letbuyy/storefront-runtime lint`: PASS with existing warnings only.
+- `pnpm --filter @letbuyy/developer-portal lint`: PASS.
+- `node --test tests/api-graphql/schema-contract.test.mjs tests/federation/developer-portal-capability-messaging.test.mjs`: PASS - 15/15.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+- Staging proof remains SKIPPED -- NEEDS HUMAN until staging storefront/store/product/customer/gateway credentials are provided.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -339,8 +362,9 @@ Started: 2026-06-05T13:54:14Z
 - H-13 staging proof that a developer registers an app, receives credentials, installs/exchanges for an app access token, and calls the SDK requires staging merchant/developer credentials plus staging gateway/session access. Exact proof path once supplied: authenticate a staging merchant/developer, `POST /v1/app-store/developers/register`, `POST /v1/app-store/developers/apps/manifest/validate`, `POST /v1/app-store/developers/apps`, complete the app install/OAuth token flow, then call `createLetbuyyAppSdk({ baseUrl: "https://api.staging.letbuyy.store", accessToken }).products()`.
 - C-6 staging proof that the web theme editor iframe renders edited sections through the real staging storefront preview route requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: authenticate to staging merchant, open `/[store]/online-store/themes/[themeId]/editor`, edit a section, confirm the iframe URL includes `theme_preview_token`, and verify the storefront preview route renders the edited section.
 - C-8/B-6 staging proof that stale editor saves conflict and preview sessions are template-scoped requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: open two editor sessions for the same theme/template, save one draft, verify the stale `base_version` save conflicts in the second, publish only the clean saved draft, and mint preview sessions for two templates to verify each returns the requested `template_key` and renders the matching draft.
+- C-10 staging proof that server-side cart persists across devices and checkout requires staging storefront/store/product/customer/gateway credentials. Exact proof path once supplied: add a product to cart in one browser, capture `lb_cart_token`, open the same store in a second browser/session with that token, verify `GET /v1/storefront/:subdomain/cart/:cartToken` returns the same lines/totals, then complete checkout using the synced cart items.
 
 ## Next work
 
-- Continue to F3.5 server-side cart.
+- Continue to F3.6 theme-marketplace checkout.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
