@@ -28,6 +28,7 @@ function loadAuthCore() {
     require(specifier) {
       if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
       if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
+      if (specifier === './customer-session') return {};
       throw new Error(`Unexpected test require: ${specifier}`);
     },
     TextEncoder,

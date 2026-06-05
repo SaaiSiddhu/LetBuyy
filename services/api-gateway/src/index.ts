@@ -598,21 +598,39 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
         }
         const queueResult = await queue.consumeQueues(workerId, queueNames, 50);
         const hadWork = scheduledDispatchHadWork(outboxResult, queueResult, webhookResult);
-        const cloudflareQueueTriggers = hadWork
-            ? await enqueueScheduledDispatchTriggers(env, {
-                status: 'completed',
-                dispatcherId,
-                workerId,
-                eventId: crypto.randomUUID(),
-                environment: env.ENVIRONMENT,
-                deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-                telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
-                outboxQueuedJobs: numberField(outboxResult, 'queued_jobs'),
-                queueClaimedJobs: sumScheduledQueueResult(queueResult, 'claimed'),
-                queueSucceededJobs: sumScheduledQueueResult(queueResult, 'succeeded'),
-                webhookDeliveries: numberField(outboxResult, 'webhook_deliveries'),
-            })
-            : [];
+        const completedDispatchTriggerInput = {
+            status: 'completed',
+            event_type: 'runtime.scheduled_dispatch.completed',
+            dispatcherId,
+            workerId,
+            eventId: crypto.randomUUID(),
+            environment: env.ENVIRONMENT,
+            deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+            telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
+            outboxQueuedJobs: numberField(outboxResult, 'queued_jobs'),
+            queueClaimedJobs: sumScheduledQueueResult(queueResult, 'claimed'),
+            queueSucceededJobs: sumScheduledQueueResult(queueResult, 'succeeded'),
+            webhookDeliveries: numberField(outboxResult, 'webhook_deliveries'),
+        } satisfies ScheduledDispatchQueueTriggerInput & {
+            event_type: 'runtime.scheduled_dispatch.completed';
+        };
+        let cloudflareQueueTriggers: CloudflareQueueTriggerResult = [];
+        if (hadWork) {
+            cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, completedDispatchTriggerInput);
+        }
+
+        if (cloudflareQueueTriggers.some((trigger) => trigger.status === 'failed')) {
+            console.error(JSON.stringify({
+                level: 'error',
+                service: 'letbuyy-api',
+                route: 'scheduled.outbox_dispatch.completion_event',
+                method: 'CRON',
+                status_code: 500,
+                latency_ms: 0,
+                dispatcher_id: dispatcherId,
+                failed_triggers: cloudflareQueueTriggers.filter((trigger) => trigger.status === 'failed'),
+            }));
+        }
 
         console.info(JSON.stringify({
             level: 'info',
@@ -625,13 +643,15 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             worker_id: workerId,
             outbox_result: outboxResult,
             queue_result: queueResult,
+            completion_event_enqueued: hadWork,
             cloudflare_queue_triggers: cloudflareQueueTriggers,
             preflight: pending,
         }));
     } catch (error: unknown) {
         const message = error instanceof Error ? error.message : 'Scheduled outbox dispatch failed';
-        const cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, {
+        const failedDispatchTriggerInput = {
             status: 'failed',
+            event_type: 'runtime.scheduled_dispatch.failed',
             dispatcherId,
             workerId,
             eventId: crypto.randomUUID(),
@@ -639,7 +659,24 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
             telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
             error: message,
-        });
+        } satisfies ScheduledDispatchQueueTriggerInput & {
+            event_type: 'runtime.scheduled_dispatch.failed';
+        };
+        const cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, failedDispatchTriggerInput);
+
+        if (cloudflareQueueTriggers.some((trigger) => trigger.status === 'failed')) {
+            console.error(JSON.stringify({
+                level: 'error',
+                service: 'letbuyy-api',
+                route: 'scheduled.outbox_dispatch.failure_event',
+                method: 'CRON',
+                status_code: 500,
+                latency_ms: 0,
+                dispatcher_id: dispatcherId,
+                error: message,
+                failed_triggers: cloudflareQueueTriggers.filter((trigger) => trigger.status === 'failed'),
+            }));
+        }
 
         console.error(JSON.stringify({
             level: 'error',

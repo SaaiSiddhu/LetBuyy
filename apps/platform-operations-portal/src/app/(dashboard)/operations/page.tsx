@@ -40,6 +40,24 @@ function checkSummary(review: MarketplaceReviewRecord) {
     };
 }
 
+function jsonRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function lifecycleReviewItems(review: MarketplaceReviewRecord): Array<{ key: string; label: string }> {
+    const automatedChecks = jsonRecord(review.automated_checks);
+    const metadata = jsonRecord(automatedChecks.metadata);
+    const rawItems = Array.isArray(metadata.extension_lifecycle_review) ? metadata.extension_lifecycle_review : [];
+
+    return rawItems
+        .map((item) => jsonRecord(item))
+        .map((item) => ({
+            key: String(item.key || item.label || 'extension-lifecycle'),
+            label: String(item.label || item.key || 'Extension lifecycle'),
+        }))
+        .slice(0, 3);
+}
+
 function formatSubmittedAt(value: string): string {
     return new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
@@ -93,6 +111,7 @@ export default async function OperationsPage() {
                         <div className="grid gap-[var(--lb-space-4)]">
                             {reviews.map((review) => {
                                 const summary = checkSummary(review);
+                                const lifecycleItems = lifecycleReviewItems(review);
 
                                 return (
                                     <article
@@ -112,6 +131,13 @@ export default async function OperationsPage() {
                                             <p className="m-0 mt-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                                 Review ID: {review.id}
                                             </p>
+                                            {lifecycleItems.length > 0 ? (
+                                                <div className="mt-[var(--lb-space-3)] flex flex-wrap gap-[var(--lb-space-2)]">
+                                                    {lifecycleItems.map((item) => (
+                                                        <StatusPill key={item.key} value={item.label} />
+                                                    ))}
+                                                </div>
+                                            ) : null}
                                         </div>
 
                                         <div className="grid content-start gap-[var(--lb-space-2)]">
