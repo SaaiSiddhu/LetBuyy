@@ -5,6 +5,7 @@ import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware } from '../middleware/auth';
 import { requireRoleCategory } from '../middleware/rbac';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
 import {
     buildMarketplaceAutomatedChecks,
     createMarketplaceReviewRecord,
@@ -23,9 +24,13 @@ import {
     appOAuthClientId,
     buildAppOAuthRedirectUrl,
     buildAppLifecycleEventPayload,
+    createAppExtensionDeveloperHandoff,
+    createAppExtensionLifecycleSnapshot,
+    createAppExtensionReviewChecklist,
     appStoreStringArray as stringArray,
     appStoreStringOrNull as stringOrNull,
     isAppStoreUuid as isUuid,
+    LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
     normalizeAppAdminEmbedSurface,
     normalizeAppExtensionRegistryStatus,
     normalizeAppInstallScopes,
@@ -487,6 +492,45 @@ function appExtensionRegistryConfig(input: AppExtensionRegistryMutationResult, r
     };
 }
 
+async function recordAppExtensionLifecycleMetric(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        siteId: string;
+        installationId: string;
+        appId?: string | null;
+        registrationId: string;
+        registrationKind: 'extension' | 'function';
+        handle?: string | null;
+        status: 'enabled' | 'disabled';
+        requestId: string;
+        actorId: string;
+    },
+): Promise<void> {
+    try {
+        await new ObservabilityExecutionAdapter(db).recordMetric({
+            metricName: 'app_extension.lifecycle.status_changed',
+            siteId: input.siteId,
+            requestId: input.requestId,
+            metricValue: 1,
+            unit: 'count',
+            dimensions: {
+                lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
+                installation_id: input.installationId,
+                app_id: input.appId || null,
+                registration_id: input.registrationId,
+                registration_kind: input.registrationKind,
+                handle: input.handle || null,
+                status: input.status,
+            },
+            metadata: {
+                actor_id: input.actorId,
+            },
+        });
+    } catch {
+        // Optional metrics tables must not block merchant lifecycle mutations.
+    }
+}
+
 async function registerAppExtensionRegistry(
     db: ReturnType<typeof getSupabaseAdmin>,
     input: {
@@ -921,12 +965,21 @@ router.get('/installations/:id/extensions', authMiddleware, async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: functionsError.message } }, 500);
     }
 
+    const extensionRows = extensions || [];
+    const functionRows = functions || [];
+    const lifecycle = createAppExtensionLifecycleSnapshot({
+        extensions: extensionRows,
+        functions: functionRows,
+        observedAt: new Date().toISOString(),
+    });
+
     return c.json(success({
         installation_id: installation.id,
         app_id: installation.app_id,
         store_id: installation.store_id,
-        extensions: extensions || [],
-        functions: functions || [],
+        extensions: extensionRows,
+        functions: functionRows,
+        lifecycle,
     }));
 });
 
@@ -988,6 +1041,19 @@ router.patch('/installations/:id/extensions/:registrationId', authMiddleware, as
         return c.json({ error: { code: 'NOT_FOUND', message: 'Extension registration not found' } }, 404);
     }
 
+    const registrationRecord = registration as AppEngineJsonRecord;
+    await recordAppExtensionLifecycleMetric(db, {
+        siteId: installation.store_id,
+        installationId: installation.id,
+        appId: stringOrNull(registrationRecord.app_id),
+        registrationId,
+        registrationKind: 'extension',
+        handle: stringOrNull(registrationRecord.extension_handle),
+        status: status === 'enabled' ? 'enabled' : 'disabled',
+        requestId: getRequestId(c),
+        actorId: customUser.id,
+    });
+
     return c.json(success(registration));
 });
 
@@ -1048,6 +1114,19 @@ router.patch('/installations/:id/functions/:registrationId', authMiddleware, asy
     if (!registration) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Function registration not found' } }, 404);
     }
+
+    const registrationRecord = registration as AppEngineJsonRecord;
+    await recordAppExtensionLifecycleMetric(db, {
+        siteId: installation.store_id,
+        installationId: installation.id,
+        appId: stringOrNull(registrationRecord.app_id),
+        registrationId,
+        registrationKind: 'function',
+        handle: stringOrNull(registrationRecord.function_handle),
+        status: status === 'enabled' ? 'enabled' : 'disabled',
+        requestId: getRequestId(c),
+        actorId: customUser.id,
+    });
 
     return c.json(success(registration));
 });
@@ -2570,15 +2649,24 @@ router.post('/developers/apps', authMiddleware, async (c) => {
                                 : 'warning',
                             message: 'Built-for-LetBuyy evidence is optional until listing review requests the badge.',
                         },
+                        {
+                            name: 'extension_lifecycle_contract',
+                            status: 'passed',
+                            message: 'Review packet includes WS13 extension lifecycle, sandbox, revocation, and observability requirements.',
+                        },
                     ],
                     metadata: {
                         app_url: submission.value.app_url,
                         pricing_model: submission.value.pricing_model,
+                        extension_lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
+                        extension_lifecycle_review: createAppExtensionReviewChecklist(),
+                        extension_developer_handoff: createAppExtensionDeveloperHandoff(),
                     },
                 }),
                 metadata: {
                     source_route: '/app-store/developers/apps',
                     submitted_status: submission.value.status,
+                    extension_lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
                 },
             });
 

@@ -314,6 +314,10 @@ test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisio
   assert.match(functionRuntimeSource, /timeout_ms, 5, 1, 5/);
   assert.match(functionRuntimeSource, /memory and alloc\(size\)/);
   assert.match(functionRuntimeSource, /result_len\(\)/);
+  assert.match(functionRuntimeSource, /recordAppFunctionExecutionMetric/);
+  assert.match(functionRuntimeSource, /app_function\.execution\.count/);
+  assert.match(functionRuntimeSource, /app_function\.execution\.duration_ms/);
+  assert.match(functionRuntimeSource, /app_function\.execution\.failed_securely/);
 
   assert.match(storefrontRouteSource, /evaluateCheckoutAppFunctions/);
   assert.match(storefrontRouteSource, /CHECKOUT_FUNCTION_VALIDATION/);

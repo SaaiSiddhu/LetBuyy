@@ -500,6 +500,78 @@ export interface AppExtensionRegistryInstallPlan {
   functionRegistrations: AppFunctionRegistryRecord[];
 }
 
+export const LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION = '2026-06-05.ws13.lifecycle' as const;
+
+export const LETBUYY_APP_EXTENSION_OBSERVABILITY_SIGNALS = [
+  'app_extension.lifecycle.status_changed',
+  'app_extension.registry.snapshot',
+  'app_function.execution.count',
+  'app_function.execution.duration_ms',
+  'app_function.execution.failed_securely',
+] as const;
+
+export const LETBUYY_APP_EXTENSION_LIFECYCLE_ROUTES = [
+  'GET /v1/app-store/installations/:id/extensions',
+  'PATCH /v1/app-store/installations/:id/extensions/:registrationId',
+  'PATCH /v1/app-store/installations/:id/functions/:registrationId',
+  'GET /v1/storefront/:subdomain/checkout/extensions',
+  'POST /v1/storefront/:subdomain/orders',
+] as const;
+
+export type AppExtensionLifecycleSignal = typeof LETBUYY_APP_EXTENSION_OBSERVABILITY_SIGNALS[number];
+export type AppExtensionLifecycleRoute = typeof LETBUYY_APP_EXTENSION_LIFECYCLE_ROUTES[number];
+
+export interface AppExtensionLifecycleItem {
+  kind: 'extension' | 'function';
+  id: string;
+  app_id: string;
+  installation_id: string;
+  handle: string;
+  status: AppExtensionRegistryStatus;
+  app_version: string | null;
+  manifest_schema_version: string | null;
+  surface?: LetbuyyAppManifestExtensionSurface;
+  target?: string;
+  hooks?: LetbuyyAppFunctionHook[];
+  enabled_at: string | null;
+  disabled_at: string | null;
+  revoked_at: string | null;
+  updated_at: string | null;
+}
+
+export interface AppExtensionLifecycleSnapshot {
+  lifecycle_version: typeof LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION;
+  observed_at: string;
+  status_counts: Record<AppExtensionRegistryStatus, number>;
+  extensions: AppExtensionLifecycleItem[];
+  functions: AppExtensionLifecycleItem[];
+  routes: AppExtensionLifecycleRoute[];
+  observability: {
+    signals: AppExtensionLifecycleSignal[];
+    metric_dimensions: string[];
+    log_correlation_keys: string[];
+  };
+  developer_handoff: AppExtensionDeveloperHandoff;
+  review_checklist: AppExtensionReviewChecklistItem[];
+}
+
+export interface AppExtensionReviewChecklistItem {
+  key: string;
+  label: string;
+  requirement: string;
+  evidence: string;
+}
+
+export interface AppExtensionDeveloperHandoff {
+  manifest_schema_version: typeof LETBUYY_APP_MANIFEST_SCHEMA_VERSION;
+  lifecycle_version: typeof LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION;
+  sdk_source_files: string[];
+  supported_surfaces: LetbuyyAppManifestExtensionSurface[];
+  supported_function_hooks: LetbuyyAppFunctionHook[];
+  lifecycle_routes: AppExtensionLifecycleRoute[];
+  observability_signals: AppExtensionLifecycleSignal[];
+}
+
 export const DEFAULT_APP_BRIDGE_CAPABILITIES: AppBridgeCapability[] = ['api.fetch', 'toast', 'resize'];
 
 export function appStoreSlugify(value: string): string {
@@ -938,6 +1010,138 @@ export function planAppExtensionRegistryInstall(input: {
         updated_by: input.installedBy,
       })),
     },
+  };
+}
+
+function lifecycleStatusCounts(items: AppExtensionLifecycleItem[]): Record<AppExtensionRegistryStatus, number> {
+  return items.reduce<Record<AppExtensionRegistryStatus, number>>((counts, item) => {
+    counts[item.status] += 1;
+    return counts;
+  }, { enabled: 0, disabled: 0, revoked: 0 });
+}
+
+function lifecycleTimestamp(value: unknown): string | null {
+  return appStoreStringOrNull(value);
+}
+
+function lifecycleHooks(value: unknown): LetbuyyAppFunctionHook[] {
+  const allowed = new Set<string>(LETBUYY_APP_FUNCTION_HOOKS);
+  return appStoreStringArray(value).filter((hook): hook is LetbuyyAppFunctionHook => allowed.has(hook));
+}
+
+function lifecycleExtensionItem(row: AppEngineJsonRecord, index: number): AppExtensionLifecycleItem {
+  const surface = normalizeManifestSurface(row.surface);
+  return {
+    kind: 'extension',
+    id: appStoreStringOrNull(row.id) || `extension-${index}`,
+    app_id: appStoreStringOrNull(row.app_id) || '',
+    installation_id: appStoreStringOrNull(row.installation_id) || '',
+    handle: appStoreStringOrNull(row.extension_handle || row.handle) || `extension-${index}`,
+    status: normalizeAppExtensionRegistryStatus(row.status) || 'disabled',
+    app_version: appStoreStringOrNull(row.app_version),
+    manifest_schema_version: appStoreStringOrNull(row.manifest_schema_version),
+    ...(surface ? { surface } : {}),
+    ...(appStoreStringOrNull(row.target) ? { target: appStoreStringOrNull(row.target) || undefined } : {}),
+    enabled_at: lifecycleTimestamp(row.enabled_at),
+    disabled_at: lifecycleTimestamp(row.disabled_at),
+    revoked_at: lifecycleTimestamp(row.revoked_at),
+    updated_at: lifecycleTimestamp(row.updated_at),
+  };
+}
+
+function lifecycleFunctionItem(row: AppEngineJsonRecord, index: number): AppExtensionLifecycleItem {
+  return {
+    kind: 'function',
+    id: appStoreStringOrNull(row.id) || `function-${index}`,
+    app_id: appStoreStringOrNull(row.app_id) || '',
+    installation_id: appStoreStringOrNull(row.installation_id) || '',
+    handle: appStoreStringOrNull(row.function_handle || row.handle) || `function-${index}`,
+    status: normalizeAppExtensionRegistryStatus(row.status) || 'disabled',
+    app_version: appStoreStringOrNull(row.app_version),
+    manifest_schema_version: appStoreStringOrNull(row.manifest_schema_version),
+    hooks: lifecycleHooks(row.hooks),
+    enabled_at: lifecycleTimestamp(row.enabled_at),
+    disabled_at: lifecycleTimestamp(row.disabled_at),
+    revoked_at: lifecycleTimestamp(row.revoked_at),
+    updated_at: lifecycleTimestamp(row.updated_at),
+  };
+}
+
+export function createAppExtensionReviewChecklist(): AppExtensionReviewChecklistItem[] {
+  return [
+    {
+      key: 'sandboxed_admin_ui',
+      label: 'Admin UI extensions',
+      requirement: 'Admin UI extensions must render inside the extension-host sandbox and use scoped App Bridge tokens.',
+      evidence: 'packages/extension-host and /v1/app-store/installations/:id/extensions',
+    },
+    {
+      key: 'sandboxed_checkout_ui',
+      label: 'Checkout UI extensions',
+      requirement: 'Checkout UI extensions must render from HTTPS origins inside the checkout sandbox without changing core checkout totals.',
+      evidence: 'GET /v1/storefront/:subdomain/checkout/extensions',
+    },
+    {
+      key: 'portable_theme_app_blocks',
+      label: 'Theme app blocks',
+      requirement: 'Theme app blocks must register as WS11 portable Liquid app blocks and install without storefront source changes.',
+      evidence: 'theme.app_block registry rows injected into storefront app_blocks',
+    },
+    {
+      key: 'deterministic_wasm_functions',
+      label: 'Wasm Functions',
+      requirement: 'Functions must be deterministic Wasm modules with SHA-256 verification, no imports, and 1-5ms execution budgets.',
+      evidence: 'services/api-gateway/src/extensions/app-functions-runtime.ts',
+    },
+    {
+      key: 'revocation_and_observability',
+      label: 'Lifecycle and observability',
+      requirement: 'Install, enable, disable, uninstall, and Function execution must expose status snapshots plus per-extension/function metrics.',
+      evidence: LETBUYY_APP_EXTENSION_OBSERVABILITY_SIGNALS.join(', '),
+    },
+  ];
+}
+
+export function createAppExtensionDeveloperHandoff(): AppExtensionDeveloperHandoff {
+  return {
+    manifest_schema_version: LETBUYY_APP_MANIFEST_SCHEMA_VERSION,
+    lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
+    sdk_source_files: [
+      'packages/app-engine/src/index.ts',
+      'packages/extension-host/src/index.ts',
+      'packages/typescript/api-client/src/index.ts',
+      'apps/developer-portal/src/lib/reference.ts',
+    ],
+    supported_surfaces: [...LETBUYY_APP_MANIFEST_EXTENSION_SURFACES],
+    supported_function_hooks: [...LETBUYY_APP_FUNCTION_HOOKS],
+    lifecycle_routes: [...LETBUYY_APP_EXTENSION_LIFECYCLE_ROUTES],
+    observability_signals: [...LETBUYY_APP_EXTENSION_OBSERVABILITY_SIGNALS],
+  };
+}
+
+export function createAppExtensionLifecycleSnapshot(input: {
+  extensions?: unknown;
+  functions?: unknown;
+  observedAt: string;
+}): AppExtensionLifecycleSnapshot {
+  const extensions = parseAppStoreJsonRecordArray(input.extensions).map(lifecycleExtensionItem);
+  const functions = parseAppStoreJsonRecordArray(input.functions).map(lifecycleFunctionItem);
+  const items = [...extensions, ...functions];
+
+  return {
+    lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
+    observed_at: input.observedAt,
+    status_counts: lifecycleStatusCounts(items),
+    extensions,
+    functions,
+    routes: [...LETBUYY_APP_EXTENSION_LIFECYCLE_ROUTES],
+    observability: {
+      signals: [...LETBUYY_APP_EXTENSION_OBSERVABILITY_SIGNALS],
+      metric_dimensions: ['site_id', 'installation_id', 'app_id', 'registration_id', 'surface', 'hook', 'status'],
+      log_correlation_keys: ['request_id', 'trace_id', 'site_id', 'installation_id', 'app_id'],
+    },
+    developer_handoff: createAppExtensionDeveloperHandoff(),
+    review_checklist: createAppExtensionReviewChecklist(),
   };
 }
 

@@ -16,11 +16,13 @@ export type GuideCard = {
 export const sourceFiles = [
   "services/api-gateway/src/index.ts",
   "services/api-gateway/src/routes/app-store.ts",
+  "services/api-gateway/src/extensions/app-functions-runtime.ts",
   "services/api-gateway/src/routes/themes.ts",
   "services/api-gateway/src/middleware/rateLimit.ts",
   "services/webhook-service/src/app-lifecycle-dispatch.ts",
   "packages/auth-core/src/index.ts",
   "packages/app-engine/src/index.ts",
+  "packages/extension-host/src/index.ts",
   "packages/theme-engine/src/theme-bundle.ts",
 ];
 
@@ -111,10 +113,13 @@ export const apiRouteGroups: RouteGroup[] = [
     title: "App Platform",
     source: "services/api-gateway/src/routes/app-store.ts",
     status: "Live",
-    summary: "App marketplace APIs include catalog, reviews, installation, app bridge fetch, OAuth authorization code, token exchange, developer profile, developer app submissions, and partner dashboard aggregates.",
+    summary: "App marketplace APIs include catalog, reviews, installation, extension/function lifecycle registry, app bridge fetch, OAuth authorization code, token exchange, developer profile, developer app submissions, and partner dashboard aggregates.",
     routes: [
       "GET /v1/app-store/apps",
       "POST /v1/app-store/apps/:id/install",
+      "GET /v1/app-store/installations/:id/extensions",
+      "PATCH /v1/app-store/installations/:id/extensions/:registrationId",
+      "PATCH /v1/app-store/installations/:id/functions/:registrationId",
       "POST /v1/app-store/apps/:id/oauth/authorize",
       "POST /v1/app-store/oauth/token",
       "POST /v1/app-store/oauth/token-exchange",
@@ -240,11 +245,23 @@ export const sdkGuides: GuideCard[] = [
   {
     title: "App manifest and extensions",
     status: "Live contract",
-    body: "App-engine supports developer registration, marketplace app submissions, admin embed extensions, app blocks, OAuth scopes, and lifecycle webhook planning.",
+    body: "App-engine publishes manifest schema `2026-06-05.ws13`, the extension registry, and lifecycle contract `2026-06-05.ws13.lifecycle` for Admin UI, Checkout UI, theme app blocks, and Wasm Functions.",
     bullets: [
-      "Admin embed extensions resolve URL, label, target, and bridge capabilities from app extension config.",
-      "Storefront app blocks carry app id, extension id, slot, render mode, settings, and optional iframe URL.",
-      "Scopes are validated against `marketplace_apps.api_scopes` during install authorization.",
+      "Admin UI and Checkout UI extensions render through `@letbuyy/extension-host` sandbox policies.",
+      "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
+      "Wasm Functions use HTTPS module URLs, SHA-256 verification, no imports, typed JSON I/O, and 1-5ms budgets.",
+      "Per-store registry rows expose `enabled`, `disabled`, and `revoked` lifecycle state.",
+    ],
+  },
+  {
+    title: "Extension lifecycle and observability",
+    status: "Live contract",
+    body: "`GET /v1/app-store/installations/:id/extensions` returns extension/function rows plus a lifecycle snapshot, developer handoff, and app review checklist. Runtime metrics are optional-table safe and keyed by store, installation, app, registration, hook, and status.",
+    bullets: [
+      "`app_extension.lifecycle.status_changed` records merchant enable/disable state changes.",
+      "`app_function.execution.count`, `app_function.execution.duration_ms`, and `app_function.execution.failed_securely` record Function execution outcomes.",
+      "Uninstall revokes extension and Function registry rows, sets `revoked_at`, and removes them from public storefront/runtime resolution.",
+      "Marketplace app review packets include the same lifecycle checklist for platform operations.",
     ],
   },
   {

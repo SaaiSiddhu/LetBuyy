@@ -1,6 +1,7 @@
 import type { Context } from 'hono';
 import {
     AppFunctionRuntimeInputSchema,
+    LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
     applyAppFunctionRuntimeOutput,
     createAppFunctionCheckoutDecision,
     normalizeAppFunctionRuntimeOutput,
@@ -12,6 +13,7 @@ import {
     type LetbuyyAppFunctionHook,
 } from '@letbuyy/app-engine';
 import type { Env } from '../index';
+import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
 import { getSupabaseAdmin } from '../lib/supabase';
 
 type GatewayContext = Context<{ Bindings: Env }>;
@@ -248,6 +250,54 @@ export async function loadEnabledAppFunctionRegistrations(
     ));
 }
 
+async function recordAppFunctionExecutionMetric(
+    c: GatewayContext,
+    input: AppFunctionRuntimeInput,
+    registration: AppFunctionRegistrationRow,
+    execution: AppFunctionExecutionSummary,
+): Promise<void> {
+    try {
+        const adapter = new ObservabilityExecutionAdapter(getSupabaseAdmin(c));
+        const dimensions = {
+            lifecycle_version: LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION,
+            runtime_version: LETBUYY_APP_FUNCTION_RUNTIME_VERSION,
+            installation_id: registration.installation_id || null,
+            app_id: registration.app_id,
+            registration_id: registration.id,
+            function_handle: registration.function_handle,
+            hook: input.hook,
+            status: execution.status,
+        };
+        const metadata = {
+            operations: execution.operations,
+            error_code: execution.errorCode || null,
+        };
+
+        await adapter.recordMetric({
+            metricName: 'app_function.execution.count',
+            siteId: input.site_id,
+            requestId: input.request.request_id,
+            metricValue: 1,
+            unit: 'count',
+            dimensions,
+            metadata,
+        });
+        await adapter.recordMetric({
+            metricName: execution.status === 'failed'
+                ? 'app_function.execution.failed_securely'
+                : 'app_function.execution.duration_ms',
+            siteId: input.site_id,
+            requestId: input.request.request_id,
+            metricValue: execution.status === 'failed' ? 1 : execution.durationMs,
+            unit: execution.status === 'failed' ? 'count' : 'ms',
+            dimensions,
+            metadata,
+        });
+    } catch {
+        // Optional metrics tables must not block checkout Function fail-closed behavior.
+    }
+}
+
 async function executeAppFunctionHook(
     c: GatewayContext,
     input: AppFunctionRuntimeInput,
@@ -259,10 +309,11 @@ async function executeAppFunctionHook(
 
     for (const registration of registrations) {
         const started = Date.now();
+        let execution: AppFunctionExecutionSummary;
         try {
             const output = await executeWasmJsonFunction(registration, parsed);
             outputs.push(output);
-            executions.push({
+            execution = {
                 registrationId: registration.id,
                 appId: registration.app_id,
                 hook: parsed.hook,
@@ -270,9 +321,9 @@ async function executeAppFunctionHook(
                 status: 'succeeded',
                 durationMs: Date.now() - started,
                 operations: output.operations.length,
-            });
+            };
         } catch {
-            executions.push({
+            execution = {
                 registrationId: registration.id,
                 appId: registration.app_id,
                 hook: parsed.hook,
@@ -281,8 +332,10 @@ async function executeAppFunctionHook(
                 durationMs: Date.now() - started,
                 operations: 0,
                 errorCode: 'APP_FUNCTION_FAILED',
-            });
+            };
         }
+        executions.push(execution);
+        await recordAppFunctionExecutionMetric(c, parsed, registration, execution);
     }
 
     return { outputs, executions };

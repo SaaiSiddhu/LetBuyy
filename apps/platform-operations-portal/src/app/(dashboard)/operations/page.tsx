@@ -31,6 +31,24 @@ function checkSummary(review: MarketplaceReviewRecord) {
     };
 }
 
+function jsonRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
+}
+
+function lifecycleReviewItems(review: MarketplaceReviewRecord): Array<{ key: string; label: string }> {
+    const automatedChecks = jsonRecord(review.automated_checks);
+    const metadata = jsonRecord(automatedChecks.metadata);
+    const rawItems = Array.isArray(metadata.extension_lifecycle_review) ? metadata.extension_lifecycle_review : [];
+
+    return rawItems
+        .map((item) => jsonRecord(item))
+        .map((item) => ({
+            key: String(item.key || item.label || 'extension-lifecycle'),
+            label: String(item.label || item.key || 'Extension lifecycle'),
+        }))
+        .slice(0, 3);
+}
+
 function formatSubmittedAt(value: string): string {
     return new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
@@ -87,6 +105,7 @@ export default async function OperationsPage() {
                     <div className="px-5 py-8 text-sm text-zinc-600 dark:text-zinc-400">No pending marketplace reviews.</div>
                 ) : reviews.map((review) => {
                     const summary = checkSummary(review);
+                    const lifecycleItems = lifecycleReviewItems(review);
 
                     return (
                         <div
@@ -103,6 +122,18 @@ export default async function OperationsPage() {
                                 <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
                                     {review.resource_slug || review.resource_id} · {formatSubmittedAt(review.submitted_at)}
                                 </div>
+                                {lifecycleItems.length > 0 ? (
+                                    <div className="mt-3 flex flex-wrap gap-1.5">
+                                        {lifecycleItems.map((item) => (
+                                            <span
+                                                key={item.key}
+                                                className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/40 dark:text-blue-300"
+                                            >
+                                                {item.label}
+                                            </span>
+                                        ))}
+                                    </div>
+                                ) : null}
                             </div>
 
                             <div>

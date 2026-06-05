@@ -6,9 +6,15 @@ import ts from 'typescript';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
 const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
+const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
+const DEVELOPER_REFERENCE_SOURCE = 'apps/developer-portal/src/lib/reference.ts';
+const OPERATIONS_REVIEW_PAGE_SOURCE = 'apps/platform-operations-portal/src/app/(dashboard)/operations/page.tsx';
 const APP_EXTENSION_REGISTRY_MIGRATION = 'database/supabase/migrations/076_app_extension_registry.sql';
 const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
 const appStoreRouteSource = readFileSync(APP_STORE_ROUTE_SOURCE, 'utf8');
+const appFunctionRuntimeSource = readFileSync(APP_FUNCTION_RUNTIME_SOURCE, 'utf8');
+const developerReferenceSource = readFileSync(DEVELOPER_REFERENCE_SOURCE, 'utf8');
+const operationsReviewPageSource = readFileSync(OPERATIONS_REVIEW_PAGE_SOURCE, 'utf8');
 const appExtensionRegistryMigration = readFileSync(APP_EXTENSION_REGISTRY_MIGRATION, 'utf8');
 
 function createZodStub() {
@@ -190,5 +196,104 @@ test('WS13 X1 wires install, enable-disable, and uninstall revocation to per-sto
     "extension_registry: registry.value",
   ]) {
     assert.ok(appStoreRouteSource.includes(marker), `app-store route registry wiring is missing ${marker}`);
+  }
+});
+
+test('WS13 X6 publishes lifecycle observability and developer review handoff', () => {
+  for (const marker of [
+    'LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION',
+    'LETBUYY_APP_EXTENSION_OBSERVABILITY_SIGNALS',
+    'LETBUYY_APP_EXTENSION_LIFECYCLE_ROUTES',
+    'createAppExtensionLifecycleSnapshot',
+    'createAppExtensionDeveloperHandoff',
+    'createAppExtensionReviewChecklist',
+  ]) {
+    assert.ok(appEngineSource.includes(marker), `app-engine lifecycle contract is missing ${marker}`);
+  }
+
+  const snapshot = appEngine.createAppExtensionLifecycleSnapshot({
+    observedAt: '2026-06-05T06:00:00.000Z',
+    extensions: [
+      {
+        id: 'reg_admin',
+        installation_id: 'install_001',
+        app_id: 'app_001',
+        extension_handle: 'admin-rewards-panel',
+        surface: 'admin.ui',
+        target: 'admin.dashboard.widget',
+        status: 'enabled',
+        app_version: '1.0.0',
+        manifest_schema_version: '2026-06-05.ws13',
+      },
+      {
+        id: 'reg_checkout',
+        installation_id: 'install_001',
+        app_id: 'app_001',
+        extension_handle: 'checkout-rewards-banner',
+        surface: 'checkout.ui',
+        target: 'checkout.order-summary.render-after',
+        status: 'disabled',
+      },
+    ],
+    functions: [
+      {
+        id: 'fn_discount',
+        installation_id: 'install_001',
+        app_id: 'app_001',
+        function_handle: 'loyalty-discount',
+        hooks: ['cart.discount.calculate'],
+        status: 'revoked',
+      },
+    ],
+  });
+
+  assert.equal(snapshot.lifecycle_version, '2026-06-05.ws13.lifecycle');
+  assert.equal(snapshot.status_counts.enabled, 1);
+  assert.equal(snapshot.status_counts.disabled, 1);
+  assert.equal(snapshot.status_counts.revoked, 1);
+  assert.equal(snapshot.extensions[0].surface, 'admin.ui');
+  assert.deepEqual(Array.from(snapshot.functions[0].hooks), ['cart.discount.calculate']);
+  assert.ok(snapshot.routes.includes('PATCH /v1/app-store/installations/:id/functions/:registrationId'));
+  assert.ok(snapshot.observability.signals.includes('app_extension.lifecycle.status_changed'));
+  assert.ok(snapshot.observability.signals.includes('app_function.execution.duration_ms'));
+  assert.ok(snapshot.developer_handoff.sdk_source_files.includes('apps/developer-portal/src/lib/reference.ts'));
+  assert.ok(snapshot.review_checklist.some((item) => item.key === 'deterministic_wasm_functions'));
+
+  for (const marker of [
+    'createAppExtensionLifecycleSnapshot',
+    'recordAppExtensionLifecycleMetric',
+    'app_extension.lifecycle.status_changed',
+    'extension_lifecycle_contract',
+    'extension_lifecycle_review',
+    'extension_developer_handoff',
+  ]) {
+    assert.ok(appStoreRouteSource.includes(marker), `app-store lifecycle route/review wiring is missing ${marker}`);
+  }
+
+  for (const marker of [
+    'recordAppFunctionExecutionMetric',
+    'app_function.execution.count',
+    'app_function.execution.duration_ms',
+    'app_function.execution.failed_securely',
+    'LETBUYY_APP_EXTENSION_LIFECYCLE_VERSION',
+  ]) {
+    assert.ok(appFunctionRuntimeSource.includes(marker), `Function runtime observability is missing ${marker}`);
+  }
+
+  for (const marker of [
+    '2026-06-05.ws13.lifecycle',
+    'Extension lifecycle and observability',
+    'GET /v1/app-store/installations/:id/extensions',
+    'app_function.execution.failed_securely',
+  ]) {
+    assert.ok(developerReferenceSource.includes(marker), `developer reference is missing ${marker}`);
+  }
+
+  for (const marker of [
+    'lifecycleReviewItems',
+    'extension_lifecycle_review',
+    'Extension lifecycle',
+  ]) {
+    assert.ok(operationsReviewPageSource.includes(marker), `operations review page is missing ${marker}`);
   }
 });
