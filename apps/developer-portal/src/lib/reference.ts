@@ -171,21 +171,22 @@ export const oauthGuide: GuideCard[] = [
   {
     title: "Authorization code",
     status: "Live contract",
-    body: "A merchant authorizes a published app through `/v1/app-store/apps/:id/oauth/authorize`. The gateway verifies store ownership, requested scopes, and redirect URI before upserting an active installation.",
+    body: "A merchant authorizes a published app through `/v1/app-store/apps/:id/oauth/authorize`. The gateway verifies store ownership, requested scopes, redirect URI, and PKCE S256 challenge before upserting an active installation.",
     bullets: [
       "Grant type is `authorization_code`.",
       "Authorization codes are short lived and expire after 15 minutes.",
+      "The app must keep the original `code_verifier`; token exchange rejects missing or mismatched PKCE proof.",
       "The response includes `redirect_to`, `code`, `state`, granted scopes, app id, installation id, and store id.",
     ],
   },
   {
     title: "Access token exchange",
     status: "Live contract",
-    body: "`POST /v1/app-store/oauth/token` exchanges the authorization code for a scoped app access token after checking client id, redirect URI, active installation, and one-time code redemption.",
+    body: "`POST /v1/app-store/oauth/token` exchanges the authorization code for a scoped app access token after checking client id, redirect URI, PKCE verifier, active installation, and one-time code redemption. The same endpoint supports `grant_type=refresh_token` and rotates the stored refresh-token hash.",
     bullets: [
-      "Token response includes `access_token`, `token_type`, `expires_in`, `expires_at`, `scope`, and `scopes`.",
+      "Authorization-code and refresh-token responses include `access_token`, `refresh_token`, `token_type`, `expires_at`, `refresh_expires_at`, `scope`, and `scopes`.",
       "Auth-core signs app access tokens as JWTs with normalized scopes.",
-      "The installation config stores token hashes, not raw returned tokens.",
+      "The installation config stores token hashes, not raw returned access or refresh tokens.",
     ],
   },
   {
@@ -396,6 +397,8 @@ export const appInstallExample = `POST /v1/app-store/apps/:id/oauth/authorize
 {
   "store_id": "site_uuid",
   "redirect_uri": "https://partner.example/oauth/callback",
+  "code_challenge": "base64url_sha256_of_pkce_verifier",
+  "code_challenge_method": "S256",
   "scopes": ["read_products"],
   "state": "opaque-csrf-state",
   "webhook_url": "https://partner.example/webhooks/letbuyy"

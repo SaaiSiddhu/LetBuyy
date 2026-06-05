@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F2.1 scoped app API complete; continue F2.2 OAuth client auth + PKCE/refresh next.
-- Findings resolved: 9/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-12`, `C-13`, `H-1`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F2.1 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F2.2 OAuth PKCE/refresh hardening complete; continue F2.3 compliance webhook producers next.
+- Findings resolved: 10/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-12`, `C-13`, `H-1`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F2.2 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -151,6 +151,24 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F2.2 OAuth PKCE and refresh evidence
+
+- `/v1/app-store/apps/:id/oauth/authorize` now requires a PKCE S256 `code_challenge` and stores only the authorization-code hash plus challenge under `app_installations.config.oauth.authorization_code`.
+- `/v1/app-store/oauth/token` with `grant_type=authorization_code` requires `code_verifier`, validates the signed code, checks client/redirect match, verifies PKCE, rejects redeemed-code replay, and stores only access/refresh token hashes.
+- `/v1/app-store/oauth/token` with `grant_type=refresh_token` looks up the hashed refresh token on an active installation, checks client id and expiry, enforces scope containment, and rotates `refresh_token_hash`.
+- `packages/shared-types`, `packages/typescript/api-client`, `apps/developer-portal/src/lib/developer-surface.ts`, and `apps/developer-portal/src/lib/reference.ts` now expose the PKCE and refresh-token contract.
+- `tests/contracts/app-oauth-pkce-refresh.test.ts` covers PKCE S256 normalization/verification, refresh-token hash persistence, route source requirements, replay guard markers, API client types, shared schema, and developer docs.
+- `pnpm run test:contracts`: PASS - 35/35.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm --filter @letbuyy/shared-types typecheck`: PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck`: PASS.
+- `pnpm --filter @letbuyy/shared-types build` then `pnpm --filter @letbuyy/api-client typecheck`: PASS.
+- `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 106/106.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -176,6 +194,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the completed F2.1 scoped app API increment.
-- Continue to F2.2 OAuth client auth with client proof/PKCE, refresh grant, and used-code replay coverage.
+- Commit the completed F2.2 OAuth PKCE/refresh increment.
+- Continue to F2.3 compliance webhook producers.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

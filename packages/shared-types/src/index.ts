@@ -1715,8 +1715,10 @@ export const AppOAuthAuthorizationResultSchema = z.object({
 
 export const AppOAuthTokenResultSchema = z.object({
   access_token: z.string().min(1),
+  refresh_token: z.string().min(1).optional(),
   token_type: z.literal('Bearer'),
   expires_at: z.string().datetime(),
+  refresh_expires_at: z.string().datetime().optional(),
   scope: z.string().default(''),
   scopes: z.array(z.string().min(1)).default([]),
   installation_id: z.string().min(1),

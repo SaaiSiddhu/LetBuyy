@@ -26,12 +26,14 @@ import type {
 } from '@letbuyy/billing-core';
 
 export type AppLifecycleEventType = 'app.installed' | 'app.uninstalled';
-export type AppOAuthGrantType = 'authorization_code';
+export type AppOAuthGrantType = 'authorization_code' | 'refresh_token';
 
 export interface AppOAuthTokenResponse {
     access_token: string;
+    refresh_token?: string;
     token_type: 'Bearer';
     expires_at: string;
+    refresh_expires_at?: string;
     scope: string;
     scopes: string[];
     installation_id: string;
@@ -70,6 +72,11 @@ export type AppExtensionRegistryPersistenceResult =
     | { ok: true; value: AppExtensionRegistryMutationResult }
     | { ok: false; status: 400 | 500; code: string; message: string };
 
+export interface AppOAuthPkceChallenge {
+    codeChallenge: string;
+    codeChallengeMethod: 'S256';
+}
+
 export function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
 }
@@ -87,11 +94,42 @@ export function appOAuthState(value: unknown): string | null {
 }
 
 export function appOAuthGrantType(value: unknown): AppOAuthGrantType | null {
-    return value === 'authorization_code' ? value : null;
+    return value === 'authorization_code' || value === 'refresh_token' ? value : null;
 }
 
 export function appOAuthConfig(config: unknown): AppEngineJsonRecord {
     return parseJsonRecord(parseJsonRecord(config).oauth);
+}
+
+const PKCE_VALUE_PATTERN = /^[A-Za-z0-9._~-]{43,128}$/;
+
+export function normalizeAppOAuthPkceChallenge(challenge: unknown, method: unknown): { ok: true; value: AppOAuthPkceChallenge } | { ok: false; message: string } {
+    const codeChallenge = stringOrNull(challenge);
+    const codeChallengeMethod = stringOrNull(method) || 'S256';
+    if (codeChallengeMethod !== 'S256') {
+        return { ok: false, message: 'code_challenge_method must be S256' };
+    }
+    if (!codeChallenge || !PKCE_VALUE_PATTERN.test(codeChallenge)) {
+        return { ok: false, message: 'code_challenge must be 43-128 PKCE characters' };
+    }
+    return { ok: true, value: { codeChallenge, codeChallengeMethod } };
+}
+
+export async function appOAuthPkceS256Challenge(verifier: string): Promise<string> {
+    const digest = new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier)));
+    let output = '';
+    for (const byte of digest) output += String.fromCharCode(byte);
+    return btoa(output).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+export async function verifyAppOAuthPkceVerifier(verifier: unknown, challenge: unknown, method: unknown): Promise<boolean> {
+    const codeVerifier = stringOrNull(verifier);
+    const codeChallenge = stringOrNull(challenge);
+    const codeChallengeMethod = stringOrNull(method);
+    if (!codeVerifier || !codeChallenge || codeChallengeMethod !== 'S256' || !PKCE_VALUE_PATTERN.test(codeVerifier)) {
+        return false;
+    }
+    return await appOAuthPkceS256Challenge(codeVerifier) === codeChallenge;
 }
 
 export function firstRelatedRecord(value: unknown): AppEngineJsonRecord {
@@ -171,9 +209,11 @@ export function partnerStoreFromOwnedSite(row: AppEngineJsonRecord): AppEngineJs
 export function appendAppOAuthTokenConfig(input: {
     existingConfig: unknown;
     accessTokenHash: string;
+    refreshTokenHash?: string;
     scopes: string[];
     issuedAt: string;
     expiresAt: string;
+    refreshExpiresAt?: string;
     authorizationCode?: AppEngineJsonRecord;
 }): AppEngineJsonRecord {
     const rootConfig = parseJsonRecord(input.existingConfig);
@@ -187,8 +227,36 @@ export function appendAppOAuthTokenConfig(input: {
             scopes: input.scopes,
             issued_at: input.issuedAt,
             expires_at: input.expiresAt,
+            ...(input.refreshTokenHash ? {
+                refresh_token_hash: input.refreshTokenHash,
+                refresh_token_issued_at: input.issuedAt,
+                refresh_token_expires_at: input.refreshExpiresAt,
+            } : {}),
             ...(input.authorizationCode ? { authorization_code: input.authorizationCode } : {}),
         },
+    };
+}
+
+function randomOAuthToken(length = 64): string {
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._~-';
+    const bytes = new Uint8Array(length);
+    crypto.getRandomValues(bytes);
+    let token = '';
+    for (const byte of bytes) token += alphabet[byte % alphabet.length];
+    return token;
+}
+
+export async function mintAppOAuthRefreshToken(input: {
+    now: Date;
+    ttlSeconds?: number;
+}): Promise<{ token: string; hash: string; expiresAt: string }> {
+    const ttlSeconds = input.ttlSeconds || 60 * 60 * 24 * 30;
+    const expiresAt = new Date(input.now.getTime() + ttlSeconds * 1000).toISOString();
+    const token = `lbapp_refresh_${randomOAuthToken(72)}`;
+    return {
+        token,
+        hash: await sha256Hex(token),
+        expiresAt,
     };
 }
 

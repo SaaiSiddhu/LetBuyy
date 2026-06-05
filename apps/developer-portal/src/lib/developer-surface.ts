@@ -692,8 +692,9 @@ export const contractCards: ContractCard[] = [
     status: "available",
     source: "services/api-gateway/src/routes/app-store.ts:1225",
     points: [
-      "Authorization codes expire after 15 minutes and are stored only as hashes in app_installations.config.",
-      "POST /v1/app-store/oauth/token blocks replay by marking authorization_code.redeemed_at.",
+      "Authorization codes expire after 15 minutes and are stored only as hashes in app_installations.config with the PKCE S256 code challenge.",
+      "POST /v1/app-store/oauth/token requires code_verifier, blocks replay by marking authorization_code.redeemed_at, and stores only token hashes.",
+      "POST /v1/app-store/oauth/token with grant_type=refresh_token rotates the stored refresh_token_hash and returns a new app Bearer token.",
       "POST /v1/app-store/oauth/token-exchange mints a 15-minute embedded app token from a merchant session and installation_id.",
       "Direct install currently returns a Bearer app token with a one-hour expires_at value."
     ]
@@ -771,7 +772,7 @@ export const appStoreEndpoints: EndpointDoc[] = [
     path: "/v1/app-store/oauth/token",
     auth: "public",
     status: "available",
-    summary: "Exchanges grant_type=authorization_code, code, client_id, and redirect_uri for a scoped Bearer token.",
+    summary: "Exchanges grant_type=authorization_code with PKCE code_verifier, or grant_type=refresh_token with a rotated refresh token, for a scoped Bearer token.",
     source: "services/api-gateway/src/routes/app-store.ts:1312"
   },
   {
@@ -1239,31 +1240,36 @@ export const webhookEndpoints: EndpointDoc[] = [
 export const oauthSteps: GuideStep[] = [
   {
     title: "1. Merchant authorizes the app",
-    body: "Call POST /v1/app-store/apps/:id/oauth/authorize with a merchant session. The gateway verifies store ownership, checks requested scopes against the app's api_scopes, validates redirect_uri, activates the installation, creates webhook subscriptions, and returns an authorization code.",
+    body: "Call POST /v1/app-store/apps/:id/oauth/authorize with a merchant session and a PKCE S256 code_challenge. The gateway verifies store ownership, checks requested scopes against the app's api_scopes, validates redirect_uri, activates the installation, creates webhook subscriptions, and returns an authorization code.",
     source: "services/api-gateway/src/routes/app-store.ts:1140"
   },
   {
     title: "2. Authorization code is short-lived",
-    body: "The code is stored as a hash in app_installations.config.oauth.authorization_code and expires after 15 minutes.",
+    body: "The code is stored as a hash with the PKCE challenge in app_installations.config.oauth.authorization_code and expires after 15 minutes.",
     source: "services/api-gateway/src/routes/app-store.ts:1225"
   },
   {
     title: "3. App exchanges the code",
-    body: "Call POST /v1/app-store/oauth/token with grant_type=authorization_code, code, client_id, and redirect_uri. The gateway verifies the signed code, checks client and redirect match, blocks replay, and returns a scoped Bearer token.",
+    body: "Call POST /v1/app-store/oauth/token with grant_type=authorization_code, code, client_id, redirect_uri, and code_verifier. The gateway verifies the signed code, checks client and redirect match, verifies PKCE, blocks replay, and returns a scoped Bearer token plus refresh token.",
     source: "services/api-gateway/src/routes/app-store.ts:1312"
   },
   {
-    title: "4. Embedded apps can exchange a merchant session",
+    title: "4. Refresh tokens rotate",
+    body: "Call POST /v1/app-store/oauth/token with grant_type=refresh_token, refresh_token, and client_id to rotate the refresh token and receive a fresh scoped app token. The gateway stores only refresh_token_hash.",
+    source: "services/api-gateway/src/routes/app-store.ts:1312"
+  },
+  {
+    title: "5. Embedded apps can exchange a merchant session",
     body: "Call POST /v1/app-store/oauth/token-exchange with a merchant session and installation_id. The returned token lasts 15 minutes and is intended for embedded admin app surfaces.",
     source: "services/api-gateway/src/routes/app-store.ts:1400"
   },
   {
-    title: "5. App bridge reads are scoped and GET-only",
+    title: "6. App bridge reads are scoped and GET-only",
     body: "POST /v1/app-store/bridge/fetch accepts a Bearer app token and only proxies GET reads to approved first segments. Mutating bridge calls are not implemented.",
     source: "services/api-gateway/src/routes/app-store.ts:781"
   },
   {
-    title: "6. Server-to-server app API calls are scoped",
+    title: "7. Server-to-server app API calls are scoped",
     body: "Call /v1/app/products or /v1/app/orders with the app Bearer token for direct scoped reads. Metadata writes are limited to PATCH /v1/app/installation/metadata and require write_app_metadata.",
     source: "services/api-gateway/src/routes/app-api.ts:152"
   }
@@ -1272,14 +1278,14 @@ export const oauthSteps: GuideStep[] = [
 export const oauthTokenLifecycle: OAuthTokenLifecycleDoc[] = [
   {
     surface: "Authorization code issuance",
-    currentContract: "POST /v1/app-store/apps/:id/oauth/authorize validates merchant ownership, requested scopes, and redirect_uri, then stores only a code hash under config.oauth.authorization_code with a 15-minute expires_at.",
-    developerAction: "Treat the returned code as one-time, short-lived material and redirect with the exact redirect_uri and state returned by the gateway.",
+    currentContract: "POST /v1/app-store/apps/:id/oauth/authorize validates merchant ownership, requested scopes, redirect_uri, and PKCE S256 code_challenge, then stores only a code hash plus challenge under config.oauth.authorization_code with a 15-minute expires_at.",
+    developerAction: "Treat the returned code as one-time, short-lived material and keep the original PKCE code_verifier for token exchange.",
     source: "services/api-gateway/src/routes/app-store.ts:1139 + :1225 + :1244"
   },
   {
     surface: "Authorization code exchange",
-    currentContract: "POST /v1/app-store/oauth/token accepts only grant_type=authorization_code and requires code, client_id, and redirect_uri; the signed code payload must match client_id and redirect_uri.",
-    developerAction: "Send the exact redirect URI used during authorize and handle INVALID_GRANT for expired, malformed, or mismatched codes.",
+    currentContract: "POST /v1/app-store/oauth/token accepts grant_type=authorization_code and requires code, client_id, redirect_uri, and code_verifier; the signed code payload must match client_id and redirect_uri, and the verifier must match the stored S256 challenge.",
+    developerAction: "Send the exact redirect URI and PKCE verifier used during authorize, and handle INVALID_GRANT for expired, malformed, mismatched, or replayed codes.",
     source: "services/api-gateway/src/routes/app-store.ts:1311 + :1316 + :1322 + :1327"
   },
   {
@@ -1290,8 +1296,8 @@ export const oauthTokenLifecycle: OAuthTokenLifecycleDoc[] = [
   },
   {
     surface: "Scoped app token",
-    currentContract: "mintAppOAuthAccessToken defaults to a 3600-second TTL, returns Bearer access_token, expires_at, scope, scopes, installation_id, app_id, and store_id, and stores only access_token_hash.",
-    developerAction: "Use the token as a one-hour scoped bearer token and store expiry separately in the partner app.",
+    currentContract: "mintAppOAuthAccessToken defaults to a 3600-second TTL, returns Bearer access_token, expires_at, scope, scopes, installation_id, app_id, and store_id, and stores only access_token_hash. Authorization-code and refresh-token flows also return a refresh_token while storing only refresh_token_hash.",
+    developerAction: "Use the token as a one-hour scoped bearer token, store expiry separately in the partner app, and replace the refresh token after every refresh response.",
     source: "services/api-gateway/src/routes/app-store.ts:213 + :227 + :241"
   },
   {
@@ -1320,8 +1326,8 @@ export const oauthTokenLifecycle: OAuthTokenLifecycleDoc[] = [
   },
   {
     surface: "Refresh tokens and rotation",
-    currentContract: "[SKIP — NEEDS BACKEND/SDK] AppOAuthGrantType only accepts authorization_code and the token response interface has no refresh_token or public credential rotation contract.",
-    developerAction: "Do not document refresh-token or app-secret rotation workflows until real gateway routes or SDK tooling land.",
+    currentContract: "POST /v1/app-store/oauth/token accepts grant_type=refresh_token, looks up the hashed refresh token in active installation config, checks client_id and expiry, issues a fresh access token, and rotates refresh_token_hash.",
+    developerAction: "Persist the newest refresh token returned by the gateway and discard the previous token immediately after a successful refresh.",
     source: "services/api-gateway/src/routes/app-store.ts:48 + :53 + :1316"
   }
 ];
@@ -1338,6 +1344,8 @@ Content-Type: application/json
   "store_id": "site_id",
   "scopes": ["read_products", "read_orders"],
   "redirect_uri": "https://partner.example/oauth/callback",
+  "code_challenge": "base64url_sha256_of_pkce_verifier",
+  "code_challenge_method": "S256",
   "state": "partner_csrf_state",
   "webhook_secret": "partner_shared_signing_secret",
   "config": {
@@ -1373,8 +1381,10 @@ Content-Type: application/json
     code: `{
   "data": {
     "access_token": "letbuyy_app_token",
+    "refresh_token": "lbapp_refresh_token",
     "token_type": "Bearer",
     "expires_at": "2026-06-03T04:15:00.000Z",
+    "refresh_expires_at": "2026-07-03T04:00:00.000Z",
     "scopes": ["read_products", "read_orders"],
     "installation_id": "installation_id",
     "app_id": "app_id",

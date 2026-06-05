@@ -42,8 +42,11 @@ import {
     insertAppChargeOutbox,
     insertAppLifecycleOutbox,
     insertAppWebhookSubscriptions,
+    mintAppOAuthRefreshToken,
     mintAppOAuthAccessToken,
+    normalizeAppOAuthPkceChallenge,
     registerAppExtensionRegistry,
+    verifyAppOAuthPkceVerifier,
     type AppBillingChargeRecord,
 } from './shared';
 
@@ -353,6 +356,14 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             return c.json({ error: { code: 'VALIDATION', message: redirect.message } }, 400);
         }
 
+        const pkce = normalizeAppOAuthPkceChallenge(
+            body.code_challenge || body.codeChallenge,
+            body.code_challenge_method || body.codeChallengeMethod,
+        );
+        if (!pkce.ok) {
+            return c.json({ error: { code: 'VALIDATION', message: pkce.message } }, 400);
+        }
+
         const appSecret = appPlatformTokenSecret(c.env);
         if (!appSecret) {
             return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App OAuth token secret is not configured' } }, 500);
@@ -427,6 +438,8 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
                     code_hash: authorizationCodeHash,
                     client_id: clientId,
                     redirect_uri: redirect.value,
+                    code_challenge: pkce.value.codeChallenge,
+                    code_challenge_method: pkce.value.codeChallengeMethod,
                     scopes: scopes.value,
                     state,
                     issued_at: now.toISOString(),
@@ -497,17 +510,108 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
         const body = await c.req.json() as AppEngineJsonRecord;
         const grantType = appOAuthGrantType(body.grant_type || body.grantType);
         if (!grantType) {
-            return c.json({ error: { code: 'VALIDATION', message: 'grant_type must be authorization_code' } }, 400);
+            return c.json({ error: { code: 'VALIDATION', message: 'grant_type must be authorization_code or refresh_token' } }, 400);
+        }
+
+        const appSecret = appPlatformTokenSecret(c.env);
+        if (!appSecret) {
+            return c.json({ error: { code: 'SERVER_MISCONFIGURED', message: 'App OAuth token secret is not configured' } }, 500);
+        }
+
+        if (grantType === 'refresh_token') {
+            const refreshToken = stringOrNull(body.refresh_token || body.refreshToken);
+            const clientId = stringOrNull(body.client_id || body.clientId);
+            if (!refreshToken || !clientId) {
+                return c.json({ error: { code: 'VALIDATION', message: 'refresh_token and client_id are required' } }, 400);
+            }
+
+            const refreshTokenHash = await sha256Hex(refreshToken);
+            const db = getSupabaseAdmin(c);
+            const { data: installation, error } = await db
+                .from('app_installations')
+                .select('id, app_id, store_id, installed_by, status, scopes_granted, config, marketplace_apps(id, name, oauth_client_id)')
+                .eq('status', 'active')
+                .contains('config', { oauth: { refresh_token_hash: refreshTokenHash } })
+                .maybeSingle();
+
+            if (error) {
+                return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+            }
+
+            if (!installation) {
+                return c.json({ error: { code: 'INVALID_GRANT', message: 'Refresh token is invalid or revoked' } }, 400);
+            }
+
+            const app = firstRelatedRecord(installation.marketplace_apps);
+            const expectedClientId = appOAuthClientId({
+                id: stringOrNull(app.id) || installation.app_id,
+                name: stringOrNull(app.name) || 'Installed app',
+                oauth_client_id: stringOrNull(app.oauth_client_id),
+            });
+            if (expectedClientId !== clientId) {
+                return c.json({ error: { code: 'INVALID_GRANT', message: 'Refresh token client mismatch' } }, 400);
+            }
+
+            const now = new Date();
+            const oauth = appOAuthConfig(installation.config);
+            const refreshExpiresAt = stringOrNull(oauth.refresh_token_expires_at);
+            if (!refreshExpiresAt || Date.parse(refreshExpiresAt) <= now.getTime()) {
+                return c.json({ error: { code: 'INVALID_GRANT', message: 'Refresh token is expired' } }, 400);
+            }
+
+            const previouslyGrantedScopes = stringArray(oauth.scopes).length > 0
+                ? stringArray(oauth.scopes)
+                : stringArray(installation.scopes_granted);
+            const scopes = Array.isArray(body.scopes)
+                ? normalizeAppInstallScopes(body.scopes, previouslyGrantedScopes)
+                : { ok: true as const, value: previouslyGrantedScopes };
+            if (!scopes.ok) {
+                return c.json({ error: { code: 'VALIDATION', message: scopes.message } }, 400);
+            }
+
+            const minted = await mintAppOAuthAccessToken({
+                appId: installation.app_id,
+                installationId: installation.id,
+                storeId: installation.store_id,
+                installedBy: installation.installed_by,
+                scopes: scopes.value,
+                secret: appSecret,
+                now,
+            });
+            const refreshed = await mintAppOAuthRefreshToken({ now });
+            const finalConfig = appendAppOAuthTokenConfig({
+                existingConfig: installation.config,
+                accessTokenHash: minted.hash,
+                refreshTokenHash: refreshed.hash,
+                scopes: scopes.value,
+                issuedAt: now.toISOString(),
+                expiresAt: minted.response.expires_at,
+                refreshExpiresAt: refreshed.expiresAt,
+            });
+            const { error: updateError } = await db
+                .from('app_installations')
+                .update({ config: finalConfig })
+                .eq('id', installation.id);
+
+            if (updateError) {
+                return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+            }
+
+            return c.json(success({
+                ...minted.response,
+                refresh_token: refreshed.token,
+                refresh_expires_at: refreshed.expiresAt,
+            }));
         }
 
         const code = stringOrNull(body.code);
         const clientId = stringOrNull(body.client_id || body.clientId);
         const redirectUri = stringOrNull(body.redirect_uri || body.redirectUri);
-        if (!code || !clientId || !redirectUri) {
-            return c.json({ error: { code: 'VALIDATION', message: 'code, client_id, and redirect_uri are required' } }, 400);
+        const codeVerifier = stringOrNull(body.code_verifier || body.codeVerifier);
+        if (!code || !clientId || !redirectUri || !codeVerifier) {
+            return c.json({ error: { code: 'VALIDATION', message: 'code, client_id, redirect_uri, and code_verifier are required' } }, 400);
         }
 
-        const appSecret = appPlatformTokenSecret(c.env);
         const verification = await verifyAppAuthorizationCode(code, appSecret);
         if (!verification.accepted || !verification.payload) {
             return c.json({ error: { code: 'INVALID_GRANT', message: verification.reason || 'Authorization code is invalid' } }, 400);
@@ -547,6 +651,15 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             return c.json({ error: { code: 'INVALID_GRANT', message: 'Authorization code has already been redeemed or is not recognized' } }, 400);
         }
 
+        const pkceAccepted = await verifyAppOAuthPkceVerifier(
+            codeVerifier,
+            authorizationCodeConfig.code_challenge,
+            authorizationCodeConfig.code_challenge_method,
+        );
+        if (!pkceAccepted) {
+            return c.json({ error: { code: 'INVALID_GRANT', message: 'Authorization code verifier mismatch' } }, 400);
+        }
+
         const now = new Date();
         const minted = await mintAppOAuthAccessToken({
             appId: verification.payload.appId,
@@ -554,15 +667,18 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             storeId: verification.payload.storeId,
             installedBy: verification.payload.installedBy,
             scopes: verification.payload.scopes,
-            secret: appSecret || '',
+            secret: appSecret,
             now,
         });
+        const refreshed = await mintAppOAuthRefreshToken({ now });
         const finalConfig = appendAppOAuthTokenConfig({
             existingConfig: installation.config,
             accessTokenHash: minted.hash,
+            refreshTokenHash: refreshed.hash,
             scopes: verification.payload.scopes,
             issuedAt: now.toISOString(),
             expiresAt: minted.response.expires_at,
+            refreshExpiresAt: refreshed.expiresAt,
             authorizationCode: {
                 ...authorizationCodeConfig,
                 redeemed_at: now.toISOString(),
@@ -577,7 +693,11 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
         }
 
-        return c.json(success(minted.response));
+        return c.json(success({
+            ...minted.response,
+            refresh_token: refreshed.token,
+            refresh_expires_at: refreshed.expiresAt,
+        }));
     });
 
     // POST /app-store/oauth/token-exchange — Exchange a merchant session for an embedded app token

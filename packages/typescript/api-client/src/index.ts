@@ -194,14 +194,24 @@ export interface AppInstallInput extends JsonRecord {
 }
 export interface AppOAuthAuthorizeInput extends AppInstallInput {
   redirect_uri: string;
+  code_challenge: string;
+  code_challenge_method?: 'S256';
   state?: string | null;
 }
-export interface AppOAuthTokenInput extends JsonRecord {
+export interface AppOAuthAuthorizationCodeTokenInput extends JsonRecord {
   grant_type: 'authorization_code';
   code: string;
   client_id: string;
   redirect_uri: string;
+  code_verifier: string;
 }
+export interface AppOAuthRefreshTokenInput extends JsonRecord {
+  grant_type: 'refresh_token';
+  refresh_token: string;
+  client_id: string;
+  scopes?: string[];
+}
+export type AppOAuthTokenInput = AppOAuthAuthorizationCodeTokenInput | AppOAuthRefreshTokenInput;
 export interface AppOAuthTokenExchangeInput extends JsonRecord {
   installation_id: string;
   store_id?: string;
