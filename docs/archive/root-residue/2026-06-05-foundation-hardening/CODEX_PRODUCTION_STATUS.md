@@ -1,55 +1,51 @@
-# CODEX PRODUCTION STATUS - 2026-06-02T06:43:35Z
+# CODEX PRODUCTION STATUS - 2026-06-03T02:15:24Z
 
 Final state: BLOCKED - AWAITING HUMAN.
 
-The local production-readiness work is green for fresh provisioning, real-stack federation journeys, COD/GST, self-hosted UI assets, build, tests, and governance. The mission cannot be marked COMPLETE because one online provider's sandbox charge/webhook proof and several production credential/policy decisions remain human-gated.
+WS7 production hardening is green for fresh local stack boot, real J1-J5 federation journeys, COD, GST, build, tests, typecheck, lint, and governance. The branch cannot be classified COMPLETE because the required online-provider sandbox execution still needs human-provided Cashfree sandbox credentials, and reserved services cannot be activated without topology authority.
+
+## WS7 Branch
+
+- Worktree: `/Users/saai_sidd/Git/lb-ws7`
+- Branch: `stream/WS7-hardening`
+- Prior WS7 hardening commits: `2265a55 docs(ws7): record production hardening evidence`, `bc4a996 chore(ws7): harden local stack orchestration`
+- Ownership honored: edited `scripts/dev/**` plus root mission/status ledgers; did not edit `apps/**` or `packages/typescript/**`.
 
 ## Phase Summary
 
 | Phase | Status | Evidence |
 | --- | --- | --- |
-| P0 Migration replay | PASS | `pnpm run federation:local:up` replayed `000_baseline.sql`, `073`, `074`, and `075` on a fresh local Supabase, seeded data, returned `/health` 200 and product query 200. Baseline equivalence diff was empty. Commits `572c8bc`, `bdb635f`. |
-| P1 Real J1-J5 | PASS | `LETBUYY_E2E_REQUIRE_REAL_STACK=1 pnpm exec playwright test tests/e2e/federation --project=chromium` -> 5/5 PASS against real local Supabase/gateway/apps. Commits `408a5a1`, `eb4bf91`. |
-| P2 India-native | PARTIAL PASS | COD and GST pass on real orders; Cashfree has real adapter/routes/webhook and honest unconfigured state. Cashfree sandbox charge/webhook proof is SKIPPED pending sandbox credentials. Commits `00366ce`, `e352f27`. |
-| P3 Premium UI | PASS | Self-hosted Geist fonts via `next/font/local`; no Google font source path; active web UI icons centralized through `@letbuyy/ui` Lucide wrapper. Real-stack screenshots captured under `.tmp/p3-visual-proof/`. Commits `12aff3a`, `c0fa151`. |
-| P4 Production prerequisites | PARTIAL PASS | Env templates/schema/matrix include credential placeholders and human runbook. Resend is config-gated; social OAuth and payout rails remain human-gated. Commits `d467543`, `3b50f3e`. |
-| Final regression | PASS, except human-gated provider proof | `5021682` aligned source-contract tests with the active baseline. Final typecheck/lint/build/node-test/governance and real-stack E2E are green. |
+| Fresh stack boot | PASS | `pnpm run federation:local:up` applied `000_baseline.sql`, `073_order_item_required_field_compatibility.sql`, `074_cod_pending_status.sql`, and `075_cashfree_payment_provider.sql`; seeded demo data; `/health` 200; product query returned `Bengaluru Street Runner`; all local web runtimes returned 200. |
+| Real J1-J5 | PASS | `LETBUYY_E2E_REQUIRE_REAL_STACK=1 pnpm exec playwright test tests/e2e/federation --project=chromium` -> 5/5 PASS against real local Supabase, gateway, and apps. |
+| COD/GST | PASS | J4 created real COD orders with `pending_cod`, confirmed COD, asserted intra-state CGST/SGST, asserted inter-state IGST, and consumed event queue jobs. |
+| Cashfree / online provider | BLOCKED - NEEDS HUMAN | Cashfree adapter/routes/webhook are real and return honest unconfigured state. Local probe created a Cashfree-method order, then provider order creation returned 503 `PAYMENT_UNAVAILABLE` because `CASHFREE_APP_ID` and `CASHFREE_SECRET_KEY` are absent. |
+| Local orchestration | PASS | `scripts/dev/local-stack-up.mjs` now starts `webhook-service` on 8788, writes gateway and webhook `.dev.vars`, and propagates human-provided payment sandbox env overrides. `scripts/dev/local-stack-down.mjs` removes webhook `.dev.vars`. |
+| Scaffold services | PARTIAL / SKIPPED | `queue-workers` is executable and persists queue deliveries plus telemetry. `notification-service`, `search-service`, `analytics-pipeline`, `media-service`, `event-bus`, and `checkout-runtime` remain `platform: reserved` in topology authority, so executable activation is skipped pending governance decision. |
+| Build stability | PASS | `pnpm turbo build` -> 57/57 successful with no network-fetch failure observed. |
+| Final validation | PASS | `pnpm turbo typecheck` -> 57/57; `pnpm run test` -> 286/286; `pnpm run lint` -> exit 0 with app-owned warnings only; `pnpm run validate:governance` -> 128/128 after generated artifact cleanup. |
 
 ## Success Criteria
 
 | # | Result | Evidence |
 | --- | --- | --- |
-| 1 Fresh-DB provisioning | PASS | `pnpm run federation:local:up` -> fresh Supabase applied `000_baseline.sql`, `073_order_item_required_field_compatibility.sql`, `074_cod_pending_status.sql`, `075_cashfree_payment_provider.sql`, seeded data, all apps/gateway ready. |
-| 2 Real E2E | PASS | Final `LETBUYY_E2E_REQUIRE_REAL_STACK=1 pnpm exec playwright test tests/e2e/federation --project=chromium` -> 5 passed in 26.0s. |
-| 3 India-native | BLOCKED - AWAITING HUMAN | COD and GST are real and proven. Cashfree implementation is real, but sandbox charge + webhook proof requires `CASHFREE_APP_ID` and `CASHFREE_SECRET_KEY`. |
-| 4 Self-contained build | PASS | `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> 57/57 PASS; `rg "next/font/google|fonts.googleapis.com"` -> no active matches. |
-| 5 Premium UI | PASS | `@letbuyy/ui` exports fonts/icons; scan shows only `packages/typescript/ui/src/icons.tsx` imports `lucide-react`; no emoji/ad-hoc SVG UI affordance scan hits in active web TS/TSX/CSS surfaces. |
-| 6 Human-gated ledger | PASS | `CODEX_PRODUCTION_LEDGER.md` contains SKIPPED entries for prod/staging DB apply, Cloudflare/Vercel, Resend, social OAuth, Razorpay live/Route payouts, and Cashfree sandbox proof. |
-| 7 Full validators | PASS | Final gate: `pnpm turbo typecheck` 57/57; `pnpm lint` 8/8; `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` 57/57; escalated `node --test` 287/287; `pnpm run validate:governance` 128/128; real-stack Playwright 5/5. |
-| 8 Status file | PASS | This file records the final state as BLOCKED - AWAITING HUMAN. |
-
-## Final Commands
-
-- `pnpm turbo typecheck` -> 57/57 successful.
-- `pnpm lint` -> 8/8 successful, existing warnings only.
-- `NEXT_TELEMETRY_DISABLED=1 pnpm turbo build` -> 57/57 successful.
-- `node --test` -> initial sandbox run failed on local listener EPERM and stale archived migration paths; after test alignment, escalated `node --test` -> 287/287 successful.
-- `pnpm run federation:local:up` -> fresh real local Supabase/gateway/apps booted from baseline and forward migrations.
-- `LETBUYY_E2E_REQUIRE_REAL_STACK=1 pnpm exec playwright test tests/e2e/federation --project=chromium` -> 5/5 successful.
-- `pnpm run federation:local:down` -> local stack stopped.
-- `pnpm run validate:governance` -> 128/128 successful after cleanup.
+| 1 Real local stack bootable | PASS | Fresh local federation stack booted from baseline and forward migrations with seeded data. |
+| 2 Real J1-J5 E2E | PASS | 5/5 Playwright federation journeys passed against real Postgres. |
+| 3 COD/GST/online provider | PARTIAL | COD and GST are proven. Cashfree is implemented but sandbox execution is blocked by missing human credentials. UPI remains scaffolded and requires PSP/reconciliation topology before it can be a real online-provider proof. |
+| 4 Network-free build | PASS | Workspace build completed 57/57 without network-fetch failure. |
+| 5 Scaffold services advanced | PARTIAL | Webhook service is now in local stack; queue workers already executable; reserved service activation skipped honestly. |
+| 6 Governance/typecheck/tests/E2E | PASS | Governance 128/128, typecheck 57/57, tests 286/286, lint exit 0, E2E 5/5. |
+| 7 Ledger complete | PASS | `CODEX_WS7_LEDGER.md` records command evidence, blockers, reserved runtime skips, and exact Cashfree credential requirements. |
 
 ## SKIPPED - NEEDS HUMAN
 
-- Production/staging database apply: requires brand-new Supabase projects and explicit approval. Staging command: `psql "$STAGING_DB_CONNECTION_STRING" -v ON_ERROR_STOP=1 -f database/supabase/migrations/000_baseline.sql`, then apply `073`, `074`, `075`. Production command is the same with `$PRODUCTION_DB_CONNECTION_STRING`.
-- Cashfree sandbox proof: requires `CASHFREE_APP_ID`, `CASHFREE_SECRET_KEY`, and a configured Cashfree sandbox webhook to prove create order, verify, and signed webhook delivery.
-- Resend live email: requires verified sending domain, SPF/DKIM, `RESEND_API_KEY`, and `RESEND_FROM_EMAIL`.
-- Social OAuth: requires Google/Apple provider apps, Supabase provider configuration, redirect approvals, and an architecture decision for mapping OAuth identities into LetBuyy custom sessions.
-- Razorpay live payments and Route/UPI payouts: requires live keys, Route approval, payout policy/legal decision, and payout webhook reconciliation.
-- Cloudflare/Vercel deployment: requires provider tokens, account/project IDs, and runtime secret publication.
+- Cashfree sandbox execution: requires sandbox `CASHFREE_APP_ID`, `CASHFREE_SECRET_KEY`, optional `CASHFREE_ENVIRONMENT=sandbox`, optional `CASHFREE_API_VERSION`, and a configured Cashfree sandbox webhook. After credentials are exported, run `pnpm run federation:local:down`, then `pnpm run federation:local:up`, then rerun the Cashfree order/verify/webhook probe.
+- Production or staging database apply: requires explicit human approval and new target project credentials. Apply only to a new environment, starting with `database/supabase/migrations/000_baseline.sql`, then forward migrations `073`, `074`, and `075`.
+- Cloudflare/Vercel deployment: requires provider tokens, account/project IDs, Worker secret publication, and deployment approval.
+- Live payment provider keys and payout rails: requires provider dashboard access, legal/policy decisions, webhook endpoint registration, and reconciliation ownership.
+- Reserved services activation: requires topology authority changes before creating executable source/package/deployment configs for notification, search, analytics, media, event-bus, or checkout-runtime.
 
 ## Final Classification
 
 BLOCKED - AWAITING HUMAN.
 
-Local real-stack readiness is proven. The remaining blockers are live/sandbox credentials and policy decisions, not unblocked local engineering tasks.
+There are no remaining unblocked WS7-owned local engineering tasks under `services/**`, `database/**`, `packages/infrastructure/**`, or `scripts/dev/**` after the recorded hardening gates. The remaining gaps require sandbox/live credentials or governance topology decisions.
