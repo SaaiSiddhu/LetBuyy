@@ -148,6 +148,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P0-E.5 — Release smoke suite
+
+- Added `tests/e2e/smoke/release-gates.spec.ts` for identity login, storefront product read, checkout create, webhook bad-signature rejection, and gateway queue health.
+- Added public gateway `/v1/health/queues` readiness metadata for release smoke without exposing queue contents.
+- Wired canonical staging and production deploy workflows to run smoke tests with `LETBUYY_E2E_REQUIRE_REAL_STACK=1`, deployed service URLs, webhook URL, seeded identity credentials, Turnstile token, and smoke store subdomain.
+- Added production release preflight checks for staging and production smoke identity credentials.
+- Moved staging API and webhook Worker secret writes before their deploy steps and added staging `CUSTOMER_SESSION_SECRET` / `TURNSTILE_SECRET_KEY` provisioning.
+- Added source regression coverage for smoke-suite gate presence, queue-health endpoint presence, workflow real-stack smoke wiring, and staging secrets-before-deploy ordering.
+
+Evidence:
+- `node --test tests/operations/release-smoke-suite.test.mjs tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 10/10 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm exec playwright test --project=chromium tests/e2e/smoke/ --list` — PASS, 9 smoke tests discovered.
+- `pnpm exec playwright test --project=chromium tests/e2e/smoke/release-gates.spec.ts` — PASS in local-safe mode with 5 expected skips after Chromium was rerun outside the sandbox.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -181,6 +198,12 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
 - `git diff --check` — PASS after WS11-13 production feature gates.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after WS11-13 production feature gates.
+- `node --test tests/operations/release-smoke-suite.test.mjs tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 10/10 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after release smoke queue-health endpoint.
+- `pnpm exec playwright test --project=chromium tests/e2e/smoke/ --list` — PASS, 9 smoke tests discovered.
+- `pnpm exec playwright test --project=chromium tests/e2e/smoke/release-gates.spec.ts` — PASS in local-safe mode with 5 expected skips after sandbox-escalated Chromium launch.
+- `git diff --check` — PASS after release smoke suite.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after release smoke suite.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -190,3 +213,4 @@ Evidence:
 - SKIP: Provision and verify live `TURNSTILE_SECRET_KEY` / `NEXT_PUBLIC_TURNSTILE_SITE_KEY` for storefront-runtime and api-gateway — Reason: Cloudflare Turnstile site/secret keys and deployment secret-store access require human-controlled staging/prod access. Resume point: Phase 2 secrets-before-deploy gate and P0 storefront auth/contact/review smoke suite.
 - SKIP: Execute `.github/workflows/production-deploy.yml` on a protected release branch with one credential intentionally unset — Reason: GitHub Actions protected environments and production secret store are human-controlled. Resume point: Phase 2 release workflow proof; expected result is hard failure in `release-preflight`, not skipped deploy jobs or green smoke.
 - SKIP: Provision `PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE` and validate encrypted production backup artifact restore in GitHub Actions — Reason: production backup encryption secret and database access are human-controlled. Resume point: Phase 2 migration safety proof before enabling production migrations.
+- SKIP: Run the full release smoke suite with `LETBUYY_E2E_REQUIRE_REAL_STACK=1` on deployed staging and production — Reason: seeded smoke merchant credentials, smoke store/subdomain, live Worker redeploy with webhook secrets, and protected staging/production environments are human-controlled. Local-safe smoke currently skips the live checks; the reachable staging webhook returned 500 for bad Razorpay signature until secrets/redeploy are fixed. Resume point: Phase 2 release smoke proof; expected result is identity login, product read, checkout create, bad-signature 400, and queue health all green.

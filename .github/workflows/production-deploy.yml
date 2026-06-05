@@ -55,6 +55,10 @@ jobs:
           HAS_PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID: ${{ secrets.PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID != '' }}
           HAS_PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID: ${{ secrets.PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID != '' }}
           HAS_PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE: ${{ secrets.PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE != '' }}
+          HAS_STAGING_E2E_IDENTITY_EMAIL: ${{ secrets.STAGING_E2E_IDENTITY_EMAIL != '' }}
+          HAS_STAGING_E2E_IDENTITY_PASSWORD: ${{ secrets.STAGING_E2E_IDENTITY_PASSWORD != '' }}
+          HAS_PRODUCTION_E2E_IDENTITY_EMAIL: ${{ secrets.PRODUCTION_E2E_IDENTITY_EMAIL != '' }}
+          HAS_PRODUCTION_E2E_IDENTITY_PASSWORD: ${{ secrets.PRODUCTION_E2E_IDENTITY_PASSWORD != '' }}
         run: |
           missing=()
           [[ "${HAS_SUPABASE_CREDS}" == "true" ]] || missing+=("SUPABASE_ACCESS_TOKEN/PRODUCTION_DB_CONNECTION_STRING")
@@ -88,6 +92,10 @@ jobs:
           [[ "${HAS_PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID")
           [[ "${HAS_PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID")
           [[ "${HAS_PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE}" == "true" ]] || missing+=("PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE")
+          [[ "${HAS_STAGING_E2E_IDENTITY_EMAIL}" == "true" ]] || missing+=("STAGING_E2E_IDENTITY_EMAIL")
+          [[ "${HAS_STAGING_E2E_IDENTITY_PASSWORD}" == "true" ]] || missing+=("STAGING_E2E_IDENTITY_PASSWORD")
+          [[ "${HAS_PRODUCTION_E2E_IDENTITY_EMAIL}" == "true" ]] || missing+=("PRODUCTION_E2E_IDENTITY_EMAIL")
+          [[ "${HAS_PRODUCTION_E2E_IDENTITY_PASSWORD}" == "true" ]] || missing+=("PRODUCTION_E2E_IDENTITY_PASSWORD")
 
           if (( ${#missing[@]} )); then
             printf 'Missing required production release credentials:\n' >&2
@@ -125,6 +133,17 @@ jobs:
           ACCOUNTS_URL: https://accounts-staging.letbuyy.store
           ADMIN_URL: https://admin-staging.letbuyy.store
           API_URL: https://api-staging.letbuyy.store/v1
+          LETBUYY_E2E_REQUIRE_REAL_STACK: "1"
+          LETBUYY_E2E_MARKETING_URL: https://store-staging.letbuyy.store
+          LETBUYY_E2E_IDENTITY_URL: https://accounts-staging.letbuyy.store
+          LETBUYY_E2E_MERCHANT_URL: https://admin-staging.letbuyy.store
+          LETBUYY_E2E_STOREFRONT_URL: https://store-staging.letbuyy.store
+          LETBUYY_E2E_API_URL: https://api-staging.letbuyy.store
+          LETBUYY_E2E_WEBHOOK_URL: https://webhooks-staging.letbuyy.store
+          LETBUYY_E2E_STORE_SUBDOMAIN: ${{ vars.STAGING_E2E_STORE_SUBDOMAIN }}
+          LETBUYY_E2E_IDENTITY_EMAIL: ${{ secrets.STAGING_E2E_IDENTITY_EMAIL }}
+          LETBUYY_E2E_IDENTITY_PASSWORD: ${{ secrets.STAGING_E2E_IDENTITY_PASSWORD }}
+          LETBUYY_E2E_TURNSTILE_TOKEN: ${{ secrets.STAGING_E2E_TURNSTILE_TOKEN }}
           CI: "true"
 
       - name: Upload E2E results
@@ -402,6 +421,17 @@ jobs:
           ACCOUNTS_URL: https://accounts.letbuyy.store
           ADMIN_URL: https://admin.letbuyy.store
           API_URL: https://api.letbuyy.store
+          LETBUYY_E2E_REQUIRE_REAL_STACK: "1"
+          LETBUYY_E2E_MARKETING_URL: https://letbuyy.store
+          LETBUYY_E2E_IDENTITY_URL: https://accounts.letbuyy.store
+          LETBUYY_E2E_MERCHANT_URL: https://admin.letbuyy.store
+          LETBUYY_E2E_STOREFRONT_URL: https://letbuyy.store
+          LETBUYY_E2E_API_URL: https://api.letbuyy.store
+          LETBUYY_E2E_WEBHOOK_URL: https://webhooks.letbuyy.store
+          LETBUYY_E2E_STORE_SUBDOMAIN: ${{ vars.PRODUCTION_E2E_STORE_SUBDOMAIN }}
+          LETBUYY_E2E_IDENTITY_EMAIL: ${{ secrets.PRODUCTION_E2E_IDENTITY_EMAIL }}
+          LETBUYY_E2E_IDENTITY_PASSWORD: ${{ secrets.PRODUCTION_E2E_IDENTITY_PASSWORD }}
+          LETBUYY_E2E_TURNSTILE_TOKEN: ${{ secrets.PRODUCTION_E2E_TURNSTILE_TOKEN }}
           CI: "true"
 
       - name: Upload smoke test results

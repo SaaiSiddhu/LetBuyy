@@ -119,6 +119,38 @@ function healthResponse(environment: string | undefined) {
     };
 }
 
+const QUEUE_HEALTH_BINDINGS = [
+    { binding: 'EVENT_QUEUE', nameVar: 'EVENT_QUEUE_NAME', fallbackName: 'letbuyy-events' },
+    { binding: 'ANALYTICS_QUEUE', nameVar: 'ANALYTICS_QUEUE_NAME', fallbackName: 'letbuyy-analytics-queue' },
+    { binding: 'SEARCH_QUEUE', nameVar: 'SEARCH_QUEUE_NAME', fallbackName: 'letbuyy-search-queue' },
+    { binding: 'NOTIFICATION_QUEUE', nameVar: 'NOTIFICATION_QUEUE_NAME', fallbackName: 'letbuyy-notifications-queue' },
+    { binding: 'RUNTIME_QUEUE', nameVar: 'RUNTIME_QUEUE_NAME', fallbackName: 'letbuyy-runtime-queue' },
+] as const satisfies ReadonlyArray<{
+    binding: 'EVENT_QUEUE' | 'ANALYTICS_QUEUE' | 'SEARCH_QUEUE' | 'NOTIFICATION_QUEUE' | 'RUNTIME_QUEUE';
+    nameVar: 'EVENT_QUEUE_NAME' | 'ANALYTICS_QUEUE_NAME' | 'SEARCH_QUEUE_NAME' | 'NOTIFICATION_QUEUE_NAME' | 'RUNTIME_QUEUE_NAME';
+    fallbackName: string;
+}>;
+
+function queueHealthResponse(env: Env) {
+    const queues = QUEUE_HEALTH_BINDINGS.map(({ binding, nameVar, fallbackName }) => {
+        const name = env[nameVar] || fallbackName;
+
+        return {
+            binding,
+            name,
+            binding_configured: Boolean(env[binding]),
+        };
+    });
+    const ready = queues.every((queue) => queue.binding_configured && queue.name.length > 0);
+
+    return {
+        status: ready ? 'healthy' : 'degraded',
+        timestamp: new Date().toISOString(),
+        environment: env.ENVIRONMENT,
+        queues,
+    };
+}
+
 // Global middleware
 app.use('*', securityHeaders);
 app.use('*', requestId);
@@ -174,6 +206,10 @@ const api = app.basePath('/v1');
 api.use('/*', apiVersioning);
 api.get('/health', (c) => {
     return c.json(healthResponse(c.env.ENVIRONMENT));
+});
+api.get('/health/queues', (c) => {
+    const body = queueHealthResponse(c.env);
+    return c.json(body, body.status === 'healthy' ? 200 : 503);
 });
 api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
 
