@@ -3,7 +3,17 @@ import type { Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
 import { checkQueryCostRateLimitKey, type QueryCostRateLimitResult } from '../middleware/rateLimit';
+import {
+    cancelGraphQLBulkOperation,
+    createGraphQLBulkOperation,
+    currentGraphQLBulkOperation,
+    getGraphQLBulkOperation,
+    isGraphQLBulkOperationError,
+    listGraphQLBulkOperations,
+    readGraphQLBulkOperationResult,
+} from './bulk';
 import { calculateGraphQLQueryCost } from './cost';
+import type { GraphQLBulkOperationType } from '@letbuyy/shared-types';
 
 type GatewayContext = Context<{ Bindings: Env }>;
 type JsonObject = Record<string, unknown>;
@@ -95,6 +105,12 @@ function hasField(document: string, fieldName: string): boolean {
 function readStringArgument(document: string, fieldName: string, argumentName: string): string | null {
     const match = new RegExp(`\\b${fieldName}\\s*\\([^)]*\\b${argumentName}\\s*:\\s*"([^"]+)"`, 'i').exec(document);
     return match?.[1] || null;
+}
+
+function readIdentifierArgument(document: string, fieldName: string, argumentName: string): string | null {
+    return readStringArgument(document, fieldName, argumentName)
+        || new RegExp(`\\b${fieldName}\\s*\\([^)]*\\b${argumentName}\\s*:\\s*([A-Za-z_][A-Za-z0-9_]*)`, 'i').exec(document)?.[1]
+        || null;
 }
 
 function fieldVariables(variables: GraphQLVariables | undefined, fieldName: string): JsonObject | null {
@@ -319,6 +335,25 @@ function connectionFromEnvelope(envelope: RestEnvelope, pagination: { limit: num
     };
 }
 
+function connectionFromArray(
+    nodes: unknown[],
+    pagination: { limit: number; offset: number },
+    cost: ReturnType<typeof queryCostExtension>,
+) {
+    const page = Math.floor(pagination.offset / pagination.limit) + 1;
+    const sliced = nodes.slice(pagination.offset, pagination.offset + pagination.limit);
+    return connectionFromEnvelope({
+        data: sliced,
+        meta: {
+            page,
+            per_page: pagination.limit,
+            total: nodes.length,
+            has_next: pagination.offset + sliced.length < nodes.length,
+            has_prev: pagination.offset > 0,
+        },
+    }, pagination, cost);
+}
+
 function paramsForConnection(c: GatewayContext, variables: GraphQLVariables | undefined, fieldName: string) {
     const pagination = connectionPagination(variables, fieldName);
     const params = new URLSearchParams({
@@ -369,6 +404,116 @@ async function resolveArrayField(
     return arrayValue(envelope.data);
 }
 
+function normalizeBulkOperationType(value: unknown): GraphQLBulkOperationType | null {
+    const normalized = stringValue(value)?.toLowerCase();
+    return normalized === 'query' || normalized === 'mutation' ? normalized : null;
+}
+
+function bulkInputForField(variables: GraphQLVariables | undefined, fieldName: string): JsonObject | null {
+    return fieldVariables(variables, fieldName)
+        || recordValue(variables?.input)
+        || recordValue(variables);
+}
+
+function bulkInputVariables(input: JsonObject | null): GraphQLVariables {
+    return recordValue(input?.variables) || {};
+}
+
+function bulkOperationTypeFromRequest(
+    document: string,
+    variables: GraphQLVariables | undefined,
+    fieldName: string,
+): GraphQLBulkOperationType | null {
+    return normalizeBulkOperationType(variableString(variables, ['type', 'operationType', 'operation_type']))
+        || normalizeBulkOperationType(readIdentifierArgument(document, fieldName, 'type'));
+}
+
+async function resolveBulkOperationQueryFields(
+    c: GatewayContext,
+    document: string,
+    variables: GraphQLVariables | undefined,
+    cost: ReturnType<typeof queryCostExtension>,
+    data: JsonObject,
+) {
+    if (hasField(document, 'bulkOperation')) {
+        const id = singleId(document, variables, 'bulkOperation');
+        data.bulkOperation = id ? await getGraphQLBulkOperation(c, id) : null;
+    }
+
+    if (hasField(document, 'currentBulkOperation')) {
+        const operationType = bulkOperationTypeFromRequest(document, variables, 'currentBulkOperation');
+        data.currentBulkOperation = await currentGraphQLBulkOperation(c, operationType);
+    }
+
+    if (hasField(document, 'bulkOperations')) {
+        const pagination = connectionPagination(variables, 'bulkOperations');
+        data.bulkOperations = connectionFromArray(await listGraphQLBulkOperations(c), pagination, cost);
+    }
+}
+
+async function resolveBulkOperationMutationFields(
+    c: GatewayContext,
+    delegate: AdminGraphQLRestDelegate,
+    document: string,
+    variables: GraphQLVariables | undefined,
+    data: JsonObject,
+) {
+    if (hasField(document, 'bulkOperationRunQuery')) {
+        const input = bulkInputForField(variables, 'bulkOperationRunQuery');
+        const query = stringValue(input?.query) || variableString(variables, ['query', 'document']);
+        if (!query) {
+            throw new AdminGraphQLError('bulkOperationRunQuery requires an input.query document.', 'GRAPHQL_BULK_QUERY_MISSING', 'bulkOperationRunQuery');
+        }
+
+        data.bulkOperationRunQuery = {
+            bulkOperation: await createGraphQLBulkOperation(c, delegate, {
+                operationType: 'query',
+                query,
+                variables: bulkInputVariables(input),
+            }),
+            userErrors: [],
+        };
+    }
+
+    if (hasField(document, 'bulkOperationRunMutation')) {
+        const input = bulkInputForField(variables, 'bulkOperationRunMutation');
+        const mutation = stringValue(input?.mutation) || variableString(variables, ['mutation', 'document', 'query']);
+        const idempotencyKey = stringValue(input?.idempotencyKey)
+            || stringValue(input?.idempotency_key)
+            || c.req.header('X-Idempotency-Key')
+            || null;
+        if (!mutation) {
+            throw new AdminGraphQLError('bulkOperationRunMutation requires an input.mutation document.', 'GRAPHQL_BULK_MUTATION_MISSING', 'bulkOperationRunMutation');
+        }
+        if (!idempotencyKey) {
+            throw new AdminGraphQLError('bulkOperationRunMutation requires an idempotency key.', 'GRAPHQL_IDEMPOTENCY_KEY_REQUIRED', 'idempotencyKey');
+        }
+
+        data.bulkOperationRunMutation = {
+            bulkOperation: await createGraphQLBulkOperation(c, delegate, {
+                operationType: 'mutation',
+                query: mutation,
+                stagedUploadPath: stringValue(input?.stagedUploadPath) || stringValue(input?.staged_upload_path),
+                variables: bulkInputVariables(input),
+                idempotencyKey,
+            }),
+            userErrors: [],
+        };
+    }
+
+    if (hasField(document, 'bulkOperationCancel')) {
+        const id = singleId(document, variables, 'bulkOperationCancel');
+        if (!id) {
+            throw new AdminGraphQLError('bulkOperationCancel requires an id.', 'GRAPHQL_BULK_OPERATION_ID_MISSING', 'bulkOperationCancel');
+        }
+
+        data.bulkOperationCancel = {
+            bulkOperation: await cancelGraphQLBulkOperation(c, id),
+            userErrors: [],
+        };
+    }
+}
+
 async function resolveAdminData(
     c: GatewayContext,
     delegate: AdminGraphQLRestDelegate,
@@ -382,6 +527,16 @@ async function resolveAdminData(
     if (hasField(document, 'queryCost')) {
         data.queryCost = cost;
     }
+
+    if (/^\s*mutation\b/i.test(document)) {
+        await resolveBulkOperationMutationFields(c, delegate, document, variables, data);
+        if (Object.keys(data).length === 0 || (Object.keys(data).length === 1 && data.queryCost)) {
+            throw new AdminGraphQLError('Admin GraphQL mutations are reserved for bulk operations until G6 resolver wiring lands.', 'GRAPHQL_MUTATION_NOT_READY');
+        }
+        return /\badmin\s*\{/.test(document) ? { admin: data } : data;
+    }
+
+    await resolveBulkOperationQueryFields(c, document, variables, cost, data);
 
     if (hasField(document, 'stores')) {
         const { params, pagination } = paramsForConnection(c, variables, 'stores');
@@ -466,10 +621,6 @@ async function resolveAdminData(
 
     if (hasField(document, 'taxRates')) {
         data.taxRates = await resolveArrayField(c, delegate, variables, '/shipping-tax/taxes', 'taxRates');
-    }
-
-    if (/^\s*mutation\b/i.test(document)) {
-        throw new AdminGraphQLError('Admin GraphQL mutations are reserved for G4/G6 resolver wiring in this stage.', 'GRAPHQL_MUTATION_NOT_READY');
     }
 
     if (Object.keys(data).length === 0) {
@@ -559,6 +710,8 @@ async function executeAdminGraphQL(c: GatewayContext, options: AdminGraphQLRoute
     } catch (error) {
         const graphQLErrorValue = error instanceof AdminGraphQLError
             ? graphQLError(error.message, error.code, error.field)
+            : isGraphQLBulkOperationError(error)
+                ? graphQLError(error.message, error.code, error.field)
             : graphQLError('GraphQL execution failed.', 'GRAPHQL_EXECUTION_ERROR');
 
         return c.json({
@@ -571,6 +724,7 @@ async function executeAdminGraphQL(c: GatewayContext, options: AdminGraphQLRoute
 export function createAdminGraphQLRouter(options: AdminGraphQLRouterOptions) {
     const router = new Hono<{ Bindings: Env }>();
 
+    router.get('/bulk/:id/result', (c) => readGraphQLBulkOperationResult(c, c.req.param('id')));
     router.get('/', (c) => executeAdminGraphQL(c, options));
     router.post('/', (c) => executeAdminGraphQL(c, options));
 

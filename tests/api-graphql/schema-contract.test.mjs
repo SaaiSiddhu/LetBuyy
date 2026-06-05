@@ -9,12 +9,14 @@ const repoRoot = path.resolve(__dirname, '../..');
 const schemaPath = path.join(repoRoot, 'services/api-gateway/src/graphql/schema.ts');
 const adminGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/graphql/admin.ts');
 const storefrontGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/graphql/storefront.ts');
+const bulkGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/graphql/bulk.ts');
 const graphQLCostPath = path.join(repoRoot, 'services/api-gateway/src/graphql/cost.ts');
 const gatewayIndexPath = path.join(repoRoot, 'services/api-gateway/src/index.ts');
 const sharedTypesPath = path.join(repoRoot, 'packages/shared-types/src/index.ts');
 const schemaSource = readFileSync(schemaPath, 'utf8');
 const adminGraphQLSource = readFileSync(adminGraphQLPath, 'utf8');
 const storefrontGraphQLSource = readFileSync(storefrontGraphQLPath, 'utf8');
+const bulkGraphQLSource = readFileSync(bulkGraphQLPath, 'utf8');
 const graphQLCostSource = readFileSync(graphQLCostPath, 'utf8');
 const gatewayIndexSource = readFileSync(gatewayIndexPath, 'utf8');
 const sharedTypesSource = readFileSync(sharedTypesPath, 'utf8');
@@ -246,4 +248,33 @@ test('WS12 G3 Storefront GraphQL delegates reads through existing storefront RES
     "'/storefront/customer/orders'",
     'data.cart = null',
   ], 'Storefront GraphQL REST delegation');
+});
+
+test('WS12 G4 implements R2-backed GraphQL bulk operations with queue handoff', () => {
+  assertIncludesAll(bulkGraphQLSource, [
+    "GRAPHQL_BULK_OPERATION_R2_PREFIX = 'graphql-bulk'",
+    "GRAPHQL_BULK_OPERATION_QUEUE_NAME = 'graphql-bulk'",
+    "GRAPHQL_BULK_OPERATION_QUEUE_JOB_TYPE = 'graphql.bulk.operation'",
+    'GRAPHQL_BULK_OPERATION_CONCURRENCY_CAP = 2',
+    'c.env.R2_BUCKET',
+    'c.env.RUNTIME_QUEUE.send',
+    'c.executionCtx.waitUntil',
+    'processGraphQLBulkOperation',
+    "contentType: 'application/x-ndjson; charset=utf-8'",
+    "'Content-Type': 'application/x-ndjson; charset=utf-8'",
+  ], 'GraphQL bulk operation R2 and queue implementation');
+
+  assertIncludesAll(adminGraphQLSource, [
+    'createGraphQLBulkOperation',
+    'getGraphQLBulkOperation',
+    'currentGraphQLBulkOperation',
+    'listGraphQLBulkOperations',
+    'cancelGraphQLBulkOperation',
+    'readGraphQLBulkOperationResult',
+    'isGraphQLBulkOperationError',
+    "hasField(document, 'bulkOperationRunQuery')",
+    "hasField(document, 'bulkOperationRunMutation')",
+    "hasField(document, 'bulkOperationCancel')",
+    "router.get('/bulk/:id/result'",
+  ], 'Admin GraphQL bulk operation resolver wiring');
 });
