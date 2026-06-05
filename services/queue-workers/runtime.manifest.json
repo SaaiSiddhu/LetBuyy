@@ -5,11 +5,11 @@
   "actorType": [
     "service"
   ],
-  "runtimeCategory": "reserved-service",
+  "runtimeCategory": "cloudflare-worker",
   "runtimeClassification": "async-worker-plane",
   "ownership": {
     "sourceAuthority": "services/queue-workers",
-    "businessAuthority": "Reserved background queue worker authority for asynchronous commerce jobs.",
+    "businessAuthority": "Implemented Cloudflare Queue worker runtime for asynchronous event, notification, search, analytics, and outbox consumers declared in services/queue-workers/wrangler.toml.",
     "governanceDocs": [
       "docs/governance/runtime-boundaries.md",
       "docs/governance/observability-governance.md",

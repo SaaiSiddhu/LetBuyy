@@ -2,6 +2,7 @@ import {
   canonicalRuntimeRoots,
   createReporter,
   exists,
+  readFile,
   readJson,
 } from "./governance-common.mjs";
 
@@ -9,6 +10,8 @@ const reporter = createReporter("Runtime topology validator");
 
 const deploymentTopology = readJson("config/runtime/deployment-topology.json");
 const productionTopology = readJson("config/runtime/production-topology.json");
+const claudeContext = readFile("CLAUDE.md");
+const runtimeBoundaries = readFile("docs/governance/runtime-boundaries.md");
 
 reporter.assert(deploymentTopology?.generatedFrom === "runtime-manifests", "Deployment topology must be generated from runtime manifests");
 reporter.assert(Array.isArray(deploymentTopology?.nodes) && deploymentTopology.nodes.length > 0, "Deployment topology must declare runtime nodes");
@@ -20,6 +23,8 @@ const roots = new Set((deploymentTopology?.nodes || []).map((node) => node.runti
 for (const runtimeRoot of canonicalRuntimeRoots) {
   reporter.assert(exists(`${runtimeRoot}/runtime.manifest.json`), `Canonical runtime is missing manifest: ${runtimeRoot}`);
   reporter.assert(roots.has(runtimeRoot), `Deployment topology missing canonical runtime root: ${runtimeRoot}`);
+  reporter.assert(claudeContext.includes(`\`${runtimeRoot}\``), `CLAUDE.md canonical runtime map missing ${runtimeRoot}`);
+  reporter.assert(runtimeBoundaries.includes(`\`${runtimeRoot}\``), `Runtime boundaries doc missing canonical runtime root ${runtimeRoot}`);
 }
 
 for (const node of deploymentTopology?.nodes || []) {

@@ -19,13 +19,18 @@
 
 - `services/api-gateway`: versioned Hono API, auth middleware, tenant context, service orchestration.
 - `services/webhook-service`: payment/provider webhook callback runtime.
-- `services/checkout-runtime`: reserved checkout execution runtime.
-- `services/queue-workers`: reserved queue and outbox consumers.
-- `services/notification-service`: reserved notification delivery runtime.
-- `services/search-service`: reserved search indexing/query runtime.
-- `services/media-service`: reserved media processing runtime.
-- `services/analytics-pipeline`: reserved analytics projection runtime.
-- `services/event-bus`: reserved event delivery/runtime contracts.
+- `services/queue-workers`: implemented Cloudflare Queue worker runtime for event, notification, search, analytics, outbox, and dead-letter consumers declared in `services/queue-workers/wrangler.toml`.
+
+## Reserved Service Roots
+
+These roots are canonical but not implemented. Each contains only `AGENTS.md` and `runtime.manifest.json`; none owns active runtime behavior until source, package/deployment config, tests, and governance approval are added.
+
+- `services/checkout-runtime`: reserved checkout execution extraction; current active owner is `services/api-gateway`, with async consumers in `services/queue-workers` where configured.
+- `services/notification-service`: reserved notification delivery extraction; current active owners are `services/api-gateway` and `services/queue-workers`.
+- `services/search-service`: reserved search indexing/query extraction; current active owners are `services/api-gateway` and `services/queue-workers`.
+- `services/media-service`: reserved media processing extraction; current active owner is `services/api-gateway`.
+- `services/analytics-pipeline`: reserved analytics projection extraction; current active owners are `services/api-gateway` and `services/queue-workers`.
+- `services/event-bus`: reserved event delivery/runtime extraction; current active event execution uses package-owned contracts through `services/api-gateway` and `services/queue-workers`.
 
 ## Boundary Enforcement
 
