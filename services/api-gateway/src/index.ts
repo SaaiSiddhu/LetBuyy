@@ -152,6 +152,103 @@ function queueHealthResponse(env: Env) {
     };
 }
 
+type ScheduledQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
+
+interface ScheduledDispatchPreflightResult {
+    hasWork: boolean;
+    outbox: boolean;
+    queues: boolean;
+    webhookDeliveries: boolean;
+}
+
+type ScheduledDispatchQueueResult = Array<{
+    claimed?: number;
+    succeeded?: number;
+    failed?: number;
+    skipped?: number;
+}>;
+
+function numberField(value: unknown, key: string): number {
+    return value && typeof value === 'object' && typeof (value as Record<string, unknown>)[key] === 'number'
+        ? (value as Record<string, number>)[key]
+        : 0;
+}
+
+function hasCount(result: { count?: number | null; error?: { message?: string } | null }, label: string): boolean {
+    if (result.error) throw new Error(`${label} pending work check failed: ${result.error.message}`);
+    return Number(result.count || 0) > 0;
+}
+
+async function hasPendingScheduledDispatchWork(
+    db: ReturnType<typeof getSupabaseAdminFromEnv>,
+    queueNames: ScheduledQueueName[],
+    includeWebhookDeliveries: boolean,
+): Promise<ScheduledDispatchPreflightResult> {
+    const now = new Date().toISOString();
+    const [outboxResult, queueResult, webhookResult] = await Promise.all([
+        db.from('outbox_events')
+            .select('id', { count: 'exact', head: true })
+            .in('status', ['queued', 'failed'])
+            .lte('available_at', now)
+            .lte('next_attempt_at', now),
+        db.from('platform_queue_jobs')
+            .select('id', { count: 'exact', head: true })
+            .in('queue_name', queueNames)
+            .in('status', ['queued', 'failed'])
+            .lte('available_at', now)
+            .is('deleted_at', null),
+        includeWebhookDeliveries
+            ? db.from('webhook_deliveries')
+                .select('id', { count: 'exact', head: true })
+                .in('status', ['pending', 'failed'])
+                .lte('next_attempt_at', now)
+                .is('deleted_at', null)
+            : Promise.resolve({ count: 0, error: null }),
+    ]);
+
+    const outbox = hasCount(outboxResult, 'Outbox');
+    const queues = hasCount(queueResult, 'Platform queue');
+    const webhookDeliveries = hasCount(webhookResult, 'Webhook delivery');
+
+    return {
+        hasWork: outbox || queues || webhookDeliveries,
+        outbox,
+        queues,
+        webhookDeliveries,
+    };
+}
+
+function scheduledDispatchHadWork(
+    outboxResult: {
+        claimed?: number;
+        processed?: number;
+        failed?: number;
+        queued_jobs?: number;
+        webhook_deliveries?: number;
+    },
+    queueResult: ScheduledDispatchQueueResult,
+    webhookResult: unknown,
+): boolean {
+    const webhookPayload = webhookResult && typeof webhookResult === 'object' && 'data' in webhookResult
+        ? (webhookResult as { data?: unknown }).data
+        : webhookResult;
+
+    return numberField(outboxResult, 'claimed') > 0
+        || numberField(outboxResult, 'processed') > 0
+        || numberField(outboxResult, 'failed') > 0
+        || numberField(outboxResult, 'queued_jobs') > 0
+        || numberField(outboxResult, 'webhook_deliveries') > 0
+        || queueResult.some((result) => (
+            Number(result.claimed || 0) > 0
+            || Number(result.succeeded || 0) > 0
+            || Number(result.failed || 0) > 0
+            || Number(result.skipped || 0) > 0
+        ))
+        || numberField(webhookPayload, 'claimed') > 0
+        || numberField(webhookPayload, 'succeeded') > 0
+        || numberField(webhookPayload, 'failed') > 0;
+}
+
 // Global middleware
 app.use('*', securityHeaders);
 app.use('*', requestId);
@@ -336,38 +433,65 @@ app.onError((err, c) => {
     );
 });
 
-function runScheduledDispatch(controller: ScheduledController, env: Env): Promise<void> {
+async function runScheduledDispatch(controller: ScheduledController, env: Env): Promise<void> {
     const dispatcherId = `cron:${controller.cron || 'manual'}:${crypto.randomUUID()}`;
     const workerId = `cron-queue:${controller.cron || 'manual'}:${crypto.randomUUID()}`;
     const db = getSupabaseAdminFromEnv(env);
     const outbox = new OutboxExecutionAdapter(db);
     const queue = new QueueExecutionAdapter(db);
     const eventQueue = env.EVENT_QUEUE ? createCloudflareQueueProducer(env.EVENT_QUEUE) : null;
+    const queueNames: ScheduledQueueName[] = ['analytics-events', 'search-indexing', 'payment-events'];
 
-    return outbox
-        .dispatchBatch({
+    try {
+        const pending = await hasPendingScheduledDispatchWork(
+            db,
+            queueNames,
+            Boolean(env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET),
+        );
+
+        if (!pending.hasWork) {
+            console.info(JSON.stringify({
+                level: 'info',
+                service: 'letbuyy-api',
+                route: 'scheduled.outbox_dispatch',
+                method: 'CRON',
+                status_code: 204,
+                latency_ms: 0,
+                dispatcher_id: dispatcherId,
+                worker_id: workerId,
+                skipped: true,
+                reason: 'no_pending_work',
+                preflight: pending,
+            }));
+            return;
+        }
+
+        const outboxResult = await outbox.dispatchBatch({
             dispatcherId,
             outboxLimit: 50,
             webhookLimit: 50,
-        })
-        .then(async (outboxResult) => {
-            let webhookResult: unknown = null;
-            if (env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET) {
-                const response = await env.WEBHOOK_SERVICE.fetch('https://webhook-service/webhook-deliveries/dispatch', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-LetBuyy-Internal-Secret': env.INTERNAL_API_SECRET,
-                    },
-                    body: JSON.stringify({
-                        dispatcher_id: `cron-webhooks:${controller.cron || 'manual'}:${crypto.randomUUID()}`,
-                        limit: 50,
-                    }),
-                });
-                webhookResult = await response.json().catch(() => ({ ok: response.ok, status: response.status }));
-            }
-            const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing', 'payment-events'], 50);
-            const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
+        });
+
+        let webhookResult: unknown = null;
+        if (env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET) {
+            const response = await env.WEBHOOK_SERVICE.fetch('https://webhook-service/webhook-deliveries/dispatch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-LetBuyy-Internal-Secret': env.INTERNAL_API_SECRET,
+                },
+                body: JSON.stringify({
+                    dispatcher_id: `cron-webhooks:${controller.cron || 'manual'}:${crypto.randomUUID()}`,
+                    limit: 50,
+                }),
+            });
+            webhookResult = await response.json().catch(() => ({ ok: response.ok, status: response.status }));
+        }
+        const queueResult = await queue.consumeQueues(workerId, queueNames, 50);
+        const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
+        const hadWork = scheduledDispatchHadWork(outboxResult, queueResult, webhookResult);
+
+        if (hadWork) {
             await eventQueue?.enqueue({
                 id: crypto.randomUUID(),
                 queueName: eventQueueName,
@@ -385,31 +509,64 @@ function runScheduledDispatch(controller: ScheduledController, env: Env): Promis
                 attempts: 0,
                 correlationId: dispatcherId,
             });
-            console.info(JSON.stringify({
-                level: 'info',
-                service: 'letbuyy-api',
-                route: 'scheduled.outbox_dispatch',
-                method: 'CRON',
-                status_code: 200,
-                latency_ms: 0,
+        }
+
+        console.info(JSON.stringify({
+            level: 'info',
+            service: 'letbuyy-api',
+            route: 'scheduled.outbox_dispatch',
+            method: 'CRON',
+            status_code: hadWork ? 200 : 204,
+            latency_ms: 0,
+            dispatcher_id: dispatcherId,
+            worker_id: workerId,
+            outbox_result: outboxResult,
+            queue_result: queueResult,
+            completion_event_enqueued: hadWork,
+            preflight: pending,
+        }));
+    } catch (error: unknown) {
+        const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
+        const message = error instanceof Error ? error.message : 'Scheduled outbox dispatch failed';
+
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'scheduled.outbox_dispatch',
+            method: 'CRON',
+            status_code: 500,
+            latency_ms: 0,
+            dispatcher_id: dispatcherId,
+            error: message,
+        }));
+
+        await eventQueue?.enqueue({
+            id: crypto.randomUUID(),
+            queueName: eventQueueName,
+            payload: {
+                event_type: 'runtime.scheduled_dispatch.failed',
                 dispatcher_id: dispatcherId,
                 worker_id: workerId,
-                outbox_result: outboxResult,
-                queue_result: queueResult,
-            }));
-        })
-        .catch((error: unknown) => {
+                error: message,
+                environment: env.ENVIRONMENT,
+                deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+                telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
+            },
+            attempts: 0,
+            correlationId: dispatcherId,
+        }).catch((enqueueError: unknown) => {
             console.error(JSON.stringify({
                 level: 'error',
                 service: 'letbuyy-api',
-                route: 'scheduled.outbox_dispatch',
+                route: 'scheduled.outbox_dispatch.failure_event',
                 method: 'CRON',
                 status_code: 500,
                 latency_ms: 0,
                 dispatcher_id: dispatcherId,
-                error: error instanceof Error ? error.message : 'Scheduled outbox dispatch failed',
+                error: enqueueError instanceof Error ? enqueueError.message : 'Scheduled failure event enqueue failed',
             }));
         });
+    }
 }
 
 export default {

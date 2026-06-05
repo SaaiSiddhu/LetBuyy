@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 3 — P1 Cost.
-- Current work item: P1-1 request-log sampling.
+- Current work item: P1-4 cron no-op and routine completion event reduction.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -180,6 +180,20 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-4 — Cron no-op and routine completion event reduction
+
+- Added a scheduled-dispatch preflight that checks pending outbox events, platform queue jobs, and webhook deliveries before claiming or dispatching work.
+- Idle cron runs now log a `204` no-op result and return without outbox claims, queue claims, webhook dispatch, or routine completion events.
+- `runtime.scheduled_dispatch.completed` now only enqueues when outbox, queue, or webhook work was actually claimed/processed.
+- Scheduled failures now emit a separate `runtime.scheduled_dispatch.failed` event when the event queue is available.
+- Reduced staging api-gateway cron cadence from every minute to every five minutes while keeping production at the existing one-minute cadence.
+
+Evidence:
+- `node --test tests/operations/cron-noop.test.mjs` — PASS, 4/4 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -223,6 +237,10 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after request-log sampling.
 - `git diff --check` — PASS after request-log sampling.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after request-log sampling.
+- `node --test tests/operations/cron-noop.test.mjs` — PASS, 4/4 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after cron no-op.
+- `git diff --check` — PASS after cron no-op.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after cron no-op.
 
 ## SKIPPED — NEEDS HUMAN
 

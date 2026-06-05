@@ -17,7 +17,7 @@ head_sampling_rate = 1
 invocation_logs = true
 
 [triggers]
-crons = ["*/1 * * * *"]
+crons = ["*/5 * * * *"]
 
 [[migrations]]
 tag = "v1-runtime-coordinator"
@@ -91,7 +91,7 @@ head_sampling_rate = 1
 invocation_logs = true
 
 [env.staging.triggers]
-crons = ["*/1 * * * *"]
+crons = ["*/5 * * * *"]
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
