@@ -9,11 +9,11 @@ command = "pnpm build"
 
 [observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [triggers]
@@ -83,11 +83,11 @@ routes = [
 
 [env.staging.observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [env.staging.observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.staging.triggers]
@@ -178,11 +178,11 @@ routes = [
 
 [env.production.observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [env.production.observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.production.triggers]

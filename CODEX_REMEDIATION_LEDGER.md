@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 3 — P1 Cost.
-- Current work item: P1-4 cron no-op and routine completion event reduction.
+- Current work item: P1-5 Worker log sampling config.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -194,6 +194,18 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-5 — Worker log sampling config
+
+- Lowered Cloudflare Worker observability head sampling from `1` to `0.1` for the api-gateway, queue-workers, and webhook-service default, staging, and production configs.
+- Kept `observability.logs.enabled = true` and `invocation_logs = true` in every log section so sampled invocation logging remains active while cost exposure drops.
+- Added a static regression test that rejects any canonical Worker config returning to full `head_sampling_rate = 1`.
+
+Evidence:
+- `node --test tests/operations/worker-log-sampling.test.mjs` — PASS, 2/2 tests.
+- `node scripts/validators/cloudflare-environment-validator.mjs` — PASS, 3 Cloudflare Worker configs checked.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -241,6 +253,10 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after cron no-op.
 - `git diff --check` — PASS after cron no-op.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after cron no-op.
+- `node --test tests/operations/worker-log-sampling.test.mjs` — PASS, 2/2 tests.
+- `node scripts/validators/cloudflare-environment-validator.mjs` — PASS, 3 Cloudflare Worker configs checked after Worker log sampling.
+- `git diff --check` — PASS after Worker log sampling.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after Worker log sampling.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -251,3 +267,4 @@ Evidence:
 - SKIP: Execute `.github/workflows/production-deploy.yml` on a protected release branch with one credential intentionally unset — Reason: GitHub Actions protected environments and production secret store are human-controlled. Resume point: Phase 2 release workflow proof; expected result is hard failure in `release-preflight`, not skipped deploy jobs or green smoke.
 - SKIP: Provision `PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE` and validate encrypted production backup artifact restore in GitHub Actions — Reason: production backup encryption secret and database access are human-controlled. Resume point: Phase 2 migration safety proof before enabling production migrations.
 - SKIP: Run the full release smoke suite with `LETBUYY_E2E_REQUIRE_REAL_STACK=1` on deployed staging and production — Reason: seeded smoke merchant credentials, smoke store/subdomain, live Worker redeploy with webhook secrets, and protected staging/production environments are human-controlled. Local-safe smoke currently skips the live checks; the reachable staging webhook returned 500 for bad Razorpay signature until secrets/redeploy are fixed. Resume point: Phase 2 release smoke proof; expected result is identity login, product read, checkout create, bad-signature 400, and queue health all green.
+- SKIP: Configure and prove full-fidelity Cloudflare Logpush/error export for api-gateway, queue-workers, and webhook-service — Reason: Cloudflare account log destination, dataset selection, and provider credentials are human-controlled. Resume point: P1-5 observability cost proof; expected result is Worker head sampling at 10% plus provider-backed error/full-fidelity export evidence.
