@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F2.3 compliance webhook producers complete; continue F2.4 app billing real-sandbox or honest-unconfigured next.
-- Findings resolved: 11/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-12`, `C-13`, `H-1`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F2.3 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F2.4 app billing honest provider activation complete and committed next; continue F2.5 Wasm limits.
+- Findings resolved: 12/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-12`, `C-13`, `H-1`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F2.4 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -185,6 +185,25 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F2.4 app billing provider evidence
+
+- App charge approval no longer fabricates `rzp_route_test_*` provider references and no longer marks merchant approval as an active charge by itself.
+- `POST /v1/app-store/charges/:id/approve` now creates or returns a Razorpay payment order when `RAZORPAY_KEY_ID`/`RAZORPAY_KEY_SECRET` are configured, stores the charge as `approved`, and returns `payment_required` without emitting `app.charge.activated`.
+- When provider credentials are absent, the route records an honest `approved`/unconfigured state with `activated: false`, `APP_BILLING_PROVIDER_UNCONFIGURED`, and no payout ledger event.
+- Activation now requires provider proof: provider order reference, provider payment id, provider signature, valid Razorpay HMAC, and provider order notes linked to the app charge id.
+- App charge domain event payloads carry `provider_reference` and `provider_mode`; both queue payout ledger consumers now copy the verified provider mode instead of hardcoding `test`.
+- Live partner payout release remains human-gated under H-11; this increment creates payout ledger entries only after provider-verified activation and does not claim funds release.
+- `pnpm run test:contracts`: PASS - 41/41, including `tests/contracts/app-billing-provider-proof.test.ts`.
+- `node --test tests/federation/app-billing-payout.test.mjs`: PASS - 5/5.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm --filter @letbuyy/queue-workers typecheck`: PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck`: PASS.
+- `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 108/108.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -207,9 +226,10 @@ Started: 2026-06-05T13:54:14Z
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
 - C-7 third-party section runtime/upload model requires product and sandbox scope decisions.
 - H-11 live payout release/failure emitters require payout policy, Razorpay Route/RazorpayX credentials, and an operations approval/runbook for release/failure transitions.
+- C-5 live app-charge payout release requires the same payout rail/policy/credentials; provider-verified app charge activation is implemented, but fund release remains human-gated.
 
 ## Next work
 
-- Commit the completed F2.3 compliance webhook producer increment.
-- Continue to F2.4 app billing real-sandbox or honest-unconfigured.
+- Commit the completed F2.4 app billing provider-proof increment.
+- Continue to F2.5 Wasm limits.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

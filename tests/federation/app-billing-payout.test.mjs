@@ -37,6 +37,19 @@ test('gateway exposes merchant approval and activation routes for app charges', 
   assert.match(APP_STORE_ROUTE_SOURCE, /payout_rail: stringOrNull\(indiaPayout\.payout_rail\) \|\| 'razorpay_route'/);
 });
 
+test('app billing approval does not fabricate provider success references', () => {
+  assert.doesNotMatch(APP_STORE_ROUTE_SOURCE, /rzp_route_test_/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /APP_BILLING_PROVIDER_UNCONFIGURED/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /APP_BILLING_PROVIDER_PROOF_REQUIRED/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /APP_BILLING_PROVIDER_SIGNATURE_INVALID/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /createRazorpayOrder/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /getRazorpayOrderNotes/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /hmacSha256Hex/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /status: 'approved'[\s\S]*provider_status: 'payment_required'/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /status: 'active'[\s\S]*provider_status: 'verified'/);
+  assert.match(APP_STORE_ROUTE_SOURCE, /ledger_event: null/);
+});
+
 test('event spine activates payout ledger only after merchant-approved app charges', () => {
   assert.match(EVENT_CORE_SOURCE, /'app\.charge\.created':[\s\S]*consumers: \['analytics', 'notifications', 'webhook-service'\]/);
   assert.match(EVENT_CORE_SOURCE, /'app\.charge\.activated':[\s\S]*consumers: \['analytics', 'notifications', 'payout-ledger', 'webhook-service'\]/);
@@ -46,6 +59,10 @@ test('event spine activates payout ledger only after merchant-approved app charg
   assert.match(QUEUE_EXECUTION_SOURCE, /partner_payout_ledger_entries/);
   assert.match(QUEUE_EXECUTION_SOURCE, /rail,\s+metadata: \{/);
   assert.match(QUEUE_EXECUTION_SOURCE, /partner_gst_minor/);
+  assert.match(EVENT_CORE_SOURCE, /provider_reference: z\.string\(\)\.trim\(\)\.min\(1\)\.max\(200\)\.optional\(\)/);
+  assert.match(EVENT_CORE_SOURCE, /provider_mode: z\.enum\(\['test', 'live'\]\)\.default\('test'\)/);
+  assert.match(QUEUE_EXECUTION_SOURCE, /payout_provider_mode: payload\.provider_mode === 'live' \? 'live' : 'test'/);
+  assert.doesNotMatch(QUEUE_EXECUTION_SOURCE, /payout_provider_mode: 'test'/);
 });
 
 test('app billing migration records INR charges and India payout rails', () => {

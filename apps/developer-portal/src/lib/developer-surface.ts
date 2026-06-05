@@ -2168,15 +2168,15 @@ export const dashboardSurfaces: DashboardSurfaceDoc[] = [
     auth: "merchant session",
     status: "available",
     currentPayload: "Creates a merchant-approved app charge with idempotency, INR currency, payout plan, and approval URL.",
-    source: "services/api-gateway/src/routes/app-store.ts:880 + packages/billing-core/src/index.ts:80"
+    source: "services/api-gateway/src/routes/app-store/billing-oauth-routes.ts + packages/billing-core/src/index.ts"
   },
   {
     label: "App charge approval",
     route: "POST /v1/app-store/charges/:id/approve",
     auth: "merchant session",
     status: "available",
-    currentPayload: "Approves or activates pending app charges and emits the app.charge.activated ledger event.",
-    source: "services/api-gateway/src/routes/app-store.ts:1026 + packages/billing-core/src/index.ts:92"
+    currentPayload: "Approves pending app charges, creates or returns a Razorpay payment order when configured, and emits app.charge.activated only after provider proof verifies.",
+    source: "services/api-gateway/src/routes/app-store/billing-oauth-routes.ts + packages/billing-core/src/index.ts"
   },
   {
     label: "Credential management UI",

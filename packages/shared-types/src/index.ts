@@ -1619,6 +1619,8 @@ export const AppBillingChargeApproveSchema = z.object({
   charge_id: UuidSchema,
   idempotency_key: z.string().trim().min(8).max(200),
   provider_reference: z.string().trim().min(1).max(200).optional(),
+  provider_payment_id: z.string().trim().min(1).max(200).optional(),
+  provider_signature: z.string().trim().min(1).max(500).optional(),
   provider_mode: AppBillingChargeProviderModeSchema.default('test'),
 }).strict();
 

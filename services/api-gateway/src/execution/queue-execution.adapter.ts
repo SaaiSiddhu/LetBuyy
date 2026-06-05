@@ -115,6 +115,8 @@ interface AppChargeEventPayload {
         currency?: 'INR';
     };
     payout_rail?: 'razorpay_route' | 'razorpayx' | 'upi' | 'manual';
+    provider_reference?: string;
+    provider_mode?: 'test' | 'live';
     revenue_share_bps?: number;
     partner_gst_bps?: number;
     partner_gst_minor?: number;
@@ -476,7 +478,8 @@ export class QueueExecutionAdapter {
                         queue_job_id: job.id,
                         partner_gst_bps: partnerGstBps,
                         partner_gst_minor: partnerGstMinor,
-                        payout_provider_mode: 'test',
+                        provider_reference: payload.provider_reference || null,
+                        payout_provider_mode: payload.provider_mode === 'live' ? 'live' : 'test',
                     },
                 },
                 { onConflict: 'source_event_id' }

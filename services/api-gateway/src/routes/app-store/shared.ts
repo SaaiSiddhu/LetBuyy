@@ -61,6 +61,8 @@ export interface AppBillingChargeRecord {
     amount_minor: number;
     currency: 'INR';
     idempotency_key: string;
+    provider_reference?: string | null;
+    provider_mode?: 'test' | 'live' | string | null;
     metadata?: AppEngineJsonRecord | null;
 }
 
@@ -494,6 +496,8 @@ export async function insertAppChargeOutbox(
                 currency: input.charge.currency,
             },
             payout_rail: stringOrNull(indiaPayout.payout_rail) || 'razorpay_route',
+            provider_reference: stringOrNull(input.charge.provider_reference) || undefined,
+            provider_mode: input.charge.provider_mode === 'live' ? 'live' : 'test',
             revenue_share_bps: Number(indiaPayout.revenue_share_bps || 8000),
             partner_gst_bps: Number(indiaPayout.partner_gst_bps || 1800),
             partner_gst_minor: Number(indiaPayout.partner_gst_minor || 0),

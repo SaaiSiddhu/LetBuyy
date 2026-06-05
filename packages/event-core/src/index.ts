@@ -181,6 +181,8 @@ const AppChargePayloadSchema = z.object({
   billing_mode: z.enum(['recurring', 'usage']),
   amount: InrMinorUnitsSchema,
   payout_rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('razorpay_route'),
+  provider_reference: z.string().trim().min(1).max(200).optional(),
+  provider_mode: z.enum(['test', 'live']).default('test'),
   revenue_share_bps: z.number().int().min(0).max(10000).default(8000),
   partner_gst_bps: z.number().int().min(0).max(10000).default(1800),
   partner_gst_minor: z.number().int().nonnegative().default(0),

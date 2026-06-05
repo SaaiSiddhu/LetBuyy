@@ -26,6 +26,12 @@ import {
     planAppBillingCharge,
 } from '@letbuyy/billing-core';
 import {
+    createRazorpayOrder,
+    getRazorpayOrderNotes,
+    hmacSha256Hex,
+    timingSafeEqual,
+} from '@letbuyy/infrastructure/razorpay-adapter';
+import {
     appendAppOAuthTokenConfig,
     appBillingMode,
     appChargeProviderMode,
@@ -259,24 +265,234 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
 
         const now = new Date().toISOString();
         const metadata = parseJsonRecord(charge.metadata);
-        const providerReference = input.data.provider_reference || `rzp_route_test_${chargeId.replaceAll('-', '').slice(0, 18)}`;
-        const { data: activatedCharge, error: updateError } = await db
+        const storedProviderReference = stringOrNull(charge.provider_reference);
+        const submittedProviderReference = stringOrNull(input.data.provider_reference);
+        const submittedPaymentId = stringOrNull(input.data.provider_payment_id);
+        const submittedSignature = stringOrNull(input.data.provider_signature);
+        const providerReferenceForProof = submittedProviderReference || storedProviderReference;
+        const hasSubmittedProviderProof = Boolean(submittedProviderReference || submittedPaymentId || submittedSignature);
+        const hasCompleteProviderProof = Boolean(providerReferenceForProof && submittedPaymentId && submittedSignature);
+
+        if (hasSubmittedProviderProof && !hasCompleteProviderProof) {
+            return c.json({
+                error: {
+                    code: 'APP_BILLING_PROVIDER_PROOF_REQUIRED',
+                    message: 'provider_reference, provider_payment_id, and provider_signature are required to activate an app charge',
+                },
+            }, 400);
+        }
+
+        if (hasCompleteProviderProof) {
+            if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
+                return c.json({
+                    error: {
+                        code: 'APP_BILLING_PROVIDER_UNCONFIGURED',
+                        message: 'Razorpay is not configured for app billing verification',
+                    },
+                }, 503);
+            }
+
+            if (storedProviderReference && submittedProviderReference && submittedProviderReference !== storedProviderReference) {
+                return c.json({
+                    error: {
+                        code: 'APP_BILLING_PROVIDER_REFERENCE_MISMATCH',
+                        message: 'Provider reference does not match the approved app charge',
+                    },
+                }, 409);
+            }
+
+            const providerReference = providerReferenceForProof as string;
+            const expectedSignature = await hmacSha256Hex(
+                c.env.RAZORPAY_KEY_SECRET,
+                `${providerReference}|${submittedPaymentId}`,
+            );
+
+            if (!timingSafeEqual(expectedSignature, submittedSignature as string)) {
+                return c.json({
+                    error: {
+                        code: 'APP_BILLING_PROVIDER_SIGNATURE_INVALID',
+                        message: 'App billing provider verification failed',
+                    },
+                }, 400);
+            }
+
+            const providerNotes = await getRazorpayOrderNotes(
+                { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+                providerReference,
+            );
+            if (stringOrNull(providerNotes.charge_id) !== chargeId) {
+                return c.json({
+                    error: {
+                        code: 'APP_BILLING_PROVIDER_REFERENCE_MISMATCH',
+                        message: 'Provider order is not linked to this app charge',
+                    },
+                }, 409);
+            }
+
+            const { data: activatedCharge, error: updateError } = await db
+                .from('app_billing_charges')
+                .update({
+                    status: 'active',
+                    approved_by: customUser.id,
+                    approved_at: charge.approved_at || now,
+                    activated_at: now,
+                    provider_reference: providerReference,
+                    provider_mode: input.data.provider_mode,
+                    updated_by: customUser.id,
+                    metadata: {
+                        ...metadata,
+                        approval: {
+                            idempotency_key: input.data.idempotency_key,
+                            provider_reference: providerReference,
+                            provider_payment_id: submittedPaymentId,
+                            provider_mode: input.data.provider_mode,
+                            provider_status: 'verified',
+                            approved_at: charge.approved_at || now,
+                            activated_at: now,
+                        },
+                    },
+                })
+                .eq('id', chargeId)
+                .select()
+                .single();
+
+            if (updateError) {
+                return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+            }
+
+            await insertAppChargeOutbox(db, {
+                charge: activatedCharge as AppBillingChargeRecord,
+                eventType: 'app.charge.activated',
+                actorId: customUser.id,
+                requestId,
+            });
+
+            return c.json(success({
+                charge: activatedCharge,
+                billing: {
+                    activated: true,
+                    provider: 'razorpay',
+                    provider_reference: providerReference,
+                    provider_payment_id: submittedPaymentId,
+                    provider_mode: input.data.provider_mode,
+                },
+                payout: {
+                    ledger_event: 'app.charge.activated',
+                    queue: 'payment-events',
+                    rail: activatedCharge.payout_rail,
+                },
+            }));
+        }
+
+        if (storedProviderReference) {
+            return c.json(success({
+                charge,
+                billing: {
+                    activated: false,
+                    payment_required: true,
+                    provider: 'razorpay',
+                    provider_reference: storedProviderReference,
+                    razorpay_order_id: storedProviderReference,
+                    amount: Number(charge.amount_minor || 0),
+                    currency: charge.currency || 'INR',
+                    key_id: c.env.RAZORPAY_KEY_ID || null,
+                    provider_mode: charge.provider_mode || input.data.provider_mode,
+                },
+                payout: {
+                    ledger_event: null,
+                    queue: null,
+                    rail: charge.payout_rail,
+                },
+            }), 202);
+        }
+
+        if (!c.env.RAZORPAY_KEY_ID || !c.env.RAZORPAY_KEY_SECRET) {
+            const { data: approvedCharge, error: approvalError } = await db
+                .from('app_billing_charges')
+                .update({
+                    status: 'approved',
+                    approved_by: customUser.id,
+                    approved_at: charge.approved_at || now,
+                    provider_mode: input.data.provider_mode,
+                    updated_by: customUser.id,
+                    metadata: {
+                        ...metadata,
+                        approval: {
+                            idempotency_key: input.data.idempotency_key,
+                            provider_mode: input.data.provider_mode,
+                            provider_status: 'unconfigured',
+                            approved_at: charge.approved_at || now,
+                        },
+                    },
+                })
+                .eq('id', chargeId)
+                .select()
+                .single();
+
+            if (approvalError) {
+                return c.json({ error: { code: 'DB_ERROR', message: approvalError.message } }, 500);
+            }
+
+            return c.json(success({
+                charge: approvedCharge,
+                billing: {
+                    activated: false,
+                    reason: 'app_billing_provider_unconfigured',
+                    required_action: 'configure_razorpay_test_or_live_keys',
+                    provider_mode: input.data.provider_mode,
+                },
+                payout: {
+                    ledger_event: null,
+                    queue: null,
+                    rail: approvedCharge.payout_rail,
+                },
+            }), 202);
+        }
+
+        const providerOrder = await createRazorpayOrder(
+            { keyId: c.env.RAZORPAY_KEY_ID, keySecret: c.env.RAZORPAY_KEY_SECRET },
+            {
+                amount: Number(charge.amount_minor || 0),
+                currency: charge.currency || 'INR',
+                receipt: `appchg_${chargeId.replace(/-/g, '').slice(0, 24)}`,
+                notes: {
+                    charge_id: chargeId,
+                    app_id: charge.app_id,
+                    installation_id: charge.installation_id,
+                    site_id: charge.site_id,
+                    billing_mode: charge.billing_mode,
+                    idempotency_key: input.data.idempotency_key,
+                    request_id: requestId,
+                },
+            },
+        );
+
+        if (!providerOrder.id) {
+            return c.json({
+                error: {
+                    code: 'APP_BILLING_PROVIDER_ERROR',
+                    message: providerOrder.error?.description || 'Failed to create app billing payment order',
+                },
+            }, 502);
+        }
+
+        const { data: approvedCharge, error: approvalError } = await db
             .from('app_billing_charges')
             .update({
-                status: 'active',
+                status: 'approved',
                 approved_by: customUser.id,
-                approved_at: now,
-                activated_at: now,
-                provider_reference: providerReference,
+                approved_at: charge.approved_at || now,
+                provider_reference: providerOrder.id,
                 provider_mode: input.data.provider_mode,
                 updated_by: customUser.id,
                 metadata: {
                     ...metadata,
                     approval: {
                         idempotency_key: input.data.idempotency_key,
-                        provider_reference: providerReference,
+                        provider_reference: providerOrder.id,
                         provider_mode: input.data.provider_mode,
-                        approved_at: now,
+                        provider_status: 'payment_required',
+                        approved_at: charge.approved_at || now,
                     },
                 },
             })
@@ -284,30 +500,29 @@ export function registerAppStoreBillingOAuthRoutes(router: Hono<{ Bindings: Env 
             .select()
             .single();
 
-        if (updateError) {
-            return c.json({ error: { code: 'DB_ERROR', message: updateError.message } }, 500);
+        if (approvalError) {
+            return c.json({ error: { code: 'DB_ERROR', message: approvalError.message } }, 500);
         }
 
-        await insertAppChargeOutbox(db, {
-            charge: activatedCharge as AppBillingChargeRecord,
-            eventType: 'app.charge.activated',
-            actorId: customUser.id,
-            requestId,
-        });
-
         return c.json(success({
-            charge: activatedCharge,
+            charge: approvedCharge,
             billing: {
-                activated: true,
-                provider_reference: providerReference,
+                activated: false,
+                payment_required: true,
+                provider: 'razorpay',
+                provider_reference: providerOrder.id,
+                razorpay_order_id: providerOrder.id,
+                amount: providerOrder.amount ?? Number(charge.amount_minor || 0),
+                currency: providerOrder.currency || charge.currency || 'INR',
+                key_id: c.env.RAZORPAY_KEY_ID,
                 provider_mode: input.data.provider_mode,
             },
             payout: {
-                ledger_event: 'app.charge.activated',
-                queue: 'payment-events',
-                rail: activatedCharge.payout_rail,
+                ledger_event: null,
+                queue: null,
+                rail: approvedCharge.payout_rail,
             },
-        }));
+        }), 202);
     });
 
     // POST /app-store/apps/:id/oauth/authorize — Install/authorize an app and issue a short-lived code
