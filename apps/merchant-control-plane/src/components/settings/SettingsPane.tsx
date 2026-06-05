@@ -5,6 +5,7 @@ import {
     Page,
     PageHeader,
     SaveBar,
+    type MaterialIconName,
     type PageHeaderAction,
     type SaveBarProps,
 } from '@letbuyy/ui'
@@ -16,6 +17,7 @@ interface SettingsPaneProps {
     children: React.ReactNode
     breadcrumbs?: Array<{ label: string; href?: string }>
     eyebrow?: string
+    iconName?: MaterialIconName
     guidance?: {
         title: string
         body: React.ReactNode
@@ -33,6 +35,7 @@ export function SettingsPane({
     children,
     breadcrumbs,
     eyebrow,
+    iconName,
     guidance,
     primaryAction,
     secondaryActions,
@@ -44,6 +47,7 @@ export function SettingsPane({
                 title={title}
                 description={description}
                 eyebrow={eyebrow}
+                iconName={iconName}
                 breadcrumbs={breadcrumbs ?? [{ label: 'Settings', href: `/${store}/settings` }, { label: title }]}
                 primaryAction={primaryAction}
                 secondaryActions={secondaryActions}

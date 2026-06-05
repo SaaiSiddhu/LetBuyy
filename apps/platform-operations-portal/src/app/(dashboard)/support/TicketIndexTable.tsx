@@ -6,7 +6,24 @@ import {
     IndexTable,
     type IndexTableColumn,
 } from '@letbuyy/ui';
-import type { TicketRow } from './page';
+
+type TicketStatus = 'open' | 'pending' | 'resolved' | 'backend_needed';
+type TicketPriority = 'low' | 'normal' | 'high' | 'urgent';
+
+export interface TicketRow {
+    id: string;
+    subject: string;
+    requester: string;
+    storeLabel: string;
+    status: TicketStatus;
+    statusLabel: string;
+    priority: TicketPriority;
+    priorityLabel: string;
+    assignee: string;
+    updatedLabel: string;
+    nextAction: string;
+    backendNeeded: boolean;
+}
 
 function statusVariant(status: TicketRow['status']) {
     if (status === 'resolved') return 'success' as const;

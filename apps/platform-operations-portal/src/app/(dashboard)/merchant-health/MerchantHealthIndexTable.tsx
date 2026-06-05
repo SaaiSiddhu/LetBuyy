@@ -7,7 +7,25 @@ import {
     ProgressBar,
     type IndexTableColumn,
 } from '@letbuyy/ui';
-import type { MerchantHealthRow } from './page';
+
+type HealthBand = 'healthy' | 'watch' | 'at_risk';
+
+export interface MerchantHealthRow {
+    id: string;
+    storeName: string;
+    subdomain: string;
+    siteType: string;
+    statusLabel: string;
+    score: number;
+    band: HealthBand;
+    bandLabel: string;
+    productLabel: string;
+    orderLabel: string;
+    themeLabel: string;
+    paymentLabel: string;
+    shippingLabel: string;
+    issues: string[];
+}
 
 function bandVariant(band: MerchantHealthRow['band']) {
     if (band === 'healthy') return 'success' as const;

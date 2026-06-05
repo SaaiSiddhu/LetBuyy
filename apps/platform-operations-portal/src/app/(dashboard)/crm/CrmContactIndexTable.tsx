@@ -6,7 +6,25 @@ import {
     IndexTable,
     type IndexTableColumn,
 } from '@letbuyy/ui';
-import type { CrmContactRow } from './page';
+
+type CrmStage = 'contact_ready' | 'needs_profile' | 'needs_backend';
+
+export interface CrmContactRow {
+    id: string;
+    merchantName: string;
+    storeHandle: string;
+    siteType: string;
+    contactName: string;
+    contactDetail: string;
+    stage: CrmStage;
+    stageLabel: string;
+    lastInteraction: string;
+    notesPreview: string;
+    nextAction: string;
+    hasContact: boolean;
+    hasNotes: boolean;
+    interactionSource: 'store_updated' | 'store_published' | 'store_created' | 'unavailable';
+}
 
 function stageVariant(stage: CrmContactRow['stage']) {
     if (stage === 'contact_ready') return 'success' as const;
