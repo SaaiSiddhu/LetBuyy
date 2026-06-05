@@ -1,5 +1,5 @@
 -- P2-5 search performance fast win.
--- 079-083 are reserved for Phase 5 partition migrations in the implementation runbook.
+-- 079-083 are Phase 5 partition migrations in the implementation runbook.
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 

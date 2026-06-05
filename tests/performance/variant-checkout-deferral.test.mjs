@@ -28,7 +28,7 @@ test('batch inventory migration wraps the existing inventory semantics', () => {
   assert.match(migration, /CREATE OR REPLACE FUNCTION public\.set_inventory_levels_available_batch/);
   assert.match(migration, /jsonb_array_length\(p_levels\) > 1000/);
   assert.match(migration, /public\.set_inventory_level_available/);
-  assert.match(migration, /079-083 remain reserved/);
+  assert.match(migration, /079-083 are Phase 5 partition migrations/);
   assert.match(migration, /085-086 remain reserved/);
   assert.match(migration, /087 remains reserved/);
 });

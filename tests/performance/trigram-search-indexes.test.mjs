@@ -37,9 +37,9 @@ const expectedIndexes = [
   ['media', 'original_name'],
 ];
 
-test('trigram search migration enables pg_trgm and preserves reserved partition numbers', () => {
+test('trigram search migration enables pg_trgm after the partition migration range', () => {
   assert.match(migration, /CREATE EXTENSION IF NOT EXISTS pg_trgm;/);
-  assert.match(migration, /079-083 are reserved for Phase 5 partition migrations/);
+  assert.match(migration, /079-083 are Phase 5 partition migrations/);
 });
 
 test('leading-wildcard search columns have gin_trgm_ops indexes', () => {

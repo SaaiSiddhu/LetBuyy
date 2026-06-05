@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 5 — P3 Scalability.
-- Current work item: P3-1 partitioning and retention migrations.
+- Current work item: P3-4 dual-model consolidation.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -402,6 +402,22 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
 
+### Phase 5.4 — Hot-table partitioning and retention migrations
+
+- Added additive partition shadow migrations `079` through `083` for `worker_request_logs`, `runtime_telemetry_metrics`, `outbox_events`, `platform_queue_jobs`, and `webhook_deliveries`.
+- Added governed `retention_policies` and `partition_lifecycle_partitions` metadata tables with service-role RLS, audit columns, soft-delete columns, and `update_updated_at()` triggers.
+- Added shared lifecycle helpers for monthly partition creation, external scheduler wiring, expired partition detach, bounded shadow backfill, and live/shadow verification.
+- Preserved the existing live tables and their existing `(…, created_at)` indexes; the migrations create partition-local shadow indexes and do not add duplicate indexes to live tables.
+- Kept the live rename-swap, physical cleanup, and `*_legacy` retention-cycle proof out of replayable migrations because those are maintenance-window operations.
+- Added `docs/governance/hot-table-retention-governance.md` to document the expand-first contract and human-gated cutover requirements.
+- Refreshed stale migration-number comments/tests now that `079` through `083` are occupied by the partition migration range.
+
+Evidence:
+- `node --test tests/performance/partition-retention.test.mjs tests/performance/projection-reads.test.mjs tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 35/35 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -520,6 +536,10 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after projection read route changes.
 - `git diff --check` — PASS after analytics/search projection reads.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after analytics/search projection reads and generated artifact cleanup.
+- `node --test tests/performance/partition-retention.test.mjs tests/performance/projection-reads.test.mjs tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 35/35 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after partition shadow migrations `079` through `083`.
+- `git diff --check` — PASS after partition shadow migrations.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after partition shadow migrations.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -536,3 +556,4 @@ Evidence:
 - SKIP: Apply `088_inventory_available_batch.sql` to staging and run timed variant update plus checkout latency proof — Reason: live Supabase staging credentials, representative product variants, and deployed Worker timing telemetry are human-controlled. Resume point: P2-7 performance proof; expected result is one batched inventory RPC for changed variants, no delete/reinsert churn on unchanged variants, and storefront checkout response before usage/GST post-commit completion.
 - SKIP: Apply `089_quarantine_platform_queue_job.sql` to staging and run live poison-message plus DB-outage queue storm proof — Reason: live Supabase staging credentials, Cloudflare queue producer access, and controlled DB outage/failure injection are human-controlled. Resume point: P3-5 queue storm controls proof; expected result is deterministic poison jobs marked `dead`, generic trigger queues not draining unrelated DB queues, and sustained DB drain failure opening the circuit without multiplying Cloudflare retries.
 - SKIP: Backfill/prove analytics rollups and `search_documents` relevance on deployed staging — Reason: representative staging order history/search corpus, live queue drain execution, and query-plan/latency telemetry require human-controlled staging data and credentials. Resume point: P3-3 projection proof; expected result is analytics route parity with direct fixed-dataset queries and storefront search serving from `search_documents` with indexed search latency.
+- SKIP: Apply partition migrations `079` through `083` to a production-scale staging clone, backfill shadows, configure live scheduler, run the approved rename-swap, retain `*_legacy` for one retention cycle, and physically clean detached partitions — Reason: live/staging Supabase credentials, representative production-scale data, PITR/backup checkpoint, queue drain window, and irreversible maintenance-window cutover are human-controlled. Resume point: P3-1 partitioning proof; expected result is row-count parity from `verify_hot_table_partition_shadow`, claim-query and `(…, created_at)` `EXPLAIN` evidence, retention detach only outside policy windows, and no query regressions after cutover.
