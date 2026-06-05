@@ -107,6 +107,57 @@ void main() {
     expect(captured.headers['Cookie'], 'lb_session=opaque-lb-session');
   });
 
+  test('posts generated Storefront GraphQL operations through the gateway', () async {
+    final dio = Dio();
+    late RequestOptions captured;
+    final client = ApiClient(
+      baseUrl: 'https://gateway.test/v1',
+      dio: dio,
+      maxRetries: 0,
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          captured = options;
+          handler.resolve(
+            Response<Object?>(
+              requestOptions: options,
+              statusCode: 200,
+              data: const {
+                'data': {
+                  'products': {
+                    'nodes': <Object?>[],
+                    'pageInfo': {
+                      'hasNextPage': false,
+                      'hasPreviousPage': false,
+                    },
+                  },
+                },
+                'extensions': {
+                  'cost': {'requested': 8, 'actual': 8},
+                },
+              },
+            ),
+          );
+        },
+      ),
+    );
+
+    final result = await client.graphql.storefrontProducts(
+      handle: 'urban-kicks',
+      first: 2,
+    );
+    final body = captured.data! as Map;
+
+    expect(captured.uri.toString(), 'https://gateway.test/v1/storefront/graphql');
+    expect(body['operationName'], 'StorefrontProducts');
+    expect(body['query'], contains('query StorefrontProducts'));
+    expect(body['variables'], {'handle': 'urban-kicks', 'first': 2});
+    expect(result.data['products'], isA<Map>());
+    expect(result.extensions['cost'], isA<Map>());
+  });
+
   test('maps gateway failure payloads to ApiException', () async {
     final dio = Dio();
     final client = ApiClient(

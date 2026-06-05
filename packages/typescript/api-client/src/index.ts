@@ -1,3 +1,5 @@
+import { createLetbuyyGraphQLSdk } from './graphql';
+import type { LetbuyyGraphQLSdk } from './graphql';
 import type {
   AICreditBalance,
   AIUsageRecord,
@@ -28,6 +30,10 @@ import type {
   FormSubmission,
   FormSubmissionStatus,
   GiftCard,
+  GraphQLBulkOperation,
+  GraphQLConnection,
+  GraphQLPageInfo,
+  GraphQLQueryCost,
   InstalledApp,
   InventoryAdjustmentReason,
   InventoryLevel,
@@ -821,6 +827,8 @@ export class LetbuyyApiClient {
     this.defaultHeaders = options.headers;
   }
 
+  readonly graphql: LetbuyyGraphQLSdk = createLetbuyyGraphQLSdk(this);
+
   readonly stores = {
     list: (query?: ListQuery, options?: LetbuyyRequestOptions) =>
       this.requestPaginated<StoreSummary>('/stores', { ...options, query }),
@@ -1435,6 +1443,8 @@ export function createLetbuyyApiClient(options: LetbuyyApiClientOptions): Letbuy
   return new LetbuyyApiClient(options);
 }
 
+export * from './graphql';
+
 function unwrapData<T>(body: GatewayResponse<T>, status: number, requestId: string | null): T {
   if (isFailurePayload(body)) {
     throw errorFromBody(body, status, requestId);
@@ -1577,6 +1587,10 @@ export type {
   FileUploadResult,
   FormSubmission,
   GiftCard,
+  GraphQLBulkOperation,
+  GraphQLConnection,
+  GraphQLPageInfo,
+  GraphQLQueryCost,
   InventoryLevel,
   LineItem,
   MediaAsset,

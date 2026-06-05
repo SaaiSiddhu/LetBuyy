@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:dio/dio.dart';
 
+import 'graphql.dart';
 import 'types.dart';
 
 class ApiClient {
@@ -77,6 +78,9 @@ class ApiClient {
   late final InventoryApi inventory = InventoryApi(this);
   late final PagesApi pages = PagesApi(this);
   late final CouponsApi coupons = CouponsApi(this);
+  late final GraphQLClient graphql = GraphQLClient(
+    (path, {options}) => request(path, options: options),
+  );
 
   final String _apiVersionPath;
   final String? _defaultToken;
