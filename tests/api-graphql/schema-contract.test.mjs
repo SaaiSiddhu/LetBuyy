@@ -256,9 +256,10 @@ test('WS12 G3 Storefront GraphQL delegates reads through existing storefront RES
     "'/storefront/customer/orders'",
     "requireCustomerGraphQLSession(c, 'customer')",
     "requireCustomerGraphQLSession(c, 'order')",
-    'data.cart = null',
+    'CART_NOT_SUPPORTED',
   ], 'Storefront GraphQL REST delegation');
   assert.doesNotMatch(storefrontGraphQLSource, /\/storefront\/customer\/by-email/);
+  assert.doesNotMatch(storefrontGraphQLSource, /data\.cart\s*=\s*null/);
 });
 
 test('WS12 G4 implements R2-backed GraphQL bulk operations with single-path waitUntil processing', () => {

@@ -2,8 +2,8 @@
 
 ## CURRENT PHASE
 
-- Phase: PHASE 5 — P3 Scalability.
-- Current work item: P3-7 WS11-13 deployed staging proof and rollout gates.
+- Phase: PHASE 6 — P4 Product.
+- Current work item: P4-1 multi-template theme editor.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -439,6 +439,25 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### Phase 5.6 / P4-2 — WS11-13 local rollout gate and GraphQL cart loud-unsupported
+
+- Kept `FEATURE_GRAPHQL`, `FEATURE_EXTENSIONS`, and `FEATURE_LIQUID` production defaults off while staging/default Worker vars stay on for proof.
+- Replaced the Storefront GraphQL `cart` silent `null` stub with an explicit `CART_NOT_SUPPORTED` error until a governed server-side cart persistence/read endpoint exists.
+- Updated WS12 status to reflect the loud unsupported cart behavior instead of the old null stub.
+- Refreshed static GraphQL REST-shim parity tests for the current relational hydration read paths introduced during Phase 5.5.
+- Updated the app-platform lifecycle test harness so it can load the auth-core customer-session barrel export during source-level VM tests.
+- Deployed staging proof and graduated production enablement remain human-gated; production enablement is not claimed.
+
+Evidence:
+- `node --test tests/api-graphql/*.test.mjs` — PASS, 18/18 tests.
+- `node --test tests/theme-engine/*.test.mjs` — PASS, 20/20 tests.
+- `node --test tests/app-platform/*.test.mjs` — PASS, 16/16 tests.
+- `node --test tests/federation/app-extensions-quality-gate.test.mjs` — PASS, 4/4 tests.
+- `node --test tests/feature-flags/gateway-feature-gates.test.mjs` — PASS, 3/3 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -569,6 +588,14 @@ Evidence:
 - `node scripts/validators/migration-safety-validator.mjs` — PASS after dual-model reconciliation migrations `085` and `086`.
 - `git diff --check` — PASS after dual-model consolidation.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after dual-model consolidation.
+- `node --test tests/api-graphql/*.test.mjs` — PASS, 18/18 tests after Storefront GraphQL cart loud-unsupported and parity assertion refresh.
+- `node --test tests/theme-engine/*.test.mjs` — PASS, 20/20 tests during WS11 local rollout gate.
+- `node --test tests/app-platform/*.test.mjs` — PASS, 16/16 tests after app-platform source harness refresh.
+- `node --test tests/federation/app-extensions-quality-gate.test.mjs` — PASS, 4/4 tests during WS13 local rollout gate.
+- `node --test tests/feature-flags/gateway-feature-gates.test.mjs` — PASS, 3/3 tests confirming WS11-13 production feature defaults remain off.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after GraphQL cart loud-unsupported.
+- `git diff --check` — PASS after WS11-13 local rollout gate.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after WS11-13 local rollout gate.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -587,3 +614,4 @@ Evidence:
 - SKIP: Backfill/prove analytics rollups and `search_documents` relevance on deployed staging — Reason: representative staging order history/search corpus, live queue drain execution, and query-plan/latency telemetry require human-controlled staging data and credentials. Resume point: P3-3 projection proof; expected result is analytics route parity with direct fixed-dataset queries and storefront search serving from `search_documents` with indexed search latency.
 - SKIP: Apply partition migrations `079` through `083` to a production-scale staging clone, backfill shadows, configure live scheduler, run the approved rename-swap, retain `*_legacy` for one retention cycle, and physically clean detached partitions — Reason: live/staging Supabase credentials, representative production-scale data, PITR/backup checkpoint, queue drain window, and irreversible maintenance-window cutover are human-controlled. Resume point: P3-1 partitioning proof; expected result is row-count parity from `verify_hot_table_partition_shadow`, claim-query and `(…, created_at)` `EXPLAIN` evidence, retention detach only outside policy windows, and no query regressions after cutover.
 - SKIP: Apply `085_orders_items_reconcile.sql` and `086_products_variants_reconcile.sql` to staging/prod, run dry-run reports against representative data, then run non-dry-run convergence if approved — Reason: live Supabase credentials, data-owner approval, representative historical orders/products, and rollback checkpoint are human-controlled. Resume point: P3-4 dual-model proof; expected result is reconciliation reports clean or explicitly accepted, `orders.items` and `products.variants` refreshed only from relational rows, and readers staying green with rollback flags on/off.
+- SKIP: Deploy WS11-13 to staging with `FEATURE_GRAPHQL`, `FEATURE_EXTENSIONS`, and `FEATURE_LIQUID` enabled, run `tests/api-graphql/*`, `tests/app-platform/*`, `tests/theme-engine/*`, and `tests/federation/app-extensions-quality-gate.test.mjs` against the deployed staging environment, then graduate production enablement by cohort — Reason: staging Worker deployment credentials, seeded staging merchant/store/catalog/order/theme/app data, R2/queue bindings, and production rollout authority are human-controlled. Resume point: P3-7 rollout proof; expected result is deployed-env suite green, cart-dependent clients seeing `CART_NOT_SUPPORTED` until server-side cart persistence exists, and production flags staying off until staged proof is accepted.

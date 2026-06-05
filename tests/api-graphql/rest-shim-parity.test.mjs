@@ -76,7 +76,7 @@ test('WS12 G6 Admin and Storefront GraphQL use the shared REST shim request/enve
 test('WS12 G6 migrated REST endpoints remain the external source of truth for parity reads', () => {
   assertIncludesAll(productsRouteSource, [
     "router.get('/', validate('query', ListProductsQuery)",
-    "return c.json(cursorPaginated(pageRows, {",
+    "return c.json(cursorPaginated(responseRows, {",
     "router.get('/:id'",
   ], 'products REST parity routes');
 
@@ -84,7 +84,7 @@ test('WS12 G6 migrated REST endpoints remain the external source of truth for pa
     "router.get('/', validate('query', ListOrdersQuery)",
     "return c.json(cursorPaginated(rows, {",
     "router.get('/:id'",
-    "return c.json(success(normalizeOrderRecord(order)))",
+    "return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)))",
   ], 'orders REST parity routes');
 
   assertIncludesAll(pagesRouteSource, [
@@ -96,11 +96,11 @@ test('WS12 G6 migrated REST endpoints remain the external source of truth for pa
     "router.get('/:subdomain/products'",
     "body: paginated(data || [], count || 0, page, limit)",
     "router.get('/:subdomain/products/:slug'",
-    "body: success(data)",
+    "body: success(product)",
     "router.get('/:subdomain/pages'",
     "body: success(pages)",
     "router.get('/customer/orders'",
-    "return c.json(success({ orders: data || [] }))",
+    "return c.json(success({ orders }))",
   ], 'storefront REST parity routes');
 
   assertIncludesAll(adminGraphQLSource, [
