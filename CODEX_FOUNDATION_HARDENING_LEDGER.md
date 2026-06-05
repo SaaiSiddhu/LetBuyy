@@ -19,6 +19,8 @@
 
 ## PROGRESS LOG
 
+- 2026-06-05T14:56:05Z [F1.5] H-12 theme event contract registration - DONE - evidence: `node scripts/validators/event-schema-validator.mjs` -> PASS with emitted theme event contract checks; `npx tsx --test tests/contracts/domain-event-contracts.test.ts` -> 3/3 PASS; `node --test tests/federation/event-spine-contracts.test.mjs` -> 14/14 PASS; `pnpm --filter @letbuyy/event-core typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm lint` -> 9/9 PASS with warnings only; `pnpm turbo typecheck` -> 60/60 PASS; generated artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
+- 2026-06-05T14:56:05Z [F1.4] H-11 payout release/failure emitters - SKIPPED -- NEEDS HUMAN - evidence: `payout.released` and `payout.failed` contracts are now marked `reserved-human-gated` with credential/policy reasons and validator coverage; no payout release or failure reconciliation transition exists in source to emit from without a human payout rail decision.
 - 2026-06-05T14:47:39Z [F1.3] H-10 Cloudflare queue producer send paths - DONE - evidence: `npx tsx --test services/api-gateway/src/__tests__/cloudflare-queue-triggers.test.ts` -> 3/3 PASS; `node scripts/validators/queue-lifecycle-validator.mjs` -> PASS with source send-plan checks for 5 queue producer bindings; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; generated artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T15:41:10Z [F1.2] H-1 subscriptions/sites/billing_history Single-Writer - DONE - evidence: `rg "patchRows\\([^\\n]+\\\"(orders|products|subscriptions|sites|billing_history)\\\"" services/webhook-service/src -n` -> no matches; `node scripts/validators/single-writer-ownership-validator.mjs` -> PASS; `pnpm --filter @letbuyy/webhook-service test` -> 9/9 PASS; `pnpm --filter @letbuyy/webhook-service typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T15:03:40Z [F1.1] H-1 orders/products Single-Writer - DONE - evidence: `rg "patchRows\\([^\\n]+\\\"(orders|products)\\\"" services/webhook-service/src -n` -> no matches; `node scripts/validators/single-writer-ownership-validator.mjs` -> PASS; `pnpm --filter @letbuyy/webhook-service test` -> 5/5 PASS; `pnpm --filter @letbuyy/webhook-service typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
@@ -34,6 +36,7 @@
 
 - [SKIP] Extract `checkout-runtime`, `search-service`, `media-service`, `notification-service`, `event-bus`, and `analytics-pipeline` into independently implemented services - requires architecture decision: extract six service roots vs keep modular-monolith - unblocks C-1 beyond this mission default.
 - [SKIP] Build third-party section upload/runtime surface - requires product/sandbox/API scope decision - unblocks C-7 beyond this mission default.
+- [SKIP] Emit live `payout.released` / `payout.failed` from a payout release or reconciliation transition - requires payout policy decision, Razorpay Route/RazorpayX live or sandbox credentials, and an operations approval/runbook for release/failure state changes - unblocks H-11 beyond reserved contract honesty and C-5/F2.4 live payout release.
 
 ## SINGLE-WRITER LEDGER
 
@@ -71,8 +74,8 @@
 | H-8 | PENDING | F7.2 |
 | H-9 | PENDING | F1.6 |
 | H-10 | DONE | F1.3 |
-| H-11 | PENDING | F1.4 |
-| H-12 | PENDING | F1.5 |
+| H-11 | SKIPPED -- NEEDS HUMAN: payout rail/policy/credentials required for release or failure emitter | F1.4 |
+| H-12 | DONE | F1.5 |
 | H-13 | PENDING | F2.6 |
 | H-14 | PENDING | F3.7 |
 | H-15 | PENDING | F6.2 |
@@ -87,3 +90,4 @@
 - 2026-06-05T15:03:40Z `pnpm run validate:governance` -> 129/129 PASS after adding Single-Writer ownership validator for webhook-service `orders`/`products` writes.
 - 2026-06-05T15:45:02Z `pnpm run validate:governance` -> 129/129 PASS after expanding Single-Writer ownership to `subscriptions`, `sites`, and `billing_history`.
 - 2026-06-05T14:47:39Z `pnpm run validate:governance` -> 129/129 PASS after adding Cloudflare queue trigger producer send plans and queue lifecycle validator send-plan checks.
+- 2026-06-05T14:56:05Z `pnpm run validate:governance` -> 129/129 PASS after registering emitted theme purchase/draft event contracts and marking payout release/failure contracts reserved-human-gated.

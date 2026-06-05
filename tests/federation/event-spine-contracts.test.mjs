@@ -47,6 +47,10 @@ test('event-core declares the federation domain event registry', () => {
     'theme.approved',
     'theme.rejected',
     'theme.installed',
+    'theme.purchase.payment_order_created',
+    'theme.purchase.completed',
+    'theme.draft.saved',
+    'theme.draft.discarded',
     'payout.ledger_entry.created',
     'payout.released',
     'payout.failed',
@@ -57,7 +61,7 @@ test('event-core declares the federation domain event registry', () => {
   }
 
   assert.match(source, /export const DOMAIN_EVENT_CONTRACTS/);
-  assert.match(source, /satisfies Record<DomainEventType, DomainEventContract>/);
+  assert.match(source, /export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract>/);
   assert.match(source, /export const DOMAIN_EVENT_PRODUCER_CONSUMER_CONTRACTS/);
   assert.match(source, /export function validateDomainEventEnvelope/);
   assert.match(source, /payloadSchema: .*PayloadSchema/);

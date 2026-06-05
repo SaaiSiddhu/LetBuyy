@@ -10,6 +10,7 @@ const reporter = createReporter("Event schema validator");
 
 const eventEnvelope = readFile("packages/distributed-runtime/src/event-envelope-runtime.ts");
 const eventVersioning = readFile("packages/distributed-runtime/src/event-versioning-runtime.ts");
+const domainEventContracts = readFile("packages/event-core/src/index.ts");
 const eventStoreMigration = readActiveSupabaseSchemaMigration();
 const operationalMigration = eventStoreMigration;
 const normalizedEventStoreMigration = eventStoreMigration.toLowerCase();
@@ -38,6 +39,20 @@ for (const fragment of [
 }
 
 reporter.assert(hasSqlTable(eventStoreMigration, "distributed_event_store"), "Distributed event store migration missing replay-safe persistence table: distributed_event_store");
+for (const eventType of [
+  "theme.purchase.payment_order_created",
+  "theme.purchase.completed",
+  "theme.draft.saved",
+  "theme.draft.discarded",
+]) {
+  reporter.assert(domainEventContracts.includes(`'${eventType}'`), `Domain event contracts missing emitted theme event: ${eventType}`);
+}
+for (const reservedPayoutEvent of ["payout.released", "payout.failed"]) {
+  const eventIndex = domainEventContracts.indexOf(`eventType: '${reservedPayoutEvent}'`);
+  const eventBlock = eventIndex >= 0 ? domainEventContracts.slice(eventIndex, eventIndex + 700) : "";
+  reporter.assert(eventBlock.includes("implementationStatus: 'reserved-human-gated'"), `Payout event must be marked reserved-human-gated: ${reservedPayoutEvent}`);
+  reporter.assert(eventBlock.includes("payout credentials"), `Payout reserved event must name credential/policy gate: ${reservedPayoutEvent}`);
+}
 for (const fragment of [
   "event_id uuid not null",
   "schema_version integer default 1 not null",

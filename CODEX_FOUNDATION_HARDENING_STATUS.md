@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F1 - Backend integrity; F1.3 queue producer send-path increment complete.
-- Findings resolved: 4/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-10`); H-1 is in progress with `orders`, `products`, `subscriptions`, `sites`, and `billing_history` webhook second-writers removed. Event infrastructure tables still need classification in F1.5.
-- Current governance gate state: green after F1.3 (`pnpm run validate:governance` -> 129/129 PASS).
+- Phase: F1 - Backend integrity; F1.5 event contract increment complete.
+- Findings resolved: 5/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-10`, `H-12`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials; H-1 is in progress with `orders`, `products`, `subscriptions`, `sites`, and `billing_history` webhook second-writers removed. Event infrastructure tables still need classification before declaring H-1 fully done.
+- Current governance gate state: green after F1.5 (`pnpm run validate:governance` -> 129/129 PASS).
 
 ## Baseline gates
 
@@ -59,13 +59,27 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, warnings only.
 - `pnpm run validate:governance`: PASS - 129/129 validators.
 
+## F1.5 gate evidence
+
+- `packages/event-core` now registers contracts for emitted `theme.purchase.payment_order_created`, `theme.purchase.completed`, `theme.draft.saved`, and `theme.draft.discarded` events.
+- `payout.released` and `payout.failed` stay in the domain registry but are explicitly marked `reserved-human-gated` because no payout release/failure rail or operations approval transition exists to emit them from yet.
+- `node scripts/validators/event-schema-validator.mjs`: PASS with theme event contract checks and payout reserved-status checks.
+- `npx tsx --test tests/contracts/domain-event-contracts.test.ts`: PASS - 3/3 contract behavior tests.
+- `node --test tests/federation/event-spine-contracts.test.mjs`: PASS - 14/14 federation event-spine tests.
+- `pnpm --filter @letbuyy/event-core typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm run validate:governance`: PASS - 129/129 validators.
+
 ## Human-gated remainder
 
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
 - C-7 third-party section runtime/upload model requires product and sandbox scope decisions.
+- H-11 live payout release/failure emitters require payout policy, Razorpay Route/RazorpayX credentials, and an operations approval/runbook for release/failure transitions.
 
 ## Next work
 
-- Commit F1.3.
-- Continue F1.4-F1.5 payout event emission/reservation and event contract checks, including classification of event infrastructure tables (`outbox_events`, `payment_webhook_events`) before declaring H-1 fully done.
+- Commit F1.5.
+- Continue F1.6 god-file characterization/split work, after classifying event infrastructure tables (`outbox_events`, `payment_webhook_events`) so H-1 can be declared fully done only if the writer model is honest.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.
