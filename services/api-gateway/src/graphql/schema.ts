@@ -43,7 +43,8 @@ export const LETBUYY_GRAPHQL_SCHEMA_STAGE = 'WS12-G1';
 export const LETBUYY_GRAPHQL_SCHEMA_SURFACES = ['admin', 'storefront'] as const;
 
 export const ADMIN_GRAPHQL_SCHEMA_ROOTS = {
-  endpoint: '/v1/graphql/admin',
+  endpoint: '/v1/admin/graphql',
+  aliases: ['/v1/graphql/admin'],
   queryType: 'AdminQuery',
   mutationType: 'AdminMutation',
   auth: 'merchant-session',
@@ -55,7 +56,8 @@ export const ADMIN_GRAPHQL_SCHEMA_ROOTS = {
 } as const;
 
 export const STOREFRONT_GRAPHQL_SCHEMA_ROOTS = {
-  endpoint: '/v1/graphql/storefront',
+  endpoint: '/v1/storefront/graphql',
+  aliases: ['/v1/graphql/storefront'],
   queryType: 'StorefrontQuery',
   mutationType: 'StorefrontMutation',
   auth: 'storefront-public-or-customer-token',

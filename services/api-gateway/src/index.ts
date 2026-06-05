@@ -38,6 +38,7 @@ import formSubmissionsRouter from './routes/form-submissions';
 import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import internalConsoleRouter from './routes/internal-console';
+import { createAdminGraphQLRouter } from './graphql/admin';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
@@ -186,7 +187,13 @@ api.use('/*', authMiddleware);
 api.use('/*', csrfProtection);
 api.use('/*', rateLimit({ max: 300 }));
 
+const adminGraphQLRouter = createAdminGraphQLRouter({
+    restDelegate: async (c, request) => app.fetch(request, c.env),
+});
+
 // Mount routers
+api.route('/admin/graphql', adminGraphQLRouter);
+api.route('/graphql/admin', adminGraphQLRouter);
 api.route('/stores', storesRouter);
 api.route('/products', productsRouter);
 api.route('/orders', ordersRouter);

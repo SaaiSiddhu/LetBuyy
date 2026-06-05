@@ -7,8 +7,14 @@ import test from 'node:test';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
 const schemaPath = path.join(repoRoot, 'services/api-gateway/src/graphql/schema.ts');
+const adminGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/graphql/admin.ts');
+const graphQLCostPath = path.join(repoRoot, 'services/api-gateway/src/graphql/cost.ts');
+const gatewayIndexPath = path.join(repoRoot, 'services/api-gateway/src/index.ts');
 const sharedTypesPath = path.join(repoRoot, 'packages/shared-types/src/index.ts');
 const schemaSource = readFileSync(schemaPath, 'utf8');
+const adminGraphQLSource = readFileSync(adminGraphQLPath, 'utf8');
+const graphQLCostSource = readFileSync(graphQLCostPath, 'utf8');
+const gatewayIndexSource = readFileSync(gatewayIndexPath, 'utf8');
 const sharedTypesSource = readFileSync(sharedTypesPath, 'utf8');
 const sdlMatch = schemaSource.match(/export const LETBUYY_GRAPHQL_SCHEMA_SDL = String\.raw`([\s\S]*?)`;/);
 
@@ -25,11 +31,13 @@ function assertIncludesAll(source, needles, context) {
 test('WS12 G1 exports separate Admin and Storefront GraphQL root metadata', () => {
   assertIncludesAll(schemaSource, [
     "LETBUYY_GRAPHQL_SCHEMA_VERSION = '2026-06-05.g1'",
-    "endpoint: '/v1/graphql/admin'",
+    "endpoint: '/v1/admin/graphql'",
+    "aliases: ['/v1/graphql/admin']",
     "queryType: 'AdminQuery'",
     "mutationType: 'AdminMutation'",
     "auth: 'merchant-session'",
-    "endpoint: '/v1/graphql/storefront'",
+    "endpoint: '/v1/storefront/graphql'",
+    "aliases: ['/v1/graphql/storefront']",
     "queryType: 'StorefrontQuery'",
     "mutationType: 'StorefrontMutation'",
     "auth: 'storefront-public-or-customer-token'",
@@ -130,4 +138,58 @@ test('WS12 G1 schema is aligned to shared-types instead of app-local DTOs', () =
     'export interface GraphQLConnectionEdge<TNode>',
     'export interface GraphQLConnection<TNode>',
   ], 'shared-types GraphQL primitives');
+});
+
+test('WS12 G2 mounts Admin GraphQL behind gateway auth with cost limiting', () => {
+  assertIncludesAll(gatewayIndexSource, [
+    "import { createAdminGraphQLRouter } from './graphql/admin'",
+    "api.route('/admin/graphql', adminGraphQLRouter)",
+    "api.route('/graphql/admin', adminGraphQLRouter)",
+    "api.use('/*', authMiddleware)",
+    "api.use('/*', csrfProtection)",
+    "api.use('/*', rateLimit({ max: 300 }))",
+  ], 'Admin GraphQL gateway mount');
+
+  assert.ok(
+    gatewayIndexSource.indexOf("api.use('/*', authMiddleware)") <
+      gatewayIndexSource.indexOf("api.route('/admin/graphql', adminGraphQLRouter)"),
+    'Admin GraphQL must be mounted after gateway auth middleware',
+  );
+});
+
+test('WS12 G2 Admin GraphQL resolvers delegate through existing REST handlers', () => {
+  assertIncludesAll(adminGraphQLSource, [
+    'export type AdminGraphQLRestDelegate',
+    'restDelegate: AdminGraphQLRestDelegate',
+    'new Request(url.toString()',
+    "resolveConnection(c, delegate, document, variables, 'products', '/products'",
+    "resolveConnection(c, delegate, document, variables, 'orders', '/orders'",
+    "resolveConnection(c, delegate, document, variables, 'customers', '/customers'",
+    "resolveConnection(c, delegate, document, variables, 'themes', '/themes'",
+    "resolveConnection(c, delegate, document, variables, 'marketplaceApps', '/app-store/apps'",
+    "restGet(c, delegate, '/payments/subscription'",
+    "restGet(c, delegate, '/analytics/dashboard'",
+    'connectionFromEnvelope',
+  ], 'Admin GraphQL REST delegation');
+});
+
+test('WS12 G2 Admin GraphQL applies calculated document cost and rate-limit headers', () => {
+  assertIncludesAll(adminGraphQLSource, [
+    'calculateGraphQLQueryCost',
+    'checkQueryCostRateLimitKey',
+    "prefix: 'rl:graphql-admin'",
+    'X-RateLimit-Cost',
+    'X-RateLimit-Policy',
+    'QUERY_COST_RATE_LIMITED',
+    'extensions: { cost }',
+  ], 'Admin GraphQL cost enforcement');
+
+  assertIncludesAll(graphQLCostSource, [
+    'export function calculateGraphQLQueryCost',
+    "'products'",
+    "'orders'",
+    'bulkOperationRunQuery',
+    'bulkOperationRunMutation',
+    'Math.min(cost, 250)',
+  ], 'GraphQL cost estimator');
 });
