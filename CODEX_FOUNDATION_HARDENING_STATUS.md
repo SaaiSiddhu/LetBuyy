@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F1 - Backend integrity; H-1 Single-Writer increment complete.
+- Phase: F1 - Backend integrity; F1.6 storefront god-file split in progress.
 - Findings resolved: 6/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-1`, `H-10`, `H-12`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after H-1 event-infrastructure Single-Writer increment (`pnpm run validate:governance` -> 129/129 PASS).
+- Current governance gate state: green after F1.6 internal payment route split (`pnpm run validate:governance` -> 129/129 PASS).
 
 ## Baseline gates
 
@@ -88,6 +88,20 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, warnings only.
 - `pnpm run validate:governance`: PASS - 129/129 validators.
 
+## F1.6 partial split evidence
+
+- Internal payment endpoints moved from `services/api-gateway/src/routes/storefront.ts` into `services/api-gateway/src/routes/storefront/internal-payment-routes.ts` with a registration function preserving route order.
+- `tests/contracts/storefront-internal-payment-routes.test.ts` characterizes fail-closed 403 behavior for the internal payable/reference/confirm/failure/event routes.
+- Pre-split `npx tsx --test tests/contracts/storefront-internal-payment-routes.test.ts`: PASS - 5/5.
+- Post-split `npx tsx --test tests/contracts/storefront-internal-payment-routes.test.ts`: PASS - 5/5.
+- `npx tsx --test services/api-gateway/src/__tests__/payments.test.ts`: PASS - 7/7.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/internal-payment-routes.ts`: `storefront.ts` 4,833 lines; internal payment module 233 lines.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- `pnpm run validate:governance`: PASS - 129/129 validators.
+- H-9 remains in progress because `storefront.ts` is still above the 1,500-line target.
+
 ## Human-gated remainder
 
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
@@ -96,6 +110,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit H-1 event-infrastructure Single-Writer increment.
-- Continue F1.6 god-file characterization/split work for `services/api-gateway/src/routes/storefront.ts`.
+- Commit F1.6 internal payment route split.
+- Continue F1.6 by extracting the next cohesive storefront route group, likely customer auth/account routes, under characterization coverage.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.

@@ -19,6 +19,7 @@
 
 ## PROGRESS LOG
 
+- 2026-06-05T15:18:13Z [F1.6] H-9 storefront internal payment route split - IN PROGRESS - evidence: pre-split `npx tsx --test tests/contracts/storefront-internal-payment-routes.test.ts` -> 5/5 PASS; moved internal payment endpoints to `services/api-gateway/src/routes/storefront/internal-payment-routes.ts`; post-split `npx tsx --test tests/contracts/storefront-internal-payment-routes.test.ts` -> 5/5 PASS; `npx tsx --test services/api-gateway/src/__tests__/payments.test.ts` -> 7/7 PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/internal-payment-routes.ts` -> `storefront.ts` 4,833 lines, internal payment module 233 lines; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; generated artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS. H-9 remains IN PROGRESS because `storefront.ts` is still above 1,500 lines.
 - 2026-06-05T15:09:20Z [F1.2] H-1 event infrastructure Single-Writer classification and enforcement - DONE - evidence: `services/webhook-service` and `services/queue-workers` now emit domain events through `/v1/internal/events/domain`; `rg "outbox_events|payment_webhook_events" services/webhook-service/src services/queue-workers/src services/api-gateway/src -n` -> non-gateway outbox writes removed, payment webhook receipt writes remain webhook-service-only; `pnpm --filter @letbuyy/webhook-service test` -> 12/12 PASS; `pnpm --filter @letbuyy/queue-workers test` -> 2/2 PASS; `npx tsx --test services/api-gateway/src/__tests__/payments.test.ts` -> 7/7 PASS; `node scripts/validators/single-writer-ownership-validator.mjs` -> PASS across 106 source files; `pnpm --filter @letbuyy/webhook-service typecheck` -> PASS; `pnpm --filter @letbuyy/queue-workers typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; generated artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T14:56:05Z [F1.5] H-12 theme event contract registration - DONE - evidence: `node scripts/validators/event-schema-validator.mjs` -> PASS with emitted theme event contract checks; `npx tsx --test tests/contracts/domain-event-contracts.test.ts` -> 3/3 PASS; `node --test tests/federation/event-spine-contracts.test.mjs` -> 14/14 PASS; `pnpm --filter @letbuyy/event-core typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm lint` -> 9/9 PASS with warnings only; `pnpm turbo typecheck` -> 60/60 PASS; generated artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T14:56:05Z [F1.4] H-11 payout release/failure emitters - SKIPPED -- NEEDS HUMAN - evidence: `payout.released` and `payout.failed` contracts are now marked `reserved-human-gated` with credential/policy reasons and validator coverage; no payout release or failure reconciliation transition exists in source to emit from without a human payout rail decision.
@@ -75,7 +76,7 @@
 | H-6 | PENDING | F2.2 |
 | H-7 | PENDING | F4.1 |
 | H-8 | PENDING | F7.2 |
-| H-9 | PENDING | F1.6 |
+| H-9 | IN PROGRESS - internal payment routes split; `storefront.ts` still 4,833 lines | F1.6 |
 | H-10 | DONE | F1.3 |
 | H-11 | SKIPPED -- NEEDS HUMAN: payout rail/policy/credentials required for release or failure emitter | F1.4 |
 | H-12 | DONE | F1.5 |
@@ -95,3 +96,4 @@
 - 2026-06-05T14:47:39Z `pnpm run validate:governance` -> 129/129 PASS after adding Cloudflare queue trigger producer send plans and queue lifecycle validator send-plan checks.
 - 2026-06-05T14:56:05Z `pnpm run validate:governance` -> 129/129 PASS after registering emitted theme purchase/draft event contracts and marking payout release/failure contracts reserved-human-gated.
 - 2026-06-05T15:09:20Z `pnpm run validate:governance` -> 129/129 PASS after moving `outbox_events` emission behind gateway-owned internal events and expanding Single-Writer checks to 106 service source files.
+- 2026-06-05T15:18:13Z `pnpm run validate:governance` -> 129/129 PASS after splitting storefront internal payment routes and adding characterization coverage.
