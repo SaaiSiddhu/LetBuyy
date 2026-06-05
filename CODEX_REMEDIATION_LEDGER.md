@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 3 — P1 Cost.
-- Current work item: P1-5 Worker log sampling config.
+- Current work item: P1-6 atomic rate limiting and redundant limiter collapse.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -206,6 +206,21 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-6 — Atomic rate limiting and redundant limiter collapse
+
+- Replaced Redis fixed-window rate checks with a single `EVAL` script and batched helper so customer-auth IP and identity buckets are charged in one atomic storage decision.
+- Replaced Redis query-cost read-then-write with a single atomic leaky-bucket `EVAL` script.
+- Made production fixed-window and query-cost rate limiting fail closed when Redis credentials are missing instead of falling back to non-atomic KV.
+- Kept KV and in-memory fallback for non-production/local environments.
+- Removed the protected-route fixed-window gateway limiter and added a query-cost skip list for auth, GraphQL, and dedicated customer-auth paths so hot requests pay one limiter, not two or three.
+
+Evidence:
+- `node --test tests/operations/rate-limit-collapse.test.mjs tests/federation/api-rate-versioning.test.mjs tests/api-graphql/schema-contract.test.mjs tests/auth/customer-abuse-controls.test.mjs` — PASS, 24/24 tests.
+- `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/security.test.ts'` — PASS, 9/9 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -257,6 +272,11 @@ Evidence:
 - `node scripts/validators/cloudflare-environment-validator.mjs` — PASS, 3 Cloudflare Worker configs checked after Worker log sampling.
 - `git diff --check` — PASS after Worker log sampling.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after Worker log sampling.
+- `node --test tests/operations/rate-limit-collapse.test.mjs tests/federation/api-rate-versioning.test.mjs tests/api-graphql/schema-contract.test.mjs tests/auth/customer-abuse-controls.test.mjs` — PASS, 24/24 tests.
+- `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/security.test.ts'` — PASS, 9/9 tests after atomic rate-limit changes.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after atomic rate-limit changes.
+- `git diff --check` — PASS after atomic rate-limit changes.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after atomic rate-limit changes.
 
 ## SKIPPED — NEEDS HUMAN
 

@@ -76,6 +76,7 @@ interface RateLimitOptions {
     max?: number;        // Max requests per window (default: 60)
     prefix?: string;     // Key prefix for Redis (default: 'rl')
     keyGenerator?: (c: Context<{ Bindings: Env }>) => string;
+    skip?: (c: Context<{ Bindings: Env }>) => boolean;
 }
 
 interface QueryCostRateLimitOptions {
@@ -83,6 +84,7 @@ interface QueryCostRateLimitOptions {
     capacity?: number;
     prefix?: string;
     keyGenerator?: (c: Context<{ Bindings: Env }>) => string;
+    skip?: (c: Context<{ Bindings: Env }>) => boolean;
 }
 
 export interface CustomerAuthRateLimitIdentity {
@@ -107,6 +109,21 @@ export interface DirectRateLimitOptions {
     prefix?: string;
 }
 
+interface DirectRateLimitCheckOptions extends DirectRateLimitOptions {
+    scope?: string;
+}
+
+interface RateLimitBatchResult extends RateLimitResult {
+    key: string;
+    max: number;
+    scope?: string;
+}
+
+interface RedisPipelineResult<T> {
+    result?: T | null;
+    error?: string;
+}
+
 export interface DirectQueryCostRateLimitOptions {
     key: string;
     cost: number;
@@ -122,28 +139,47 @@ export interface DirectQueryCostRateLimitOptions {
  * Uses sliding window counter pattern via direct HTTP calls
  * to avoid bundling @upstash/ratelimit (keeps worker lean).
  */
-async function checkRedisRateLimit(
+const FIXED_WINDOW_RATE_LIMIT_SCRIPT = `
+local result = {}
+for index = 1, #KEYS do
+  local windowMs = tonumber(ARGV[((index - 1) * 2) + 1])
+  local count = redis.call('INCR', KEYS[index])
+  if count == 1 then
+    redis.call('PEXPIRE', KEYS[index], windowMs)
+  end
+  local ttl = redis.call('PTTL', KEYS[index])
+  if ttl < 0 then
+    redis.call('PEXPIRE', KEYS[index], windowMs)
+    ttl = windowMs
+  end
+  result[#result + 1] = count
+  result[#result + 1] = ttl
+end
+return result
+`;
+
+async function checkRedisRateLimitBatch(
     redisUrl: string,
     redisToken: string,
-    key: string,
-    windowMs: number,
-    max: number
-): Promise<RateLimitResult> {
+    checks: DirectRateLimitCheckOptions[]
+): Promise<RateLimitBatchResult[]> {
+    if (checks.length === 0) return [];
+
     const now = Date.now();
-    const windowKey = `${key}:${Math.floor(now / windowMs)}`;
+    const keys = checks.map((check) => compactStorageKey(`${check.prefix || 'rl'}:${check.key}:${Math.floor(now / (check.windowMs || 60_000))}`));
+    const args = checks.flatMap((check) => [
+        (check.windowMs || 60_000).toString(),
+        (check.max || 60).toString(),
+    ]);
 
     try {
-        // INCR the counter for current window, set expiry on first hit
         const response = await fetch(`${redisUrl}/pipeline`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${redisToken}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify([
-                ['INCR', windowKey],
-                ['PEXPIRE', windowKey, windowMs.toString()],
-            ]),
+            body: JSON.stringify([['EVAL', FIXED_WINDOW_RATE_LIMIT_SCRIPT, keys.length.toString(), ...keys, ...args]]),
         });
 
         if (!response.ok) {
@@ -155,15 +191,46 @@ async function checkRedisRateLimit(
                 reason: 'redis_pipeline_failed',
                 upstream_status: response.status,
             }));
-            return { allowed: false, remaining: 0, resetAt: now + windowMs, unavailable: true };
+            return checks.map((check) => ({
+                key: check.key,
+                max: check.max || 60,
+                scope: check.scope,
+                allowed: false,
+                remaining: 0,
+                resetAt: now + (check.windowMs || 60_000),
+                unavailable: true,
+            }));
         }
 
-        const results = (await response.json()) as Array<{ result: number }>;
-        const count = results[0]?.result ?? 0;
-        const remaining = Math.max(0, max - count);
-        const resetAt = (Math.floor(now / windowMs) + 1) * windowMs;
+        const results = (await response.json()) as Array<RedisPipelineResult<Array<number | string>>>;
+        const scriptResult = results[0]?.result;
+        if (results[0]?.error || !Array.isArray(scriptResult)) {
+            return checks.map((check) => ({
+                key: check.key,
+                max: check.max || 60,
+                scope: check.scope,
+                allowed: false,
+                remaining: 0,
+                resetAt: now + (check.windowMs || 60_000),
+                unavailable: true,
+            }));
+        }
 
-        return { allowed: count <= max, remaining, resetAt };
+        return checks.map((check, index) => {
+            const count = Number(scriptResult[index * 2] || 0);
+            const ttl = Number(scriptResult[index * 2 + 1] || 0);
+            const windowMs = check.windowMs || 60_000;
+            const max = check.max || 60;
+
+            return {
+                key: check.key,
+                max,
+                scope: check.scope,
+                allowed: count <= max,
+                remaining: Math.max(0, max - count),
+                resetAt: now + (Number.isFinite(ttl) && ttl > 0 ? ttl : windowMs),
+            };
+        });
     } catch (err) {
         console.error(JSON.stringify({
             level: 'error',
@@ -173,7 +240,15 @@ async function checkRedisRateLimit(
             reason: 'redis_unavailable',
             error: err instanceof Error ? err.message : 'Redis rate limit request failed',
         }));
-        return { allowed: false, remaining: 0, resetAt: now + windowMs, unavailable: true };
+        return checks.map((check) => ({
+            key: check.key,
+            max: check.max || 60,
+            scope: check.scope,
+            allowed: false,
+            remaining: 0,
+            resetAt: now + (check.windowMs || 60_000),
+            unavailable: true,
+        }));
     }
 }
 
@@ -310,21 +385,20 @@ export async function enforceCustomerAuthRateLimit(
         });
     }
 
+    const results = await checkRateLimitKeys(c.env, checks.map((check) => ({
+        ...check,
+        windowMs,
+        prefix,
+    })));
     let tightestRemaining = Number.POSITIVE_INFINITY;
     let latestResetAt = 0;
 
-    for (const check of checks) {
-        const result = await checkRateLimitKey(c.env, {
-            key: check.key,
-            windowMs,
-            max: check.max,
-            prefix,
-        });
+    for (const result of results) {
         tightestRemaining = Math.min(tightestRemaining, result.remaining);
         latestResetAt = Math.max(latestResetAt, result.resetAt);
 
         if (result.unavailable && c.env.ENVIRONMENT === 'production') {
-            c.header('X-RateLimit-Limit', check.max.toString());
+            c.header('X-RateLimit-Limit', result.max.toString());
             c.header('X-RateLimit-Remaining', '0');
             c.header('X-RateLimit-Reset', Math.ceil(result.resetAt / 1000).toString());
             return c.json(
@@ -341,7 +415,7 @@ export async function enforceCustomerAuthRateLimit(
 
         if (!result.allowed) {
             const retryAfterSeconds = Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000));
-            c.header('X-RateLimit-Limit', check.max.toString());
+            c.header('X-RateLimit-Limit', result.max.toString());
             c.header('X-RateLimit-Remaining', result.remaining.toString());
             c.header('X-RateLimit-Reset', Math.ceil(result.resetAt / 1000).toString());
             c.header('Retry-After', retryAfterSeconds.toString());
@@ -351,7 +425,7 @@ export async function enforceCustomerAuthRateLimit(
                     error: {
                         code: 'CUSTOMER_AUTH_RATE_LIMITED',
                         message: 'Too many attempts. Please try again later.',
-                        scope: check.scope,
+                        scope: result.scope || 'identity',
                     },
                 },
                 429,
@@ -483,6 +557,44 @@ async function checkKvQueryCostLimit(
     }
 }
 
+const QUERY_COST_RATE_LIMIT_SCRIPT = `
+local now = tonumber(ARGV[1])
+local cost = tonumber(ARGV[2])
+local pointsPerSecond = tonumber(ARGV[3])
+local capacity = tonumber(ARGV[4])
+local ttlMs = tonumber(ARGV[5])
+local rawEntry = redis.call('GET', KEYS[1])
+local used = 0
+local updatedAt = now
+
+if rawEntry then
+  local separator = string.find(rawEntry, ':')
+  if separator then
+    used = tonumber(string.sub(rawEntry, 1, separator - 1)) or 0
+    updatedAt = tonumber(string.sub(rawEntry, separator + 1)) or now
+  end
+end
+
+local elapsedSeconds = math.max(0, (now - updatedAt) / 1000)
+local leaked = elapsedSeconds * pointsPerSecond
+local currentUsed = math.max(0, used - leaked)
+local nextUsed = currentUsed + cost
+local allowed = nextUsed <= capacity and 1 or 0
+local storedUsed = allowed == 1 and nextUsed or currentUsed
+local overflow = math.max(0, nextUsed - capacity)
+local retryAfterMs = allowed == 1 and 0 or math.ceil((overflow / pointsPerSecond) * 1000)
+local resetInMs = math.ceil((storedUsed / pointsPerSecond) * 1000)
+
+redis.call('SET', KEYS[1], tostring(storedUsed) .. ':' .. tostring(now), 'PX', ttlMs)
+
+return {
+  allowed,
+  math.floor(math.max(0, capacity - storedUsed)),
+  resetInMs,
+  retryAfterMs,
+}
+`;
+
 async function checkRedisQueryCostLimit(
     redisUrl: string,
     redisToken: string,
@@ -494,16 +606,27 @@ async function checkRedisQueryCostLimit(
     const now = Date.now();
 
     try {
-        const readResponse = await fetch(`${redisUrl}/pipeline`, {
+        const ttlMs = Math.max(60_000, Math.ceil((capacity / pointsPerSecond) * 2000));
+        const response = await fetch(`${redisUrl}/pipeline`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${redisToken}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify([['GET', key]]),
+            body: JSON.stringify([[
+                'EVAL',
+                QUERY_COST_RATE_LIMIT_SCRIPT,
+                '1',
+                compactStorageKey(key),
+                now.toString(),
+                cost.toString(),
+                pointsPerSecond.toString(),
+                capacity.toString(),
+                ttlMs.toString(),
+            ]]),
         });
 
-        if (!readResponse.ok) {
+        if (!response.ok) {
             return {
                 allowed: false,
                 remaining: 0,
@@ -516,31 +639,35 @@ async function checkRedisQueryCostLimit(
             };
         }
 
-        const readResults = (await readResponse.json()) as Array<{ result: string | null }>;
-        const rawEntry = readResults[0]?.result;
-        const entry = rawEntry ? JSON.parse(rawEntry) as QueryCostLimitEntry : null;
-        const result = evaluateLeakyBucket({ entry, now, cost, pointsPerSecond, capacity });
-        const ttlMs = Math.max(60_000, Math.ceil((capacity / pointsPerSecond) * 2000));
-
-        const writeResponse = await fetch(`${redisUrl}/pipeline`, {
-            method: 'POST',
-            headers: {
-                Authorization: `Bearer ${redisToken}`,
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify([['SET', key, JSON.stringify(result.entry), 'PX', ttlMs.toString()]]),
-        });
-
-        if (!writeResponse.ok) {
+        const results = (await response.json()) as Array<RedisPipelineResult<Array<number | string>>>;
+        const scriptResult = results[0]?.result;
+        if (results[0]?.error || !Array.isArray(scriptResult)) {
             return {
-                ...result,
                 allowed: false,
                 remaining: 0,
+                resetAt: now + 1000,
                 unavailable: true,
+                cost,
+                limit: capacity,
+                policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
+                retryAfterMs: 1000,
             };
         }
+        const allowed = Number(scriptResult[0] || 0) === 1;
+        const remaining = Number(scriptResult[1] || 0);
+        const resetInMs = Number(scriptResult[2] || 0);
+        const retryAfterMs = Number(scriptResult[3] || 0);
 
-        return result;
+        return {
+            allowed,
+            remaining: Number.isFinite(remaining) ? Math.max(0, Math.floor(remaining)) : 0,
+            resetAt: now + (Number.isFinite(resetInMs) && resetInMs > 0 ? resetInMs : ttlMs),
+            unavailable: false,
+            cost,
+            limit: capacity,
+            policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
+            retryAfterMs: Number.isFinite(retryAfterMs) ? retryAfterMs : 0,
+        };
     } catch (err) {
         console.error(JSON.stringify({
             level: 'error',
@@ -567,40 +694,61 @@ export async function checkRateLimitKey(
     env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
     options: DirectRateLimitOptions
 ): Promise<RateLimitResult> {
+    const [result] = await checkRateLimitKeys(env, [options]);
+    return result;
+}
+
+async function checkRateLimitKeys(
+    env: Pick<Env, 'UPSTASH_REDIS_REST_URL' | 'UPSTASH_REDIS_REST_TOKEN' | 'ENVIRONMENT' | 'CACHE'>,
+    checks: DirectRateLimitCheckOptions[],
+): Promise<RateLimitBatchResult[]> {
     const {
-        key,
         windowMs = 60_000,
-        max = 60,
         prefix = 'rl',
-    } = options;
-    const fullKey = `${prefix}:${key}`;
+    } = checks[0] || {};
     const redisUrl = env.UPSTASH_REDIS_REST_URL;
     const redisToken = env.UPSTASH_REDIS_REST_TOKEN;
     const useRedis = Boolean(redisUrl && redisToken);
     const isProduction = env.ENVIRONMENT === 'production';
 
-    if (!useRedis && env.CACHE) {
-        return checkKvRateLimit(env.CACHE, fullKey, windowMs, max);
+    if (useRedis) {
+        return checkRedisRateLimitBatch(redisUrl, redisToken, checks);
     }
 
-    if (isProduction && !useRedis) {
-        return {
+    if (isProduction) {
+        return checks.map((check) => ({
+            key: check.key,
+            max: check.max || 60,
+            scope: check.scope,
             allowed: false,
             remaining: 0,
-            resetAt: Date.now() + windowMs,
+            resetAt: Date.now() + (check.windowMs || windowMs),
             unavailable: true,
+        }));
+    }
+
+    if (env.CACHE) {
+        return Promise.all(checks.map(async (check) => {
+            const fullKey = `${check.prefix || prefix}:${check.key}`;
+            const result = await checkKvRateLimit(env.CACHE as KVNamespace, fullKey, check.windowMs || windowMs, check.max || 60);
+            return {
+                ...result,
+                key: check.key,
+                max: check.max || 60,
+                scope: check.scope,
+            };
+        }));
+    }
+
+    return checks.map((check) => {
+        const fullKey = `${check.prefix || prefix}:${check.key}`;
+        return {
+            ...checkMemoryRateLimit(fullKey, check.windowMs || windowMs, check.max || 60),
+            key: check.key,
+            max: check.max || 60,
+            scope: check.scope,
         };
-    }
-
-    const result = useRedis
-        ? await checkRedisRateLimit(redisUrl, redisToken, fullKey, windowMs, max)
-        : checkMemoryRateLimit(fullKey, windowMs, max);
-
-    if (result.unavailable && !isProduction) {
-        return checkMemoryRateLimit(fullKey, windowMs, max);
-    }
-
-    return result;
+    });
 }
 
 export async function checkQueryCostRateLimitKey(
@@ -620,10 +768,6 @@ export async function checkQueryCostRateLimitKey(
     const useRedis = Boolean(redisUrl && redisToken);
     const isProduction = env.ENVIRONMENT === 'production';
 
-    if (!useRedis && env.CACHE) {
-        return checkKvQueryCostLimit(env.CACHE, fullKey, cost, pointsPerSecond, capacity);
-    }
-
     if (isProduction && !useRedis) {
         return {
             allowed: false,
@@ -635,6 +779,10 @@ export async function checkQueryCostRateLimitKey(
             policy: `${capacity};w=leaky;rate=${pointsPerSecond}`,
             retryAfterMs: 1000,
         };
+    }
+
+    if (!useRedis && env.CACHE) {
+        return checkKvQueryCostLimit(env.CACHE, fullKey, cost, pointsPerSecond, capacity);
     }
 
     const result = useRedis
@@ -659,9 +807,15 @@ export function rateLimit(options: RateLimitOptions = {}) {
             const auth = c.get('auth');
             return auth?.user?.id || c.req.header('CF-Connecting-IP') || 'anonymous';
         },
+        skip,
     } = options;
 
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        if (skip?.(c)) {
+            await next();
+            return;
+        }
+
         if (isLocalRuntime(c.env)) {
             await next();
             return;
@@ -733,10 +887,16 @@ export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {
         capacity = 200,
         prefix = 'rl:query-cost',
         keyGenerator = defaultQueryCostKey,
+        skip,
     } = options;
 
     return createMiddleware<{ Bindings: Env }>(async (c, next) => {
         if (c.req.method === 'OPTIONS') {
+            await next();
+            return;
+        }
+
+        if (skip?.(c)) {
             await next();
             return;
         }

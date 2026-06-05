@@ -151,13 +151,19 @@ test('WS12 G2 mounts Admin GraphQL behind gateway auth with cost limiting', () =
     "api.route('/graphql/admin', adminGraphQLRouter)",
     "api.use('/*', authMiddleware)",
     "api.use('/*', csrfProtection)",
-    "api.use('/*', rateLimit({ max: 300 }))",
+    'shouldSkipGatewayQueryCostLimit',
   ], 'Admin GraphQL gateway mount');
 
   assert.ok(
     gatewayIndexSource.indexOf("api.use('/*', authMiddleware)") <
       gatewayIndexSource.indexOf("api.route('/admin/graphql', adminGraphQLRouter)"),
     'Admin GraphQL must be mounted after gateway auth middleware',
+  );
+
+  assert.doesNotMatch(
+    gatewayIndexSource,
+    /api\.use\('\/\*', rateLimit\(\{ max: 300 \}\)\)/,
+    'Admin GraphQL must not pay a second fixed-window gateway limiter',
   );
 });
 

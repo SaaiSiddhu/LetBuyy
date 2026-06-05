@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { authMiddleware } from './middleware/auth';
-import { rateLimit, authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
+import { authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
 import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { featureGate } from './middleware/featureFlags';
@@ -150,6 +150,24 @@ function queueHealthResponse(env: Env) {
         environment: env.ENVIRONMENT,
         queues,
     };
+}
+
+function normalizedApiPath(path: string): string {
+    return path.replace(/^\/v1(?=\/|$)/, '') || '/';
+}
+
+function shouldSkipGatewayQueryCostLimit(c: { req: { path: string } }): boolean {
+    const path = normalizedApiPath(c.req.path);
+
+    return path.startsWith('/auth/')
+        || path === '/storefront/graphql'
+        || path === '/graphql/storefront'
+        || path === '/admin/graphql'
+        || path === '/graphql/admin'
+        || path === '/storefront/customer/login'
+        || path === '/storefront/customer/password/request-reset'
+        || path === '/storefront/customer/password/confirm-reset'
+        || /^\/storefront\/[^/]+\/orders\/contact$/.test(path);
 }
 
 type ScheduledQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
@@ -309,7 +327,11 @@ api.get('/health/queues', (c) => {
     const body = queueHealthResponse(c.env);
     return c.json(body, body.status === 'healthy' ? 200 : 503);
 });
-api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
+api.use('/*', queryCostRateLimit({
+    pointsPerSecond: 20,
+    capacity: 200,
+    skip: shouldSkipGatewayQueryCostLimit,
+}));
 
 const storefrontGraphQLRouter = createStorefrontGraphQLRouter({
     restDelegate: async (c, request) => app.fetch(request, c.env),
@@ -351,7 +373,6 @@ api.route('/internal/console', internalConsoleRouter);
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
 api.use('/*', csrfProtection);
-api.use('/*', rateLimit({ max: 300 }));
 
 const adminGraphQLRouter = createAdminGraphQLRouter({
     restDelegate: async (c, request) => app.fetch(request, c.env),
