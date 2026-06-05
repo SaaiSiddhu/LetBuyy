@@ -1352,3 +1352,749 @@ export function createMinimalLiquidThemeBundleFixture(): LiquidThemePackageBundl
     },
   });
 }
+
+export function createUrbanKicksLiquidThemeBundleFixture(): LiquidThemePackageBundle {
+  return parseLiquidThemePackageBundle({
+    schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION,
+    package: {
+      slug: 'urban-kicks-liquid',
+      name: 'Urban Kicks Liquid',
+      description: 'First-party Urban Kicks storefront converted to portable Liquid sections and blocks.',
+      version: '1.0.0',
+      compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
+    },
+    layout: {
+      theme: {
+        path: LIQUID_THEME_BUNDLE_PATHS.layout,
+        source: [
+          '<!doctype html>',
+          '<html lang="{{ request.locale | default: "en" }}">',
+          '<head>',
+          '  <meta charset="utf-8">',
+          '  <meta name="viewport" content="width=device-width, initial-scale=1">',
+          '  <title>{{ shop.name }} - Urban Kicks</title>',
+          '  {{ content_for_header }}',
+          '</head>',
+          '<body class="lb-theme lb-theme--urban-kicks">',
+          '  <main id="MainContent">',
+          '    {{ content_for_layout }}',
+          '  </main>',
+          '  {{ content_for_footer }}',
+          '</body>',
+          '</html>',
+        ].join('\n'),
+      },
+    },
+    config: {
+      settings_schema: {
+        settings: {
+          colors: {
+            label: 'Colors',
+            description: 'Urban Kicks storefront color tokens.',
+            fields: {
+              primaryColor: {
+                type: 'color',
+                label: 'Primary color',
+                default: '#8B5CF6',
+              },
+              accentColor: {
+                type: 'color',
+                label: 'Accent color',
+                default: '#F59E0B',
+              },
+              surfaceColor: {
+                type: 'color',
+                label: 'Surface color',
+                default: '#F8FAFC',
+              },
+            },
+          },
+          typography: {
+            label: 'Typography',
+            description: 'First-party type settings mirrored from the JSON-contract Urban Kicks theme.',
+            fields: {
+              headingFontFamily: {
+                type: 'text',
+                label: 'Heading font',
+                default: 'Inter',
+              },
+              bodyFontFamily: {
+                type: 'text',
+                label: 'Body font',
+                default: 'Inter',
+              },
+            },
+          },
+        },
+      },
+      settings_data: {
+        current: {
+          primaryColor: '#8B5CF6',
+          accentColor: '#F59E0B',
+          surfaceColor: '#F8FAFC',
+          headingFontFamily: 'Inter',
+          bodyFontFamily: 'Inter',
+        },
+      },
+    },
+    templates: {
+      index: {
+        name: 'Urban Kicks home page',
+        layout: 'theme',
+        sections: {
+          'announcement-default': {
+            type: 'announcement-bar',
+            settings: {
+              text: 'Free shipping on fresh drops this week.',
+              linkLabel: 'Shop now',
+              linkHref: '/products',
+            },
+          },
+          'hero-default': {
+            type: 'hero-banner',
+            settings: {
+              eyebrow: 'New season essentials',
+              heading: 'Fresh drops for daily buyers',
+              subheading: 'Launch-ready sneakers, apparel, and accessories for a commerce storefront.',
+              ctaText: 'Shop Now',
+              ctaLink: '/products',
+            },
+          },
+          'category-grid-default': {
+            type: 'category-grid',
+            settings: {
+              title: 'Shop by style',
+              subtitle: 'Launch-ready groupings for daily buyers.',
+            },
+            blocks: {
+              'category-sneakers': {
+                type: 'category',
+                settings: {
+                  name: 'Sneakers',
+                  slug: 'sneakers',
+                  tagline: 'Fresh pairs',
+                },
+              },
+              'category-apparel': {
+                type: 'category',
+                settings: {
+                  name: 'Apparel',
+                  slug: 'apparel',
+                  tagline: 'Daily fits',
+                },
+              },
+              'category-accessories': {
+                type: 'category',
+                settings: {
+                  name: 'Accessories',
+                  slug: 'accessories',
+                  tagline: 'Finish the look',
+                },
+              },
+            },
+            block_order: ['category-sneakers', 'category-apparel', 'category-accessories'],
+          },
+          'featured-collection-default': {
+            type: 'featured-products',
+            settings: {
+              title: 'Drop-ready collection',
+              subtitle: 'Curated items for the first storefront launch.',
+              viewAllLabel: 'View collection',
+              viewAllHref: '/collections/new-arrivals',
+            },
+            blocks: {
+              'product-sneaker': {
+                type: 'product-card',
+                settings: {
+                  title: 'Velocity Runner',
+                  price: 'Rs 4,999',
+                  url: '/products/velocity-runner',
+                },
+              },
+              'product-hoodie': {
+                type: 'product-card',
+                settings: {
+                  title: 'Everyday Hoodie',
+                  price: 'Rs 2,499',
+                  url: '/products/everyday-hoodie',
+                },
+              },
+              'product-cap': {
+                type: 'product-card',
+                settings: {
+                  title: 'Street Cap',
+                  price: 'Rs 899',
+                  url: '/products/street-cap',
+                },
+              },
+            },
+            block_order: ['product-sneaker', 'product-hoodie', 'product-cap'],
+          },
+          'product-grid-default': {
+            type: 'product-grid',
+            settings: {
+              title: 'Featured Products',
+              subtitle: 'Products selected from your catalog.',
+              columns: 4,
+            },
+            blocks: {
+              'grid-sneaker': {
+                type: 'product-card',
+                settings: {
+                  title: 'Court Sneaker',
+                  price: 'Rs 3,499',
+                  url: '/products/court-sneaker',
+                },
+              },
+              'grid-backpack': {
+                type: 'product-card',
+                settings: {
+                  title: 'Transit Backpack',
+                  price: 'Rs 1,999',
+                  url: '/products/transit-backpack',
+                },
+              },
+            },
+            block_order: ['grid-sneaker', 'grid-backpack'],
+          },
+          'spotlight-default': {
+            type: 'spotlight',
+            settings: {
+              heading: 'A brand-new Liquid section',
+              subheading: 'Added as sections/spotlight.liquid without changing the storefront React registry.',
+            },
+            blocks: {
+              'spotlight-badge': {
+                type: 'badge',
+                settings: {
+                  label: 'Zero storefront code change',
+                },
+              },
+              'spotlight-app': {
+                type: '@app',
+                settings: {
+                  extension_handle: 'urban-offer',
+                  slot: 'home.spotlight.offer',
+                },
+              },
+            },
+            block_order: ['spotlight-badge', 'spotlight-app'],
+          },
+          'newsletter-default': {
+            type: 'newsletter-signup',
+            settings: {
+              title: 'Get first access',
+              subtitle: 'Launch updates, new drops, and offers sent to your inbox.',
+              buttonLabel: 'Sign up',
+            },
+          },
+        },
+        order: [
+          'announcement-default',
+          'hero-default',
+          'category-grid-default',
+          'featured-collection-default',
+          'product-grid-default',
+          'spotlight-default',
+          'newsletter-default',
+        ],
+      },
+    },
+    sections: {
+      'announcement-bar': {
+        path: 'sections/announcement-bar.liquid',
+        source: [
+          '<section class="lb-announcement-bar" data-section-id="{{ section.id }}">',
+          '  <span>{{ section.settings.text }}</span>',
+          '  <a href="{{ section.settings.linkHref }}">{{ section.settings.linkLabel }}</a>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Announcement Bar",',
+          '  "settings": [',
+          '    { "id": "text", "type": "text", "label": "Message", "default": "Free shipping on fresh drops this week." },',
+          '    { "id": "linkLabel", "type": "text", "label": "Link label", "default": "Shop now" },',
+          '    { "id": "linkHref", "type": "url", "label": "Link URL", "default": "/products" }',
+          '  ],',
+          '  "presets": [{ "name": "Announcement Bar" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Announcement Bar',
+          settings: [
+            {
+              id: 'text',
+              type: 'text',
+              label: 'Message',
+              default: 'Free shipping on fresh drops this week.',
+            },
+            {
+              id: 'linkLabel',
+              type: 'text',
+              label: 'Link label',
+              default: 'Shop now',
+            },
+            {
+              id: 'linkHref',
+              type: 'url',
+              label: 'Link URL',
+              default: '/products',
+            },
+          ],
+          presets: [
+            {
+              name: 'Announcement Bar',
+            },
+          ],
+        },
+      },
+      'hero-banner': {
+        path: 'sections/hero-banner.liquid',
+        source: [
+          '<section class="lb-hero-banner" data-section-id="{{ section.id }}">',
+          '  <p>{{ section.settings.eyebrow }}</p>',
+          '  <h1>{{ section.settings.heading }}</h1>',
+          '  <p>{{ section.settings.subheading }}</p>',
+          '  <a href="{{ section.settings.ctaLink }}">{{ section.settings.ctaText }}</a>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Hero Banner",',
+          '  "settings": [',
+          '    { "id": "eyebrow", "type": "text", "label": "Eyebrow", "default": "New season essentials" },',
+          '    { "id": "heading", "type": "text", "label": "Heading", "default": "Fresh drops for daily buyers" },',
+          '    { "id": "subheading", "type": "textarea", "label": "Subheading" },',
+          '    { "id": "ctaText", "type": "text", "label": "Button text", "default": "Shop Now" },',
+          '    { "id": "ctaLink", "type": "url", "label": "Button link", "default": "/products" }',
+          '  ],',
+          '  "presets": [{ "name": "Hero Banner" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Hero Banner',
+          settings: [
+            {
+              id: 'eyebrow',
+              type: 'text',
+              label: 'Eyebrow',
+              default: 'New season essentials',
+            },
+            {
+              id: 'heading',
+              type: 'text',
+              label: 'Heading',
+              default: 'Fresh drops for daily buyers',
+            },
+            {
+              id: 'subheading',
+              type: 'textarea',
+              label: 'Subheading',
+            },
+            {
+              id: 'ctaText',
+              type: 'text',
+              label: 'Button text',
+              default: 'Shop Now',
+            },
+            {
+              id: 'ctaLink',
+              type: 'url',
+              label: 'Button link',
+              default: '/products',
+            },
+          ],
+          presets: [
+            {
+              name: 'Hero Banner',
+            },
+          ],
+        },
+      },
+      'category-grid': {
+        path: 'sections/category-grid.liquid',
+        source: [
+          '<section class="lb-category-grid" data-section-id="{{ section.id }}">',
+          '  <h2>{{ section.settings.title }}</h2>',
+          '  <p>{{ section.settings.subtitle }}</p>',
+          '  <div class="lb-category-grid__items">',
+          '    {% for block in section.blocks %}',
+          '      {{ block.content }}',
+          '    {% endfor %}',
+          '  </div>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Category Grid",',
+          '  "settings": [',
+          '    { "id": "title", "type": "text", "label": "Heading", "default": "Shop by style" },',
+          '    { "id": "subtitle", "type": "text", "label": "Subheading" }',
+          '  ],',
+          '  "blocks": [{ "type": "category", "name": "Category" }],',
+          '  "presets": [{ "name": "Category Grid" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Category Grid',
+          settings: [
+            {
+              id: 'title',
+              type: 'text',
+              label: 'Heading',
+              default: 'Shop by style',
+            },
+            {
+              id: 'subtitle',
+              type: 'text',
+              label: 'Subheading',
+            },
+          ],
+          blocks: [
+            {
+              type: 'category',
+              name: 'Category',
+            },
+          ],
+          presets: [
+            {
+              name: 'Category Grid',
+            },
+          ],
+        },
+      },
+      'featured-products': {
+        path: 'sections/featured-products.liquid',
+        source: [
+          '<section class="lb-featured-products" data-section-id="{{ section.id }}">',
+          '  <div>',
+          '    <h2>{{ section.settings.title }}</h2>',
+          '    <p>{{ section.settings.subtitle }}</p>',
+          '  </div>',
+          '  <div class="lb-featured-products__items">',
+          '    {% for block in section.blocks %}',
+          '      {{ block.content }}',
+          '    {% endfor %}',
+          '  </div>',
+          '  <a href="{{ section.settings.viewAllHref }}">{{ section.settings.viewAllLabel }}</a>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Featured Products",',
+          '  "settings": [',
+          '    { "id": "title", "type": "text", "label": "Heading", "default": "Drop-ready collection" },',
+          '    { "id": "subtitle", "type": "text", "label": "Subheading" },',
+          '    { "id": "viewAllLabel", "type": "text", "label": "View all label", "default": "View collection" },',
+          '    { "id": "viewAllHref", "type": "url", "label": "View all URL", "default": "/collections/new-arrivals" }',
+          '  ],',
+          '  "blocks": [{ "type": "product-card", "name": "Product card" }],',
+          '  "presets": [{ "name": "Featured Products" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Featured Products',
+          settings: [
+            {
+              id: 'title',
+              type: 'text',
+              label: 'Heading',
+              default: 'Drop-ready collection',
+            },
+            {
+              id: 'subtitle',
+              type: 'text',
+              label: 'Subheading',
+            },
+            {
+              id: 'viewAllLabel',
+              type: 'text',
+              label: 'View all label',
+              default: 'View collection',
+            },
+            {
+              id: 'viewAllHref',
+              type: 'url',
+              label: 'View all URL',
+              default: '/collections/new-arrivals',
+            },
+          ],
+          blocks: [
+            {
+              type: 'product-card',
+              name: 'Product card',
+            },
+          ],
+          presets: [
+            {
+              name: 'Featured Products',
+            },
+          ],
+        },
+      },
+      'product-grid': {
+        path: 'sections/product-grid.liquid',
+        source: [
+          '<section class="lb-product-grid" data-section-id="{{ section.id }}">',
+          '  <h2>{{ section.settings.title }}</h2>',
+          '  <p>{{ section.settings.subtitle }}</p>',
+          '  <div class="lb-product-grid__items" data-columns="{{ section.settings.columns }}">',
+          '    {% for block in section.blocks %}',
+          '      {{ block.content }}',
+          '    {% endfor %}',
+          '  </div>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Product Grid",',
+          '  "settings": [',
+          '    { "id": "title", "type": "text", "label": "Heading", "default": "Featured Products" },',
+          '    { "id": "subtitle", "type": "text", "label": "Subheading" },',
+          '    { "id": "columns", "type": "range", "label": "Columns", "min": 2, "max": 4, "step": 1, "default": 4 }',
+          '  ],',
+          '  "blocks": [{ "type": "product-card", "name": "Product card" }],',
+          '  "presets": [{ "name": "Product Grid" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Product Grid',
+          settings: [
+            {
+              id: 'title',
+              type: 'text',
+              label: 'Heading',
+              default: 'Featured Products',
+            },
+            {
+              id: 'subtitle',
+              type: 'text',
+              label: 'Subheading',
+            },
+            {
+              id: 'columns',
+              type: 'range',
+              label: 'Columns',
+              min: 2,
+              max: 4,
+              step: 1,
+              default: 4,
+            },
+          ],
+          blocks: [
+            {
+              type: 'product-card',
+              name: 'Product card',
+            },
+          ],
+          presets: [
+            {
+              name: 'Product Grid',
+            },
+          ],
+        },
+      },
+      spotlight: {
+        path: 'sections/spotlight.liquid',
+        source: [
+          '<section class="lb-first-party-spotlight" data-section-id="{{ section.id }}">',
+          '  <p>{{ section.settings.subheading }}</p>',
+          '  <h2>{{ section.settings.heading }}</h2>',
+          '  <div class="lb-first-party-spotlight__blocks">',
+          '    {% for block in section.blocks %}',
+          '      {{ block.content }}',
+          '    {% endfor %}',
+          '  </div>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Spotlight",',
+          '  "settings": [',
+          '    { "id": "heading", "type": "text", "label": "Heading", "default": "A brand-new Liquid section" },',
+          '    { "id": "subheading", "type": "text", "label": "Subheading" }',
+          '  ],',
+          '  "blocks": [',
+          '    { "type": "badge", "name": "Badge" },',
+          '    { "type": "@app", "name": "App block" }',
+          '  ],',
+          '  "presets": [{ "name": "Spotlight" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Spotlight',
+          settings: [
+            {
+              id: 'heading',
+              type: 'text',
+              label: 'Heading',
+              default: 'A brand-new Liquid section',
+            },
+            {
+              id: 'subheading',
+              type: 'text',
+              label: 'Subheading',
+            },
+          ],
+          blocks: [
+            {
+              type: 'badge',
+              name: 'Badge',
+            },
+            {
+              type: '@app',
+              name: 'App block',
+            },
+          ],
+          presets: [
+            {
+              name: 'Spotlight',
+            },
+          ],
+        },
+      },
+      'newsletter-signup': {
+        path: 'sections/newsletter-signup.liquid',
+        source: [
+          '<section class="lb-newsletter-signup" data-section-id="{{ section.id }}">',
+          '  <h2>{{ section.settings.title }}</h2>',
+          '  <p>{{ section.settings.subtitle }}</p>',
+          '  <form action="/contact" method="post">',
+          '    <input type="email" name="email" aria-label="Email" required>',
+          '    <button type="submit">{{ section.settings.buttonLabel }}</button>',
+          '  </form>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Newsletter Signup",',
+          '  "settings": [',
+          '    { "id": "title", "type": "text", "label": "Heading", "default": "Get first access" },',
+          '    { "id": "subtitle", "type": "text", "label": "Subheading" },',
+          '    { "id": "buttonLabel", "type": "text", "label": "Button label", "default": "Sign up" }',
+          '  ],',
+          '  "presets": [{ "name": "Newsletter Signup" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Newsletter Signup',
+          settings: [
+            {
+              id: 'title',
+              type: 'text',
+              label: 'Heading',
+              default: 'Get first access',
+            },
+            {
+              id: 'subtitle',
+              type: 'text',
+              label: 'Subheading',
+            },
+            {
+              id: 'buttonLabel',
+              type: 'text',
+              label: 'Button label',
+              default: 'Sign up',
+            },
+          ],
+          presets: [
+            {
+              name: 'Newsletter Signup',
+            },
+          ],
+        },
+      },
+    },
+    blocks: {
+      category: {
+        path: 'blocks/category.liquid',
+        source: [
+          '<a class="lb-category-card" href="/collections/{{ block.settings.slug }}" data-block-id="{{ block.id }}">',
+          '  <strong>{{ block.settings.name }}</strong>',
+          '  <span>{{ block.settings.tagline }}</span>',
+          '</a>',
+        ].join('\n'),
+        schema: {
+          name: 'Category',
+          settings: [
+            {
+              id: 'name',
+              type: 'text',
+              label: 'Name',
+            },
+            {
+              id: 'slug',
+              type: 'text',
+              label: 'Slug',
+            },
+            {
+              id: 'tagline',
+              type: 'text',
+              label: 'Tagline',
+            },
+          ],
+        },
+      },
+      'product-card': {
+        path: 'blocks/product-card.liquid',
+        source: [
+          '<article class="lb-product-card" data-block-id="{{ block.id }}">',
+          '  <a href="{{ block.settings.url }}">',
+          '    <strong>{{ block.settings.title }}</strong>',
+          '    <span>{{ block.settings.price }}</span>',
+          '  </a>',
+          '</article>',
+        ].join('\n'),
+        schema: {
+          name: 'Product card',
+          settings: [
+            {
+              id: 'title',
+              type: 'text',
+              label: 'Title',
+            },
+            {
+              id: 'price',
+              type: 'text',
+              label: 'Price',
+            },
+            {
+              id: 'url',
+              type: 'url',
+              label: 'Product URL',
+            },
+          ],
+        },
+      },
+      badge: {
+        path: 'blocks/badge.liquid',
+        source: '<span class="lb-badge" data-block-id="{{ block.id }}">{{ block.settings.label }}</span>',
+        schema: {
+          name: 'Badge',
+          settings: [
+            {
+              id: 'label',
+              type: 'text',
+              label: 'Label',
+              default: 'Zero storefront code change',
+            },
+          ],
+        },
+      },
+    },
+    locales: {
+      en: {
+        general: {
+          cart: 'Cart',
+        },
+      },
+    },
+    renderer: {
+      engine: 'liquid',
+      renderer_version: THEME_LIQUID_RENDERER_VERSION,
+      liquid_ready: true,
+      assets: {},
+    },
+  });
+}
