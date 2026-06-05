@@ -19,6 +19,8 @@ test('gateway install/uninstall claim an Idempotency-Key and replay completed re
   assert.match(src, /scope: 'app-store\.uninstall'/);
   assert.match(src, /claim\.kind === 'replay'/);
   assert.match(src, /idempotency\.complete\(/);
+  // Non-success exits must release the key for immediate retry.
+  assert.match(src, /idempotency\.fail\(/);
 });
 
 test('marketplace install route forwards the Idempotency-Key to the gateway (H9)', () => {

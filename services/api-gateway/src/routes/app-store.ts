@@ -1993,6 +1993,8 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         idempotencyClaimId = claim.id;
     }
 
+    let idempotencyCompleted = false;
+    try {
     // Verify app exists and is published
     const { data: app } = await db
         .from('marketplace_apps')
@@ -2155,8 +2157,16 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
     });
     if (idempotency && idempotencyClaimId) {
         await idempotency.complete({ id: idempotencyClaimId, responseBody: installResponse as any, statusCode: 201, resourceType: 'app_installation', resourceId: data.id });
+        idempotencyCompleted = true;
     }
     return c.json(installResponse, 201);
+    } finally {
+        // Release the idempotency key on any non-success exit (error return or throw) so a
+        // failed install is immediately retryable instead of waiting for lock expiry (H9).
+        if (idempotency && idempotencyClaimId && !idempotencyCompleted) {
+            await idempotency.fail(idempotencyClaimId);
+        }
+    }
 });
 
 // DELETE /app-store/apps/:id/install — Uninstall an app
@@ -2202,6 +2212,8 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
         idempotencyClaimId = claim.id;
     }
 
+    let idempotencyCompleted = false;
+    try {
     const { data: installation } = await db
         .from('app_installations')
         .select('id, scopes_granted, config, marketplace_apps(id, name)')
@@ -2297,8 +2309,16 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
     const uninstallResponse = { data: { uninstalled: true } };
     if (idempotency && idempotencyClaimId) {
         await idempotency.complete({ id: idempotencyClaimId, responseBody: uninstallResponse, statusCode: 200, resourceType: 'app_installation' });
+        idempotencyCompleted = true;
     }
     return c.json(uninstallResponse);
+    } finally {
+        // Release the idempotency key on any non-success exit (error return or throw) so a
+        // failed uninstall is immediately retryable instead of waiting for lock expiry (H9).
+        if (idempotency && idempotencyClaimId && !idempotencyCompleted) {
+            await idempotency.fail(idempotencyClaimId);
+        }
+    }
 });
 
 // GET /app-store/developers/me — Get current user's developer profile
