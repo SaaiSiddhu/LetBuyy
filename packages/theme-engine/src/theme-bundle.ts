@@ -27,6 +27,32 @@ export const LIQUID_THEME_BUNDLE_PATHS = {
   locales: 'locales/*.json',
 } as const;
 
+export const LIQUID_HYDRATION_ISLANDS = {
+  addToCart: {
+    tag: 'lb-add-to-cart',
+    kind: 'add-to-cart',
+    selector: 'lb-add-to-cart,[data-lb-island="add-to-cart"]',
+  },
+  cartDrawer: {
+    tag: 'lb-cart-drawer',
+    kind: 'cart-drawer',
+    selector: 'lb-cart-drawer,[data-lb-island="cart-drawer"]',
+  },
+  search: {
+    tag: 'lb-search',
+    kind: 'search',
+    selector: 'lb-search,[data-lb-island="search"]',
+  },
+  variantPicker: {
+    tag: 'lb-variant-picker',
+    kind: 'variant-picker',
+    selector: 'lb-variant-picker,[data-lb-island="variant-picker"]',
+  },
+} as const;
+
+export type LiquidHydrationIslandKey = keyof typeof LIQUID_HYDRATION_ISLANDS;
+export type LiquidHydrationIslandKind = typeof LIQUID_HYDRATION_ISLANDS[LiquidHydrationIslandKey]['kind'];
+
 const MAX_LIQUID_TEMPLATE_BYTES = 200_000;
 const LIQUID_SECTION_PATH_PATTERN = /^sections\/[a-z0-9]+(?:[-_][a-z0-9]+)*\.liquid$/;
 const LIQUID_BLOCK_PATH_PATTERN = /^blocks\/[a-z0-9]+(?:[-_][a-z0-9]+)*\.liquid$/;
@@ -1019,6 +1045,16 @@ export function createMinimalLiquidThemeBundleFixture(): LiquidThemePackageBundl
           '      {{ block.content }}',
           '    {% endfor %}',
           '  </div>',
+          '  <lb-variant-picker data-lb-island="variant-picker" data-product-id="demo-liquid-product">',
+          '    <button type="button" data-lb-variant-option data-variant-name="Size" data-variant-value="M" aria-pressed="true">M</button>',
+          '    <button type="button" data-lb-variant-option data-variant-name="Size" data-variant-value="L" aria-pressed="false">L</button>',
+          '  </lb-variant-picker>',
+          '  <lb-add-to-cart data-lb-island="add-to-cart" data-product-id="demo-liquid-product" data-product-name="{{ section.settings.heading }}" data-product-price="499" data-product-currency="INR" data-product-url="/products/demo-liquid-product">',
+          '    <button type="button" data-lb-add-to-cart>Add to cart</button>',
+          '    <span data-lb-add-to-cart-status aria-live="polite"></span>',
+          '  </lb-add-to-cart>',
+          '  <lb-search data-lb-island="search" data-search-url="{{ routes.search_url }}"></lb-search>',
+          '  <lb-cart-drawer data-lb-island="cart-drawer"></lb-cart-drawer>',
           '</section>',
           '{% schema %}',
           '{',

@@ -6,6 +6,7 @@ import type { StoreModel } from '@letbuyy/tenant-core';
 import { createThemeRenderer, type LiquidAppBlockRenderSource } from '@letbuyy/theme-engine';
 import type { SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
+import LiquidHydrationIslands from './liquid-hydration-islands';
 import { renderRegisteredSection } from './renderer-registry';
 
 function RenderSectionList({
@@ -62,16 +63,23 @@ function RenderSectionList({
 function LiquidRenderedHtml({
     html,
     editorMode,
+    basePath,
+    storeId,
 }: {
     html: string;
     editorMode: boolean;
+    basePath: string;
+    storeId: string;
 }) {
     return (
-        <div
-            data-theme-renderer="liquid"
-            data-editor-mode={editorMode ? 'true' : 'false'}
-            dangerouslySetInnerHTML={{ __html: html }}
-        />
+        <>
+            <div
+                data-theme-renderer="liquid"
+                data-editor-mode={editorMode ? 'true' : 'false'}
+                dangerouslySetInnerHTML={{ __html: html }}
+            />
+            <LiquidHydrationIslands basePath={basePath} storeId={storeId} />
+        </>
     );
 }
 
@@ -194,7 +202,14 @@ export default async function StorefrontCompositionEngine({
 }) {
     const liquidHtml = await renderLiquidPlan({ store, plan, editorMode });
     if (liquidHtml) {
-        return <LiquidRenderedHtml html={liquidHtml} editorMode={editorMode} />;
+        return (
+            <LiquidRenderedHtml
+                html={liquidHtml}
+                editorMode={editorMode}
+                basePath={`/store/${plan.route.subdomain}`}
+                storeId={store.id}
+            />
+        );
     }
 
     return (
