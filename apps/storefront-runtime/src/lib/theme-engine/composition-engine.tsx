@@ -3,7 +3,12 @@ import {
     type AppBlockInstance,
 } from '@letbuyy/app-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
-import { createThemeRenderer, type LiquidAppBlockRenderSource } from '@letbuyy/theme-engine';
+import {
+    createThemeRenderer,
+    type LiquidAppBlockRenderSource,
+    type LiquidAppEmbeds,
+    type LiquidCommerceDrops,
+} from '@letbuyy/theme-engine';
 import type { SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
 import LiquidHydrationIslands from './liquid-hydration-islands';
@@ -149,13 +154,169 @@ function buildLiquidAppBlocks(input: unknown): Record<string, LiquidAppBlockRend
     return Object.fromEntries(entries);
 }
 
+const LIQUID_HEADER_EMBED_SLOTS = new Set([
+    'content_for_header',
+    'theme.head',
+    'theme.header',
+    'storefront.head',
+    'storefront_embed.header',
+]);
+const LIQUID_FOOTER_EMBED_SLOTS = new Set([
+    'content_for_footer',
+    'theme.footer',
+    'storefront.footer',
+    'storefront_embed.footer',
+]);
+
+function normalizeEmbedSlot(value: unknown): string {
+    return typeof value === 'string' ? value.trim().toLowerCase() : '';
+}
+
+function liquidEmbedPlacement(block: AppBlockInstance): 'header' | 'footer' | null {
+    const candidates = [
+        block.slot,
+        block.settings.slot,
+        block.settings.placement,
+        block.settings.target,
+        block.settings.inject_to,
+        block.settings.injection_point,
+    ].map(normalizeEmbedSlot);
+
+    if (candidates.some((slot) => LIQUID_HEADER_EMBED_SLOTS.has(slot))) return 'header';
+    if (candidates.some((slot) => LIQUID_FOOTER_EMBED_SLOTS.has(slot))) return 'footer';
+
+    return null;
+}
+
+function buildLiquidAppEmbeds(input: unknown): LiquidAppEmbeds {
+    const blocks = normalizeAppBlockInstances(input);
+    const embeds: Required<LiquidAppEmbeds> = {
+        header: [],
+        footer: [],
+    };
+
+    for (const block of blocks) {
+        const placement = liquidEmbedPlacement(block);
+        if (!placement) continue;
+
+        embeds[placement].push({
+            html: renderLiquidAppBlockHtml(block),
+            settings: {
+                id: block.id,
+                app_id: block.app_id,
+                extension_id: block.extension_id,
+                slot: block.slot,
+                render_mode: block.render_mode,
+                ...block.settings,
+            },
+        });
+    }
+
+    return embeds;
+}
+
+function productSlug(product: SectionRenderData['product']): string {
+    if (!product) return '';
+    const explicitSlug = 'slug' in product && typeof product.slug === 'string' ? product.slug : '';
+    if (explicitSlug) return explicitSlug;
+
+    return product.name
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-|-$/g, '') || product.id;
+}
+
+function productToLiquidDrop(product: SectionRenderData['product']): Record<string, unknown> | null {
+    if (!product) return null;
+
+    const handle = productSlug(product);
+    return {
+        id: product.id,
+        handle,
+        title: product.name,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        compare_at_price: product.compareAtPrice,
+        currency: product.currency || 'INR',
+        url: `/product/${product.id}`,
+        featured_image: product.images[0] || null,
+        images: product.images,
+        available: product.stock > 0 && product.isActive !== false,
+        stock: product.stock,
+        tags: product.tags || [],
+        variants: product.variants || [],
+        options: product.variantOptions || [],
+    };
+}
+
+function collectLiquidProducts(sectionData: Map<string, SectionRenderData>): Record<string, unknown>[] {
+    const products = new Map<string, Record<string, unknown>>();
+
+    for (const data of sectionData.values()) {
+        const singleProduct = productToLiquidDrop(data.product);
+        if (singleProduct) products.set(String(singleProduct.id), singleProduct);
+
+        for (const product of data.products || []) {
+            const productDrop = productToLiquidDrop(product);
+            if (productDrop) products.set(String(productDrop.id), productDrop);
+        }
+    }
+
+    return Array.from(products.values());
+}
+
+function buildLiquidCommerceContext({
+    store,
+    plan,
+    sectionData,
+}: {
+    store: StoreModel;
+    plan: StorefrontRenderPlan;
+    sectionData: Map<string, SectionRenderData>;
+}): LiquidCommerceDrops {
+    const products = collectLiquidProducts(sectionData);
+    const product = products[0] || null;
+    const collection = plan.route.type === 'collection' || products.length > 0
+        ? {
+            id: plan.route.resourceId || plan.route.resourceSlug || 'all-products',
+            handle: plan.route.resourceSlug || 'all-products',
+            title: plan.route.resourceSlug === 'all-products' || !plan.route.resourceSlug ? 'All Products' : plan.route.resourceSlug,
+            products,
+        }
+        : null;
+
+    return {
+        shop: {
+            id: store.id,
+            name: store.name,
+            subdomain: store.subdomain,
+            url: store.storeUrl || `/store/${plan.route.subdomain}`,
+            locale: store.locale || 'en',
+            currency: 'INR',
+        },
+        product,
+        collection,
+        collections: collection ? [collection] : [],
+        cart: {
+            item_count: 0,
+            items: [],
+            total_price: 0,
+            currency: 'INR',
+        },
+        customer: null,
+    };
+}
+
 async function renderLiquidPlan({
     store,
     plan,
+    sectionData,
     editorMode,
 }: {
     store: StoreModel;
     plan: StorefrontRenderPlan;
+    sectionData: Map<string, SectionRenderData>;
     editorMode: boolean;
 }): Promise<string | null> {
     if (plan.rendererEngine !== 'liquid' || !plan.liquidBundle) return null;
@@ -182,6 +343,8 @@ async function renderLiquidPlan({
         liquidBundle: plan.liquidBundle,
         liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
         liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
+        liquidAppEmbeds: buildLiquidAppEmbeds(store.templateConfig.appBlocks),
+        liquidContext: buildLiquidCommerceContext({ store, plan, sectionData }),
     });
 
     if (result.status !== 'rendered' || !result.liquid) return null;
@@ -200,7 +363,7 @@ export default async function StorefrontCompositionEngine({
     sectionData: Map<string, SectionRenderData>;
     editorMode?: boolean;
 }) {
-    const liquidHtml = await renderLiquidPlan({ store, plan, editorMode });
+    const liquidHtml = await renderLiquidPlan({ store, plan, sectionData, editorMode });
     if (liquidHtml) {
         return (
             <LiquidRenderedHtml

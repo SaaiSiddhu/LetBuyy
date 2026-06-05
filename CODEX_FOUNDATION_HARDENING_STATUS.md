@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.3 data-driven first-party section registry and safe fallback complete; continue F3.4 app embeds and bounded Liquid drops.
-- Findings resolved: 17/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.3 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.4 app embeds and bounded Liquid commerce drops complete; continue F3.5 server-side cart.
+- Findings resolved: 18/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.4 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -295,6 +295,24 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F3.4 Liquid embeds and commerce drops evidence
+
+- `packages/theme-engine/src/theme-renderer.ts` accepts `liquidAppEmbeds` and typed `LiquidCommerceDrops`.
+- Liquid layout scope and engine globals now receive sanitized `content_for_header` and `content_for_footer` instead of hardcoded empty strings.
+- Bounded `product`, `collection`, `collections`, `cart`, `customer`, and `shop` drops are exposed through a recursive sanitizer that strips dangerous keys and caps depth, array items, and object keys.
+- Safe Liquid filters are registered for `money`, `money_with_currency`, `json`, `asset_url`, and `image_url`.
+- `apps/storefront-runtime/src/lib/theme-engine/composition-engine.tsx` maps installed app-block records with explicit header/footer embed slots into Liquid embed regions and builds commerce drops from already-loaded section data.
+- Pre-change `pnpm run test:contracts`: FAIL - 61/63 at new `tests/contracts/liquid-commerce-embeds.test.ts` because the money filter, drop interfaces, and composition wiring were absent.
+- Post-change `pnpm run test:contracts`: PASS - 63/63, including real Liquid renderer execution proving sanitized header/footer embeds and product/collection/cart/customer/shop output.
+- `pnpm --filter @letbuyy/shared-types build`: PASS after generated declarations had been cleaned.
+- `pnpm --filter @letbuyy/theme-engine typecheck`: PASS.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck`: PASS.
+- `pnpm --filter @letbuyy/storefront-runtime lint`: PASS with existing warnings only.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -324,5 +342,5 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Continue to F3.4 app embeds and bounded Liquid commerce drops.
+- Continue to F3.5 server-side cart.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
