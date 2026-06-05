@@ -41,6 +41,7 @@ import operationsRouter from './routes/operations';
 import internalConsoleRouter from './routes/internal-console';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
+import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
@@ -164,7 +165,10 @@ function normalizedApiPath(path: string): string {
     return path.replace(/^\/v1(?=\/|$)/, '') || '/';
 }
 
-function shouldSkipGatewayQueryCostLimit(c: { req: { path: string } }): boolean {
+function shouldSkipGatewayQueryCostLimit(c: { req: { path: string; header?: (name: string) => string | undefined } }): boolean {
+    const header = c.req.header?.(LETBUYY_INTERNAL_SUBREQUEST_HEADER);
+    if (isGraphQLRestShimSubrequest(header)) return true;
+
     const path = normalizedApiPath(c.req.path);
 
     return path.startsWith('/auth/')

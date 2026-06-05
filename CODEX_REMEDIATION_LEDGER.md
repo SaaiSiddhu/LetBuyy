@@ -2,8 +2,8 @@
 
 ## CURRENT PHASE
 
-- Phase: PHASE 4 — P2 Performance.
-- Current work item: Phase 5 next — P3 scalability queue storm controls / projections / partition planning.
+- Phase: PHASE 5 — P3 Scalability.
+- Current work item: P3-5 queue storm controls.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -356,6 +356,19 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### Phase 5.1 — GraphQL fan-out and N+1 mitigation
+
+- Added a nonce-backed internal REST-shim subrequest marker in `graphql/rest-shim.ts`; client-cloned headers are not trusted because only registered in-process markers bypass middleware cost.
+- Skipped request-log writes and gateway query-cost limiting for verified internal GraphQL REST shim subrequests while keeping parent Admin/Storefront GraphQL query cost limits active.
+- Changed Admin GraphQL sibling connection fields to resolve through a single `Promise.all(ADMIN_CONNECTION_FIELDS.map(...))` batch instead of serially awaiting each selected connection field.
+- Refreshed REST-shim parity tests to match current cursor-paginated admin list envelopes and cached storefront REST envelopes.
+
+Evidence:
+- `node --test tests/api-graphql/fanout-cost.test.mjs tests/api-graphql/schema-contract.test.mjs tests/api-graphql/rest-shim-parity.test.mjs` — PASS, 16/16 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -459,6 +472,10 @@ Evidence:
 - `node scripts/validators/migration-safety-validator.mjs` — PASS after `088_inventory_available_batch.sql`.
 - `git diff --check` — PASS after variant diff and checkout deferral changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after variant diff and checkout deferral changes.
+- `node --test tests/api-graphql/fanout-cost.test.mjs tests/api-graphql/schema-contract.test.mjs tests/api-graphql/rest-shim-parity.test.mjs` — PASS, 16/16 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after GraphQL fan-out/N+1 mitigation.
+- `git diff --check` — PASS after GraphQL fan-out/N+1 mitigation.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after GraphQL fan-out/N+1 mitigation.
 
 ## SKIPPED — NEEDS HUMAN
 

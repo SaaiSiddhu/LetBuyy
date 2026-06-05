@@ -9,6 +9,11 @@ export interface RestShimEnvelope {
     meta?: JsonObject;
 }
 
+export const LETBUYY_INTERNAL_SUBREQUEST_HEADER = 'X-LetBuyy-Internal-Subrequest';
+const REST_SHIM_SUBREQUEST_PREFIX = 'graphql-rest-shim';
+const REST_SHIM_SUBREQUEST_TTL_MS = 30_000;
+const activeRestShimSubrequests = new Map<string, number>();
+
 export interface RestShimParityEndpoint {
     surface: 'admin' | 'storefront';
     field: string;
@@ -40,6 +45,27 @@ function stringValue(value: unknown): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
 }
 
+function cleanupRestShimSubrequests(now = Date.now()): void {
+    for (const [marker, expiresAt] of activeRestShimSubrequests.entries()) {
+        if (expiresAt <= now) activeRestShimSubrequests.delete(marker);
+    }
+}
+
+function registerRestShimSubrequest(): string {
+    const now = Date.now();
+    cleanupRestShimSubrequests(now);
+    const marker = `${REST_SHIM_SUBREQUEST_PREFIX}:${now.toString(36)}:${crypto.randomUUID()}`;
+    activeRestShimSubrequests.set(marker, now + REST_SHIM_SUBREQUEST_TTL_MS);
+    return marker;
+}
+
+export function isGraphQLRestShimSubrequest(value: string | undefined | null): boolean {
+    if (!value || !value.startsWith(`${REST_SHIM_SUBREQUEST_PREFIX}:`)) return false;
+    cleanupRestShimSubrequests();
+    const expiresAt = activeRestShimSubrequests.get(value);
+    return typeof expiresAt === 'number' && expiresAt > Date.now();
+}
+
 export function createRestShimRequest(
     c: GatewayContext,
     path: string,
@@ -49,6 +75,7 @@ export function createRestShimRequest(
     const url = new URL(c.req.url);
     url.pathname = `/v1${path.startsWith('/') ? path : `/${path}`}`;
     url.search = params?.toString() || '';
+    headers.set(LETBUYY_INTERNAL_SUBREQUEST_HEADER, registerRestShimSubrequest());
 
     return new Request(url.toString(), {
         method: 'GET',
