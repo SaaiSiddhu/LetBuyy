@@ -467,6 +467,14 @@ export type StorefrontCustomerPasswordInput = StorefrontCustomerLookupQuery & {
   password: string;
 };
 
+export type StorefrontCustomerPasswordResetRequestInput = StorefrontCustomerLookupQuery & {
+  reset_url?: string | null;
+};
+
+export type StorefrontCustomerPasswordResetConfirmInput = StorefrontCustomerPasswordInput & {
+  token: string;
+};
+
 export type StorefrontCustomerStatsInput = StorefrontCustomerLookupQuery & {
   order_total: number;
   order_id: string;
@@ -485,6 +493,11 @@ export type StorefrontCustomerResult = {
 
 export type StorefrontCustomerPasswordResult = {
   customer_id?: string | null;
+  customer?: StorefrontCustomerRecord | null;
+};
+
+export type StorefrontCustomerPasswordResetRequestResult = {
+  accepted: boolean;
 };
 
 export type StorefrontCustomerStatsResult = {
@@ -1339,6 +1352,10 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontCustomerStatusResult>('/storefront/customer/status', { ...options, query }),
     setCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerPasswordResult>('/storefront/customer/password', { ...options, method: 'POST', body: input }),
+    requestCustomerPasswordReset: (input: StorefrontCustomerPasswordResetRequestInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerPasswordResetRequestResult>('/storefront/customer/password/request-reset', { ...options, method: 'POST', body: input }),
+    confirmCustomerPasswordReset: (input: StorefrontCustomerPasswordResetConfirmInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCustomerPasswordResult>('/storefront/customer/password/confirm-reset', { ...options, method: 'POST', body: input }),
     verifyCustomerPassword: (input: StorefrontCustomerPasswordInput, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontCustomerResult>('/storefront/customer/login', { ...options, method: 'POST', body: input }),
     updateCustomerStats: (input: StorefrontCustomerStatsInput, options?: LetbuyyRequestOptions) =>

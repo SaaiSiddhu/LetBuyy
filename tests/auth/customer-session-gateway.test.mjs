@@ -7,6 +7,8 @@ const gatewaySessionMiddleware = readFileSync('services/api-gateway/src/middlewa
 const storefrontRouteSource = readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
 const storefrontGraphQLSource = readFileSync('services/api-gateway/src/graphql/storefront.ts', 'utf8');
 const storefrontApiClientSource = readFileSync('apps/storefront-runtime/src/lib/api/client.ts', 'utf8');
+const storefrontSetPasswordRouteSource = readFileSync('apps/storefront-runtime/src/app/api/customer/set-password/route.ts', 'utf8');
+const customerResetMigrationSource = readFileSync('database/supabase/migrations/077_customer_reset_tokens.sql', 'utf8');
 
 test('auth-core exposes a 30-minute HMAC customer session primitive', () => {
   assert.match(authCoreSessionSource, /LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS = 30 \* 60/);
@@ -60,6 +62,27 @@ test('legacy enumeration routes are internal-signed and do not return password_h
   assert.match(loginBlock, /issueCustomerSession/);
   assert.match(loginBlock, /Set-Cookie/);
   assert.doesNotMatch(loginBlock, /success\(\{ customer: data \}\)/);
+});
+
+test('customer password reset is token-bound and stores only hashed reset intents', () => {
+  assert.match(customerResetMigrationSource, /reset_token_hash text/);
+  assert.match(customerResetMigrationSource, /reset_expires_at timestamp with time zone/);
+  assert.match(customerResetMigrationSource, /reset_used_at timestamp with time zone/);
+  assert.match(customerResetMigrationSource, /ALTER COLUMN password_hash DROP NOT NULL/);
+
+  assert.match(storefrontRouteSource, /router\.post\('\/customer\/password\/request-reset'/);
+  assert.match(storefrontRouteSource, /router\.post\('\/customer\/password\/confirm-reset'/);
+  assert.match(storefrontRouteSource, /hashCustomerPasswordResetToken/);
+  assert.match(storefrontRouteSource, /reset_token_hash: tokenHash/);
+  assert.match(storefrontRouteSource, /reset_used_at: now/);
+  assert.doesNotMatch(storefrontRouteSource, /reset_token:\s*token/);
+
+  assert.match(storefrontSetPasswordRouteSource, /resetToken/);
+  assert.match(storefrontSetPasswordRouteSource, /action === 'request_reset'/);
+  assert.match(storefrontSetPasswordRouteSource, /requestCustomerPasswordReset/);
+  assert.match(storefrontSetPasswordRouteSource, /confirmCustomerPasswordReset/);
+  assert.doesNotMatch(storefrontSetPasswordRouteSource, /setCustomerPassword/);
+  assert.doesNotMatch(storefrontSetPasswordRouteSource, /getCustomerByEmail/);
 });
 
 test('storefront-runtime signs server-only legacy customer lookups', () => {

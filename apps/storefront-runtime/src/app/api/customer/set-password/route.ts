@@ -1,34 +1,46 @@
 // POST /api/customer/set-password — Set first password (guest → registered)
 import { NextRequest, NextResponse } from 'next/server';
-import { setCustomerPassword, getCustomerByEmail } from '@/lib/customer-service';
+import { confirmCustomerPasswordReset, requestCustomerPasswordReset } from '@/lib/customer-service';
 import { createSession } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password, storeId } = await request.json();
+        const { action, email, password, storeId, resetToken, resetUrl } = await request.json();
 
-        if (!email || !password || !storeId) {
+        if (action === 'request_reset') {
+            if (!email || !storeId) {
+                return NextResponse.json(
+                    { error: 'Email and storeId are required' },
+                    { status: 400 }
+                );
+            }
+
+            await requestCustomerPasswordReset(storeId, email, resetUrl);
+            return NextResponse.json({
+                success: true,
+                accepted: true,
+            });
+        }
+
+        if (!email || !password || !storeId || !resetToken) {
             return NextResponse.json(
-                { error: 'Email, password, and storeId are required' },
+                { error: 'Email, password, storeId, and resetToken are required' },
                 { status: 400 }
             );
         }
 
-        if (password.length < 6) {
+        if (password.length < 8) {
             return NextResponse.json(
-                { error: 'Password must be at least 6 characters' },
+                { error: 'Password must be at least 8 characters' },
                 { status: 400 }
             );
         }
 
-        await setCustomerPassword(storeId, email, password);
-
-        // Fetch updated customer and auto-login
-        const customer = await getCustomerByEmail(storeId, email);
+        const customer = await confirmCustomerPasswordReset(storeId, email, resetToken, password);
         if (!customer) {
             return NextResponse.json(
-                { error: 'Customer not found after password set' },
-                { status: 500 }
+                { error: 'Reset token is invalid or expired' },
+                { status: 400 }
             );
         }
 

@@ -93,21 +93,52 @@ export async function checkCustomerStatus(
 }
 
 // ============================================================
-// SET CUSTOMER PASSWORD (First-time password or reset)
+// CUSTOMER PASSWORD RESET
 // ============================================================
+
+export async function requestCustomerPasswordReset(
+    storeId: string,
+    email: string,
+    resetUrl?: string
+): Promise<void> {
+    await createStorefrontApiClient()
+        .storefront
+        .requestCustomerPasswordReset({
+            store_id: storeId,
+            email,
+            reset_url: resetUrl || null,
+        });
+}
+
+export async function confirmCustomerPasswordReset(
+    storeId: string,
+    email: string,
+    token: string,
+    password: string
+): Promise<StoreCustomer | null> {
+    const data = await createStorefrontApiClient()
+        .storefront
+        .confirmCustomerPasswordReset({
+            store_id: storeId,
+            email,
+            token,
+            password,
+        });
+
+    return data.customer ? mapRow(data.customer) : null;
+}
 
 export async function setCustomerPassword(
     storeId: string,
     email: string,
-    password: string
-): Promise<void> {
-    await createStorefrontApiClient()
-        .storefront
-        .setCustomerPassword({
-            store_id: storeId,
-            email,
-            password,
-        });
+    password: string,
+    resetToken?: string
+): Promise<StoreCustomer | null> {
+    if (!resetToken) {
+        throw new Error('Reset token is required to set a customer password');
+    }
+
+    return confirmCustomerPasswordReset(storeId, email, resetToken, password);
 }
 
 // ============================================================

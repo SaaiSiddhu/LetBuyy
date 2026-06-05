@@ -26,7 +26,7 @@ interface CustomerAuthContextType {
 
     // Actions
     login: (email: string, password: string, storeId: string) => Promise<LoginResult>;
-    setPassword: (email: string, password: string, storeId: string) => Promise<LoginResult>;
+    setPassword: (email: string, password: string, storeId: string, resetToken?: string) => Promise<LoginResult>;
     checkEmail: (email: string, storeId: string) => Promise<EmailCheckResult>;
     logout: () => Promise<void>;
     refreshSession: () => Promise<void>;
@@ -138,13 +138,18 @@ export function CustomerAuthProvider({ children }: Props) {
     const setPassword = useCallback(async (
         email: string,
         password: string,
-        sid: string
+        sid: string,
+        resetToken?: string
     ): Promise<LoginResult> => {
+        if (!resetToken) {
+            return { success: false, error: 'Reset link is required to set a password.' };
+        }
+
         try {
             const res = await fetch('/api/customer/set-password', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, storeId: sid }),
+                body: JSON.stringify({ email, password, storeId: sid, resetToken }),
             });
 
             const data = await res.json();

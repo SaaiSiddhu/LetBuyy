@@ -40,6 +40,7 @@ import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adap
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
+import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
 import {
     planCouponValidation,
     storefrontCouponValidationError,
@@ -77,6 +78,8 @@ import { normalizeAppBlockInstance, type AppBlockInstance } from '@letbuyy/app-e
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
+const CUSTOMER_PASSWORD_RESET_TTL_SECONDS = 60 * 60;
+const CUSTOMER_PASSWORD_RESET_TOKEN_BYTES = 32;
 
 router.use('/customer/wishlist', requireCustomerSession);
 router.use('/customer/wishlist/*', requireCustomerSession);
@@ -255,6 +258,9 @@ type CustomerLifecycleBody = {
     phone?: string | null;
     password_hash?: string;
     password?: string;
+    token?: string;
+    reset_token?: string;
+    reset_url?: string | null;
     order_total?: number | string;
     order_id?: string;
 };
@@ -1172,6 +1178,101 @@ function randomCsrfToken(): string {
     const bytes = new Uint8Array(24);
     crypto.getRandomValues(bytes);
     return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+}
+
+function randomUrlSafeToken(byteCount: number): string {
+    const bytes = new Uint8Array(byteCount);
+    crypto.getRandomValues(bytes);
+    let binary = '';
+    for (const byte of bytes) {
+        binary += String.fromCharCode(byte);
+    }
+
+    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+}
+
+function normalizePasswordResetToken(value: string | null | undefined): string | null {
+    const normalized = typeof value === 'string' ? value.trim() : '';
+    if (
+        !normalized ||
+        normalized !== value ||
+        normalized.length < 24 ||
+        normalized.length > 256 ||
+        !/^[A-Za-z0-9._~-]+$/.test(normalized)
+    ) {
+        return null;
+    }
+
+    return normalized;
+}
+
+async function hashCustomerPasswordResetToken(
+    secret: string,
+    storeId: string,
+    email: string,
+    token: string
+): Promise<string> {
+    return hmacSha256Hex(secret, `customer-password-reset.${storeId}.${normalizeEmail(email)}.${token}`);
+}
+
+function customerPasswordResetBaseUrl(c: AppContext): string {
+    return c.env.CUSTOMER_PASSWORD_RESET_URL
+        || c.env.STOREFRONT_BASE_URL
+        || c.env.NEXT_PUBLIC_STOREFRONT_URL
+        || 'https://store.letbuyy.store/account/reset-password';
+}
+
+function customerPasswordResetUrl(c: AppContext, storeId: string, email: string, token: string, requestedUrl?: string | null): string {
+    const base = requestedUrl || customerPasswordResetBaseUrl(c);
+
+    try {
+        const url = new URL(base);
+        if (url.pathname === '/' || !url.pathname) {
+            url.pathname = '/account/reset-password';
+        }
+        url.searchParams.set('store_id', storeId);
+        url.searchParams.set('email', normalizeEmail(email));
+        url.searchParams.set('token', token);
+        return url.toString();
+    } catch {
+        const url = new URL('https://store.letbuyy.store/account/reset-password');
+        url.searchParams.set('store_id', storeId);
+        url.searchParams.set('email', normalizeEmail(email));
+        url.searchParams.set('token', token);
+        return url.toString();
+    }
+}
+
+function isConfiguredResetEmailProvider(c: AppContext): boolean {
+    const apiKey = c.env.RESEND_API_KEY;
+    return Boolean(apiKey && !apiKey.toLowerCase().includes('replace-with') && !apiKey.toLowerCase().includes('placeholder'));
+}
+
+async function sendCustomerPasswordResetEmail(
+    c: AppContext,
+    input: { email: string; fullName?: string | null; resetUrl: string; expiresAt: string }
+): Promise<void> {
+    if (!isConfiguredResetEmailProvider(c)) return;
+
+    const recipientName = input.fullName?.trim() || 'there';
+    const from = c.env.RESEND_FROM_EMAIL || 'LetBuyy <noreply@letbuyy.store>';
+    const subject = 'Reset your LetBuyy store password';
+    const text = [
+        `Hi ${recipientName},`,
+        '',
+        'Use this link to reset your customer account password:',
+        input.resetUrl,
+        '',
+        `This link expires at ${input.expiresAt}. If you did not request it, ignore this email.`,
+    ].join('\n');
+
+    await sendResendEmail({
+        apiKey: c.env.RESEND_API_KEY,
+        from,
+        to: input.email,
+        subject,
+        text,
+    }).catch(() => undefined);
 }
 
 async function insertCustomerActivity(
@@ -3062,6 +3163,181 @@ router.post('/customer/password', async (c) => {
 
     await insertCustomerActivity(c, data.id, body.store_id, 'password_set', {});
     return c.json(success({ customer_id: data.id }));
+});
+
+// POST /storefront/customer/password/request-reset — Create a token-bound reset intent
+router.post('/customer/password/request-reset', async (c) => {
+    const body = await c.req.json() as CustomerLifecycleBody;
+
+    if (!body.store_id || !body.email) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and email are required' } }, 400);
+    }
+
+    if (!c.env.CUSTOMER_SESSION_SECRET) {
+        return c.json(
+            {
+                success: false,
+                error: {
+                    code: 'CUSTOMER_RESET_MISCONFIGURED',
+                    message: 'Customer reset signing is not configured',
+                },
+            },
+            500,
+        );
+    }
+
+    const db = getSupabaseAdmin(c);
+    const email = normalizeEmail(body.email);
+    const { data: customer, error: customerError } = await db
+        .from('store_customers')
+        .select('id, store_id, email, full_name, status')
+        .eq('store_id', body.store_id)
+        .eq('email', email)
+        .maybeSingle<StoreCustomerAuthRow>();
+
+    if (customerError) {
+        return c.json(dbFailureBody(), 500);
+    }
+
+    if (!customer || customer.status === 'disabled') {
+        return c.json(success({ accepted: true }));
+    }
+
+    const token = randomUrlSafeToken(CUSTOMER_PASSWORD_RESET_TOKEN_BYTES);
+    const tokenHash = await hashCustomerPasswordResetToken(c.env.CUSTOMER_SESSION_SECRET, body.store_id, email, token);
+    const expiresAt = new Date(Date.now() + CUSTOMER_PASSWORD_RESET_TTL_SECONDS * 1000).toISOString();
+
+    const { error: credentialError } = await db
+        .from('customer_credentials')
+        .upsert(
+            {
+                store_id: body.store_id,
+                email_or_phone: email,
+                reset_token_hash: tokenHash,
+                reset_expires_at: expiresAt,
+                reset_used_at: null,
+            },
+            { onConflict: 'store_id,email_or_phone' },
+        );
+
+    if (credentialError) {
+        return c.json(dbFailureBody(), 500);
+    }
+
+    await sendCustomerPasswordResetEmail(c, {
+        email,
+        fullName: customer.full_name,
+        resetUrl: customerPasswordResetUrl(c, body.store_id, email, token, body.reset_url),
+        expiresAt,
+    });
+
+    await insertCustomerActivity(c, customer.id, body.store_id, 'password_reset_requested', {});
+    return c.json(success({ accepted: true }));
+});
+
+// POST /storefront/customer/password/confirm-reset — Consume a token-bound reset intent
+router.post('/customer/password/confirm-reset', async (c) => {
+    const body = await c.req.json() as CustomerLifecycleBody;
+    const resetToken = normalizePasswordResetToken(body.token || body.reset_token);
+
+    if (!body.store_id || !body.email || !body.password || !resetToken) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id, email, reset token and password are required' } }, 400);
+    }
+
+    if (body.password.length < 8 || body.password.length > 128) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'Password must be 8 to 128 characters' } }, 400);
+    }
+
+    if (!c.env.CUSTOMER_SESSION_SECRET) {
+        return c.json(
+            {
+                success: false,
+                error: {
+                    code: 'CUSTOMER_RESET_MISCONFIGURED',
+                    message: 'Customer reset signing is not configured',
+                },
+            },
+            500,
+        );
+    }
+
+    const db = getSupabaseAdmin(c);
+    const email = normalizeEmail(body.email);
+    const tokenHash = await hashCustomerPasswordResetToken(c.env.CUSTOMER_SESSION_SECRET, body.store_id, email, resetToken);
+    const now = new Date().toISOString();
+    const { data: credential, error: credentialError } = await db
+        .from('customer_credentials')
+        .select('id')
+        .eq('store_id', body.store_id)
+        .eq('email_or_phone', email)
+        .eq('reset_token_hash', tokenHash)
+        .is('reset_used_at', null)
+        .gt('reset_expires_at', now)
+        .maybeSingle<{ id: string }>();
+
+    if (credentialError) {
+        return c.json(dbFailureBody(), 500);
+    }
+
+    if (!credential) {
+        return c.json({ success: false, error: { code: 'INVALID_RESET_TOKEN', message: 'Reset token is invalid or expired' } }, 400);
+    }
+
+    const passwordHash = await bcrypt.hash(body.password, 10);
+    const { data: customer, error: customerError } = await db
+        .from('store_customers')
+        .update({
+            password_hash: passwordHash,
+            status: 'active',
+        })
+        .eq('store_id', body.store_id)
+        .eq('email', email)
+        .neq('status', 'disabled')
+        .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
+        .single<StoreCustomerAuthRow>();
+
+    if (customerError || !customer) {
+        return c.json({ success: false, error: { code: 'INVALID_RESET_TOKEN', message: 'Reset token is invalid or expired' } }, 400);
+    }
+
+    const { error: consumeError } = await db
+        .from('customer_credentials')
+        .update({
+            password_hash: passwordHash,
+            reset_token_hash: null,
+            reset_used_at: now,
+        })
+        .eq('id', credential.id)
+        .eq('store_id', body.store_id);
+
+    if (consumeError) {
+        return c.json(dbFailureBody(), 500);
+    }
+
+    await insertCustomerActivity(c, customer.id, body.store_id, 'password_reset_completed', {});
+
+    const responseBody = success({ customer: publicCustomerProfile(customer), customer_id: customer.id });
+    const issuedSession = await issueCustomerSession(
+        {
+            storeId: body.store_id,
+            customerId: customer.id,
+        },
+        c.env.CUSTOMER_SESSION_SECRET,
+    );
+    const csrfToken = randomCsrfToken();
+    const response = c.json(responseBody);
+    response.headers.append(
+        'Set-Cookie',
+        buildCookie(LETBUYY_CUSTOMER_SESSION_COOKIE, issuedSession.token, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, {
+            httpOnly: true,
+        }),
+    );
+    response.headers.append(
+        'Set-Cookie',
+        buildCookie('letbuyy_csrf', csrfToken, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS),
+    );
+    response.headers.set('X-CSRF-Token', csrfToken);
+    return response;
 });
 
 // GET /storefront/customer/by-email — Sessionless customer lookup scoped to a store
