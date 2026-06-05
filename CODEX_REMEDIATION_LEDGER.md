@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 4 — P2 Performance.
-- Current work item: P2-2 product view-counter de-hot.
+- Current work item: P2-4 keyset pagination / drop exact counts.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -278,6 +278,19 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
 
+### P2-2 — Product view-counter de-hot
+
+- Removed the `ProductExecutionAdapter.recordStorefrontView` read-modify-write path that updated `products.view_count` on product detail loads.
+- Product detail cache misses now enqueue sampled `product.viewed` analytics events to `ANALYTICS_QUEUE` through `waitUntil`; cache hits do not execute the producer and do not enqueue/write.
+- Added rollbackable `STOREFRONT_VIEW_SAMPLE_RATE`, defaulting to `0.1` in default, staging, and production Worker vars.
+- Event payloads carry `sample_rate` and `sample_weight` for later projection/rollup weighting without blocking storefront rendering.
+
+Evidence:
+- `node --test tests/performance/product-view-counter.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs` — PASS, 12/12 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -352,6 +365,10 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after Hyperdrive pooled SQL route changes and artifact cleanup.
 - `git diff --check` — PASS after Hyperdrive pooled SQL route changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after Hyperdrive pooled SQL route changes and generated artifact cleanup.
+- `node --test tests/performance/product-view-counter.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs` — PASS, 12/12 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after product view-counter de-hot.
+- `git diff --check` — PASS after product view-counter de-hot.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after product view-counter de-hot.
 
 ## SKIPPED — NEEDS HUMAN
 

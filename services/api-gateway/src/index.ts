@@ -100,6 +100,7 @@ export interface Env {
     FEATURE_LIQUID?: string;
     STOREFRONT_CACHE?: string;
     STOREFRONT_POOLED_SQL?: string;
+    STOREFRONT_VIEW_SAMPLE_RATE?: string;
     REQUEST_LOG_SAMPLE_RATE?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;

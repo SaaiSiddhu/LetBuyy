@@ -25,11 +25,6 @@ interface OwnedProductRow {
     price?: number | string | null;
 }
 
-interface ProductViewCounterRow {
-    id: string;
-    view_count?: number | null;
-}
-
 export class ProductExecutionAdapter {
     static readonly applicationWorkflows = COMMERCE_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = COMMERCE_EXECUTION_PIPELINES;
@@ -218,32 +213,6 @@ export class ProductExecutionAdapter {
             }
         }
         return { affected: data?.length || 0, action, products: ownedProducts };
-    }
-
-    /**
-     * Record a storefront product view from the worker runtime.
-     * This intentionally remains best-effort because product rendering must not
-     * fail if analytics counters cannot be updated.
-     */
-    async recordStorefrontView(product: ProductViewCounterRow) {
-        const nextViewCount = Number(product.view_count || 0) + 1;
-        const { error } = await this.db
-            .from('products')
-            .update({ view_count: nextViewCount })
-            .eq('id', product.id);
-
-        if (error) {
-            const text = [error.message, error.details, error.hint].filter(Boolean).join(' ').toLowerCase();
-            if (text.includes('view_count') && (
-                text.includes('does not exist') ||
-                text.includes('schema cache') ||
-                text.includes('could not find')
-            )) {
-                return;
-            }
-
-            throw new Error(`Product view counter update failed: ${error.message}`);
-        }
     }
 
     private async assertStoreOwnership(

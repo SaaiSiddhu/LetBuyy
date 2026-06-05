@@ -90,6 +90,7 @@ type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
 const CUSTOMER_PASSWORD_RESET_TTL_SECONDS = 60 * 60;
 const CUSTOMER_PASSWORD_RESET_TOKEN_BYTES = 32;
+const DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE = 0.1;
 
 function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
     return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
@@ -240,7 +241,7 @@ type ThemeEditorDraftRow = {
 
 type StorefrontProductDetail = {
     id: string;
-    view_count?: number | null;
+    slug?: string | null;
 };
 
 type RazorpayOrderResponse = {
@@ -455,6 +456,70 @@ async function listPublicProductReviews(c: AppContext) {
 
 function getRequestId(c: AppContext): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function storefrontViewSampleRate(value: string | undefined): number {
+    const parsed = Number(value ?? DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE);
+    if (!Number.isFinite(parsed)) return DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE;
+    return Math.min(1, Math.max(0, parsed));
+}
+
+function shouldSampleStorefrontView(rate: number): boolean {
+    if (rate <= 0) return false;
+    if (rate >= 1) return true;
+    const random = new Uint32Array(1);
+    crypto.getRandomValues(random);
+    return (random[0] || 0) / 0xffffffff < rate;
+}
+
+function emitProductViewedEvent(
+    c: AppContext,
+    input: {
+        storeId: string;
+        product: StorefrontProductDetail;
+    },
+): void {
+    const queue = c.env.ANALYTICS_QUEUE;
+    if (!queue) return;
+
+    const sampleRate = storefrontViewSampleRate(c.env.STOREFRONT_VIEW_SAMPLE_RATE);
+    if (!shouldSampleStorefrontView(sampleRate)) return;
+
+    const requestId = getRequestId(c);
+    const occurredAt = new Date().toISOString();
+    const eventId = `product.viewed:${input.storeId}:${input.product.id}:${crypto.randomUUID()}`;
+    const sampleWeight = sampleRate > 0 ? Math.round(1 / sampleRate) : 0;
+
+    c.executionCtx.waitUntil(queue.send({
+        messageId: eventId,
+        queueName: 'analytics-events',
+        jobType: 'product.viewed',
+        siteId: input.storeId,
+        idempotencyKey: eventId,
+        requestId,
+        correlationId: requestId,
+        payload: {
+            id: eventId,
+            type: 'product.viewed',
+            site_id: input.storeId,
+            aggregate: {
+                type: 'product',
+                id: input.product.id,
+            },
+            occurred_at: occurredAt,
+            request_id: requestId,
+            idempotency_key: eventId,
+            schema_version: 1,
+            payload: {
+                product_id: input.product.id,
+                product_slug: input.product.slug || undefined,
+                sample_rate: sampleRate,
+                sample_weight: sampleWeight,
+                source: 'storefront-runtime',
+            },
+        },
+        attempts: 0,
+    }).then(() => undefined, () => undefined));
 }
 
 function requestedAmountMinorUnits(input: { amount?: number; amountMinorUnits?: number }): number | null {
@@ -3140,7 +3205,10 @@ router.get('/:subdomain/products/:slug', async (c) => {
                 body: { success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } },
             };
         }
-        await new ProductExecutionAdapter(db).recordStorefrontView(data as StorefrontProductDetail);
+        emitProductViewedEvent(c, {
+            storeId: store.id,
+            product: data as StorefrontProductDetail,
+        });
         return {
             body: success(data),
             tags: storefrontCacheTags(store.id, handle, 'storefront:products', `storefront:product:${identifier}`),
