@@ -2,15 +2,34 @@ import { z } from 'zod';
 
 export const THEME_BUNDLE_SCHEMA_VERSION = '2026-05-json-contract';
 export const THEME_BUNDLE_RENDERER_VERSION = '1.0.0';
+export const THEME_LIQUID_BUNDLE_SCHEMA_VERSION = '2026-06-liquid-sections';
+export const THEME_LIQUID_RENDERER_VERSION = '0.1.0';
 
 export const THEME_BUNDLE_PATHS = {
+  layout: 'layout/theme.liquid',
   settingsSchema: 'config/settings_schema.json',
   settingsData: 'config/settings_data.json',
   templates: 'templates/*.json',
   sections: 'sections/manifest.json',
+  liquidSections: 'sections/*.liquid',
   blocks: 'blocks/definitions.json',
+  liquidBlocks: 'blocks/*.liquid',
   locales: 'locales/*.json',
 } as const;
+
+export const LIQUID_THEME_BUNDLE_PATHS = {
+  layout: 'layout/theme.liquid',
+  settingsSchema: 'config/settings_schema.json',
+  settingsData: 'config/settings_data.json',
+  templates: 'templates/*.json',
+  sections: 'sections/*.liquid',
+  blocks: 'blocks/*.liquid',
+  locales: 'locales/*.json',
+} as const;
+
+const MAX_LIQUID_TEMPLATE_BYTES = 200_000;
+const LIQUID_SECTION_PATH_PATTERN = /^sections\/[a-z0-9]+(?:[-_][a-z0-9]+)*\.liquid$/;
+const LIQUID_BLOCK_PATH_PATTERN = /^blocks\/[a-z0-9]+(?:[-_][a-z0-9]+)*\.liquid$/;
 
 export type ThemeBundleJson =
   | string
@@ -46,6 +65,126 @@ export const ThemeBundleSettingFieldSchema = z.object({
   step: z.number().positive().optional(),
   unit: z.string().max(24).optional(),
   maxLength: z.number().int().positive().optional(),
+}).strict();
+
+export const ThemeLiquidSourceSchema = z.string()
+  .min(1)
+  .max(MAX_LIQUID_TEMPLATE_BYTES)
+  .superRefine((source, ctx) => {
+    const normalized = source.toLowerCase();
+    const forbiddenFragments = [
+      '<script',
+      '</script',
+      'javascript:',
+      'data:text/html',
+      '{% include',
+      '{% layout',
+    ];
+
+    for (const fragment of forbiddenFragments) {
+      if (normalized.includes(fragment)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: `Liquid source contains forbidden fragment "${fragment}"`,
+        });
+      }
+    }
+  });
+
+export const ThemeLiquidSchemaSettingFieldSchema = ThemeBundleSettingFieldSchema.extend({
+  id: z.string().min(1).max(120).regex(/^[a-zA-Z][a-zA-Z0-9_:-]*$/),
+}).strict();
+
+export const ThemeLiquidSectionInlineBlockSchema = z.object({
+  type: z.string().min(1).max(120),
+  name: z.string().min(1).max(120),
+  limit: z.number().int().positive().optional(),
+  settings: z.array(ThemeLiquidSchemaSettingFieldSchema).max(100).default([]),
+}).strict();
+
+export const ThemeLiquidAppBlockSchema = z.object({
+  type: z.literal('@app'),
+  name: z.string().min(1).max(120).default('App block'),
+  limit: z.number().int().positive().optional(),
+}).strict();
+
+export const ThemeLiquidPresetBlockSchema = z.object({
+  type: z.string().min(1).max(120),
+  settings: ThemeBundleJsonObjectSchema.default({}),
+}).strict();
+
+export const ThemeLiquidPresetSchema = z.object({
+  name: z.string().min(1).max(120),
+  category: z.string().max(120).optional(),
+  settings: ThemeBundleJsonObjectSchema.default({}),
+  blocks: z.array(ThemeLiquidPresetBlockSchema).max(100).default([]),
+}).strict();
+
+export const ThemeLiquidSectionSchema = z.object({
+  name: z.string().min(1).max(120),
+  tag: z.string().min(1).max(40).default('section'),
+  class: z.string().max(200).optional(),
+  settings: z.array(ThemeLiquidSchemaSettingFieldSchema).max(100).default([]),
+  blocks: z.array(z.union([ThemeLiquidSectionInlineBlockSchema, ThemeLiquidAppBlockSchema])).max(100).default([]),
+  presets: z.array(ThemeLiquidPresetSchema).max(50).default([]),
+  enabled_on: z.object({
+    templates: z.array(z.string().min(1).max(120)).max(100).default(['*']),
+  }).default({ templates: ['*'] }),
+  disabled_on: z.object({
+    templates: z.array(z.string().min(1).max(120)).max(100).default([]),
+  }).default({ templates: [] }),
+}).strict();
+
+export const ThemeLiquidReusableBlockSchema = z.object({
+  name: z.string().min(1).max(120),
+  settings: z.array(ThemeLiquidSchemaSettingFieldSchema).max(100).default([]),
+  presets: z.array(ThemeLiquidPresetSchema).max(50).default([]),
+}).strict();
+
+function containsLiquidSchemaBlock(source: string): boolean {
+  return /\{%\s*schema\s*%\}/i.test(source) && /\{%\s*endschema\s*%\}/i.test(source);
+}
+
+function liquidFileTypeFromPath(path: string): string {
+  const fileName = path.split('/').pop() || '';
+  return fileName.replace(/\.liquid$/i, '');
+}
+
+export const ThemeLiquidLayoutFileSchema = z.object({
+  path: z.literal(LIQUID_THEME_BUNDLE_PATHS.layout).default(LIQUID_THEME_BUNDLE_PATHS.layout),
+  source: ThemeLiquidSourceSchema,
+}).strict();
+
+export const ThemeLiquidSectionFileSchema = z.object({
+  path: z.string().regex(LIQUID_SECTION_PATH_PATTERN),
+  source: ThemeLiquidSourceSchema,
+  schema: ThemeLiquidSectionSchema,
+}).strict().superRefine((section, ctx) => {
+  if (!containsLiquidSchemaBlock(section.source)) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ['source'],
+      message: 'Liquid section files must include {% schema %} and {% endschema %} blocks',
+    });
+  }
+});
+
+export const ThemeLiquidBlockFileSchema = z.object({
+  path: z.string().regex(LIQUID_BLOCK_PATH_PATTERN),
+  source: ThemeLiquidSourceSchema,
+  schema: ThemeLiquidReusableBlockSchema,
+}).strict();
+
+export const ThemeLiquidRendererManifestSchema = z.object({
+  engine: z.literal('liquid').default('liquid'),
+  renderer_version: z.string().min(1).max(40).default(THEME_LIQUID_RENDERER_VERSION),
+  liquid_ready: z.literal(true).default(true),
+  assets: z.record(z.string(), z.object({
+    type: z.enum(['stylesheet', 'script', 'font', 'image', 'media', 'json', 'other']),
+    path: z.string().min(1).max(500),
+    content_type: z.string().max(120).optional(),
+    checksum: z.string().max(160).optional(),
+  }).strict()).default({}),
 }).strict();
 
 export const ThemeBundleSettingsGroupSchema = z.object({
@@ -252,19 +391,119 @@ export const ThemePackageBundleSchema = z.object({
   }
 });
 
+function liquidSectionAcceptedBlockTypes(section: z.infer<typeof ThemeLiquidSectionFileSchema>): Set<string> {
+  return new Set(section.schema.blocks.map((block) => block.type));
+}
+
+function isLiquidAppBlockType(blockType: string): boolean {
+  return blockType === '@app' || blockType.startsWith('app:');
+}
+
+export const LiquidThemePackageBundleSchema = z.object({
+  schema_version: z.string().min(1).max(40).default(THEME_LIQUID_BUNDLE_SCHEMA_VERSION),
+  package: ThemeBundlePackageMetadataSchema.extend({
+    compatibility_range: z.string().min(1).max(120).default(`>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`),
+  }).strict(),
+  layout: z.object({
+    theme: ThemeLiquidLayoutFileSchema,
+  }).strict(),
+  config: z.object({
+    settings_schema: ThemeBundleSettingsSchema,
+    settings_data: ThemeBundleSettingsDataSchema.default({ current: {}, presets: {} }),
+  }).strict(),
+  templates: z.record(z.string(), ThemeBundleTemplateSchema).default({}),
+  sections: z.record(z.string(), ThemeLiquidSectionFileSchema).default({}),
+  blocks: z.record(z.string(), ThemeLiquidBlockFileSchema).default({}),
+  locales: z.record(z.string(), ThemeBundleLocaleSchema).default({}),
+  renderer: ThemeLiquidRendererManifestSchema.default({
+    engine: 'liquid',
+    renderer_version: THEME_LIQUID_RENDERER_VERSION,
+    liquid_ready: true,
+    assets: {},
+  }),
+}).strict().superRefine((bundle, ctx) => {
+  for (const [sectionType, section] of Object.entries(bundle.sections)) {
+    const fileType = liquidFileTypeFromPath(section.path);
+    if (fileType !== sectionType) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['sections', sectionType, 'path'],
+        message: `Liquid section key "${sectionType}" must match file path type "${fileType}"`,
+      });
+    }
+  }
+
+  for (const [blockType, block] of Object.entries(bundle.blocks)) {
+    const fileType = liquidFileTypeFromPath(block.path);
+    if (fileType !== blockType) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['blocks', blockType, 'path'],
+        message: `Liquid block key "${blockType}" must match file path type "${fileType}"`,
+      });
+    }
+  }
+
+  for (const [templateKey, template] of Object.entries(bundle.templates)) {
+    for (const [sectionId, section] of Object.entries(template.sections)) {
+      const sectionDefinition = bundle.sections[section.type];
+      if (!sectionDefinition) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ['templates', templateKey, 'sections', sectionId, 'type'],
+          message: `Liquid template "${templateKey}" references missing section file "${section.type}"`,
+        });
+        continue;
+      }
+
+      const acceptedBlockTypes = liquidSectionAcceptedBlockTypes(sectionDefinition);
+      for (const [blockId, block] of Object.entries(section.blocks)) {
+        const appBlockAllowed = isLiquidAppBlockType(block.type) && acceptedBlockTypes.has('@app');
+        const reusableBlockAllowed = Boolean(bundle.blocks[block.type]);
+        const inlineBlockAllowed = acceptedBlockTypes.has(block.type);
+
+        if (!appBlockAllowed && !reusableBlockAllowed && !inlineBlockAllowed) {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            path: ['templates', templateKey, 'sections', sectionId, 'blocks', blockId, 'type'],
+            message: `Block "${block.type}" is not allowed in liquid section "${section.type}"`,
+          });
+        }
+      }
+    }
+  }
+});
+
+export const PortableThemePackageBundleSchema = z.union([
+  ThemePackageBundleSchema,
+  LiquidThemePackageBundleSchema,
+]);
+
 export const UploadThemePackageSchema = z.object({
   bundle: ThemePackageBundleSchema,
   submission_mode: z.enum(['marketplace', 'private_install']).default('marketplace'),
 }).strict();
 
+export const UploadPortableThemePackageSchema = z.object({
+  bundle: PortableThemePackageBundleSchema,
+  submission_mode: z.enum(['marketplace', 'private_install']).default('marketplace'),
+}).strict();
+
 export type ThemeBundle = z.infer<typeof ThemePackageBundleSchema>;
 export type ThemePackageBundle = z.infer<typeof ThemePackageBundleSchema>;
+export type LiquidThemePackageBundle = z.infer<typeof LiquidThemePackageBundleSchema>;
+export type PortableThemePackageBundle = z.infer<typeof PortableThemePackageBundleSchema>;
 export type UploadThemePackageInput = z.infer<typeof UploadThemePackageSchema>;
+export type UploadPortableThemePackageInput = z.infer<typeof UploadPortableThemePackageSchema>;
 export type ThemeBundleTemplate = z.infer<typeof ThemeBundleTemplateSchema>;
 export type ThemeBundleTemplateSection = z.infer<typeof ThemeBundleTemplateSectionSchema>;
 export type ThemeBundleTemplateBlock = z.infer<typeof ThemeBundleTemplateBlockSchema>;
 export type ThemeBundleSectionDefinition = z.infer<typeof ThemeBundleSectionDefinitionSchema>;
 export type ThemeBundleBlockDefinition = z.infer<typeof ThemeBundleBlockDefinitionSchema>;
+export type ThemeLiquidSectionFile = z.infer<typeof ThemeLiquidSectionFileSchema>;
+export type ThemeLiquidBlockFile = z.infer<typeof ThemeLiquidBlockFileSchema>;
+export type ThemeLiquidSectionDefinition = z.infer<typeof ThemeLiquidSectionSchema>;
+export type ThemeLiquidBlockDefinition = z.infer<typeof ThemeLiquidReusableBlockSchema>;
 export type ThemeBundleSettingsSchemaDefinition = z.infer<typeof ThemeBundleSettingsSchema>;
 export type ThemeBundleSettingsData = z.infer<typeof ThemeBundleSettingsDataSchema>;
 export type ThemeBundleLocale = z.infer<typeof ThemeBundleLocaleSchema>;
@@ -447,6 +686,14 @@ export function parseThemePackageBundle(input: unknown): ThemePackageBundle {
   return ThemePackageBundleSchema.parse(input);
 }
 
+export function parseLiquidThemePackageBundle(input: unknown): LiquidThemePackageBundle {
+  return LiquidThemePackageBundleSchema.parse(input);
+}
+
+export function parsePortableThemePackageBundle(input: unknown): PortableThemePackageBundle {
+  return PortableThemePackageBundleSchema.parse(input);
+}
+
 export function validateThemeBundle(input: unknown): ThemeBundleValidationResult {
   const result = ThemePackageBundleSchema.safeParse(input);
   if (result.success) {
@@ -465,6 +712,13 @@ export function validateThemeBundle(input: unknown): ThemeBundleValidationResult
 
 export function collectThemePackageBundleIssues(input: unknown): string[] {
   const result = ThemePackageBundleSchema.safeParse(input);
+  if (result.success) return [];
+
+  return formatThemeBundleIssues(result.error.issues);
+}
+
+export function collectLiquidThemePackageBundleIssues(input: unknown): string[] {
+  const result = LiquidThemePackageBundleSchema.safeParse(input);
   if (result.success) return [];
 
   return formatThemeBundleIssues(result.error.issues);
@@ -666,6 +920,190 @@ export function createMinimalThemeBundleFixture(): ThemeBundle {
           cart: 'ಕಾರ್ಟ್',
         },
       },
+    },
+  });
+}
+
+export function createMinimalLiquidThemeBundleFixture(): LiquidThemePackageBundle {
+  return parseLiquidThemePackageBundle({
+    schema_version: THEME_LIQUID_BUNDLE_SCHEMA_VERSION,
+    package: {
+      slug: 'liquid-starter',
+      name: 'Liquid Starter',
+      description: 'Minimal portable Liquid storefront theme.',
+      version: '1.0.0',
+      compatibility_range: `>=${THEME_LIQUID_BUNDLE_SCHEMA_VERSION}`,
+    },
+    layout: {
+      theme: {
+        path: LIQUID_THEME_BUNDLE_PATHS.layout,
+        source: [
+          '<!doctype html>',
+          '<html lang="{{ request.locale | default: "en" }}">',
+          '<head>',
+          '  <meta charset="utf-8">',
+          '  <title>{{ shop.name }}</title>',
+          '  {{ content_for_header }}',
+          '</head>',
+          '<body>',
+          '  {{ content_for_layout }}',
+          '  {{ content_for_footer }}',
+          '</body>',
+          '</html>',
+        ].join('\n'),
+      },
+    },
+    config: {
+      settings_schema: {
+        settings: {
+          colors: {
+            label: 'Colors',
+            description: 'Primary storefront color settings.',
+            fields: {
+              primaryColor: {
+                type: 'color',
+                label: 'Primary color',
+                default: '#00B3B3',
+              },
+            },
+          },
+        },
+      },
+      settings_data: {
+        current: {
+          primaryColor: '#00B3B3',
+        },
+      },
+    },
+    templates: {
+      index: {
+        name: 'Home page',
+        layout: 'theme',
+        sections: {
+          spotlight: {
+            type: 'spotlight',
+            settings: {
+              heading: 'A portable Liquid storefront',
+              subheading: 'This section is interpreted from theme bundle files.',
+            },
+            blocks: {
+              first_badge: {
+                type: 'badge',
+                settings: {
+                  label: 'Zero storefront code change',
+                },
+              },
+              app_offer: {
+                type: '@app',
+                settings: {
+                  extension_handle: 'demo-offer',
+                },
+              },
+            },
+            block_order: ['first_badge', 'app_offer'],
+          },
+        },
+        order: ['spotlight'],
+      },
+    },
+    sections: {
+      spotlight: {
+        path: 'sections/spotlight.liquid',
+        source: [
+          '<section class="lb-spotlight" data-section-id="{{ section.id }}">',
+          '  <p>{{ section.settings.subheading }}</p>',
+          '  <h1>{{ section.settings.heading }}</h1>',
+          '  <div class="lb-spotlight__blocks">',
+          '    {% for block in section.blocks %}',
+          '      {{ block.content }}',
+          '    {% endfor %}',
+          '  </div>',
+          '</section>',
+          '{% schema %}',
+          '{',
+          '  "name": "Spotlight",',
+          '  "settings": [',
+          '    { "id": "heading", "type": "text", "label": "Heading", "default": "A portable Liquid storefront" },',
+          '    { "id": "subheading", "type": "text", "label": "Subheading", "default": "Rendered from bundle files" }',
+          '  ],',
+          '  "blocks": [',
+          '    { "type": "badge", "name": "Badge", "settings": [{ "id": "label", "type": "text", "label": "Label" }] },',
+          '    { "type": "@app", "name": "App block" }',
+          '  ],',
+          '  "presets": [{ "name": "Spotlight" }]',
+          '}',
+          '{% endschema %}',
+        ].join('\n'),
+        schema: {
+          name: 'Spotlight',
+          settings: [
+            {
+              id: 'heading',
+              type: 'text',
+              label: 'Heading',
+              default: 'A portable Liquid storefront',
+            },
+            {
+              id: 'subheading',
+              type: 'text',
+              label: 'Subheading',
+              default: 'Rendered from bundle files',
+            },
+          ],
+          blocks: [
+            {
+              type: 'badge',
+              name: 'Badge',
+              settings: [
+                {
+                  id: 'label',
+                  type: 'text',
+                  label: 'Label',
+                },
+              ],
+            },
+            {
+              type: '@app',
+              name: 'App block',
+            },
+          ],
+          presets: [
+            {
+              name: 'Spotlight',
+            },
+          ],
+        },
+      },
+    },
+    blocks: {
+      badge: {
+        path: 'blocks/badge.liquid',
+        source: '<span class="lb-badge" data-block-id="{{ block.id }}">{{ block.settings.label }}</span>',
+        schema: {
+          name: 'Badge',
+          settings: [
+            {
+              id: 'label',
+              type: 'text',
+              label: 'Label',
+              default: 'Portable block',
+            },
+          ],
+        },
+      },
+    },
+    locales: {
+      en: {
+        general: {
+          cart: 'Cart',
+        },
+      },
+    },
+    renderer: {
+      engine: 'liquid',
+      renderer_version: THEME_LIQUID_RENDERER_VERSION,
+      liquid_ready: true,
+      assets: {},
     },
   });
 }
