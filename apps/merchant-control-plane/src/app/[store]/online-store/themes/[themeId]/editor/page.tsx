@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import {
     ArrowLeft,
     Blocks,
@@ -13,7 +13,6 @@ import {
     Eye,
     FileJson,
     GripVertical,
-    ImageIcon,
     Laptop,
     Layers3,
     Loader2,
@@ -24,9 +23,7 @@ import {
     Redo2,
     Rocket,
     Save,
-    Search,
     Settings,
-    ShoppingBag,
     Smartphone,
     Sparkles,
     Tablet,
@@ -43,6 +40,7 @@ import {
     hasRenderableThemeTemplate,
 } from '@letbuyy/theme-engine'
 import SchemaFormRenderer from '@/components/theme-editor/SchemaFormRenderer'
+import CenterPanel from '@/components/theme-editor/CenterPanel'
 import type { BlockSchema, SchemaField, SectionSchema, ThemeSettingsGroup, ThemeSettingsSchema } from '@/lib/theme-schemas'
 
 type JsonRecord = Record<string, unknown>
@@ -188,17 +186,6 @@ const FIELD_TYPES = new Set([
     'radio',
 ])
 
-const PREVIEW_PRODUCTS = [
-    { name: 'Runner Low', price: '₹2,499', tone: 'purple' },
-    { name: 'Canvas Overshirt', price: '₹1,899', tone: 'blue' },
-    { name: 'Daily Cargo', price: '₹2,199', tone: 'amber' },
-    { name: 'Street Tote', price: '₹999', tone: 'dark' },
-    { name: 'Stack Hoodie', price: '₹2,799', tone: 'green' },
-    { name: 'Court Sneaker', price: '₹3,499', tone: 'red' },
-    { name: 'Logo Cap', price: '₹699', tone: 'slate' },
-    { name: 'Rib Socks', price: '₹299', tone: 'violet' },
-]
-
 function asRecord(value: unknown): JsonRecord {
     return value && typeof value === 'object' && !Array.isArray(value)
         ? (value as JsonRecord)
@@ -213,10 +200,6 @@ function numberValue(value: unknown, fallback = 0): number {
     if (typeof value === 'number' && Number.isFinite(value)) return value
     const parsed = Number(value)
     return Number.isFinite(parsed) ? parsed : fallback
-}
-
-function booleanValue(value: unknown, fallback = false): boolean {
-    return typeof value === 'boolean' ? value : fallback
 }
 
 function optionalString(value: unknown): string | undefined {
@@ -719,15 +702,6 @@ function releaseDate(release: ReleaseEntry): string {
     return new Date(release.published_at).toLocaleString()
 }
 
-function getPreviewText(settings: JsonRecord, key: string, fallback: string): string {
-    return stringValue(settings[key], fallback)
-}
-
-function getPreviewColor(settings: JsonRecord, key: string, fallback: string): string {
-    const value = stringValue(settings[key])
-    return value.startsWith('#') ? value : fallback
-}
-
 function ThemeEditorInner() {
     const params = useParams()
     const store = params?.store as string
@@ -760,6 +734,10 @@ function ThemeEditorInner() {
     const [savedAt, setSavedAt] = useState<string | null>(null)
     const [currentReleaseVersion, setCurrentReleaseVersion] = useState<number | null>(null)
     const [releases, setReleases] = useState<ReleaseEntry[]>([])
+    const [previewToken, setPreviewToken] = useState<string | null>(null)
+    const [previewError, setPreviewError] = useState<string | null>(null)
+    const [isPreviewRefreshing, setIsPreviewRefreshing] = useState(false)
+    const previewRequestCounter = useRef(0)
 
     const canUndo = history.past.length > 0
     const canRedo = history.future.length > 0
@@ -800,6 +778,7 @@ function ThemeEditorInner() {
     const activeAddSectionType = addSectionType || addableSections[0]?.type || ''
     const activeDevice = PREVIEW_DEVICES.find((device) => device.value === previewDevice) || PREVIEW_DEVICES[0]
     const selectedTemplate = templateOptions.find((option) => option.key === selectedTemplateKey) || templateOptions[0] || DEFAULT_TEMPLATE_OPTIONS[0]
+    const selectedPreviewSectionId = selection.kind === 'theme' ? null : selection.sectionId
 
     const applyChange = useCallback((updater: (current: EditorState) => EditorState) => {
         setEditorState((current) => {
@@ -982,6 +961,74 @@ function ThemeEditorInner() {
         setHistory({ past: [], future: [] })
         setIsDirty(false)
     }, [baseConfig, draftVersion, editorState, selectedTemplateKey, store, themeId])
+
+    const syncPreviewDraft = useCallback(async () => {
+        if (!store || !themeId) return
+
+        const requestId = previewRequestCounter.current + 1
+        previewRequestCounter.current = requestId
+        setIsPreviewRefreshing(true)
+        setPreviewError(null)
+
+        try {
+            const draftConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
+            const draftRes = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey }),
+            })
+            const draftPayload = await draftRes.json().catch(() => ({}))
+            if (!draftRes.ok) {
+                const errorRecord = asRecord(asRecord(draftPayload).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(draftPayload).error, draftRes.statusText)))
+            }
+
+            const sessionRes = await fetch(`/api/themes/${themeId}/preview-session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    store_name: store,
+                    ttl_seconds: 900,
+                    templateKey: selectedTemplateKey,
+                }),
+            })
+            const sessionPayload = await sessionRes.json().catch(() => ({}))
+            if (!sessionRes.ok) {
+                const errorRecord = asRecord(asRecord(sessionPayload).error)
+                throw new Error(stringValue(errorRecord.message, stringValue(asRecord(sessionPayload).error, sessionRes.statusText)))
+            }
+
+            const sessionData = asRecord(asRecord(sessionPayload).data)
+            const nextPreviewToken = stringValue(sessionData.preview_token)
+            if (!nextPreviewToken) throw new Error('Preview session did not return a token.')
+            if (previewRequestCounter.current !== requestId) return
+
+            setPreviewToken(nextPreviewToken)
+            setPreviewError(null)
+            if (typeof asRecord(draftPayload).version === 'number') {
+                setDraftVersion(asRecord(draftPayload).version as number)
+            }
+            const nextSavedAt = stringValue(asRecord(draftPayload).savedAt)
+            if (nextSavedAt) setSavedAt(nextSavedAt)
+        } catch (err) {
+            if (previewRequestCounter.current !== requestId) return
+            setPreviewError(err instanceof Error ? err.message : 'Unable to refresh the storefront preview.')
+        } finally {
+            if (previewRequestCounter.current === requestId) {
+                setIsPreviewRefreshing(false)
+            }
+        }
+    }, [baseConfig, editorState, selectedTemplateKey, store, themeId])
+
+    useEffect(() => {
+        if (isLoading || loadError || !store || !themeId) return
+
+        const timeout = window.setTimeout(() => {
+            void syncPreviewDraft()
+        }, isDirty ? 900 : 0)
+
+        return () => window.clearTimeout(timeout)
+    }, [isDirty, isLoading, loadError, store, syncPreviewDraft, themeId])
 
     const handleSave = useCallback(async () => {
         if (!store || !themeId || isSaving) return
@@ -1398,13 +1445,14 @@ function ThemeEditorInner() {
                     </div>
 
                     <div className="theme-os-preview-panel__canvas">
-                        <PreviewCanvas
-                            state={editorState}
-                            sectionSchemas={sectionSchemas}
-                            selection={selection}
+                        <CenterPanel
                             storeName={store}
-                            device={previewDevice}
-                            onSelect={setSelection}
+                            viewport={previewDevice}
+                            previewToken={previewToken}
+                            previewError={previewError}
+                            isPreviewRefreshing={isPreviewRefreshing}
+                            selectedSectionId={selectedPreviewSectionId}
+                            onSelectSection={(sectionId) => setSelection({ kind: 'section', sectionId })}
                         />
                     </div>
                 </section>
@@ -1836,391 +1884,6 @@ function PropertyPanel({
                 ) : null}
             </div>
         </aside>
-    )
-}
-
-function PreviewCanvas({
-    state,
-    sectionSchemas,
-    selection,
-    storeName,
-    device,
-    onSelect,
-}: {
-    state: EditorState
-    sectionSchemas: Record<string, SectionSchema>
-    selection: EditorSelection
-    storeName: string
-    device: PreviewDevice
-    onSelect: (selection: EditorSelection) => void
-}) {
-    const previewStyle = {
-        '--theme-primary': stringValue(state.themeSettings.primaryColor, '#8B5CF6'),
-        '--theme-secondary': stringValue(state.themeSettings.secondaryColor, '#3B82F6'),
-        '--theme-accent': stringValue(state.themeSettings.accentColor, '#F59E0B'),
-        '--theme-bg': stringValue(state.themeSettings.backgroundColor, '#FFFFFF'),
-        '--theme-text': stringValue(state.themeSettings.textColor, '#111827'),
-        '--theme-surface': stringValue(state.themeSettings.surfaceColor, '#F8FAFC'),
-        '--theme-radius': `${numberValue(state.themeSettings.borderRadius, 12)}px`,
-        '--theme-body-font': stringValue(state.themeSettings.fontFamily, 'Inter'),
-        '--theme-heading-font': stringValue(state.themeSettings.headingFontFamily, 'Inter'),
-    } as CSSProperties
-
-    return (
-        <div className={`theme-os-preview-shell theme-os-preview-shell--${device}`}>
-            <div className="theme-os-preview" style={previewStyle}>
-                {state.sections.header ? (
-                    <PreviewSectionShell
-                        section={state.sections.header}
-                        schema={sectionSchemas[state.sections.header.type]}
-                        selection={selection}
-                        onSelect={onSelect}
-                    >
-                        <RenderHeader section={state.sections.header} storeName={storeName} onSelect={onSelect} />
-                    </PreviewSectionShell>
-                ) : null}
-                {state.sections.template.filter((section) => section.visible).map((section) => (
-                    <PreviewSectionShell
-                        key={section.id}
-                        section={section}
-                        schema={sectionSchemas[section.type]}
-                        selection={selection}
-                        onSelect={onSelect}
-                    >
-                        <RenderSection section={section} schema={sectionSchemas[section.type]} onSelect={onSelect} />
-                    </PreviewSectionShell>
-                ))}
-                {state.sections.footer ? (
-                    <PreviewSectionShell
-                        section={state.sections.footer}
-                        schema={sectionSchemas[state.sections.footer.type]}
-                        selection={selection}
-                        onSelect={onSelect}
-                    >
-                        <RenderFooter section={state.sections.footer} storeName={storeName} onSelect={onSelect} />
-                    </PreviewSectionShell>
-                ) : null}
-            </div>
-        </div>
-    )
-}
-
-function PreviewSectionShell({
-    section,
-    schema,
-    selection,
-    children,
-    onSelect,
-}: {
-    section: SectionEntry
-    schema?: SectionSchema
-    selection: EditorSelection
-    children: ReactNode
-    onSelect: (selection: EditorSelection) => void
-}) {
-    const selected = selection.kind === 'section' && selection.sectionId === section.id
-    return (
-        <section
-            className={`theme-os-preview-section theme-os-preview-section--${section.type} ${selected ? 'theme-os-preview-section--selected' : ''}`}
-            onClick={() => onSelect({ kind: 'section', sectionId: section.id })}
-            role="button"
-            tabIndex={0}
-            onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') onSelect({ kind: 'section', sectionId: section.id })
-            }}
-        >
-            <span className="theme-os-preview-section__tag">{schema?.name || labelFromKey(section.type)}</span>
-            {children}
-        </section>
-    )
-}
-
-function RenderSection({
-    section,
-    schema,
-    onSelect,
-}: {
-    section: SectionEntry
-    schema?: SectionSchema
-    onSelect: (selection: EditorSelection) => void
-}) {
-    switch (section.type) {
-        case 'announcementBar':
-            return <RenderAnnouncement section={section} />
-        case 'heroBanner':
-            return <RenderHero section={section} />
-        case 'categoryGrid':
-            return <RenderCategories section={section} schema={schema} onSelect={onSelect} />
-        case 'featuredProducts':
-            return <RenderFeaturedProducts section={section} />
-        case 'productGrid':
-            return <RenderProductGrid section={section} />
-        case 'newsletter':
-            return <RenderNewsletter section={section} />
-        case 'trustBadges':
-            return <RenderTrustBadges section={section} onSelect={onSelect} />
-        default:
-            return <RenderGenericSection section={section} schema={schema} />
-    }
-}
-
-function RenderAnnouncement({ section }: { section: SectionEntry }) {
-    const style = {
-        '--announcement-bg': getPreviewColor(section.settings, 'backgroundColor', '#0F172A'),
-        '--announcement-text': getPreviewColor(section.settings, 'textColor', '#FFFFFF'),
-    } as CSSProperties
-
-    return (
-        <div className={`theme-os-store-announcement theme-os-store-announcement--${getPreviewText(section.settings, 'alignment', 'center')}`} style={style}>
-            <span>{getPreviewText(section.settings, 'text', 'New drops are live now.')}</span>
-            {stringValue(section.settings.linkLabel) ? <strong>{stringValue(section.settings.linkLabel)}</strong> : null}
-        </div>
-    )
-}
-
-function RenderHeader({
-    section,
-    storeName,
-    onSelect,
-}: {
-    section: SectionEntry
-    storeName: string
-    onSelect: (selection: EditorSelection) => void
-}) {
-    const displayMode = getPreviewText(section.settings, 'displayMode', 'name')
-    const storeLabel = getPreviewText(section.settings, 'storeName', storeName)
-    const visibleBlocks = section.blocks.filter((block) => block.visible && booleanValue(block.settings.isVisible, true))
-
-    return (
-        <header className={`theme-os-store-header theme-os-store-header--${getPreviewText(section.settings, 'logoPlacement', 'left')}`}>
-            <div className="theme-os-store-brand">
-                {displayMode !== 'name' ? <span className="theme-os-store-logo-mark">LB</span> : null}
-                {displayMode !== 'logo' ? <strong>{storeLabel}</strong> : null}
-            </div>
-            <nav className="theme-os-store-nav" aria-label="Preview navigation">
-                {visibleBlocks.map((block) => (
-                    <button
-                        key={block.id}
-                        type="button"
-                        className="theme-os-store-nav__link"
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            onSelect({ kind: 'block', sectionId: section.id, blockId: block.id })
-                        }}
-                    >
-                        {getPreviewText(block.settings, 'label', 'Link')}
-                    </button>
-                ))}
-            </nav>
-            <div className="theme-os-store-actions">
-                {booleanValue(section.settings.showSearch, true) ? <Search size={18} aria-hidden="true" /> : null}
-                {booleanValue(section.settings.showAccount, true) ? <span className="theme-os-store-action-dot" /> : null}
-                {booleanValue(section.settings.showCart, true) ? <ShoppingBag size={18} aria-hidden="true" /> : null}
-            </div>
-        </header>
-    )
-}
-
-function RenderHero({ section }: { section: SectionEntry }) {
-    return (
-        <div className={`theme-os-store-hero theme-os-store-hero--${getPreviewText(section.settings, 'textAlign', 'left')}`}>
-            <div className="theme-os-store-hero__media" aria-hidden="true">
-                <span />
-                <span />
-                <span />
-            </div>
-            <div className="theme-os-store-hero__copy">
-                <h1>{getPreviewText(section.settings, 'heading', 'New season essentials')}</h1>
-                <p>{getPreviewText(section.settings, 'subheading', 'Fresh drops curated for your store.')}</p>
-                {stringValue(section.settings.ctaText) ? <button type="button">{stringValue(section.settings.ctaText)}</button> : null}
-            </div>
-        </div>
-    )
-}
-
-function RenderCategories({
-    section,
-    schema,
-    onSelect,
-}: {
-    section: SectionEntry
-    schema?: SectionSchema
-    onSelect: (selection: EditorSelection) => void
-}) {
-    const blocks = section.blocks.length > 0 ? section.blocks : sampleBlocksForSchema(schema)
-    return (
-        <div className="theme-os-store-band">
-            <PreviewHeading title={getPreviewText(section.settings, 'title', 'Shop by style')} subtitle={getPreviewText(section.settings, 'subtitle', 'Browse storefront-ready categories.')} />
-            <div className="theme-os-store-categories">
-                {blocks.filter((block) => block.visible).map((block, index) => (
-                    <button
-                        key={block.id}
-                        type="button"
-                        className={`theme-os-store-category theme-os-store-category--${index % 3}`}
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            onSelect({ kind: 'block', sectionId: section.id, blockId: block.id })
-                        }}
-                    >
-                        <span>{getPreviewText(block.settings, 'tagline', 'Collection')}</span>
-                        <strong>{getPreviewText(block.settings, 'name', 'Category')}</strong>
-                    </button>
-                ))}
-            </div>
-        </div>
-    )
-}
-
-function RenderFeaturedProducts({ section }: { section: SectionEntry }) {
-    const limit = numberValue(section.settings.limit, 4)
-    return (
-        <div className="theme-os-store-band">
-            <PreviewHeading title={getPreviewText(section.settings, 'title', 'Featured collection')} subtitle={getPreviewText(section.settings, 'subtitle', 'A focused product story.')} />
-            <div className="theme-os-store-featured">
-                {PREVIEW_PRODUCTS.slice(0, limit).map((product) => (
-                    <ProductPreviewCard key={product.name} product={product} featured />
-                ))}
-            </div>
-            {booleanValue(section.settings.showViewAll, true) ? (
-                <button className="theme-os-store-link-btn" type="button">
-                    {getPreviewText(section.settings, 'viewAllLabel', 'View collection')}
-                </button>
-            ) : null}
-        </div>
-    )
-}
-
-function RenderProductGrid({ section }: { section: SectionEntry }) {
-    const rows = numberValue(section.settings.rows, 2)
-    const columns = numberValue(section.settings.columns, 4)
-    const count = Math.max(2, Math.min(12, rows * columns))
-
-    return (
-        <div className="theme-os-store-band" id="products">
-            {booleanValue(section.settings.showTitle, true) ? (
-                <PreviewHeading title={getPreviewText(section.settings, 'title', 'Products')} subtitle={getPreviewText(section.settings, 'subtitle', 'Selected from your catalog.')} />
-            ) : null}
-            <div className="theme-os-store-grid" data-columns={columns}>
-                {PREVIEW_PRODUCTS.slice(0, count).map((product) => (
-                    <ProductPreviewCard key={product.name} product={product} showPrice={booleanValue(section.settings.showPrice, true)} />
-                ))}
-            </div>
-        </div>
-    )
-}
-
-function RenderNewsletter({ section }: { section: SectionEntry }) {
-    const style = {
-        '--newsletter-bg': getPreviewColor(section.settings, 'backgroundColor', '#F8FAFC'),
-    } as CSSProperties
-
-    return (
-        <div className="theme-os-store-newsletter" style={style}>
-            <div>
-                <h2>{getPreviewText(section.settings, 'title', 'Stay in the loop')}</h2>
-                <p>{getPreviewText(section.settings, 'subtitle', 'Get product drops and launch updates.')}</p>
-            </div>
-            <form>
-                <input placeholder={getPreviewText(section.settings, 'placeholder', 'Email address')} readOnly />
-                <button type="button">{getPreviewText(section.settings, 'buttonText', 'Subscribe')}</button>
-            </form>
-        </div>
-    )
-}
-
-function RenderFooter({
-    section,
-    storeName,
-    onSelect,
-}: {
-    section: SectionEntry
-    storeName: string
-    onSelect: (selection: EditorSelection) => void
-}) {
-    return (
-        <footer className="theme-os-store-footer">
-            <div>
-                <strong>{storeName}</strong>
-                <p>{getPreviewText(section.settings, 'contactEmail', 'support@letbuyy.store')}</p>
-            </div>
-            <div className="theme-os-store-footer__links">
-                {section.blocks.filter((block) => block.visible).map((block) => (
-                    <button
-                        key={block.id}
-                        type="button"
-                        onClick={(event) => {
-                            event.stopPropagation()
-                            onSelect({ kind: 'block', sectionId: section.id, blockId: block.id })
-                        }}
-                    >
-                        {getPreviewText(block.settings, 'label', 'Link')}
-                    </button>
-                ))}
-            </div>
-            <small>{getPreviewText(section.settings, 'copyrightText', `© ${new Date().getFullYear()} ${storeName}`)}</small>
-        </footer>
-    )
-}
-
-function RenderTrustBadges({ section, onSelect }: { section: SectionEntry; onSelect: (selection: EditorSelection) => void }) {
-    return (
-        <div className="theme-os-store-badges">
-            {section.blocks.filter((block) => block.visible).map((block) => (
-                <button
-                    key={block.id}
-                    type="button"
-                    onClick={(event) => {
-                        event.stopPropagation()
-                        onSelect({ kind: 'block', sectionId: section.id, blockId: block.id })
-                    }}
-                >
-                    <span />
-                    <strong>{getPreviewText(block.settings, 'label', 'Badge')}</strong>
-                    <small>{getPreviewText(block.settings, 'description', 'Store promise')}</small>
-                </button>
-            ))}
-        </div>
-    )
-}
-
-function RenderGenericSection({ section, schema }: { section: SectionEntry; schema?: SectionSchema }) {
-    return (
-        <div className="theme-os-store-generic">
-            <ImageIcon size={28} aria-hidden="true" />
-            <strong>{schema?.name || labelFromKey(section.type)}</strong>
-            <p>{schema?.description || 'Schema-driven section preview.'}</p>
-        </div>
-    )
-}
-
-function PreviewHeading({ title, subtitle }: { title: string; subtitle: string }) {
-    return (
-        <div className="theme-os-store-heading">
-            <h2>{title}</h2>
-            {subtitle ? <p>{subtitle}</p> : null}
-        </div>
-    )
-}
-
-function ProductPreviewCard({
-    product,
-    featured = false,
-    showPrice = true,
-}: {
-    product: { name: string; price: string; tone: string }
-    featured?: boolean
-    showPrice?: boolean
-}) {
-    return (
-        <article className={`theme-os-product-card theme-os-product-card--${product.tone} ${featured ? 'theme-os-product-card--featured' : ''}`}>
-            <div className="theme-os-product-card__media" aria-hidden="true">
-                <span />
-            </div>
-            <div>
-                <strong>{product.name}</strong>
-                {showPrice ? <span>{product.price}</span> : null}
-            </div>
-        </article>
     )
 }
 

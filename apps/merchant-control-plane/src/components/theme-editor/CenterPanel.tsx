@@ -10,6 +10,7 @@ interface CenterPanelProps {
     previewError: string | null
     isPreviewRefreshing: boolean
     selectedSectionId: string | null
+    onSelectSection?: (sectionId: string) => void
 }
 
 function getStorefrontBaseUrl() {
@@ -26,13 +27,15 @@ export default function CenterPanel({
     previewError,
     isPreviewRefreshing,
     selectedSectionId,
+    onSelectSection,
 }: CenterPanelProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const storefrontBaseUrl = getStorefrontBaseUrl()
     const previewUrl = useMemo(() => {
         if (!storefrontBaseUrl || !storeName) return ''
 
-        const url = new URL(`/store/${encodeURIComponent(storeName)}`, storefrontBaseUrl)
+        const url = new URL('/preview', storefrontBaseUrl)
+        url.searchParams.set('subdomain', storeName)
         url.searchParams.set('editor', '1')
         url.searchParams.set('viewport', viewport)
         if (previewToken) url.searchParams.set('theme_preview_token', previewToken)
@@ -49,6 +52,20 @@ export default function CenterPanel({
             new URL(previewUrl).origin
         )
     }, [previewUrl, selectedSectionId])
+
+    useEffect(() => {
+        function handleMessage(event: MessageEvent) {
+            const message = event.data && typeof event.data === 'object'
+                ? event.data as { type?: unknown; sectionId?: unknown }
+                : null
+            if (message?.type !== 'letbuyy:theme-editor:section-select') return
+            if (typeof message.sectionId !== 'string' || !message.sectionId) return
+            onSelectSection?.(message.sectionId)
+        }
+
+        window.addEventListener('message', handleMessage)
+        return () => window.removeEventListener('message', handleMessage)
+    }, [onSelectSection])
 
     return (
         <div className="te-center-panel">

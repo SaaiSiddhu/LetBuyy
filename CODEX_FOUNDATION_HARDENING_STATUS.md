@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F2.6 developer tooling no-credential parts complete; continue F3.1 real web theme-editor preview.
-- Findings resolved: 14/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F2.6 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.1 real web theme-editor preview complete; continue F3.2 publish separation, base-version concurrency, and template-scoped preview sessions.
+- Findings resolved: 15/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.1 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -240,6 +240,23 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F3.1 web theme editor live preview evidence
+
+- The web theme editor no longer renders the local `PREVIEW_PRODUCTS`/`PreviewCanvas` mock path; `apps/merchant-control-plane/src/app/[store]/online-store/themes/[themeId]/editor/page.tsx` mounts `CenterPanel` for the center preview.
+- Preview refresh now persists the selected-template draft through `/api/themes/:themeId/editor/draft` before minting `/api/themes/:themeId/preview-session`, then passes the returned `preview_token` into the iframe.
+- `apps/merchant-control-plane/src/components/theme-editor/CenterPanel.tsx` targets the storefront runtime `/preview` route with `subdomain`, `viewport`, and `theme_preview_token`, and keeps section-selection bridge messages wired.
+- Browser plugin proof against `localhost`/`127.0.0.1` was blocked by `net::ERR_BLOCKED_BY_CLIENT`; local Playwright fallback started a mock gateway plus merchant/storefront dev servers and verified the real iframe route.
+- Playwright proof: iframe URL `http://127.0.0.1:3200/preview?subdomain=local-kicks&editor=1&viewport=desktop&theme_preview_token=local.preview.token`; iframe contained `[data-letbuyy-preview-route="true"]`, `Local Kicks Preview`, `Preview products`, and product `Canvas Runner`; legacy mock text count was 0.
+- Screenshot evidence: `/tmp/letbuyy-f3-editor-preview-settled.png`.
+- `pnpm run test:contracts`: PASS - 53/53, including `tests/contracts/theme-editor-real-preview.test.ts`.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck`: PASS.
+- `pnpm --filter @letbuyy/merchant-control-plane lint`: PASS with 6 existing warnings outside the edited editor file.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+- Staging proof remains SKIPPED -- NEEDS HUMAN until staging merchant/session/store/theme credentials are provided.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -264,8 +281,9 @@ Started: 2026-06-05T13:54:14Z
 - H-11 live payout release/failure emitters require payout policy, Razorpay Route/RazorpayX credentials, and an operations approval/runbook for release/failure transitions.
 - C-5 live app-charge payout release requires the same payout rail/policy/credentials; provider-verified app charge activation is implemented, but fund release remains human-gated.
 - H-13 staging proof that a developer registers an app, receives credentials, installs/exchanges for an app access token, and calls the SDK requires staging merchant/developer credentials plus staging gateway/session access. Exact proof path once supplied: authenticate a staging merchant/developer, `POST /v1/app-store/developers/register`, `POST /v1/app-store/developers/apps/manifest/validate`, `POST /v1/app-store/developers/apps`, complete the app install/OAuth token flow, then call `createLetbuyyAppSdk({ baseUrl: "https://api.staging.letbuyy.store", accessToken }).products()`.
+- C-6 staging proof that the web theme editor iframe renders edited sections through the real staging storefront preview route requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: authenticate to staging merchant, open `/[store]/online-store/themes/[themeId]/editor`, edit a section, confirm the iframe URL includes `theme_preview_token`, and verify the storefront preview route renders the edited section.
 
 ## Next work
 
-- Continue to F3.1 real web theme-editor preview.
+- Continue to F3.2 publish separation, base-version concurrency, and template-scoped preview sessions.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
