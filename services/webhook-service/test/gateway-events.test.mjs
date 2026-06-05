@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { emitGatewayDomainEvent } from "../src/gateway-events.ts";
+import { emitGatewayDomainEvent } from "../../../packages/infrastructure/gateway-events-adapter/index.ts";
 
 function captureGateway(status = 200, payload = { success: true }) {
     const calls = [];

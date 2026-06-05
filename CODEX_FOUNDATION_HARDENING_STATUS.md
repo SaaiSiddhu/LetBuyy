@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F1 - Backend integrity; F1.6 storefront god-file split in progress.
-- Findings resolved: 6/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-1`, `H-10`, `H-12`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F1.6 internal payment route split (`pnpm run validate:governance` -> 129/129 PASS).
+- Phase: V2 P-1 regression gate complete; resume F1.6 storefront god-file split next.
+- Findings resolved: 6/31 original Critical/High complete (`C-2`, `C-12`, `C-13`, `H-1`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after V2 P-1 (`pnpm run validate:governance` -> 135/135 PASS).
 
 ## Baseline gates
 
@@ -102,6 +102,23 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 129/129 validators.
 - H-9 remains in progress because `storefront.ts` is still above the 1,500-line target.
 
+## V2 P-1 gate evidence
+
+- N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
+- N-2: idempotency completion persists a recursively redacted response body, so `access_token`, `refresh_token`, `signing_secret`, and client-secret shapes are not replayable from `idempotency_keys.response_body`.
+- N-3: root `test` and `test:governance` invoke `test:contracts`, and api-gateway `test` runs `tsx --test ../../tests/contracts/*.test.ts`; Turbo now executes the TS contract suite.
+- N-4: payment/refund/subscription webhook event topics are registered in `@letbuyy/event-core`, provider events are normalized before emission, and api-gateway internal event ingress rejects uncontracted event types.
+- N-5: webhook-service and queue-workers now share `@letbuyy/infrastructure/gateway-events-adapter`; duplicate service-local `gateway-events.ts` files were removed.
+- N-6: historical `CODEX*.md` residue was archived under `docs/archive/root-residue/2026-06-06-foundation-v2/`, no runtime/package source tree contains CODEX ledger files, and the orphan `webhook-deliveries` queue producer was removed.
+- `pnpm run test:contracts`: PASS - 16/16 TS contract tests.
+- `pnpm turbo test --filter @letbuyy/api-gateway`: PASS - 41/41 Turbo tasks; api-gateway contract suite 16/16 PASS, including staging no-secret -> 403 and production no-secret -> 403 cases.
+- `pnpm --filter @letbuyy/webhook-service test`: PASS - 12/12.
+- `pnpm --filter @letbuyy/queue-workers test`: PASS - 2/2.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 135/135 validators, including new fail-closed internal routes, replayable-secret persistence, contracted-domain-event ingress, shared gateway-events client, orphan webhook-deliveries queue, and source-ledger residue validators.
+
 ## Human-gated remainder
 
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
@@ -110,6 +127,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit F1.6 internal payment route split.
+- Commit V2 P-1 regression gate.
 - Continue F1.6 by extracting the next cohesive storefront route group, likely customer auth/account routes, under characterization coverage.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.

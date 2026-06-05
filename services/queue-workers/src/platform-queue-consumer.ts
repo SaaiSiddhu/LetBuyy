@@ -15,7 +15,7 @@ import {
   type SupabaseClient,
   type SupabaseServiceEnv,
 } from '@letbuyy/infrastructure/supabase-adapter';
-import { emitGatewayDomainEvent, type GatewayServiceBinding } from './gateway-events';
+import { emitGatewayDomainEvent, type GatewayServiceBinding } from '@letbuyy/infrastructure/gateway-events-adapter';
 
 type JsonObject = Record<string, unknown>;
 export type PlatformQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';

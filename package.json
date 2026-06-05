@@ -40,8 +40,9 @@
         "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
         "certify:production:provider": "node infrastructure/scripts/operations/run-provider-production-certification.mjs --environment=production --mode=auto",
         "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
-        "test": "node --test tests/*/*.test.mjs",
-        "test:governance": "node --test tests/*/*.test.mjs",
+        "test": "node --test tests/*/*.test.mjs && pnpm run test:contracts",
+        "test:governance": "node --test tests/*/*.test.mjs && pnpm run test:contracts",
+        "test:contracts": "tsx --test tests/contracts/*.test.ts",
         "test:workspaces": "turbo test",
         "load:plan": "node load/run-load-evidence.mjs --mode=plan",
         "load:execute": "node load/run-load-evidence.mjs --mode=execute",
@@ -53,6 +54,7 @@
     "devDependencies": {
         "@cloudflare/workers-types": "4.20260525.1",
         "@playwright/test": "1.60.0",
+        "tsx": "4.20.6",
         "turbo": "2.8.9",
         "typescript": "5.9.3"
     },

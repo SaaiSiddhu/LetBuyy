@@ -19,6 +19,7 @@
     "./resend-adapter": "./resend-adapter/index.ts",
     "./storage-adapter": "./storage-adapter/index.ts",
     "./queue-adapter": "./queue-adapter/index.ts",
+    "./gateway-events-adapter": "./gateway-events-adapter/index.ts",
     "./analytics-adapter": "./analytics-adapter/index.ts",
     "./cache-adapter": "./cache-adapter/index.ts",
     "./pooled-sql-adapter": "./pooled-sql-adapter/index.ts",
