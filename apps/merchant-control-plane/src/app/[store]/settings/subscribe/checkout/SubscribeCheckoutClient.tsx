@@ -1,26 +1,21 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { SubscriptionPlanView } from '@/lib/billing/plan-ui'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 import {
     Badge,
     Banner,
     Button,
     Card,
-    Check,
     CheckCircle2,
     CreditCard,
     IndianRupee,
     Input,
-    ListChecks,
     Lock,
-    Phone,
-    Rocket,
     Section,
     Select,
-    ShieldCheck,
-    Store,
     Tag,
 } from '@letbuyy/ui'
 
@@ -52,30 +47,29 @@ const STATES = [
     'Tamil Nadu', 'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
 ]
 
-const STATE_OPTIONS = [
-    { label: 'Select state', value: '' },
-    ...STATES.map((stateName) => ({ label: stateName, value: stateName })),
+const stateOptions = [
+    { value: '', label: 'Select state' },
+    ...STATES.map((stateName) => ({ value: stateName, label: stateName })),
 ]
 
 function cx(...classes: Array<string | false | null | undefined>) {
     return classes.filter(Boolean).join(' ')
 }
 
-function formatCheckoutPrice(amount: number) {
-    if (amount <= 0) return 'Free'
-    return `₹${amount.toLocaleString('en-IN')}`
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
 }
 
-function billingPeriodLabel(value: 'monthly' | 'yearly') {
-    return value === 'yearly' ? 'Annual' : 'Monthly'
+function readString(value: unknown) {
+    return typeof value === 'string' ? value : ''
 }
 
 function paymentErrorMessage(payload: unknown, fallback: string) {
-    if (!payload || typeof payload !== 'object') return fallback
-    const error = (payload as { error?: unknown }).error
+    if (!isRecord(payload)) return fallback
+    const error = payload.error
     if (typeof error === 'string') return error
-    if (error && typeof error === 'object') {
-        const message = (error as { message?: unknown }).message
+    if (isRecord(error)) {
+        const message = error.message
         if (typeof message === 'string' && message.length > 0) return message
     }
     return fallback
@@ -86,7 +80,71 @@ function checkoutThemeColor() {
     return (
         rootStyle.getPropertyValue('--lb-color-primary').trim() ||
         rootStyle.getPropertyValue('--primary').trim() ||
-        '#8B5CF6'
+        '#2563eb'
+    )
+}
+
+function formatRupees(value: number) {
+    return new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+    }).format(value)
+}
+
+function coerceNumber(value: unknown) {
+    const amount = typeof value === 'number' ? value : typeof value === 'string' ? Number(value) : 0
+    return Number.isFinite(amount) ? amount : 0
+}
+
+function normalizeOrderData(payload: unknown) {
+    const data = isRecord(payload) ? payload : {}
+
+    return {
+        activated: data.activated === true,
+        checkout_mode: readString(data.checkout_mode),
+        key_id: readString(data.key_id),
+        razorpay_order_id: readString(data.razorpay_order_id),
+        razorpay_subscription_id: readString(data.razorpay_subscription_id),
+        amount: coerceNumber(data.amount),
+    }
+}
+
+interface PaymentMethodOptionProps {
+    value: 'upi' | 'card'
+    selected: boolean
+    title: string
+    description: string
+    onSelect: () => void
+}
+
+function PaymentMethodOption({ value, selected, title, description, onSelect }: PaymentMethodOptionProps) {
+    return (
+        <label
+            className={cx(
+                'flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)] transition-colors duration-[var(--lb-motion-fast)]',
+                selected
+                    ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
+                    : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
+            )}
+        >
+            <input
+                type="radio"
+                name="payment-method"
+                value={value}
+                checked={selected}
+                onChange={onSelect}
+                className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+            />
+            <span className="min-w-0">
+                <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                    {title}
+                </span>
+                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                    {description}
+                </span>
+            </span>
+        </label>
     )
 }
 
@@ -104,7 +162,6 @@ export default function SubscribeCheckoutClient({
     const [paymentMethod, setPaymentMethod] = useState<'upi' | 'card'>('upi')
     const [isProcessing, setIsProcessing] = useState(false)
     const [error, setError] = useState<string | null>(null)
-
     const [upiId, setUpiId] = useState('')
     const [phone, setPhone] = useState('')
     const [address, setAddress] = useState('')
@@ -112,15 +169,19 @@ export default function SubscribeCheckoutClient({
     const [city, setCity] = useState('')
     const [state, setState] = useState('')
 
-    const monthlyPrice = plan.price_monthly_inr / 100
-    const yearlyPrice = plan.price_yearly_inr / 100
-    const promoPrice = plan.promo_price_inr / 100
-    const hasPromo = plan.promo_price_inr > 0 && plan.promo_months > 0
-    const isFreePlan = plan.price_monthly_inr === 0 && plan.price_yearly_inr === 0 && !plan.requires_contact
+    const monthlyCents = coerceNumber(plan.price_monthly_inr)
+    const yearlyCents = coerceNumber(plan.price_yearly_inr)
+    const promoCents = coerceNumber(plan.promo_price_inr)
+    const promoMonths = Math.max(0, Math.floor(coerceNumber(plan.promo_months)))
+    const monthlyPrice = monthlyCents / 100
+    const yearlyPrice = yearlyCents / 100
+    const promoPrice = promoCents / 100
+    const hasPromo = promoCents > 0 && promoMonths > 0
+    const isFreePlan = monthlyCents === 0 && yearlyCents === 0 && !plan.requires_contact
     const currentPrice = billingPeriod === 'yearly' ? yearlyPrice : hasPromo ? promoPrice : monthlyPrice
-    const yearlySavings = Math.round((monthlyPrice - yearlyPrice) * 12)
+    const yearlySavings = Math.max(0, Math.round((monthlyPrice - yearlyPrice) * 12))
 
-    const timeline = (() => {
+    const timeline = useMemo(() => {
         const today = new Date()
         const entries: Array<{ date: string; label: string; amount: string; isActive?: boolean; description?: string }> = []
 
@@ -128,21 +189,21 @@ export default function SubscribeCheckoutClient({
             date: 'Today',
             label: 'Start your plan',
             amount: billingPeriod === 'yearly'
-                ? `₹${(yearlyPrice * 12).toLocaleString('en-IN')}/year`
+                ? `${formatRupees(yearlyPrice * 12)}/year`
                 : hasPromo
-                    ? `₹${promoPrice.toLocaleString('en-IN')}/month`
-                    : `₹${monthlyPrice.toLocaleString('en-IN')}/month`,
+                    ? `${formatRupees(promoPrice)}/month`
+                    : `${formatRupees(monthlyPrice)}/month`,
             isActive: true,
         })
 
         if (hasPromo && billingPeriod === 'monthly') {
             const promoEnd = new Date(today)
-            promoEnd.setMonth(promoEnd.getMonth() + plan.promo_months)
+            promoEnd.setMonth(promoEnd.getMonth() + promoMonths)
             entries.push({
                 date: promoEnd.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
                 label: 'Regular pricing begins',
-                amount: `₹${monthlyPrice.toLocaleString('en-IN')}/month`,
-                description: `₹${promoPrice} × ${plan.promo_months} months promo ends`,
+                amount: `${formatRupees(monthlyPrice)}/month`,
+                description: `${formatRupees(promoPrice)} x ${promoMonths} months promo ends`,
             })
         }
 
@@ -152,19 +213,19 @@ export default function SubscribeCheckoutClient({
             entries.push({
                 date: renewalDate.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
                 label: 'Next renewal',
-                amount: `₹${(yearlyPrice * 12).toLocaleString('en-IN')}/year`,
+                amount: `${formatRupees(yearlyPrice * 12)}/year`,
             })
         } else if (!hasPromo) {
             renewalDate.setMonth(renewalDate.getMonth() + 1)
             entries.push({
                 date: renewalDate.toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }),
                 label: 'Next renewal',
-                amount: `₹${monthlyPrice.toLocaleString('en-IN')}/month`,
+                amount: `${formatRupees(monthlyPrice)}/month`,
             })
         }
 
         return entries
-    })()
+    }, [billingPeriod, hasPromo, monthlyPrice, promoMonths, promoPrice, yearlyPrice])
 
     const handleSubscribe = async () => {
         setIsProcessing(true)
@@ -182,8 +243,10 @@ export default function SubscribeCheckoutClient({
                 }),
             })
 
-            const orderData = await orderRes.json()
-            if (!orderRes.ok) throw new Error(paymentErrorMessage(orderData, 'Failed to create order'))
+            const orderPayload = await orderRes.json().catch(() => null)
+            if (!orderRes.ok) throw new Error(paymentErrorMessage(orderPayload, 'Failed to create order'))
+
+            const orderData = normalizeOrderData(orderPayload)
 
             if (orderData.activated || orderData.checkout_mode === 'free_activation') {
                 router.push(`/${storeSlug}/dashboard?subscribed=${plan.slug}`)
@@ -239,7 +302,7 @@ export default function SubscribeCheckoutClient({
                                 site_type: siteType,
                             }),
                         })
-                        const verifyData = await verifyRes.json()
+                        const verifyData = await verifyRes.json().catch(() => null)
                         if (!verifyRes.ok) {
                             setError(paymentErrorMessage(verifyData, 'Payment verification failed'))
                             setIsProcessing(false)
@@ -266,329 +329,242 @@ export default function SubscribeCheckoutClient({
     }
 
     return (
-        <div className="grid min-w-0 gap-[var(--lb-space-4)] xl:grid-cols-[minmax(0,1fr)_24rem] xl:items-start">
-            <div className="flex min-w-0 flex-col gap-[var(--lb-space-4)]">
-                <Card>
-                    <Section title="Checkout context" description="Confirm the store, site type, and billing period before payment.">
-                        <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                            <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                                <Store className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
-                                <div className="min-w-0">
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Store
-                                    </p>
-                                    <p className="m-0 truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                        {storeName}
-                                    </p>
+        <SettingsPane
+            store={storeSlug}
+            title="Subscribe checkout"
+            description={`Activate the ${plan.name} plan for ${storeName}.`}
+            guidance={{
+                title: isFreePlan ? 'No payment required' : 'Subscription billing uses Razorpay',
+                body: isFreePlan
+                    ? 'The Free plan activates immediately and can be upgraded later.'
+                    : 'Payment orders are still created and verified by the existing subscription API routes.',
+                variant: isFreePlan ? 'success' : 'info',
+            }}
+        >
+            <div className="grid gap-[var(--lb-space-5)] xl:grid-cols-[minmax(0,1fr)_360px]">
+                <div className="flex min-w-0 flex-col gap-[var(--lb-space-5)]">
+                    {!isFreePlan && (
+                        <Card>
+                            <Section
+                                title="Billing cadence"
+                                description="Choose the cadence that matches how you want to pay for this plan."
+                                action={yearlySavings > 0 ? <Badge label={`Save ${formatRupees(yearlySavings)}`} variant="success" /> : undefined}
+                            >
+                                <div className="grid gap-[var(--lb-space-3)] sm:grid-cols-2">
+                                    {(['monthly', 'yearly'] as const).map((period) => (
+                                        <label
+                                            key={period}
+                                            className={cx(
+                                                'flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)] transition-colors duration-[var(--lb-motion-fast)]',
+                                                billingPeriod === period
+                                                    ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
+                                                    : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                            )}
+                                        >
+                                            <input
+                                                type="radio"
+                                                name="billing-period"
+                                                checked={billingPeriod === period}
+                                                onChange={() => setBillingPeriod(period)}
+                                                className="mt-[var(--lb-space-1)] h-[var(--lb-space-4)] w-[var(--lb-space-4)] accent-[var(--lb-color-primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                            />
+                                            <span>
+                                                <span className="block text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] capitalize leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                    {period}
+                                                </span>
+                                                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                    {period === 'yearly'
+                                                        ? `${formatRupees(yearlyPrice * 12)} per year`
+                                                        : hasPromo
+                                                            ? `${formatRupees(promoPrice)} promo, then ${formatRupees(monthlyPrice)}`
+                                                            : `${formatRupees(monthlyPrice)} per month`}
+                                                </span>
+                                            </span>
+                                        </label>
+                                    ))}
                                 </div>
-                            </div>
-                            <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                                <Tag className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
-                                <div className="min-w-0">
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Site type
-                                    </p>
-                                    <p className="m-0 truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                        {siteType}
-                                    </p>
-                                </div>
-                            </div>
-                            <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                                <ListChecks className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
-                                <div className="min-w-0">
-                                    <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                        Billing
-                                    </p>
-                                    <p className="m-0 truncate text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                        {billingPeriodLabel(billingPeriod)}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </Section>
-                </Card>
+                            </Section>
+                        </Card>
+                    )}
 
-                {!isFreePlan && (
-                    <Banner
-                        variant="success"
-                        title="Yearly billing option"
-                        action={(
-                            <div className="flex rounded-[var(--lb-radius-md)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-1)]">
-                                {(['monthly', 'yearly'] as const).map((period) => (
-                                    <button
-                                        key={period}
-                                        type="button"
-                                        className={cx(
-                                            'inline-flex h-[var(--lb-density-icon-button-height)] items-center justify-center rounded-[var(--lb-radius-sm)] px-[var(--lb-space-3)] text-[length:var(--lb-font-size-caption)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-caption)] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]',
-                                            billingPeriod === period
-                                                ? 'bg-[var(--lb-color-primary)] text-[color:var(--lb-color-text-inverse)]'
-                                                : 'text-[color:var(--lb-color-text-subdued)] hover:text-[color:var(--lb-color-text)]',
-                                        )}
-                                        onClick={() => setBillingPeriod(period)}
-                                        aria-pressed={billingPeriod === period}
-                                    >
-                                        {billingPeriodLabel(period)}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    >
-                        <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                            {yearlySavings > 0
-                                ? `Save ₹${yearlySavings.toLocaleString('en-IN')} with annual billing at ₹${yearlyPrice.toLocaleString('en-IN')}/mo.`
-                                : `Annual billing is available at ₹${yearlyPrice.toLocaleString('en-IN')}/mo.`}
-                        </p>
-                    </Banner>
-                )}
-
-                {isFreePlan ? (
                     <Card>
-                        <Section title="Activation" description="No payment method is required for the Free plan.">
-                            <div className="flex items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-success)] bg-[var(--lb-color-success-soft)] p-[var(--lb-space-4)] text-[color:var(--lb-color-text)]">
-                                <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
-                                <p className="m-0 text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]">
-                                    Activate the plan now and upgrade whenever you need higher limits.
-                                </p>
-                            </div>
-                        </Section>
-                    </Card>
-                ) : (
-                    <Card>
-                        <Section title="Payment method" description="Razorpay will collect and verify payment after this review step.">
-                            <div className="grid gap-[var(--lb-space-3)]">
-                                <label
-                                    className={cx(
-                                        'flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)] transition-colors',
-                                        paymentMethod === 'upi'
-                                            ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
-                                            : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
-                                    )}
-                                >
-                                    <input
-                                        className="sr-only"
-                                        type="radio"
-                                        name="payment"
+                        <Section
+                            title={isFreePlan ? 'Activation' : 'Payment method'}
+                            description={isFreePlan ? 'No payment method is required for the Free plan.' : 'Select the payment method Razorpay should prefill when checkout opens.'}
+                        >
+                            {isFreePlan ? (
+                                <Banner variant="success" title="Free plan activation">
+                                    Continue to activate this plan immediately for the current store.
+                                </Banner>
+                            ) : (
+                                <div className="grid gap-[var(--lb-space-3)]">
+                                    <PaymentMethodOption
                                         value="upi"
-                                        checked={paymentMethod === 'upi'}
-                                        onChange={() => setPaymentMethod('upi')}
+                                        selected={paymentMethod === 'upi'}
+                                        title="UPI"
+                                        description="Google Pay, PhonePe, BHIM, and other UPI apps."
+                                        onSelect={() => setPaymentMethod('upi')}
                                     />
-                                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] text-[var(--lb-color-primary)]">
-                                        <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                    </span>
-                                    <span className="min-w-0 flex-1">
-                                        <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                            UPI
-                                        </span>
-                                        <span className="block text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
-                                            Google Pay, PhonePe, BHIM, and other UPI apps.
-                                        </span>
-                                    </span>
-                                    {paymentMethod === 'upi' && <Check className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />}
-                                </label>
-
-                                {paymentMethod === 'upi' && (
-                                    <div className="grid gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] md:grid-cols-2">
-                                        <Input
-                                            id="upi-id"
-                                            label="UPI ID"
-                                            helperText="Optional pre-fill for the Razorpay checkout."
-                                            type="text"
-                                            placeholder="yourname@upi"
-                                            value={upiId}
-                                            onChange={(event) => setUpiId(event.target.value)}
-                                        />
-                                        <Input
-                                            id="phone"
-                                            label="Phone number"
-                                            type="tel"
-                                            placeholder="+91 XXXXXXXXXX"
-                                            value={phone}
-                                            onChange={(event) => setPhone(event.target.value)}
-                                            leftIcon={<Phone className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                                        />
-                                    </div>
-                                )}
-
-                                <label
-                                    className={cx(
-                                        'flex cursor-pointer items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border p-[var(--lb-space-4)] transition-colors',
-                                        paymentMethod === 'card'
-                                            ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)]'
-                                            : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] hover:bg-[var(--lb-color-surface-subdued)]',
+                                    {paymentMethod === 'upi' && (
+                                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                            <Input
+                                                label="UPI ID"
+                                                value={upiId}
+                                                onChange={(event) => setUpiId(event.target.value)}
+                                                placeholder="yourname@upi"
+                                                helperText="Optional. Used only as a Razorpay checkout prefill."
+                                            />
+                                            <Input
+                                                label="Phone number"
+                                                type="tel"
+                                                value={phone}
+                                                onChange={(event) => setPhone(event.target.value)}
+                                                placeholder="+91 XXXXXXXXXX"
+                                            />
+                                        </div>
                                     )}
-                                >
-                                    <input
-                                        className="sr-only"
-                                        type="radio"
-                                        name="payment"
+                                    <PaymentMethodOption
                                         value="card"
-                                        checked={paymentMethod === 'card'}
-                                        onChange={() => setPaymentMethod('card')}
+                                        selected={paymentMethod === 'card'}
+                                        title="Credit or debit card"
+                                        description="Visa, Mastercard, Amex, and RuPay cards."
+                                        onSelect={() => setPaymentMethod('card')}
                                     />
-                                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-surface)] text-[var(--lb-color-primary)]">
-                                        <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                    </span>
-                                    <span className="min-w-0 flex-1">
-                                        <span className="block text-[length:var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]">
-                                            Credit or debit card
-                                        </span>
-                                        <span className="block text-[length:var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[color:var(--lb-color-text-subdued)]">
-                                            Visa, Mastercard, Amex, and RuPay.
-                                        </span>
-                                    </span>
-                                    {paymentMethod === 'card' && <Check className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />}
-                                </label>
-                            </div>
+                                </div>
+                            )}
                         </Section>
                     </Card>
-                )}
 
-                {!isFreePlan && (
-                    <Card>
-                        <Section title="Billing address" description="This address is used for taxes and subscription invoicing.">
-                            <div className="grid gap-[var(--lb-space-3)]">
+                    {!isFreePlan && (
+                        <Card>
+                            <Section
+                                title="Billing address"
+                                description="The existing subscription flow uses this information for payment and tax context."
+                            >
                                 <Input
-                                    id="billing-address"
                                     label="Address"
-                                    type="text"
-                                    placeholder="Street address"
                                     value={address}
                                     onChange={(event) => setAddress(event.target.value)}
+                                    placeholder="Street address"
+                                    autoComplete="street-address"
                                 />
-                                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                                     <Input
-                                        id="pin-code"
                                         label="PIN code"
-                                        type="text"
-                                        placeholder="6-digit PIN"
                                         value={pinCode}
                                         onChange={(event) => setPinCode(event.target.value)}
+                                        placeholder="6-digit PIN"
                                         maxLength={6}
+                                        autoComplete="postal-code"
                                     />
                                     <Input
-                                        id="city"
                                         label="City"
-                                        type="text"
-                                        placeholder="City"
                                         value={city}
                                         onChange={(event) => setCity(event.target.value)}
+                                        placeholder="City"
+                                        autoComplete="address-level2"
                                     />
                                 </div>
-                                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
+                                <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
                                     <Select
-                                        id="state"
                                         label="State"
-                                        options={STATE_OPTIONS}
                                         value={state}
                                         onChange={(event) => setState(event.target.value)}
+                                        options={stateOptions}
                                     />
-                                    <Input id="country" label="Country" type="text" value="India" disabled />
+                                    <Input label="Country" value="India" disabled />
                                 </div>
-                            </div>
-                        </Section>
-                    </Card>
-                )}
-            </div>
+                            </Section>
+                        </Card>
+                    )}
+                </div>
 
-            <aside className="min-w-0 xl:sticky xl:top-[var(--lb-space-6)]" aria-label="Plan summary">
-                <Card>
-                    <Section
-                        title="Plan summary"
-                        description={`${billingPeriodLabel(billingPeriod)} billing for ${plan.name}.`}
-                        action={<Badge label={plan.name} variant={isFreePlan ? 'info' : 'success'} />}
-                    >
-                        <div className="grid gap-[var(--lb-space-4)]">
-                            <div className="rounded-[var(--lb-radius-lg)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                                <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
-                                    <div className="min-w-0">
-                                        <p className="m-0 text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                            Amount due
-                                        </p>
-                                        <p className="m-0 text-[length:var(--lb-font-size-heading)] font-[var(--lb-font-weight-bold)] leading-[var(--lb-line-height-heading)] text-[color:var(--lb-color-text)]">
-                                            {formatCheckoutPrice(currentPrice)} INR
-                                        </p>
-                                    </div>
-                                    <IndianRupee className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] shrink-0 text-[var(--lb-color-primary)]" aria-hidden="true" />
-                                </div>
-                                <p className="m-[var(--lb-space-2)_0_0] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                    {isFreePlan ? 'No payment required' : 'Plus applicable taxes'}
-                                    {hasPromo && billingPeriod === 'monthly' && ` · ${formatCheckoutPrice(promoPrice)} × ${plan.promo_months} mo`}
-                                </p>
+                <aside className="min-w-0" aria-label="Plan summary">
+                    <Card>
+                        <Section
+                            title={`${plan.name} plan`}
+                            description={billingPeriod === 'yearly' ? 'Annual subscription' : 'Monthly subscription'}
+                            action={<Badge label={isFreePlan ? 'Free' : 'Razorpay'} variant={isFreePlan ? 'success' : 'info'} />}
+                        >
+                            <div className="flex items-baseline justify-between gap-[var(--lb-space-3)]">
+                                <span className="text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                    Amount due
+                                </span>
+                                <span className="text-[var(--lb-font-size-display)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-display)] text-[var(--lb-color-text)]">
+                                    {formatRupees(currentPrice)}
+                                </span>
                             </div>
 
                             <div className="grid gap-[var(--lb-space-3)]">
                                 {timeline.map((entry, index) => (
-                                    <div key={`${entry.label}-${index}`} className="flex gap-[var(--lb-space-3)] border-b border-[var(--lb-color-border)] pb-[var(--lb-space-3)] last:border-b-0 last:pb-0">
-                                        <span
-                                            className={cx(
-                                                'mt-[6px] h-[var(--lb-space-2)] w-[var(--lb-space-2)] shrink-0 rounded-[var(--lb-radius-full)]',
-                                                entry.isActive ? 'bg-[var(--lb-color-primary)]' : 'bg-[var(--lb-color-border)]',
-                                            )}
-                                        />
-                                        <div className="min-w-0 flex-1">
-                                            <div className="flex items-start justify-between gap-[var(--lb-space-2)]">
-                                                <span className="text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
-                                                    {entry.label}
-                                                </span>
-                                                <span className="text-right text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
-                                                    {entry.amount}
-                                                </span>
-                                            </div>
-                                            <p className="m-[var(--lb-space-1)_0_0] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                    <div key={`${entry.label}-${index}`} className="flex gap-[var(--lb-space-3)]">
+                                        <span className={cx(
+                                            'mt-[var(--lb-space-1)] flex h-[var(--lb-space-5)] w-[var(--lb-space-5)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] border',
+                                            entry.isActive
+                                                ? 'border-[var(--lb-color-success)] bg-[var(--lb-color-success-soft)] text-[var(--lb-color-success)]'
+                                                : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] text-[var(--lb-color-text-subdued)]',
+                                        )}>
+                                            <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        </span>
+                                        <span className="min-w-0 flex-1">
+                                            <span className="flex flex-wrap justify-between gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                <span>{entry.label}</span>
+                                                <span>{entry.amount}</span>
+                                            </span>
+                                            <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                                 {entry.date}
-                                            </p>
+                                            </span>
                                             {entry.description && (
-                                                <p className="m-[var(--lb-space-1)_0_0] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
+                                                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
                                                     {entry.description}
-                                                </p>
+                                                </span>
                                             )}
-                                        </div>
+                                        </span>
                                     </div>
                                 ))}
                             </div>
 
-                            <Button type="button" fullWidth size="lg" loading={isProcessing} onClick={handleSubscribe}>
-                                <Rocket className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                {isFreePlan ? 'Activate Free plan' : `Subscribe · ${formatCheckoutPrice(currentPrice)}`}
-                            </Button>
-
-                            {error && (
-                                <Banner variant="critical" title="Payment could not continue">
-                                    <p className="m-0">{error}</p>
-                                </Banner>
-                            )}
-
-                            <p className="m-0 text-center text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                {isFreePlan ? 'Upgrade whenever you need higher limits.' : 'Change or cancel your plan anytime.'}
-                            </p>
-
                             {plan.gmv_percentage > 0 && (
                                 <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)]">
-                                    <div className="mb-[var(--lb-space-2)] flex items-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-small)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text)]">
-                                        <ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] text-[var(--lb-color-primary)]" aria-hidden="true" />
+                                    <div className="mb-[var(--lb-space-2)] flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                        <Tag className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                                         Included benefits
                                     </div>
-                                    <ul className="m-0 grid list-none gap-[var(--lb-space-2)] p-0 text-[length:var(--lb-font-size-small)] leading-[var(--lb-line-height-small)] text-[color:var(--lb-color-text-subdued)]">
-                                        <li className="flex items-start gap-[var(--lb-space-2)]">
-                                            <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
-                                            Transaction fee: only {plan.gmv_percentage}% of GMV
-                                        </li>
-                                        <li className="flex items-start gap-[var(--lb-space-2)]">
-                                            <CheckCircle2 className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
-                                            7-day free trial included
-                                        </li>
+                                    <ul className="m-0 grid list-none gap-[var(--lb-space-2)] p-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                        <li>Transaction fee: {plan.gmv_percentage}% of GMV</li>
+                                        <li>7-day free trial included</li>
                                     </ul>
                                 </div>
                             )}
 
-                            <div className="flex items-center justify-center gap-[var(--lb-space-2)] text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text-subdued)]">
-                                <Lock className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                            {error && (
+                                <Banner variant="critical" title="Subscription checkout needs attention">
+                                    {error}
+                                </Banner>
+                            )}
+
+                            <Button type="button" onClick={handleSubscribe} loading={isProcessing} fullWidth>
+                                {isFreePlan ? (
+                                    <>
+                                        <CheckCircle2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        Activate Free plan
+                                    </>
+                                ) : (
+                                    <>
+                                        <CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                        Subscribe - {formatRupees(currentPrice)}
+                                    </>
+                                )}
+                            </Button>
+
+                            <p className="m-0 flex items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                {isFreePlan ? <IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" /> : <Lock className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                                 {isFreePlan ? 'LetBuyy billing' : 'Secured by Razorpay'}
-                            </div>
-                        </div>
-                    </Section>
-                </Card>
-            </aside>
-        </div>
+                            </p>
+                        </Section>
+                    </Card>
+                </aside>
+            </div>
+        </SettingsPane>
     )
 }

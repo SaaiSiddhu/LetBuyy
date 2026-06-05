@@ -1,251 +1,198 @@
-import type { MaterialIconName } from '@letbuyy/ui'
+import type { LucideIcon } from '@letbuyy/ui'
+import {
+    AppWindow,
+    Bell,
+    CreditCard,
+    FileJson,
+    FileText,
+    Globe,
+    IndianRupee,
+    Rocket,
+    Settings,
+    ShieldCheck,
+    ShoppingCart,
+    Store,
+    Tag,
+    Truck,
+    Users,
+} from '@letbuyy/ui'
 
-export type SettingsItemStatus = 'ready' | 'planned' | 'needs-backend'
-
-export interface SettingsIndexItem {
-    key: string
+export interface SettingsNavItem {
+    href: string
     label: string
     description: string
-    path: string
-    icon: MaterialIconName
-    status: SettingsItemStatus
-    badge?: string
-    query?: string
+    keywords: string[]
+    Icon: LucideIcon
+    status?: 'available' | 'backend-needed' | 'handoff'
 }
 
-export interface SettingsIndexGroup {
-    label: string
-    items: SettingsIndexItem[]
+export interface SettingsNavGroup {
+    title: string
+    items: SettingsNavItem[]
 }
 
-export const settingsIndexGroups: SettingsIndexGroup[] = [
+export const SETTINGS_NAV_GROUPS: SettingsNavGroup[] = [
     {
-        label: 'Store',
+        title: 'Store',
         items: [
             {
-                key: 'overview',
-                label: 'Overview',
-                description: 'Launch readiness, defaults, and the main settings map.',
-                path: '',
-                icon: 'settings',
-                status: 'ready',
+                href: 'general',
+                label: 'Store details',
+                description: 'Name, store handle, description, currency, and locale.',
+                keywords: ['general', 'store', 'details', 'currency', 'locale', 'language'],
+                Icon: Settings,
             },
             {
-                key: 'general',
-                label: 'General',
-                description: 'Store name, contact details, currency, locale, and deletion controls.',
-                path: 'general',
-                icon: 'storefront',
-                status: 'ready',
-            },
-            {
-                key: 'business',
+                href: 'business',
                 label: 'Business details',
-                description: 'Legal entity, GSTIN, invoice identity, and billing address readiness.',
-                path: 'business',
-                icon: 'work',
-                status: 'ready',
-                badge: 'Read-only',
+                description: 'Legal entity, GSTIN, and billing address.',
+                keywords: ['business', 'legal', 'gst', 'gstin', 'address'],
+                Icon: Store,
+                status: 'backend-needed',
+            },
+            {
+                href: 'localization',
+                label: 'Languages and localization',
+                description: 'Store languages, default locale, and regional formatting.',
+                keywords: ['languages', 'localization', 'locale', 'translation', 'markets'],
+                Icon: Globe,
+                status: 'backend-needed',
             },
         ],
     },
     {
-        label: 'Plan & Billing',
+        title: 'Plan and billing',
         items: [
             {
-                key: 'plan',
+                href: 'plan',
                 label: 'Plan',
-                description: 'Current plan, upgrade options, and cancellation workflow.',
-                path: 'plan',
-                icon: 'plan',
-                status: 'ready',
-                badge: 'Ends in 14 days',
+                description: 'Subscription status, trial timing, and plan comparison.',
+                keywords: ['plan', 'subscription', 'trial', 'upgrade'],
+                Icon: Rocket,
             },
             {
-                key: 'billing',
+                href: 'billing',
                 label: 'Billing',
-                description: 'Invoices, billing profile, and subscription payment details.',
-                path: 'billing',
-                icon: 'receipt_long',
-                status: 'ready',
+                description: 'Invoices, payment method, and billing history.',
+                keywords: ['billing', 'invoice', 'charges', 'payment method'],
+                Icon: CreditCard,
             },
             {
-                key: 'subscribe-checkout',
+                href: 'subscribe/checkout',
                 label: 'Subscribe checkout',
-                description: 'Plan checkout flow through the existing Razorpay subscription contract.',
-                path: 'subscribe/checkout',
-                query: 'plan=starter&bp=MONTHLY&site_type=store',
-                icon: 'credit_card',
-                status: 'ready',
-                badge: 'Flow',
+                description: 'Razorpay plan checkout and activation flow.',
+                keywords: ['subscribe', 'checkout', 'razorpay', 'plan checkout'],
+                Icon: CreditCard,
             },
         ],
     },
     {
-        label: 'Users & Permissions',
+        title: 'Users and permissions',
         items: [
             {
-                key: 'users',
-                label: 'Users',
-                description: 'Invite staff and manage workspace roles.',
-                path: 'users',
-                icon: 'manage_accounts',
-                status: 'ready',
+                href: 'users',
+                label: 'Users and permissions',
+                description: 'Invite staff and control access roles.',
+                keywords: ['users', 'permissions', 'staff', 'roles', 'invite'],
+                Icon: Users,
             },
             {
-                key: 'security',
+                href: 'security',
                 label: 'Security',
-                description: 'Session ownership, password security, MFA, passkeys, and risk monitoring readiness.',
-                path: 'security',
-                icon: 'shield_lock',
-                status: 'ready',
-                badge: 'Read-only',
+                description: '2FA, passkeys, and recovery code readiness.',
+                keywords: ['security', '2fa', 'mfa', 'passkeys', 'recovery'],
+                Icon: ShieldCheck,
+                status: 'backend-needed',
             },
         ],
     },
     {
-        label: 'Payments',
+        title: 'Commerce operations',
         items: [
             {
-                key: 'payments',
+                href: 'payments',
                 label: 'Payments',
-                description: 'Razorpay, COD, Cashfree, UPI, and provider account settings.',
-                path: 'payments',
-                icon: 'payments',
-                status: 'ready',
+                description: 'Razorpay, Cash on Delivery, and provider status.',
+                keywords: ['payments', 'razorpay', 'cod', 'upi', 'cashfree'],
+                Icon: IndianRupee,
             },
-        ],
-    },
-    {
-        label: 'Checkout',
-        items: [
             {
-                key: 'checkout',
+                href: 'checkout',
                 label: 'Checkout',
-                description: 'Checkout branding, buyer options, and order conversion controls.',
-                path: 'checkout',
-                icon: 'shopping_cart_checkout',
-                status: 'ready',
+                description: 'Customer account, contact, and form options.',
+                keywords: ['checkout', 'customer accounts', 'order notes', 'tips'],
+                Icon: ShoppingCart,
             },
-        ],
-    },
-    {
-        label: 'Shipping & Delivery',
-        items: [
             {
-                key: 'shipping',
+                href: 'shipping',
                 label: 'Shipping and delivery',
-                description: 'Shipping zones, delivery rates, and fulfillment defaults.',
-                path: 'shipping',
-                icon: 'local_shipping',
-                status: 'ready',
+                description: 'Delivery zones, countries, and rate coverage.',
+                keywords: ['shipping', 'delivery', 'zones', 'rates', 'fulfillment'],
+                Icon: Truck,
             },
-        ],
-    },
-    {
-        label: 'Taxes & Duties',
-        items: [
             {
-                key: 'taxes',
+                href: 'taxes',
                 label: 'Taxes and duties',
-                description: 'GST, inclusive pricing, and regional tax rates.',
-                path: 'taxes',
-                icon: 'request_quote',
-                status: 'ready',
+                description: 'GST, regional tax rates, and inclusive pricing.',
+                keywords: ['taxes', 'duties', 'gst', 'hsn', 'inclusive pricing'],
+                Icon: Tag,
             },
         ],
     },
     {
-        label: 'Domains',
+        title: 'Storefront trust',
         items: [
             {
-                key: 'domains',
+                href: 'domains',
                 label: 'Domains',
-                description: 'Primary domain, LetBuyy subdomain, and custom-domain setup.',
-                path: 'domains',
-                icon: 'domains',
-                status: 'ready',
+                description: 'LetBuyy subdomain and custom domain setup.',
+                keywords: ['domains', 'custom domain', 'dns', 'cname'],
+                Icon: Globe,
             },
-        ],
-    },
-    {
-        label: 'Notifications',
-        items: [
             {
-                key: 'notifications',
+                href: 'notifications',
                 label: 'Notifications',
-                description: 'Merchant alerts and shopper email preferences.',
-                path: 'notifications',
-                icon: 'notifications',
-                status: 'ready',
+                description: 'Staff alerts and customer transactional emails.',
+                keywords: ['notifications', 'emails', 'alerts', 'templates'],
+                Icon: Bell,
             },
-        ],
-    },
-    {
-        label: 'Languages',
-        items: [
             {
-                key: 'localization',
-                label: 'Languages',
-                description: 'Default locale, available language catalog, and storefront translation readiness.',
-                path: 'localization',
-                icon: 'language',
-                status: 'ready',
-                badge: 'Read-only',
-            },
-        ],
-    },
-    {
-        label: 'Policies',
-        items: [
-            {
-                key: 'policies',
+                href: 'policies',
                 label: 'Policies',
-                description: 'Privacy, refund, shipping, and terms policy pages.',
-                path: 'policies',
-                icon: 'policy',
-                status: 'ready',
+                description: 'Refund, privacy, terms, and shipping policies.',
+                keywords: ['policies', 'legal', 'refund', 'privacy', 'terms'],
+                Icon: FileText,
             },
         ],
     },
     {
-        label: 'Apps & Channels',
+        title: 'Extensions',
         items: [
             {
-                key: 'apps',
+                href: 'apps',
                 label: 'Apps and sales channels',
-                description: 'Installed apps, channels, app data access, and uninstall actions.',
-                path: 'apps',
-                icon: 'extension',
-                status: 'ready',
+                description: 'Installed apps, channel readiness, and marketplace handoff.',
+                keywords: ['apps', 'sales channels', 'marketplace', 'extensions'],
+                Icon: AppWindow,
             },
-        ],
-    },
-    {
-        label: 'Custom Data',
-        items: [
             {
-                key: 'custom-data',
+                href: 'custom-data',
                 label: 'Custom data',
-                description: 'Metafields, metaobjects, schema validation, and storefront exposure readiness.',
-                path: 'custom-data',
-                icon: 'deployed_code',
-                status: 'ready',
-                badge: 'Read-only',
+                description: 'Metafields and metaobjects for custom storefront data.',
+                keywords: ['custom data', 'metafields', 'metaobjects', 'schema'],
+                Icon: FileJson,
+                status: 'backend-needed',
             },
         ],
     },
 ]
 
-export function getSettingsItemHref(store: string, item: SettingsIndexItem) {
-    const base = item.path ? `/${store}/settings/${item.path}` : `/${store}/settings`
-    return item.query ? `${base}?${item.query}` : base
-}
+export const SETTINGS_NAV_ITEMS = SETTINGS_NAV_GROUPS.flatMap((group) => group.items)
 
-export function getSettingsItemPath(store: string, item: SettingsIndexItem) {
-    return item.path ? `/${store}/settings/${item.path}` : `/${store}/settings`
-}
-
-export function getSettingsReadyItems() {
-    return settingsIndexGroups.flatMap((group) => group.items.filter((item) => item.status === 'ready'))
+export function getSettingsItemByPath(pathname: string | null | undefined, store: string) {
+    if (!pathname) return null
+    return SETTINGS_NAV_ITEMS.find((item) => {
+        const href = `/${store}/settings/${item.href}`
+        return pathname === href || pathname.startsWith(`${href}/`)
+    }) ?? null
 }

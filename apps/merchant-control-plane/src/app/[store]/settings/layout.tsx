@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation'
 import { getSessionUser, getStoreForUser } from '@/lib/auth/session'
-import { SettingsShell } from '@/components/settings'
+import { SettingsShell } from '@/components/settings/SettingsShell'
 
 interface SettingsLayoutProps {
     children: React.ReactNode
@@ -23,7 +23,7 @@ export default async function SettingsLayout({ children, params }: SettingsLayou
             store={store}
             storeName={storeData.name || storeData.store_name || store}
             subdomain={storeData.subdomain || storeData.store_name || store}
-            userName={user.fullName || user.email.split('@')[0] || 'User'}
+            userName={user.fullName || ''}
             userEmail={user.email}
         >
             {children}

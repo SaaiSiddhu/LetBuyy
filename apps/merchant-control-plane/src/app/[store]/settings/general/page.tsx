@@ -9,14 +9,13 @@ import {
     Card,
     ConfirmDialog,
     Input,
-    SaveBar,
     Section,
     Select,
     Skeleton,
     Textarea,
     useToast,
 } from '@letbuyy/ui'
-import { SettingsPane } from '@/components/settings'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface GeneralData {
     id: string
@@ -31,6 +30,11 @@ interface GeneralData {
 }
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
+
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
 
 const currencyOptions = [
     { value: 'INR', label: 'Indian Rupee (INR)' },
@@ -56,6 +60,15 @@ const emptyGeneralData: GeneralData = {
     currency: 'INR',
     locale: DEFAULT_ADMIN_LOCALE,
     site_type: 'store',
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
 function readString(record: Record<string, unknown>, key: string, fallback = '') {
@@ -91,64 +104,64 @@ export default function GeneralSettingsPage() {
 
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
-    useEffect(() => {
-        let mounted = true
+    const loadData = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true)
+        setLoadError(null)
 
-        async function load() {
-            setLoading(true)
-            setLoadError(null)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+                signal,
+            })
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                    cache: 'no-store',
-                })
-                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
-
-                if (!response.ok) {
-                    throw new Error(payload.error || 'Unable to load general settings')
-                }
-
-                const storeData = payload.data
-                if (!storeData) {
-                    throw new Error('General settings were not returned for this store')
-                }
-
-                const nextData: GeneralData = {
-                    id: readString(storeData, 'id'),
-                    store_name: readString(storeData, 'store_name'),
-                    name: readString(storeData, 'name', readString(storeData, 'store_name')),
-                    description: readString(storeData, 'description'),
-                    subdomain: readString(storeData, 'subdomain', readString(storeData, 'store_name')),
-                    custom_domain: readString(storeData, 'custom_domain'),
-                    currency: readString(storeData, 'currency', 'INR'),
-                    locale: normalizeAdminLocale(readString(storeData, 'locale', DEFAULT_ADMIN_LOCALE)),
-                    site_type: readString(storeData, 'site_type', 'store'),
-                }
-
-                if (!mounted) return
-                setData(nextData)
-                setInitialData(nextData)
-                setSaveState('saved')
-            } catch (error) {
-                if (!mounted) return
-                const message = error instanceof Error ? error.message : 'Unable to load general settings'
-                setLoadError(message)
-                notify({
-                    title: 'General settings could not load',
-                    description: message,
-                    variant: 'critical',
-                })
-            } finally {
-                if (mounted) setLoading(false)
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to load general settings'))
             }
-        }
 
-        void load()
+            const storeData = isRecord(payload?.data) ? payload.data : null
+            if (!storeData) {
+                throw new Error('General settings were not returned for this store')
+            }
 
-        return () => {
-            mounted = false
+            const nextData: GeneralData = {
+                id: readString(storeData, 'id'),
+                store_name: readString(storeData, 'store_name'),
+                name: readString(storeData, 'name', readString(storeData, 'store_name')),
+                description: readString(storeData, 'description'),
+                subdomain: readString(storeData, 'subdomain', readString(storeData, 'store_name')),
+                custom_domain: readString(storeData, 'custom_domain'),
+                currency: readString(storeData, 'currency', 'INR'),
+                locale: normalizeAdminLocale(readString(storeData, 'locale', DEFAULT_ADMIN_LOCALE)),
+                site_type: readString(storeData, 'site_type', 'store'),
+            }
+
+            setData(nextData)
+            setInitialData(nextData)
+            setSaveState('saved')
+        } catch (error) {
+            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
+
+            const message = error instanceof Error ? error.message : 'Unable to load general settings'
+            setLoadError(message)
+            notify({
+                title: 'General settings could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            if (!signal?.aborted) setLoading(false)
         }
     }, [notify, store])
+
+    useEffect(() => {
+        const controller = new AbortController()
+        void loadData(controller.signal)
+
+        return () => {
+            controller.abort()
+        }
+    }, [loadData])
 
     const updateField = useCallback(<Key extends keyof GeneralData>(field: Key, value: GeneralData[Key]) => {
         setData((current) => ({ ...current, [field]: value }))
@@ -171,10 +184,10 @@ export default function GeneralSettingsPage() {
                     locale: data.locale,
                 }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save general settings')
+                throw new Error(getPayloadError(payload, 'Unable to save general settings'))
             }
 
             setInitialData(data)
@@ -214,10 +227,10 @@ export default function GeneralSettingsPage() {
             const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
                 method: 'DELETE',
             })
-            const payload = await response.json().catch(() => ({})) as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to delete store')
+                throw new Error(getPayloadError(payload, 'Unable to delete store'))
             }
 
             notify({
@@ -242,9 +255,9 @@ export default function GeneralSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
-                store={store}
                 title="General"
                 description="Manage the core identity, language, and market defaults for this store."
+                store={store}
             >
                 <Card>
                     <Section title="Store details">
@@ -264,15 +277,25 @@ export default function GeneralSettingsPage() {
     return (
         <>
             <SettingsPane
-                store={store}
                 title="General"
                 description="Manage the core identity, language, and market defaults for this store."
+                store={store}
+                guidance={{
+                    title: 'Core store identity',
+                    body: 'Keep these details aligned with the public storefront, billing records, and support workflows before launch.',
+                }}
+                saveBar={{
+                    state: activeSaveState,
+                    onSave: () => void handleSave(),
+                    onDiscard: handleDiscard,
+                    saveLabel: 'Save settings',
+                }}
             >
                 {loadError && (
                     <Banner
                         variant="critical"
                         title="General settings could not load"
-                        action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                        action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
                     >
                         {loadError}
                     </Banner>
@@ -343,13 +366,6 @@ export default function GeneralSettingsPage() {
                             />
                         </Section>
                     </Card>
-
-                    <SaveBar
-                        state={activeSaveState}
-                        onSave={() => void handleSave()}
-                        onDiscard={handleDiscard}
-                        saveLabel="Save settings"
-                    />
                 </form>
 
                 <Card className="border-[var(--lb-color-critical)]">

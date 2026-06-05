@@ -1,6 +1,6 @@
 'use client'
 
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
     Badge,
@@ -9,14 +9,11 @@ import {
     Card,
     Globe,
     Input,
-    Link2,
-    SaveBar,
     Section,
-    ShieldCheck,
     Skeleton,
     useToast,
 } from '@letbuyy/ui'
-import { SettingsPane } from '@/components/settings'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface DomainStoreData {
     id: string
@@ -26,33 +23,23 @@ interface DomainStoreData {
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
 
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
 function readString(record: Record<string, unknown>, key: string, fallback = '') {
     const value = record[key]
     return typeof value === 'string' ? value : fallback
-}
-
-interface DomainMetricProps {
-    icon: ReactNode
-    label: string
-    value: string
-}
-
-function DomainMetric({ icon, label, value }: DomainMetricProps) {
-    return (
-        <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                {icon}
-            </span>
-            <span className="min-w-0 space-y-[var(--lb-space-1)]">
-                <span className="block text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                    {label}
-                </span>
-                <span className="block truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                    {value}
-                </span>
-            </span>
-        </div>
-    )
 }
 
 export default function DomainSettingsPage() {
@@ -70,65 +57,63 @@ export default function DomainSettingsPage() {
     const [customDomain, setCustomDomain] = useState('')
 
     const normalizedDomain = customDomain.trim()
-    const hostedDomain = `${storeData.subdomain || store}.letbuyy.store`
-    const customDomainStatus = storeData.custom_domain ? 'Saved, pending verification' : 'Not connected'
     const hasUnsavedChanges = useMemo(() => normalizedDomain !== initialDomain, [initialDomain, normalizedDomain])
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
-    useEffect(() => {
-        let mounted = true
+    const loadData = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true)
+        setLoadError(null)
 
-        async function load() {
-            setLoading(true)
-            setLoadError(null)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+                signal,
+            })
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                    cache: 'no-store',
-                })
-                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
-
-                if (!response.ok) {
-                    throw new Error(payload.error || 'Unable to load domain settings')
-                }
-
-                const data = payload.data
-                if (!data) {
-                    throw new Error('Domain settings were not returned for this store')
-                }
-
-                const nextDomain = readString(data, 'custom_domain')
-                const nextStoreData: DomainStoreData = {
-                    id: readString(data, 'id'),
-                    subdomain: readString(data, 'subdomain', readString(data, 'store_name')),
-                    custom_domain: nextDomain,
-                }
-
-                if (!mounted) return
-                setStoreData(nextStoreData)
-                setCustomDomain(nextDomain)
-                setInitialDomain(nextDomain)
-                setSaveState('saved')
-            } catch (error) {
-                if (!mounted) return
-                const message = error instanceof Error ? error.message : 'Unable to load domain settings'
-                setLoadError(message)
-                notify({
-                    title: 'Domain settings could not load',
-                    description: message,
-                    variant: 'critical',
-                })
-            } finally {
-                if (mounted) setLoading(false)
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to load domain settings'))
             }
-        }
 
-        void load()
+            const data = isRecord(payload?.data) ? payload.data : null
+            if (!data) {
+                throw new Error('Domain settings were not returned for this store')
+            }
 
-        return () => {
-            mounted = false
+            const nextDomain = readString(data, 'custom_domain')
+            const nextStoreData: DomainStoreData = {
+                id: readString(data, 'id'),
+                subdomain: readString(data, 'subdomain', readString(data, 'store_name')),
+                custom_domain: nextDomain,
+            }
+
+            setStoreData(nextStoreData)
+            setCustomDomain(nextDomain)
+            setInitialDomain(nextDomain)
+            setSaveState('saved')
+        } catch (error) {
+            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
+
+            const message = error instanceof Error ? error.message : 'Unable to load domain settings'
+            setLoadError(message)
+            notify({
+                title: 'Domain settings could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            if (!signal?.aborted) setLoading(false)
         }
     }, [notify, store])
+
+    useEffect(() => {
+        const controller = new AbortController()
+        void loadData(controller.signal)
+
+        return () => {
+            controller.abort()
+        }
+    }, [loadData])
 
     const handleSave = useCallback(async () => {
         if (!hasUnsavedChanges || saveState === 'saving') return
@@ -141,10 +126,10 @@ export default function DomainSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ custom_domain: normalizedDomain || null }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save domain settings')
+                throw new Error(getPayloadError(payload, 'Unable to save domain settings'))
             }
 
             setStoreData((current) => ({ ...current, custom_domain: normalizedDomain }))
@@ -182,10 +167,9 @@ export default function DomainSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
-                store={store}
                 title="Domains"
                 description="Manage LetBuyy and custom domains for this store."
-                iconName="domains"
+                store={store}
             >
                 <Card>
                     <Section title="Primary domain">
@@ -203,53 +187,29 @@ export default function DomainSettingsPage() {
 
     return (
         <SettingsPane
-            store={store}
             title="Domains"
             description="Manage LetBuyy and custom domains for this store."
-            iconName="domains"
-            saveBar={(
-                <SaveBar
-                    state={activeSaveState}
-                    onSave={() => void handleSave()}
-                    onDiscard={handleDiscard}
-                    saveLabel="Save domain"
-                />
-            )}
+            store={store}
+            guidance={{
+                title: 'Custom domains need DNS setup',
+                body: 'Connect a custom domain to give your store a professional web address. Update DNS before switching traffic.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save domain',
+            }}
         >
             {loadError && (
                 <Banner
                     variant="critical"
                     title="Domain settings could not load"
-                    action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
                 >
                     {loadError}
                 </Banner>
             )}
-
-            <Card>
-                <Section
-                    title="Domain overview"
-                    description="Review the live hosted domain, custom-domain save state, and verification readiness."
-                >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                        <DomainMetric
-                            icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="LetBuyy domain"
-                            value={hostedDomain}
-                        />
-                        <DomainMetric
-                            icon={<Link2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Custom domain"
-                            value={storeData.custom_domain || 'Not connected'}
-                        />
-                        <DomainMetric
-                            icon={<ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Verification"
-                            value={storeData.custom_domain ? 'Backend needed' : 'Waiting for domain'}
-                        />
-                    </div>
-                </Section>
-            </Card>
 
             <Card>
                 <Section
@@ -262,7 +222,7 @@ export default function DomainSettingsPage() {
                                 <Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
                             </span>
                             <span className="truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                                {hostedDomain}
+                                {storeData.subdomain}.letbuyy.store
                             </span>
                         </div>
                         <div className="flex flex-wrap gap-[var(--lb-space-2)]">
@@ -278,18 +238,6 @@ export default function DomainSettingsPage() {
                     title="Custom domain"
                     description="Point a CNAME record from your domain to the LetBuyy storefront host."
                 >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
-                        <DomainMetric
-                            icon={<Link2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Status"
-                            value={customDomainStatus}
-                        />
-                        <DomainMetric
-                            icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="CNAME target"
-                            value="stores.letbuyy.store"
-                        />
-                    </div>
                     <div className="rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] text-[var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
                         CNAME target: <code className="rounded-[var(--lb-radius-sm)] bg-[var(--lb-color-surface)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-[var(--lb-font-size-caption)]">stores.letbuyy.store</code>
                     </div>
@@ -303,39 +251,6 @@ export default function DomainSettingsPage() {
                     />
                 </Section>
             </Card>
-
-            <Card>
-                <Section
-                    title="Verification and SSL"
-                    description="DNS checks, certificate status, and primary-domain switching need a verification API before they can be configured here."
-                    action={<Badge label="Needs backend" variant="warning" />}
-                >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                        <DomainMetric
-                            icon={<Globe className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="DNS check"
-                            value="Backend needed"
-                        />
-                        <DomainMetric
-                            icon={<ShieldCheck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="SSL certificate"
-                            value="Not issued here"
-                        />
-                        <DomainMetric
-                            icon={<Link2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Primary switch"
-                            value="Needs verification"
-                        />
-                    </div>
-                    <Banner variant="warning" title="Domain verification needs backend support">
-                        The current store settings API saves the custom domain only. DNS verification, SSL issuance status, and primary-domain switching need backend support before this pane can prove those controls.
-                    </Banner>
-                </Section>
-            </Card>
-
-            <Banner variant="info" title="Custom domains need DNS setup">
-                Connect a custom domain to give your store a professional web address. Update DNS before switching traffic.
-            </Banner>
         </SettingsPane>
     )
 }

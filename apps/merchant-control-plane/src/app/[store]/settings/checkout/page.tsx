@@ -1,25 +1,17 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useParams } from 'next/navigation'
 import {
     Banner,
-    Badge,
     Button,
     Card,
-    Lock,
-    Mail,
-    MessageSquare,
-    Palette,
-    SaveBar,
     Section,
     Select,
     Skeleton,
-    ShoppingCart,
-    User,
     useToast,
 } from '@letbuyy/ui'
-import { SettingsPane } from '@/components/settings'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface CheckoutSettings {
     contact_method: 'email' | 'phone' | 'both'
@@ -31,6 +23,11 @@ interface CheckoutSettings {
 }
 
 type SaveState = 'saved' | 'unsaved' | 'saving'
+
+type SettingsPayload = {
+    data?: unknown
+    error?: string | { message?: string }
+}
 
 const DEFAULTS: CheckoutSettings = {
     contact_method: 'email',
@@ -67,6 +64,11 @@ const companyNameOptions = [
 
 function isRecord(value: unknown): value is Record<string, unknown> {
     return Boolean(value) && typeof value === 'object' && !Array.isArray(value)
+}
+
+function getPayloadError(payload: SettingsPayload | null, fallback: string) {
+    if (!payload?.error) return fallback
+    return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
 function readEnum<Value extends string>(record: Record<string, unknown>, key: string, allowed: readonly Value[], fallback: Value) {
@@ -130,55 +132,6 @@ function ToggleRow({ id, label, description, checked, onChange }: ToggleRowProps
     )
 }
 
-interface StatusCardProps {
-    icon: ReactNode
-    label: string
-    value: string
-    badge?: string
-}
-
-function StatusCard({ icon, label, value, badge }: StatusCardProps) {
-    return (
-        <div className="flex min-w-0 items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-            <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                {icon}
-            </span>
-            <div className="min-w-0 space-y-[var(--lb-space-1)]">
-                <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
-                    <p className="m-0 text-[var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text-subdued)]">
-                        {label}
-                    </p>
-                    {badge && <Badge label={badge} variant="info" />}
-                </div>
-                <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                    {value}
-                </p>
-            </div>
-        </div>
-    )
-}
-
-interface LockedCoreItemProps {
-    title: string
-    description: string
-}
-
-function LockedCoreItem({ title, description }: LockedCoreItemProps) {
-    return (
-        <li className="flex items-start gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)]">
-            <Lock className="mt-[2px] h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)] shrink-0 text-[var(--lb-color-success)]" aria-hidden="true" />
-            <div className="min-w-0 space-y-[var(--lb-space-1)]">
-                <p className="m-0 text-[var(--lb-font-size-secondary)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text)]">
-                    {title}
-                </p>
-                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                    {description}
-                </p>
-            </div>
-        </li>
-    )
-}
-
 export default function CheckoutSettingsPage() {
     const { store } = useParams<{ store: string }>()
     const { notify } = useToast()
@@ -192,56 +145,56 @@ export default function CheckoutSettingsPage() {
     const hasUnsavedChanges = useMemo(() => !settingsEqual(settings, initialSettings), [settings, initialSettings])
     const activeSaveState: SaveState = saveState === 'saving' ? 'saving' : hasUnsavedChanges ? 'unsaved' : 'saved'
 
-    useEffect(() => {
-        let mounted = true
+    const loadData = useCallback(async (signal?: AbortSignal) => {
+        setLoading(true)
+        setLoadError(null)
 
-        async function load() {
-            setLoading(true)
-            setLoadError(null)
+        try {
+            const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
+                cache: 'no-store',
+                signal,
+            })
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
-            try {
-                const response = await fetch(`/api/stores/${encodeURIComponent(store)}/settings`, {
-                    cache: 'no-store',
-                })
-                const payload = await response.json() as { data?: Record<string, unknown>; error?: string }
-
-                if (!response.ok) {
-                    throw new Error(payload.error || 'Unable to load checkout settings')
-                }
-
-                const data = payload.data
-                if (!data) {
-                    throw new Error('Checkout settings were not returned for this store')
-                }
-
-                const nextSiteSettings = isRecord(data.site_settings) ? data.site_settings : {}
-                const nextSettings = readCheckoutSettings(nextSiteSettings)
-
-                if (!mounted) return
-                setSiteSettings(nextSiteSettings)
-                setSettings(nextSettings)
-                setInitialSettings(nextSettings)
-                setSaveState('saved')
-            } catch (error) {
-                if (!mounted) return
-                const message = error instanceof Error ? error.message : 'Unable to load checkout settings'
-                setLoadError(message)
-                notify({
-                    title: 'Checkout settings could not load',
-                    description: message,
-                    variant: 'critical',
-                })
-            } finally {
-                if (mounted) setLoading(false)
+            if (!response.ok) {
+                throw new Error(getPayloadError(payload, 'Unable to load checkout settings'))
             }
-        }
 
-        void load()
+            const data = isRecord(payload?.data) ? payload.data : null
+            if (!data) {
+                throw new Error('Checkout settings were not returned for this store')
+            }
 
-        return () => {
-            mounted = false
+            const nextSiteSettings = isRecord(data.site_settings) ? data.site_settings : {}
+            const nextSettings = readCheckoutSettings(nextSiteSettings)
+
+            setSiteSettings(nextSiteSettings)
+            setSettings(nextSettings)
+            setInitialSettings(nextSettings)
+            setSaveState('saved')
+        } catch (error) {
+            if (signal?.aborted || (error instanceof DOMException && error.name === 'AbortError')) return
+
+            const message = error instanceof Error ? error.message : 'Unable to load checkout settings'
+            setLoadError(message)
+            notify({
+                title: 'Checkout settings could not load',
+                description: message,
+                variant: 'critical',
+            })
+        } finally {
+            if (!signal?.aborted) setLoading(false)
         }
     }, [notify, store])
+
+    useEffect(() => {
+        const controller = new AbortController()
+        void loadData(controller.signal)
+
+        return () => {
+            controller.abort()
+        }
+    }, [loadData])
 
     const updateField = useCallback(<Key extends keyof CheckoutSettings>(key: Key, value: CheckoutSettings[Key]) => {
         setSettings((current) => ({ ...current, [key]: value }))
@@ -259,10 +212,10 @@ export default function CheckoutSettingsPage() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ site_settings: nextSiteSettings }),
             })
-            const payload = await response.json() as { error?: string }
+            const payload = (await response.json().catch(() => null)) as SettingsPayload | null
 
             if (!response.ok) {
-                throw new Error(payload.error || 'Unable to save checkout settings')
+                throw new Error(getPayloadError(payload, 'Unable to save checkout settings'))
             }
 
             setSiteSettings(nextSiteSettings)
@@ -297,10 +250,9 @@ export default function CheckoutSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
-                store={store}
                 title="Checkout"
                 description="Control how customers identify themselves and complete checkout."
-                iconName="checkout"
+                store={store}
             >
                 <Card>
                     <Section title="Customer contact method">
@@ -319,24 +271,25 @@ export default function CheckoutSettingsPage() {
 
     return (
         <SettingsPane
-            store={store}
             title="Checkout"
             description="Control how customers identify themselves and complete checkout."
-            iconName="checkout"
-            saveBar={(
-                <SaveBar
-                    state={activeSaveState}
-                    onSave={() => void handleSave()}
-                    onDiscard={handleDiscard}
-                    saveLabel="Save checkout"
-                />
-            )}
+            store={store}
+            guidance={{
+                title: 'Checkout impact',
+                body: 'These settings control how customers interact with your checkout process.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save checkout',
+            }}
         >
             {loadError && (
                 <Banner
                     variant="critical"
                     title="Checkout settings could not load"
-                    action={<Button variant="secondary" onClick={() => window.location.reload()}>Retry</Button>}
+                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
                 >
                     {loadError}
                 </Banner>
@@ -344,48 +297,29 @@ export default function CheckoutSettingsPage() {
 
             <Card>
                 <Section
-                    title="Checkout experience"
-                    description="Review the customer identification rules currently saved under store settings."
+                    title="Customer contact method"
+                    description="Choose the contact detail customers can use to receive order updates."
                 >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                        <StatusCard
-                            icon={<Mail className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Contact"
-                            value={contactMethodOptions.find((option) => option.value === settings.contact_method)?.label ?? 'Email'}
-                        />
-                        <StatusCard
-                            icon={<User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Customer accounts"
-                            value={accountOptions.find((option) => option.value === settings.customer_accounts)?.label ?? 'Accounts are optional'}
-                        />
-                        <StatusCard
-                            icon={<MessageSquare className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Extras"
-                            value={`${settings.order_notes ? 'Notes on' : 'Notes off'} / ${settings.tip_option ? 'Tips on' : 'Tips off'}`}
-                        />
-                    </div>
+                    <Select
+                        label="Customers can check out using"
+                        value={settings.contact_method}
+                        options={contactMethodOptions}
+                        onChange={(event) => updateField('contact_method', event.target.value as CheckoutSettings['contact_method'])}
+                    />
                 </Section>
             </Card>
 
             <Card>
                 <Section
-                    title="Customer identity"
-                    description="Choose how shoppers identify themselves before order confirmation."
+                    title="Customer accounts"
+                    description="Decide whether accounts are required, optional, or unavailable during checkout."
                 >
-                    <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                        <Select
-                            label="Customers can check out using"
-                            value={settings.contact_method}
-                            options={contactMethodOptions}
-                            onChange={(event) => updateField('contact_method', event.target.value as CheckoutSettings['contact_method'])}
-                        />
-                        <Select
-                            label="Account creation"
-                            value={settings.customer_accounts}
-                            options={accountOptions}
-                            onChange={(event) => updateField('customer_accounts', event.target.value as CheckoutSettings['customer_accounts'])}
-                        />
-                    </div>
+                    <Select
+                        label="Account creation"
+                        value={settings.customer_accounts}
+                        options={accountOptions}
+                        onChange={(event) => updateField('customer_accounts', event.target.value as CheckoutSettings['customer_accounts'])}
+                    />
                 </Section>
             </Card>
 
@@ -413,55 +347,6 @@ export default function CheckoutSettingsPage() {
 
             <Card>
                 <Section
-                    title="Checkout branding"
-                    description="Brand controls are shown as a placeholder until checkout-core exposes editable branding fields."
-                    action={<Badge label="Needs backend" variant="warning" />}
-                >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
-                        <StatusCard
-                            icon={<Palette className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Brand theme"
-                            value="Storefront theme inherited"
-                            badge="Locked"
-                        />
-                        <StatusCard
-                            icon={<ShoppingCart className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            label="Checkout layout"
-                            value="LetBuyy managed checkout"
-                            badge="Core"
-                        />
-                    </div>
-                    <Banner variant="warning" title="Branding controls need backend support">
-                        Checkout logo, accent color, trust badge, and checkout layout settings are not exposed by the current store settings API. The pane keeps the existing options editable and shows branding as read-only.
-                    </Banner>
-                </Section>
-            </Card>
-
-            <Card>
-                <Section
-                    title="Locked checkout core"
-                    description="These behaviours stay platform-managed so orders remain tenant-safe and payment-safe."
-                    action={<Badge label="Protected" variant="success" />}
-                >
-                    <ul className="m-0 grid list-none gap-[var(--lb-space-3)] p-0 md:grid-cols-3">
-                        <LockedCoreItem
-                            title="Server pricing"
-                            description="Totals are recalculated by the checkout service before payment or COD order creation."
-                        />
-                        <LockedCoreItem
-                            title="Payment handoff"
-                            description="Provider signatures and idempotency stay outside editable merchant UI settings."
-                        />
-                        <LockedCoreItem
-                            title="Policy links"
-                            description="Checkout policy content is managed from the Policies pane."
-                        />
-                    </ul>
-                </Section>
-            </Card>
-
-            <Card>
-                <Section
                     title="Additional options"
                     description="Enable optional checkout affordances that help customers communicate order details."
                 >
@@ -483,10 +368,6 @@ export default function CheckoutSettingsPage() {
                     </div>
                 </Section>
             </Card>
-
-            <Banner variant="info" title="Checkout impact">
-                These settings control how customers interact with your checkout process.
-            </Banner>
         </SettingsPane>
     )
 }

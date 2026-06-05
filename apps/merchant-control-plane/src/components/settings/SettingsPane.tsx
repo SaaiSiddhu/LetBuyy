@@ -1,48 +1,71 @@
-import type { ReactNode } from 'react'
-import { Page, PageContent, PageHeader, type MaterialIconName, type PageHeaderAction, type PageIdentity } from '@letbuyy/ui'
+'use client'
+
+import {
+    Banner,
+    Page,
+    PageHeader,
+    SaveBar,
+    type PageHeaderAction,
+    type SaveBarProps,
+} from '@letbuyy/ui'
 
 interface SettingsPaneProps {
-    store: string
     title: string
-    description?: string
-    identity?: PageIdentity
-    iconName?: MaterialIconName
+    description: string
+    store: string
+    children: React.ReactNode
+    breadcrumbs?: Array<{ label: string; href?: string }>
+    eyebrow?: string
+    guidance?: {
+        title: string
+        body: React.ReactNode
+        variant?: 'info' | 'success' | 'warning' | 'critical'
+    }
     primaryAction?: PageHeaderAction
     secondaryActions?: PageHeaderAction[]
-    children: ReactNode
-    saveBar?: ReactNode
+    saveBar?: Pick<SaveBarProps, 'state' | 'onSave' | 'onDiscard' | 'saveLabel' | 'discardLabel'>
 }
 
 export function SettingsPane({
-    store,
     title,
     description,
-    identity = 'settings',
-    iconName,
+    store,
+    children,
+    breadcrumbs,
+    eyebrow,
+    guidance,
     primaryAction,
     secondaryActions,
-    children,
     saveBar,
 }: SettingsPaneProps) {
-    const breadcrumbs = title === 'Settings'
-        ? [{ label: 'Settings' }]
-        : [{ label: 'Settings', href: `/${store}/settings` }, { label: title }]
-
     return (
-        <Page className="max-w-[var(--lb-size-page-max)] px-0 py-0">
+        <Page>
             <PageHeader
                 title={title}
                 description={description}
-                identity={identity}
-                iconName={iconName}
-                showBreadcrumbs
-                showDescription={Boolean(description)}
-                breadcrumbs={breadcrumbs}
+                eyebrow={eyebrow}
+                breadcrumbs={breadcrumbs ?? [{ label: 'Settings', href: `/${store}/settings` }, { label: title }]}
                 primaryAction={primaryAction}
                 secondaryActions={secondaryActions}
             />
-            <PageContent>{children}</PageContent>
-            {saveBar}
+
+            {guidance && (
+                <Banner variant={guidance.variant ?? 'info'} title={guidance.title}>
+                    {guidance.body}
+                </Banner>
+            )}
+
+            {children}
+
+            {saveBar && (
+                <SaveBar
+                    state={saveBar.state}
+                    onSave={saveBar.onSave}
+                    onDiscard={saveBar.onDiscard}
+                    saveLabel={saveBar.saveLabel}
+                    discardLabel={saveBar.discardLabel}
+                />
+            )}
         </Page>
     )
 }

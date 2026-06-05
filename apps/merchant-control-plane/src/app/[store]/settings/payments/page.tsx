@@ -11,14 +11,13 @@ import {
     IndianRupee,
     Input,
     Key,
-    SaveBar,
     Section,
     ShieldCheck,
     Skeleton,
     Truck,
     useToast,
 } from '@letbuyy/ui'
-import { SettingsPane } from '@/components/settings'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 type SanitizedPaymentSettings = {
     mode: 'shared' | 'ownAccount'
@@ -41,7 +40,7 @@ type PaymentConfig = {
 }
 
 type PaymentConfigPayload = {
-    data?: PaymentConfig
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -50,6 +49,38 @@ type SaveState = 'saved' | 'unsaved' | 'saving'
 function getPayloadError(payload: PaymentConfigPayload | null, fallback: string) {
     if (!payload?.error) return fallback
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown) {
+    return typeof value === 'string' ? value : ''
+}
+
+function normalizePaymentConfig(value: unknown): PaymentConfig {
+    const data = isRecord(value) ? value : {}
+    const settings = isRecord(data.payment_settings) ? data.payment_settings : {}
+    const razorpayData = isRecord(settings.razorpay) ? settings.razorpay : null
+
+    return {
+        store_id: readString(data.store_id),
+        online_payment_enabled: data.online_payment_enabled === true,
+        cod_enabled: data.cod_enabled === true,
+        payment_settings: {
+            mode: settings.mode === 'ownAccount' ? 'ownAccount' : 'shared',
+            gateways: Array.isArray(settings.gateways) ? settings.gateways.filter((gateway): gateway is string => typeof gateway === 'string') : [],
+            razorpay: razorpayData ? {
+                key_id: typeof razorpayData.key_id === 'string' ? razorpayData.key_id : null,
+                test_mode: typeof razorpayData.test_mode === 'boolean' ? razorpayData.test_mode : true,
+                verified: razorpayData.verified === true,
+                connected_at: typeof razorpayData.connected_at === 'string' ? razorpayData.connected_at : null,
+                updated_at: typeof razorpayData.updated_at === 'string' ? razorpayData.updated_at : null,
+                secret_configured: razorpayData.secret_configured === true,
+            } : null,
+        },
+    }
 }
 
 interface PaymentSummaryProps {
@@ -73,52 +104,6 @@ function PaymentSummary({ icon, label, value }: PaymentSummaryProps) {
                 </span>
             </span>
         </div>
-    )
-}
-
-type ProviderStatusVariant = 'default' | 'info' | 'success' | 'warning' | 'critical'
-
-interface ProviderCardProps {
-    icon: ReactNode
-    name: string
-    description: string
-    statusLabel: string
-    statusVariant: ProviderStatusVariant
-    helperText?: string
-}
-
-function ProviderCard({
-    icon,
-    name,
-    description,
-    statusLabel,
-    statusVariant,
-    helperText,
-}: ProviderCardProps) {
-    return (
-        <article className="flex min-w-0 flex-col gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)]">
-            <div className="flex items-start justify-between gap-[var(--lb-space-3)]">
-                <div className="flex min-w-0 items-start gap-[var(--lb-space-3)]">
-                    <span className="flex h-[var(--lb-size-control-md)] w-[var(--lb-size-control-md)] shrink-0 items-center justify-center rounded-[var(--lb-radius-full)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]">
-                        {icon}
-                    </span>
-                    <div className="min-w-0 space-y-[var(--lb-space-1)]">
-                        <h3 className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
-                            {name}
-                        </h3>
-                        <p className="m-0 text-[var(--lb-font-size-secondary)] leading-[var(--lb-line-height-secondary)] text-[var(--lb-color-text-subdued)]">
-                            {description}
-                        </p>
-                    </div>
-                </div>
-                <Badge label={statusLabel} variant={statusVariant} />
-            </div>
-            {helperText && (
-                <p className="m-0 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-3)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                    {helperText}
-                </p>
-            )}
-        </article>
     )
 }
 
@@ -156,8 +141,9 @@ export default function PaymentsSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load payment settings'))
             }
 
-            const nextTestMode = payload.data.payment_settings.razorpay?.test_mode ?? true
-            setConfig(payload.data)
+            const nextConfig = normalizePaymentConfig(payload.data)
+            const nextTestMode = nextConfig.payment_settings.razorpay?.test_mode ?? true
+            setConfig(nextConfig)
             setTestMode(nextTestMode)
             setInitialTestMode(nextTestMode)
             setKeyId('')
@@ -216,19 +202,21 @@ export default function PaymentsSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to save payment settings'))
             }
 
-            const nextTestMode = payload.data.payment_settings.razorpay?.test_mode ?? testMode
-            setConfig(payload.data)
+            const nextConfig = normalizePaymentConfig(payload.data)
+            const nextRazorpay = nextConfig.payment_settings.razorpay
+            const nextTestMode = nextRazorpay?.test_mode ?? testMode
+            setConfig(nextConfig)
             setKeyId('')
             setKeySecret('')
             setTestMode(nextTestMode)
             setInitialTestMode(nextTestMode)
             setSaveState('saved')
             notify({
-                title: payload.data.payment_settings.razorpay?.verified ? 'Razorpay connected' : 'Razorpay credentials saved',
-                description: payload.data.payment_settings.razorpay?.verified
+                title: nextRazorpay?.verified ? 'Razorpay connected' : 'Razorpay credentials saved',
+                description: nextRazorpay?.verified
                     ? 'The seller Razorpay account is connected and verified.'
                     : 'Verification did not complete. Re-check the credentials before going live.',
-                variant: payload.data.payment_settings.razorpay?.verified ? 'success' : 'warning',
+                variant: nextRazorpay?.verified ? 'success' : 'warning',
             })
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to save payment settings'
@@ -263,10 +251,9 @@ export default function PaymentsSettingsPage() {
     if (loading) {
         return (
             <SettingsPane
-                store={store}
                 title="Payments"
                 description="Connect provider credentials and review storefront payment availability."
-                iconName="payments"
+                store={store}
             >
                 <Card>
                     <Section title="Razorpay account">
@@ -284,24 +271,22 @@ export default function PaymentsSettingsPage() {
         : razorpay?.secret_configured
             ? { label: 'Saved', variant: 'warning' as const }
             : { label: 'Not connected', variant: 'default' as const }
-    const gateways = config?.payment_settings.gateways ?? []
-    const hasCashfree = gateways.includes('cashfree')
-    const hasUpi = gateways.includes('upi')
 
     return (
         <SettingsPane
-            store={store}
             title="Payments"
             description="Connect provider credentials and review storefront payment availability."
-            iconName="payments"
-            saveBar={(
-                <SaveBar
-                    state={activeSaveState}
-                    onSave={() => void handleSave()}
-                    onDiscard={handleDiscard}
-                    saveLabel="Save payments"
-                />
-            )}
+            store={store}
+            guidance={{
+                title: 'Secret handling',
+                body: 'Secrets are sent to the LetBuyy API worker and stored encrypted. The admin UI only receives masked payment settings.',
+            }}
+            saveBar={{
+                state: activeSaveState,
+                onSave: () => void handleSave(),
+                onDiscard: handleDiscard,
+                saveLabel: 'Save payments',
+            }}
         >
             {loadError && (
                 <Banner
@@ -396,60 +381,14 @@ export default function PaymentsSettingsPage() {
                 </Section>
             </Card>
 
-            <Banner variant="info" title="Secret handling">
-                Secrets are sent to the LetBuyy API worker and stored encrypted. The admin UI only receives masked payment settings.
-            </Banner>
-
             <Banner variant="warning" title="Before going live">
                 Test payments should be verified end to end before switching a store to live Razorpay credentials.
             </Banner>
 
             <Card>
                 <Section
-                    title="Payment providers"
-                    description="Review checkout payment methods from the masked provider configuration returned by the platform."
-                >
-                    <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
-                        <ProviderCard
-                            icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            name="Razorpay"
-                            description="Online card, wallet, netbanking, and UPI payments through the seller account."
-                            statusLabel={status.label}
-                            statusVariant={status.variant}
-                            helperText={razorpay?.secret_configured ? 'Credentials are saved in the worker and masked in the merchant UI.' : 'Add seller Razorpay credentials above to enable online checkout.'}
-                        />
-                        <ProviderCard
-                            icon={<Truck className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            name="Cash on delivery"
-                            description="Allow shoppers to place orders with payment collected during fulfillment."
-                            statusLabel={config?.cod_enabled ? 'Enabled' : 'Disabled'}
-                            statusVariant={config?.cod_enabled ? 'success' : 'default'}
-                            helperText="COD availability is returned by the payment configuration endpoint."
-                        />
-                        <ProviderCard
-                            icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            name="Cashfree"
-                            description="India payment gateway option for cards, netbanking, UPI, and wallets."
-                            statusLabel={hasCashfree ? 'Available' : 'Needs backend'}
-                            statusVariant={hasCashfree ? 'info' : 'warning'}
-                            helperText={hasCashfree ? 'Cashfree appears in the configured gateway list.' : 'Payment settings do not yet expose Cashfree enable/configure controls for this pane.'}
-                        />
-                        <ProviderCard
-                            icon={<IndianRupee className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            name="UPI"
-                            description="UPI collection through the active online payment gateway."
-                            statusLabel={hasUpi ? 'Enabled' : 'Needs backend'}
-                            statusVariant={hasUpi ? 'success' : 'warning'}
-                            helperText={hasUpi ? 'UPI is included in the configured gateway list.' : 'Payment settings do not yet expose standalone UPI enable/configure controls for this pane.'}
-                        />
-                    </div>
-                </Section>
-            </Card>
-
-            <Card>
-                <Section
                     title="Accepted methods"
-                    description="These values are derived from the current masked provider configuration."
+                    description="These options reflect the current masked provider configuration returned by the platform."
                 >
                     <div className="grid gap-[var(--lb-space-3)] md:grid-cols-2">
                         <PaymentSummary
@@ -460,7 +399,7 @@ export default function PaymentsSettingsPage() {
                         <PaymentSummary
                             icon={<CreditCard className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
                             label="Gateways"
-                            value={gateways.length ? gateways.join(', ') : 'No gateways configured'}
+                            value={config?.payment_settings.gateways.length ? config.payment_settings.gateways.join(', ') : 'No gateways configured'}
                         />
                     </div>
                 </Section>

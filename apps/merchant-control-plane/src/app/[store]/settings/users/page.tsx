@@ -10,20 +10,20 @@ import {
     Card,
     ConfirmDialog,
     EmptyState,
+    IndexTable,
     Input,
     Mail,
     Plus,
-    SaveBar,
     Section,
     Select,
     ShieldCheck,
     Skeleton,
     Trash2,
-    User,
     Users,
+    type IndexTableColumn,
     useToast,
 } from '@letbuyy/ui'
-import { SettingsPane } from '@/components/settings'
+import { SettingsPane } from '@/components/settings/SettingsPane'
 
 interface Employee {
     id: string
@@ -34,7 +34,7 @@ interface Employee {
 }
 
 type StaffPayload = {
-    data?: Employee[] | Employee
+    data?: unknown
     error?: string | { message?: string }
 }
 
@@ -57,6 +57,40 @@ function getPayloadError(payload: StaffPayload | null, fallback: string) {
     return typeof payload.error === 'string' ? payload.error : payload.error.message || fallback
 }
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+    return Boolean(value && typeof value === 'object' && !Array.isArray(value))
+}
+
+function readString(value: unknown, fallback = '') {
+    return typeof value === 'string' ? value : fallback
+}
+
+function readRole(value: unknown) {
+    const role = readString(value).trim().toLowerCase()
+    return ROLES.some((item) => item.value === role) ? role : 'viewer'
+}
+
+function readStatus(value: unknown) {
+    const status = readString(value).trim().toLowerCase()
+    return status || 'invited'
+}
+
+function normalizeEmployees(value: unknown): Employee[] {
+    if (!Array.isArray(value)) return []
+
+    return value.flatMap((employee) => {
+        if (!isRecord(employee) || typeof employee.id !== 'string' || !employee.id || typeof employee.email !== 'string' || !employee.email) return []
+
+        return [{
+            id: employee.id,
+            email: employee.email,
+            role: readRole(employee.role),
+            status: readStatus(employee.status),
+            created_at: readString(employee.created_at),
+        }]
+    })
+}
+
 function getRoleLabel(role: string) {
     return ROLES.find((item) => item.value === role)?.label || role
 }
@@ -67,7 +101,10 @@ function formatStatus(status: string) {
 
 function formatDate(value: string) {
     if (!value) return 'Recently'
-    return new Date(value).toLocaleDateString('en-US', {
+    const date = new Date(value)
+    if (Number.isNaN(date.getTime())) return 'Recently'
+
+    return date.toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
@@ -107,7 +144,7 @@ export default function UsersSettingsPage() {
                 throw new Error(getPayloadError(payload, 'Unable to load staff members'))
             }
 
-            setEmployees(Array.isArray(payload?.data) ? payload.data : [])
+            setEmployees(normalizeEmployees(payload?.data))
         } catch (error) {
             const message = error instanceof Error ? error.message : 'Unable to load staff members'
             setLoadError(message)
@@ -261,13 +298,73 @@ export default function UsersSettingsPage() {
         }
     }, [employeeToRemove, notify, removingId, store])
 
+    const staffColumns = useMemo<IndexTableColumn<Employee>[]>(() => [
+        {
+            key: 'email',
+            header: 'Staff member',
+            render: (employee) => (
+                <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
+                    <Avatar name={employee.email} />
+                    <div className="min-w-0">
+                        <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                            {employee.email}
+                        </p>
+                        <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                            Added {formatDate(employee.created_at)}
+                        </p>
+                    </div>
+                </div>
+            ),
+        },
+        {
+            key: 'role',
+            header: 'Role',
+            render: (employee) => (
+                <div className="min-w-[180px]">
+                    <Select
+                        aria-label={`Role for ${employee.email}`}
+                        value={employee.role}
+                        onChange={(event) => void handleRoleChange(employee, event.target.value)}
+                        options={ROLES.map((role) => ({ value: role.value, label: role.label }))}
+                        disabled={updatingRoleId === employee.id || Boolean(removingId)}
+                    />
+                </div>
+            ),
+        },
+        {
+            key: 'status',
+            header: 'Status',
+            render: (employee) => (
+                <Badge
+                    label={formatStatus(employee.status)}
+                    variant={employee.status === 'active' ? 'success' : 'warning'}
+                />
+            ),
+        },
+        {
+            key: 'actions',
+            header: 'Actions',
+            render: (employee) => (
+                <Button
+                    type="button"
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => setEmployeeToRemove(employee)}
+                    disabled={removingId === employee.id || Boolean(updatingRoleId)}
+                >
+                    <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                    Remove
+                </Button>
+            ),
+        },
+    ], [handleRoleChange, removingId, updatingRoleId])
+
     if (loading) {
         return (
             <SettingsPane
-                store={store}
                 title="Users and permissions"
                 description="Invite staff and control access to this store."
-                iconName="users"
+                store={store}
             >
                 <Card>
                     <Section title="Staff">
@@ -279,197 +376,165 @@ export default function UsersSettingsPage() {
     }
 
     return (
-        <SettingsPane
-            store={store}
-            title="Users and permissions"
-            description="Invite staff and control access to this store."
-            iconName="users"
-            primaryAction={{
-                label: 'Add staff',
-                onClick: startAdd,
-                disabled: showAdd,
-                icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
-            }}
-            saveBar={(
-                <SaveBar
-                    state={activeSaveState}
-                    onSave={() => void handleAdd()}
-                    onDiscard={resetInviteForm}
-                    saveLabel="Send invite"
-                />
-            )}
-        >
-            {loadError && (
-                <Banner
-                    variant="critical"
-                    title="Staff could not load"
-                    action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
-                >
-                    {loadError}
-                </Banner>
-            )}
+        <>
+            <SettingsPane
+                title="Users and permissions"
+                description="Invite staff and control access to this store."
+                store={store}
+                guidance={{
+                    title: 'Access guidance',
+                    body: 'Use manager access for trusted operators, editor access for catalog and content teammates, and fulfillment access for order handling.',
+                }}
+                primaryAction={{
+                    label: 'Add staff',
+                    onClick: startAdd,
+                    disabled: showAdd,
+                    icon: <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />,
+                }}
+                saveBar={{
+                    state: activeSaveState,
+                    onSave: () => void handleAdd(),
+                    onDiscard: resetInviteForm,
+                    saveLabel: 'Send invite',
+                }}
+            >
+                {loadError && (
+                    <Banner
+                        variant="critical"
+                        title="Staff could not load"
+                        action={<Button variant="secondary" onClick={() => void loadData()}>Retry</Button>}
+                    >
+                        {loadError}
+                    </Banner>
+                )}
 
-            {formError && (
-                <Banner variant="critical" title="Staff invite needs attention">
-                    {formError}
-                </Banner>
-            )}
+                {formError && (
+                    <Banner variant="critical" title="Staff invite needs attention">
+                        {formError}
+                    </Banner>
+                )}
 
-            <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
-                <Card className="p-[var(--lb-space-4)]">
-                    <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <Users className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" aria-hidden="true" />
-                        <div>
-                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Staff members</p>
-                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{employees.length}</p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="p-[var(--lb-space-4)]">
-                    <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <ShieldCheck className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-success)]" aria-hidden="true" />
-                        <div>
-                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Active access</p>
-                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{activeStaff}</p>
-                        </div>
-                    </div>
-                </Card>
-                <Card className="p-[var(--lb-space-4)]">
-                    <div className="flex items-center gap-[var(--lb-space-3)]">
-                        <Mail className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-warning)]" aria-hidden="true" />
-                        <div>
-                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Pending invites</p>
-                            <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{invitedStaff}</p>
-                        </div>
-                    </div>
-                </Card>
-            </div>
-
-            <Card>
-                <Section
-                    title="Store owner"
-                    description="The store owner has full access to every setting, workflow, and billing action."
-                >
-                    <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                <div className="grid gap-[var(--lb-space-3)] md:grid-cols-3">
+                    <Card className="p-[var(--lb-space-4)]">
                         <div className="flex items-center gap-[var(--lb-space-3)]">
-                            <Avatar name="Owner" />
+                            <Users className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-primary)]" aria-hidden="true" />
                             <div>
-                                <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">Owner</p>
-                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Full access to all settings</p>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Staff members</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{employees.length}</p>
                             </div>
                         </div>
-                        <Badge label="Primary owner" variant="success" />
-                    </div>
-                </Section>
-            </Card>
+                    </Card>
+                    <Card className="p-[var(--lb-space-4)]">
+                        <div className="flex items-center gap-[var(--lb-space-3)]">
+                            <ShieldCheck className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-success)]" aria-hidden="true" />
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Active access</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{activeStaff}</p>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card className="p-[var(--lb-space-4)]">
+                        <div className="flex items-center gap-[var(--lb-space-3)]">
+                            <Mail className="h-[var(--lb-size-icon)] w-[var(--lb-size-icon)] text-[var(--lb-color-warning)]" aria-hidden="true" />
+                            <div>
+                                <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Pending invites</p>
+                                <p className="m-0 text-[var(--lb-font-size-heading)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-heading)] text-[var(--lb-color-text)]">{invitedStaff}</p>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
 
-            {showAdd && (
                 <Card>
                     <Section
-                        title="Invite staff"
-                        description="Send an invite with the right level of access for day-to-day store operations."
+                        title="Store owner"
+                        description="The store owner has full access to every setting, workflow, and billing action."
                     >
-                        <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
-                            <Input
-                                label="Email address"
-                                type="email"
-                                value={newEmail}
-                                onChange={(event) => {
-                                    setNewEmail(event.target.value)
-                                    setSaveState('unsaved')
-                                }}
-                                placeholder="staff@example.com"
-                                helperText="The invite is sent to this email address."
-                            />
-                            <Select
-                                label="Role"
-                                value={newRole}
-                                onChange={(event) => {
-                                    setNewRole(event.target.value)
-                                    setSaveState('unsaved')
-                                }}
-                                options={ROLE_OPTIONS}
-                                helperText={ROLES.find((role) => role.value === newRole)?.desc}
-                            />
-                        </div>
-                        <div className="flex flex-wrap gap-[var(--lb-space-2)]">
-                            <Button type="button" onClick={() => void handleAdd()} loading={saveState === 'saving'}>
-                                Send invite
-                            </Button>
-                            <Button type="button" variant="secondary" onClick={resetInviteForm} disabled={saveState === 'saving'}>
-                                Cancel
-                            </Button>
+                        <div className="flex flex-col gap-[var(--lb-space-3)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] p-[var(--lb-space-4)] md:flex-row md:items-center md:justify-between">
+                            <div className="flex items-center gap-[var(--lb-space-3)]">
+                                <Avatar name="Owner" />
+                                <div>
+                                    <p className="m-0 text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">Owner</p>
+                                    <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">Full access to all settings</p>
+                                </div>
+                            </div>
+                            <Badge label="Primary owner" variant="success" />
                         </div>
                     </Section>
                 </Card>
-            )}
 
-            <Card>
-                <Section
-                    title="Staff"
-                    description="Staff can help manage store operations based on their assigned role."
-                    action={!showAdd && (
-                        <Button type="button" variant="secondary" onClick={startAdd}>
-                            <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                            Add staff
-                        </Button>
-                    )}
-                >
-                    {employees.length === 0 ? (
-                        <EmptyState
-                            icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
-                            title="No staff members yet"
-                            body="Invite team members when you are ready to share product, order, or fulfillment work."
-                            primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
+                {showAdd && (
+                    <Card>
+                        <Section
+                            title="Invite staff"
+                            description="Send an invite with the right level of access for day-to-day store operations."
+                        >
+                            <div className="grid gap-[var(--lb-space-4)] md:grid-cols-2">
+                                <Input
+                                    label="Email address"
+                                    type="email"
+                                    value={newEmail}
+                                    onChange={(event) => {
+                                        setNewEmail(event.target.value)
+                                        setSaveState('unsaved')
+                                    }}
+                                    placeholder="staff@example.com"
+                                    helperText="The invite is sent to this email address."
+                                />
+                                <Select
+                                    label="Role"
+                                    value={newRole}
+                                    onChange={(event) => {
+                                        setNewRole(event.target.value)
+                                        setSaveState('unsaved')
+                                    }}
+                                    options={ROLE_OPTIONS}
+                                    helperText={ROLES.find((role) => role.value === newRole)?.desc}
+                                />
+                            </div>
+                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                <Button type="button" onClick={() => void handleAdd()} loading={saveState === 'saving'}>
+                                    Send invite
+                                </Button>
+                                <Button type="button" variant="secondary" onClick={resetInviteForm} disabled={saveState === 'saving'}>
+                                    Cancel
+                                </Button>
+                            </div>
+                        </Section>
+                    </Card>
+                )}
+
+                <Card>
+                    <Section
+                        title="Staff"
+                        description="Staff can help manage store operations based on their assigned role."
+                        action={!showAdd && (
+                            <Button type="button" variant="secondary" onClick={startAdd}>
+                                <Plus className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
+                                Add staff
+                            </Button>
+                        )}
+                    >
+                        <IndexTable
+                            columns={staffColumns}
+                            rows={employees}
+                            emptyState={(
+                                <EmptyState
+                                    icon={<Users className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />}
+                                    title="No staff members yet"
+                                    body="Invite team members when you are ready to share product, order, or fulfillment work."
+                                    primaryAction={!showAdd ? <Button type="button" onClick={startAdd}>Add staff</Button> : undefined}
+                                />
+                            )}
+                            savedViews={[
+                                { label: 'All', value: 'all', count: employees.length },
+                                { label: 'Active', value: 'active', count: activeStaff },
+                                { label: 'Invited', value: 'invited', count: invitedStaff },
+                            ]}
+                            activeView="all"
                         />
-                    ) : (
-                        <div className="divide-y divide-[var(--lb-color-border)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)]">
-                            {employees.map((employee) => (
-                                <div key={employee.id} className="flex flex-col gap-[var(--lb-space-4)] p-[var(--lb-space-4)] lg:flex-row lg:items-center lg:justify-between">
-                                    <div className="flex min-w-0 items-center gap-[var(--lb-space-3)]">
-                                        <Avatar name={employee.email} />
-                                        <div className="min-w-0">
-                                            <p className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">{employee.email}</p>
-                                            <p className="m-0 flex flex-wrap items-center gap-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
-                                                <User className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                                <span>{getRoleLabel(employee.role)}</span>
-                                                <span>Added {formatDate(employee.created_at)}</span>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div className="grid gap-[var(--lb-space-2)] sm:grid-cols-[minmax(0,1fr)_auto_auto] sm:items-center">
-                                        <Select
-                                            aria-label={`Role for ${employee.email}`}
-                                            value={employee.role}
-                                            onChange={(event) => void handleRoleChange(employee, event.target.value)}
-                                            options={ROLES.map((role) => ({ value: role.value, label: role.label }))}
-                                            disabled={updatingRoleId === employee.id || Boolean(removingId)}
-                                        />
-                                        <Badge
-                                            label={formatStatus(employee.status)}
-                                            variant={employee.status === 'active' ? 'success' : 'warning'}
-                                        />
-                                        <Button
-                                            type="button"
-                                            variant="destructive"
-                                            size="sm"
-                                            onClick={() => setEmployeeToRemove(employee)}
-                                            disabled={removingId === employee.id || Boolean(updatingRoleId)}
-                                        >
-                                            <Trash2 className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" aria-hidden="true" />
-                                            Remove
-                                        </Button>
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    )}
-                </Section>
-            </Card>
-
-            <Banner variant="info" title="Access guidance">
-                Use manager access for trusted operators, editor access for catalog and content teammates, and fulfillment access for order handling.
-            </Banner>
+                    </Section>
+                </Card>
+            </SettingsPane>
 
             <ConfirmDialog
                 open={Boolean(employeeToRemove)}
@@ -482,6 +547,6 @@ export default function UsersSettingsPage() {
                     if (!removingId) setEmployeeToRemove(null)
                 }}
             />
-        </SettingsPane>
+        </>
     )
 }
