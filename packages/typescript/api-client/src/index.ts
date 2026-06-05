@@ -726,6 +726,34 @@ export type ThemeInstallResult = {
   theme: Pick<Theme, 'id' | 'slug' | 'name'>;
   release: JsonRecord;
 };
+export type ThemePurchaseOrderInput = {
+  currency?: 'INR';
+  idempotency_key?: string;
+};
+export type ThemePurchaseOrderResult = {
+  purchase_id: string;
+  theme: string;
+  status: string;
+  already_purchased?: boolean;
+  payment_required?: boolean;
+  provider?: 'razorpay' | 'free' | string;
+  razorpay_order_id?: string;
+  amount?: number;
+  currency?: string;
+  key_id?: string;
+  idempotent_replay?: boolean;
+};
+export type ThemePurchaseVerifyInput = {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+};
+export type ThemePurchaseVerifyResult = {
+  purchase_id: string;
+  theme: string;
+  status: string;
+  provider_payment_id?: string | null;
+};
 export type ThemePackageUploadInput = {
   bundle: JsonRecord;
   submission_mode?: 'marketplace' | 'private_install';
@@ -1343,6 +1371,10 @@ export class LetbuyyApiClient {
       this.requestData<JsonRecord[]>('/themes/installations/list', options),
     install: (slug: string, input: ThemeInstallInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeInstallResult>(`/themes/${encodePathSegment(slug)}/install`, { ...options, method: 'POST', body: input }),
+    purchase: (slug: string, input: ThemePurchaseOrderInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePurchaseOrderResult>(`/themes/${encodePathSegment(slug)}/purchase`, { ...options, method: 'POST', body: input }),
+    verifyPurchase: (slug: string, input: ThemePurchaseVerifyInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<ThemePurchaseVerifyResult>(`/themes/${encodePathSegment(slug)}/purchase/verify`, { ...options, method: 'POST', body: input }),
     uploadPackage: (input: ThemePackageUploadInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemePackageUploadResult>('/themes/packages/upload', { ...options, method: 'POST', body: input }),
     editor: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>

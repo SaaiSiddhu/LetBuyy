@@ -1,5 +1,11 @@
 import 'server-only';
 import { createThemeMarketplaceApiClient } from '@/lib/api/client';
+import type {
+    ThemePurchaseOrderInput,
+    ThemePurchaseOrderResult,
+    ThemePurchaseVerifyInput,
+    ThemePurchaseVerifyResult,
+} from '@letbuyy/api-client';
 import type { ThemeSearchFilters, ThemeSearchResult } from '@letbuyy/theme-engine';
 
 export class MarketplaceUnavailableError extends Error {
@@ -133,6 +139,24 @@ export const ThemeService = {
             store_id: storeId,
             config_overrides: {},
         }).then((result) => result as unknown as Record<string, unknown>);
+    },
+
+    async createThemePurchase(slug: string, input: ThemePurchaseOrderInput): Promise<ThemePurchaseOrderResult> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.purchase(slug, input);
+    },
+
+    async verifyThemePurchase(slug: string, input: unknown): Promise<ThemePurchaseVerifyResult> {
+        const api = await getThemeApi(true);
+        if (!api) {
+            throw new Error('Authentication required');
+        }
+
+        return api.themes.verifyPurchase(slug, input as ThemePurchaseVerifyInput);
     },
 
     async getCategories(): Promise<string[]> {

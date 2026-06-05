@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.5 server-side cart complete locally; continue F3.6 theme-marketplace checkout.
-- Findings resolved: 19/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.5 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.6 theme-marketplace checkout complete locally; continue F3.7 demo-store isolation and theme table honesty.
+- Findings resolved: 20/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.6 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -336,6 +336,26 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 - Staging proof remains SKIPPED -- NEEDS HUMAN until staging storefront/store/product/customer/gateway credentials are provided.
 
+## F3.6 theme-marketplace checkout evidence
+
+- `apps/theme-marketplace/src/app/checkout/page.tsx` no longer links the Pay button directly to `/checkout/success`; success navigation now happens only after purchase creation and payment verification.
+- Checkout starts a provider-backed theme purchase through the existing `/api/themes/[slug]` POST action proxy, loads Razorpay Checkout after the gateway returns an order, and posts Razorpay proof back for verification.
+- `apps/theme-marketplace/src/app/api/themes/[slug]/route.ts` remains a thin proxy to `ThemeService.createThemePurchase` and `ThemeService.verifyThemePurchase`; it does not own server pricing, provider verification, or provider-specific proof field parsing.
+- `packages/typescript/api-client` exposes `themes.purchase` and `themes.verifyPurchase`; the gateway-owned theme purchase route still derives amount from `letbuyy_price_inr`, returns `PAYMENT_UNAVAILABLE` when Razorpay env is absent, creates Razorpay orders when configured, and verifies signatures with `timingSafeEqualHex`.
+- Coupon application is honest unsupported state (`Theme coupons are not configured`) rather than an inert fake apply path.
+- Pre-change `pnpm run test:contracts`: FAIL - 69/72 at new `tests/contracts/theme-marketplace-checkout.test.ts` because the fake checkout path and missing client/proxy contracts were still present.
+- Post-change `pnpm run test:contracts`: PASS - 72/72.
+- `pnpm --filter @letbuyy/shared-types build`: PASS.
+- `pnpm --filter @letbuyy/api-client typecheck`: PASS.
+- `pnpm --filter @letbuyy/theme-marketplace typecheck`: PASS.
+- `pnpm --filter @letbuyy/theme-marketplace lint`: PASS with existing warnings only.
+- `node scripts/validators/domain-boundary-validator.mjs`: PASS after provider proof stayed opaque in app API/lib files.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+- Staging Razorpay test checkout proof remains SKIPPED -- NEEDS HUMAN until staging merchant session, gateway Razorpay test credentials, a purchasable staging theme, and browser access to Razorpay checkout are provided.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -363,8 +383,9 @@ Started: 2026-06-05T13:54:14Z
 - C-6 staging proof that the web theme editor iframe renders edited sections through the real staging storefront preview route requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: authenticate to staging merchant, open `/[store]/online-store/themes/[themeId]/editor`, edit a section, confirm the iframe URL includes `theme_preview_token`, and verify the storefront preview route renders the edited section.
 - C-8/B-6 staging proof that stale editor saves conflict and preview sessions are template-scoped requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: open two editor sessions for the same theme/template, save one draft, verify the stale `base_version` save conflicts in the second, publish only the clean saved draft, and mint preview sessions for two templates to verify each returns the requested `template_key` and renders the matching draft.
 - C-10 staging proof that server-side cart persists across devices and checkout requires staging storefront/store/product/customer/gateway credentials. Exact proof path once supplied: add a product to cart in one browser, capture `lb_cart_token`, open the same store in a second browser/session with that token, verify `GET /v1/storefront/:subdomain/cart/:cartToken` returns the same lines/totals, then complete checkout using the synced cart items.
+- H-4 staging proof that theme-marketplace checkout creates a real Razorpay test order and succeeds only after provider verification requires staging merchant session, gateway Razorpay test credentials, a purchasable staging theme with INR pricing, and browser access to Razorpay checkout. Exact proof path once supplied: authenticate to staging theme marketplace, open `/checkout?theme=<slug>`, start checkout, verify the gateway returns a Razorpay order from `POST /v1/themes/<slug>/purchase`, complete test payment in Razorpay Checkout, verify `/v1/themes/<slug>/purchase/verify` records the purchase, and confirm the success page is reached only after verification.
 
 ## Next work
 
-- Continue to F3.6 theme-marketplace checkout.
+- Continue to F3.7 demo-store isolation and theme table honesty.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
