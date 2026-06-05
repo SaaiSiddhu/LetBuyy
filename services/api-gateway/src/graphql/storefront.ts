@@ -4,6 +4,7 @@ import { z } from 'zod';
 import type { Env } from '../index';
 import { checkQueryCostRateLimitKey, type QueryCostRateLimitResult } from '../middleware/rateLimit';
 import { calculateGraphQLQueryCost } from './cost';
+import { createRestShimRequest, readRestShimEnvelope, type RestShimEnvelope } from './rest-shim';
 
 type GatewayContext = Context<{ Bindings: Env }>;
 type JsonObject = Record<string, unknown>;
@@ -21,10 +22,7 @@ interface GraphQLRequestPayload {
     operationName?: string | null;
 }
 
-interface RestEnvelope {
-    data: unknown;
-    meta?: JsonObject;
-}
+type RestEnvelope = RestShimEnvelope;
 
 const GraphQLRequestPayloadSchema = z.object({
     query: z.string().trim().min(1).max(500_000),
@@ -224,25 +222,7 @@ function cloneStorefrontHeaders(c: GatewayContext): Headers {
 }
 
 async function readRestEnvelope(response: Response, fieldName: string): Promise<RestEnvelope> {
-    let payload: unknown = null;
-    try {
-        payload = await response.json();
-    } catch {
-        payload = null;
-    }
-
-    const record = recordValue(payload);
-    if (!response.ok) {
-        const error = recordValue(record?.error);
-        const message = stringValue(error?.message) || `REST delegate failed for ${fieldName}`;
-        const code = stringValue(error?.code) || 'REST_DELEGATE_ERROR';
-        throw new StorefrontGraphQLError(message, code, fieldName);
-    }
-
-    return {
-        data: record && 'data' in record ? record.data : payload,
-        meta: recordValue(record?.meta) || undefined,
-    };
+    return readRestShimEnvelope(response, fieldName, (message, code, field) => new StorefrontGraphQLError(message, code, field));
 }
 
 async function restGet(
@@ -252,14 +232,7 @@ async function restGet(
     params?: URLSearchParams,
     fieldName = path,
 ): Promise<RestEnvelope> {
-    const url = new URL(c.req.url);
-    url.pathname = `/v1${path.startsWith('/') ? path : `/${path}`}`;
-    url.search = params?.toString() || '';
-
-    const response = await delegate(c, new Request(url.toString(), {
-        method: 'GET',
-        headers: cloneStorefrontHeaders(c),
-    }));
+    const response = await delegate(c, createRestShimRequest(c, path, params, cloneStorefrontHeaders(c)));
 
     return readRestEnvelope(response, fieldName);
 }
