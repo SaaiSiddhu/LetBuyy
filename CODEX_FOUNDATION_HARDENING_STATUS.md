@@ -100,7 +100,13 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm turbo typecheck`: PASS - 60/60 tasks.
 - `pnpm lint`: PASS - 9/9 tasks, warnings only.
 - `pnpm run validate:governance`: PASS - 129/129 validators.
-- H-9 remains in progress because `storefront.ts` is still above the 1,500-line target.
+- Customer/password/login/order-credential/wishlist/order-contact/review/address routes moved from `services/api-gateway/src/routes/storefront.ts` into `services/api-gateway/src/routes/storefront/customer-engagement-routes.ts` with a registration function preserving the route band before blog routes.
+- `tests/contracts/storefront-customer-engagement-routes.test.ts`: added before extraction and kept green after extraction; it verifies the route list, route order, and insertion point.
+- Pre-split `pnpm run test:contracts`: PASS - 19/19.
+- Post-split `pnpm run test:contracts`: PASS - 19/19.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts`: `storefront.ts` 3,372 lines; extracted module 1,500 lines.
+- H-9 remains in progress because `storefront.ts` and `app-store.ts` are still above the 1,500-line target.
 
 ## V2 P-1 gate evidence
 
@@ -127,6 +133,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit V2 P-1 regression gate.
-- Continue F1.6 by extracting the next cohesive storefront route group, likely customer auth/account routes, under characterization coverage.
+- Commit the F1.6 customer engagement route split.
+- Continue F1.6 by extracting the next cohesive storefront route group, likely checkout/payment routes or catalog/search routes, under characterization coverage.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.
