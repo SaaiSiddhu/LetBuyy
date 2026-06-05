@@ -661,7 +661,96 @@ async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<
     return (data as StorefrontThemeReleaseRecord | null) || null;
 }
 
+function appBlockFromRegistryRegistration(registration: Record<string, unknown>): AppBlockInstance | null {
+    const settings = storefrontJsonRecord(registration.settings);
+    const appId = storefrontString(registration.app_id);
+    const registrationId = storefrontString(registration.id);
+    if (!appId || !registrationId) return null;
+
+    const extensionHandle = storefrontString(registration.extension_handle) || registrationId;
+    const slot = storefrontString(settings.slot)
+        || storefrontString(registration.target)
+        || 'storefront.home.after-hero';
+    const title = storefrontString(settings.title)
+        || storefrontString(settings.label)
+        || storefrontString(settings.name)
+        || extensionHandle;
+    const renderer = storefrontString(registration.renderer);
+    const renderMode = renderer === 'iframe' || settings.render_mode === 'iframe' || settings.renderMode === 'iframe'
+        ? 'iframe'
+        : 'inline';
+    const sourceUrl = storefrontString(registration.source_url);
+    const iframeUrl = renderMode === 'iframe'
+        ? storefrontString(settings.iframe_url) || storefrontString(settings.iframeUrl) || sourceUrl || undefined
+        : undefined;
+
+    return normalizeAppBlockInstance({
+        id: `app-registry-${registrationId}`,
+        app_id: appId,
+        extension_id: registrationId,
+        slot,
+        title,
+        render_mode: renderMode,
+        iframe_url: iframeUrl,
+        settings: {
+            ...settings,
+            app_id: appId,
+            extension_id: registrationId,
+            extension_handle: extensionHandle,
+            source_entrypoint: storefrontString(registration.source_entrypoint) || undefined,
+            manifest_schema_version: storefrontString(registration.manifest_schema_version) || undefined,
+            slot,
+            title,
+            render_mode: renderMode,
+        },
+        content: {
+            heading: settings.heading || settings.headline,
+            body: settings.body || settings.description,
+            cta_label: settings.cta_label || settings.ctaLabel,
+            cta_href: settings.cta_href || settings.ctaHref,
+        },
+    }, {
+        id: `app-registry-${registrationId}`,
+        app_id: appId,
+        extension_id: registrationId,
+        slot,
+        title,
+    });
+}
+
 async function loadPublicStorefrontAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
+    const [registeredBlocks, legacyBlocks] = await Promise.all([
+        loadRegisteredThemeAppBlocks(c, storeId),
+        loadLegacyStorefrontAppBlocks(c, storeId),
+    ]);
+
+    const merged = new Map<string, AppBlockInstance>();
+    for (const block of legacyBlocks) merged.set(block.id, block);
+    for (const block of registeredBlocks) merged.set(block.id, block);
+    return Array.from(merged.values());
+}
+
+async function loadRegisteredThemeAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
+    const { data, error } = await getSupabaseAdmin(c)
+        .from('app_extension_registrations')
+        .select('id, site_id, app_id, installation_id, extension_handle, extension_type, surface, target, renderer, source_url, source_entrypoint, scopes, capabilities, settings, manifest_schema_version, app_version, status, sort_order, created_at, updated_at')
+        .eq('site_id', storeId)
+        .eq('surface', 'theme.app_block')
+        .eq('status', 'enabled')
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true });
+
+    if (error || !Array.isArray(data)) {
+        if (isMissingTableError(error, 'app_extension_registrations')) return [];
+        return [];
+    }
+
+    return data
+        .map((registration) => appBlockFromRegistryRegistration(registration as Record<string, unknown>))
+        .filter((block): block is AppBlockInstance => block !== null);
+}
+
+async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Promise<AppBlockInstance[]> {
     const { data, error } = await getSupabaseAdmin(c)
         .from('app_installations')
         .select('id, app_id, store_id, config, marketplace_apps(id, name, slug, app_url, app_extensions(id, type, target, label, config, sort_order))')

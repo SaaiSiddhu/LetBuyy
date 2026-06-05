@@ -272,3 +272,19 @@ test('WS13 X3 checkout UI extension host normalizes public registrations and mou
     assert.match(checkoutClientSource, new RegExp(`target="${target}"`));
   }
 });
+
+test('WS13 X4 theme app blocks load from the per-store extension registry into WS11 slots', () => {
+  const storefrontRouteSource = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+
+  assert.match(storefrontRouteSource, /function loadRegisteredThemeAppBlocks/);
+  assert.match(storefrontRouteSource, /function appBlockFromRegistryRegistration/);
+  assert.match(storefrontRouteSource, /\.from\('app_extension_registrations'\)/);
+  assert.match(storefrontRouteSource, /\.eq\('site_id', storeId\)/);
+  assert.match(storefrontRouteSource, /\.eq\('surface', 'theme\.app_block'\)/);
+  assert.match(storefrontRouteSource, /\.eq\('status', 'enabled'\)/);
+  assert.match(storefrontRouteSource, /normalizeAppBlockInstance\(\{/);
+  assert.match(storefrontRouteSource, /source_entrypoint: storefrontString\(registration\.source_entrypoint\)/);
+  assert.match(storefrontRouteSource, /loadLegacyStorefrontAppBlocks/);
+  assert.match(storefrontRouteSource, /for \(const block of registeredBlocks\) merged\.set\(block\.id, block\)/);
+  assert.match(storefrontRouteSource, /app_blocks: appBlocks/);
+});
