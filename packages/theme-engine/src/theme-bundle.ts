@@ -79,6 +79,7 @@ export const ThemeLiquidSourceSchema = z.string()
       'data:text/html',
       '{% include',
       '{% layout',
+      '{% render',
     ];
 
     for (const fragment of forbiddenFragments) {
@@ -395,7 +396,7 @@ function liquidSectionAcceptedBlockTypes(section: z.infer<typeof ThemeLiquidSect
   return new Set(section.schema.blocks.map((block) => block.type));
 }
 
-function isLiquidAppBlockType(blockType: string): boolean {
+export function isLiquidAppBlockType(blockType: string): boolean {
   return blockType === '@app' || blockType.startsWith('app:');
 }
 

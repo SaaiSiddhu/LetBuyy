@@ -7,6 +7,8 @@
 - Branch baseline for this WS11 activation: `pnpm turbo typecheck` -> PASS (58/58 tasks) after frozen dependency-link restoration; generated artifact cleanup; `pnpm run validate:governance` -> PASS (128/128 validators).
 
 ## PROGRESS LOG
+- 2026-06-05T02:47:19Z [T1 gate] WS11 T1 validation - PASS. Evidence: `pnpm turbo typecheck` -> PASS (58/58 tasks); `pnpm run lint` -> PASS (9/9 tasks, existing warnings only); `pnpm run test` -> PASS (291/291 tests); generated artifact cleanup scan -> no app/service/package generated artifact directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-05T02:36:44Z [T1] LiquidRenderer implementation - DONE. Evidence: `@letbuyy/theme-engine` now depends on `liquidjs@10.27.0`; `packages/theme-engine/src/theme-renderer.ts` replaces the Liquid stub with a sandboxed LiquidJS renderer behind `ThemeRenderer`, validates `LiquidThemePackageBundle`, strips section schema tags before parsing, renders reusable blocks before sections, supports injectable `@app` block HTML slots, sanitizes rendered HTML, renders `layout/theme.liquid` with `content_for_layout`, and returns both a Liquid HTML artifact and a normal `StorefrontCompositionResult`. Checks: `node --test tests/theme-engine/*.test.mjs` -> PASS (6/6); live smoke `npx tsx -e '<LiquidRenderer fixture render>'` -> PASS with `{"status":"rendered","sections":1,"blocks":2,"compositionSections":1}`; `pnpm --filter @letbuyy/shared-types build` -> PASS; `pnpm --filter @letbuyy/theme-engine typecheck` -> PASS; `pnpm --filter @letbuyy/theme-engine build` -> PASS.
 - 2026-06-05T01:48:01Z [T0 gate] WS11 T0 validation - PASS. Evidence: `pnpm turbo typecheck` -> PASS (58/58 tasks); `pnpm run lint` -> PASS (9/9 tasks, existing warnings only); generated artifact cleanup scan -> no app/service/package generated artifact directories; `pnpm run validate:governance` -> PASS (128/128 validators).
 - 2026-06-05T01:48:01Z [T0] Portable Liquid bundle contract - DONE. Evidence: added additive Liquid bundle constants/schemas to `packages/theme-engine/src/theme-bundle.ts` for `layout/theme.liquid`, `templates/*.json`, `sections/*.liquid`, `blocks/*.liquid`, `config/settings_schema.json`, `config/settings_data.json`, and `locales/*.json`; added section `{% schema %}` requirement; added reusable block and `@app` block contract; added `createMinimalLiquidThemeBundleFixture()` with `sections/spotlight.liquid` and `blocks/badge.liquid`. Checks: `node --test tests/theme-engine/liquid-bundle-contract.test.mjs` -> PASS (3/3); `pnpm --filter @letbuyy/theme-engine typecheck` -> PASS after rebuilding `@letbuyy/shared-types` declarations; `pnpm --filter @letbuyy/theme-engine build` -> PASS.
 
@@ -14,6 +16,13 @@
 - [SKIP] Deployed staging Liquid render proof - requires staging Supabase/gateway/storefront deployment credentials and a seeded/installed portable theme release. Local T0 contract proof is complete; staging screenshots will resume after credentials/deployment are available.
 
 ## VALIDATOR LEDGER
+- 2026-06-05T02:47:19Z T1 gate `pnpm turbo typecheck` -> PASS (58/58 tasks).
+- 2026-06-05T02:47:19Z T1 gate `pnpm run lint` -> PASS (9/9 tasks, existing warnings only).
+- 2026-06-05T02:47:19Z T1 gate `pnpm run test` -> PASS (291/291 tests).
+- 2026-06-05T02:47:19Z T1 gate generated artifact cleanup scan -> no generated app/service/package directories; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-05T02:36:44Z T1 focused tests: `node --test tests/theme-engine/*.test.mjs` -> PASS (6/6).
+- 2026-06-05T02:36:44Z T1 live render smoke: `npx tsx -e '<LiquidRenderer fixture render>'` -> PASS; output `{"status":"rendered","sections":1,"blocks":2,"compositionSections":1}`.
+- 2026-06-05T02:36:44Z T1 focused package checks: `pnpm --filter @letbuyy/shared-types build` -> PASS; `pnpm --filter @letbuyy/theme-engine typecheck` -> PASS; `pnpm --filter @letbuyy/theme-engine build` -> PASS.
 - 2026-06-05T01:48:01Z T0 gate `pnpm turbo typecheck` -> PASS (58/58 tasks).
 - 2026-06-05T01:48:01Z T0 gate `pnpm run lint` -> PASS (9/9 tasks, existing warnings only).
 - 2026-06-05T01:48:01Z T0 gate generated artifact cleanup scan -> no generated app/service/package directories; `pnpm run validate:governance` -> PASS (128/128 validators).
