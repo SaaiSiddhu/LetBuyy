@@ -1637,6 +1637,57 @@ export const AppOAuthTokenResultSchema = z.object({
   store_id: z.string().min(1),
 }).strict();
 
+export const GraphQLPageInfoSchema = z.object({
+  hasNextPage: z.boolean(),
+  hasPreviousPage: z.boolean(),
+  startCursor: z.string().min(1).optional().nullable(),
+  endCursor: z.string().min(1).optional().nullable(),
+}).strict();
+
+export const GraphQLQueryCostSchema = z.object({
+  requested: z.number().int().min(1).max(1000),
+  actual: z.number().int().min(0).max(1000),
+  maximumAvailable: z.number().int().min(0),
+  currentlyAvailable: z.number().int().min(0),
+  restoreRate: z.number().int().min(1),
+  policy: z.string().min(1).max(120),
+}).strict();
+
+export const GraphQLApiSurfaceSchema = z.enum(['admin', 'storefront']);
+export const GraphQLBulkOperationTypeSchema = z.enum(['query', 'mutation']);
+export const GraphQLBulkOperationStatusSchema = z.enum([
+  'created',
+  'queued',
+  'running',
+  'completed',
+  'failed',
+  'cancelled',
+  'expired',
+]);
+
+export const GraphQLBulkOperationSchema = z.object({
+  id: UuidSchema,
+  storeId: UuidSchema.optional().nullable(),
+  apiSurface: GraphQLApiSurfaceSchema,
+  operationType: GraphQLBulkOperationTypeSchema,
+  status: GraphQLBulkOperationStatusSchema,
+  query: z.string().min(1).max(500_000),
+  variables: MetadataSchema.default({}),
+  inputUrl: UrlSchema.optional().nullable(),
+  resultUrl: UrlSchema.optional().nullable(),
+  objectCount: z.number().int().min(0).default(0),
+  fileSizeBytes: z.number().int().min(0).optional().nullable(),
+  errorCode: z.string().min(1).max(120).optional().nullable(),
+  errorMessage: z.string().min(1).max(1000).optional().nullable(),
+  idempotencyKey: z.string().min(8).max(200).optional().nullable(),
+  createdAt: z.string().datetime(),
+  updatedAt: z.string().datetime().optional().nullable(),
+  startedAt: z.string().datetime().optional().nullable(),
+  completedAt: z.string().datetime().optional().nullable(),
+  expiresAt: z.string().datetime().optional().nullable(),
+  metadata: MetadataSchema.default({}),
+}).strict();
+
 export type SiteType = z.infer<typeof SiteTypeSchema>;
 export type StoreStatus = z.infer<typeof StoreStatusSchema>;
 export type ProductStatus = z.infer<typeof ProductStatusSchema>;
@@ -1776,6 +1827,25 @@ export type PartnerDashboard = z.infer<typeof PartnerDashboardSchema>;
 export type AppOAuthAuthorization = z.infer<typeof AppOAuthAuthorizationSchema>;
 export type AppOAuthAuthorizationResult = z.infer<typeof AppOAuthAuthorizationResultSchema>;
 export type AppOAuthTokenResult = z.infer<typeof AppOAuthTokenResultSchema>;
+export type GraphQLPageInfo = z.infer<typeof GraphQLPageInfoSchema>;
+export type GraphQLQueryCost = z.infer<typeof GraphQLQueryCostSchema>;
+export type GraphQLApiSurface = z.infer<typeof GraphQLApiSurfaceSchema>;
+export type GraphQLBulkOperationType = z.infer<typeof GraphQLBulkOperationTypeSchema>;
+export type GraphQLBulkOperationStatus = z.infer<typeof GraphQLBulkOperationStatusSchema>;
+export type GraphQLBulkOperation = z.infer<typeof GraphQLBulkOperationSchema>;
+
+export interface GraphQLConnectionEdge<TNode> {
+  cursor: string;
+  node: TNode;
+}
+
+export interface GraphQLConnection<TNode> {
+  edges: GraphQLConnectionEdge<TNode>[];
+  nodes: TNode[];
+  pageInfo: GraphQLPageInfo;
+  totalCount?: number;
+  queryCost?: GraphQLQueryCost;
+}
 
 export const RuntimeEnvironmentSchema = z.enum(['local', 'development', 'staging', 'production']);
 

@@ -7,7 +7,18 @@
 - Scope: `services/api-gateway/**`, `packages/typescript/api-client/**`, `packages/dart/api_client/**`, and additive `packages/shared-types/**`. REST `/v1` must remain externally unchanged.
 
 ## PROGRESS LOG
+- 2026-06-05T03:17:33Z [G1 pre-commit gate] Full local gate - PASS. Evidence: `wc -l CODEX_WS12_LEDGER.md CODEX_MASTER_EXECUTION_LEDGER.md` -> PASS (78 and 389 lines; 467 total); `pnpm turbo typecheck` -> PASS (58/58 tasks); `pnpm run lint` -> PASS (9/9 tasks, existing warnings only); `pnpm run test` -> PASS (310/310 tests); generated artifact cleanup scan after removing app/service/package `.next`, `.turbo`, `.vercel`, nested `node_modules`, `.wrangler`, `dist`, `build`, and `.dart_tool` directories -> no matches; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-05T03:15:11Z [G1] GraphQL schema contract - DONE locally. Evidence: `packages/shared-types/src/index.ts` now exports GraphQL page info, query-cost, API-surface, bulk-operation, and generic connection contracts; `services/api-gateway/src/graphql/schema.ts` now exports `LETBUYY_GRAPHQL_SCHEMA_SDL`, `ADMIN_GRAPHQL_SCHEMA_ROOTS`, `STOREFRONT_GRAPHQL_SCHEMA_ROOTS`, `GRAPHQL_BULK_OPERATION_CONTRACT`, and `GRAPHQL_SHARED_TYPE_ALIGNMENT`; `tests/api-graphql/schema-contract.test.mjs` enforces root separation, domain coverage, Relay-style connections, query cost metadata, JSONL bulk operations, and shared-type alignment. Checks: `node --test tests/api-graphql/schema-contract.test.mjs` -> PASS (5/5); initial `pnpm --filter @letbuyy/shared-types typecheck` failed only on missing package-local dependency links after cleanup (`zod` not resolved); sandbox `CI=true pnpm install --frozen-lockfile --force` failed on registry DNS; escalated rerun -> PASS with lockfile unchanged; `pnpm --filter @letbuyy/shared-types typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS.
 - 2026-06-05T02:57:48Z [G0] REST and schema baseline inventory - DONE. Evidence: read WS12 mission, local API gateway/client AGENTS, current gateway entrypoint, routes, schemas, query-cost middleware, Dart API client package, and Part 3 blocker notes. Inventory command via Node REPL over `services/api-gateway/src/routes` and `src/schemas` detected 31 route modules, 353 Hono endpoints, and 17 schema facades. G1 schema backlog is grouped below. Checks: `wc -l CODEX_WS12_LEDGER.md CODEX_MASTER_EXECUTION_LEDGER.md` -> PASS (67 and 387 lines; 454 total); `pnpm run validate:governance` -> PASS (128/128 validators).
+
+## G1 GRAPHQL SCHEMA CONTRACT
+- Schema module: `services/api-gateway/src/graphql/schema.ts`.
+- Version: `2026-06-05.g1`.
+- Admin root: `/v1/graphql/admin`, query type `AdminQuery`, mutation type `AdminMutation`, merchant-session auth, query-cost budget 20 points/second with 200 point capacity and 250 max single-operation cost.
+- Storefront root: `/v1/graphql/storefront`, query type `StorefrontQuery`, mutation type `StorefrontMutation`, storefront public/customer-token auth, same query-cost budget.
+- Shared type alignment: the gateway SDL maps core objects back to `@letbuyy/shared-types` contracts for Store, Product, ProductVariant, Collection, InventoryLevel, Customer, Cart, Order, Payment, Page, Policy, BlogPost, Theme/ThemeBundle/ThemeSection/ThemeBlock/ThemeRelease, MarketplaceApp, InstalledApp, analytics, shipping/tax, and GraphQL bulk/cost/pagination primitives.
+- Bulk operation contract: `bulkOperationRunQuery`, `bulkOperationRunMutation`, and `bulkOperationCancel`; output is JSONL stored through the API-gateway-owned Cloudflare R2/queue path; mutation work requires `X-Idempotency-Key`.
+- Resolver/runtime status: G1 is contract-only and does not mount GraphQL execution into `services/api-gateway/src/index.ts`; REST `/v1` remains unchanged. G2 will add parser/execution wiring behind the two roots.
 
 ## REST /V1 SURFACE INVENTORY
 - Gateway entrypoint: `services/api-gateway/src/index.ts`.
@@ -63,5 +74,7 @@
 - [SKIP - NEEDS HUMAN] WS12 deployed staging GraphQL/bulk proof - requires staging gateway deployment credentials, seeded staging merchant/store/catalog/order/theme/app data, and R2/queue bindings for bulk JSONL result proof. Local source inventory is complete; staging proof resumes when credentials are available.
 
 ## VALIDATOR LEDGER
+- 2026-06-05T03:17:33Z G1 pre-commit gate: `wc -l CODEX_WS12_LEDGER.md CODEX_MASTER_EXECUTION_LEDGER.md` -> PASS (78 and 389 lines; 467 total); `pnpm turbo typecheck` -> PASS (58/58 tasks); `pnpm run lint` -> PASS (9/9 tasks, existing warnings only); `pnpm run test` -> PASS (310/310 tests); generated artifact cleanup scan -> no matches; `pnpm run validate:governance` -> PASS (128/128 validators).
+- 2026-06-05T03:15:11Z G1 schema contract: `node --test tests/api-graphql/schema-contract.test.mjs` -> PASS (5/5); `pnpm --filter @letbuyy/shared-types typecheck` -> PASS after escalated frozen dependency-link restoration; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS.
 - 2026-06-05T02:57:48Z G0 docs verification: `wc -l CODEX_WS12_LEDGER.md CODEX_MASTER_EXECUTION_LEDGER.md` -> PASS (67 and 387 lines; 454 total).
 - 2026-06-05T02:57:48Z G0 governance: `pnpm run validate:governance` -> PASS (128/128 validators).
