@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ThemeService } from '@/lib/theme-service';
+import { logger } from '@/lib/logger';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -23,7 +24,7 @@ export async function GET(req: NextRequest, { params }: Props) {
 
         return NextResponse.json({ theme });
     } catch (error) {
-        console.error('[API] /api/themes/[slug] error:', error);
+        logger.error('failed to fetch theme', { error: error instanceof Error ? error.message : String(error) });
         return NextResponse.json(
             { error: 'Failed to fetch theme', theme: null },
             { status: 500 }

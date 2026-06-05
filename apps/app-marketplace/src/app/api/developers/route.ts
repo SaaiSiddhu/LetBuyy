@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/developers — Get developer profile for current user
@@ -12,7 +13,7 @@ export async function GET() {
         const data = await api.appStore.developer();
         return NextResponse.json({ data });
     } catch (error) {
-        console.error('[API /developers GET] Error:', error);
+        logger.error('failed to fetch developer profile', { error: error instanceof Error ? error.message : String(error) });
         return appMarketplaceErrorResponse(error, 'Failed to fetch developer profile');
     }
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { appMarketplaceErrorResponse, createAppMarketplaceApiClient } from '@/lib/api/client';
+import { logger } from '@/lib/logger';
 
 interface RouteParams {
     params: Promise<{ id: string }>;
@@ -25,7 +26,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
         });
         return NextResponse.json({ data }, { status: 201 });
     } catch (err) {
-        console.error('[install] Unexpected error:', err);
+        logger.error('app install failed', { appId, error: err instanceof Error ? err.message : String(err) });
         return appMarketplaceErrorResponse(err, 'Internal server error');
     }
 }
@@ -42,7 +43,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
         const data = await api.appStore.uninstall(appId, storeId ? { store_id: storeId } : undefined);
         return NextResponse.json({ data });
     } catch (err) {
-        console.error('[uninstall] Unexpected error:', err);
+        logger.error('app uninstall failed', { appId, error: err instanceof Error ? err.message : String(err) });
         return appMarketplaceErrorResponse(err, 'Internal server error');
     }
 }

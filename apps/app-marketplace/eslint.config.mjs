@@ -9,6 +9,7 @@ const eslintConfig = defineConfig([
   createLetbuyyBoundaryConfig(),
   {
     rules: {
+      "no-console": "error",
       "react-hooks/purity": "warn",
       "react-hooks/set-state-in-effect": "warn",
       "react-hooks/immutability": "warn",

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AppService } from '@/lib/app-service';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/apps/search — Full-text search
@@ -27,7 +28,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(result.value);
     } catch (error) {
-        console.error('[API /apps/search] Error:', error);
+        logger.error('app search failed', { error: error instanceof Error ? error.message : String(error) });
         return NextResponse.json(
             { error: 'Search failed' },
             { status: 500 }

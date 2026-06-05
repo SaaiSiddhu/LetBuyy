@@ -3,6 +3,7 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
+import { logger } from '@/lib/logger';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
@@ -51,7 +52,7 @@ function SearchContent() {
 
             setResults(apps);
         } catch (err) {
-            console.error('Failed to fetch apps:', err);
+            logger.error('search page failed to fetch apps', { error: err instanceof Error ? err.message : String(err) });
             setResults([]);
         } finally {
             setLoading(false);

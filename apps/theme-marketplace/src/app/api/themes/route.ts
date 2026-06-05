@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { ThemeService } from '@/lib/theme-service';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/themes
@@ -31,7 +32,7 @@ export async function GET(req: NextRequest) {
 
         return NextResponse.json(result.value);
     } catch (error) {
-        console.error('[API] /api/themes error:', error);
+        logger.error('failed to list themes', { error: error instanceof Error ? error.message : String(error) });
         return NextResponse.json(
             { error: 'Failed to fetch themes', themes: [], total: 0 },
             { status: 500 }
@@ -54,7 +55,7 @@ export async function POST(req: NextRequest) {
         const result = await ThemeService.uploadThemePackage(bundle as Record<string, unknown>);
         return NextResponse.json(result, { status: 201 });
     } catch (error) {
-        console.error('[API] /api/themes upload error:', error);
+        logger.error('theme upload failed', { error: error instanceof Error ? error.message : String(error) });
         return NextResponse.json(
             { error: error instanceof Error ? error.message : 'Failed to upload theme package' },
             { status: 500 }

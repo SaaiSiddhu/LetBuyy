@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { AppService } from '@/lib/app-service';
+import { logger } from '@/lib/logger';
 
 /**
  * GET /api/apps — List and filter published apps
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
         return NextResponse.json(result.value);
     } catch (error) {
-        console.error('[API /apps] Error:', error);
+        logger.error('failed to list apps', { error: error instanceof Error ? error.message : String(error) });
         return NextResponse.json(
             { error: 'Failed to fetch apps' },
             { status: 500 }
