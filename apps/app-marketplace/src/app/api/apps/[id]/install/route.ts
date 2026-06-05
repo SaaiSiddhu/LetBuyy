@@ -15,6 +15,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
 
     try {
         const body = await request.json().catch(() => ({}));
+        const idempotencyKey = request.headers.get('idempotency-key') ?? request.headers.get('x-idempotency-key') ?? undefined;
         const api = await createAppMarketplaceApiClient({ requireSession: true });
         const data = await api.appStore.install(appId, {
                 store_id: typeof body.store_id === 'string' ? body.store_id : undefined,
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
                 webhook_url: typeof body.webhook_url === 'string' ? body.webhook_url : undefined,
                 webhook_event: typeof body.webhook_event === 'string' ? body.webhook_event : undefined,
                 // webhook_secret intentionally not forwarded: the gateway generates the signing secret server-side (M5).
-        });
+        }, idempotencyKey ? { idempotencyKey } : undefined);
         return NextResponse.json({ data }, { status: 201 });
     } catch (err) {
         logger.error('app install failed', { appId, error: err instanceof Error ? err.message : String(err) });
@@ -39,8 +40,9 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
 
     try {
         const storeId = request.nextUrl.searchParams.get('store_id');
+        const idempotencyKey = request.headers.get('idempotency-key') ?? request.headers.get('x-idempotency-key') ?? undefined;
         const api = await createAppMarketplaceApiClient({ requireSession: true });
-        const data = await api.appStore.uninstall(appId, storeId ? { store_id: storeId } : undefined);
+        const data = await api.appStore.uninstall(appId, storeId ? { store_id: storeId } : undefined, idempotencyKey ? { idempotencyKey } : undefined);
         return NextResponse.json({ data });
     } catch (err) {
         logger.error('app uninstall failed', { appId, error: err instanceof Error ? err.message : String(err) });

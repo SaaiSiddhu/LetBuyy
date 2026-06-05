@@ -6,6 +6,7 @@ import { authMiddleware } from '../middleware/auth';
 import { requireRoleCategory } from '../middleware/rbac';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
+import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import {
     buildMarketplaceAutomatedChecks,
     createMarketplaceReviewRecord,
@@ -1974,6 +1975,24 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
     }
 
+    // Idempotency: dedupe double-submitted installs when the caller sends an Idempotency-Key (H9).
+    const idempotencyKey = c.req.header('X-Idempotency-Key');
+    const idempotency = idempotencyKey ? new IdempotencyExecutionAdapter(db) : null;
+    let idempotencyClaimId: string | null = null;
+    if (idempotency && idempotencyKey) {
+        const claim = await idempotency.begin({
+            siteId: storeId,
+            key: idempotencyKey,
+            scope: 'app-store.install',
+            requestBody: body,
+            requestId,
+        });
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+        idempotencyClaimId = claim.id;
+    }
+
     // Verify app exists and is published
     const { data: app } = await db
         .from('marketplace_apps')
@@ -2119,7 +2138,7 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         // Non-critical — install count update failed silently
     }
 
-    return c.json(success({
+    const installResponse = success({
         installation: finalInstallation || data,
         oauth: {
             access_token: accessToken,
@@ -2133,7 +2152,11 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
             signing_secret: defaultSigningSecret,
         },
         extension_registry: registry.value,
-    }), 201);
+    });
+    if (idempotency && idempotencyClaimId) {
+        await idempotency.complete({ id: idempotencyClaimId, responseBody: installResponse as any, statusCode: 201, resourceType: 'app_installation', resourceId: data.id });
+    }
+    return c.json(installResponse, 201);
 });
 
 // DELETE /app-store/apps/:id/install — Uninstall an app
@@ -2159,6 +2182,24 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
     const ownsStore = await verifySiteOwnership(db, resolvedStoreId, customUser.id, auth.user.storeId);
     if (!ownsStore) {
         return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    // Idempotency: dedupe double-submitted uninstalls when the caller sends an Idempotency-Key (H9).
+    const idempotencyKey = c.req.header('X-Idempotency-Key');
+    const idempotency = idempotencyKey ? new IdempotencyExecutionAdapter(db) : null;
+    let idempotencyClaimId: string | null = null;
+    if (idempotency && idempotencyKey) {
+        const claim = await idempotency.begin({
+            siteId: resolvedStoreId,
+            key: idempotencyKey,
+            scope: 'app-store.uninstall',
+            requestBody: { app_id: appId, store_id: resolvedStoreId },
+            requestId,
+        });
+        if (claim.kind === 'replay') {
+            return c.json(claim.responseBody as any, claim.statusCode as any);
+        }
+        idempotencyClaimId = claim.id;
     }
 
     const { data: installation } = await db
@@ -2253,7 +2294,11 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
         });
     }
 
-    return c.json({ data: { uninstalled: true } });
+    const uninstallResponse = { data: { uninstalled: true } };
+    if (idempotency && idempotencyClaimId) {
+        await idempotency.complete({ id: idempotencyClaimId, responseBody: uninstallResponse, statusCode: 200, resourceType: 'app_installation' });
+    }
+    return c.json(uninstallResponse);
 });
 
 // GET /app-store/developers/me — Get current user's developer profile
