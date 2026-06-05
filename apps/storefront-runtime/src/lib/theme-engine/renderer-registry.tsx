@@ -382,12 +382,36 @@ export function resolveSectionRendererKey(section: SectionModel): string | undef
     return COMPATIBILITY_RENDERER_KEYS[section.type];
 }
 
+function UnknownSectionFallback({ section, rendererKey }: { section: SectionModel; rendererKey?: string }): ReactNode {
+    const sectionTitle = typeof section.settings.title === 'string' && section.settings.title.trim().length > 0
+        ? section.settings.title.trim()
+        : 'Theme section unavailable';
+
+    return (
+        <section
+            data-theme-section-fallback="true"
+            data-section-id={section.id}
+            data-section-type={section.type}
+            data-renderer-key={rendererKey || 'unresolved'}
+            aria-label={`Unsupported theme section ${section.type}`}
+            className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 lg:px-8"
+        >
+            <div className="rounded-md border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300">
+                <p className="font-medium text-slate-900 dark:text-slate-100">{sectionTitle}</p>
+                <p className="mt-1">
+                    Renderer {rendererKey || section.type} is not available in this storefront runtime.
+                </p>
+            </div>
+        </section>
+    );
+}
+
 export function renderRegisteredSection(props: SectionRendererProps): ReactNode {
     const rendererKey = resolveSectionRendererKey(props.section);
-    if (!rendererKey) return null;
+    if (!rendererKey) return <UnknownSectionFallback section={props.section} />;
 
     const renderer = APPROVED_SECTION_RENDERERS[rendererKey];
-    if (!renderer) return null;
+    if (!renderer) return <UnknownSectionFallback section={props.section} rendererKey={rendererKey} />;
 
     return renderer(props);
 }

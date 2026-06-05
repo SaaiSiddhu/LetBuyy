@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.2 publish separation, base-version concurrency, and template-scoped preview sessions complete; continue F3.3 data-driven section registry.
-- Findings resolved: 16/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-8`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.2 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.3 data-driven first-party section registry and safe fallback complete; continue F3.4 app embeds and bounded Liquid drops.
+- Findings resolved: 17/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.3 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -278,6 +278,23 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 - Staging proof remains SKIPPED -- NEEDS HUMAN until staging merchant/session/store/theme credentials are provided.
 
+## F3.3 data-driven section registry evidence
+
+- `apps/storefront-runtime/src/lib/theme-engine/renderer-registry.tsx` continues to use `SECTION_RENDERER_DEFINITIONS` plus derived compatibility maps instead of a `switch` on section type.
+- Manifest-declared `rendererKey` and `settings.rendererKey` still resolve through the approved first-party renderer key map.
+- `apps/storefront-runtime/src/lib/store-service.ts` preserves section-definition `renderer_key` from JSON bundle manifests into `SectionModel.rendererKey`, so new manifest-declared JSON section types can reuse approved first-party renderers without a storefront switch edit.
+- Unknown or unsupported JSON section renderers now return `UnknownSectionFallback` with `data-theme-section-fallback`, `data-section-type`, and `data-renderer-key` instead of silently returning `null`.
+- Third-party section upload/runtime remains SKIPPED -- NEEDS HUMAN under the mission architecture fork; this increment implements the data-driven first-party default only.
+- Pre-change `pnpm run test:contracts`: FAIL at new `tests/contracts/theme-section-registry.test.ts` because `UnknownSectionFallback` was absent.
+- Post-change `pnpm run test:contracts`: PASS - 61/61.
+- `pnpm install --frozen-lockfile --force`: PASS to restore workspace dependency links after generated artifact cleanup.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck`: PASS.
+- `pnpm --filter @letbuyy/storefront-runtime lint`: PASS with existing warnings only.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -307,5 +324,5 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Continue to F3.3 data-driven section registry.
+- Continue to F3.4 app embeds and bounded Liquid commerce drops.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
