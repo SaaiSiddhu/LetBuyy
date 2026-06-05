@@ -259,19 +259,23 @@ test('WS12 G3 Storefront GraphQL delegates reads through existing storefront RES
   assert.doesNotMatch(storefrontGraphQLSource, /\/storefront\/customer\/by-email/);
 });
 
-test('WS12 G4 implements R2-backed GraphQL bulk operations with queue handoff', () => {
+test('WS12 G4 implements R2-backed GraphQL bulk operations with single-path waitUntil processing', () => {
   assertIncludesAll(bulkGraphQLSource, [
     "GRAPHQL_BULK_OPERATION_R2_PREFIX = 'graphql-bulk'",
     "GRAPHQL_BULK_OPERATION_QUEUE_NAME = 'graphql-bulk'",
     "GRAPHQL_BULK_OPERATION_QUEUE_JOB_TYPE = 'graphql.bulk.operation'",
     'GRAPHQL_BULK_OPERATION_CONCURRENCY_CAP = 2',
     'c.env.R2_BUCKET',
-    'c.env.RUNTIME_QUEUE.send',
+    "processingPath: 'api-gateway.waitUntil'",
     'c.executionCtx.waitUntil',
     'processGraphQLBulkOperation',
+    'BULK_MUTATION_DIRECT_EXECUTION_REQUIRED',
     "contentType: 'application/x-ndjson; charset=utf-8'",
     "'Content-Type': 'application/x-ndjson; charset=utf-8'",
-  ], 'GraphQL bulk operation R2 and queue implementation');
+  ], 'GraphQL bulk operation R2 and single-path implementation');
+
+  assert.doesNotMatch(bulkGraphQLSource, /c\.env\.RUNTIME_QUEUE\.send/);
+  assert.doesNotMatch(bulkGraphQLSource, /queueEnqueued/);
 
   assertIncludesAll(adminGraphQLSource, [
     'createGraphQLBulkOperation',

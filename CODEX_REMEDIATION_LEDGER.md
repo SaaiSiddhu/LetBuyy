@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 3 — P1 Cost.
-- Current work item: P1-6 atomic rate limiting and redundant limiter collapse.
+- Current work item: P1-7 queue write batching and GraphQL bulk single-path processing.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -221,6 +221,22 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-7 — Queue write batching and GraphQL bulk single-path processing
+
+- Changed queue-workers to normalize each Cloudflare queue batch in memory, upsert all `distributed_queue_messages` rows with one batched call, and write one aggregate `runtime_telemetry_metrics` row per batch.
+- Removed per-message lag metric inserts; the aggregate batch metric now carries p95/max lag dimensions.
+- Drains platform queues once per Cloudflare batch instead of once per message.
+- Removed the unused GraphQL bulk queue enqueue path and kept one gateway `waitUntil` processor path.
+- Stopped rewriting the actor bulk-operation index on every status transition; list/current reads hydrate operation objects from the append-only operation records.
+- Bulk GraphQL mutations now fail loudly with `BULK_MUTATION_DIRECT_EXECUTION_REQUIRED` until direct execution adapters are wired, avoiding per-row full GraphQL HTTP fan-out.
+
+Evidence:
+- `node --test tests/operations/queue-bulk-cost.test.mjs tests/api-graphql/schema-contract.test.mjs` — PASS, 15/15 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after restoring pnpm workspace links with `CI=true pnpm install --frozen-lockfile`; generated nested `node_modules` folders removed before governance.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -277,6 +293,11 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after atomic rate-limit changes.
 - `git diff --check` — PASS after atomic rate-limit changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after atomic rate-limit changes.
+- `node --test tests/operations/queue-bulk-cost.test.mjs tests/api-graphql/schema-contract.test.mjs` — PASS, 15/15 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after GraphQL bulk single-path changes.
+- `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after queue write batching, with pnpm workspace links restored temporarily and nested generated `node_modules` removed afterward.
+- `git diff --check` — PASS after queue write batching and GraphQL bulk single-path changes.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after queue write batching and GraphQL bulk single-path changes.
 
 ## SKIPPED — NEEDS HUMAN
 
