@@ -816,15 +816,24 @@ router.post('/apps/:id/reviews', authMiddleware, async (c) => {
         }
     }
 
-    // Check if user has installed this app (verified review)
-    const { data: installation } = await db
+    // Require an active installation for this app before accepting a review
+    // (verified-install reviews only — no drive-by ratings).
+    let installationQuery = db
         .from('app_installations')
         .select('id')
         .eq('app_id', appId)
         .eq('installed_by', customUser.id)
-        .limit(1);
+        .eq('status', 'active');
+    if (body.store_id) {
+        installationQuery = installationQuery.eq('store_id', body.store_id);
+    }
+    const { data: installation } = await installationQuery.limit(1);
 
-    const isVerified = installation && installation.length > 0;
+    if (!installation || installation.length === 0) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'You must have an active installation of this app to review it' } }, 403);
+    }
+
+    const isVerified = true;
 
     const { data, error } = await db
         .from('app_reviews')
