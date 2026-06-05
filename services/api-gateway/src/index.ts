@@ -51,6 +51,9 @@ export interface Env {
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
+    HYPERDRIVE?: Hyperdrive;
+    DATABASE_URL?: string;
+    SUPABASE_DB_URL?: string;
     RAZORPAY_KEY_ID: string;
     RAZORPAY_KEY_SECRET: string;
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
@@ -96,6 +99,7 @@ export interface Env {
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
     STOREFRONT_CACHE?: string;
+    STOREFRONT_POOLED_SQL?: string;
     REQUEST_LOG_SAMPLE_RATE?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;

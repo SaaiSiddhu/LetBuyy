@@ -21,6 +21,7 @@
     "./queue-adapter": "./queue-adapter/index.ts",
     "./analytics-adapter": "./analytics-adapter/index.ts",
     "./cache-adapter": "./cache-adapter/index.ts",
+    "./pooled-sql-adapter": "./pooled-sql-adapter/index.ts",
     "./search-provider-adapter": "./search-provider-adapter/index.ts",
     "./logistics-adapter": "./logistics-adapter/index.ts",
     "./provider-resilience-adapter": "./provider-resilience-adapter/index.ts"
@@ -35,6 +36,7 @@
     "@supabase/supabase-js": "^2.95.2",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.36.2",
+    "postgres": "^3.4.7",
     "resend": "^6.9.2",
     "stripe": "^20.3.1"
   },

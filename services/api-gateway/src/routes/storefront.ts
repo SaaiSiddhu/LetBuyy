@@ -50,6 +50,7 @@ import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
+import { getPooledSql } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {
     planCouponValidation,
     storefrontCouponValidationError,
@@ -603,6 +604,16 @@ type PublicProductQueryOptions = {
     paginated?: boolean;
 };
 
+type SqlRecord = Record<string, unknown>;
+type SqlParameter = null | boolean | number | string | Date | Uint8Array | readonly SqlParameter[];
+type ProductSqlRow = SqlRecord & { __total_count?: number | string | null };
+type PublicProductRow = SqlRecord;
+type PublicProductQueryResult = {
+    data: PublicProductRow[];
+    count: number;
+    error: DatabaseErrorLike;
+};
+
 function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
 }
@@ -612,10 +623,135 @@ function isSchemaMismatchError(error: DatabaseErrorLike): boolean {
     return text.includes('does not exist') || text.includes('schema cache') || text.includes('could not find');
 }
 
+function normalizeSqlValue(value: unknown): unknown {
+    return value instanceof Date ? value.toISOString() : value;
+}
+
+function normalizeSqlRecord<T extends object>(row: T): T {
+    const normalized: SqlRecord = {};
+    for (const [key, value] of Object.entries(row as SqlRecord)) {
+        normalized[key] = normalizeSqlValue(value);
+    }
+    return normalized as T;
+}
+
+function normalizeSqlRecords<T extends object>(rows: T[]): T[] {
+    return rows.map((row) => normalizeSqlRecord(row));
+}
+
+function productRowWithoutCount(row: ProductSqlRow): SqlRecord {
+    const normalized = normalizeSqlRecord(row);
+    delete normalized.__total_count;
+    return normalized;
+}
+
+function publicProductRows(value: unknown): PublicProductRow[] {
+    if (!Array.isArray(value)) return [];
+    return value.filter((row): row is PublicProductRow => {
+        return Boolean(row) && typeof row === 'object' && !Array.isArray(row);
+    });
+}
+
+async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<PublishedStoreRecord[]>(
+        'select id from sites where (subdomain = $1 or store_name = $1) and status = $2 and deleted_at is null limit 1',
+        [handle, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<StorefrontSiteRecord[]>(
+        `select ${STOREFRONT_SITE_RELEASE_SELECT}
+         from sites
+         where (subdomain = $1 or store_name = $1)
+           and status = $2
+           and deleted_at is null
+         limit 1`,
+        [handle, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<StorefrontThemeReleaseRecord[]>(
+        `select id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
+                template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest,
+                schema_manifest_version, engine_version, published_at
+         from theme_releases
+         where store_id = $1
+           and is_current = true
+           and release_status = $2
+           and deleted_at is null
+         order by release_version desc
+         limit 1`,
+        [storeId, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+
+    const params: SqlParameter[] = [storeId];
+    const filters = ['store_id = $1', 'is_active = true', 'deleted_at is null'];
+
+    if (options.ids?.length) {
+        params.push(options.ids);
+        filters.push(`id::text = any($${params.length}::text[])`);
+    }
+
+    if (options.category) {
+        params.push(options.category);
+        filters.push(`category = $${params.length}`);
+    }
+
+    if (options.search) {
+        params.push(`%${options.search}%`);
+        filters.push(`name ilike $${params.length}`);
+    }
+
+    const offset = ((options.page || 1) - 1) * options.limit;
+    params.push(options.limit);
+    const limitParam = params.length;
+    params.push(offset);
+    const offsetParam = params.length;
+
+    const countSelect = options.paginated ? ', count(*) over() as __total_count' : '';
+    const rows = await sql.unsafe<ProductSqlRow[]>(
+        `select ${PRODUCT_SELECT_FULL}${countSelect}
+         from products
+         where ${filters.join(' and ')}
+         order by display_order asc
+         limit $${limitParam} offset $${offsetParam}`,
+        params,
+    ).catch(() => null);
+
+    if (!rows) return null;
+    const count = options.paginated
+        ? Number(rows[0]?.__total_count || 0)
+        : rows.length;
+    return {
+        data: rows.map(productRowWithoutCount),
+        count,
+        error: null,
+    };
+}
+
 async function loadPublishedStore(c: AppContext, subdomain: string): Promise<PublishedStoreRecord | null> {
     const db = getSupabaseAdmin(c);
     const handle = normalizeStorefrontHandle(subdomain);
     if (!handle) return null;
+
+    const pooledStore = await loadPublishedStoreFromPooledSql(c, handle);
+    if (pooledStore) return pooledStore;
 
     const selectStore = (includeDeletedAtFilter: boolean) => {
         const query = db
@@ -666,6 +802,11 @@ async function loadSiteByHandle(
     if (!normalized) return null;
 
     const db = getSupabaseAdmin(c);
+    if (options.publishedOnly) {
+        const pooledSite = await loadSiteByHandleFromPooledSql(c, normalized);
+        if (pooledSite) return pooledSite;
+    }
+
     const selectSite = (selectFields: string, includeDeletedAtFilter: boolean) => {
         let query = db
             .from('sites')
@@ -702,6 +843,9 @@ async function loadSiteByHandle(
 
 async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
     const db = getSupabaseAdmin(c);
+    const pooledRelease = await loadCurrentThemeReleaseFromPooledSql(c, storeId);
+    if (pooledRelease) return pooledRelease;
+
     const baseQuery = (select: string, includeDeletedAtFilter: boolean) => {
         let query = db
             .from('theme_releases')
@@ -891,8 +1035,11 @@ async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Pr
     return blocks;
 }
 
-async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions) {
+async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult> {
     const db = getSupabaseAdmin(c);
+    const pooledResult = await queryPublicProductsFromPooledSql(c, storeId, options);
+    if (pooledResult) return pooledResult;
+
     const attempts = [
         { select: PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
         { select: PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
@@ -920,9 +1067,10 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
             : await query.limit(options.limit);
 
         if (!result.error) {
+            const data = publicProductRows(result.data);
             return {
-                data: result.data || [],
-                count: result.count || (result.data?.length ?? 0),
+                data,
+                count: result.count || data.length,
                 error: null,
             };
         }

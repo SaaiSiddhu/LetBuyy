@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 4 — P2 Performance.
-- Current work item: P2-2 Hyperdrive pooled SQL reads.
+- Current work item: P2-2 product view-counter de-hot.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -262,6 +262,22 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-2 / Phase 4.2 — Hyperdrive pooled SQL reads
+
+- Added `@letbuyy/infrastructure/pooled-sql-adapter` using `postgres` against `HYPERDRIVE.connectionString`, with `DATABASE_URL`/`SUPABASE_DB_URL` local fallbacks.
+- Exposed the adapter through the infrastructure package public exports and declared the `postgres` dependency in the owning package manifest and lockfile.
+- Added gateway `HYPERDRIVE` and rollbackable `STOREFRONT_POOLED_SQL` bindings/vars for default, staging, and production Worker configs.
+- Routed cache-miss hot reads through pooled SQL before Supabase fallback: published store handle resolution, published store/theme bootstrap, current theme release, and public product catalog reads.
+- Kept writes, RPCs, customer auth, and provider mutation paths on existing Supabase/PostgREST clients.
+
+Evidence:
+- `node --test tests/performance/storefront-pooled-sql.test.mjs tests/performance/storefront-cache.test.mjs` — PASS, 9/9 tests.
+- `pnpm --filter @letbuyy/payments build` — PASS; generated `packages/payments/dist` removed before governance.
+- `pnpm --filter @letbuyy/infrastructure typecheck` — PASS after workspace links were restored; generated nested `node_modules` and `dist` folders removed before governance.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after artifact cleanup.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -330,6 +346,12 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after public storefront REST cache changes.
 - `git diff --check` — PASS after public storefront REST cache changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after public storefront REST cache changes.
+- `node --test tests/performance/storefront-pooled-sql.test.mjs tests/performance/storefront-cache.test.mjs` — PASS, 9/9 tests.
+- `pnpm --filter @letbuyy/payments build` — PASS as setup for infrastructure typecheck; generated `dist` removed before governance.
+- `pnpm --filter @letbuyy/infrastructure typecheck` — PASS after Hyperdrive pooled SQL adapter and workspace link restore.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after Hyperdrive pooled SQL route changes and artifact cleanup.
+- `git diff --check` — PASS after Hyperdrive pooled SQL route changes.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after Hyperdrive pooled SQL route changes and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 
