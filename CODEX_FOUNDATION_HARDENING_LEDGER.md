@@ -19,6 +19,7 @@
 
 ## PROGRESS LOG
 
+- 2026-06-05T14:47:39Z [F1.3] H-10 Cloudflare queue producer send paths - DONE - evidence: `npx tsx --test services/api-gateway/src/__tests__/cloudflare-queue-triggers.test.ts` -> 3/3 PASS; `node scripts/validators/queue-lifecycle-validator.mjs` -> PASS with source send-plan checks for 5 queue producer bindings; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; generated artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T15:41:10Z [F1.2] H-1 subscriptions/sites/billing_history Single-Writer - DONE - evidence: `rg "patchRows\\([^\\n]+\\\"(orders|products|subscriptions|sites|billing_history)\\\"" services/webhook-service/src -n` -> no matches; `node scripts/validators/single-writer-ownership-validator.mjs` -> PASS; `pnpm --filter @letbuyy/webhook-service test` -> 9/9 PASS; `pnpm --filter @letbuyy/webhook-service typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T15:03:40Z [F1.1] H-1 orders/products Single-Writer - DONE - evidence: `rg "patchRows\\([^\\n]+\\\"(orders|products)\\\"" services/webhook-service/src -n` -> no matches; `node scripts/validators/single-writer-ownership-validator.mjs` -> PASS; `pnpm --filter @letbuyy/webhook-service test` -> 5/5 PASS; `pnpm --filter @letbuyy/webhook-service typecheck` -> PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; artifact cleanup; `pnpm run validate:governance` -> 129/129 PASS.
 - 2026-06-05T14:08:05Z [F0-GATE] F0 validation gate - DONE - evidence: `pnpm install --frozen-lockfile --force` -> restored workspace links from lockfile; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; recursive generated artifact cleanup; `pnpm run validate:governance` -> 128/128 PASS.
@@ -36,11 +37,11 @@
 
 ## SINGLE-WRITER LEDGER
 
-- 2026-06-05T15:03:40Z table `orders` -> sole writer `services/api-gateway` for payment webhook order transitions; `services/webhook-service` now calls gateway internal payment endpoints; second-writer validator added pending commit.
-- 2026-06-05T15:03:40Z table `products` -> sole writer `services/api-gateway` for payment webhook legacy stock fallback; `services/webhook-service` has zero direct writes to `products`; second-writer validator added pending commit.
-- 2026-06-05T15:41:10Z table `subscriptions` -> sole writer `services/api-gateway` for provider subscription activation/status sync; `services/webhook-service` now calls `/v1/internal/billing/subscriptions/*`; second-writer validator expanded pending commit.
-- 2026-06-05T15:41:10Z table `sites` -> sole writer `services/api-gateway` for subscription-paid trial status updates; `services/webhook-service` no longer patches `sites`; second-writer validator expanded pending commit.
-- 2026-06-05T15:41:10Z table `billing_history` -> sole writer `services/api-gateway` for provider subscription invoices; `services/webhook-service` now calls gateway invoice endpoint; second-writer validator expanded pending commit.
+- 2026-06-05T15:03:40Z table `orders` -> sole writer `services/api-gateway` for payment webhook order transitions; `services/webhook-service` now calls gateway internal payment endpoints; second-writer validator added in commit `9b5e0604`.
+- 2026-06-05T15:03:40Z table `products` -> sole writer `services/api-gateway` for payment webhook legacy stock fallback; `services/webhook-service` has zero direct writes to `products`; second-writer validator added in commit `9b5e0604`.
+- 2026-06-05T15:41:10Z table `subscriptions` -> sole writer `services/api-gateway` for provider subscription activation/status sync; `services/webhook-service` now calls `/v1/internal/billing/subscriptions/*`; second-writer validator expanded in commit `964c46d1`.
+- 2026-06-05T15:41:10Z table `sites` -> sole writer `services/api-gateway` for subscription-paid trial status updates; `services/webhook-service` no longer patches `sites`; second-writer validator expanded in commit `964c46d1`.
+- 2026-06-05T15:41:10Z table `billing_history` -> sole writer `services/api-gateway` for provider subscription invoices; `services/webhook-service` now calls gateway invoice endpoint; second-writer validator expanded in commit `964c46d1`.
 
 ## TRACEABILITY MATRIX
 
@@ -69,7 +70,7 @@
 | H-7 | PENDING | F4.1 |
 | H-8 | PENDING | F7.2 |
 | H-9 | PENDING | F1.6 |
-| H-10 | PENDING | F1.3 |
+| H-10 | DONE | F1.3 |
 | H-11 | PENDING | F1.4 |
 | H-12 | PENDING | F1.5 |
 | H-13 | PENDING | F2.6 |
@@ -85,3 +86,4 @@
 - 2026-06-05T14:08:05Z `pnpm run validate:governance` -> 128/128 PASS after dependency-linked typecheck/lint and recursive generated artifact cleanup.
 - 2026-06-05T15:03:40Z `pnpm run validate:governance` -> 129/129 PASS after adding Single-Writer ownership validator for webhook-service `orders`/`products` writes.
 - 2026-06-05T15:45:02Z `pnpm run validate:governance` -> 129/129 PASS after expanding Single-Writer ownership to `subscriptions`, `sites`, and `billing_history`.
+- 2026-06-05T14:47:39Z `pnpm run validate:governance` -> 129/129 PASS after adding Cloudflare queue trigger producer send plans and queue lifecycle validator send-plan checks.

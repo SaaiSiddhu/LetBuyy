@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F1 - Backend integrity; F1.2 core commerce/billing Single-Writer increment complete.
-- Findings resolved: 3/31 Critical/High complete (`C-2`, `C-12`, `C-13`); H-1 is in progress with `orders`, `products`, `subscriptions`, `sites`, and `billing_history` webhook second-writers removed. Event infrastructure tables still need classification in F1.3/F1.5.
-- Current governance gate state: green after F1.2 (`pnpm run validate:governance` -> 129/129 PASS).
+- Phase: F1 - Backend integrity; F1.3 queue producer send-path increment complete.
+- Findings resolved: 4/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-10`); H-1 is in progress with `orders`, `products`, `subscriptions`, `sites`, and `billing_history` webhook second-writers removed. Event infrastructure tables still need classification in F1.5.
+- Current governance gate state: green after F1.3 (`pnpm run validate:governance` -> 129/129 PASS).
 
 ## Baseline gates
 
@@ -48,6 +48,17 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, warnings only.
 - `pnpm run validate:governance`: PASS - 129/129 validators.
 
+## F1.3 gate evidence
+
+- `services/api-gateway` scheduled dispatch now produces Cloudflare queue triggers for `EVENT_QUEUE`, `RUNTIME_QUEUE`, and, when platform queue work exists, `ANALYTICS_QUEUE`, `SEARCH_QUEUE`, and `NOTIFICATION_QUEUE`.
+- `packages/infrastructure/queue-adapter` now preserves `jobType` so queue-worker deliveries see the intended drain trigger type.
+- `scripts/validators/queue-lifecycle-validator.mjs`: PASS with source send-plan checks for all 5 queue producer bindings.
+- `npx tsx --test services/api-gateway/src/__tests__/cloudflare-queue-triggers.test.ts`: PASS - 3/3 behavior tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- `pnpm run validate:governance`: PASS - 129/129 validators.
+
 ## Human-gated remainder
 
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
@@ -55,6 +66,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit F1.2.
-- Continue F1.3-F1.5 queue producer and event contract checks, including classification of event infrastructure tables (`outbox_events`, `payment_webhook_events`) before declaring H-1 fully done.
+- Commit F1.3.
+- Continue F1.4-F1.5 payout event emission/reservation and event contract checks, including classification of event infrastructure tables (`outbox_events`, `payment_webhook_events`) before declaring H-1 fully done.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.

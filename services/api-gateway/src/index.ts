@@ -45,6 +45,11 @@ import { createStorefrontGraphQLRouter } from './graphql/storefront';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
+import {
+    planScheduledDispatchQueueTriggers,
+    type CloudflareQueueTriggerPlan,
+    type ScheduledDispatchQueueTriggerInput,
+} from './execution/cloudflare-queue-triggers';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
 export { LetbuyyRuntimeDurableObject } from './durable/runtime-coordinator';
 
@@ -203,6 +208,13 @@ type ScheduledDispatchQueueResult = Array<{
     skipped?: number;
 }>;
 
+type CloudflareQueueTriggerResult = Array<{
+    binding: CloudflareQueueTriggerPlan['binding'];
+    queue_name: string;
+    status: 'enqueued' | 'missing-binding' | 'failed';
+    error?: string;
+}>;
+
 function numberField(value: unknown, key: string): number {
     return value && typeof value === 'object' && typeof (value as Record<string, unknown>)[key] === 'number'
         ? (value as Record<string, number>)[key]
@@ -282,6 +294,63 @@ function scheduledDispatchHadWork(
         || numberField(webhookPayload, 'claimed') > 0
         || numberField(webhookPayload, 'succeeded') > 0
         || numberField(webhookPayload, 'failed') > 0;
+}
+
+function sumScheduledQueueResult(queueResult: ScheduledDispatchQueueResult, key: keyof ScheduledDispatchQueueResult[number]): number {
+    return queueResult.reduce((sum, result) => sum + numberField(result, key), 0);
+}
+
+async function enqueueCloudflareQueueTriggers(
+    env: Env,
+    plans: CloudflareQueueTriggerPlan[],
+): Promise<CloudflareQueueTriggerResult> {
+    const results: CloudflareQueueTriggerResult = [];
+
+    for (const plan of plans) {
+        const binding = env[plan.binding];
+        const queueName = env[plan.nameVar] || plan.fallbackName;
+
+        if (!binding) {
+            results.push({
+                binding: plan.binding,
+                queue_name: queueName,
+                status: 'missing-binding',
+            });
+            continue;
+        }
+
+        try {
+            await createCloudflareQueueProducer(binding).enqueue({
+                id: plan.messageId,
+                queueName,
+                jobType: plan.jobType,
+                payload: plan.payload,
+                attempts: 0,
+                correlationId: plan.correlationId,
+            });
+            results.push({
+                binding: plan.binding,
+                queue_name: queueName,
+                status: 'enqueued',
+            });
+        } catch (error) {
+            results.push({
+                binding: plan.binding,
+                queue_name: queueName,
+                status: 'failed',
+                error: error instanceof Error ? error.message : 'Cloudflare queue enqueue failed',
+            });
+        }
+    }
+
+    return results;
+}
+
+async function enqueueScheduledDispatchTriggers(
+    env: Env,
+    input: ScheduledDispatchQueueTriggerInput,
+): Promise<CloudflareQueueTriggerResult> {
+    return enqueueCloudflareQueueTriggers(env, planScheduledDispatchQueueTriggers(input));
 }
 
 // Global middleware
@@ -478,7 +547,6 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
     const db = getSupabaseAdminFromEnv(env);
     const outbox = new OutboxExecutionAdapter(db);
     const queue = new QueueExecutionAdapter(db);
-    const eventQueue = env.EVENT_QUEUE ? createCloudflareQueueProducer(env.EVENT_QUEUE) : null;
     const queueNames: ScheduledQueueName[] = ['analytics-events', 'search-indexing', 'payment-events'];
 
     try {
@@ -527,28 +595,22 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             webhookResult = await response.json().catch(() => ({ ok: response.ok, status: response.status }));
         }
         const queueResult = await queue.consumeQueues(workerId, queueNames, 50);
-        const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
         const hadWork = scheduledDispatchHadWork(outboxResult, queueResult, webhookResult);
-
-        if (hadWork) {
-            await eventQueue?.enqueue({
-                id: crypto.randomUUID(),
-                queueName: eventQueueName,
-                payload: {
-                    event_type: 'runtime.scheduled_dispatch.completed',
-                    dispatcher_id: dispatcherId,
-                    worker_id: workerId,
-                    outbox_result: outboxResult,
-                    webhook_result: webhookResult,
-                    queue_result: queueResult,
-                    environment: env.ENVIRONMENT,
-                    deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-                    telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
-                },
-                attempts: 0,
-                correlationId: dispatcherId,
-            });
-        }
+        const cloudflareQueueTriggers = hadWork
+            ? await enqueueScheduledDispatchTriggers(env, {
+                status: 'completed',
+                dispatcherId,
+                workerId,
+                eventId: crypto.randomUUID(),
+                environment: env.ENVIRONMENT,
+                deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+                telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
+                outboxQueuedJobs: numberField(outboxResult, 'queued_jobs'),
+                queueClaimedJobs: sumScheduledQueueResult(queueResult, 'claimed'),
+                queueSucceededJobs: sumScheduledQueueResult(queueResult, 'succeeded'),
+                webhookDeliveries: numberField(outboxResult, 'webhook_deliveries'),
+            })
+            : [];
 
         console.info(JSON.stringify({
             level: 'info',
@@ -561,12 +623,21 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             worker_id: workerId,
             outbox_result: outboxResult,
             queue_result: queueResult,
-            completion_event_enqueued: hadWork,
+            cloudflare_queue_triggers: cloudflareQueueTriggers,
             preflight: pending,
         }));
     } catch (error: unknown) {
-        const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
         const message = error instanceof Error ? error.message : 'Scheduled outbox dispatch failed';
+        const cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, {
+            status: 'failed',
+            dispatcherId,
+            workerId,
+            eventId: crypto.randomUUID(),
+            environment: env.ENVIRONMENT,
+            deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+            telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
+            error: message,
+        });
 
         console.error(JSON.stringify({
             level: 'error',
@@ -577,34 +648,8 @@ async function runScheduledDispatch(controller: ScheduledController, env: Env): 
             latency_ms: 0,
             dispatcher_id: dispatcherId,
             error: message,
+            cloudflare_queue_triggers: cloudflareQueueTriggers,
         }));
-
-        await eventQueue?.enqueue({
-            id: crypto.randomUUID(),
-            queueName: eventQueueName,
-            payload: {
-                event_type: 'runtime.scheduled_dispatch.failed',
-                dispatcher_id: dispatcherId,
-                worker_id: workerId,
-                error: message,
-                environment: env.ENVIRONMENT,
-                deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-                telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
-            },
-            attempts: 0,
-            correlationId: dispatcherId,
-        }).catch((enqueueError: unknown) => {
-            console.error(JSON.stringify({
-                level: 'error',
-                service: 'letbuyy-api',
-                route: 'scheduled.outbox_dispatch.failure_event',
-                method: 'CRON',
-                status_code: 500,
-                latency_ms: 0,
-                dispatcher_id: dispatcherId,
-                error: enqueueError instanceof Error ? enqueueError.message : 'Scheduled failure event enqueue failed',
-            }));
-        });
     }
 }
 

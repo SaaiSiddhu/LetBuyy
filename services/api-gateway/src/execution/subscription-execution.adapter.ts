@@ -40,7 +40,7 @@ export class SubscriptionExecutionAdapter {
         kind: 'runtime-bridge',
         adapter: 'subscription-execution.adapter',
         workflowAuthority: 'billing-application',
-        allowedResponsibilities: ['database-rpc', 'provider-webhook-state-application', 'response-formatting'],
+        allowedResponsibilities: ['database-rpc', 'response-formatting'],
         forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
     });
 

@@ -12,6 +12,9 @@ const schemaPath = "config/runtime/queue-lifecycle-manifest.schema.json";
 const manifest = readJson(manifestPath);
 const apiWrangler = readFile("services/api-gateway/wrangler.toml");
 const queueWrangler = readFile("services/queue-workers/wrangler.toml");
+const gatewayQueueTriggerSource = readFile("services/api-gateway/src/execution/cloudflare-queue-triggers.ts");
+const gatewayIndexSource = readFile("services/api-gateway/src/index.ts");
+const queueAdapterSource = readFile("packages/infrastructure/queue-adapter/index.ts");
 
 function escapeRegExp(value) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
@@ -56,6 +59,14 @@ reporter.assert(manifest?.producerConfig === "services/api-gateway/wrangler.toml
 reporter.assert(manifest?.consumerConfig === "services/queue-workers/wrangler.toml", "Queue manifest must bind Queue Workers consumer config");
 reporter.assert(manifest?.deterministicRecovery?.clockSource === "caller-supplied-runtime-time", "Queue recovery must require caller-supplied runtime time");
 reporter.assert(manifest?.failurePolicy === "fail-closed", "Queue lifecycle must fail closed");
+reporter.assert(
+  gatewayIndexSource.includes("planScheduledDispatchQueueTriggers") && gatewayIndexSource.includes("createCloudflareQueueProducer"),
+  "API Gateway scheduled dispatcher must produce Cloudflare queue trigger messages",
+);
+reporter.assert(
+  queueAdapterSource.includes("jobType?: string") && queueAdapterSource.includes("jobType: message.jobType"),
+  "Cloudflare queue adapter must preserve trigger jobType for queue-workers",
+);
 
 const queueSource = readFile("packages/distributed-runtime/src/queue-runtime.ts");
 for (const fragment of [
@@ -101,6 +112,10 @@ for (const environment of Object.keys(manifest?.environments || {})) {
     reporter.assert(Boolean(queueName), `Queue manifest missing name for ${queue.logicalName}/${environment}`);
     reporter.assert(Boolean(dlqName), `Queue manifest missing DLQ name for ${queue.logicalName}/${environment}`);
     reporter.assert(Boolean(producer), `API Gateway missing queue producer binding ${queue.producerBinding} for ${environment}`);
+    reporter.assert(
+      gatewayQueueTriggerSource.includes(`'${queue.producerBinding}'`),
+      `API Gateway source missing queue trigger send plan for ${queue.producerBinding}`,
+    );
     reporter.assert(stringValue(producer || "", "queue") === queueName, `API Gateway producer queue drift for ${queue.logicalName}/${environment}`);
     reporter.assert(Boolean(consumer), `Queue Workers missing consumer for ${queueName}`);
     reporter.assert(stringValue(consumer || "", "dead_letter_queue") === dlqName, `Queue consumer DLQ drift for ${queueName}`);
