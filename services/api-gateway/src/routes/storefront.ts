@@ -38,6 +38,7 @@ import {
 } from '../middleware/customer-session';
 import { enforceCustomerAuthRateLimit } from '../middleware/rateLimit';
 import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security';
+import { isGatewayFeatureEnabled } from '../middleware/featureFlags';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
@@ -1956,41 +1957,49 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
             phone: body.customer.phone,
             gstin: body.customer.gstin,
         };
-        const functionEvaluation = await evaluateCheckoutAppFunctions(c, {
-            siteId: store.id,
-            requestId: tenant.requestId,
-            couponCode: body.couponCode,
-            cart: {
-                lines: body.items.map((item) => ({
-                    product_id: item.productId,
-                    variant_id: item.variantId || null,
-                    quantity: item.quantity,
-                })),
-                coupon_code: body.couponCode || null,
-                gift_card_code: body.giftCardCode || null,
-            },
-            checkout: {
-                payment_method: body.paymentMethod,
-                shipping_method: body.deliveryOption,
-                customer: {
-                    name: body.customer.name,
-                    email: body.customer.email,
-                    phone: body.customer.phone,
-                    gstin: body.customer.gstin,
+        const functionEvaluation = isGatewayFeatureEnabled(c.env, 'FEATURE_EXTENSIONS')
+            ? await evaluateCheckoutAppFunctions(c, {
+                siteId: store.id,
+                requestId: tenant.requestId,
+                couponCode: body.couponCode,
+                cart: {
+                    lines: body.items.map((item) => ({
+                        product_id: item.productId,
+                        variant_id: item.variantId || null,
+                        quantity: item.quantity,
+                    })),
+                    coupon_code: body.couponCode || null,
+                    gift_card_code: body.giftCardCode || null,
                 },
-                shipping_address: shippingAddress,
-            },
-        });
+                checkout: {
+                    payment_method: body.paymentMethod,
+                    shipping_method: body.deliveryOption,
+                    customer: {
+                        name: body.customer.name,
+                        email: body.customer.email,
+                        phone: body.customer.phone,
+                        gstin: body.customer.gstin,
+                    },
+                    shipping_address: shippingAddress,
+                },
+            })
+            : null;
+        const checkoutDecision = functionEvaluation?.decision || {
+            validationErrors: [],
+            paymentMethod: body.paymentMethod,
+            shippingMethod: body.deliveryOption,
+            couponCode: body.couponCode,
+        };
 
-        if (functionEvaluation.decision.validationErrors.length > 0) {
+        if (checkoutDecision.validationErrors.length > 0) {
             await idempotency.fail(claim.id);
             return c.json(
                 {
                     success: false,
                     error: {
                         code: 'CHECKOUT_FUNCTION_VALIDATION',
-                        message: functionEvaluation.decision.validationErrors[0]?.message || 'Checkout validation failed',
-                        details: functionEvaluation.decision.validationErrors,
+                        message: checkoutDecision.validationErrors[0]?.message || 'Checkout validation failed',
+                        details: checkoutDecision.validationErrors,
                     },
                 },
                 400
@@ -2009,10 +2018,10 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
                     variant_id: item.variantId || null,
                     quantity: item.quantity,
                 })),
-                payment_method: functionEvaluation.decision.paymentMethod,
-                shipping_method: functionEvaluation.decision.shippingMethod,
+                payment_method: checkoutDecision.paymentMethod,
+                shipping_method: checkoutDecision.shippingMethod,
                 notes: body.notes,
-                coupon_code: functionEvaluation.decision.couponCode,
+                coupon_code: checkoutDecision.couponCode,
                 gift_card_code: body.giftCardCode,
                 idempotency_key: body.idempotencyKey,
             },
@@ -2038,7 +2047,7 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
                 placeOfSupplyState: order.place_of_supply_state || null,
                 place_of_supply_state: order.place_of_supply_state || null,
             },
-            extensionFunctions: functionEvaluation.executions.map((execution) => ({
+            extensionFunctions: (functionEvaluation?.executions || []).map((execution) => ({
                 registrationId: execution.registrationId,
                 appId: execution.appId,
                 hook: execution.hook,

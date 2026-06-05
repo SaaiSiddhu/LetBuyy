@@ -245,10 +245,12 @@ test('WS12 G3 Storefront GraphQL delegates reads through existing storefront RES
     "`/storefront/${encodeURIComponent(handle)}/navigation`",
     "`/storefront/${encodeURIComponent(handle)}/blog`",
     "'/storefront/reviews'",
-    "'/storefront/customer/by-email'",
     "'/storefront/customer/orders'",
+    "requireCustomerGraphQLSession(c, 'customer')",
+    "requireCustomerGraphQLSession(c, 'order')",
     'data.cart = null',
   ], 'Storefront GraphQL REST delegation');
+  assert.doesNotMatch(storefrontGraphQLSource, /\/storefront\/customer\/by-email/);
 });
 
 test('WS12 G4 implements R2-backed GraphQL bulk operations with queue handoff', () => {

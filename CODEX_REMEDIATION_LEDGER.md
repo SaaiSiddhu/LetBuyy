@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 2 — Release Safety.
-- Current work item: P0-E release workflow fail-closed, migration safety, and secrets-before-deploy.
+- Current work item: P0-E WS11-13 production feature gates and smoke suite.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -133,6 +133,21 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P0-E.4 — WS11-13 production feature gates
+
+- Added gateway feature flag helpers for `FEATURE_GRAPHQL`, `FEATURE_EXTENSIONS`, and `FEATURE_LIQUID`.
+- Gated public and admin GraphQL route aliases behind `FEATURE_GRAPHQL`.
+- Gated app extension registry routes and public checkout extension registry behind `FEATURE_EXTENSIONS`.
+- Gated checkout app-function execution so extension functions do not run while `FEATURE_EXTENSIONS` is disabled.
+- Set staging Worker defaults to enabled for proof and production Worker defaults to disabled for GraphQL, extensions, and Liquid.
+- Added regression coverage for production-off defaults, route-gate ordering, and checkout function gating.
+
+Evidence:
+- `node --test tests/feature-flags/gateway-feature-gates.test.mjs tests/api-graphql/schema-contract.test.mjs tests/app-platform/app-bridge.test.mjs` — PASS, 20/20 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -162,6 +177,10 @@ Evidence:
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated `packages/commerce-core/dist` was removed.
 - `node --test tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 6/6 tests.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after production workflow fail-closed changes.
+- `node --test tests/feature-flags/gateway-feature-gates.test.mjs tests/api-graphql/schema-contract.test.mjs tests/app-platform/app-bridge.test.mjs` — PASS, 20/20 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS after WS11-13 production feature gates.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after WS11-13 production feature gates.
 
 ## SKIPPED — NEEDS HUMAN
 

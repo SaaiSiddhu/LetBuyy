@@ -320,9 +320,11 @@ test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisio
   assert.match(functionRuntimeSource, /app_function\.execution\.failed_securely/);
 
   assert.match(storefrontRouteSource, /evaluateCheckoutAppFunctions/);
+  assert.match(storefrontRouteSource, /isGatewayFeatureEnabled\(c\.env, 'FEATURE_EXTENSIONS'\)/);
+  assert.match(storefrontRouteSource, /const checkoutDecision = functionEvaluation\?\.decision \|\|/);
   assert.match(storefrontRouteSource, /CHECKOUT_FUNCTION_VALIDATION/);
-  assert.match(storefrontRouteSource, /payment_method: functionEvaluation\.decision\.paymentMethod/);
-  assert.match(storefrontRouteSource, /shipping_method: functionEvaluation\.decision\.shippingMethod/);
-  assert.match(storefrontRouteSource, /coupon_code: functionEvaluation\.decision\.couponCode/);
-  assert.match(storefrontRouteSource, /extensionFunctions: functionEvaluation\.executions/);
+  assert.match(storefrontRouteSource, /payment_method: checkoutDecision\.paymentMethod/);
+  assert.match(storefrontRouteSource, /shipping_method: checkoutDecision\.shippingMethod/);
+  assert.match(storefrontRouteSource, /coupon_code: checkoutDecision\.couponCode/);
+  assert.match(storefrontRouteSource, /extensionFunctions: \(functionEvaluation\?\.executions \|\| \[\]\)\.map/);
 });

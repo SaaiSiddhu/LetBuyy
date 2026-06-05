@@ -4,6 +4,7 @@ import { authMiddleware } from './middleware/auth';
 import { rateLimit, authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
 import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
+import { featureGate } from './middleware/featureFlags';
 import { observability } from './middleware/observability';
 import { AppError, formatAppError } from './lib/errors';
 import { getSupabaseAdminFromEnv } from './lib/supabase';
@@ -91,6 +92,9 @@ export interface Env {
     NODE_ENV?: string;
     DEPLOYMENT_ENV?: string;
     TELEMETRY_ENV?: string;
+    FEATURE_GRAPHQL?: string;
+    FEATURE_EXTENSIONS?: string;
+    FEATURE_LIQUID?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;
     FAILOVER_REGION?: string;
@@ -176,6 +180,16 @@ api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
 const storefrontGraphQLRouter = createStorefrontGraphQLRouter({
     restDelegate: async (c, request) => app.fetch(request, c.env),
 });
+const graphQLFeatureGate = featureGate(
+    'FEATURE_GRAPHQL',
+    'GRAPHQL_DISABLED',
+    'GraphQL is disabled for this environment',
+);
+const extensionsFeatureGate = featureGate(
+    'FEATURE_EXTENSIONS',
+    'EXTENSIONS_DISABLED',
+    'Extensions are disabled for this environment',
+);
 
 // Public routes (no auth required)
 api.use('/auth/*', async (c, next) => {
@@ -188,6 +202,11 @@ api.use('/auth/*', async (c, next) => {
 });
 api.route('/auth', authRouter);
 api.route('/contacts', contactsRouter);
+api.use('/storefront/graphql', graphQLFeatureGate);
+api.use('/graphql/storefront', graphQLFeatureGate);
+api.use('/storefront/:subdomain/checkout/extensions', extensionsFeatureGate);
+api.use('/app-store/installations/:id/extensions', extensionsFeatureGate);
+api.use('/app-store/installations/:id/extensions/:registrationId', extensionsFeatureGate);
 api.route('/storefront/graphql', storefrontGraphQLRouter);
 api.route('/graphql/storefront', storefrontGraphQLRouter);
 api.route('/storefront', storefrontRouter);
@@ -205,6 +224,8 @@ const adminGraphQLRouter = createAdminGraphQLRouter({
 });
 
 // Mount routers
+api.use('/admin/graphql', graphQLFeatureGate);
+api.use('/graphql/admin', graphQLFeatureGate);
 api.route('/admin/graphql', adminGraphQLRouter);
 api.route('/graphql/admin', adminGraphQLRouter);
 api.route('/stores', storesRouter);
