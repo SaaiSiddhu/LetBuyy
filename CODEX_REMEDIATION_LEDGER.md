@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 3 — P1 Cost.
-- Current work item: P1-7 queue write batching and GraphQL bulk single-path processing.
+- Current work item: P1-2 Hyperdrive pooled-read decision.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -237,6 +237,17 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-2 — Hyperdrive pooled-read decision
+
+- Decision: keep the existing staging and production `HYPERDRIVE` bindings and implement pooled SQL reads in Phase 4.2 after P2-1 edge cache.
+- Rationale: `docs/LETBUYY_CODEX_IMPLEMENTATION_MASTER.md` sequences P2-1 edge cache before P1-2 pooled reads so cache misses, not all storefront reads, move to the new DB access path.
+- No code-path migration is done in Phase 3; the rollback flag and cache boundary will be introduced with the Phase 4 cache/pooled-read work.
+
+Evidence:
+- `rg -n "P1-2|Hyperdrive|pooled reads" docs/P1_COST_MASTER.md docs/P2_PERFORMANCE_MASTER.md docs/P3_SCALABILITY_MASTER.md docs/LETBUYY_CODEX_IMPLEMENTATION_MASTER.md services/api-gateway/wrangler.toml` — PASS, confirmed bindings exist and implementation order is cache first, pooled reads second.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -298,6 +309,9 @@ Evidence:
 - `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after queue write batching, with pnpm workspace links restored temporarily and nested generated `node_modules` removed afterward.
 - `git diff --check` — PASS after queue write batching and GraphQL bulk single-path changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after queue write batching and GraphQL bulk single-path changes.
+- `rg -n "P1-2|Hyperdrive|pooled reads" docs/P1_COST_MASTER.md docs/P2_PERFORMANCE_MASTER.md docs/P3_SCALABILITY_MASTER.md docs/LETBUYY_CODEX_IMPLEMENTATION_MASTER.md services/api-gateway/wrangler.toml` — PASS, Hyperdrive retained for Phase 4.2 pooled-read implementation.
+- `git diff --check` — PASS after Hyperdrive pooled-read decision ledger update.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after Hyperdrive pooled-read decision ledger update.
 
 ## SKIPPED — NEEDS HUMAN
 
