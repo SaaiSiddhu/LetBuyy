@@ -15,6 +15,7 @@ import {
     upsertSupabaseRows,
 } from "@letbuyy/infrastructure/supabase-adapter";
 import { dispatchLetBuyyWebhook } from "./app-lifecycle-dispatch";
+import { emitGatewayDomainEvent } from "./gateway-events";
 import {
     confirmGatewayOrderPayment,
     recordGatewayOrderPaymentEvent,
@@ -272,31 +273,18 @@ async function emitPaymentDomainEvent(
         payload?: JsonObject;
     }
 ): Promise<void> {
-    try {
-        await upsertSupabaseRows(env, "outbox_events", {
-            store_id: params.storeId || null,
-            aggregate_type: params.aggregateType,
-            aggregate_id: params.aggregateId,
-            event_type: params.eventType,
-            payload: {
-                provider: params.provider,
-                provider_event_id: params.providerEventId,
-                ...(params.payload || {}),
-            },
-            idempotency_key: `payment-webhook:${params.provider}:${params.providerEventId}:${params.eventType}`,
-        }, { onConflict: "idempotency_key" });
-    } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        if (message.includes("outbox_events") && (message.includes("schema cache") || message.includes("does not exist"))) {
-            console.warn("[Webhooks] Optional outbox_events table unavailable; domain event skipped", {
-                eventType: params.eventType,
-                provider: params.provider,
-            });
-            return;
-        }
-
-        throw error;
-    }
+    await emitGatewayDomainEvent(env, {
+        storeId: params.storeId || null,
+        aggregateType: params.aggregateType,
+        aggregateId: params.aggregateId,
+        eventType: params.eventType,
+        payload: {
+            provider: params.provider,
+            provider_event_id: params.providerEventId,
+            ...(params.payload || {}),
+        },
+        idempotencyKey: `payment-webhook:${params.provider}:${params.providerEventId}:${params.eventType}`,
+    });
 }
 
 async function findOrderByPaymentCandidates(

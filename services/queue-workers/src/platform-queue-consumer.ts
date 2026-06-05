@@ -15,6 +15,7 @@ import {
   type SupabaseClient,
   type SupabaseServiceEnv,
 } from '@letbuyy/infrastructure/supabase-adapter';
+import { emitGatewayDomainEvent, type GatewayServiceBinding } from './gateway-events';
 
 type JsonObject = Record<string, unknown>;
 export type PlatformQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
@@ -133,6 +134,8 @@ export interface PlatformQueueConsumeResult {
 }
 
 export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv {
+  API_GATEWAY_SERVICE?: GatewayServiceBinding;
+  INTERNAL_API_SECRET?: string;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
   PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH?: string;
   PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
@@ -722,25 +725,16 @@ class PlatformQueueConsumer {
       throw deterministicQueueJobError(`Invalid payload for event ${input.eventType}`, error);
     }
 
-    const { error } = await this.db
-      .from('outbox_events')
-      .upsert(
-        {
-          store_id: input.storeId || null,
-          site_id: input.storeId || null,
-          aggregate_type: input.aggregateType,
-          aggregate_id: input.aggregateId,
-          event_type: input.eventType,
-          payload,
-          idempotency_key: input.idempotencyKey,
-          request_id: input.requestId || null,
-          actor_id: input.actorId || null,
-          schema_version: contract?.schemaVersion || 1,
-        },
-        { onConflict: 'idempotency_key' },
-      );
-
-    if (error) throw new Error(`Outbox event emit failed: ${error.message}`);
+    await emitGatewayDomainEvent(this.env, {
+      storeId: input.storeId || null,
+      aggregateType: input.aggregateType,
+      aggregateId: input.aggregateId,
+      eventType: input.eventType,
+      payload,
+      idempotencyKey: input.idempotencyKey,
+      requestId: input.requestId || null,
+      actorId: input.actorId || null,
+    });
   }
 
   private async applyProductSearchIndex(job: PlatformQueueJob, productId: string): Promise<boolean> {

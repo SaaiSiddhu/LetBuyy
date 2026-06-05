@@ -40,6 +40,7 @@ import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import internalConsoleRouter from './routes/internal-console';
 import internalBillingRouter from './routes/internal-billing';
+import internalEventsRouter from './routes/internal-events';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
@@ -456,6 +457,7 @@ api.route('/themes', themesRouter);
 api.route('/app-store', appStoreRouter);
 api.route('/internal/console', internalConsoleRouter);
 api.route('/internal/billing', internalBillingRouter);
+api.route('/internal/events', internalEventsRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);

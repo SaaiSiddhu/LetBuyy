@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F1 - Backend integrity; F1.5 event contract increment complete.
-- Findings resolved: 5/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-10`, `H-12`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials; H-1 is in progress with `orders`, `products`, `subscriptions`, `sites`, and `billing_history` webhook second-writers removed. Event infrastructure tables still need classification before declaring H-1 fully done.
-- Current governance gate state: green after F1.5 (`pnpm run validate:governance` -> 129/129 PASS).
+- Phase: F1 - Backend integrity; H-1 Single-Writer increment complete.
+- Findings resolved: 6/31 Critical/High complete (`C-2`, `C-12`, `C-13`, `H-1`, `H-10`, `H-12`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after H-1 event-infrastructure Single-Writer increment (`pnpm run validate:governance` -> 129/129 PASS).
 
 ## Baseline gates
 
@@ -72,6 +72,22 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm turbo typecheck`: PASS - 60/60 tasks.
 - `pnpm run validate:governance`: PASS - 129/129 validators.
 
+## H-1 final gate evidence
+
+- `orders`, `products`, `subscriptions`, `sites`, and `billing_history` remain gateway-owned after the previous webhook transition increments.
+- `outbox_events` is now gateway-owned: webhook-service and queue-workers call `/v1/internal/events/domain` instead of writing the table directly.
+- `payment_webhook_events` remains webhook-service-owned for provider webhook receipt/idempotency state; api-gateway and queue-workers are validator-guarded from writing it.
+- `pnpm --filter @letbuyy/webhook-service test`: PASS - 12/12 behavior tests.
+- `pnpm --filter @letbuyy/queue-workers test`: PASS - 2/2 behavior tests.
+- `npx tsx --test services/api-gateway/src/__tests__/payments.test.ts`: PASS - 7/7 payment architecture tests.
+- `node scripts/validators/single-writer-ownership-validator.mjs`: PASS - 106 source files checked.
+- `pnpm --filter @letbuyy/webhook-service typecheck`: PASS.
+- `pnpm --filter @letbuyy/queue-workers typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- `pnpm run validate:governance`: PASS - 129/129 validators.
+
 ## Human-gated remainder
 
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
@@ -80,6 +96,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit F1.5.
-- Continue F1.6 god-file characterization/split work, after classifying event infrastructure tables (`outbox_events`, `payment_webhook_events`) so H-1 can be declared fully done only if the writer model is honest.
+- Commit H-1 event-infrastructure Single-Writer increment.
+- Continue F1.6 god-file characterization/split work for `services/api-gateway/src/routes/storefront.ts`.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.

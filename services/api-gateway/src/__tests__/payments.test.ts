@@ -97,7 +97,8 @@ test('provider webhooks are centralized in webhook-service', () => {
     assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"paypal"/);
     assert.match(webhookSource, /webhookVerify\(\{\s*provider:\s*"cashfree"/);
     assert.match(webhookSource, /emitPaymentDomainEvent/);
-    assert.match(webhookSource, /outbox_events/);
+    assert.match(webhookSource, /emitGatewayDomainEvent/);
+    assert.doesNotMatch(webhookSource, /["']outbox_events["']/);
 
     assert.doesNotMatch(stripeAdapter, /constructWebhookEvent/);
     assert.doesNotMatch(paypalAdapter, /export async function verifyWebhookSignature/);
@@ -161,8 +162,8 @@ test('storefront runtime no longer owns payment route handlers', () => {
 
     assert.doesNotMatch(checkoutClient, /\/api\/payments/);
     assert.doesNotMatch(paypalReturn, /\/api\/payments/);
-    assert.match(checkoutClient, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/razorpay\/order'/);
-    assert.match(checkoutClient, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/stripe\/checkout'/);
-    assert.match(checkoutClient, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/paypal\/order'/);
-    assert.match(paypalReturn, /storefrontWorkerFetch\(subdomain,\s*'\/payments\/paypal\/capture'/);
+    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/razorpay\/order'/);
+    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/stripe\/checkout'/);
+    assert.match(checkoutClient, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/paypal\/order'/);
+    assert.match(paypalReturn, /storefrontBrowserApiFetch\(subdomain,\s*'\/payments\/paypal\/capture'/);
 });
