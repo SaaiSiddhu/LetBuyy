@@ -358,6 +358,7 @@ router.get('/:slug/editor', async (c) => {
     const slug = c.req.param('slug');
     const parsed = ThemeStoreQuerySchema.safeParse({
         store_id: c.req.query('store_id'),
+        template_key: c.req.query('template_key') || c.req.query('template') || 'index',
     });
 
     if (!parsed.success) {
@@ -373,7 +374,7 @@ router.get('/:slug/editor', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.loadEditor(slug, parsed.data.store_id, customUser.id)));
+    return c.json(success(await service.loadEditor(slug, parsed.data.store_id, customUser.id, parsed.data.template_key)));
 });
 
 // PUT /themes/:slug/editor/draft — Save a store-scoped theme draft
@@ -396,6 +397,7 @@ router.delete('/:slug/editor/draft', async (c) => {
     const slug = c.req.param('slug');
     const parsed = ThemeStoreQuerySchema.safeParse({
         store_id: c.req.query('store_id'),
+        template_key: c.req.query('template_key') || c.req.query('template') || 'index',
     });
 
     if (!parsed.success) {
@@ -411,7 +413,7 @@ router.delete('/:slug/editor/draft', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c))));
+    return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c), parsed.data.template_key)));
 });
 
 // POST /themes/:slug/publish — Publish a saved draft to the live store config

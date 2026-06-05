@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 6 — P4 Product.
-- Current work item: P4-1 multi-template theme editor.
+- Current work item: P4-4 API-ownership consolidation and validator.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -458,6 +458,27 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P4-1 — Multi-template theme editor
+
+- Replaced the merchant theme editor's static "Home page" pill with a real template selector covering home, product, collection, page, cart, blog, and bundle-discovered templates.
+- Scoped theme editor draft load/save/delete/publish paths by `template_key` through the merchant Next proxy, typed API client, gateway route validation, shared payload schemas, and theme execution adapter.
+- Added additive migration `087_theme_template_drafts.sql` to backfill `template_key = 'index'`, enforce not-null/default/check constraints, and replace the old `store_id, theme_id` uniqueness with `store_id, theme_id, template_key`.
+- Converted portable theme template section/block records into editable editor state and wrote edited sections back to `templates[template_key]` while preserving the existing full release snapshot publish model.
+- Added a source-level regression test that rejects selector regressions, missing template-key propagation, and draft upserts that would overwrite a single global draft.
+
+Evidence:
+- `node --test tests/theme-engine/*.test.mjs` — PASS, 25/25 tests after adding template-editor draft-scope coverage.
+- `pnpm --filter @letbuyy/shared-types typecheck` — PASS.
+- `pnpm --filter @letbuyy/shared-types build` — PASS as setup for referenced declarations; generated `dist` removed before governance.
+- `pnpm --filter @letbuyy/theme-engine typecheck` — PASS after referenced declaration build.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after explicit `ThemeCatalogResponse` pagination fields and referenced declaration build.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck` — PASS after restoring workspace dependency links.
+- `node --test tests/theme-engine/*.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs` — PASS, 30/30 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after `087_theme_template_drafts.sql`.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and declaration artifacts were removed.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -596,6 +617,17 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after GraphQL cart loud-unsupported.
 - `git diff --check` — PASS after WS11-13 local rollout gate.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after WS11-13 local rollout gate.
+- `node --test tests/theme-engine/*.test.mjs` — PASS, 25/25 tests after template-scoped theme editor draft coverage.
+- `pnpm --filter @letbuyy/shared-types typecheck` — PASS after theme editor payload schema additions.
+- `pnpm --filter @letbuyy/shared-types build` — PASS before template editor dependent typechecks; generated artifacts removed before governance.
+- `pnpm --filter @letbuyy/theme-engine typecheck` — PASS after template-key schema additions and referenced declaration build.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after template-key request fields and explicit theme catalog pagination response.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after template-scoped theme execution changes.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck` — PASS after multi-template editor UI/proxy changes and workspace link restore.
+- `node --test tests/theme-engine/*.test.mjs tests/federation/theme-store-install-lifecycle.test.mjs` — PASS, 30/30 tests after P4-1 multi-template editor.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after `087_theme_template_drafts.sql`.
+- `git diff --check` — PASS after P4-1 multi-template editor.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-1 multi-template editor and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -615,3 +647,4 @@ Evidence:
 - SKIP: Apply partition migrations `079` through `083` to a production-scale staging clone, backfill shadows, configure live scheduler, run the approved rename-swap, retain `*_legacy` for one retention cycle, and physically clean detached partitions — Reason: live/staging Supabase credentials, representative production-scale data, PITR/backup checkpoint, queue drain window, and irreversible maintenance-window cutover are human-controlled. Resume point: P3-1 partitioning proof; expected result is row-count parity from `verify_hot_table_partition_shadow`, claim-query and `(…, created_at)` `EXPLAIN` evidence, retention detach only outside policy windows, and no query regressions after cutover.
 - SKIP: Apply `085_orders_items_reconcile.sql` and `086_products_variants_reconcile.sql` to staging/prod, run dry-run reports against representative data, then run non-dry-run convergence if approved — Reason: live Supabase credentials, data-owner approval, representative historical orders/products, and rollback checkpoint are human-controlled. Resume point: P3-4 dual-model proof; expected result is reconciliation reports clean or explicitly accepted, `orders.items` and `products.variants` refreshed only from relational rows, and readers staying green with rollback flags on/off.
 - SKIP: Deploy WS11-13 to staging with `FEATURE_GRAPHQL`, `FEATURE_EXTENSIONS`, and `FEATURE_LIQUID` enabled, run `tests/api-graphql/*`, `tests/app-platform/*`, `tests/theme-engine/*`, and `tests/federation/app-extensions-quality-gate.test.mjs` against the deployed staging environment, then graduate production enablement by cohort — Reason: staging Worker deployment credentials, seeded staging merchant/store/catalog/order/theme/app data, R2/queue bindings, and production rollout authority are human-controlled. Resume point: P3-7 rollout proof; expected result is deployed-env suite green, cart-dependent clients seeing `CART_NOT_SUPPORTED` until server-side cart persistence exists, and production flags staying off until staged proof is accepted.
+- SKIP: Apply `087_theme_template_drafts.sql` to staging/prod and run deployed merchant editor save/publish smoke for product, collection, page, cart, and blog templates — Reason: live Supabase credentials, staging merchant/store/theme fixtures, deployed gateway/app URLs, and release-window authority are human-controlled. Resume point: P4-1 multi-template editor proof; expected result is each template maintaining an independent draft row keyed by `template_key`, publish producing a full storefront release snapshot, and storefront rendering the selected template changes after cache purge.

@@ -1184,9 +1184,16 @@ export const ThemeEditorPayloadSchema = z.object({
   theme: ThemeEditableSchemaResponseSchema.shape.theme.extend({
     theme_instance_id: UuidSchema.optional().nullable(),
   }).passthrough(),
+  template_key: z.string().min(1).max(80).default('index'),
+  templates: z.array(z.object({
+    key: z.string().min(1).max(80),
+    label: z.string().min(1).max(160),
+    type: z.string().min(1).max(80),
+  }).passthrough()).default([]),
   template_config: MetadataSchema,
   draft: z.object({
     exists: z.boolean(),
+    template_key: z.string().min(1).max(80).optional(),
     updated_at: z.string().datetime().optional().nullable(),
     version: z.number().int().positive(),
   }).passthrough(),
@@ -1204,6 +1211,7 @@ export const ThemeEditorPayloadSchema = z.object({
 export const ThemeDraftSaveResultSchema = z.object({
   saved_at: z.string().datetime(),
   version: z.number().int().positive(),
+  template_key: z.string().min(1).max(80).default('index'),
   draft: z.object({
     id: UuidSchema,
     version: z.number().int().positive(),
@@ -1232,6 +1240,7 @@ export const ThemePublishResultSchema = z.object({
     name: z.string().min(1).max(160),
   }).passthrough(),
   release: ThemePublishedReleaseSchema,
+  template_key: z.string().min(1).max(80).default('index'),
   published_at: z.string().datetime(),
 });
 

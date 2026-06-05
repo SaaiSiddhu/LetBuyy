@@ -9183,6 +9183,31 @@ body {
   font-weight: 700;
 }
 
+.theme-os-page-pill {
+  position: relative;
+}
+
+.theme-os-page-pill select {
+  min-width: 104px;
+  max-width: 170px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  outline: 0;
+  appearance: none;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme-os-page-pill select:disabled {
+  cursor: not-allowed;
+}
+
 .theme-os-theme-pill span,
 .theme-os-page-pill span {
   overflow: hidden;

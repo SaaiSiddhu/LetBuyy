@@ -56,6 +56,7 @@ interface ThemeRecord extends DbRecord {
 interface DraftRecord extends DbRecord {
     id?: string;
     draft_config?: DbRecord | null;
+    template_key?: string | null;
     version?: number | null;
     auto_saved_at?: string | null;
 }
@@ -178,6 +179,47 @@ function resolveLiquidBundleArtifact(releaseConfig: DbRecord): DbRecord | null {
     const candidate = asRecord(releaseConfig).liquidBundle;
     const result = LiquidThemePackageBundleSchema.safeParse(candidate);
     return result.success ? result.data as unknown as DbRecord : null;
+}
+
+const DEFAULT_THEME_TEMPLATE_OPTIONS = [
+    { key: 'index', label: 'Home page', type: 'home' },
+    { key: 'product', label: 'Product page', type: 'product' },
+    { key: 'collection', label: 'Collection page', type: 'collection' },
+    { key: 'page', label: 'Content page', type: 'page' },
+    { key: 'cart', label: 'Cart page', type: 'cart' },
+    { key: 'blog', label: 'Blog post', type: 'blog' },
+] as const;
+
+function normalizeThemeTemplateKey(value: unknown): string {
+    const normalized = typeof value === 'string' ? value.trim() : '';
+    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : 'index';
+}
+
+function labelFromTemplateKey(key: string): string {
+    const defaultOption = DEFAULT_THEME_TEMPLATE_OPTIONS.find((option) => option.key === key);
+    if (defaultOption) return defaultOption.label;
+
+    return key
+        .replace(/[-_]/g, ' ')
+        .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function listThemeTemplateOptions(templateConfig: DbRecord): Array<{ key: string; label: string; type: string }> {
+    const templateRecords = asRecord(templateConfig.templates);
+    const keys = new Set<string>(DEFAULT_THEME_TEMPLATE_OPTIONS.map((option) => option.key));
+    for (const key of Object.keys(templateRecords)) {
+        const normalized = normalizeThemeTemplateKey(key);
+        keys.add(normalized);
+    }
+
+    return Array.from(keys).map((key) => {
+        const template = asRecord(templateRecords[key]);
+        return {
+            key,
+            label: typeof template.name === 'string' && template.name.trim() ? template.name.trim() : labelFromTemplateKey(key),
+            type: typeof template.type === 'string' && template.type.trim() ? template.type.trim() : key,
+        };
+    });
 }
 
 export class ThemeExecutionAdapter {
@@ -877,16 +919,116 @@ export class ThemeExecutionAdapter {
         };
     }
 
-    async loadEditor(slug: string, storeId: string, userId: string) {
+    private async loadEditorDraft(storeId: string, themeSlug: string, templateKey: string): Promise<DraftRecord | null> {
+        const selectTemplateDraft = () => this.db
+            .from('theme_editor_drafts')
+            .select('id, draft_config, template_key, version, auto_saved_at')
+            .eq('store_id', storeId)
+            .eq('theme_id', themeSlug)
+            .eq('template_key', templateKey)
+            .maybeSingle();
+
+        let { data, error } = await selectTemplateDraft();
+
+        if (isMissingColumnError(error, 'template_key')) {
+            if (templateKey !== 'index') return null;
+            ({ data, error } = await this.db
+                .from('theme_editor_drafts')
+                .select('id, draft_config, version, auto_saved_at')
+                .eq('store_id', storeId)
+                .eq('theme_id', themeSlug)
+                .maybeSingle());
+        }
+
+        if (error) {
+            throw new Error(`Theme draft load failed: ${error.message}`);
+        }
+
+        return data as DraftRecord | null;
+    }
+
+    private async loadEditorDraftForWrite(storeId: string, themeSlug: string, templateKey: string): Promise<DraftRecord | null> {
+        const { data, error } = await this.db
+            .from('theme_editor_drafts')
+            .select('id, version, template_key')
+            .eq('store_id', storeId)
+            .eq('theme_id', themeSlug)
+            .eq('template_key', templateKey)
+            .maybeSingle();
+
+        if (isMissingColumnError(error, 'template_key')) {
+            if (templateKey !== 'index') {
+                throw new Error('Template-scoped theme drafts require migration 087_theme_template_drafts.sql before editing non-index templates.');
+            }
+
+            const legacy = await this.db
+                .from('theme_editor_drafts')
+                .select('id, version')
+                .eq('store_id', storeId)
+                .eq('theme_id', themeSlug)
+                .maybeSingle();
+            if (legacy.error) throw new Error(`Theme draft lookup failed: ${legacy.error.message}`);
+            return legacy.data as DraftRecord | null;
+        }
+
+        if (error) throw new Error(`Theme draft lookup failed: ${error.message}`);
+        return data as DraftRecord | null;
+    }
+
+    private async saveEditorDraftRecord(input: {
+        storeId: string;
+        themeSlug: string;
+        templateKey: string;
+        templateConfig: DbRecord;
+        version: number;
+        savedAt: string;
+        actorId: string;
+    }): Promise<DraftRecord> {
+        const draftPayload = {
+            store_id: input.storeId,
+            theme_id: input.themeSlug,
+            template_key: input.templateKey,
+            draft_config: input.templateConfig,
+            version: input.version,
+            auto_saved_at: input.savedAt,
+            updated_at: input.savedAt,
+            updated_by: input.actorId,
+            created_by: input.actorId,
+        };
+
+        let { data, error } = await this.db
+            .from('theme_editor_drafts')
+            .upsert(draftPayload, { onConflict: 'store_id,theme_id,template_key' })
+            .select('id, version, auto_saved_at, template_key')
+            .single();
+
+        if (isMissingColumnError(error, 'template_key')) {
+            if (input.templateKey !== 'index') {
+                throw new Error('Template-scoped theme drafts require migration 087_theme_template_drafts.sql before editing non-index templates.');
+            }
+
+            const legacyPayload: Record<string, unknown> = { ...draftPayload };
+            delete legacyPayload.template_key;
+            ({ data, error } = await this.db
+                .from('theme_editor_drafts')
+                .upsert(legacyPayload, { onConflict: 'store_id,theme_id' })
+                .select('id, version, auto_saved_at')
+                .single());
+        }
+
+        if (error || !data) {
+            throw new Error(`Theme draft save failed: ${error?.message || 'Unknown error'}`);
+        }
+
+        return data as DraftRecord;
+    }
+
+    async loadEditor(slug: string, storeId: string, userId: string, templateKeyInput = 'index') {
+        const templateKey = normalizeThemeTemplateKey(templateKeyInput);
         const store = await this.verifyStoreOwner(storeId, userId);
         const theme = await this.getTheme(slug);
 
-        const { data: draft } = await this.db
-            .from('theme_editor_drafts')
-            .select('id, draft_config, version, auto_saved_at')
-            .eq('store_id', storeId)
-            .eq('theme_id', theme.slug)
-            .maybeSingle();
+        const draft = await this.loadEditorDraft(storeId, theme.slug, templateKey);
 
         const selectCurrentRelease = (includeDeletedAtFilter: boolean) => {
             const query = this.db
@@ -938,9 +1080,12 @@ export class ThemeExecutionAdapter {
                 schema_manifest_version: runtime.schemaManifestVersion,
                 schema_source: runtime.source,
             },
+            template_key: templateKey,
+            templates: listThemeTemplateOptions(templateConfig),
             template_config: templateConfig,
             draft: {
                 exists: Boolean(draft),
+                template_key: (draft as DraftRecord | null)?.template_key || templateKey,
                 updated_at: (draft as DraftRecord | null)?.auto_saved_at || null,
                 version: (draft as DraftRecord | null)?.version || 1,
             },
@@ -970,6 +1115,7 @@ export class ThemeExecutionAdapter {
         userId: string,
         requestId?: string | null
     ) {
+        const templateKey = normalizeThemeTemplateKey(input.template_key);
         await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
         const runtime = await this.validateTemplateConfig(input.template_config, theme);
@@ -983,14 +1129,9 @@ export class ThemeExecutionAdapter {
             false
         );
 
-        const { data: existing } = await this.db
-            .from('theme_editor_drafts')
-            .select('version')
-            .eq('store_id', input.store_id)
-            .eq('theme_id', theme.slug)
-            .maybeSingle();
+        const existing = await this.loadEditorDraftForWrite(input.store_id, theme.slug, templateKey);
 
-        const existingVersion = ((existing as DraftRecord | null)?.version || 0);
+        const existingVersion = (existing?.version || 0);
 
         if (input.base_version && existingVersion > input.base_version) {
             throw new ConflictError('Theme draft has changed in another session');
@@ -999,27 +1140,15 @@ export class ThemeExecutionAdapter {
         const version = Math.max(existingVersion + 1, 1);
         const savedAt = new Date().toISOString();
 
-        const { data, error } = await this.db
-            .from('theme_editor_drafts')
-            .upsert(
-                {
-                    store_id: input.store_id,
-                    theme_id: theme.slug,
-                    draft_config: templateConfig,
-                    version,
-                    auto_saved_at: savedAt,
-                    updated_at: savedAt,
-                    updated_by: userId,
-                    created_by: userId,
-                },
-                { onConflict: 'store_id,theme_id' }
-            )
-            .select('id, version, auto_saved_at')
-            .single();
-
-        if (error || !data) {
-            throw new Error(`Theme draft save failed: ${error?.message || 'Unknown error'}`);
-        }
+        const data = await this.saveEditorDraftRecord({
+            storeId: input.store_id,
+            themeSlug: theme.slug,
+            templateKey,
+            templateConfig,
+            version,
+            savedAt,
+            actorId: userId,
+        });
 
         const instanceDraftId = await this.saveInstanceDraftSnapshot({
             storeId: input.store_id,
@@ -1037,12 +1166,13 @@ export class ThemeExecutionAdapter {
             aggregateType: 'theme_draft',
             aggregateId: String(data.id),
             eventType: 'theme.draft.saved',
-            idempotencyKey: `theme.draft.saved:${input.store_id}:${theme.slug}:${version}`,
+            idempotencyKey: `theme.draft.saved:${input.store_id}:${theme.slug}:${templateKey}:${version}`,
             requestId,
             actorId: userId,
             payload: {
                 store_id: input.store_id,
                 theme_id: theme.slug,
+                template_key: templateKey,
                 theme_instance_id: themeInstance?.id || null,
                 theme_package_version_id: runtime.themePackageVersionId || null,
                 theme_instance_draft_id: instanceDraftId,
@@ -1061,6 +1191,7 @@ export class ThemeExecutionAdapter {
             requestId,
             afterState: {
                 theme_id: theme.slug,
+                template_key: templateKey,
                 version,
             },
             metadata: {
@@ -1071,26 +1202,36 @@ export class ThemeExecutionAdapter {
         return {
             saved_at: savedAt,
             version,
+            template_key: templateKey,
             draft: data,
         };
     }
 
-    async deleteDraft(slug: string, storeId: string, userId: string, requestId?: string | null) {
+    async deleteDraft(slug: string, storeId: string, userId: string, requestId?: string | null, templateKeyInput = 'index') {
+        const templateKey = normalizeThemeTemplateKey(templateKeyInput);
         await this.verifyStoreOwner(storeId, userId);
         const theme = await this.getTheme(slug);
 
-        const { data: draft } = await this.db
-            .from('theme_editor_drafts')
-            .select('id, version')
-            .eq('store_id', storeId)
-            .eq('theme_id', theme.slug)
-            .maybeSingle();
+        const draft = await this.loadEditorDraftForWrite(storeId, theme.slug, templateKey);
 
-        await this.db
+        const deleteResult = await this.db
             .from('theme_editor_drafts')
             .delete()
             .eq('store_id', storeId)
-            .eq('theme_id', theme.slug);
+            .eq('theme_id', theme.slug)
+            .eq('template_key', templateKey);
+
+        if (isMissingColumnError(deleteResult.error, 'template_key')) {
+            if (templateKey === 'index') {
+                await this.db
+                    .from('theme_editor_drafts')
+                    .delete()
+                    .eq('store_id', storeId)
+                    .eq('theme_id', theme.slug);
+            }
+        } else if (deleteResult.error) {
+            throw new Error(`Theme draft delete failed: ${deleteResult.error.message}`);
+        }
 
         if (draft) {
             const events = new EventExecutionAdapter(this.db);
@@ -1099,19 +1240,20 @@ export class ThemeExecutionAdapter {
                 aggregateType: 'theme_draft',
                 aggregateId: String((draft as DbRecord).id),
                 eventType: 'theme.draft.discarded',
-                idempotencyKey: `theme.draft.discarded:${storeId}:${theme.slug}:${(draft as DbRecord).version}`,
+                idempotencyKey: `theme.draft.discarded:${storeId}:${theme.slug}:${templateKey}:${(draft as DbRecord).version}`,
                 requestId,
                 actorId: userId,
                 payload: {
                     store_id: storeId,
                     theme_id: theme.slug,
+                    template_key: templateKey,
                     draft_id: (draft as DbRecord).id,
                     version: (draft as DbRecord).version,
                 },
             });
         }
 
-        return { deleted: true };
+        return { deleted: true, template_key: templateKey };
     }
 
     async publish(
@@ -1120,17 +1262,11 @@ export class ThemeExecutionAdapter {
         userId: string,
         requestId?: string | null
     ) {
+        const templateKey = normalizeThemeTemplateKey(input.template_key);
         const store = await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
 
-        const { data: draft } = await this.db
-            .from('theme_editor_drafts')
-            .select('id, draft_config, version')
-            .eq('store_id', input.store_id)
-            .eq('theme_id', theme.slug)
-            .maybeSingle();
-
-        const draftRecord = draft as DraftRecord | null;
+        const draftRecord = await this.loadEditorDraft(input.store_id, theme.slug, templateKey);
         const draftVersion = draftRecord?.version || 0;
 
         if (input.base_version && draftVersion > input.base_version) {
@@ -1172,7 +1308,7 @@ export class ThemeExecutionAdapter {
             activate: input.make_store_live,
         });
 
-        await this.deleteDraft(theme.slug, input.store_id, userId, requestId);
+        await this.deleteDraft(theme.slug, input.store_id, userId, requestId, templateKey);
 
         const { data: updatedStore } = await this.db
             .from('sites')
@@ -1188,6 +1324,7 @@ export class ThemeExecutionAdapter {
                 name: theme.name,
             },
             release,
+            template_key: templateKey,
             published_at: release.published_at,
         };
     }
