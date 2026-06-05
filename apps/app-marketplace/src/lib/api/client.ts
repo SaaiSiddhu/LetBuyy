@@ -13,19 +13,21 @@ import {
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 
-const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store';
-
 interface AppMarketplaceApiOptions {
     requireSession?: boolean;
 }
 
 function getApiBaseUrl(): string {
-    return (
+    const base =
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/v1\/?$/, '').replace(/\/$/, '');
+        process.env.API_URL;
+    if (!base) {
+        throw new Error(
+            'Marketplace API base URL is not configured. Set LETBUYY_API_URL (or NEXT_PUBLIC_API_URL / API_URL); refusing to fall back to a hardcoded staging host.',
+        );
+    }
+    return base.replace(/\/v1\/?$/, '').replace(/\/$/, '');
 }
 
 export async function createAppMarketplaceApiClient(

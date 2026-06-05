@@ -7,19 +7,21 @@ import {
 } from '@letbuyy/auth-core';
 import { createLetbuyyApiClient, type LetbuyyApiClient } from '@letbuyy/api-client';
 
-const DEFAULT_API_BASE_URL = 'https://api.staging.letbuyy.store';
-
 export interface ThemeMarketplaceApiClientOptions {
     requireSession?: boolean;
 }
 
 function getApiBaseUrl(): string {
-    return (
+    const base =
         process.env.LETBUYY_API_URL ||
         process.env.NEXT_PUBLIC_API_URL ||
-        process.env.API_URL ||
-        DEFAULT_API_BASE_URL
-    ).replace(/\/$/, '');
+        process.env.API_URL;
+    if (!base) {
+        throw new Error(
+            'Marketplace API base URL is not configured. Set LETBUYY_API_URL (or NEXT_PUBLIC_API_URL / API_URL); refusing to fall back to a hardcoded staging host.',
+        );
+    }
+    return base.replace(/\/$/, '');
 }
 
 export async function createThemeMarketplaceApiClient(
