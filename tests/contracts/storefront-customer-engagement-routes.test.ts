@@ -6,11 +6,14 @@ import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const storefrontPath = join(testDir, '../../services/api-gateway/src/routes/storefront.ts');
+const publicRoutesPath = join(testDir, '../../services/api-gateway/src/routes/storefront/public-routes.ts');
 const extractedPath = join(testDir, '../../services/api-gateway/src/routes/storefront/customer-engagement-routes.ts');
 
 const storefrontSource = readFileSync(storefrontPath, 'utf8');
+const publicRoutesSource = existsSync(publicRoutesPath) ? readFileSync(publicRoutesPath, 'utf8') : '';
 const extractedSource = existsSync(extractedPath) ? readFileSync(extractedPath, 'utf8') : '';
 const routeBandSource = extractedSource || storefrontSource;
+const registrationHostSource = publicRoutesSource || storefrontSource;
 
 const expectedRoutes = [
     { method: 'post', path: '/customer/find-or-create' },
@@ -73,10 +76,10 @@ test('storefront customer engagement route order is preserved', () => {
 test('storefront customer engagement band stays after page routes and before blog routes', () => {
     const beforeMarker = "router.get('/:subdomain/pages/:slug'";
     const afterMarker = "router.get('/:subdomain/blog'";
-    const beforeIndex = storefrontSource.indexOf(beforeMarker);
-    const afterIndex = storefrontSource.indexOf(afterMarker);
-    const extractedCallIndex = storefrontSource.indexOf('registerStorefrontCustomerEngagementRoutes(router');
-    const inlineFirstRouteIndex = storefrontSource.indexOf("router.post('/customer/find-or-create'");
+    const beforeIndex = registrationHostSource.indexOf(beforeMarker);
+    const afterIndex = registrationHostSource.indexOf(afterMarker);
+    const extractedCallIndex = registrationHostSource.indexOf('registerStorefrontCustomerEngagementRoutes(router');
+    const inlineFirstRouteIndex = registrationHostSource.indexOf("router.post('/customer/find-or-create'");
 
     assert.notEqual(beforeIndex, -1, 'page route marker should exist');
     assert.notEqual(afterIndex, -1, 'blog route marker should exist');

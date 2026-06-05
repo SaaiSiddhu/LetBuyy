@@ -6,11 +6,14 @@ import { fileURLToPath } from 'node:url';
 
 const testDir = dirname(fileURLToPath(import.meta.url));
 const storefrontPath = join(testDir, '../../services/api-gateway/src/routes/storefront.ts');
+const publicRoutesPath = join(testDir, '../../services/api-gateway/src/routes/storefront/public-routes.ts');
 const extractedPath = join(testDir, '../../services/api-gateway/src/routes/storefront/checkout-payment-routes.ts');
 
 const storefrontSource = readFileSync(storefrontPath, 'utf8');
+const publicRoutesSource = existsSync(publicRoutesPath) ? readFileSync(publicRoutesPath, 'utf8') : '';
 const extractedSource = existsSync(extractedPath) ? readFileSync(extractedPath, 'utf8') : '';
 const routeBandSource = extractedSource || storefrontSource;
+const registrationHostSource = publicRoutesSource || storefrontSource;
 
 const expectedRoutes = [
     { method: 'post', path: '/:subdomain/orders' },
@@ -56,10 +59,10 @@ test('storefront checkout payment route order is preserved', () => {
 test('storefront checkout payment band stays after status and before catalog routes', () => {
     const beforeMarker = "router.get('/:subdomain/status'";
     const afterMarker = "router.get('/:subdomain/products'";
-    const beforeIndex = storefrontSource.indexOf(beforeMarker);
-    const afterIndex = storefrontSource.indexOf(afterMarker);
-    const extractedCallIndex = storefrontSource.indexOf('registerStorefrontCheckoutPaymentRoutes(router');
-    const inlineFirstRouteIndex = storefrontSource.indexOf("router.post('/:subdomain/orders'");
+    const beforeIndex = registrationHostSource.indexOf(beforeMarker);
+    const afterIndex = registrationHostSource.indexOf(afterMarker);
+    const extractedCallIndex = registrationHostSource.indexOf('registerStorefrontCheckoutPaymentRoutes(router');
+    const inlineFirstRouteIndex = registrationHostSource.indexOf("router.post('/:subdomain/orders'");
 
     assert.notEqual(beforeIndex, -1, 'status route marker should exist');
     assert.notEqual(afterIndex, -1, 'catalog route marker should exist');

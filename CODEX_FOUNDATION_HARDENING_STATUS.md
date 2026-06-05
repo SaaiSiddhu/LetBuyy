@@ -112,7 +112,13 @@ Started: 2026-06-05T13:54:14Z
 - Post-split `pnpm run test:contracts`: PASS - 22/22.
 - `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
 - `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`: `storefront.ts` 2,206 lines; extracted module 1,223 lines.
-- H-9 remains in progress because `storefront.ts` and `app-store.ts` are still above the 1,500-line target.
+- Remaining public storefront lookup/directory/store/bootstrap/status/catalog/CMS/blog/contact routes moved from `services/api-gateway/src/routes/storefront.ts` into `services/api-gateway/src/routes/storefront/public-routes.ts`.
+- `tests/contracts/storefront-public-routes.test.ts`: added before extraction and kept green after extraction; it verifies the remaining public route list, route order, and insertion point after internal routes.
+- Pre-split `pnpm run test:contracts`: PASS - 25/25.
+- Post-split `pnpm run test:contracts`: PASS - 25/25.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/public-routes.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts services/api-gateway/src/routes/storefront/internal-payment-routes.ts`: `storefront.ts` 1,330 lines; public module 992 lines; checkout module 1,223 lines; customer module 1,500 lines; internal payment module 231 lines.
+- H-9 remains in progress because `app-store.ts` is still above the 1,500-line target.
 
 ## V2 P-1 gate evidence
 
@@ -139,6 +145,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the F1.6 checkout/payment route split.
-- Continue F1.6 by extracting the next cohesive storefront route group, likely catalog/search or CMS/content routes, under characterization coverage.
+- Commit the F1.6 storefront public route split.
+- Continue F1.6 by splitting `services/api-gateway/src/routes/app-store.ts` under characterization coverage.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.
