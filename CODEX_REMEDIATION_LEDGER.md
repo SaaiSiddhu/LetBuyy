@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 5 — P3 Scalability.
-- Current work item: P3-3 analytics/search projections.
+- Current work item: P3-1 partitioning and retention migrations.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -385,6 +385,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated nested `node_modules` cleanup.
 
+### Phase 5.3 — Analytics and search projection reads
+
+- Extended `packages/runtime-composition` analytics rollup planning with commerce metrics for `orders.created`, `orders.paid`, `orders.status`, `revenue.paid_minor`, `product.units_sold`, and `product.revenue_minor`.
+- Updated both platform queue consumers (`services/queue-workers` and api-gateway scheduled drain adapter) to pass event payloads into rollup planning and to maintain top-product rollups from `order_items` on `order.created`.
+- Added projection-first analytics route readers for dashboard, revenue chart, top products, and order status breakdown through `analytics_rollups_daily`.
+- Added storefront product search resolution through `search_documents.search_vector`, then hydrates product rows by projected IDs; direct `products.name ilike` remains only as the `STOREFRONT_SEARCH_PROJECTION=off` rollback path.
+- Added rollback flags `ANALYTICS_PROJECTION_READS` and `STOREFRONT_SEARCH_PROJECTION`, defaulting on in api-gateway Worker vars.
+- Added regression coverage for rollup metric names, queue consumer maintenance, projection-first analytics reads, search-document product search, and rollback defaults.
+
+Evidence:
+- `node --test tests/performance/projection-reads.test.mjs tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 30/30 tests.
+- `pnpm --filter @letbuyy/runtime-composition typecheck` — PASS after referenced package declarations were built; generated artifacts removed before governance.
+- `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after workspace links were restored; generated nested `node_modules` removed before governance.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -497,6 +514,12 @@ Evidence:
 - `node scripts/validators/migration-safety-validator.mjs` — PASS after `089_quarantine_platform_queue_job.sql`.
 - `git diff --check` — PASS after queue storm controls.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after queue storm controls and generated artifact cleanup.
+- `node --test tests/performance/projection-reads.test.mjs tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 30/30 tests.
+- `pnpm --filter @letbuyy/runtime-composition typecheck` — PASS after analytics/search projection read changes and referenced declaration builds.
+- `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after analytics rollup maintenance changes and workspace link restore.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after projection read route changes.
+- `git diff --check` — PASS after analytics/search projection reads.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after analytics/search projection reads and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -512,3 +535,4 @@ Evidence:
 - SKIP: Run 100k-row products/orders export and capped product import against deployed staging R2 — Reason: representative staging dataset, live R2 bucket, and deployed Worker credentials are human-controlled. Resume point: P2-6 export proof; expected result is queued job completion, streamed R2 CSV download, no request-path memory spike, and import jobs capped at 500 rows.
 - SKIP: Apply `088_inventory_available_batch.sql` to staging and run timed variant update plus checkout latency proof — Reason: live Supabase staging credentials, representative product variants, and deployed Worker timing telemetry are human-controlled. Resume point: P2-7 performance proof; expected result is one batched inventory RPC for changed variants, no delete/reinsert churn on unchanged variants, and storefront checkout response before usage/GST post-commit completion.
 - SKIP: Apply `089_quarantine_platform_queue_job.sql` to staging and run live poison-message plus DB-outage queue storm proof — Reason: live Supabase staging credentials, Cloudflare queue producer access, and controlled DB outage/failure injection are human-controlled. Resume point: P3-5 queue storm controls proof; expected result is deterministic poison jobs marked `dead`, generic trigger queues not draining unrelated DB queues, and sustained DB drain failure opening the circuit without multiplying Cloudflare retries.
+- SKIP: Backfill/prove analytics rollups and `search_documents` relevance on deployed staging — Reason: representative staging order history/search corpus, live queue drain execution, and query-plan/latency telemetry require human-controlled staging data and credentials. Resume point: P3-3 projection proof; expected result is analytics route parity with direct fixed-dataset queries and storefront search serving from `search_documents` with indexed search latency.

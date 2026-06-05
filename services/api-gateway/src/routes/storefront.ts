@@ -684,6 +684,15 @@ type PublicProductQueryResult = {
     error: DatabaseErrorLike;
 };
 
+type SearchDocumentProductResult = {
+    ids: string[];
+    count: number;
+};
+
+function storefrontSearchIndexReadsEnabled(env: Pick<Env, 'STOREFRONT_SEARCH_PROJECTION'>): boolean {
+    return (env.STOREFRONT_SEARCH_PROJECTION || 'on').trim().toLowerCase() !== 'off';
+}
+
 function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
 }
@@ -720,6 +729,62 @@ function publicProductRows(value: unknown): PublicProductRow[] {
     return value.filter((row): row is PublicProductRow => {
         return Boolean(row) && typeof row === 'object' && !Array.isArray(row);
     });
+}
+
+function searchDocumentTerm(value: string | undefined): string | null {
+    const term = value?.trim().replace(/\s+/g, ' ').slice(0, 120);
+    return term && term.length >= 2 ? term : null;
+}
+
+function sortProductsBySearchDocumentIds(products: PublicProductRow[], ids: string[]): PublicProductRow[] {
+    const rank = new Map(ids.map((id, index) => [id, index]));
+    return [...products].sort((left, right) => {
+        const leftRank = typeof left.id === 'string' ? rank.get(left.id) ?? Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+        const rightRank = typeof right.id === 'string' ? rank.get(right.id) ?? Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+        return leftRank - rightRank;
+    });
+}
+
+async function querySearchDocumentProductIds(
+    c: AppContext,
+    storeId: string,
+    options: PublicProductQueryOptions,
+): Promise<SearchDocumentProductResult | null> {
+    const term = searchDocumentTerm(options.search);
+    if (!term) return null;
+
+    const db = getSupabaseAdmin(c);
+    const offset = ((options.page || 1) - 1) * options.limit;
+    let query = db
+        .from('search_documents')
+        .select('object_id', { count: options.paginated ? 'exact' : undefined })
+        .eq('site_id', storeId)
+        .eq('object_type', 'product')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .textSearch('search_vector', term, { config: 'simple', type: 'websearch' })
+        .order('indexed_at', { ascending: false });
+
+    if (options.category) {
+        query = query.contains('attributes', { category: options.category });
+    }
+
+    const result = options.paginated
+        ? await query.range(offset, offset + options.limit - 1)
+        : await query.limit(options.limit);
+
+    if (result.error) return null;
+
+    const ids = Array.isArray(result.data)
+        ? result.data
+            .map((row) => typeof row.object_id === 'string' ? row.object_id : null)
+            .filter((id): id is string => Boolean(id))
+        : [];
+
+    return {
+        ids,
+        count: result.count || ids.length,
+    };
 }
 
 async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null> {
@@ -1107,6 +1172,27 @@ async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Pr
 
 async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult> {
     const db = getSupabaseAdmin(c);
+    if (options.search && storefrontSearchIndexReadsEnabled(c.env)) {
+        const projected = await querySearchDocumentProductIds(c, storeId, options);
+        if (projected) {
+            if (projected.ids.length === 0) return { data: [], count: 0, error: null };
+
+            const hydrated = await queryPublicProducts(c, storeId, {
+                ...options,
+                ids: projected.ids,
+                limit: projected.ids.length,
+                paginated: false,
+                search: undefined,
+            });
+
+            return {
+                data: sortProductsBySearchDocumentIds(hydrated.data, projected.ids),
+                count: projected.count,
+                error: hydrated.error,
+            };
+        }
+    }
+
     const pooledResult = await queryPublicProductsFromPooledSql(c, storeId, options);
     if (pooledResult) return pooledResult;
 

@@ -57,7 +57,7 @@ export interface AnalyticsRollupIncrementPlan {
   metricName: string;
   date: string;
   dimensions: Record<string, unknown>;
-  increment: 1;
+  increment: number;
 }
 
 export interface AnalyticsEventStreamInput {
@@ -211,9 +211,10 @@ export function planAnalyticsRollupIncrements(input: {
   eventType: string;
   occurredAt?: string;
   aggregateType?: string | null;
+  payload?: Record<string, unknown>;
 }): AnalyticsRollupIncrementPlan[] {
   const date = analyticsRollupDate(input.occurredAt);
-  return [
+  const plans: AnalyticsRollupIncrementPlan[] = [
     {
       siteId: input.siteId,
       metricName: 'events.total',
@@ -229,6 +230,145 @@ export function planAnalyticsRollupIncrements(input: {
       increment: 1,
     },
   ];
+
+  if (input.eventType === 'order.created') {
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'orders.created',
+      date,
+      dimensions: {},
+      increment: 1,
+    });
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'orders.status',
+      date,
+      dimensions: { status: 'created' },
+      increment: 1,
+    });
+  }
+
+  if (input.eventType === 'order.paid') {
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'orders.paid',
+      date,
+      dimensions: {},
+      increment: 1,
+    });
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'orders.status',
+      date,
+      dimensions: { status: 'paid' },
+      increment: 1,
+    });
+
+    const amountMinor = analyticsAmountMinor(input.payload?.total);
+    if (amountMinor !== null) {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'revenue.paid_minor',
+        date,
+        dimensions: { currency: 'INR' },
+        increment: amountMinor,
+      });
+    }
+  }
+
+  const status = orderStatusFromEventType(input.eventType);
+  if (status && status !== 'created' && status !== 'paid') {
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'orders.status',
+      date,
+      dimensions: { status },
+      increment: 1,
+    });
+  }
+
+  return plans;
+}
+
+export interface OrderItemAnalyticsRollupInput {
+  productId?: string | null;
+  name?: string | null;
+  sku?: string | null;
+  quantity?: number | string | null;
+  total?: number | string | null;
+}
+
+export function planOrderItemAnalyticsRollupIncrements(input: {
+  siteId: string;
+  occurredAt?: string;
+  items: OrderItemAnalyticsRollupInput[];
+}): AnalyticsRollupIncrementPlan[] {
+  const date = analyticsRollupDate(input.occurredAt);
+  const plans: AnalyticsRollupIncrementPlan[] = [];
+
+  for (const item of input.items) {
+    if (!item.productId) continue;
+
+    const quantity = analyticsPositiveNumber(item.quantity, 1);
+    const dimensions = {
+      product_id: item.productId,
+      product_name: item.name || item.productId,
+      sku: item.sku || null,
+    };
+
+    plans.push({
+      siteId: input.siteId,
+      metricName: 'product.units_sold',
+      date,
+      dimensions,
+      increment: quantity,
+    });
+
+    const revenueMinor = analyticsMajorToMinor(item.total);
+    if (revenueMinor !== null) {
+      plans.push({
+        siteId: input.siteId,
+        metricName: 'product.revenue_minor',
+        date,
+        dimensions,
+        increment: revenueMinor,
+      });
+    }
+  }
+
+  return plans;
+}
+
+function orderStatusFromEventType(eventType: string): string | null {
+  switch (eventType) {
+    case 'order.fulfilled':
+      return 'fulfilled';
+    case 'order.cancelled':
+      return 'cancelled';
+    case 'order.refunded':
+      return 'refunded';
+    default:
+      return null;
+  }
+}
+
+function analyticsAmountMinor(value: unknown): number | null {
+  if (!value || typeof value !== 'object') return null;
+  const amount = (value as Record<string, unknown>).amount_minor;
+  if (typeof amount !== 'number' || !Number.isFinite(amount) || amount < 0) return null;
+  return Math.round(amount);
+}
+
+function analyticsPositiveNumber(value: unknown, fallback: number): number {
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue) || numberValue <= 0) return fallback;
+  return Math.max(1, Math.trunc(numberValue));
+}
+
+function analyticsMajorToMinor(value: unknown): number | null {
+  const numberValue = Number(value);
+  if (!Number.isFinite(numberValue) || numberValue < 0) return null;
+  return Math.round(numberValue * 100);
 }
 
 export function planAnalyticsEventStreamRecord(input: AnalyticsEventStreamInput): AnalyticsEventStreamRecord {
