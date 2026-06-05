@@ -64,6 +64,8 @@ export interface Env {
     CASHFREE_API_VERSION?: string;
     AUTH_SECRET?: string;
     CSRF_SECRET?: string;
+    CUSTOMER_SESSION_SECRET?: string;
+    CUSTOMER_LEGACY_AUTH?: string;
     INTERNAL_API_SECRET?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
     ASSET_PUBLIC_BASE_URL?: string;

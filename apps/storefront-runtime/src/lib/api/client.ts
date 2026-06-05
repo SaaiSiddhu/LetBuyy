@@ -1,8 +1,14 @@
 import 'server-only';
+import { cookies } from 'next/headers';
 import {
     createLetbuyyApiClient,
     type LetbuyyApiClient,
 } from '@letbuyy/api-client';
+import {
+    getLetbuyyInternalAuthSecret,
+    hmacSha256Hex,
+    LETBUYY_CUSTOMER_SESSION_COOKIE,
+} from '@letbuyy/auth-core';
 
 const DEFAULT_API_BASE_URL = 'https://api.letbuyy.store/v1';
 
@@ -58,6 +64,16 @@ export async function storefrontApiFetch(path: string, init: StorefrontApiFetchI
     headers.set('Content-Type', headers.get('Content-Type') || 'application/json');
     headers.set('X-Client', 'storefront-web');
     headers.set('X-Request-ID', headers.get('X-Request-ID') || crypto.randomUUID());
+    if (cleanPath.startsWith('/storefront/customer/') && !headers.has('X-LetBuyy-Customer-Session')) {
+        const cookieStore = await cookies();
+        const customerSession = cookieStore.get(LETBUYY_CUSTOMER_SESSION_COOKIE)?.value;
+        if (customerSession) {
+            headers.set('X-LetBuyy-Customer-Session', customerSession);
+        }
+    }
+    if (isStorefrontInternalOnlyPath(cleanPath)) {
+        await signStorefrontInternalRequest(headers);
+    }
 
     const requestInit: StorefrontApiFetchInit = {
         ...init,
@@ -69,6 +85,34 @@ export async function storefrontApiFetch(path: string, init: StorefrontApiFetchI
     }
 
     return fetch(`${getApiBaseUrl()}${cleanPath}`, requestInit);
+}
+
+function isStorefrontInternalOnlyPath(path: string): boolean {
+    return path === '/storefront/customer/by-email'
+        || path === '/storefront/customer/status'
+        || path === '/storefront/customer/password'
+        || path === '/storefront/customer/login-success'
+        || path === '/storefront/customer/order-credential'
+        || path === '/storefront/customer/order-credential/login'
+        || path === '/storefront/customer/order-credential/login-success'
+        || path === '/storefront/customer/order-stats'
+        || /^\/storefront\/[^/]+\/orders\/contact$/.test(path);
+}
+
+async function signStorefrontInternalRequest(headers: Headers): Promise<void> {
+    const secret = getLetbuyyInternalAuthSecret({
+        INTERNAL_API_SECRET: process.env.INTERNAL_API_SECRET,
+        AUTH_SECRET: process.env.AUTH_SECRET,
+    });
+
+    if (!secret) return;
+
+    const app = 'storefront';
+    const timestamp = Date.now().toString();
+    const signature = await hmacSha256Hex(secret, `app.${app}.${timestamp}`);
+    headers.set('X-LetBuyy-Internal-App', app);
+    headers.set('X-LetBuyy-Internal-Timestamp', timestamp);
+    headers.set('X-LetBuyy-Internal-Signature', signature);
 }
 
 export function createStorefrontApiClient(defaultInit: StorefrontApiFetchInit = {}): LetbuyyApiClient {

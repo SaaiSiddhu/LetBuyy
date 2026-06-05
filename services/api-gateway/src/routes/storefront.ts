@@ -6,6 +6,7 @@ import type { Context } from 'hono';
 import * as bcrypt from 'bcryptjs';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { verifyInternalAppRequest } from '../lib/internal-auth';
 import { validate } from '../middleware/validation';
 import {
     StorefrontCreateOrderSchema,
@@ -30,6 +31,11 @@ import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import { evaluateCheckoutAppFunctions } from '../extensions/app-functions-runtime';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
+import {
+    getCustomerSession,
+    isCustomerLegacyAuthEnabled,
+    requireCustomerSession,
+} from '../middleware/customer-session';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
@@ -44,6 +50,11 @@ import {
     summarizePublicProductReviews,
     type PublicProductReviewRecord,
 } from '@letbuyy/commerce-core';
+import {
+    issueCustomerSession,
+    LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS,
+    LETBUYY_CUSTOMER_SESSION_COOKIE,
+} from '@letbuyy/auth-core';
 import {
     buildPublicNavigationTree,
     normalizeStorefrontRoutePage,
@@ -66,6 +77,14 @@ import { normalizeAppBlockInstance, type AppBlockInstance } from '@letbuyy/app-e
 const router = new Hono<{ Bindings: Env }>();
 type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
+
+router.use('/customer/wishlist', requireCustomerSession);
+router.use('/customer/wishlist/*', requireCustomerSession);
+router.use('/customer/orders', requireCustomerSession);
+router.use('/customer/activity', requireCustomerSession);
+router.use('/customer/profile', requireCustomerSession);
+router.use('/customer/addresses', requireCustomerSession);
+router.use('/customer/addresses/*', requireCustomerSession);
 
 type StorefrontCreateOrderBody = {
     customer: {
@@ -238,6 +257,25 @@ type CustomerLifecycleBody = {
     password?: string;
     order_total?: number | string;
     order_id?: string;
+};
+
+type StoreCustomerAuthRow = {
+    id: string;
+    store_id: string;
+    email: string;
+    full_name?: string | null;
+    phone?: string | null;
+    status?: string | null;
+    password_hash?: string | null;
+    login_count?: number | string | null;
+    accepts_marketing?: boolean | null;
+    updated_at?: string | null;
+};
+
+type VerifiedStoreCustomer = {
+    id: string;
+    store_id: string;
+    email: string;
 };
 
 type CustomerProfileBody = {
@@ -1055,16 +1093,29 @@ async function loadNavigationMenu(c: AppContext, storeId: string, location: stri
     };
 }
 
-async function verifyStoreCustomer(c: AppContext, storeId: string, customerId: string): Promise<boolean> {
+async function getVerifiedStoreCustomer(c: AppContext, storeId: string, customerId: string): Promise<VerifiedStoreCustomer | null> {
+    const session = getCustomerSession(c);
+    if (session) {
+        if (session.storeId !== storeId || session.customerId !== customerId) {
+            return null;
+        }
+    } else if (!isCustomerLegacyAuthEnabled(c.env)) {
+        return null;
+    }
+
     const db = getSupabaseAdmin(c);
     const { data } = await db
         .from('store_customers')
-        .select('id')
+        .select('id, store_id, email')
         .eq('id', customerId)
         .eq('store_id', storeId)
-        .single();
+        .single<VerifiedStoreCustomer>();
 
-    return Boolean(data);
+    return data || null;
+}
+
+async function verifyStoreCustomer(c: AppContext, storeId: string, customerId: string): Promise<boolean> {
+    return Boolean(await getVerifiedStoreCustomer(c, storeId, customerId));
 }
 
 function normalizeEmail(email: string): string {
@@ -1073,6 +1124,54 @@ function normalizeEmail(email: string): string {
 
 function normalizeContact(value: string): string {
     return value.toLowerCase().trim();
+}
+
+async function requireStorefrontInternal(c: AppContext): Promise<Response | null> {
+    if (await verifyInternalAppRequest(c, 'storefront')) return null;
+
+    return c.json(
+        {
+            success: false,
+            error: {
+                code: 'UNAUTHORIZED',
+                message: 'Invalid internal storefront signature',
+            },
+        },
+        401,
+    );
+}
+
+function publicCustomerProfile(customer: StoreCustomerAuthRow): Record<string, unknown> {
+    return {
+        id: customer.id,
+        store_id: customer.store_id,
+        email: customer.email,
+        full_name: customer.full_name || null,
+        phone: customer.phone || null,
+        status: customer.status || 'active',
+        accepts_marketing: Boolean(customer.accepts_marketing),
+        updated_at: customer.updated_at || null,
+    };
+}
+
+function buildCookie(name: string, value: string, maxAgeSeconds: number, options: { httpOnly?: boolean } = {}): string {
+    const parts = [
+        `${name}=${encodeURIComponent(value)}`,
+        'Path=/',
+        `Max-Age=${maxAgeSeconds}`,
+        `Expires=${new Date(Date.now() + maxAgeSeconds * 1000).toUTCString()}`,
+        'SameSite=Lax',
+        'Secure',
+    ];
+
+    if (options.httpOnly) parts.push('HttpOnly');
+    return parts.join('; ');
+}
+
+function randomCsrfToken(): string {
+    const bytes = new Uint8Array(24);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
 }
 
 async function insertCustomerActivity(
@@ -2876,10 +2975,10 @@ router.post('/customer/find-or-create', async (c) => {
     const email = normalizeEmail(body.email);
     const { data: existing, error: existingError } = await db
         .from('store_customers')
-        .select('*')
+        .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
         .eq('store_id', body.store_id)
         .eq('email', email)
-        .maybeSingle();
+        .maybeSingle<StoreCustomerAuthRow>();
 
     if (existingError) {
         return c.json(dbFailureBody(), 500);
@@ -2891,7 +2990,7 @@ router.post('/customer/find-or-create', async (c) => {
         if (body.phone && !existing.phone) updates.phone = body.phone;
 
         if (!Object.keys(updates).length) {
-            return c.json(success({ customer: existing, created: false }));
+            return c.json(success({ customer: publicCustomerProfile(existing), created: false }));
         }
 
         const { data: updated, error } = await db
@@ -2899,14 +2998,14 @@ router.post('/customer/find-or-create', async (c) => {
             .update(updates)
             .eq('id', existing.id)
             .eq('store_id', body.store_id)
-            .select()
-            .single();
+            .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
+            .single<StoreCustomerAuthRow>();
 
         if (error) {
             return c.json(dbFailureBody(), 500);
         }
 
-        return c.json(success({ customer: updated, created: false }));
+        return c.json(success({ customer: publicCustomerProfile(updated), created: false }));
     }
 
     const { data: created, error } = await db
@@ -2919,19 +3018,22 @@ router.post('/customer/find-or-create', async (c) => {
             status: 'active',
             password_hash: null,
         })
-        .select()
-        .single();
+        .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
+        .single<StoreCustomerAuthRow>();
 
     if (error) {
         return c.json(dbFailureBody(), 500);
     }
 
     await insertCustomerActivity(c, created.id, body.store_id, 'account_created', { source: 'checkout' });
-    return c.json(success({ customer: created, created: true }), 201);
+    return c.json(success({ customer: publicCustomerProfile(created), created: true }), 201);
 });
 
 // POST /storefront/customer/password — Persist a server-generated password hash
 router.post('/customer/password', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const body = await c.req.json() as CustomerLifecycleBody;
 
     if (!body.store_id || !body.email || (!body.password && !body.password_hash)) {
@@ -2964,6 +3066,9 @@ router.post('/customer/password', async (c) => {
 
 // GET /storefront/customer/by-email — Sessionless customer lookup scoped to a store
 router.get('/customer/by-email', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const storeId = c.req.query('store_id');
     const email = c.req.query('email');
 
@@ -2974,20 +3079,23 @@ router.get('/customer/by-email', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('store_customers')
-        .select('*')
+        .select('id, store_id, email, full_name, phone, status, accepts_marketing, updated_at')
         .eq('store_id', storeId)
         .eq('email', normalizeEmail(email))
-        .single();
+        .single<StoreCustomerAuthRow>();
 
     if (error || !data) {
         return c.json(success({ customer: null }));
     }
 
-    return c.json(success({ customer: data }));
+    return c.json(success({ customer: publicCustomerProfile(data) }));
 });
 
 // GET /storefront/customer/status — Check whether a customer exists and has a password
 router.get('/customer/status', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const storeId = c.req.query('store_id');
     const email = c.req.query('email');
 
@@ -3025,10 +3133,10 @@ router.post('/customer/login', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('store_customers')
-        .select('*')
+        .select('id, store_id, email, full_name, phone, status, password_hash, login_count, accepts_marketing, updated_at')
         .eq('store_id', body.store_id)
         .eq('email', normalizeEmail(body.email))
-        .single();
+        .single<StoreCustomerAuthRow>();
 
     if (error || !data || !data.password_hash) {
         return c.json(success({ customer: null }));
@@ -3051,11 +3159,53 @@ router.post('/customer/login', async (c) => {
         .eq('store_id', body.store_id);
 
     await insertCustomerActivity(c, data.id, body.store_id, 'login', { method: 'password' });
-    return c.json(success({ customer: data }));
+
+    const responseBody = success({ customer: publicCustomerProfile(data) });
+    if (!c.env.CUSTOMER_SESSION_SECRET) {
+        if (isCustomerLegacyAuthEnabled(c.env)) {
+            return c.json(responseBody);
+        }
+
+        return c.json(
+            {
+                success: false,
+                error: {
+                    code: 'CUSTOMER_SESSION_MISCONFIGURED',
+                    message: 'Customer session signing is not configured',
+                },
+            },
+            500,
+        );
+    }
+
+    const issuedSession = await issueCustomerSession(
+        {
+            storeId: body.store_id,
+            customerId: data.id,
+        },
+        c.env.CUSTOMER_SESSION_SECRET,
+    );
+    const csrfToken = randomCsrfToken();
+    const response = c.json(responseBody);
+    response.headers.append(
+        'Set-Cookie',
+        buildCookie(LETBUYY_CUSTOMER_SESSION_COOKIE, issuedSession.token, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, {
+            httpOnly: true,
+        }),
+    );
+    response.headers.append(
+        'Set-Cookie',
+        buildCookie('letbuyy_csrf', csrfToken, LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS),
+    );
+    response.headers.set('X-CSRF-Token', csrfToken);
+    return response;
 });
 
 // POST /storefront/customer/login-success — Record verified customer login metadata
 router.post('/customer/login-success', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const body = await c.req.json() as CustomerLifecycleBody;
 
     if (!body.customer_id || !body.store_id) {
@@ -3093,6 +3243,9 @@ router.post('/customer/login-success', async (c) => {
 
 // POST /storefront/customer/order-credential — Persist legacy order-tracking credential
 router.post('/customer/order-credential', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const body = await c.req.json() as CustomerLifecycleBody;
     const storeId = await resolveCredentialStoreId(c, body);
 
@@ -3125,6 +3278,9 @@ router.post('/customer/order-credential', async (c) => {
 
 // POST /storefront/customer/order-credential/login — Verify legacy order-tracking credential
 router.post('/customer/order-credential/login', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const body = await c.req.json() as CustomerLifecycleBody;
     const storeId = await resolveCredentialStoreId(c, body);
 
@@ -3160,6 +3316,9 @@ router.post('/customer/order-credential/login', async (c) => {
 
 // POST /storefront/customer/order-credential/login-success — Record legacy order login metadata
 router.post('/customer/order-credential/login-success', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const body = await c.req.json() as CustomerLifecycleBody;
     const storeId = await resolveCredentialStoreId(c, body);
 
@@ -3198,6 +3357,9 @@ router.post('/customer/order-credential/login-success', async (c) => {
 
 // POST /storefront/customer/order-stats — Reconcile customer order counters after checkout
 router.post('/customer/order-stats', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const body = await c.req.json() as CustomerLifecycleBody;
 
     if (!body.store_id || !body.email || body.order_total === undefined || !body.order_id) {
@@ -3270,10 +3432,15 @@ router.get('/customer/wishlist', async (c) => {
 // GET /storefront/customer/orders — Session-proxied customer order history
 router.get('/customer/orders', async (c) => {
     const storeId = c.req.query('store_id');
-    const email = c.req.query('email');
+    const customerId = getCustomerSession(c)?.customerId || c.req.query('customer_id');
 
-    if (!storeId || !email) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and email are required' } }, 400);
+    if (!storeId || !customerId) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and customer session are required' } }, 400);
+    }
+
+    const customer = await getVerifiedStoreCustomer(c, storeId, customerId);
+    if (!customer) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
     }
 
     const db = getSupabaseAdmin(c);
@@ -3281,7 +3448,7 @@ router.get('/customer/orders', async (c) => {
         .from('orders')
         .select('id, order_number, status, total, created_at, items')
         .eq('store_id', storeId)
-        .eq('customer_email', normalizeEmail(email))
+        .eq('customer_email', normalizeEmail(customer.email))
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -3291,6 +3458,9 @@ router.get('/customer/orders', async (c) => {
 
 // GET /storefront/:subdomain/orders/contact — Public order tracking lookup by contact
 router.get('/:subdomain/orders/contact', async (c) => {
+    const unauthorized = await requireStorefrontInternal(c);
+    if (unauthorized) return unauthorized;
+
     const contact = c.req.query('contact');
     const store = await loadPublishedStore(c, c.req.param('subdomain'));
 
@@ -3585,15 +3755,15 @@ router.post('/reviews', validate('json', CreateStorefrontProductReviewSchema), a
 
 // GET /storefront/customer/addresses — Session-proxied customer addresses
 router.get('/customer/addresses', async (c) => {
-    const customerId = c.req.query('customer_id');
     const storeId = c.req.query('store_id');
-    const customerEmail = c.req.query('customer_email');
+    const customerId = getCustomerSession(c)?.customerId || c.req.query('customer_id');
 
-    if (!customerId || !storeId || !customerEmail) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and customer_email are required' } }, 400);
+    if (!customerId || !storeId) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id and store_id are required' } }, 400);
     }
 
-    if (!(await verifyStoreCustomer(c, storeId, customerId))) {
+    const customer = await getVerifiedStoreCustomer(c, storeId, customerId);
+    if (!customer) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
     }
 
@@ -3602,7 +3772,7 @@ router.get('/customer/addresses', async (c) => {
         .from('customer_addresses')
         .select('*')
         .eq('store_id', storeId)
-        .eq('customer_email', customerEmail.toLowerCase())
+        .eq('customer_email', normalizeEmail(customer.email))
         .order('is_default', { ascending: false })
         .order('created_at', { ascending: false });
 
@@ -3621,12 +3791,13 @@ router.post('/customer/addresses', async (c) => {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Required address fields missing' } }, 400);
     }
 
-    if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
+    const customer = await getVerifiedStoreCustomer(c, body.store_id, body.customer_id);
+    if (!customer) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
     }
 
     const db = getSupabaseAdmin(c);
-    const customerEmail = body.customer_email.toLowerCase();
+    const customerEmail = normalizeEmail(customer.email);
     if (body.is_default) {
         await db
             .from('customer_addresses')
@@ -3671,12 +3842,13 @@ router.patch('/customer/addresses/:id', async (c) => {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and customer_email are required' } }, 400);
     }
 
-    if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
+    const customer = await getVerifiedStoreCustomer(c, body.store_id, body.customer_id);
+    if (!customer) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
     }
 
     const db = getSupabaseAdmin(c);
-    const customerEmail = body.customer_email.toLowerCase();
+    const customerEmail = normalizeEmail(customer.email);
     if (body.is_default) {
         await db
             .from('customer_addresses')
@@ -3717,7 +3889,8 @@ router.delete('/customer/addresses/:id', async (c) => {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'customer_id, store_id and customer_email are required' } }, 400);
     }
 
-    if (!(await verifyStoreCustomer(c, body.store_id, body.customer_id))) {
+    const customer = await getVerifiedStoreCustomer(c, body.store_id, body.customer_id);
+    if (!customer) {
         return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Invalid customer session' } }, 403);
     }
 
@@ -3727,7 +3900,7 @@ router.delete('/customer/addresses/:id', async (c) => {
         .delete()
         .eq('id', addressId)
         .eq('store_id', body.store_id)
-        .eq('customer_email', body.customer_email.toLowerCase());
+        .eq('customer_email', normalizeEmail(customer.email));
 
     if (error) {
         return c.json(dbFailureBody(), 500);

@@ -1,6 +1,8 @@
 import { z } from 'zod';
 import { EmailSchema } from '@letbuyy/shared-types';
 
+export * from './customer-session';
+
 const PasswordSchema = z
   .string()
   .min(8, 'Password must be at least 8 characters')

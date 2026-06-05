@@ -6,26 +6,36 @@ import { webcrypto } from 'node:crypto';
 import ts from 'typescript';
 
 const AUTH_CORE_SOURCE = 'packages/auth-core/src/index.ts';
+const AUTH_CORE_CUSTOMER_SESSION_SOURCE = 'packages/auth-core/src/customer-session.ts';
 
-function loadAuthCore() {
-  const source = readFileSync(AUTH_CORE_SOURCE, 'utf8');
-  const transpiled = ts.transpileModule(source, {
+function transpileTypeScript(sourcePath) {
+  return ts.transpileModule(readFileSync(sourcePath, 'utf8'), {
     compilerOptions: {
       module: ts.ModuleKind.CommonJS,
       target: ts.ScriptTarget.ES2022,
       esModuleInterop: true,
     },
   }).outputText;
+}
 
-  const module = { exports: {} };
+function loadAuthCore() {
+  const moduleCache = new Map();
   const zChain = new Proxy(function zChain() {}, {
     get: () => zChain,
     apply: () => zChain,
   });
-  const sandbox = {
+
+  function evaluateModule(sourcePath) {
+    const cached = moduleCache.get(sourcePath);
+    if (cached) return cached.exports;
+
+    const module = { exports: {} };
+    moduleCache.set(sourcePath, module);
+    const sandbox = {
     module,
     exports: module.exports,
     require(specifier) {
+      if (specifier === './customer-session') return evaluateModule(AUTH_CORE_CUSTOMER_SESSION_SOURCE);
       if (specifier === 'zod') return { z: { string: () => zChain, object: () => zChain } };
       if (specifier === '@letbuyy/shared-types') return { EmailSchema: zChain };
       throw new Error(`Unexpected test require: ${specifier}`);
@@ -46,8 +56,11 @@ function loadAuthCore() {
     ArrayBuffer,
   };
 
-  vm.runInNewContext(transpiled, sandbox, { filename: AUTH_CORE_SOURCE });
-  return module.exports;
+    vm.runInNewContext(transpileTypeScript(sourcePath), sandbox, { filename: sourcePath });
+    return module.exports;
+  }
+
+  return evaluateModule(AUTH_CORE_SOURCE);
 }
 
 const authCore = loadAuthCore();
@@ -140,6 +153,50 @@ test('customer session JWTs are signed and verified only by auth-core', async ()
 
   const tampered = await authCore.verifyCustomerSessionToken(`${token.slice(0, -1)}x`, 'customer-secret', { nowSeconds: 120 });
   assert.equal(tampered.status, 'invalid_signature');
+});
+
+test('gateway customer sessions are short-lived, signed, and body-independent', async () => {
+  assert.equal(authCore.LETBUYY_CUSTOMER_GATEWAY_SESSION_TTL_SECONDS, 30 * 60);
+
+  const issued = await authCore.issueCustomerSession(
+    {
+      storeId: 'store_123',
+      customerId: 'customer_123',
+    },
+    'gateway-customer-session-secret',
+    { nowSeconds: 1_000 },
+  );
+
+  assert.equal(issued.expiresAt, new Date((1_000 + 30 * 60) * 1000).toISOString());
+
+  const accepted = await authCore.verifyCustomerSession(
+    issued.token,
+    'gateway-customer-session-secret',
+    { nowSeconds: 2_799 },
+  );
+  assert.equal(accepted.storeId, 'store_123');
+  assert.equal(accepted.customerId, 'customer_123');
+
+  const expired = await authCore.verifyCustomerSession(
+    issued.token,
+    'gateway-customer-session-secret',
+    { nowSeconds: 2_800 },
+  );
+  assert.equal(expired, null);
+
+  const tampered = await authCore.verifyCustomerSession(
+    `${issued.token.slice(0, -1)}x`,
+    'gateway-customer-session-secret',
+    { nowSeconds: 1_100 },
+  );
+  assert.equal(tampered, null);
+
+  const wrongSecret = await authCore.verifyCustomerSession(
+    issued.token,
+    'different-secret',
+    { nowSeconds: 1_100 },
+  );
+  assert.equal(wrongSecret, null);
 });
 
 test('customer federation tokens mint, redeem once, and expire after 15 minutes', async () => {

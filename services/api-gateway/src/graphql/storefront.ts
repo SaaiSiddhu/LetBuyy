@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import { z } from 'zod';
 import type { Env } from '../index';
+import { verifyGatewayCustomerSession } from '../middleware/customer-session';
 import { checkQueryCostRateLimitKey, type QueryCostRateLimitResult } from '../middleware/rateLimit';
 import { calculateGraphQLQueryCost } from './cost';
 import { createRestShimRequest, readRestShimEnvelope, type RestShimEnvelope } from './rest-shim';
@@ -209,6 +210,7 @@ function cloneStorefrontHeaders(c: GatewayContext): Headers {
         'X-Customer-ID',
         'X-Customer-Email',
         'X-LetBuyy-Customer-Token',
+        'X-LetBuyy-Customer-Session',
         'X-LetBuyy-API-Version',
         'LetBuyy-API-Version',
     ];
@@ -263,6 +265,7 @@ function hasCustomerContext(c: GatewayContext, document: string): boolean {
             || c.req.header('X-Customer-ID')
             || c.req.header('X-Customer-Email')
             || c.req.header('X-LetBuyy-Customer-Token')
+            || c.req.header('X-LetBuyy-Customer-Session')
             || /\b(customer|order|cart)\b/.test(document),
     );
 }
@@ -494,27 +497,21 @@ async function resolveStorefrontData(
     }
 
     if (hasField(document, 'customer')) {
-        const storeId = storeIdFromVariables(variables);
-        const email = variableString(variables, ['email', 'customerEmail']);
-        const params = new URLSearchParams();
-        if (storeId) params.set('store_id', storeId);
-        if (email) params.set('email', email);
-        const envelope = storeId && email
-            ? await restGet(c, delegate, '/storefront/customer/by-email', params, 'customer')
-            : null;
-        data.customer = recordValue(envelope?.data)?.customer || null;
+        const session = await requireCustomerGraphQLSession(c, 'customer');
+        data.customer = {
+            id: session.customerId,
+            store_id: session.storeId,
+        };
     }
 
     if (hasField(document, 'order')) {
-        const storeId = storeIdFromVariables(variables);
-        const email = variableString(variables, ['email', 'customerEmail']);
+        const session = await requireCustomerGraphQLSession(c, 'order');
         const orderId = slugOrId(document, variables, 'order');
-        const params = new URLSearchParams();
-        if (storeId) params.set('store_id', storeId);
-        if (email) params.set('email', email);
-        const envelope = storeId && email
-            ? await restGet(c, delegate, '/storefront/customer/orders', params, 'order')
-            : null;
+        const params = new URLSearchParams({
+            store_id: session.storeId,
+            customer_id: session.customerId,
+        });
+        const envelope = await restGet(c, delegate, '/storefront/customer/orders', params, 'order');
         data.order = orderId
             ? arrayValue(recordValue(envelope?.data)?.orders).find((node) => recordValue(node)?.id === orderId) || null
             : null;
@@ -529,6 +526,19 @@ async function resolveStorefrontData(
     }
 
     return /\bstorefront\s*\{/.test(document) ? { storefront: data } : data;
+}
+
+async function requireCustomerGraphQLSession(c: GatewayContext, fieldName: string) {
+    const session = await verifyGatewayCustomerSession(c);
+    if (!session) {
+        throw new StorefrontGraphQLError(
+            'A valid customer session is required for this Storefront GraphQL field.',
+            'CUSTOMER_SESSION_REQUIRED',
+            fieldName,
+        );
+    }
+
+    return session;
 }
 
 function parseVariables(raw: string | undefined): GraphQLVariables | undefined {
