@@ -39,6 +39,7 @@ import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import internalConsoleRouter from './routes/internal-console';
 import { createAdminGraphQLRouter } from './graphql/admin';
+import { createStorefrontGraphQLRouter } from './graphql/storefront';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
@@ -166,6 +167,10 @@ api.get('/health', (c) => {
 });
 api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
 
+const storefrontGraphQLRouter = createStorefrontGraphQLRouter({
+    restDelegate: async (c, request) => app.fetch(request, c.env),
+});
+
 // Public routes (no auth required)
 api.use('/auth/*', async (c, next) => {
     if (c.req.method === 'GET' && c.req.path.endsWith('/auth/custom/session')) {
@@ -177,6 +182,8 @@ api.use('/auth/*', async (c, next) => {
 });
 api.route('/auth', authRouter);
 api.route('/contacts', contactsRouter);
+api.route('/storefront/graphql', storefrontGraphQLRouter);
+api.route('/graphql/storefront', storefrontGraphQLRouter);
 api.route('/storefront', storefrontRouter);
 api.route('/themes', themesRouter);
 api.route('/app-store', appStoreRouter);

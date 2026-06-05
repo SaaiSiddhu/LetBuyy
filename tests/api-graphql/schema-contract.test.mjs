@@ -8,11 +8,13 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(__dirname, '../..');
 const schemaPath = path.join(repoRoot, 'services/api-gateway/src/graphql/schema.ts');
 const adminGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/graphql/admin.ts');
+const storefrontGraphQLPath = path.join(repoRoot, 'services/api-gateway/src/graphql/storefront.ts');
 const graphQLCostPath = path.join(repoRoot, 'services/api-gateway/src/graphql/cost.ts');
 const gatewayIndexPath = path.join(repoRoot, 'services/api-gateway/src/index.ts');
 const sharedTypesPath = path.join(repoRoot, 'packages/shared-types/src/index.ts');
 const schemaSource = readFileSync(schemaPath, 'utf8');
 const adminGraphQLSource = readFileSync(adminGraphQLPath, 'utf8');
+const storefrontGraphQLSource = readFileSync(storefrontGraphQLPath, 'utf8');
 const graphQLCostSource = readFileSync(graphQLCostPath, 'utf8');
 const gatewayIndexSource = readFileSync(gatewayIndexPath, 'utf8');
 const sharedTypesSource = readFileSync(sharedTypesPath, 'utf8');
@@ -192,4 +194,56 @@ test('WS12 G2 Admin GraphQL applies calculated document cost and rate-limit head
     'bulkOperationRunMutation',
     'Math.min(cost, 250)',
   ], 'GraphQL cost estimator');
+});
+
+test('WS12 G3 mounts Storefront GraphQL as a public cache-aware endpoint', () => {
+  assertIncludesAll(gatewayIndexSource, [
+    "import { createStorefrontGraphQLRouter } from './graphql/storefront'",
+    "api.route('/storefront/graphql', storefrontGraphQLRouter)",
+    "api.route('/graphql/storefront', storefrontGraphQLRouter)",
+    "api.route('/storefront', storefrontRouter)",
+    "api.use('/*', authMiddleware)",
+  ], 'Storefront GraphQL gateway mount');
+
+  assert.ok(
+    gatewayIndexSource.indexOf("api.route('/storefront/graphql', storefrontGraphQLRouter)") <
+      gatewayIndexSource.indexOf("api.route('/storefront', storefrontRouter)"),
+    'Storefront GraphQL must be mounted before the generic storefront REST router',
+  );
+
+  assert.ok(
+    gatewayIndexSource.indexOf("api.route('/storefront/graphql', storefrontGraphQLRouter)") <
+      gatewayIndexSource.indexOf("api.use('/*', authMiddleware)"),
+    'Storefront GraphQL must remain public and optional-customer-token scoped',
+  );
+
+  assertIncludesAll(storefrontGraphQLSource, [
+    'export type StorefrontGraphQLRestDelegate',
+    'Cache-Control',
+    'public, max-age=30, stale-while-revalidate=120',
+    'private, no-store',
+    'calculateGraphQLQueryCost',
+    'checkQueryCostRateLimitKey',
+    "prefix: 'rl:graphql-storefront'",
+    'X-RateLimit-Cost',
+    'QUERY_COST_RATE_LIMITED',
+    'extensions: { cost }',
+  ], 'Storefront GraphQL cache and cost enforcement');
+});
+
+test('WS12 G3 Storefront GraphQL delegates reads through existing storefront REST handlers', () => {
+  assertIncludesAll(storefrontGraphQLSource, [
+    "restGet(c, delegate, `/storefront/${encodeURIComponent(handle)}`",
+    "`/storefront/${encodeURIComponent(handle)}/products`",
+    "`/storefront/${encodeURIComponent(handle)}/products/${encodeURIComponent(identifier)}`",
+    "`/storefront/${encodeURIComponent(handle)}/categories`",
+    "`/storefront/${encodeURIComponent(handle)}/pages`",
+    "`/storefront/${encodeURIComponent(handle)}/policies`",
+    "`/storefront/${encodeURIComponent(handle)}/navigation`",
+    "`/storefront/${encodeURIComponent(handle)}/blog`",
+    "'/storefront/reviews'",
+    "'/storefront/customer/by-email'",
+    "'/storefront/customer/orders'",
+    'data.cart = null',
+  ], 'Storefront GraphQL REST delegation');
 });
