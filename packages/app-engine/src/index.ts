@@ -313,6 +313,67 @@ export interface AppManifestRegistrationPlan {
   functionRecords: AppManifestFunctionRegistrationRecord[];
 }
 
+export const LETBUYY_APP_EXTENSION_REGISTRY_STATUSES = ['enabled', 'disabled', 'revoked'] as const;
+
+export type AppExtensionRegistryStatus = typeof LETBUYY_APP_EXTENSION_REGISTRY_STATUSES[number];
+
+export interface AppExtensionRegistryRecord {
+  site_id: string;
+  installation_id: string;
+  app_id: string;
+  extension_handle: string;
+  extension_type: AppManifestExtensionRegistrationRecord['type'];
+  surface: LetbuyyAppManifestExtensionSurface;
+  target: LetbuyyAppManifestExtension['target'];
+  renderer: LetbuyyAppManifestExtensionRenderer;
+  source_url: string | null;
+  source_entrypoint: string | null;
+  scopes: string[];
+  capabilities: string[];
+  settings: Record<string, unknown>;
+  manifest_schema_version: string;
+  app_version: string;
+  status: AppExtensionRegistryStatus;
+  enabled_at: string;
+  disabled_at: string | null;
+  revoked_at: string | null;
+  sort_order: number;
+  created_by: string;
+  updated_by: string;
+}
+
+export interface AppFunctionRegistryRecord {
+  site_id: string;
+  installation_id: string;
+  app_id: string;
+  function_handle: string;
+  name: string;
+  hooks: LetbuyyAppFunctionHook[];
+  runtime: 'wasm';
+  wasm_module_url: string;
+  wasm_sha256: string;
+  wasm_entrypoint: string;
+  timeout_ms: number;
+  memory_limit_kb: number;
+  input_schema: Record<string, unknown>;
+  output_schema: Record<string, unknown>;
+  config: Record<string, unknown>;
+  manifest_schema_version: string;
+  app_version: string;
+  status: AppExtensionRegistryStatus;
+  enabled_at: string;
+  disabled_at: string | null;
+  revoked_at: string | null;
+  created_by: string;
+  updated_by: string;
+}
+
+export interface AppExtensionRegistryInstallPlan {
+  manifest: LetbuyyAppManifest;
+  extensionRegistrations: AppExtensionRegistryRecord[];
+  functionRegistrations: AppFunctionRegistryRecord[];
+}
+
 export const DEFAULT_APP_BRIDGE_CAPABILITIES: AppBridgeCapability[] = ['api.fetch', 'toast', 'resize'];
 
 export function appStoreSlugify(value: string): string {
@@ -664,6 +725,91 @@ export function planAppManifestRegistration(
           output_schema: fn.output_schema,
           deterministic: fn.deterministic,
         },
+      })),
+    },
+  };
+}
+
+export function normalizeAppExtensionRegistryStatus(value: unknown): AppExtensionRegistryStatus | null {
+  switch (appStoreStringOrNull(value)) {
+    case 'enabled':
+      return 'enabled';
+    case 'disabled':
+      return 'disabled';
+    case 'revoked':
+      return 'revoked';
+    default:
+      return null;
+  }
+}
+
+export function planAppExtensionRegistryInstall(input: {
+  appId: string;
+  storeId: string;
+  installationId: string;
+  installedBy: string;
+  manifestInput: unknown;
+  registeredAt: string;
+}): AppEnginePlanResult<AppExtensionRegistryInstallPlan> {
+  const manifest = normalizeLetbuyyAppManifest(input.manifestInput);
+  if (!manifest.ok) return { ok: false, message: manifest.message };
+
+  return {
+    ok: true,
+    value: {
+      manifest: manifest.value,
+      extensionRegistrations: manifest.value.extensions.map((extension: LetbuyyAppManifestExtension, index: number) => ({
+        site_id: input.storeId,
+        installation_id: input.installationId,
+        app_id: input.appId,
+        extension_handle: extension.handle,
+        extension_type: appExtensionTypeForManifestExtension(extension),
+        surface: extension.surface,
+        target: extension.target,
+        renderer: extension.renderer,
+        source_url: extension.source.url || null,
+        source_entrypoint: extension.source.entrypoint || null,
+        scopes: extension.scopes,
+        capabilities: extension.capabilities,
+        settings: extension.settings,
+        manifest_schema_version: manifest.value.schema_version,
+        app_version: manifest.value.app.version,
+        status: 'enabled',
+        enabled_at: input.registeredAt,
+        disabled_at: null,
+        revoked_at: null,
+        sort_order: index,
+        created_by: input.installedBy,
+        updated_by: input.installedBy,
+      })),
+      functionRegistrations: manifest.value.functions.map((fn: LetbuyyAppManifestFunction) => ({
+        site_id: input.storeId,
+        installation_id: input.installationId,
+        app_id: input.appId,
+        function_handle: fn.handle,
+        name: fn.name,
+        hooks: fn.hooks,
+        runtime: 'wasm',
+        wasm_module_url: fn.wasm.module_url,
+        wasm_sha256: fn.wasm.sha256,
+        wasm_entrypoint: fn.wasm.entrypoint,
+        timeout_ms: fn.timeout_ms,
+        memory_limit_kb: fn.memory_limit_kb,
+        input_schema: fn.input_schema,
+        output_schema: fn.output_schema,
+        config: {
+          manifest_schema_version: manifest.value.schema_version,
+          manifest_app_slug: manifest.value.app.slug,
+          deterministic: fn.deterministic,
+        },
+        manifest_schema_version: manifest.value.schema_version,
+        app_version: manifest.value.app.version,
+        status: 'enabled',
+        enabled_at: input.registeredAt,
+        disabled_at: null,
+        revoked_at: null,
+        created_by: input.installedBy,
+        updated_by: input.installedBy,
       })),
     },
   };

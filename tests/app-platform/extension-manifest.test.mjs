@@ -5,7 +5,11 @@ import vm from 'node:vm';
 import ts from 'typescript';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
+const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
+const APP_EXTENSION_REGISTRY_MIGRATION = 'database/supabase/migrations/076_app_extension_registry.sql';
 const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
+const appStoreRouteSource = readFileSync(APP_STORE_ROUTE_SOURCE, 'utf8');
+const appExtensionRegistryMigration = readFileSync(APP_EXTENSION_REGISTRY_MIGRATION, 'utf8');
 
 function createZodStub() {
   const zChain = new Proxy(function zChain() {}, {
@@ -116,4 +120,75 @@ test('WS13 X0 manifest normalization fails closed for insecure UI and Function s
   assert.equal(normalized.ok, false);
   assert.match(normalized.message, /source\.url must be HTTPS/);
   assert.match(normalized.message, /wasm\.module_url must be HTTPS/);
+});
+
+test('WS13 X1 plans per-store extension and function registry records from a manifest', () => {
+  for (const marker of [
+    'LETBUYY_APP_EXTENSION_REGISTRY_STATUSES',
+    'AppExtensionRegistryRecord',
+    'AppFunctionRegistryRecord',
+    'planAppExtensionRegistryInstall',
+  ]) {
+    assert.ok(appEngineSource.includes(marker), `app-engine registry contract is missing ${marker}`);
+  }
+
+  const plan = appEngine.planAppExtensionRegistryInstall({
+    appId: 'app_loyalty_001',
+    storeId: 'site_001',
+    installationId: 'install_001',
+    installedBy: 'user_001',
+    registeredAt: '2026-06-05T00:00:00.000Z',
+    manifestInput: appEngine.createExampleLetbuyyAppManifest(),
+  });
+
+  assert.equal(plan.ok, true);
+  assert.equal(plan.value.extensionRegistrations.length, 3);
+  assert.equal(plan.value.functionRegistrations.length, 1);
+  assert.deepEqual(
+    Array.from(plan.value.extensionRegistrations.map((registration) => registration.site_id)),
+    ['site_001', 'site_001', 'site_001'],
+  );
+  assert.deepEqual(
+    Array.from(plan.value.extensionRegistrations.map((registration) => registration.status)),
+    ['enabled', 'enabled', 'enabled'],
+  );
+  assert.equal(plan.value.extensionRegistrations[0].installation_id, 'install_001');
+  assert.equal(plan.value.extensionRegistrations[0].extension_type, 'dashboard_widget');
+  assert.equal(plan.value.extensionRegistrations[2].renderer, 'liquid_app_block');
+  assert.equal(plan.value.functionRegistrations[0].runtime, 'wasm');
+  assert.equal(plan.value.functionRegistrations[0].wasm_sha256.length, 64);
+  assert.equal(plan.value.functionRegistrations[0].timeout_ms, 5);
+});
+
+test('WS13 X1 wires install, enable-disable, and uninstall revocation to per-store registry tables', () => {
+  for (const marker of [
+    'CREATE TABLE public.app_extension_registrations',
+    'CREATE TABLE public.app_function_registrations',
+    'site_id uuid NOT NULL',
+    'created_by uuid',
+    'updated_by uuid',
+    'deleted_at timestamp with time zone',
+    'EXECUTE FUNCTION public.update_updated_at()',
+    'ALTER TABLE public.app_extension_registrations ENABLE ROW LEVEL SECURITY',
+    'ALTER TABLE public.app_function_registrations ENABLE ROW LEVEL SECURITY',
+    'app_extension_registrations_service_all',
+    'app_function_registrations_service_all',
+  ]) {
+    assert.ok(appExtensionRegistryMigration.includes(marker), `registry migration is missing ${marker}`);
+  }
+
+  for (const marker of [
+    'planAppExtensionRegistryInstall',
+    'registerAppExtensionRegistry',
+    'revokeAppExtensionRegistry',
+    "router.get('/installations/:id/extensions'",
+    "router.patch('/installations/:id/extensions/:registrationId'",
+    "router.patch('/installations/:id/functions/:registrationId'",
+    ".from('app_extension_registrations')",
+    ".from('app_function_registrations')",
+    "status must be enabled or disabled",
+    "extension_registry: registry.value",
+  ]) {
+    assert.ok(appStoreRouteSource.includes(marker), `app-store route registry wiring is missing ${marker}`);
+  }
 });

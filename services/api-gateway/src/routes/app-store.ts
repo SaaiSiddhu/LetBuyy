@@ -27,13 +27,16 @@ import {
     appStoreStringOrNull as stringOrNull,
     isAppStoreUuid as isUuid,
     normalizeAppAdminEmbedSurface,
+    normalizeAppExtensionRegistryStatus,
     normalizeAppInstallScopes,
     normalizeAppOAuthRedirectUri,
     normalizeAppWebhookDefinitions,
     parseAppStoreJsonRecord as parseJsonRecord,
+    planAppExtensionRegistryInstall,
     planAppWebhookSubscriptions,
     planAppDeveloperRegistration,
     planMarketplaceAppSubmission,
+    type AppExtensionRegistryInstallPlan,
     type AppEngineJsonRecord,
     type AppWebhookDefinition,
     type AppWebhookSubscriptionInsert,
@@ -83,6 +86,16 @@ interface AppBillingChargeRecord {
     idempotency_key: string;
     metadata?: AppEngineJsonRecord | null;
 }
+
+interface AppExtensionRegistryMutationResult {
+    manifest: AppExtensionRegistryInstallPlan['manifest'] | null;
+    extensionRegistrations: AppEngineJsonRecord[];
+    functionRegistrations: AppEngineJsonRecord[];
+}
+
+type AppExtensionRegistryPersistenceResult =
+    | { ok: true; value: AppExtensionRegistryMutationResult }
+    | { ok: false; status: 400 | 500; code: string; message: string };
 
 function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
@@ -450,6 +463,184 @@ async function dispatchAppLifecycleSubscriptions(env: Env, input: {
     })));
 }
 
+function appManifestInputFromInstallBody(body: AppEngineJsonRecord): unknown | null {
+    const config = parseJsonRecord(body.config);
+    return body.manifest
+        || body.app_manifest
+        || body.appManifest
+        || config.manifest
+        || config.app_manifest
+        || config.appManifest
+        || null;
+}
+
+function appExtensionRegistryConfig(input: AppExtensionRegistryMutationResult, registeredAt: string): AppEngineJsonRecord | null {
+    if (!input.manifest) return null;
+
+    return {
+        manifest_schema_version: input.manifest.schema_version,
+        manifest_app_slug: input.manifest.app.slug,
+        manifest_app_version: input.manifest.app.version,
+        extension_count: input.extensionRegistrations.length,
+        function_count: input.functionRegistrations.length,
+        registered_at: registeredAt,
+    };
+}
+
+async function registerAppExtensionRegistry(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: {
+        body: AppEngineJsonRecord;
+        appId: string;
+        storeId: string;
+        installationId: string;
+        installedBy: string;
+        registeredAt: string;
+    },
+): Promise<AppExtensionRegistryPersistenceResult> {
+    const manifestInput = appManifestInputFromInstallBody(input.body);
+    if (!manifestInput) {
+        return {
+            ok: true,
+            value: {
+                manifest: null,
+                extensionRegistrations: [],
+                functionRegistrations: [],
+            },
+        };
+    }
+
+    const plan = planAppExtensionRegistryInstall({
+        appId: input.appId,
+        storeId: input.storeId,
+        installationId: input.installationId,
+        installedBy: input.installedBy,
+        manifestInput,
+        registeredAt: input.registeredAt,
+    });
+
+    if (!plan.ok) {
+        return { ok: false, status: 400, code: 'VALIDATION', message: plan.message };
+    }
+
+    const revokePatch = {
+        status: 'revoked',
+        revoked_at: input.registeredAt,
+        deleted_at: input.registeredAt,
+        updated_by: input.installedBy,
+    };
+    const { error: revokeExtensionsError } = await db
+        .from('app_extension_registrations')
+        .update(revokePatch)
+        .eq('installation_id', input.installationId)
+        .neq('status', 'revoked');
+
+    if (revokeExtensionsError) {
+        return { ok: false, status: 500, code: 'DB_ERROR', message: revokeExtensionsError.message };
+    }
+
+    const { error: revokeFunctionsError } = await db
+        .from('app_function_registrations')
+        .update(revokePatch)
+        .eq('installation_id', input.installationId)
+        .neq('status', 'revoked');
+
+    if (revokeFunctionsError) {
+        return { ok: false, status: 500, code: 'DB_ERROR', message: revokeFunctionsError.message };
+    }
+
+    let extensionRegistrations: AppEngineJsonRecord[] = [];
+    if (plan.value.extensionRegistrations.length > 0) {
+        const { data, error } = await db
+            .from('app_extension_registrations')
+            .upsert(
+                plan.value.extensionRegistrations.map((registration) => ({
+                    ...registration,
+                    deleted_at: null,
+                })),
+                { onConflict: 'installation_id,extension_handle' }
+            )
+            .select();
+
+        if (error) {
+            return { ok: false, status: 500, code: 'DB_ERROR', message: error.message };
+        }
+
+        extensionRegistrations = Array.isArray(data) ? data as AppEngineJsonRecord[] : [];
+    }
+
+    let functionRegistrations: AppEngineJsonRecord[] = [];
+    if (plan.value.functionRegistrations.length > 0) {
+        const { data, error } = await db
+            .from('app_function_registrations')
+            .upsert(
+                plan.value.functionRegistrations.map((registration) => ({
+                    ...registration,
+                    deleted_at: null,
+                })),
+                { onConflict: 'installation_id,function_handle' }
+            )
+            .select();
+
+        if (error) {
+            return { ok: false, status: 500, code: 'DB_ERROR', message: error.message };
+        }
+
+        functionRegistrations = Array.isArray(data) ? data as AppEngineJsonRecord[] : [];
+    }
+
+    return {
+        ok: true,
+        value: {
+            manifest: plan.value.manifest,
+            extensionRegistrations,
+            functionRegistrations,
+        },
+    };
+}
+
+async function revokeAppExtensionRegistry(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    input: { installationId: string; actorId: string; revokedAt: string },
+): Promise<AppExtensionRegistryPersistenceResult> {
+    const patch = {
+        status: 'revoked',
+        disabled_at: input.revokedAt,
+        revoked_at: input.revokedAt,
+        deleted_at: input.revokedAt,
+        updated_by: input.actorId,
+    };
+
+    const { error: extensionError } = await db
+        .from('app_extension_registrations')
+        .update(patch)
+        .eq('installation_id', input.installationId)
+        .neq('status', 'revoked');
+
+    if (extensionError) {
+        return { ok: false, status: 500, code: 'DB_ERROR', message: extensionError.message };
+    }
+
+    const { error: functionError } = await db
+        .from('app_function_registrations')
+        .update(patch)
+        .eq('installation_id', input.installationId)
+        .neq('status', 'revoked');
+
+    if (functionError) {
+        return { ok: false, status: 500, code: 'DB_ERROR', message: functionError.message };
+    }
+
+    return {
+        ok: true,
+        value: {
+            manifest: null,
+            extensionRegistrations: [],
+            functionRegistrations: [],
+        },
+    };
+}
+
 // GET /app-store/categories — List active app categories
 router.get('/categories', async (c) => {
     const { data, error } = await getSupabaseAdmin(c)
@@ -670,6 +861,195 @@ router.get('/installations', authMiddleware, async (c) => {
     }
 
     return c.json(success(data || []));
+});
+
+// GET /app-store/installations/:id/extensions — List per-store extension/function registry state
+router.get('/installations/:id/extensions', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const installationId = c.req.param('id');
+    const storeId = c.req.query('store_id');
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const { data: installation, error: installationError } = await db
+        .from('app_installations')
+        .select('id, app_id, store_id, status')
+        .eq('id', installationId)
+        .neq('status', 'uninstalled')
+        .maybeSingle();
+
+    if (installationError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installationError.message } }, 500);
+    }
+
+    if (!installation) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App installation not found' } }, 404);
+    }
+
+    if (storeId && installation.store_id !== storeId) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Installation does not belong to this store' } }, 403);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data: extensions, error: extensionsError } = await db
+        .from('app_extension_registrations')
+        .select('*')
+        .eq('installation_id', installation.id)
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true });
+
+    if (extensionsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: extensionsError.message } }, 500);
+    }
+
+    const { data: functions, error: functionsError } = await db
+        .from('app_function_registrations')
+        .select('*')
+        .eq('installation_id', installation.id)
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+
+    if (functionsError) {
+        return c.json({ error: { code: 'DB_ERROR', message: functionsError.message } }, 500);
+    }
+
+    return c.json(success({
+        installation_id: installation.id,
+        app_id: installation.app_id,
+        store_id: installation.store_id,
+        extensions: extensions || [],
+        functions: functions || [],
+    }));
+});
+
+// PATCH /app-store/installations/:id/extensions/:registrationId — Enable or disable an extension registration
+router.patch('/installations/:id/extensions/:registrationId', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const installationId = c.req.param('id');
+    const registrationId = c.req.param('registrationId');
+    const body = await c.req.json().catch(() => ({})) as AppEngineJsonRecord;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const now = new Date().toISOString();
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const status = normalizeAppExtensionRegistryStatus(body.status);
+    if (!status || status === 'revoked') {
+        return c.json({ error: { code: 'VALIDATION', message: 'status must be enabled or disabled' } }, 400);
+    }
+
+    const { data: installation, error: installationError } = await db
+        .from('app_installations')
+        .select('id, store_id, status')
+        .eq('id', installationId)
+        .neq('status', 'uninstalled')
+        .maybeSingle();
+
+    if (installationError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installationError.message } }, 500);
+    }
+
+    if (!installation) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App installation not found' } }, 404);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data: registration, error } = await db
+        .from('app_extension_registrations')
+        .update(status === 'enabled'
+            ? { status, enabled_at: now, disabled_at: null, updated_by: customUser.id }
+            : { status, disabled_at: now, updated_by: customUser.id })
+        .eq('id', registrationId)
+        .eq('installation_id', installation.id)
+        .is('deleted_at', null)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (!registration) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Extension registration not found' } }, 404);
+    }
+
+    return c.json(success(registration));
+});
+
+// PATCH /app-store/installations/:id/functions/:registrationId — Enable or disable a function registration
+router.patch('/installations/:id/functions/:registrationId', authMiddleware, async (c) => {
+    const auth = c.get('auth');
+    const installationId = c.req.param('id');
+    const registrationId = c.req.param('registrationId');
+    const body = await c.req.json().catch(() => ({})) as AppEngineJsonRecord;
+    const db = getSupabaseAdmin(c);
+    const customUser = await resolveCustomUser(db, auth.user);
+    const now = new Date().toISOString();
+
+    if (!customUser) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
+    }
+
+    const status = normalizeAppExtensionRegistryStatus(body.status);
+    if (!status || status === 'revoked') {
+        return c.json({ error: { code: 'VALIDATION', message: 'status must be enabled or disabled' } }, 400);
+    }
+
+    const { data: installation, error: installationError } = await db
+        .from('app_installations')
+        .select('id, store_id, status')
+        .eq('id', installationId)
+        .neq('status', 'uninstalled')
+        .maybeSingle();
+
+    if (installationError) {
+        return c.json({ error: { code: 'DB_ERROR', message: installationError.message } }, 500);
+    }
+
+    if (!installation) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'App installation not found' } }, 404);
+    }
+
+    const ownsStore = await verifySiteOwnership(db, installation.store_id, customUser.id, auth.user.storeId);
+    if (!ownsStore) {
+        return c.json({ error: { code: 'FORBIDDEN', message: 'Not authorized' } }, 403);
+    }
+
+    const { data: registration, error } = await db
+        .from('app_function_registrations')
+        .update(status === 'enabled'
+            ? { status, enabled_at: now, disabled_at: null, updated_by: customUser.id }
+            : { status, disabled_at: now, updated_by: customUser.id })
+        .eq('id', registrationId)
+        .eq('installation_id', installation.id)
+        .is('deleted_at', null)
+        .select()
+        .maybeSingle();
+
+    if (error) {
+        return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
+    }
+
+    if (!registration) {
+        return c.json({ error: { code: 'NOT_FOUND', message: 'Function registration not found' } }, 404);
+    }
+
+    return c.json(success(registration));
 });
 
 // POST /app-store/installations/:id/embed-session — Mint an admin app bridge session
@@ -1229,6 +1609,20 @@ router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
         defaultSigningSecret,
     });
     const insertedSubscriptions = await insertAppWebhookSubscriptions(db, webhookSubscriptions);
+    const registry = await registerAppExtensionRegistry(db, {
+        body,
+        appId: app.id,
+        storeId,
+        installationId: installation.id,
+        installedBy: customUser.id,
+        registeredAt: now.toISOString(),
+    });
+
+    if (!registry.ok) {
+        return c.json({ error: { code: registry.code, message: registry.message } }, registry.status);
+    }
+
+    const registryConfig = appExtensionRegistryConfig(registry.value, now.toISOString());
     const finalConfig = {
         ...parseJsonRecord(body.config),
         oauth: {
@@ -1246,6 +1640,7 @@ router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
         webhooks: {
             subscription_ids: insertedSubscriptions.map((subscription) => subscription.id),
         },
+        ...(registryConfig ? { extension_registry: registryConfig } : {}),
     };
     const { data: finalInstallation, error: updateError } = await db
         .from('app_installations')
@@ -1296,6 +1691,7 @@ router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
             app_id: app.id,
             store_id: storeId,
         },
+        extension_registry: registry.value,
     }), 201);
 });
 
@@ -1563,6 +1959,20 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         defaultSigningSecret,
     });
     const insertedSubscriptions = await insertAppWebhookSubscriptions(db, webhookSubscriptions);
+    const registry = await registerAppExtensionRegistry(db, {
+        body,
+        appId: app.id,
+        storeId,
+        installationId: data.id,
+        installedBy: customUser.id,
+        registeredAt: now.toISOString(),
+    });
+
+    if (!registry.ok) {
+        return c.json({ error: { code: registry.code, message: registry.message } }, registry.status);
+    }
+
+    const registryConfig = appExtensionRegistryConfig(registry.value, now.toISOString());
     const finalConfig = {
         ...parseJsonRecord(body.config),
         oauth: {
@@ -1575,6 +1985,7 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         webhooks: {
             subscription_ids: insertedSubscriptions.map((subscription) => subscription.id),
         },
+        ...(registryConfig ? { extension_registry: registryConfig } : {}),
     };
     const { data: finalInstallation, error: updateError } = await db
         .from('app_installations')
@@ -1631,6 +2042,7 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         webhooks: {
             subscriptions: insertedSubscriptions,
         },
+        extension_registry: registry.value,
     }), 201);
 });
 
@@ -1708,6 +2120,16 @@ router.delete('/apps/:id/install', authMiddleware, async (c) => {
             })
             .eq('site_id', resolvedStoreId)
             .contains('metadata', { app_id: appId, installation_id: installation.id });
+
+        const registryRevocation = await revokeAppExtensionRegistry(db, {
+            installationId: installation.id,
+            actorId: customUser.id,
+            revokedAt: now.toISOString(),
+        });
+
+        if (!registryRevocation.ok) {
+            return c.json({ error: { code: registryRevocation.code, message: registryRevocation.message } }, registryRevocation.status);
+        }
 
         const appRecord = parseJsonRecord(installation.marketplace_apps);
         const lifecyclePayload = buildAppLifecycleEventPayload({
