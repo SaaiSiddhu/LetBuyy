@@ -454,6 +454,9 @@ importers:
       '@letbuyy/commerce-core':
         specifier: workspace:*
         version: link:../../packages/commerce-core
+      '@letbuyy/extension-host':
+        specifier: workspace:*
+        version: link:../../packages/extension-host
       '@letbuyy/runtime-composition':
         specifier: workspace:*
         version: link:../../packages/runtime-composition

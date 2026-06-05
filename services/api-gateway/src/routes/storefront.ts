@@ -1381,6 +1381,39 @@ router.get('/store/:storeId/coupons/validate', async (c) => {
 // Keep this before /:subdomain so "reviews" is not treated as a tenant handle.
 router.get('/reviews', validate('query', StorefrontProductReviewsQuery), listPublicProductReviews);
 
+// GET /storefront/:subdomain/checkout/extensions — Public enabled checkout UI extensions for a published store.
+router.get('/:subdomain/checkout/extensions', async (c) => {
+    const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
+    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+
+    const { data, error } = await getSupabaseAdmin(c)
+        .from('app_extension_registrations')
+        .select('id, site_id, app_id, installation_id, extension_handle, extension_type, surface, target, renderer, source_url, source_entrypoint, scopes, capabilities, settings, manifest_schema_version, app_version, status, enabled_at, disabled_at, revoked_at, sort_order, created_at, updated_at')
+        .eq('site_id', store.id)
+        .eq('surface', 'checkout.ui')
+        .eq('status', 'enabled')
+        .is('deleted_at', null)
+        .order('sort_order', { ascending: true });
+
+    if (isMissingTableError(error, 'app_extension_registrations')) {
+        return c.json(success({
+            store_id: store.id,
+            surface: 'checkout.ui',
+            extensions: [],
+        }));
+    }
+
+    if (error) {
+        return c.json(dbFailureBody(), 500);
+    }
+
+    return c.json(success({
+        store_id: store.id,
+        surface: 'checkout.ui',
+        extensions: data || [],
+    }));
+});
+
 // GET /storefront/:subdomain/theme-preview?token=...
 // Signed storefront preview for editor iframes. Uses the same public store payload
 // shape as live rendering, but swaps the current release config with the draft.

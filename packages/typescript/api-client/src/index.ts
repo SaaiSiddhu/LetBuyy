@@ -74,6 +74,7 @@ import type {
   Store,
   StorePaymentConfig,
   StoreStatus,
+  StorefrontCheckoutExtensionRegistryResponse,
   StoreSummary,
   StoreSubscriptionState,
   SubscriptionBillingPeriod,
@@ -1287,6 +1288,8 @@ export class LetbuyyApiClient {
       this.requestData<StorefrontStorePayload>(`/storefront/store/${encodePathSegment(storeId)}`, options),
     getStore: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStorePayload>(`/storefront/${encodePathSegment(subdomain)}`, options),
+    checkoutExtensions: (subdomain: string, options?: LetbuyyRequestOptions) =>
+      this.requestData<StorefrontCheckoutExtensionRegistryResponse>(`/storefront/${encodePathSegment(subdomain)}/checkout/extensions`, options),
     status: (subdomain: string, options?: LetbuyyRequestOptions) =>
       this.requestData<StorefrontStoreStatusPayload>(`/storefront/${encodePathSegment(subdomain)}/status`, options),
     themePreview: (subdomain: string, token: string, options?: LetbuyyRequestOptions) =>

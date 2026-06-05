@@ -16,6 +16,8 @@ import {
     storefrontApiErrorMessage,
 } from '@/lib/api/browser-client';
 import { StorefrontEmptyState } from '@/components/storefront/storefront-states';
+import { CheckoutExtensionHost } from '@/components/checkout-extensions/CheckoutExtensionHost';
+import type { AppExtensionRegistration } from '@letbuyy/shared-types';
 
 interface RazorpaySuccessResponse {
     razorpay_order_id: string;
@@ -71,6 +73,7 @@ interface CheckoutClientProps {
     storeName: string;
     codEnabled: boolean;
     onlinePaymentEnabled: boolean;
+    checkoutExtensions: AppExtensionRegistration[];
 }
 
 interface FormData {
@@ -148,7 +151,7 @@ function scrollToCheckoutTop() {
     });
 }
 
-export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled }: CheckoutClientProps) {
+export default function CheckoutClient({ storeId, sellerId, subdomain, storeName, codEnabled, onlinePaymentEnabled, checkoutExtensions }: CheckoutClientProps) {
     const { items, cartTotal, clearCart } = useCart();
     const basePath = `/store/${subdomain}`;
     const hasPaymentMethods = onlinePaymentEnabled || codEnabled;
@@ -213,6 +216,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     const discountAmount = appliedCoupon?.discount || 0;
     const effectiveDeliveryCharges = appliedCoupon?.freeShipping ? 0 : deliveryCharges;
     const totalAmount = Math.max(0, cartTotal + effectiveDeliveryCharges - discountAmount);
+    const itemCount = items.reduce((count, item) => count + item.quantity, 0);
     const getIdempotencyKey = (scope: string) => {
         if (!idempotencyKeysRef.current[scope]) {
             idempotencyKeysRef.current[scope] = `checkout-${scope}-${crypto.randomUUID()}`;
@@ -851,6 +855,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             </div>
                                         </div>
 
+                                        <CheckoutExtensionHost
+                                            extensions={checkoutExtensions}
+                                            target="checkout.contact.render-after"
+                                            storeId={storeId}
+                                            subdomain={subdomain}
+                                            cartTotal={totalAmount}
+                                            itemCount={itemCount}
+                                            className="mt-4 space-y-3"
+                                        />
+
                                         {/* Delivery Options */}
                                         <div className="mt-6 pt-4 border-t border-card">
                                             <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
@@ -886,6 +900,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                                 </button>
                                             </div>
                                         </div>
+
+                                        <CheckoutExtensionHost
+                                            extensions={checkoutExtensions}
+                                            target="checkout.shipping-options.render-after"
+                                            storeId={storeId}
+                                            subdomain={subdomain}
+                                            cartTotal={totalAmount}
+                                            itemCount={itemCount}
+                                            className="mt-4 space-y-3"
+                                        />
 
                                         <button
                                             onClick={proceedToPayment}
@@ -1049,6 +1073,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                             </div>
                                         </div>
 
+                                        <CheckoutExtensionHost
+                                            extensions={checkoutExtensions}
+                                            target="checkout.payment-options.render-after"
+                                            storeId={storeId}
+                                            subdomain={subdomain}
+                                            cartTotal={totalAmount}
+                                            itemCount={itemCount}
+                                            className="space-y-3"
+                                        />
+
                                         {/* Payment Button */}
                                         <button
                                             onClick={
@@ -1176,6 +1210,16 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                                         </div>
                                     )}
                                 </div>
+
+                                <CheckoutExtensionHost
+                                    extensions={checkoutExtensions}
+                                    target="checkout.order-summary.render-after"
+                                    storeId={storeId}
+                                    subdomain={subdomain}
+                                    cartTotal={totalAmount}
+                                    itemCount={itemCount}
+                                    className="mt-4 space-y-3"
+                                />
 
                                 {/* Trust Badges */}
                                 <div className="mt-4 pt-4 border-t border-card flex justify-center gap-4">

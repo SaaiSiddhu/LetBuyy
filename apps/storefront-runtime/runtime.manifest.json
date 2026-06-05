@@ -38,6 +38,7 @@
       "@letbuyy/checkout-core",
       "@letbuyy/cms-core",
       "@letbuyy/commerce-core",
+      "@letbuyy/extension-host",
       "@letbuyy/runtime-composition",
       "@letbuyy/shared-types",
       "@letbuyy/tenant-core",

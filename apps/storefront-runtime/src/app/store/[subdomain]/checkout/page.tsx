@@ -1,5 +1,6 @@
 import { StoreService } from '@/lib/store-service';
 import { buildStoreMetadata } from '@/lib/seo';
+import { createStorefrontApiClient, storefrontReadInit } from '@/lib/api/client';
 import { notFound } from 'next/navigation';
 import CheckoutClient from './checkout-client';
 import type { Metadata } from 'next';
@@ -26,6 +27,10 @@ export default async function CheckoutPage({ params }: { params: Promise<{ subdo
         return notFound();
     }
 
+    const checkoutExtensionRegistry = await createStorefrontApiClient(
+        storefrontReadInit(60, [`storefront:checkout-extensions:${store.id}`]),
+    ).storefront.checkoutExtensions(subdomain).catch(() => null);
+
     return (
         <CheckoutClient
             storeId={store.id}
@@ -34,6 +39,7 @@ export default async function CheckoutPage({ params }: { params: Promise<{ subdo
             storeName={store.name}
             codEnabled={store.codEnabled !== false}
             onlinePaymentEnabled={store.onlinePaymentEnabled !== false}
+            checkoutExtensions={checkoutExtensionRegistry?.extensions || []}
         />
     );
 }

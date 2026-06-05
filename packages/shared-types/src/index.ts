@@ -1537,6 +1537,12 @@ export const AppExtensionRegistryResponseSchema = z.object({
   functions: z.array(AppFunctionRegistrationSchema).default([]),
 }).strict();
 
+export const StorefrontCheckoutExtensionRegistryResponseSchema = z.object({
+  store_id: z.string().min(1),
+  surface: z.literal('checkout.ui'),
+  extensions: z.array(AppExtensionRegistrationSchema).default([]),
+}).strict();
+
 export const AppBillingChargeModeSchema = z.enum(['recurring', 'usage']);
 export const AppBillingChargeStatusSchema = z.enum([
   'pending_merchant_approval',
@@ -1877,6 +1883,7 @@ export type AppExtensionRegistrationStatus = z.infer<typeof AppExtensionRegistra
 export type AppExtensionRegistration = z.infer<typeof AppExtensionRegistrationSchema>;
 export type AppFunctionRegistration = z.infer<typeof AppFunctionRegistrationSchema>;
 export type AppExtensionRegistryResponse = z.infer<typeof AppExtensionRegistryResponseSchema>;
+export type StorefrontCheckoutExtensionRegistryResponse = z.infer<typeof StorefrontCheckoutExtensionRegistryResponseSchema>;
 export type AppBillingChargeMode = z.infer<typeof AppBillingChargeModeSchema>;
 export type AppBillingChargeStatus = z.infer<typeof AppBillingChargeStatusSchema>;
 export type AppBillingIndiaPayoutRail = z.infer<typeof AppBillingIndiaPayoutRailSchema>;

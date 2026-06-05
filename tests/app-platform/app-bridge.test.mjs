@@ -6,9 +6,13 @@ import ts from 'typescript';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
 const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
+const STOREFRONT_ROUTE_SOURCE = 'services/api-gateway/src/routes/storefront.ts';
 const EXTENSION_HOST_SOURCE = 'packages/extension-host/src/index.ts';
 const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
 const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx';
+const CHECKOUT_EXTENSION_HOST_SOURCE = 'apps/storefront-runtime/src/components/checkout-extensions/CheckoutExtensionHost.tsx';
+const CHECKOUT_CLIENT_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/checkout/checkout-client.tsx';
+const CHECKOUT_PAGE_SOURCE = 'apps/storefront-runtime/src/app/store/[subdomain]/checkout/page.tsx';
 const SHARED_TYPES_SOURCE = 'packages/shared-types/src/index.ts';
 
 function createZodStub() {
@@ -183,4 +187,88 @@ test('WS13 X2 admin UI extension host normalizes registered extensions and enfor
   assert.match(bridgeClient, /referrerPolicy=\{framePolicy\.referrerPolicy\}/);
   assert.match(embeddedAppPage, /appStore\.extensionRegistry/);
   assert.match(embeddedAppPage, /adminExtensions=\{registry\?\.extensions \|\| \[\]\}/);
+});
+
+test('WS13 X3 checkout UI extension host normalizes public registrations and mounts checkout targets', () => {
+  const extensionHostSource = readFileSync(EXTENSION_HOST_SOURCE, 'utf8');
+  const checkoutHostSource = readFileSync(CHECKOUT_EXTENSION_HOST_SOURCE, 'utf8');
+  const checkoutClientSource = readFileSync(CHECKOUT_CLIENT_SOURCE, 'utf8');
+  const checkoutPageSource = readFileSync(CHECKOUT_PAGE_SOURCE, 'utf8');
+  const storefrontRouteSource = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+  const apiClientSource = readFileSync('packages/typescript/api-client/src/index.ts', 'utf8');
+  const sharedTypes = readFileSync(SHARED_TYPES_SOURCE, 'utf8');
+
+  for (const marker of [
+    'CHECKOUT_UI_EXTENSION_TARGETS',
+    'CHECKOUT_EXTENSION_IFRAME_SANDBOX',
+    'listEnabledCheckoutUiExtensions',
+    'createCheckoutUiExtensionFramePolicy',
+    'createCheckoutUiExtensionBridgeContext',
+  ]) {
+    assert.ok(extensionHostSource.includes(marker), `extension-host package is missing ${marker}`);
+  }
+
+  const normalized = extensionHost.normalizeCheckoutUiExtensionRegistration({
+    id: 'reg_checkout_001',
+    site_id: 'site_001',
+    app_id: 'app_001',
+    installation_id: 'install_001',
+    extension_handle: 'delivery-note',
+    extension_type: 'checkout_extension',
+    surface: 'checkout.ui',
+    target: 'checkout.shipping-options.render-after',
+    renderer: 'iframe',
+    source_url: 'https://apps.example.com/checkout/delivery-note',
+    scopes: ['read_checkout'],
+    capabilities: ['api.fetch', 'toast', 'resize'],
+    settings: { title: 'Delivery note' },
+    manifest_schema_version: '2026-06-05.ws13',
+    status: 'enabled',
+    sort_order: 1,
+  });
+
+  assert.equal(normalized.title, 'Delivery note');
+  assert.equal(normalized.origin, 'https://apps.example.com');
+  assert.equal(normalized.target, 'checkout.shipping-options.render-after');
+  assert.deepEqual(Array.from(normalized.capabilities), ['toast', 'resize']);
+
+  const rejectedAdmin = extensionHost.normalizeCheckoutUiExtensionRegistration({
+    ...normalized,
+    id: 'reg_admin',
+    surface: 'admin.ui',
+  });
+  assert.equal(rejectedAdmin, null);
+
+  const rejectedUrl = extensionHost.normalizeCheckoutUiExtensionRegistration({
+    ...normalized,
+    id: 'reg_http',
+    source_url: 'http://apps.example.com/checkout/delivery-note',
+  });
+  assert.equal(rejectedUrl, null);
+
+  const policy = extensionHost.createCheckoutUiExtensionFramePolicy();
+  assert.equal(policy.sandbox, 'allow-forms allow-popups allow-scripts');
+  assert.equal(policy.referrerPolicy, 'no-referrer');
+
+  assert.match(sharedTypes, /StorefrontCheckoutExtensionRegistryResponseSchema/);
+  assert.match(apiClientSource, /checkoutExtensions: \(subdomain: string/);
+  assert.match(storefrontRouteSource, /\/:subdomain\/checkout\/extensions/);
+  assert.match(storefrontRouteSource, /\.from\('app_extension_registrations'\)/);
+  assert.match(storefrontRouteSource, /\.eq\('site_id', store\.id\)/);
+  assert.match(storefrontRouteSource, /\.eq\('surface', 'checkout\.ui'\)/);
+  assert.match(storefrontRouteSource, /\.eq\('status', 'enabled'\)/);
+
+  assert.match(checkoutHostSource, /@letbuyy\/extension-host/);
+  assert.match(checkoutHostSource, /sandbox=\{framePolicy\.sandbox\}/);
+  assert.match(checkoutHostSource, /letbuyy\.checkout\.extension\.context/);
+  assert.match(checkoutHostSource, /letbuyy\.checkout\.extension\.resize/);
+  assert.match(checkoutPageSource, /storefront\.checkoutExtensions\(subdomain\)/);
+  for (const target of [
+    'checkout.contact.render-after',
+    'checkout.shipping-options.render-after',
+    'checkout.payment-options.render-after',
+    'checkout.order-summary.render-after',
+  ]) {
+    assert.match(checkoutClientSource, new RegExp(`target="${target}"`));
+  }
 });
