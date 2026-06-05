@@ -2,10 +2,11 @@ import { NextRequest, NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
 import { createSession } from '@/lib/auth/session'
-import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
+import { setSessionCookie, addAccount, setPasswordSetIntentCookie } from '@/lib/auth/cookies'
 import { identityApiRequest } from '@/lib/api/client'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { getAdminDashboardUrl } from '@/lib/config/urls'
+import { createPasswordSetIntent } from '@/lib/auth/password-set-intent'
 
 /**
  * GET /api/auth/verify?token=xxx&type=email_verify|magic_link
@@ -46,6 +47,9 @@ export async function GET(request: NextRequest) {
 
             // Create a temporary session for password setting
             if (result.user_id) {
+                const intent = await createPasswordSetIntent(result.user_id, result.email)
+                await setPasswordSetIntentCookie(intent.id)
+
                 const fingerprint = generateDeviceFingerprint(request.headers, ip)
                 const userAgent = request.headers.get('user-agent') || ''
                 const { deviceId } = await getOrCreateDevice(result.user_id, fingerprint, userAgent)

@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 1 — P0 Security.
-- Current work item: P0-A.5 token-bound customer password reset.
+- Current work item: P0-B identity set-password OTP-intent binding.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -63,6 +63,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P0-B — Identity set-password OTP-intent binding
+
+- Added `database/supabase/migrations/078_password_set_intents.sql` for server-side one-time identity password-set intents.
+- Added internal gateway create/consume endpoints for `auth_password_set_intents`.
+- OTP verification and email-link verification now create a fresh intent and set its id in an HttpOnly `lb_password_set_intent` cookie.
+- Identity `/api/auth/set-password` now reads the intent cookie, consumes it server-side, derives `user_id`/`email` from the consumed record, and ignores request-body identity.
+- Added regression coverage for forged-body identity and one-time intent storage.
+
+Evidence:
+- `node --test tests/auth/identity-password-intent.test.mjs tests/auth/customer-session-gateway.test.mjs tests/auth/session-verifier.test.mjs` — PASS, 17/17 tests.
+- `npx tsx --test apps/identity-platform/src/__tests__/auth-flow.test.ts` — PASS, 4/4 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/identity-platform typecheck` — PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/identity-platform lint` — PASS with 12 pre-existing warnings, 0 errors.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -71,6 +88,10 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
 - `pnpm --filter @letbuyy/shared-types build` — PASS; generated `dist` removed before governance.
 - `pnpm --filter @letbuyy/api-client typecheck` — PASS.
+- `npx tsx --test apps/identity-platform/src/__tests__/auth-flow.test.ts` — PASS, 4/4 tests after OTP-intent binding coverage.
+- `node --test tests/auth/identity-password-intent.test.mjs tests/auth/customer-session-gateway.test.mjs tests/auth/session-verifier.test.mjs` — PASS, 17/17 tests.
+- `pnpm --filter @letbuyy/identity-platform typecheck` — PASS.
+- `pnpm --filter @letbuyy/identity-platform lint` — PASS, warnings only.
 - `pnpm --filter @letbuyy/storefront-runtime typecheck` — PASS.
 - `pnpm --filter @letbuyy/storefront-runtime lint` — PASS, warnings only.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated install artifacts were removed.
@@ -79,3 +100,4 @@ Evidence:
 
 - SKIP: Live `CUSTOMER_SESSION_SECRET` provisioning and deployed-cookie verification — Reason: production/staging secret-store access is not available in this local environment. Resume point: Phase 2 release safety, before Worker deploy and smoke tests.
 - SKIP: Apply migration `077_customer_reset_tokens.sql` and verify deployed reset-email delivery — Reason: live Supabase migration apply and Resend/provider credentials require human-controlled staging/prod access. Resume point: Phase 2 release safety migration gate and P0 customer-auth smoke suite.
+- SKIP: Apply migration `078_password_set_intents.sql` and run deployed OTP→intent→set-password smoke — Reason: live Supabase migration apply and staging identity secrets require human-controlled access. Resume point: Phase 2 release safety migration gate and P0 identity auth smoke suite.

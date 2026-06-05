@@ -3,6 +3,8 @@ import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/clie
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateOTPToken } from '@/lib/auth/tokens'
 import { validateCsrf } from '@/lib/auth/csrf'
+import { createPasswordSetIntent } from '@/lib/auth/password-set-intent'
+import { setPasswordSetIntentCookie } from '@/lib/auth/cookies'
 
 /**
  * POST /api/auth/verify-otp
@@ -71,6 +73,9 @@ export async function POST(request: NextRequest) {
             )
             return NextResponse.json({ error: message }, { status: verifyResponse.status || 500 })
         }
+
+        const intent = await createPasswordSetIntent(result.user_id, result.email)
+        await setPasswordSetIntentCookie(intent.id)
 
         return NextResponse.json({
             success: true,

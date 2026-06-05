@@ -3,14 +3,20 @@ import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
 import { createSession } from '@/lib/auth/session'
-import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
+import {
+    addAccount,
+    clearPasswordSetIntentCookie,
+    getPasswordSetIntentCookie,
+    setSessionCookie,
+} from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
 import { validateCsrf } from '@/lib/auth/csrf'
+import { consumePasswordSetIntent } from '@/lib/auth/password-set-intent'
 
 /**
  * POST /api/auth/set-password
  * Set password for a newly verified account (after OTP verification).
- * Accepts userId + email (from the OTP verification step) instead of requiring a session.
+ * Consumes the server-side OTP/email verification intent cookie.
  * Creates a session and returns redirect to onboarding.
  */
 export async function POST(request: NextRequest) {
@@ -31,13 +37,15 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Invalid request. Please refresh and try again.' }, { status: 403 })
         }
 
-        const { password, userId, email } = await request.json()
+        const { password } = await request.json()
 
         if (!password) {
             return NextResponse.json({ error: 'Password is required' }, { status: 400 })
         }
-        if (!userId || !email) {
-            return NextResponse.json({ error: 'Missing user information' }, { status: 400 })
+
+        const intentId = await getPasswordSetIntentCookie()
+        if (!intentId) {
+            return NextResponse.json({ error: 'Email verification session expired. Please verify your email again.' }, { status: 403 })
         }
 
         // Validate password strength
@@ -46,13 +54,21 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'Password does not meet requirements', rules: strength.rules }, { status: 400 })
         }
 
+        let intent: Awaited<ReturnType<typeof consumePasswordSetIntent>>
+        try {
+            intent = await consumePasswordSetIntent(intentId)
+        } catch {
+            await clearPasswordSetIntentCookie()
+            return NextResponse.json({ error: 'Email verification session expired. Please verify your email again.' }, { status: 403 })
+        }
+
         // Hash and store password
         const passwordHash = await hashPassword(password)
         const passwordResponse = await identityApiRequest('/auth/custom/users/set-password', {
             method: 'POST',
             body: JSON.stringify({
-                user_id: userId,
-                email: email.toLowerCase().trim(),
+                user_id: intent.user_id,
+                email: intent.email,
                 password_hash: passwordHash,
             }),
         })
@@ -67,6 +83,7 @@ export async function POST(request: NextRequest) {
         } | null
 
         if (!passwordResponse.ok || !passwordPayload?.data) {
+            await clearPasswordSetIntentCookie()
             return NextResponse.json(
                 { error: passwordPayload?.error?.message || 'Failed to set password' },
                 { status: passwordResponse.status }
@@ -77,8 +94,8 @@ export async function POST(request: NextRequest) {
         // Create device fingerprint + session
         const userAgent = request.headers.get('user-agent') || ''
         const fingerprint = generateDeviceFingerprint(request.headers, ip)
-        const device = await getOrCreateDevice(userId, fingerprint, userAgent)
-        const sessionToken = await createSession(userId, device.deviceId)
+        const device = await getOrCreateDevice(intent.user_id, fingerprint, userAgent)
+        const sessionToken = await createSession(intent.user_id, device.deviceId)
 
         // Set session cookie
         const response = NextResponse.json({
@@ -87,6 +104,7 @@ export async function POST(request: NextRequest) {
         })
 
         await setSessionCookie(sessionToken)
+        await clearPasswordSetIntentCookie()
 
         // Update accounts cookie
         await addAccount({

@@ -42,6 +42,7 @@ const AUTH_RATE_LIMITS = {
     verify: { limit: 10, windowMs: 15 * 60_000, prefix: 'rl:verify' },
     verify_otp: { limit: 5, windowMs: 15 * 60_000, prefix: 'rl:verify_otp' },
 } as const;
+const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60;
 
 async function requireAccountsInternal(c: Context<{ Bindings: import('../index').Env }>) {
     if (await verifyInternalAppRequest(c, 'accounts')) return null;
@@ -408,6 +409,98 @@ auth.post('/custom/users/verify-email', async (c) => {
     }
 
     return c.json({ data });
+});
+
+auth.post('/custom/password-set-intents/create', async (c) => {
+    const unauthorized = await requireAccountsInternal(c);
+    if (unauthorized) return unauthorized;
+
+    const body = await c.req.json();
+    const userId = String(body.user_id || '');
+    const email = normalizeAuthEmail(body.email);
+
+    if (!isAuthUuid(userId) || !email) {
+        return c.json({ error: { code: 'VALIDATION', message: 'valid user_id and email are required' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const { data: user, error: userError } = await db
+        .from('users_custom')
+        .select('id, email, email_verified')
+        .eq('id', userId)
+        .eq('email', email)
+        .maybeSingle();
+
+    if (userError) {
+        return c.json(dbErrorBody(), 500);
+    }
+
+    if (!user) {
+        return c.json(errorBody('NOT_FOUND', 'User not found'), 404);
+    }
+
+    if (!user.email_verified) {
+        return c.json(errorBody('FORBIDDEN', 'Email not verified'), 403);
+    }
+
+    const now = new Date().toISOString();
+    await db
+        .from('auth_password_set_intents')
+        .update({ used_at: now })
+        .eq('user_id', userId)
+        .eq('email', email)
+        .is('used_at', null)
+        .is('deleted_at', null);
+
+    const expiresAt = new Date(Date.now() + PASSWORD_SET_INTENT_TTL_SECONDS * 1000).toISOString();
+    const { data: intent, error: intentError } = await db
+        .from('auth_password_set_intents')
+        .insert({
+            user_id: userId,
+            email,
+            expires_at: expiresAt,
+        })
+        .select('id, user_id, email, expires_at')
+        .single();
+
+    if (intentError || !intent) {
+        return c.json(dbErrorBody(), 500);
+    }
+
+    return c.json({ data: intent }, 201);
+});
+
+auth.post('/custom/password-set-intents/consume', async (c) => {
+    const unauthorized = await requireAccountsInternal(c);
+    if (unauthorized) return unauthorized;
+
+    const body = await c.req.json();
+    const intentId = String(body.intent_id || '');
+
+    if (!isAuthUuid(intentId)) {
+        return c.json({ error: { code: 'VALIDATION', message: 'valid intent_id is required' } }, 400);
+    }
+
+    const now = new Date().toISOString();
+    const { data: intent, error } = await getSupabaseAdmin(c)
+        .from('auth_password_set_intents')
+        .update({ used_at: now })
+        .eq('id', intentId)
+        .is('used_at', null)
+        .is('deleted_at', null)
+        .gt('expires_at', now)
+        .select('id, user_id, email, expires_at, used_at')
+        .maybeSingle();
+
+    if (error) {
+        return c.json(dbErrorBody(), 500);
+    }
+
+    if (!intent) {
+        return c.json(errorBody('FORBIDDEN', 'Password set intent is invalid or expired'), 403);
+    }
+
+    return c.json({ data: intent });
 });
 
 auth.post('/custom/users/set-password', async (c) => {

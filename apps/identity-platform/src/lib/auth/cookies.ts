@@ -4,6 +4,8 @@ import { LETBUYY_MERCHANT_SESSION_COOKIE } from '@letbuyy/auth-core'
 
 const AUTH_SECRET = process.env.AUTH_SECRET || ''
 const secret = new TextEncoder().encode(AUTH_SECRET)
+const PASSWORD_SET_INTENT_COOKIE = 'lb_password_set_intent'
+const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60
 
 // Cookie names
 export const COOKIE_NAMES = {
@@ -11,6 +13,7 @@ export const COOKIE_NAMES = {
     csrf: 'lb_csrf',
     accounts: 'lb_accounts',
     device: 'lb_device',
+    passwordSetIntent: PASSWORD_SET_INTENT_COOKIE,
 } as const
 
 /**
@@ -71,6 +74,31 @@ export async function clearAccountsCookie(): Promise<void> {
     cookieStore.set(COOKIE_NAMES.accounts, '', {
         ...BASE_OPTIONS,
         sameSite: 'lax',
+        maxAge: 0,
+    })
+}
+
+// --- Password Set Intent Cookie ---
+
+export async function setPasswordSetIntentCookie(intentId: string): Promise<void> {
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAMES.passwordSetIntent, intentId, {
+        ...BASE_OPTIONS,
+        sameSite: 'strict',
+        maxAge: PASSWORD_SET_INTENT_TTL_SECONDS,
+    })
+}
+
+export async function getPasswordSetIntentCookie(): Promise<string | undefined> {
+    const cookieStore = await cookies()
+    return cookieStore.get(COOKIE_NAMES.passwordSetIntent)?.value
+}
+
+export async function clearPasswordSetIntentCookie(): Promise<void> {
+    const cookieStore = await cookies()
+    cookieStore.set(COOKIE_NAMES.passwordSetIntent, '', {
+        ...BASE_OPTIONS,
+        sameSite: 'strict',
         maxAge: 0,
     })
 }

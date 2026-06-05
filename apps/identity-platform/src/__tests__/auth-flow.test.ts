@@ -32,16 +32,24 @@ test('verify-otp rejects invalid codes and persists verified email state', () =>
     assert.match(source, /identityApiRequest\('\/auth\/custom\/users\/verify-email'/)
     assert.match(source, /user_id:\s*result\.user_id/)
     assert.match(source, /!verifyResponse\.ok\s*\|\|\s*!verifyPayload\?\.data/)
+    assert.match(source, /createPasswordSetIntent\(result\.user_id,\s*result\.email\)/)
+    assert.match(source, /setPasswordSetIntentCookie\(intent\.id\)/)
 })
 
 test('set-password creates the authenticated session cookie after OTP verification', () => {
     const source = routeSource('app/api/auth/set-password/route.ts')
 
+    assert.match(source, /getPasswordSetIntentCookie\(\)/)
+    assert.match(source, /consumePasswordSetIntent\(intentId\)/)
     assert.match(source, /identityApiRequest\('\/auth\/custom\/users\/set-password'/)
-    assert.match(source, /createSession\(userId,\s*device\.deviceId\)/)
+    assert.match(source, /user_id:\s*intent\.user_id/)
+    assert.match(source, /email:\s*intent\.email/)
+    assert.match(source, /createSession\(intent\.user_id,\s*device\.deviceId\)/)
     assert.match(source, /setSessionCookie\(sessionToken\)/)
+    assert.match(source, /clearPasswordSetIntentCookie\(\)/)
     assert.match(source, /addAccount\(/)
     assert.match(source, /redirectTo:\s*'\/onboarding'/)
+    assert.doesNotMatch(source, /const \{ password,\s*userId,\s*email \} = await request\.json\(\)/)
 })
 
 test('create-store uses the shared api client facade with a required session', () => {
