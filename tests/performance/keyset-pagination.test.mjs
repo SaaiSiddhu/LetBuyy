@@ -22,10 +22,13 @@ test('hot gateway list routes do not run exact counts by default', () => {
 test('orders list does not expand order_items relation by default', () => {
   const source = read('services/api-gateway/src/routes/orders.ts');
   const listBlock = source.slice(source.indexOf("// GET /orders"), source.indexOf("// GET /orders/:id"));
+  const detailBlock = source.slice(source.indexOf("// GET /orders/:id"));
 
   assert.ok(listBlock.length > 0, 'orders list route block should be present');
   assert.doesNotMatch(listBlock, /order_items\(\*\)/);
-  assert.match(source.slice(source.indexOf("// GET /orders/:id")), /order_items\(\*\)/);
+  assert.doesNotMatch(detailBlock, /order_items\(\*\)/);
+  assert.match(source, /hydrateOrderItems/);
+  assert.match(source, /\.from\('order_items'\)/);
 });
 
 test('shared pagination contracts expose cursor and count opt-in fields', () => {

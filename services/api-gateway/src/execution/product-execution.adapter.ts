@@ -31,10 +31,14 @@ interface ProductVariantRow {
     price?: number | string | null;
     compare_price?: number | string | null;
     sku?: string | null;
+    barcode?: string | null;
     inventory_qty?: number | string | null;
+    weight?: number | string | null;
+    weight_unit?: string | null;
     option1?: string | null;
     option2?: string | null;
     option3?: string | null;
+    image_url?: string | null;
     position?: number | string | null;
 }
 
@@ -148,8 +152,9 @@ export class ProductExecutionAdapter {
         await this.replaceProductOptions(data.id, createPlan.productOptions);
         await this.replaceProductVariants(data.id, input.price, createPlan.productVariants, userId);
         await this.setInventoryAvailable(data.id, null, createPlan.initialStock, userId, 'product.create');
+        const variants = await this.refreshProductVariantJsonbCache(data.id);
         await this.recordProductUsage(input.store_id, 1, `product.create:${data.id}`, userId, data.id);
-        return data;
+        return { ...data, variants };
     }
 
     /**
@@ -170,6 +175,7 @@ export class ProductExecutionAdapter {
         }
 
         let data: Record<string, unknown> | null = null;
+        let refreshedVariantCache: Record<string, unknown>[] | null = null;
         if (Object.keys(updatePlan.safeUpdates).length > 0) {
             const result = await this.db
                 .from('products')
@@ -191,6 +197,7 @@ export class ProductExecutionAdapter {
                 ? updatePlan.safeUpdates.price
                 : Number(data?.price ?? ownedProduct.price ?? 0);
             await this.replaceProductVariants(productId, basePrice, updates.variants as ProductVariantInput[], userId);
+            refreshedVariantCache = await this.refreshProductVariantJsonbCache(productId);
         }
 
         if (updatePlan.hasInventoryUpdate && typeof updates.stock === 'number') {
@@ -206,6 +213,10 @@ export class ProductExecutionAdapter {
 
             if (error) throw new Error(`Product refresh failed: ${error.message}`);
             data = refreshed as Record<string, unknown>;
+        }
+
+        if (refreshedVariantCache) {
+            data = { ...data, variants: refreshedVariantCache };
         }
 
         return data;
@@ -539,12 +550,41 @@ export class ProductExecutionAdapter {
     private async loadExistingProductVariants(productId: string): Promise<ProductVariantRow[]> {
         const { data, error } = await this.db
             .from('product_variants')
-            .select('id, title, price, compare_price, sku, inventory_qty, option1, option2, option3, position')
+            .select('id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
             .eq('product_id', productId)
             .order('position', { ascending: true });
 
         if (error) throw new Error(`Product variants lookup failed: ${error.message}`);
         return data as ProductVariantRow[] || [];
+    }
+
+    private async refreshProductVariantJsonbCache(productId: string): Promise<Record<string, unknown>[]> {
+        const variants = await this.loadExistingProductVariants(productId);
+        const cache = variants.map((variant) => ({
+            id: variant.id,
+            title: variant.title,
+            price: numericValue(variant.price),
+            compare_price: nullableNumericValue(variant.compare_price),
+            sku: normalizedText(variant.sku),
+            barcode: normalizedText(variant.barcode),
+            stock: numericValue(variant.inventory_qty),
+            inventory_qty: numericValue(variant.inventory_qty),
+            weight: nullableNumericValue(variant.weight),
+            weight_unit: normalizedText(variant.weight_unit) || 'kg',
+            option1: normalizedText(variant.option1),
+            option2: normalizedText(variant.option2),
+            option3: normalizedText(variant.option3),
+            image_url: normalizedText(variant.image_url),
+            position: numericValue(variant.position),
+        }));
+
+        const { error } = await this.db
+            .from('products')
+            .update({ variants: cache })
+            .eq('id', productId);
+
+        if (error) throw new Error(`Product variant cache refresh failed: ${error.message}`);
+        return cache;
     }
 
     private normalizeProductVariant(

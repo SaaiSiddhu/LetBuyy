@@ -509,7 +509,6 @@ export const PRODUCT_UPDATE_FIELDS = [
   'is_active',
   'is_featured',
   'tags',
-  'variants',
   'display_order',
 ] as const;
 
@@ -1037,7 +1036,7 @@ export function planProductCreate(input: CreateProductCommand): ProductCreatePla
       is_active: input.is_active ?? true,
       is_featured: input.is_featured ?? false,
       tags: input.tags || [],
-      variants: input.variants || [],
+      variants: [],
       display_order: input.display_order ?? 0,
     },
   };

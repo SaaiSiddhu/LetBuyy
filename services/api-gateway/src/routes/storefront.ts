@@ -658,6 +658,8 @@ const PRODUCT_SELECT_COMPAT: string =
     'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,is_active,is_featured,status,category,tags,variants,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_MINIMAL: string =
     'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
+const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
+const PRODUCT_SELECT_COMPAT_RELATIONAL: string = PRODUCT_SELECT_COMPAT.replace(',variants', '');
 
 type DatabaseErrorLike = {
     message?: string;
@@ -689,8 +691,50 @@ type SearchDocumentProductResult = {
     count: number;
 };
 
+type PublicProductVariantRow = {
+    id: string;
+    product_id: string;
+    title?: string | null;
+    price?: number | string | null;
+    compare_price?: number | string | null;
+    sku?: string | null;
+    barcode?: string | null;
+    inventory_qty?: number | string | null;
+    weight?: number | string | null;
+    weight_unit?: string | null;
+    option1?: string | null;
+    option2?: string | null;
+    option3?: string | null;
+    image_url?: string | null;
+    position?: number | string | null;
+};
+
+type StorefrontOrderItemRow = {
+    id: string;
+    order_id: string;
+    product_id?: string | null;
+    variant_id?: string | null;
+    title?: string | null;
+    name?: string | null;
+    sku?: string | null;
+    quantity?: number | string | null;
+    unit_price?: number | string | null;
+    price?: number | string | null;
+    total?: number | string | null;
+    variant_title?: string | null;
+    product_snapshot?: Record<string, unknown> | string | null;
+};
+
 function storefrontSearchIndexReadsEnabled(env: Pick<Env, 'STOREFRONT_SEARCH_PROJECTION'>): boolean {
     return (env.STOREFRONT_SEARCH_PROJECTION || 'on').trim().toLowerCase() !== 'off';
+}
+
+function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>): boolean {
+    return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
+function orderItemsRelationalReadsEnabled(env: Pick<Env, 'ORDER_ITEMS_RELATIONAL_READS'>): boolean {
+    return (env.ORDER_ITEMS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
 }
 
 function databaseErrorText(error: DatabaseErrorLike): string {
@@ -716,6 +760,115 @@ function normalizeSqlRecord<T extends object>(row: T): T {
 
 function normalizeSqlRecords<T extends object>(rows: T[]): T[] {
     return rows.map((row) => normalizeSqlRecord(row));
+}
+
+function storefrontNumber(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+}
+
+function publicProductVariantView(row: PublicProductVariantRow): Record<string, unknown> {
+    return {
+        id: row.id,
+        product_id: row.product_id,
+        title: row.title || '',
+        price: storefrontNumber(row.price) ?? 0,
+        compare_price: storefrontNumber(row.compare_price),
+        sku: storefrontString(row.sku),
+        barcode: storefrontString(row.barcode),
+        stock: storefrontNumber(row.inventory_qty) ?? 0,
+        inventory_qty: storefrontNumber(row.inventory_qty) ?? 0,
+        weight: storefrontNumber(row.weight),
+        weight_unit: storefrontString(row.weight_unit) || 'kg',
+        option1: storefrontString(row.option1),
+        option2: storefrontString(row.option2),
+        option3: storefrontString(row.option3),
+        image_url: storefrontString(row.image_url),
+        position: storefrontNumber(row.position) ?? 0,
+    };
+}
+
+async function hydratePublicProductVariants(c: AppContext, products: PublicProductRow[]): Promise<PublicProductRow[]> {
+    if (!productVariantRelationalReadsEnabled(c.env)) return products;
+
+    const productIds = products
+        .map((product) => storefrontString(product.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (productIds.length === 0) return products;
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('product_variants')
+        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+        .in('product_id', Array.from(new Set(productIds)))
+        .order('position', { ascending: true });
+
+    if (isMissingTableError(error, 'product_variants')) return products;
+    if (error) throw new Error(`Storefront product variant hydration failed: ${error.message}`);
+
+    const variantsByProduct = new Map<string, Record<string, unknown>[]>();
+    for (const row of (data || []) as PublicProductVariantRow[]) {
+        variantsByProduct.set(row.product_id, [
+            ...(variantsByProduct.get(row.product_id) || []),
+            publicProductVariantView(row),
+        ]);
+    }
+
+    return products.map((product) => {
+        const productId = storefrontString(product.id);
+        if (!productId) return product;
+        const variants = variantsByProduct.get(productId) || [];
+        return {
+            ...product,
+            variants,
+            product_variants: variants,
+        };
+    });
+}
+
+async function hydrateStorefrontOrderItems(c: AppContext, orders: SqlRecord[]): Promise<SqlRecord[]> {
+    if (!orderItemsRelationalReadsEnabled(c.env)) return orders;
+
+    const orderIds = orders
+        .map((order) => storefrontString(order.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (orderIds.length === 0) return orders;
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('order_items')
+        .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
+        .in('order_id', Array.from(new Set(orderIds)))
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+
+    if (isMissingTableError(error, 'order_items')) return orders;
+    if (error) throw new Error(`Storefront order item hydration failed: ${error.message}`);
+
+    const itemsByOrder = new Map<string, StorefrontOrderItemRow[]>();
+    for (const row of (data || []) as StorefrontOrderItemRow[]) {
+        itemsByOrder.set(row.order_id, [
+            ...(itemsByOrder.get(row.order_id) || []),
+            row,
+        ]);
+    }
+
+    return orders.map((order) => {
+        const orderId = storefrontString(order.id);
+        if (!orderId) return order;
+        const items = itemsByOrder.get(orderId) || [];
+        return {
+            ...order,
+            items,
+            order_items: items,
+        };
+    });
 }
 
 function productRowWithoutCount(row: ProductSqlRow): SqlRecord {
@@ -860,8 +1013,11 @@ async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, 
     const offsetParam = params.length;
 
     const countSelect = options.paginated ? ', count(*) over() as __total_count' : '';
+    const selectColumns = productVariantRelationalReadsEnabled(c.env)
+        ? PRODUCT_SELECT_FULL_RELATIONAL
+        : PRODUCT_SELECT_FULL;
     const rows = await sql.unsafe<ProductSqlRow[]>(
-        `select ${PRODUCT_SELECT_FULL}${countSelect}
+        `select ${selectColumns}${countSelect}
          from products
          where ${filters.join(' and ')}
          order by display_order asc
@@ -1194,12 +1350,18 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
     }
 
     const pooledResult = await queryPublicProductsFromPooledSql(c, storeId, options);
-    if (pooledResult) return pooledResult;
+    if (pooledResult) {
+        return {
+            ...pooledResult,
+            data: await hydratePublicProductVariants(c, pooledResult.data),
+        };
+    }
 
+    const relationalProductVariants = productVariantRelationalReadsEnabled(c.env);
     const attempts = [
-        { select: PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
-        { select: PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
-        { select: PRODUCT_SELECT_COMPAT, useDeletedAt: false, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_FULL_RELATIONAL : PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: false, useActive: true, orderBy: 'display_order' },
         { select: PRODUCT_SELECT_MINIMAL, useDeletedAt: false, useActive: false, orderBy: 'created_at' },
     ];
     let lastError: DatabaseErrorLike = null;
@@ -1225,7 +1387,7 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
         if (!result.error) {
             const data = publicProductRows(result.data);
             return {
-                data,
+                data: await hydratePublicProductVariants(c, data),
                 count: result.count || data.length,
                 error: null,
             };
@@ -1708,7 +1870,7 @@ async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?
 
     const { data: order } = await db
         .from('orders')
-        .select('id, store_id, total, currency, items, customer_email, payment_id, payment_method, payment_status, status, inventory_reserved_at')
+        .select('id, store_id, total, currency, customer_email, payment_id, payment_method, payment_status, status, inventory_reserved_at')
         .eq('id', orderId)
         .is('deleted_at', null)
         .single();
@@ -3298,7 +3460,7 @@ router.get('/:subdomain/products/:slug', async (c) => {
         }
         const { data } = await db
             .from('products')
-            .select('*, product_variants(*)')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_SELECT_FULL_RELATIONAL : '*')
             .eq('store_id', store.id)
             .or(`slug.eq.${identifier},id.eq.${identifier}`)
             .eq('is_active', true)
@@ -3309,12 +3471,13 @@ router.get('/:subdomain/products/:slug', async (c) => {
                 body: { success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } },
             };
         }
+        const [product] = await hydratePublicProductVariants(c, [data as unknown as PublicProductRow]);
         emitProductViewedEvent(c, {
             storeId: store.id,
-            product: data as StorefrontProductDetail,
+            product: product as StorefrontProductDetail,
         });
         return {
-            body: success(data),
+            body: success(product),
             tags: storefrontCacheTags(store.id, handle, 'storefront:products', `storefront:product:${identifier}`),
         };
     });
@@ -4255,14 +4418,15 @@ router.get('/customer/orders', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('orders')
-        .select('id, order_number, status, total, created_at, items')
+        .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, order_number, status, total, created_at' : 'id, order_number, status, total, created_at, items')
         .eq('store_id', storeId)
         .eq('customer_email', normalizeEmail(customer.email))
         .order('created_at', { ascending: false })
         .limit(50);
 
     if (error) return c.json(dbFailureBody(), 500);
-    return c.json(success({ orders: data || [] }));
+    const orders = await hydrateStorefrontOrderItems(c, (data || []) as unknown as SqlRecord[]);
+    return c.json(success({ orders }));
 });
 
 // GET /storefront/:subdomain/orders/contact — Public order tracking lookup by contact
@@ -4288,7 +4452,9 @@ router.get('/:subdomain/orders/contact', async (c) => {
     const db = getSupabaseAdmin(c);
     let query = db
         .from('orders')
-        .select('*')
+        .select(orderItemsRelationalReadsEnabled(c.env)
+            ? 'id, store_id, order_number, customer_email, customer_phone, status, payment_status, fulfillment_status, total, currency, created_at, updated_at'
+            : '*')
         .eq('store_id', store.id)
         .order('created_at', { ascending: false });
 
@@ -4307,10 +4473,11 @@ router.get('/:subdomain/orders/contact', async (c) => {
     ]);
 
     if (error) return c.json(dbFailureBody(), 500);
+    const hydratedOrders = await hydrateStorefrontOrderItems(c, (orders || []) as unknown as SqlRecord[]);
 
     return c.json(success({
-        orders: orders || [],
-        hasOrders: Boolean(orders?.length),
+        orders: hydratedOrders,
+        hasOrders: hydratedOrders.length > 0,
         hasPassword: Boolean(credential),
         store_id: store.id,
     }));

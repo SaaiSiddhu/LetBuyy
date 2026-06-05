@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 5 — P3 Scalability.
-- Current work item: P3-4 dual-model consolidation.
+- Current work item: P3-7 WS11-13 deployed staging proof and rollout gates.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -418,6 +418,27 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### Phase 5.5 — Dual JSONB/relational consolidation
+
+- Added reconciliation migrations `085_orders_items_reconcile.sql` and `086_products_variants_reconcile.sql` with dry-run reports, controlled backfill helpers, and JSONB cache refresh helpers.
+- Added governed `dual_model_reconciliation_reports` with service-role RLS, audit columns, soft-delete columns, and `update_updated_at()`.
+- Made `product_variants` authoritative for product variant writes: product create/update writes variants through `product_variants` and refreshes `products.variants` only as a derived compatibility cache.
+- Added default-on rollback flags `ORDER_ITEMS_RELATIONAL_READS` and `PRODUCT_VARIANTS_RELATIONAL_READS` in api-gateway Worker vars.
+- Hydrated merchant order list/detail responses from `order_items` in one batched query when relational reads are enabled.
+- Hydrated merchant and public product responses from `product_variants` in one batched query when relational reads are enabled.
+- Removed unused `orders.items` from internal payable-order reads and switched storefront customer order history/contact lookup to relational item hydration in default mode.
+- Kept `orders.items` and `products.variants` columns for rollback/compatibility; no column removal or destructive migration was added.
+
+Evidence:
+- `node --test tests/performance/dual-model-consolidation.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/variant-checkout-deferral.test.mjs` — PASS, 12/12 tests.
+- `pnpm --filter @letbuyy/shared-types build` — PASS as setup for referenced declarations; generated artifacts removed before governance.
+- `pnpm --filter @letbuyy/commerce-core typecheck` — PASS after workspace links were restored.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after relational-read route changes.
+- `node --test tests/performance/dual-model-consolidation.test.mjs tests/performance/partition-retention.test.mjs tests/performance/projection-reads.test.mjs tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 40/40 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -540,6 +561,14 @@ Evidence:
 - `node scripts/validators/migration-safety-validator.mjs` — PASS after partition shadow migrations `079` through `083`.
 - `git diff --check` — PASS after partition shadow migrations.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after partition shadow migrations.
+- `node --test tests/performance/dual-model-consolidation.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/variant-checkout-deferral.test.mjs` — PASS, 12/12 tests.
+- `pnpm --filter @letbuyy/shared-types build` — PASS before dual-model typechecks; generated artifacts removed before governance.
+- `pnpm --filter @letbuyy/commerce-core typecheck` — PASS after dual-model write-plan changes.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after relational-read route changes.
+- `node --test tests/performance/dual-model-consolidation.test.mjs tests/performance/partition-retention.test.mjs tests/performance/projection-reads.test.mjs tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 40/40 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after dual-model reconciliation migrations `085` and `086`.
+- `git diff --check` — PASS after dual-model consolidation.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after dual-model consolidation.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -557,3 +586,4 @@ Evidence:
 - SKIP: Apply `089_quarantine_platform_queue_job.sql` to staging and run live poison-message plus DB-outage queue storm proof — Reason: live Supabase staging credentials, Cloudflare queue producer access, and controlled DB outage/failure injection are human-controlled. Resume point: P3-5 queue storm controls proof; expected result is deterministic poison jobs marked `dead`, generic trigger queues not draining unrelated DB queues, and sustained DB drain failure opening the circuit without multiplying Cloudflare retries.
 - SKIP: Backfill/prove analytics rollups and `search_documents` relevance on deployed staging — Reason: representative staging order history/search corpus, live queue drain execution, and query-plan/latency telemetry require human-controlled staging data and credentials. Resume point: P3-3 projection proof; expected result is analytics route parity with direct fixed-dataset queries and storefront search serving from `search_documents` with indexed search latency.
 - SKIP: Apply partition migrations `079` through `083` to a production-scale staging clone, backfill shadows, configure live scheduler, run the approved rename-swap, retain `*_legacy` for one retention cycle, and physically clean detached partitions — Reason: live/staging Supabase credentials, representative production-scale data, PITR/backup checkpoint, queue drain window, and irreversible maintenance-window cutover are human-controlled. Resume point: P3-1 partitioning proof; expected result is row-count parity from `verify_hot_table_partition_shadow`, claim-query and `(…, created_at)` `EXPLAIN` evidence, retention detach only outside policy windows, and no query regressions after cutover.
+- SKIP: Apply `085_orders_items_reconcile.sql` and `086_products_variants_reconcile.sql` to staging/prod, run dry-run reports against representative data, then run non-dry-run convergence if approved — Reason: live Supabase credentials, data-owner approval, representative historical orders/products, and rollback checkpoint are human-controlled. Resume point: P3-4 dual-model proof; expected result is reconciliation reports clean or explicitly accepted, `orders.items` and `products.variants` refreshed only from relational rows, and readers staying green with rollback flags on/off.

@@ -1,5 +1,5 @@
 -- P2-7 variant update performance.
--- 079-083 are Phase 5 partition migrations; 085-086 remain reserved for reconciliation migrations; 087 remains reserved for Phase 6 theme template drafts.
+-- 079-083 are Phase 5 partition migrations; 085-086 are Phase 5 reconciliation migrations; 087 remains reserved for Phase 6 theme template drafts.
 
 CREATE OR REPLACE FUNCTION public.set_inventory_levels_available_batch(
     p_levels jsonb,

@@ -70,6 +70,28 @@ const PRODUCT_LIST_COLUMNS = [
     'hsn_code',
     'version',
 ].join(',');
+const PRODUCT_LIST_COLUMNS_RELATIONAL = PRODUCT_LIST_COLUMNS
+    .split(',')
+    .filter((column) => column !== 'variants')
+    .join(',');
+
+type ProductVariantRelationRow = {
+    id: string;
+    product_id: string;
+    title?: string | null;
+    price?: number | string | null;
+    compare_price?: number | string | null;
+    sku?: string | null;
+    barcode?: string | null;
+    inventory_qty?: number | string | null;
+    weight?: number | string | null;
+    weight_unit?: string | null;
+    option1?: string | null;
+    option2?: string | null;
+    option3?: string | null;
+    image_url?: string | null;
+    position?: number | string | null;
+};
 
 type DatabaseErrorLike = {
     message?: string;
@@ -113,14 +135,86 @@ function isMissingTableError(error: DatabaseErrorLike, tableName: string): boole
     );
 }
 
+function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>): boolean {
+    return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
 function stringOrNull(value: unknown): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function numberOrNull(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
 }
 
 function objectRecord(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)
         ? value as Record<string, unknown>
         : {};
+}
+
+function productVariantView(row: ProductVariantRelationRow): Record<string, unknown> {
+    return {
+        id: row.id,
+        product_id: row.product_id,
+        title: row.title || '',
+        price: numberOrNull(row.price) ?? 0,
+        compare_price: numberOrNull(row.compare_price),
+        sku: stringOrNull(row.sku),
+        barcode: stringOrNull(row.barcode),
+        stock: numberOrNull(row.inventory_qty) ?? 0,
+        inventory_qty: numberOrNull(row.inventory_qty) ?? 0,
+        weight: numberOrNull(row.weight),
+        weight_unit: stringOrNull(row.weight_unit) || 'kg',
+        option1: stringOrNull(row.option1),
+        option2: stringOrNull(row.option2),
+        option3: stringOrNull(row.option3),
+        image_url: stringOrNull(row.image_url),
+        position: numberOrNull(row.position) ?? 0,
+    };
+}
+
+async function hydrateProductVariants(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    products: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+    const productIds = products
+        .map((product) => stringOrNull(product.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (productIds.length === 0) return products;
+
+    const { data, error } = await db
+        .from('product_variants')
+        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+        .in('product_id', Array.from(new Set(productIds)))
+        .order('position', { ascending: true });
+
+    if (isMissingTableError(error, 'product_variants')) return products;
+    if (error) throw new Error(`Product variant hydration failed: ${error.message}`);
+
+    const variantsByProduct = new Map<string, Record<string, unknown>[]>();
+    for (const row of (data || []) as ProductVariantRelationRow[]) {
+        variantsByProduct.set(row.product_id, [
+            ...(variantsByProduct.get(row.product_id) || []),
+            productVariantView(row),
+        ]);
+    }
+
+    return products.map((product) => {
+        const productId = stringOrNull(product.id);
+        if (!productId) return product;
+        return {
+            ...product,
+            variants: variantsByProduct.get(productId) || [],
+            product_variants: variantsByProduct.get(productId) || [],
+        };
+    });
 }
 
 function productStatus(record: Record<string, unknown>, deleted = false): 'draft' | 'active' | 'archived' | 'deleted' | undefined {
@@ -195,7 +289,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('products')
-            .select(PRODUCT_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -227,13 +321,16 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    const rows = data || [];
-    const pageRows = rows.slice(0, query.limit);
+    const rows = (data || []) as unknown as Array<Record<string, unknown>>;
+    const pageRows = rows.slice(0, query.limit) as Array<Record<string, unknown>>;
     const nextCursor = rows.length > query.limit
         ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
         : null;
+    const responseRows = productVariantRelationalReadsEnabled(c.env)
+        ? await hydrateProductVariants(db, pageRows)
+        : pageRows;
 
-    return c.json(cursorPaginated(pageRows, {
+    return c.json(cursorPaginated(responseRows, {
         page: query.page,
         limit: query.limit,
         total: query.withCount ? count || 0 : undefined,
@@ -433,7 +530,7 @@ router.get('/:id', async (c) => {
     const buildProductQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('products')
-            .select('*')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
             .eq('id', productId);
 
         return includeDeletedAtFilter ? query.is('deleted_at', null).single() : query.single();
@@ -445,11 +542,17 @@ router.get('/:id', async (c) => {
         ({ data, error } = await buildProductQuery(false));
     }
 
-    if (error || !data || !(await verifyStoreOwnership(db, data.store_id, customUser.id, auth.user.storeId))) {
+    const product = data as unknown as Record<string, unknown> | null;
+
+    if (error || !product || !(await verifyStoreOwnership(db, String(product.store_id), customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
-    return c.json(success(data));
+    const rows = productVariantRelationalReadsEnabled(c.env)
+        ? await hydrateProductVariants(db, [product])
+        : [product];
+
+    return c.json(success(rows[0]));
 });
 
 // POST /products — Create a product

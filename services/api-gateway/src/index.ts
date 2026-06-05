@@ -106,6 +106,8 @@ export interface Env {
     ANALYTICS_PROJECTION_READS?: string;
     PRODUCT_VARIANT_DIFF?: string;
     CHECKOUT_POSTCOMMIT_DEFERRAL?: string;
+    ORDER_ITEMS_RELATIONAL_READS?: string;
+    PRODUCT_VARIANTS_RELATIONAL_READS?: string;
     REQUEST_LOG_SAMPLE_RATE?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;

@@ -79,6 +79,10 @@ const ORDER_LIST_COLUMNS = [
     'gst_invoice_number',
     'gst_invoice',
 ].join(',');
+const ORDER_LIST_COLUMNS_RELATIONAL = ORDER_LIST_COLUMNS
+    .split(',')
+    .filter((column) => column !== 'items')
+    .join(',');
 
 type DatabaseErrorLike = {
     message?: string;
@@ -92,6 +96,23 @@ type FulfillmentOrderSnapshot = {
     customer_phone?: string | null;
     customer_email?: string | null;
     shipping_address?: unknown;
+};
+
+type OrderItemRelationRow = {
+    id: string;
+    order_id: string;
+    product_id?: string | null;
+    variant_id?: string | null;
+    title?: string | null;
+    name?: string | null;
+    sku?: string | null;
+    quantity?: number | string | null;
+    unit_price?: number | string | null;
+    price?: number | string | null;
+    total?: number | string | null;
+    image_url?: string | null;
+    variant_title?: string | null;
+    product_snapshot?: Record<string, unknown> | string | null;
 };
 
 function databaseErrorText(error: DatabaseErrorLike): string {
@@ -117,10 +138,53 @@ function isMissingOrderItemsRelation(error: DatabaseErrorLike): boolean {
     );
 }
 
+function orderItemsRelationalReadsEnabled(env: Pick<Env, 'ORDER_ITEMS_RELATIONAL_READS'>): boolean {
+    return (env.ORDER_ITEMS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
 function recordValue(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)
         ? value as Record<string, unknown>
         : {};
+}
+
+async function hydrateOrderItems(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    orders: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+    const orderIds = orders
+        .map((order) => textValue(order.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (orderIds.length === 0) return orders;
+
+    const { data, error } = await db
+        .from('order_items')
+        .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
+        .in('order_id', Array.from(new Set(orderIds)))
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+
+    if (isMissingOrderItemsRelation(error)) return orders;
+    if (error) throw new Error(`Order item hydration failed: ${error.message}`);
+
+    const itemsByOrder = new Map<string, OrderItemRelationRow[]>();
+    for (const row of (data || []) as OrderItemRelationRow[]) {
+        itemsByOrder.set(row.order_id, [
+            ...(itemsByOrder.get(row.order_id) || []),
+            row,
+        ]);
+    }
+
+    return orders.map((order) => {
+        const orderId = textValue(order.id);
+        if (!orderId) return order;
+        const orderItems = itemsByOrder.get(orderId) || [];
+        return {
+            ...order,
+            order_items: orderItems,
+        };
+    });
 }
 
 function textValue(value: unknown): string | null {
@@ -300,7 +364,7 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
     const buildOrdersQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
-            .select(ORDER_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
+            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : ORDER_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds)
             .order(query.sort, { ascending: query.order === 'asc' })
             .order('id', { ascending: query.order === 'asc' });
@@ -334,12 +398,15 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
         return c.json(dbErrorBody(), 500);
     }
 
-    const rawRows = (data || []) as unknown as OrderSourceRow[];
+    const rawRows = (data || []) as unknown as Array<Record<string, unknown>>;
     const pageRows = rawRows.slice(0, query.limit);
     const nextCursor = rawRows.length > query.limit
         ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
         : null;
-    const rows = pageRows.map(normalizeOrderRecord);
+    const hydratedRows = orderItemsRelationalReadsEnabled(c.env)
+        ? await hydrateOrderItems(db, pageRows)
+        : pageRows;
+    const rows = (hydratedRows as unknown as OrderSourceRow[]).map(normalizeOrderRecord);
 
     return c.json(cursorPaginated(rows, {
         page: query.page,
@@ -360,27 +427,20 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const buildOrderQuery = (includeOrderItems: boolean, includeDeletedAtFilter: boolean) => {
+    const buildOrderQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
-            .select(includeOrderItems ? '*,order_items(*)' : '*')
+            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : '*')
             .eq('id', orderId);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
         return dbQuery.single();
     };
 
-    let { data, error } = await buildOrderQuery(true, true);
+    let { data, error } = await buildOrderQuery(true);
 
     if (isMissingColumnError(error, 'deleted_at')) {
-        ({ data, error } = await buildOrderQuery(true, false));
-    }
-
-    if (isMissingOrderItemsRelation(error)) {
-        ({ data, error } = await buildOrderQuery(false, true));
-        if (isMissingColumnError(error, 'deleted_at')) {
-            ({ data, error } = await buildOrderQuery(false, false));
-        }
+        ({ data, error } = await buildOrderQuery(false));
     }
 
     const order = data as unknown as OrderSourceRow | null;
@@ -389,7 +449,11 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Order not found' } }, 404);
     }
 
-    return c.json(success(normalizeOrderRecord(order)));
+    const rows = orderItemsRelationalReadsEnabled(c.env)
+        ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
+        : [order as unknown as Record<string, unknown>];
+
+    return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)));
 });
 
 // PATCH /orders/:id — Update order status (with state machine)
