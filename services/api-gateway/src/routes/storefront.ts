@@ -28,6 +28,7 @@ import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter'
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { evaluateCheckoutAppFunctions } from '../extensions/app-functions-runtime';
 import { createPublicStorefrontTenantContext } from '../lib/tenant-context';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
@@ -1714,32 +1715,74 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
     }
 
     try {
+        const shippingAddress = {
+            name: body.customer.name,
+            line1: body.customer.address.address,
+            city: body.customer.address.city,
+            state: body.customer.address.state,
+            state_code: body.customer.address.stateCode,
+            zip: body.customer.address.pincode,
+            country: 'IN',
+            phone: body.customer.phone,
+            gstin: body.customer.gstin,
+        };
+        const functionEvaluation = await evaluateCheckoutAppFunctions(c, {
+            siteId: store.id,
+            requestId: tenant.requestId,
+            couponCode: body.couponCode,
+            cart: {
+                lines: body.items.map((item) => ({
+                    product_id: item.productId,
+                    variant_id: item.variantId || null,
+                    quantity: item.quantity,
+                })),
+                coupon_code: body.couponCode || null,
+                gift_card_code: body.giftCardCode || null,
+            },
+            checkout: {
+                payment_method: body.paymentMethod,
+                shipping_method: body.deliveryOption,
+                customer: {
+                    name: body.customer.name,
+                    email: body.customer.email,
+                    phone: body.customer.phone,
+                    gstin: body.customer.gstin,
+                },
+                shipping_address: shippingAddress,
+            },
+        });
+
+        if (functionEvaluation.decision.validationErrors.length > 0) {
+            await idempotency.fail(claim.id);
+            return c.json(
+                {
+                    success: false,
+                    error: {
+                        code: 'CHECKOUT_FUNCTION_VALIDATION',
+                        message: functionEvaluation.decision.validationErrors[0]?.message || 'Checkout validation failed',
+                        details: functionEvaluation.decision.validationErrors,
+                    },
+                },
+                400
+            );
+        }
+
         const order = await service.createOrder(
             {
                 customer_name: body.customer.name,
                 customer_email: body.customer.email,
                 customer_phone: body.customer.phone,
-                shipping_address: {
-                    name: body.customer.name,
-                    line1: body.customer.address.address,
-                    city: body.customer.address.city,
-                    state: body.customer.address.state,
-                    state_code: body.customer.address.stateCode,
-                    zip: body.customer.address.pincode,
-                    country: 'IN',
-                    phone: body.customer.phone,
-                    gstin: body.customer.gstin,
-                },
+                shipping_address: shippingAddress,
                 customer_gstin: body.customer.gstin,
                 items: body.items.map((item) => ({
                     product_id: item.productId,
                     variant_id: item.variantId || null,
                     quantity: item.quantity,
                 })),
-                payment_method: body.paymentMethod,
-                shipping_method: body.deliveryOption,
+                payment_method: functionEvaluation.decision.paymentMethod,
+                shipping_method: functionEvaluation.decision.shippingMethod,
                 notes: body.notes,
-                coupon_code: body.couponCode,
+                coupon_code: functionEvaluation.decision.couponCode,
                 gift_card_code: body.giftCardCode,
                 idempotency_key: body.idempotencyKey,
             },
@@ -1765,6 +1808,16 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
                 placeOfSupplyState: order.place_of_supply_state || null,
                 place_of_supply_state: order.place_of_supply_state || null,
             },
+            extensionFunctions: functionEvaluation.executions.map((execution) => ({
+                registrationId: execution.registrationId,
+                appId: execution.appId,
+                hook: execution.hook,
+                handle: execution.handle,
+                status: execution.status,
+                durationMs: execution.durationMs,
+                operations: execution.operations,
+                errorCode: execution.errorCode || null,
+            })),
         });
 
         await idempotency.complete({

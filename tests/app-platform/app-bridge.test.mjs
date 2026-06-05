@@ -7,6 +7,7 @@ import ts from 'typescript';
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
 const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
 const STOREFRONT_ROUTE_SOURCE = 'services/api-gateway/src/routes/storefront.ts';
+const APP_FUNCTION_RUNTIME_SOURCE = 'services/api-gateway/src/extensions/app-functions-runtime.ts';
 const EXTENSION_HOST_SOURCE = 'packages/extension-host/src/index.ts';
 const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
 const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx';
@@ -287,4 +288,37 @@ test('WS13 X4 theme app blocks load from the per-store extension registry into W
   assert.match(storefrontRouteSource, /loadLegacyStorefrontAppBlocks/);
   assert.match(storefrontRouteSource, /for \(const block of registeredBlocks\) merged\.set\(block\.id, block\)/);
   assert.match(storefrontRouteSource, /app_blocks: appBlocks/);
+});
+
+test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisions', () => {
+  const appEngineSource = readFileSync(APP_ENGINE_SOURCE, 'utf8');
+  const functionRuntimeSource = readFileSync(APP_FUNCTION_RUNTIME_SOURCE, 'utf8');
+  const storefrontRouteSource = readFileSync(STOREFRONT_ROUTE_SOURCE, 'utf8');
+
+  assert.match(appEngineSource, /AppFunctionRuntimeInputSchema/);
+  assert.match(appEngineSource, /AppFunctionRuntimeOutputSchema/);
+  assert.match(appEngineSource, /apply_discount_code/);
+  assert.match(appEngineSource, /select_shipping_method/);
+  assert.match(appEngineSource, /allow_payment_methods/);
+  assert.match(appEngineSource, /validation_error/);
+  assert.match(appEngineSource, /applyAppFunctionRuntimeOutput/);
+
+  assert.match(functionRuntimeSource, /LETBUYY_APP_FUNCTION_RUNTIME_VERSION/);
+  assert.match(functionRuntimeSource, /compiler\.compile\(bytes\)/);
+  assert.match(functionRuntimeSource, /WebAssembly\.instantiate\(module, \{\}\)/);
+  assert.match(functionRuntimeSource, /crypto\.subtle\.digest\('SHA-256'/);
+  assert.match(functionRuntimeSource, /\.from\('app_function_registrations'\)/);
+  assert.match(functionRuntimeSource, /\.eq\('site_id', siteId\)/);
+  assert.match(functionRuntimeSource, /\.eq\('status', 'enabled'\)/);
+  assert.match(functionRuntimeSource, /\.contains\('hooks', \[hook\]\)/);
+  assert.match(functionRuntimeSource, /timeout_ms, 5, 1, 5/);
+  assert.match(functionRuntimeSource, /memory and alloc\(size\)/);
+  assert.match(functionRuntimeSource, /result_len\(\)/);
+
+  assert.match(storefrontRouteSource, /evaluateCheckoutAppFunctions/);
+  assert.match(storefrontRouteSource, /CHECKOUT_FUNCTION_VALIDATION/);
+  assert.match(storefrontRouteSource, /payment_method: functionEvaluation\.decision\.paymentMethod/);
+  assert.match(storefrontRouteSource, /shipping_method: functionEvaluation\.decision\.shippingMethod/);
+  assert.match(storefrontRouteSource, /coupon_code: functionEvaluation\.decision\.couponCode/);
+  assert.match(storefrontRouteSource, /extensionFunctions: functionEvaluation\.executions/);
 });

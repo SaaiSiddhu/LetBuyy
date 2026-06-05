@@ -286,6 +286,132 @@ export type LetbuyyAppManifestExtension = z.infer<typeof AppManifestExtensionSch
 export type LetbuyyAppManifestFunction = z.infer<typeof AppManifestFunctionSchema>;
 export type LetbuyyAppManifest = z.infer<typeof LetbuyyAppManifestSchema>;
 
+export const AppFunctionCheckoutPaymentMethodSchema = z.enum(['razorpay', 'stripe', 'paypal', 'cashfree', 'cod']);
+export const AppFunctionCheckoutShippingMethodSchema = z.enum(['standard', 'express']);
+
+export const AppFunctionRuntimeInputSchema = z.object({
+  hook: AppManifestFunctionHookSchema,
+  site_id: z.string().min(1).max(120),
+  cart: z.object({
+    lines: z.array(z.object({
+      product_id: z.string().min(1).max(120),
+      variant_id: z.string().min(1).max(120).nullable().optional(),
+      quantity: z.number().int().min(1).max(999),
+    }).strict()).min(1).max(50),
+    coupon_code: z.string().min(1).max(50).nullable().optional(),
+    gift_card_code: z.string().min(1).max(100).nullable().optional(),
+  }).strict(),
+  checkout: z.object({
+    payment_method: AppFunctionCheckoutPaymentMethodSchema,
+    shipping_method: AppFunctionCheckoutShippingMethodSchema,
+    customer: z.record(z.string(), z.unknown()).default({}),
+    shipping_address: z.record(z.string(), z.unknown()).default({}),
+  }).strict(),
+  request: z.object({
+    request_id: z.string().min(1).max(200),
+    occurred_at: z.string().datetime(),
+  }).strict(),
+}).strict();
+
+export const AppFunctionRuntimeOperationSchema = z.union([
+  z.object({
+    type: z.literal('apply_discount_code'),
+    coupon_code: z.string().min(1).max(50),
+  }).strict(),
+  z.object({
+    type: z.literal('select_shipping_method'),
+    shipping_method: AppFunctionCheckoutShippingMethodSchema,
+  }).strict(),
+  z.object({
+    type: z.literal('allow_payment_methods'),
+    payment_methods: z.array(AppFunctionCheckoutPaymentMethodSchema).min(1).max(5),
+  }).strict(),
+  z.object({
+    type: z.literal('validation_error'),
+    message: z.string().min(1).max(240),
+    field: z.string().min(1).max(120).optional(),
+  }).strict(),
+]);
+
+export const AppFunctionRuntimeOutputSchema = z.object({
+  operations: z.array(AppFunctionRuntimeOperationSchema).max(25).default([]),
+  metadata: z.record(z.string(), z.unknown()).default({}),
+}).strict();
+
+export type AppFunctionCheckoutPaymentMethod = z.infer<typeof AppFunctionCheckoutPaymentMethodSchema>;
+export type AppFunctionCheckoutShippingMethod = z.infer<typeof AppFunctionCheckoutShippingMethodSchema>;
+export type AppFunctionRuntimeInput = z.infer<typeof AppFunctionRuntimeInputSchema>;
+export type AppFunctionRuntimeOperation = z.infer<typeof AppFunctionRuntimeOperationSchema>;
+export type AppFunctionRuntimeOutput = z.infer<typeof AppFunctionRuntimeOutputSchema>;
+
+export interface AppFunctionCheckoutDecision {
+  couponCode?: string;
+  shippingMethod: AppFunctionCheckoutShippingMethod;
+  paymentMethod: AppFunctionCheckoutPaymentMethod;
+  validationErrors: Array<{ message: string; field?: string }>;
+}
+
+export function normalizeAppFunctionRuntimeOutput(input: unknown): AppEnginePlanResult<AppFunctionRuntimeOutput> {
+  const parsed = AppFunctionRuntimeOutputSchema.safeParse(input);
+  if (!parsed.success) {
+    return { ok: false, message: parsed.error.issues.map((issue: { message: string }) => issue.message).join('; ') || 'Invalid function output' };
+  }
+
+  return { ok: true, value: parsed.data };
+}
+
+export function createAppFunctionCheckoutDecision(input: {
+  couponCode?: string | null;
+  shippingMethod: AppFunctionCheckoutShippingMethod;
+  paymentMethod: AppFunctionCheckoutPaymentMethod;
+}): AppFunctionCheckoutDecision {
+  return {
+    couponCode: appStoreStringOrNull(input.couponCode || null) || undefined,
+    shippingMethod: input.shippingMethod,
+    paymentMethod: input.paymentMethod,
+    validationErrors: [],
+  };
+}
+
+export function applyAppFunctionRuntimeOutput(
+  decision: AppFunctionCheckoutDecision,
+  output: AppFunctionRuntimeOutput,
+): AppFunctionCheckoutDecision {
+  const next: AppFunctionCheckoutDecision = {
+    ...decision,
+    validationErrors: [...decision.validationErrors],
+  };
+
+  for (const operation of output.operations) {
+    switch (operation.type) {
+      case 'apply_discount_code':
+        next.couponCode = operation.coupon_code.trim().toUpperCase();
+        break;
+      case 'select_shipping_method':
+        next.shippingMethod = operation.shipping_method;
+        break;
+      case 'allow_payment_methods':
+        if (!operation.payment_methods.includes(next.paymentMethod)) {
+          next.validationErrors.push({
+            field: 'payment_method',
+            message: 'The selected payment method is not available for this checkout.',
+          });
+        }
+        break;
+      case 'validation_error':
+        next.validationErrors.push({
+          message: operation.message,
+          ...(operation.field ? { field: operation.field } : {}),
+        });
+        break;
+      default:
+        break;
+    }
+  }
+
+  return next;
+}
+
 export interface AppManifestExtensionRegistrationRecord {
   app_id: string;
   type: 'settings_page' | 'dashboard_widget' | 'product_action' | 'order_action' | 'checkout_extension' | 'storefront_block';
