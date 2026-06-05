@@ -323,7 +323,7 @@ function appLifecycleWebhookDefinitions(appWebhooks: unknown, body: AppEngineJso
         ...normalizeAppWebhookDefinitions([{
             event: body.webhook_event || body.webhookEvent || 'app.installed',
             url: requestedUrl,
-            secret: body.webhook_secret || body.webhookSecret,
+            // Signing secret is generated server-side (see defaultSigningSecret); never accepted from the client body (M5).
             is_active: true,
         }]),
     ];
@@ -1687,7 +1687,7 @@ router.post('/apps/:id/oauth/authorize', authMiddleware, async (c) => {
     const authorizationCodeHash = await sha256Hex(authorizationCode);
     const authorizationExpiresAt = new Date((nowSeconds + 15 * 60) * 1000).toISOString();
     const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body);
-    const defaultSigningSecret = stringOrNull(body.webhook_secret || body.webhookSecret) || crypto.randomUUID();
+    const defaultSigningSecret = crypto.randomUUID();
     const webhookSubscriptions = planAppWebhookSubscriptions({
         app,
         storeId,
@@ -2037,7 +2037,7 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         occurredAt: now.toISOString(),
     });
     const webhookDefinitions = appLifecycleWebhookDefinitions(app.app_webhooks, body);
-    const defaultSigningSecret = stringOrNull(body.webhook_secret || body.webhookSecret) || crypto.randomUUID();
+    const defaultSigningSecret = crypto.randomUUID();
     const webhookSubscriptions = planAppWebhookSubscriptions({
         app,
         storeId,
@@ -2129,6 +2129,8 @@ router.post('/apps/:id/install', authMiddleware, async (c) => {
         },
         webhooks: {
             subscriptions: insertedSubscriptions,
+            // Show-once: the server-generated signing secret for app-supplied webhooks (M5).
+            signing_secret: defaultSigningSecret,
         },
         extension_registry: registry.value,
     }), 201);

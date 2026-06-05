@@ -22,7 +22,7 @@ export async function POST(request: NextRequest, { params }: RouteParams) {
                 config: body.config && typeof body.config === 'object' ? body.config : undefined,
                 webhook_url: typeof body.webhook_url === 'string' ? body.webhook_url : undefined,
                 webhook_event: typeof body.webhook_event === 'string' ? body.webhook_event : undefined,
-                webhook_secret: typeof body.webhook_secret === 'string' ? body.webhook_secret : undefined,
+                // webhook_secret intentionally not forwarded: the gateway generates the signing secret server-side (M5).
         });
         return NextResponse.json({ data }, { status: 201 });
     } catch (err) {
