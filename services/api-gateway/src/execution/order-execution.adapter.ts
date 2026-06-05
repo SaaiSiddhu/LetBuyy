@@ -71,6 +71,10 @@ interface GstTaxRateRow {
     rate?: number | string | null;
 }
 
+interface CreateOrderOptions {
+    deferPostCommit?: boolean;
+}
+
 function toRecord(value: unknown): Record<string, unknown> {
     if (value && typeof value === 'object' && !Array.isArray(value)) {
         return value as Record<string, unknown>;
@@ -139,7 +143,7 @@ export class OrderExecutionAdapter {
      * 4. Generate collision-free order number
      * 5. Insert order + items atomically through the inventory RPC
      */
-    async createOrder(input: CreateCheckoutOrderCommand, tenant: TenantContext) {
+    async createOrder(input: CreateCheckoutOrderCommand, tenant: TenantContext, options: CreateOrderOptions = {}) {
         await this.assertOrderQuota(tenant.siteId);
         const shippingAddress = { ...(input.shipping_address || {}) };
         if (input.customer_gstin) shippingAddress.gstin = input.customer_gstin;
@@ -175,6 +179,15 @@ export class OrderExecutionAdapter {
             throw new Error(`Order creation failed: ${message}`);
         }
 
+        if (options.deferPostCommit) return data;
+        return this.completeOrderPostCommitWork(input, tenant, data);
+    }
+
+    async completeOrderPostCommitWork(
+        input: CreateCheckoutOrderCommand,
+        tenant: TenantContext,
+        data: unknown,
+    ): Promise<unknown> {
         await new SaasExecutionAdapter(this.db).recordUsage({
             siteId: tenant.siteId,
             meterName: 'orders',

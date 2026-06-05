@@ -101,6 +101,8 @@ export interface Env {
     STOREFRONT_CACHE?: string;
     STOREFRONT_POOLED_SQL?: string;
     STOREFRONT_VIEW_SAMPLE_RATE?: string;
+    PRODUCT_VARIANT_DIFF?: string;
+    CHECKOUT_POSTCOMMIT_DEFERRAL?: string;
     REQUEST_LOG_SAMPLE_RATE?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;

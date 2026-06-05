@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 4 — P2 Performance.
-- Current work item: P2-7 variant diff + checkout deferral.
+- Current work item: Phase 5 next — P3 scalability queue storm controls / projections / partition planning.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -338,6 +338,24 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
 
+### P2-7 — Variant diff and checkout post-commit deferral
+
+- Replaced the default product variant update path with a diff-based writer behind `PRODUCT_VARIANT_DIFF`, preserving the legacy delete/reinsert path as an explicit rollback switch.
+- Added additive migration `087_inventory_available_batch.sql`, which wraps the existing `set_inventory_level_available` semantics in one batched RPC for variant inventory sync.
+- Split order post-commit work into `completeOrderPostCommitWork` and enabled storefront checkout to defer usage metering plus GST invoice persistence through `waitUntil` behind `CHECKOUT_POSTCOMMIT_DEFERRAL`.
+- Kept admin order creation synchronous; only the public storefront checkout path defers post-commit work.
+- Added static regression coverage for variant diffing, batched inventory sync, rollback flags, and checkout deferral.
+
+Evidence:
+- `node --test tests/performance/variant-checkout-deferral.test.mjs` — PASS, 4/4 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `node --test tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 25/25 tests.
+- `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/products.test.ts services/api-gateway/src/__tests__/security.test.ts'` — PASS, 14/14 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after source test assertion refresh.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -434,6 +452,13 @@ Evidence:
 - `pnpm --filter @letbuyy/merchant-control-plane typecheck` — PASS after import UI queued-state update and workspace link restore.
 - `git diff --check` — PASS after async export/import changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after async export/import changes and generated artifact cleanup.
+- `node --test tests/performance/variant-checkout-deferral.test.mjs tests/performance/async-export.test.mjs tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 25/25 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after variant diff and checkout deferral changes.
+- `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/products.test.ts services/api-gateway/src/__tests__/security.test.ts'` — PASS, 14/14 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after source test assertion refresh.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after `087_inventory_available_batch.sql`.
+- `git diff --check` — PASS after variant diff and checkout deferral changes.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after variant diff and checkout deferral changes.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -447,3 +472,4 @@ Evidence:
 - SKIP: Configure and prove full-fidelity Cloudflare Logpush/error export for api-gateway, queue-workers, and webhook-service — Reason: Cloudflare account log destination, dataset selection, and provider credentials are human-controlled. Resume point: P1-5 observability cost proof; expected result is Worker head sampling at 10% plus provider-backed error/full-fidelity export evidence.
 - SKIP: Apply `084_trigram_search_indexes.sql` to staging and capture `EXPLAIN (ANALYZE, BUFFERS)` proof for merchant search paths — Reason: live Supabase staging credentials and representative seeded datasets are human-controlled. Resume point: P2-5 search proof; expected result is Bitmap Index Scan/BitmapOr over trigram indexes for product/order/app/theme/internal-console search queries.
 - SKIP: Run 100k-row products/orders export and capped product import against deployed staging R2 — Reason: representative staging dataset, live R2 bucket, and deployed Worker credentials are human-controlled. Resume point: P2-6 export proof; expected result is queued job completion, streamed R2 CSV download, no request-path memory spike, and import jobs capped at 500 rows.
+- SKIP: Apply `087_inventory_available_batch.sql` to staging and run timed variant update plus checkout latency proof — Reason: live Supabase staging credentials, representative product variants, and deployed Worker timing telemetry are human-controlled. Resume point: P2-7 performance proof; expected result is one batched inventory RPC for changed variants, no delete/reinsert churn on unchanged variants, and storefront checkout response before usage/GST post-commit completion.

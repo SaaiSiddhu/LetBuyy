@@ -25,6 +25,93 @@ interface OwnedProductRow {
     price?: number | string | null;
 }
 
+interface ProductVariantRow {
+    id: string;
+    title: string;
+    price?: number | string | null;
+    compare_price?: number | string | null;
+    sku?: string | null;
+    inventory_qty?: number | string | null;
+    option1?: string | null;
+    option2?: string | null;
+    option3?: string | null;
+    position?: number | string | null;
+}
+
+interface ProductVariantWriteRow {
+    product_id: string;
+    title: string;
+    price: number;
+    compare_price: number | null;
+    sku: string | null;
+    inventory_qty: number;
+    option1: string | null;
+    option2: string | null;
+    option3: string | null;
+    position: number;
+}
+
+interface ProductVariantInventoryLevel {
+    product_id: string;
+    variant_id: string | null;
+    location_id: null;
+    available: number;
+    notes: string;
+    request_id: string;
+}
+
+interface ProductExecutionAdapterOptions {
+    variantDiffEnabled?: boolean;
+}
+
+function normalizedText(value: unknown): string | null {
+    return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function numericValue(value: unknown): number {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : 0;
+    }
+    return 0;
+}
+
+function nullableNumericValue(value: unknown): number | null {
+    if (value === null || value === undefined || value === '') return null;
+    return numericValue(value);
+}
+
+function variantIdentityKey(variant: Pick<ProductVariantRow, 'sku' | 'title' | 'option1' | 'option2' | 'option3'>): string {
+    const sku = normalizedText(variant.sku);
+    if (sku) return `sku:${sku.toLowerCase()}`;
+
+    return [
+        'shape',
+        normalizedText(variant.title)?.toLowerCase() || '',
+        normalizedText(variant.option1)?.toLowerCase() || '',
+        normalizedText(variant.option2)?.toLowerCase() || '',
+        normalizedText(variant.option3)?.toLowerCase() || '',
+    ].join(':');
+}
+
+function variantWriteChanged(existing: ProductVariantRow, desired: ProductVariantWriteRow): boolean {
+    return (
+        existing.title !== desired.title ||
+        numericValue(existing.price) !== desired.price ||
+        nullableNumericValue(existing.compare_price) !== desired.compare_price ||
+        (normalizedText(existing.sku) || null) !== desired.sku ||
+        (normalizedText(existing.option1) || null) !== desired.option1 ||
+        (normalizedText(existing.option2) || null) !== desired.option2 ||
+        (normalizedText(existing.option3) || null) !== desired.option3 ||
+        numericValue(existing.position) !== desired.position
+    );
+}
+
+export function isProductVariantDiffEnabled(env: { PRODUCT_VARIANT_DIFF?: string }): boolean {
+    return (env.PRODUCT_VARIANT_DIFF || 'on').trim().toLowerCase() !== 'off';
+}
+
 export class ProductExecutionAdapter {
     static readonly applicationWorkflows = COMMERCE_APPLICATION_WORKFLOWS;
     static readonly executionPipelines = COMMERCE_EXECUTION_PIPELINES;
@@ -36,7 +123,10 @@ export class ProductExecutionAdapter {
         forbiddenResponsibilities: ['workflow-ownership', 'business-sequencing', 'query-aggregation', 'provider-sdk', 'ui-rendering'],
     });
 
-    constructor(private db: SupabaseClient) { }
+    constructor(
+        private db: SupabaseClient,
+        private options: ProductExecutionAdapterOptions = {},
+    ) { }
 
     /**
      * Create a product with store ownership verification.
@@ -303,6 +393,114 @@ export class ProductExecutionAdapter {
         variants: ProductVariantInput[],
         actorId: string
     ) {
+        if (this.options.variantDiffEnabled === false) {
+            await this.replaceProductVariantsLegacy(productId, basePrice, variants, actorId);
+            return;
+        }
+
+        if (variants.length === 0) {
+            const { error } = await this.db.from('product_variants').delete().eq('product_id', productId);
+            if (error) throw new Error(`Product variants delete failed: ${error.message}`);
+            return;
+        }
+
+        const existingVariants = await this.loadExistingProductVariants(productId);
+        const existingByKey = new Map<string, ProductVariantRow[]>();
+        for (const existing of existingVariants) {
+            const key = variantIdentityKey(existing);
+            existingByKey.set(key, [...(existingByKey.get(key) || []), existing]);
+        }
+
+        const matchedIds = new Set<string>();
+        const rowsToInsert: ProductVariantWriteRow[] = [];
+        const rowsToUpdate: Array<{ id: string; row: ProductVariantWriteRow }> = [];
+        const inventoryLevels: ProductVariantInventoryLevel[] = [];
+
+        for (const [index, variant] of variants.entries()) {
+            const desired = this.normalizeProductVariant(productId, basePrice, variant, index);
+            const key = variantIdentityKey(desired);
+            const existingQueue = existingByKey.get(key) || [];
+            const existing = existingQueue.shift();
+            if (existingQueue.length > 0) {
+                existingByKey.set(key, existingQueue);
+            } else {
+                existingByKey.delete(key);
+            }
+
+            if (!existing) {
+                rowsToInsert.push(desired);
+                continue;
+            }
+
+            matchedIds.add(existing.id);
+            if (variantWriteChanged(existing, desired)) {
+                rowsToUpdate.push({ id: existing.id, row: desired });
+            }
+            if (numericValue(existing.inventory_qty) !== desired.inventory_qty) {
+                inventoryLevels.push(this.inventoryLevel(productId, existing.id, desired.inventory_qty, 'variant.inventory.diff'));
+            }
+        }
+
+        await Promise.all(rowsToUpdate.map(async ({ id, row }) => {
+            const { error } = await this.db
+                .from('product_variants')
+                .update({
+                    title: row.title,
+                    price: row.price,
+                    compare_price: row.compare_price,
+                    sku: row.sku,
+                    inventory_qty: row.inventory_qty,
+                    option1: row.option1,
+                    option2: row.option2,
+                    option3: row.option3,
+                    position: row.position,
+                })
+                .eq('product_id', productId)
+                .eq('id', id);
+
+            if (error) throw new Error(`Product variant update failed: ${error.message}`);
+        }));
+
+        if (rowsToInsert.length > 0) {
+            const { data, error } = await this.db
+                .from('product_variants')
+                .insert(rowsToInsert)
+                .select('id, inventory_qty');
+
+            if (error) throw new Error(`Product variants insert failed: ${error.message}`);
+            for (const variant of data || []) {
+                inventoryLevels.push(this.inventoryLevel(
+                    productId,
+                    variant.id as string,
+                    numericValue((variant as ProductVariantRow).inventory_qty),
+                    'variant.inventory.diff',
+                ));
+            }
+        }
+
+        const obsoleteIds = existingVariants
+            .filter((variant) => !matchedIds.has(variant.id))
+            .map((variant) => variant.id);
+
+        if (obsoleteIds.length > 0) {
+            const { error } = await this.db
+                .from('product_variants')
+                .delete()
+                .eq('product_id', productId)
+                .in('id', obsoleteIds);
+
+            if (error) throw new Error(`Product variants delete failed: ${error.message}`);
+        }
+
+        await this.setInventoryAvailableBatch(inventoryLevels, actorId);
+    }
+
+    private async replaceProductVariantsLegacy(
+        productId: string,
+        basePrice: number,
+        variants: ProductVariantInput[],
+        actorId: string
+    ) {
         await this.db.from('product_variants').delete().eq('product_id', productId);
 
         if (variants.length === 0) return;
@@ -336,6 +534,71 @@ export class ProductExecutionAdapter {
                 'variant.inventory.set'
             );
         }
+    }
+
+    private async loadExistingProductVariants(productId: string): Promise<ProductVariantRow[]> {
+        const { data, error } = await this.db
+            .from('product_variants')
+            .select('id, title, price, compare_price, sku, inventory_qty, option1, option2, option3, position')
+            .eq('product_id', productId)
+            .order('position', { ascending: true });
+
+        if (error) throw new Error(`Product variants lookup failed: ${error.message}`);
+        return data as ProductVariantRow[] || [];
+    }
+
+    private normalizeProductVariant(
+        productId: string,
+        basePrice: number,
+        variant: ProductVariantInput,
+        index: number,
+    ): ProductVariantWriteRow {
+        const optionValues = Object.values(variant.options || {});
+        return {
+            product_id: productId,
+            title: variant.title,
+            price: numericValue(variant.price ?? variant.price_override ?? basePrice),
+            compare_price: nullableNumericValue(variant.compare_price),
+            sku: normalizedText(variant.sku),
+            inventory_qty: variant.stock ?? 0,
+            option1: normalizedText(optionValues[0]),
+            option2: normalizedText(optionValues[1]),
+            option3: normalizedText(optionValues[2]),
+            position: index,
+        };
+    }
+
+    private inventoryLevel(
+        productId: string,
+        variantId: string,
+        available: number,
+        notes: string,
+    ): ProductVariantInventoryLevel {
+        return {
+            product_id: productId,
+            variant_id: variantId,
+            location_id: null,
+            available,
+            notes,
+            request_id: `variant.inventory.diff:${productId}:${variantId}`,
+        };
+    }
+
+    private async setInventoryAvailableBatch(
+        levels: ProductVariantInventoryLevel[],
+        actorId: string,
+    ): Promise<void> {
+        if (levels.length === 0) return;
+
+        const { error } = await this.db.rpc('set_inventory_levels_available_batch', {
+            p_levels: levels,
+            p_actor_id: actorId,
+            p_reason: 'adjustment',
+            p_notes: 'variant.inventory.diff',
+            p_request_id: null,
+        });
+
+        if (error) throw new Error(`Inventory batch sync failed: ${error.message}`);
     }
 
     private async setInventoryAvailable(

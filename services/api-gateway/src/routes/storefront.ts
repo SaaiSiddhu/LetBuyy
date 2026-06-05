@@ -54,6 +54,7 @@ import { getPooledSql } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {
     planCouponValidation,
     storefrontCouponValidationError,
+    type CreateCheckoutOrderCommand,
     type CouponRecord,
 } from '@letbuyy/checkout-core';
 import {
@@ -91,6 +92,10 @@ type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValu
 const CUSTOMER_PASSWORD_RESET_TTL_SECONDS = 60 * 60;
 const CUSTOMER_PASSWORD_RESET_TOKEN_BYTES = 32;
 const DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE = 0.1;
+
+function isCheckoutPostCommitDeferralEnabled(env: Pick<Env, 'CHECKOUT_POSTCOMMIT_DEFERRAL'>): boolean {
+    return (env.CHECKOUT_POSTCOMMIT_DEFERRAL || 'on').trim().toLowerCase() !== 'off';
+}
 
 function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
     return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
@@ -2240,27 +2245,40 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
             );
         }
 
-        const order = await service.createOrder(
-            {
-                customer_name: body.customer.name,
-                customer_email: body.customer.email,
-                customer_phone: body.customer.phone,
-                shipping_address: shippingAddress,
-                customer_gstin: body.customer.gstin,
-                items: body.items.map((item) => ({
-                    product_id: item.productId,
-                    variant_id: item.variantId || null,
-                    quantity: item.quantity,
-                })),
-                payment_method: checkoutDecision.paymentMethod,
-                shipping_method: checkoutDecision.shippingMethod,
-                notes: body.notes,
-                coupon_code: checkoutDecision.couponCode,
-                gift_card_code: body.giftCardCode,
-                idempotency_key: body.idempotencyKey,
-            },
-            tenant
-        ) as OrderRpcResult;
+        const orderCommand: CreateCheckoutOrderCommand = {
+            customer_name: body.customer.name,
+            customer_email: body.customer.email,
+            customer_phone: body.customer.phone,
+            shipping_address: shippingAddress,
+            customer_gstin: body.customer.gstin,
+            items: body.items.map((item) => ({
+                product_id: item.productId,
+                variant_id: item.variantId || null,
+                quantity: item.quantity,
+            })),
+            payment_method: checkoutDecision.paymentMethod,
+            shipping_method: checkoutDecision.shippingMethod,
+            notes: body.notes,
+            coupon_code: checkoutDecision.couponCode,
+            gift_card_code: body.giftCardCode,
+            idempotency_key: body.idempotencyKey,
+        };
+        const deferPostCommit = isCheckoutPostCommitDeferralEnabled(c.env);
+        const order = await service.createOrder(orderCommand, tenant, { deferPostCommit }) as OrderRpcResult;
+        if (deferPostCommit) {
+            c.executionCtx.waitUntil(
+                service.completeOrderPostCommitWork(orderCommand, tenant, order).catch((error) => {
+                    console.error(JSON.stringify({
+                        level: 'error',
+                        event: 'storefront.checkout.post_commit_failed',
+                        site_id: store.id,
+                        order_id: order.id || null,
+                        request_id: tenant.requestId,
+                        error: error instanceof Error ? error.message : 'Unknown checkout post-commit failure',
+                    }));
+                }),
+            );
+        }
 
         await emitStorefrontOrderCreatedEvent(db, {
             storeId: store.id,
