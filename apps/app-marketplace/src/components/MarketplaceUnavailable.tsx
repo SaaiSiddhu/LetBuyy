@@ -10,11 +10,14 @@ import { useRouter } from 'next/navigation';
 export function MarketplaceUnavailable({
     title = 'App catalog temporarily unavailable',
     body = 'We could not reach the app catalog service right now. This is a temporary issue on our side — please try again.',
+    onRetry,
 }: {
     title?: string;
     body?: string;
+    onRetry?: () => void;
 }) {
     const router = useRouter();
+    const handleRetry = onRetry ?? (() => router.refresh());
     return (
         <div role="alert" aria-live="polite" style={{ textAlign: 'center', padding: '48px 16px' }}>
             <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}>{title}</h3>
@@ -23,7 +26,7 @@ export function MarketplaceUnavailable({
             </p>
             <button
                 type="button"
-                onClick={() => router.refresh()}
+                onClick={handleRetry}
                 style={{
                     padding: '8px 18px',
                     borderRadius: 8,

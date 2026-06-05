@@ -4,6 +4,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { logger } from '@/lib/logger';
+import { MarketplaceUnavailable } from '@/components/MarketplaceUnavailable';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useCallback, Suspense } from 'react';
@@ -23,9 +24,11 @@ function SearchContent() {
     const [sortBy, setSortBy] = useState('popular');
     const [results, setResults] = useState<MarketplaceApp[]>([]);
     const [loading, setLoading] = useState(true);
+    const [errored, setErrored] = useState(false);
 
     const fetchApps = useCallback(async () => {
         setLoading(true);
+        setErrored(false);
         try {
             const params = new URLSearchParams();
             if (query) params.set('search', query);
@@ -35,6 +38,11 @@ function SearchContent() {
 
             const endpoint = query ? `/api/apps/search?q=${encodeURIComponent(query)}&${params}` : `/api/apps?${params}`;
             const res = await fetch(endpoint);
+            if (!res.ok) {
+                setErrored(true);
+                setResults([]);
+                return;
+            }
             const data = await res.json() as { apps?: MarketplaceApp[]; results?: MarketplaceApp[] };
 
             let apps = data.apps || data.results || [];
@@ -53,6 +61,7 @@ function SearchContent() {
             setResults(apps);
         } catch (err) {
             logger.error('search page failed to fetch apps', { error: err instanceof Error ? err.message : String(err) });
+            setErrored(true);
             setResults([]);
         } finally {
             setLoading(false);
@@ -124,8 +133,8 @@ function SearchContent() {
                     <div className="search-results">
                         <div className="search-results-header">
                             <span className="search-results-count">
-                                {loading ? 'Searching...' : `${results.length} ${results.length === 1 ? 'app' : 'apps'} found`}
-                                {query && ` for "${query}"`}
+                                {loading ? 'Searching...' : errored ? 'Could not load apps' : `${results.length} ${results.length === 1 ? 'app' : 'apps'} found`}
+                                {!errored && query && ` for "${query}"`}
                             </span>
                             <select
                                 className="search-sort-select"
@@ -148,6 +157,8 @@ function SearchContent() {
                                     }} />
                                 ))}
                             </div>
+                        ) : errored ? (
+                            <MarketplaceUnavailable onRetry={fetchApps} />
                         ) : (
                             <div className="app-card-grid">
                                 {results.map((app) => (
@@ -156,7 +167,7 @@ function SearchContent() {
                             </div>
                         )}
 
-                        {!loading && results.length === 0 && (
+                        {!loading && !errored && results.length === 0 && (
                             <div className="empty-state">
                                 <div className="empty-state-icon">
                                     <Search size={32} aria-hidden="true" />
