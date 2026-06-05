@@ -18,6 +18,7 @@ import {
     type AppExtensionRegistryInstallPlan,
     type AppWebhookDefinition,
     type AppWebhookSubscriptionInsert,
+    type MandatoryComplianceWebhookTopic,
 } from '@letbuyy/app-engine';
 import type {
     AppChargeBillingMode,
@@ -26,6 +27,7 @@ import type {
 } from '@letbuyy/billing-core';
 
 export type AppLifecycleEventType = 'app.installed' | 'app.uninstalled';
+export type AppWebhookEventType = AppLifecycleEventType | MandatoryComplianceWebhookTopic;
 export type AppOAuthGrantType = 'authorization_code' | 'refresh_token';
 
 export interface AppOAuthTokenResponse {
@@ -77,6 +79,26 @@ export interface AppOAuthPkceChallenge {
     codeChallengeMethod: 'S256';
 }
 
+export interface AppComplianceWebhookPayload extends Record<string, unknown> {
+    topic: MandatoryComplianceWebhookTopic;
+    store_id: string;
+    occurred_at: string;
+    request_id: string;
+    trigger: {
+        source: 'merchant' | 'customer' | 'app_uninstall' | 'system';
+        actor_id: string | null;
+    };
+    customer?: {
+        id: string | null;
+        email: string | null;
+    };
+    reason?: string | null;
+    app_uninstall?: {
+        app_id: string;
+        installation_id: string;
+    };
+}
+
 export function getRequestId(c: { req: { header(name: string): string | undefined }; res: { headers: Headers } }): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
 }
@@ -99,6 +121,52 @@ export function appOAuthGrantType(value: unknown): AppOAuthGrantType | null {
 
 export function appOAuthConfig(config: unknown): AppEngineJsonRecord {
     return parseJsonRecord(parseJsonRecord(config).oauth);
+}
+
+export function appComplianceWebhookEventIdPrefix(input: {
+    eventType: MandatoryComplianceWebhookTopic;
+    storeId: string;
+    idempotencyKey: string;
+}): string {
+    return `app-compliance:${input.eventType}:${input.storeId}:${input.idempotencyKey}`;
+}
+
+export function buildAppComplianceWebhookPayload(input: {
+    eventType: MandatoryComplianceWebhookTopic;
+    storeId: string;
+    occurredAt: string;
+    requestId: string;
+    triggerSource: AppComplianceWebhookPayload['trigger']['source'];
+    actorId?: string | null;
+    customerId?: string | null;
+    customerEmail?: string | null;
+    reason?: string | null;
+    appUninstall?: { appId: string; installationId: string } | null;
+}): AppComplianceWebhookPayload {
+    const payload: AppComplianceWebhookPayload = {
+        topic: input.eventType,
+        store_id: input.storeId,
+        occurred_at: input.occurredAt,
+        request_id: input.requestId,
+        trigger: {
+            source: input.triggerSource,
+            actor_id: input.actorId || null,
+        },
+        ...(input.reason ? { reason: input.reason } : {}),
+        ...(input.appUninstall ? { app_uninstall: {
+            app_id: input.appUninstall.appId,
+            installation_id: input.appUninstall.installationId,
+        } } : {}),
+    };
+
+    if (input.eventType.startsWith('customers/')) {
+        payload.customer = {
+            id: input.customerId || null,
+            email: input.customerEmail || null,
+        };
+    }
+
+    return payload;
 }
 
 const PKCE_VALUE_PATTERN = /^[A-Za-z0-9._~-]{43,128}$/;
@@ -456,7 +524,7 @@ export async function insertAppWebhookSubscriptions(
 
 export async function dispatchAppLifecycleThroughWebhookService(env: Env, input: {
     eventId: string;
-    eventType: AppLifecycleEventType;
+    eventType: AppWebhookEventType;
     payload: Record<string, unknown>;
     targetUrl: string;
     signingSecret: string;
@@ -482,8 +550,9 @@ export async function dispatchAppLifecycleThroughWebhookService(env: Env, input:
 }
 
 export async function dispatchAppLifecycleSubscriptions(env: Env, input: {
-    eventType: AppLifecycleEventType;
+    eventType: AppWebhookEventType;
     installationId: string;
+    eventIdPrefix?: string;
     payload: Record<string, unknown>;
     requestId: string;
     subscriptions: Array<{
@@ -491,17 +560,19 @@ export async function dispatchAppLifecycleSubscriptions(env: Env, input: {
         signing_secret: string;
         event_types?: unknown;
     }>;
-}): Promise<void> {
+}): Promise<number> {
     const targets = input.subscriptions.filter((subscription) => stringArray(subscription.event_types).includes(input.eventType));
 
     await Promise.all(targets.map((subscription, index) => dispatchAppLifecycleThroughWebhookService(env, {
-        eventId: `${input.eventType}:${input.installationId}:${index}`,
+        eventId: input.eventIdPrefix ? `${input.eventIdPrefix}:${index}` : `${input.eventType}:${input.installationId}:${index}`,
         eventType: input.eventType,
         payload: input.payload,
         targetUrl: subscription.target_url,
         signingSecret: subscription.signing_secret,
         requestId: input.requestId,
     })));
+
+    return targets.length;
 }
 
 export function appManifestInputFromInstallBody(body: AppEngineJsonRecord): unknown | null {

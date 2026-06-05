@@ -18,10 +18,12 @@ import {
     type AppEngineJsonRecord,
 } from '@letbuyy/app-engine';
 import {
+    appComplianceWebhookEventIdPrefix,
     appExtensionRegistryConfig,
     appLifecycleWebhookDefinitions,
     appOAuthConfig,
     appPlatformTokenSecret,
+    buildAppComplianceWebhookPayload,
     dispatchAppLifecycleSubscriptions,
     getRequestId,
     insertAppLifecycleOutbox,
@@ -335,6 +337,32 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
                 .eq('site_id', resolvedStoreId)
                 .eq('status', 'active')
                 .contains('metadata', { app_id: appId, installation_id: installation.id });
+            const activeSubscriptions = Array.isArray(appWebhookSubscriptions) ? appWebhookSubscriptions : [];
+            const appRecord = parseJsonRecord(installation.marketplace_apps);
+
+            if (activeSubscriptions.length > 0 && c.env.WEBHOOK_SERVICE && c.env.INTERNAL_API_SECRET) {
+                await dispatchAppLifecycleSubscriptions(c.env, {
+                    eventType: 'shop/redact',
+                    installationId: installation.id,
+                    eventIdPrefix: appComplianceWebhookEventIdPrefix({
+                        eventType: 'shop/redact',
+                        storeId: resolvedStoreId,
+                        idempotencyKey: `app-uninstall:${appId}:${installation.id}`,
+                    }),
+                    payload: buildAppComplianceWebhookPayload({
+                        eventType: 'shop/redact',
+                        storeId: resolvedStoreId,
+                        occurredAt: now.toISOString(),
+                        requestId,
+                        triggerSource: 'app_uninstall',
+                        actorId: customUser.id,
+                        reason: 'app_uninstalled',
+                        appUninstall: { appId, installationId: installation.id },
+                    }),
+                    requestId,
+                    subscriptions: activeSubscriptions,
+                });
+            }
 
             await db
                 .from('webhook_subscriptions')
@@ -356,7 +384,6 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
                 return c.json({ error: { code: registryRevocation.code, message: registryRevocation.message } }, registryRevocation.status);
             }
 
-            const appRecord = parseJsonRecord(installation.marketplace_apps);
             const lifecyclePayload = buildAppLifecycleEventPayload({
                 app: {
                     id: appId,
@@ -384,7 +411,7 @@ export function registerAppStoreInstallLifecycleRoutes(router: Hono<{ Bindings: 
                 installationId: installation.id,
                 payload: lifecyclePayload,
                 requestId,
-                subscriptions: Array.isArray(appWebhookSubscriptions) ? appWebhookSubscriptions : [],
+                subscriptions: activeSubscriptions,
             });
         }
 

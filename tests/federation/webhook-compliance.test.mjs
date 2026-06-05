@@ -25,6 +25,17 @@ test('app installs auto-subscribe app webhooks to mandatory compliance topics', 
   assert.match(appStore, /planAppWebhookSubscriptions/);
 });
 
+test('app compliance webhook producers dispatch mandatory topics through the gateway', () => {
+  const appStore = readAppStoreRouteSource();
+
+  assert.match(appStore, /\/compliance\/customers\/data-request/);
+  assert.match(appStore, /\/compliance\/customers\/redact/);
+  assert.match(appStore, /\/compliance\/shop\/redact/);
+  assert.match(appStore, /eventType: 'shop\/redact'/);
+  assert.match(appStore, /dispatchAppLifecycleSubscriptions\(c\.env/);
+  assert.match(appStore, /appComplianceWebhookEventIdPrefix/);
+});
+
 test('webhook-service owns outbound HTTPS delivery and raw-body HMAC headers', () => {
   const webhookService = source(WEBHOOK_SERVICE);
   const webhookDispatch = source(WEBHOOK_DISPATCH);

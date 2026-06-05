@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F2.2 OAuth PKCE/refresh hardening complete; continue F2.3 compliance webhook producers next.
-- Findings resolved: 10/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-12`, `C-13`, `H-1`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F2.2 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F2.3 compliance webhook producers complete; continue F2.4 app billing real-sandbox or honest-unconfigured next.
+- Findings resolved: 11/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-12`, `C-13`, `H-1`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F2.3 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -169,6 +169,22 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F2.3 compliance webhook producer evidence
+
+- `services/api-gateway/src/routes/app-store/compliance-routes.ts` adds merchant-authenticated, store-owned producer routes for `POST /v1/app-store/compliance/customers/data-request`, `POST /v1/app-store/compliance/customers/redact`, and `POST /v1/app-store/compliance/shop/redact`.
+- Producer routes validate payloads with Zod, require `X-Idempotency-Key` or `idempotency_key`, select active app-platform webhook subscriptions whose `event_types` contain the mandatory compliance topic, and fail loud when delivery is unconfigured while subscriptions exist.
+- The producer path dispatches through the existing `WEBHOOK_SERVICE` binding and `X-LetBuyy-Internal-Secret`; no UI runtime owns outbound webhook delivery.
+- App uninstall now emits `shop/redact` before disabling app webhook subscriptions, then emits `app.uninstalled`.
+- `apps/developer-portal/src/lib/developer-surface.ts` and `apps/developer-portal/src/lib/reference.ts` now document emitted compliance topics and trigger routes.
+- `pnpm run test:contracts`: PASS - 39/39, including compliance dispatch to a fake webhook-service binding, route/source safeguards, uninstall ordering, and docs checks.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck`: PASS.
+- `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 107/107.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -194,6 +210,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the completed F2.2 OAuth PKCE/refresh increment.
-- Continue to F2.3 compliance webhook producers.
+- Commit the completed F2.3 compliance webhook producer increment.
+- Continue to F2.4 app billing real-sandbox or honest-unconfigured.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

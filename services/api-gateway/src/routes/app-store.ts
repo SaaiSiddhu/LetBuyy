@@ -8,6 +8,7 @@ import { registerAppStoreExtensionRoutes } from './app-store/extension-routes';
 import { registerAppStoreBillingOAuthRoutes } from './app-store/billing-oauth-routes';
 import { registerAppStoreInstallLifecycleRoutes } from './app-store/install-lifecycle-routes';
 import { registerAppStoreDeveloperRoutes } from './app-store/developer-routes';
+import { registerAppStoreComplianceRoutes } from './app-store/compliance-routes';
 
 const router = new Hono<{ Bindings: Env }>();
 
@@ -210,6 +211,8 @@ registerAppStoreExtensionRoutes(router);
 registerAppStoreBillingOAuthRoutes(router);
 
 registerAppStoreInstallLifecycleRoutes(router);
+
+registerAppStoreComplianceRoutes(router);
 
 registerAppStoreDeveloperRoutes(router);
 

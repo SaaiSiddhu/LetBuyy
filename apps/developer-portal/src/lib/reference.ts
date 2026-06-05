@@ -225,11 +225,11 @@ export const webhookGuide: GuideCard[] = [
   {
     title: "Compliance topics",
     status: "Live contract",
-    body: "App-engine always includes mandatory compliance topics when planning app webhook subscriptions.",
+    body: "App-engine always includes mandatory compliance topics when planning app webhook subscriptions, and the app-store gateway emits those topics from compliance producer routes.",
     bullets: [
-      "`customers/data_request`",
-      "`customers/redact`",
-      "`shop/redact`",
+      "`POST /v1/app-store/compliance/customers/data-request` emits `customers/data_request`.",
+      "`POST /v1/app-store/compliance/customers/redact` emits `customers/redact`.",
+      "`POST /v1/app-store/compliance/shop/redact` and app uninstall emit `shop/redact`.",
     ],
   },
   {

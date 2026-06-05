@@ -1553,6 +1553,8 @@ export const webhookFacts = [
   "The HMAC header is X-LetBuyy-Hmac-SHA256 and the value is versioned as v1=<hex>.",
   "X-LetBuyy-Signature is sent as a legacy alias with the same versioned value.",
   "Mandatory compliance topics are always added to app webhook subscriptions: customers/data_request, customers/redact, and shop/redact.",
+  "Merchant/customer compliance producers emit through POST /v1/app-store/compliance/customers/data-request, POST /v1/app-store/compliance/customers/redact, and POST /v1/app-store/compliance/shop/redact.",
+  "App uninstall emits shop/redact before app webhook subscriptions are disabled, then emits app.uninstalled.",
   "Queued delivery retries use exponential backoff from 120 seconds and cap at one hour."
 ];
 
@@ -1574,23 +1576,23 @@ export const webhookTopics: WebhookTopicDoc[] = [
   {
     topic: "customers/data_request",
     category: "mandatory compliance",
-    deliveryRule: "App webhook subscriptions always include this topic in event_types.",
+    deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/customers/data-request emits it to active app-platform subscriptions for the store.",
     partnerAction: "Respond to the merchant/customer data export request through the partner app's compliance workflow.",
-    source: "packages/app-engine/src/index.ts:150 + :459"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:129 + packages/app-engine/src/index.ts:150"
   },
   {
     topic: "customers/redact",
     category: "mandatory compliance",
-    deliveryRule: "App webhook subscriptions always include this topic in event_types.",
+    deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/customers/redact emits it to active app-platform subscriptions for the store.",
     partnerAction: "Delete or anonymize customer personal data held by the partner app.",
-    source: "packages/app-engine/src/index.ts:150 + :459"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:131 + packages/app-engine/src/index.ts:150"
   },
   {
     topic: "shop/redact",
     category: "mandatory compliance",
-    deliveryRule: "App webhook subscriptions always include this topic in event_types.",
+    deliveryRule: "App webhook subscriptions always include this topic in event_types; POST /v1/app-store/compliance/shop/redact emits it explicitly and app uninstall emits shop/redact before app webhook subscriptions are disabled.",
     partnerAction: "Delete or anonymize store-level data held by the partner app after store/app lifecycle cleanup.",
-    source: "packages/app-engine/src/index.ts:150 + :459"
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:133 + services/api-gateway/src/routes/app-store/install-lifecycle-routes.ts:335"
   }
 ];
 
@@ -1639,9 +1641,15 @@ export const webhookDeliveryRules: WebhookDeliveryRuleDoc[] = [
   },
   {
     rule: "Subscription event filter",
-    currentBehavior: "Lifecycle dispatch sends only to subscriptions whose event_types include the current event. Planned app subscriptions append mandatory compliance topics to every configured webhook.",
-    developerAction: "Register the lifecycle topics your app needs and implement the mandatory compliance topics added by the platform.",
-    source: "services/api-gateway/src/routes/app-store.ts:447 + packages/app-engine/src/index.ts:459"
+    currentBehavior: "Lifecycle and compliance dispatch sends only to subscriptions whose event_types include the current event. Planned app subscriptions append mandatory compliance topics to every configured webhook.",
+    developerAction: "Register the lifecycle topics your app needs and implement the mandatory compliance topics emitted by the platform.",
+    source: "services/api-gateway/src/routes/app-store/shared.ts:484 + packages/app-engine/src/index.ts:1430"
+  },
+  {
+    rule: "Compliance producer routes",
+    currentBehavior: "POST /v1/app-store/compliance/customers/data-request, /customers/redact, and /shop/redact require merchant auth, store ownership, an idempotency key, and app webhook delivery configuration when active app subscriptions exist.",
+    developerAction: "Use these routes from merchant/customer compliance workflows and dedupe events by X-LetBuyy-Event-ID on the partner callback.",
+    source: "services/api-gateway/src/routes/app-store/compliance-routes.ts:129"
   }
 ];
 
