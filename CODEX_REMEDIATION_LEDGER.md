@@ -2,8 +2,8 @@
 
 ## CURRENT PHASE
 
-- Phase: PHASE 3 — P1 Cost.
-- Current work item: P1-2 Hyperdrive pooled-read decision.
+- Phase: PHASE 4 — P2 Performance.
+- Current work item: P2-2 Hyperdrive pooled SQL reads.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -248,6 +248,20 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P2-1 — Public storefront REST edge cache and publish invalidation
+
+- Added a Cloudflare Cache API helper for public storefront JSON responses with `STOREFRONT_CACHE=off` rollback, 60-second max-age, and 300-second stale-while-revalidate.
+- Cache-off and local no-cache paths now emit `Cache-Control: no-store`, so rollback disables both Worker cache writes and downstream public caching.
+- Added versioned cache keys backed by the existing `CACHE` KV binding; theme publish and rollback bump the store handle version for subdomain, store name, and custom domain.
+- Cached public REST storefront reads for bootstrap, product lists, product subsets, product detail, categories, navigation, pages, policies, and blog routes.
+- Added store-scoped cache tags for provider-level purge observability without relying on tag purge for correctness.
+
+Evidence:
+- `node --test tests/performance/storefront-cache.test.mjs` — PASS, 5/5 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -312,6 +326,10 @@ Evidence:
 - `rg -n "P1-2|Hyperdrive|pooled reads" docs/P1_COST_MASTER.md docs/P2_PERFORMANCE_MASTER.md docs/P3_SCALABILITY_MASTER.md docs/LETBUYY_CODEX_IMPLEMENTATION_MASTER.md services/api-gateway/wrangler.toml` — PASS, Hyperdrive retained for Phase 4.2 pooled-read implementation.
 - `git diff --check` — PASS after Hyperdrive pooled-read decision ledger update.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after Hyperdrive pooled-read decision ledger update.
+- `node --test tests/performance/storefront-cache.test.mjs` — PASS, 5/5 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after public storefront REST cache changes.
+- `git diff --check` — PASS after public storefront REST cache changes.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after public storefront REST cache changes.
 
 ## SKIPPED — NEEDS HUMAN
 

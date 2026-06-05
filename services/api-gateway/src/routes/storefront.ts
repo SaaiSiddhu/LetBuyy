@@ -7,6 +7,12 @@ import * as bcrypt from 'bcryptjs';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { verifyInternalAppRequest } from '../lib/internal-auth';
+import {
+    cachedJson,
+    storefrontRequestCacheKey,
+    STOREFRONT_CACHE_SWR_SECONDS,
+    STOREFRONT_CACHE_TTL_SECONDS,
+} from '../lib/storefront-cache';
 import { validate } from '../middleware/validation';
 import {
     StorefrontCreateOrderSchema,
@@ -83,6 +89,10 @@ type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
 const CUSTOMER_PASSWORD_RESET_TTL_SECONDS = 60 * 60;
 const CUSTOMER_PASSWORD_RESET_TOKEN_BYTES = 32;
+
+function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
+    return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
+}
 
 router.use('/customer/wishlist', requireCustomerSession);
 router.use('/customer/wishlist/*', requireCustomerSession);
@@ -1881,17 +1891,28 @@ router.get('/:subdomain/theme-preview', async (c) => {
 
 // GET /storefront/:subdomain — Public published store data and immutable current release
 router.get('/:subdomain', async (c) => {
-    const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    const [release, appBlocks] = await Promise.all([
-        loadCurrentThemeRelease(c, store.id),
-        loadPublicStorefrontAppBlocks(c, store.id),
-    ]);
-    return c.json(success({
-        ...mapPublicStorePayload(store, release),
-        app_blocks: appBlocks,
-    }));
+        const [release, appBlocks] = await Promise.all([
+            loadCurrentThemeRelease(c, store.id),
+            loadPublicStorefrontAppBlocks(c, store.id),
+        ]);
+        return {
+            body: success({
+                ...mapPublicStorePayload(store, release),
+                app_blocks: appBlocks,
+            }),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:bootstrap', 'storefront:theme'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/status — Public limited status data for coming-soon routing.
@@ -2888,24 +2909,32 @@ router.post(
 router.get('/:subdomain/products', async (c) => {
     const page = parseInt(c.req.query('page') || '1');
     const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data, count, error } = await queryPublicProducts(c, store.id, {
-        page,
-        limit,
-        paginated: true,
-        category: c.req.query('category') || undefined,
-        search: c.req.query('search') || undefined,
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'products', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data, count, error } = await queryPublicProducts(c, store.id, {
+            page,
+            limit,
+            paginated: true,
+            category: c.req.query('category') || undefined,
+            search: c.req.query('search') || undefined,
+        });
+        if (error) return { status: 500, body: dbFailureBody() };
+        return {
+            body: paginated(data || [], count || 0, page, limit),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
+        };
     });
-    if (error) return c.json(dbFailureBody(), 500);
-    return c.json(paginated(data || [], count || 0, page, limit));
 });
 
 // GET /storefront/:subdomain/products/by-ids?ids=a,b — Public product subset scoped by store
 router.get('/:subdomain/products/by-ids', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const ids = (c.req.query('ids') || '')
         .split(',')
         .map((id) => id.trim())
@@ -2914,31 +2943,61 @@ router.get('/:subdomain/products/by-ids', async (c) => {
 
     if (!ids.length) return c.json(success([]));
 
-    const { data, error } = await queryPublicProducts(c, store.id, { limit: 100, ids });
-    if (error) return c.json(dbFailureBody(), 500);
-    return c.json(success(data || []));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'products-by-ids', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        const { data, error } = await queryPublicProducts(c, store.id, { limit: 100, ids });
+        if (error) return { status: 500, body: dbFailureBody() };
+        return {
+            body: success(data || []),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/products/:slug — Single product scoped by store.
 // Accepts either a product slug or UUID to preserve existing storefront URLs.
 router.get('/:subdomain/products/:slug', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     const identifier = c.req.param('slug');
     if (!/^[a-z0-9-]{1,120}$/i.test(identifier)) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product identifier' } }, 400);
     }
-    const { data } = await db
-        .from('products')
-        .select('*, product_variants(*)')
-        .eq('store_id', store.id)
-        .or(`slug.eq.${identifier},id.eq.${identifier}`)
-        .eq('is_active', true)
-        .single();
-    if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
-    await new ProductExecutionAdapter(db).recordStorefrontView(data as StorefrontProductDetail);
-    return c.json(success(data));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'product-detail', handle, identifier), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data } = await db
+            .from('products')
+            .select('*, product_variants(*)')
+            .eq('store_id', store.id)
+            .or(`slug.eq.${identifier},id.eq.${identifier}`)
+            .eq('is_active', true)
+            .single();
+        if (!data) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } },
+            };
+        }
+        await new ProductExecutionAdapter(db).recordStorefrontView(data as StorefrontProductDetail);
+        return {
+            body: success(data),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products', `storefront:product:${identifier}`),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/coupons/validate — Public checkout coupon validation
@@ -2999,108 +3058,199 @@ async function validateCouponForStore(c: AppContext, storeId: string) {
 
 // GET /storefront/:subdomain/categories
 router.get('/:subdomain/categories', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data } = await db.from('product_categories').select('id,name,slug,image_url,parent_id,product_count').eq('store_id', store.id).eq('is_visible', true).order('display_order');
-    return c.json(success(data || []));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'categories', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data } = await db.from('product_categories').select('id,name,slug,image_url,parent_id,product_count').eq('store_id', store.id).eq('is_visible', true).order('display_order');
+        return {
+            body: success(data || []),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products', 'storefront:categories'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/navigation?location=main
 router.get('/:subdomain/navigation', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const location = normalizePublicRouteToken(c.req.query('location') || 'main');
     if (!location) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid menu location' } }, 400);
     }
 
-    try {
-        const navigation = await loadNavigationMenu(c, store.id, location);
-        return c.json(success(navigation));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load navigation' },
-        }, 500);
-    }
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'navigation', handle, location), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        try {
+            const navigation = await loadNavigationMenu(c, store.id, location);
+            return {
+                body: success(navigation),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:navigation', `storefront:navigation:${location}`),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load navigation' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/pages
 router.get('/:subdomain/pages', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'pages', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    try {
-        const pages = await listStorefrontPages(c, store.id);
-        return c.json(success(pages));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load pages' },
-        }, 500);
-    }
+        try {
+            const pages = await listStorefrontPages(c, store.id);
+            return {
+                body: success(pages),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:pages'),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load pages' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/policies
 router.get('/:subdomain/policies', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'policies', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    try {
-        const policies = await listStorefrontPolicies(c, store.id);
-        return c.json(success(policies));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load policies' },
-        }, 500);
-    }
+        try {
+            const policies = await listStorefrontPolicies(c, store.id);
+            return {
+                body: success(policies),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:policies'),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load policies' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/policies/:policyType
 router.get('/:subdomain/policies/:policyType', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const policyToken = normalizePublicRouteToken(c.req.param('policyType'));
     if (!policyToken) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid policy type' } }, 400);
     }
 
-    try {
-        const policy = await loadStorefrontPolicy(c, store.id, policyToken);
-        if (!policy) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Policy not found' } }, 404);
-        return c.json(success(policy));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load policy' },
-        }, 500);
-    }
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'policy', handle, policyToken), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        try {
+            const policy = await loadStorefrontPolicy(c, store.id, policyToken);
+            if (!policy) {
+                return {
+                    status: 404,
+                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Policy not found' } },
+                };
+            }
+            return {
+                body: success(policy),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:policies', `storefront:policy:${policyToken}`),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load policy' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/pages/:slug
 router.get('/:subdomain/pages/:slug', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const slug = normalizePublicRouteToken(c.req.param('slug'));
     if (!slug) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid page slug' } }, 400);
     }
 
-    try {
-        const page = await loadStorefrontPageBySlug(c, store.id, slug);
-        if (!page) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Page not found' } }, 404);
-        return c.json(success(page));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load page' },
-        }, 500);
-    }
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'page', handle, slug), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        try {
+            const page = await loadStorefrontPageBySlug(c, store.id, slug);
+            if (!page) {
+                return {
+                    status: 404,
+                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Page not found' } },
+                };
+            }
+            return {
+                body: success(page),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:pages', `storefront:page:${slug}`),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load page' },
+                },
+            };
+        }
+    });
 });
 
 // POST /storefront/customer/find-or-create — Sessionless checkout customer bootstrap
@@ -4260,57 +4410,84 @@ router.delete('/customer/addresses/:id', async (c) => {
 
 // GET /storefront/:subdomain/blog
 router.get('/:subdomain/blog', async (c) => {
-    const db = getSupabaseAdmin(c);
     const page = parseInt(c.req.query('page') || '1');
     const limit = Math.min(parseInt(c.req.query('limit') || '10'), 50);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
-        .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
-    return c.json(paginated(data || [], count || 0, page, limit));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'blog', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
+            .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
+        return {
+            body: paginated(data || [], count || 0, page, limit),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:blog'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/blog/:slug
 router.get('/:subdomain/blog/:slug', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const slug = normalizePublicRouteToken(c.req.param('slug'));
     if (!slug) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid blog post slug' } }, 400);
     }
 
-    const { data, error } = await db.from('blog_posts')
-        .select('id,title,slug,excerpt,content,content_html,featured_image,published_at,updated_at,seo_title,seo_description,og_image_url,canonical_url')
-        .eq('store_id', store.id)
-        .eq('status', 'published')
-        .eq('slug', slug)
-        .maybeSingle();
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'blog-detail', handle, slug), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    if (error) return c.json(dbFailureBody(), 500);
-    if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Blog post not found' } }, 404);
+        const { data, error } = await db.from('blog_posts')
+            .select('id,title,slug,excerpt,content,content_html,featured_image,published_at,updated_at,seo_title,seo_description,og_image_url,canonical_url')
+            .eq('store_id', store.id)
+            .eq('status', 'published')
+            .eq('slug', slug)
+            .maybeSingle();
 
-    return c.json(success({
-        id: data.id,
-        title: data.title,
-        slug: data.slug,
-        page_type: 'blog_post',
-        content: {
-            body: data.content || '',
-            html: data.content_html || '',
-            image: data.featured_image || '',
-            excerpt: data.excerpt || '',
-        },
-        seo: {
-            title: data.seo_title || data.title,
-            description: data.seo_description || data.excerpt || '',
-            ogImage: data.og_image_url || data.featured_image || '',
-            canonicalUrl: data.canonical_url || '',
-        },
-        published_at: data.published_at,
-        updated_at: data.updated_at,
-    }));
+        if (error) return { status: 500, body: dbFailureBody() };
+        if (!data) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Blog post not found' } },
+            };
+        }
+
+        return {
+            body: success({
+                id: data.id,
+                title: data.title,
+                slug: data.slug,
+                page_type: 'blog_post',
+                content: {
+                    body: data.content || '',
+                    html: data.content_html || '',
+                    image: data.featured_image || '',
+                    excerpt: data.excerpt || '',
+                },
+                seo: {
+                    title: data.seo_title || data.title,
+                    description: data.seo_description || data.excerpt || '',
+                    ogImage: data.og_image_url || data.featured_image || '',
+                    canonicalUrl: data.canonical_url || '',
+                },
+                published_at: data.published_at,
+                updated_at: data.updated_at,
+            }),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:blog', `storefront:blog:${slug}`),
+        };
+    });
 });
 
 // POST /storefront/:subdomain/contact — Public contact form
