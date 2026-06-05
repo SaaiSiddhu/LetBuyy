@@ -2,8 +2,8 @@
 
 ## CURRENT PHASE
 
-- Phase: PHASE 1 — P0 Security.
-- Current work item: P0-D customer-auth rate limit and Turnstile abuse controls.
+- Phase: PHASE 2 — Release Safety.
+- Current work item: P0-E release workflow fail-closed, migration safety, and secrets-before-deploy.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -118,6 +118,21 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated `packages/commerce-core/dist` was removed.
 
+### P0-E.1 / P0-E.2 / P0-E.3 — Release workflow fail-closed and migration safety
+
+- Added a `release-preflight` job to `.github/workflows/production-deploy.yml` that fails on missing Supabase, Cloudflare, Vercel, Worker, app, Turnstile, customer-session, and backup credentials.
+- Removed production migration, Worker deployment, and app deployment skip branches so missing credentials cannot produce a green release.
+- Moved api-gateway and webhook-service `wrangler secret put` steps before their production `wrangler deploy` steps.
+- Added `CUSTOMER_SESSION_SECRET` and `TURNSTILE_SECRET_KEY` to api-gateway production Worker secret provisioning.
+- Put production migrations behind the `production-migrations` environment, generated a Supabase migration diff artifact, and required an encrypted logical backup artifact before `supabase db push`.
+- Added a `release-required-jobs-succeeded` job with `if: always()` that fails before production smoke when any required release job is failed, cancelled, or skipped.
+- Added source regression tests for fail-closed credentials, migration diff/backup evidence, secrets-before-deploy ordering, and the required-job gate.
+
+Evidence:
+- `node --test tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 6/6 tests.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -145,6 +160,8 @@ Evidence:
 - `pnpm --filter @letbuyy/api-client typecheck` — PASS.
 - `pnpm --filter @letbuyy/storefront-runtime lint` — PASS, warnings only.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated `packages/commerce-core/dist` was removed.
+- `node --test tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 6/6 tests.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after production workflow fail-closed changes.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -152,3 +169,5 @@ Evidence:
 - SKIP: Apply migration `077_customer_reset_tokens.sql` and verify deployed reset-email delivery — Reason: live Supabase migration apply and Resend/provider credentials require human-controlled staging/prod access. Resume point: Phase 2 release safety migration gate and P0 customer-auth smoke suite.
 - SKIP: Apply migration `078_password_set_intents.sql` and run deployed OTP→intent→set-password smoke — Reason: live Supabase migration apply and staging identity secrets require human-controlled access. Resume point: Phase 2 release safety migration gate and P0 identity auth smoke suite.
 - SKIP: Provision and verify live `TURNSTILE_SECRET_KEY` / `NEXT_PUBLIC_TURNSTILE_SITE_KEY` for storefront-runtime and api-gateway — Reason: Cloudflare Turnstile site/secret keys and deployment secret-store access require human-controlled staging/prod access. Resume point: Phase 2 secrets-before-deploy gate and P0 storefront auth/contact/review smoke suite.
+- SKIP: Execute `.github/workflows/production-deploy.yml` on a protected release branch with one credential intentionally unset — Reason: GitHub Actions protected environments and production secret store are human-controlled. Resume point: Phase 2 release workflow proof; expected result is hard failure in `release-preflight`, not skipped deploy jobs or green smoke.
+- SKIP: Provision `PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE` and validate encrypted production backup artifact restore in GitHub Actions — Reason: production backup encryption secret and database access are human-controlled. Resume point: Phase 2 migration safety proof before enabling production migrations.

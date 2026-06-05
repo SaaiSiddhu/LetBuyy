@@ -21,8 +21,83 @@ env:
   HAS_VERCEL_CREDS: ${{ secrets.VERCEL_TOKEN != '' }}
 
 jobs:
+  release-preflight:
+    name: Release credential preflight
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require production release credentials
+        env:
+          HAS_PRODUCTION_SUPABASE_URL: ${{ secrets.PRODUCTION_SUPABASE_URL != '' }}
+          HAS_PRODUCTION_SUPABASE_ANON_KEY: ${{ secrets.PRODUCTION_SUPABASE_ANON_KEY != '' }}
+          HAS_PRODUCTION_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.PRODUCTION_SUPABASE_SERVICE_ROLE_KEY != '' }}
+          HAS_PRODUCTION_AUTH_SECRET: ${{ secrets.PRODUCTION_AUTH_SECRET != '' }}
+          HAS_PRODUCTION_CSRF_SECRET: ${{ secrets.PRODUCTION_CSRF_SECRET != '' }}
+          HAS_PRODUCTION_CUSTOMER_SESSION_SECRET: ${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET != '' }}
+          HAS_PRODUCTION_TURNSTILE_SECRET_KEY: ${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY != '' }}
+          HAS_PRODUCTION_INTERNAL_API_SECRET: ${{ secrets.PRODUCTION_INTERNAL_API_SECRET != '' }}
+          HAS_PRODUCTION_PLATFORM_CONSOLE_API_TOKEN: ${{ secrets.PRODUCTION_PLATFORM_CONSOLE_API_TOKEN != '' }}
+          HAS_PRODUCTION_UPSTASH_REDIS_REST_URL: ${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_URL != '' }}
+          HAS_PRODUCTION_UPSTASH_REDIS_REST_TOKEN: ${{ secrets.PRODUCTION_UPSTASH_REDIS_REST_TOKEN != '' }}
+          HAS_PRODUCTION_RAZORPAY_KEY_ID: ${{ secrets.PRODUCTION_RAZORPAY_KEY_ID != '' }}
+          HAS_PRODUCTION_RAZORPAY_KEY_SECRET: ${{ secrets.PRODUCTION_RAZORPAY_KEY_SECRET != '' }}
+          HAS_PRODUCTION_RAZORPAY_WEBHOOK_SECRET: ${{ secrets.PRODUCTION_RAZORPAY_WEBHOOK_SECRET != '' }}
+          HAS_PRODUCTION_STRIPE_WEBHOOK_SECRET: ${{ secrets.PRODUCTION_STRIPE_WEBHOOK_SECRET != '' }}
+          HAS_PRODUCTION_RESEND_API_KEY: ${{ secrets.PRODUCTION_RESEND_API_KEY != '' }}
+          HAS_PRODUCTION_PAYMENT_CONFIG_ENCRYPTION_KEY: ${{ secrets.PRODUCTION_PAYMENT_CONFIG_ENCRYPTION_KEY != '' }}
+          HAS_PRODUCTION_TURNSTILE_SITE_KEY: ${{ secrets.PRODUCTION_TURNSTILE_SITE_KEY != '' }}
+          HAS_VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID != '' }}
+          HAS_PRODUCTION_MARKETING_PROJECT_ID: ${{ secrets.PRODUCTION_MARKETING_PROJECT_ID != '' }}
+          HAS_PRODUCTION_IDENTITY_PROJECT_ID: ${{ secrets.PRODUCTION_IDENTITY_PROJECT_ID != '' }}
+          HAS_PRODUCTION_MERCHANT_PROJECT_ID: ${{ secrets.PRODUCTION_MERCHANT_PROJECT_ID != '' }}
+          HAS_PRODUCTION_STOREFRONT_PROJECT_ID: ${{ secrets.PRODUCTION_STOREFRONT_PROJECT_ID != '' }}
+          HAS_PRODUCTION_THEME_MARKETPLACE_PROJECT_ID: ${{ secrets.PRODUCTION_THEME_MARKETPLACE_PROJECT_ID != '' }}
+          HAS_PRODUCTION_APP_MARKETPLACE_PROJECT_ID: ${{ secrets.PRODUCTION_APP_MARKETPLACE_PROJECT_ID != '' }}
+          HAS_PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID: ${{ secrets.PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID != '' }}
+          HAS_PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID: ${{ secrets.PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID != '' }}
+          HAS_PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE: ${{ secrets.PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE != '' }}
+        run: |
+          missing=()
+          [[ "${HAS_SUPABASE_CREDS}" == "true" ]] || missing+=("SUPABASE_ACCESS_TOKEN/PRODUCTION_DB_CONNECTION_STRING")
+          [[ "${HAS_CLOUDFLARE_CREDS}" == "true" ]] || missing+=("CLOUDFLARE_API_TOKEN/CLOUDFLARE_ACCOUNT_ID")
+          [[ "${HAS_VERCEL_CREDS}" == "true" ]] || missing+=("VERCEL_TOKEN")
+          [[ "${HAS_PRODUCTION_SUPABASE_URL}" == "true" ]] || missing+=("PRODUCTION_SUPABASE_URL")
+          [[ "${HAS_PRODUCTION_SUPABASE_ANON_KEY}" == "true" ]] || missing+=("PRODUCTION_SUPABASE_ANON_KEY")
+          [[ "${HAS_PRODUCTION_SUPABASE_SERVICE_ROLE_KEY}" == "true" ]] || missing+=("PRODUCTION_SUPABASE_SERVICE_ROLE_KEY")
+          [[ "${HAS_PRODUCTION_AUTH_SECRET}" == "true" ]] || missing+=("PRODUCTION_AUTH_SECRET")
+          [[ "${HAS_PRODUCTION_CSRF_SECRET}" == "true" ]] || missing+=("PRODUCTION_CSRF_SECRET")
+          [[ "${HAS_PRODUCTION_CUSTOMER_SESSION_SECRET}" == "true" ]] || missing+=("PRODUCTION_CUSTOMER_SESSION_SECRET")
+          [[ "${HAS_PRODUCTION_TURNSTILE_SECRET_KEY}" == "true" ]] || missing+=("PRODUCTION_TURNSTILE_SECRET_KEY")
+          [[ "${HAS_PRODUCTION_INTERNAL_API_SECRET}" == "true" ]] || missing+=("PRODUCTION_INTERNAL_API_SECRET")
+          [[ "${HAS_PRODUCTION_PLATFORM_CONSOLE_API_TOKEN}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_CONSOLE_API_TOKEN")
+          [[ "${HAS_PRODUCTION_UPSTASH_REDIS_REST_URL}" == "true" ]] || missing+=("PRODUCTION_UPSTASH_REDIS_REST_URL")
+          [[ "${HAS_PRODUCTION_UPSTASH_REDIS_REST_TOKEN}" == "true" ]] || missing+=("PRODUCTION_UPSTASH_REDIS_REST_TOKEN")
+          [[ "${HAS_PRODUCTION_RAZORPAY_KEY_ID}" == "true" ]] || missing+=("PRODUCTION_RAZORPAY_KEY_ID")
+          [[ "${HAS_PRODUCTION_RAZORPAY_KEY_SECRET}" == "true" ]] || missing+=("PRODUCTION_RAZORPAY_KEY_SECRET")
+          [[ "${HAS_PRODUCTION_RAZORPAY_WEBHOOK_SECRET}" == "true" ]] || missing+=("PRODUCTION_RAZORPAY_WEBHOOK_SECRET")
+          [[ "${HAS_PRODUCTION_STRIPE_WEBHOOK_SECRET}" == "true" ]] || missing+=("PRODUCTION_STRIPE_WEBHOOK_SECRET")
+          [[ "${HAS_PRODUCTION_RESEND_API_KEY}" == "true" ]] || missing+=("PRODUCTION_RESEND_API_KEY")
+          [[ "${HAS_PRODUCTION_PAYMENT_CONFIG_ENCRYPTION_KEY}" == "true" ]] || missing+=("PRODUCTION_PAYMENT_CONFIG_ENCRYPTION_KEY")
+          [[ "${HAS_PRODUCTION_TURNSTILE_SITE_KEY}" == "true" ]] || missing+=("PRODUCTION_TURNSTILE_SITE_KEY")
+          [[ "${HAS_VERCEL_ORG_ID}" == "true" ]] || missing+=("VERCEL_ORG_ID")
+          [[ "${HAS_PRODUCTION_MARKETING_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_MARKETING_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_IDENTITY_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_IDENTITY_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_MERCHANT_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_MERCHANT_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_STOREFRONT_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_STOREFRONT_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_THEME_MARKETPLACE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_THEME_MARKETPLACE_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_APP_MARKETPLACE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_APP_MARKETPLACE_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID}" == "true" ]] || missing+=("PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID")
+          [[ "${HAS_PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE}" == "true" ]] || missing+=("PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE")
+
+          if (( ${#missing[@]} )); then
+            printf 'Missing required production release credentials:\n' >&2
+            printf ' - %s\n' "${missing[@]}" >&2
+            exit 1
+          fi
+
   staging-e2e:
     name: E2E tests on staging (production gate)
+    needs: release-preflight
     runs-on: ubuntu-latest
     environment: staging
     steps:
@@ -64,7 +139,7 @@ jobs:
     name: Migrate production DB
     needs: staging-e2e
     runs-on: ubuntu-latest
-    environment: production
+    environment: production-migrations
     steps:
       - uses: actions/checkout@v4
 
@@ -80,15 +155,47 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run migrations on production DB
-        if: ${{ env.HAS_SUPABASE_CREDS == 'true' }}
-        run: pnpm dlx supabase@latest db push --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --include-all
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Generate production migration diff
+        run: pnpm dlx supabase@latest db diff --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --schema public > supabase-production-migration-diff.sql
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
-      - name: Skip production migrations
-        if: ${{ env.HAS_SUPABASE_CREDS != 'true' }}
-        run: echo "SKIP - production migrations require Supabase credentials."
+      - name: Upload production migration diff
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: production-migration-diff
+          path: supabase-production-migration-diff.sql
+          retention-days: 30
+
+      - name: Capture encrypted production logical backup
+        run: |
+          pg_dump --format=custom --no-owner --no-acl --file "$RUNNER_TEMP/production-pre-migration.backup" "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}"
+          pg_restore --list "$RUNNER_TEMP/production-pre-migration.backup" > "$RUNNER_TEMP/production-pre-migration.restore-list.txt"
+          gpg --batch --yes --symmetric --cipher-algo AES256 \
+            --passphrase "${{ secrets.PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE }}" \
+            --output production-pre-migration.backup.gpg \
+            "$RUNNER_TEMP/production-pre-migration.backup"
+          sha256sum production-pre-migration.backup.gpg > production-pre-migration.backup.gpg.sha256
+
+      - name: Upload encrypted production backup metadata
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-pre-migration-backup
+          path: |
+            production-pre-migration.backup.gpg
+            production-pre-migration.backup.gpg.sha256
+          retention-days: 7
+
+      - name: Run migrations on production DB
+        run: pnpm dlx supabase@latest db push --db-url "${{ secrets.PRODUCTION_DB_CONNECTION_STRING }}" --include-all
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
 
   deploy-workers-production:
     name: Deploy workers to production
@@ -113,22 +220,15 @@ jobs:
       - name: Build workers
         run: pnpm turbo build --filter="@letbuyy/api-gateway" --filter="@letbuyy/webhook-service" --filter="@letbuyy/queue-workers"
 
-      - name: Deploy api-gateway to production
-        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
-        run: pnpm exec wrangler deploy --env production
-        working-directory: services/api-gateway
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
       - name: Set api-gateway production secrets
-        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
           echo "${{ secrets.PRODUCTION_SUPABASE_URL }}" | pnpm exec wrangler secret put SUPABASE_URL --env production
           echo "${{ secrets.PRODUCTION_SUPABASE_ANON_KEY }}" | pnpm exec wrangler secret put SUPABASE_ANON_KEY --env production
           echo "${{ secrets.PRODUCTION_SUPABASE_SERVICE_ROLE_KEY }}" | pnpm exec wrangler secret put SUPABASE_SERVICE_ROLE_KEY --env production
           echo "${{ secrets.PRODUCTION_AUTH_SECRET }}" | pnpm exec wrangler secret put AUTH_SECRET --env production
           echo "${{ secrets.PRODUCTION_CSRF_SECRET }}" | pnpm exec wrangler secret put CSRF_SECRET --env production
+          echo "${{ secrets.PRODUCTION_CUSTOMER_SESSION_SECRET }}" | pnpm exec wrangler secret put CUSTOMER_SESSION_SECRET --env production
+          echo "${{ secrets.PRODUCTION_TURNSTILE_SECRET_KEY }}" | pnpm exec wrangler secret put TURNSTILE_SECRET_KEY --env production
           echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put INTERNAL_API_SECRET --env production
           echo "${{ secrets.PRODUCTION_INTERNAL_API_SECRET }}" | pnpm exec wrangler secret put LETBUYY_INTERNAL_API_SECRET --env production
           echo "${{ secrets.PRODUCTION_PLATFORM_CONSOLE_API_TOKEN }}" | pnpm exec wrangler secret put PLATFORM_CONSOLE_API_TOKEN --env production
@@ -144,16 +244,14 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Deploy webhook-service to production
-        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
+      - name: Deploy api-gateway to production
         run: pnpm exec wrangler deploy --env production
-        working-directory: services/webhook-service
+        working-directory: services/api-gateway
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Set webhook-service production secrets
-        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: |
           echo "${{ secrets.PRODUCTION_RAZORPAY_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put RAZORPAY_WEBHOOK_SECRET --env production
           echo "${{ secrets.PRODUCTION_STRIPE_WEBHOOK_SECRET }}" | pnpm exec wrangler secret put STRIPE_WEBHOOK_SECRET --env production
@@ -162,17 +260,19 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
+      - name: Deploy webhook-service to production
+        run: pnpm exec wrangler deploy --env production
+        working-directory: services/webhook-service
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
       - name: Deploy queue-workers to production
-        if: ${{ env.HAS_CLOUDFLARE_CREDS == 'true' }}
         run: pnpm exec wrangler deploy --env production
         working-directory: services/queue-workers
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-
-      - name: Skip worker deployment
-        if: ${{ env.HAS_CLOUDFLARE_CREDS != 'true' }}
-        run: echo "SKIP - production worker deployment requires Cloudflare credentials."
 
   deploy-apps-production:
     name: Deploy Next apps to production
@@ -214,7 +314,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Deploy ${{ matrix.app }} to production
-        if: ${{ env.HAS_VERCEL_CREDS == 'true' }}
         run: pnpm dlx vercel@latest deploy --prod --token "${{ secrets.VERCEL_TOKEN }}" --scope "${{ secrets.VERCEL_ORG_ID }}"
         working-directory: apps/${{ matrix.app }}
         env:
@@ -241,13 +340,41 @@ jobs:
           NEXT_PUBLIC_RAZORPAY_KEY_ID: ${{ secrets.PRODUCTION_RAZORPAY_KEY_ID }}
           NODE_ENV: production
 
-      - name: Skip app deployment
-        if: ${{ env.HAS_VERCEL_CREDS != 'true' }}
-        run: echo "SKIP - production app deployment requires Vercel credentials."
+  release-required-jobs-succeeded:
+    name: Verify required release jobs succeeded
+    needs:
+      - release-preflight
+      - staging-e2e
+      - migrate-production
+      - deploy-workers-production
+      - deploy-apps-production
+    runs-on: ubuntu-latest
+    if: always()
+    steps:
+      - name: Fail when a required release job failed or skipped
+        env:
+          PREFLIGHT_RESULT: ${{ needs.release-preflight.result }}
+          STAGING_E2E_RESULT: ${{ needs.staging-e2e.result }}
+          MIGRATE_RESULT: ${{ needs.migrate-production.result }}
+          WORKERS_RESULT: ${{ needs.deploy-workers-production.result }}
+          APPS_RESULT: ${{ needs.deploy-apps-production.result }}
+        run: |
+          failed=()
+          [[ "${PREFLIGHT_RESULT}" == "success" ]] || failed+=("release-preflight=${PREFLIGHT_RESULT}")
+          [[ "${STAGING_E2E_RESULT}" == "success" ]] || failed+=("staging-e2e=${STAGING_E2E_RESULT}")
+          [[ "${MIGRATE_RESULT}" == "success" ]] || failed+=("migrate-production=${MIGRATE_RESULT}")
+          [[ "${WORKERS_RESULT}" == "success" ]] || failed+=("deploy-workers-production=${WORKERS_RESULT}")
+          [[ "${APPS_RESULT}" == "success" ]] || failed+=("deploy-apps-production=${APPS_RESULT}")
+
+          if (( ${#failed[@]} )); then
+            printf 'Required release jobs did not all succeed:\n' >&2
+            printf ' - %s\n' "${failed[@]}" >&2
+            exit 1
+          fi
 
   smoke-test-production:
     name: Smoke test production
-    needs: deploy-apps-production
+    needs: release-required-jobs-succeeded
     runs-on: ubuntu-latest
     environment: production
     steps:
