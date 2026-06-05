@@ -94,10 +94,24 @@ export const apiRouteGroups: RouteGroup[] = [
     ],
   },
   {
+    title: "GraphQL APIs",
+    source: "services/api-gateway/src/graphql/schema.ts, storefront.ts, admin.ts",
+    status: "Partial",
+    summary: "Admin and Storefront GraphQL endpoints are mounted behind the gateway with query-cost limiting. Storefront cart reads fail loudly with `CART_NOT_SUPPORTED` until server-side cart persistence exists; they no longer return silent null data.",
+    routes: [
+      "GET|POST /v1/admin/graphql",
+      "GET|POST /v1/graphql/admin",
+      "GET|POST /v1/storefront/graphql",
+      "GET|POST /v1/graphql/storefront",
+      "StorefrontQuery.cart -> CART_NOT_SUPPORTED",
+      "Admin bulk operations -> Cloudflare R2 JSONL",
+    ],
+  },
+  {
     title: "Theme Platform",
     source: "services/api-gateway/src/routes/themes.ts",
     status: "Live",
-    summary: "Theme APIs cover marketplace catalog, package upload, install, editor state, draft save/delete, preview tokens, release history, rollback, purchase, and payment verification.",
+    summary: "Theme APIs cover marketplace catalog, JSON-contract package upload, Liquid/JSON rendering assets, install, multi-template editor state, draft save/delete, preview tokens, release history, rollback, purchase, and payment verification.",
     routes: [
       "GET /v1/themes",
       "GET /v1/themes/:slug/schema",
@@ -233,12 +247,14 @@ export const sdkGuides: GuideCard[] = [
   {
     title: "Theme bundle contract",
     status: "Live contract",
-    body: "Theme packages use the JSON-contract bundle from `packages/theme-engine/src/theme-bundle.ts` and upload through `/v1/themes/packages/upload`.",
+    body: "Theme packages use the JSON-contract bundle from `packages/theme-engine/src/theme-bundle.ts` and upload through `/v1/themes/packages/upload`. Liquid sections and blocks render through the LiquidJS-backed renderer in `packages/theme-engine/src/theme-renderer.ts`.",
     bullets: [
       "`config/settings_schema.json` defines grouped editable settings.",
       "`config/settings_data.json` stores current and preset values.",
-      "`templates/*.json` references section and block instances.",
+      "`templates/*.json` references section and block instances across home, product, collection, page, cart, and blog templates.",
       "`sections/manifest.json` and `blocks/definitions.json` define reusable section/block schemas.",
+      "`renderer.engine = liquid` is supported for Liquid templates; JSON-contract sections remain the portable configuration layer.",
+      "Merchant editor drafts are scoped by `template_key`, so editing Product does not overwrite Home.",
       "`locales/*.json` stores translation dictionaries.",
     ],
   },
@@ -249,6 +265,7 @@ export const sdkGuides: GuideCard[] = [
     bullets: [
       "Admin UI and Checkout UI extensions render through `@letbuyy/extension-host` sandbox policies.",
       "Theme app blocks install as WS11 portable Liquid app blocks and require no storefront source changes.",
+      "Checkout Functions are advisory only: they can apply discount codes, select shipping methods, restrict payment methods, and return validation errors; they cannot set arbitrary totals, taxes, line prices, or payment amounts.",
       "Wasm Functions use HTTPS module URLs, SHA-256 verification, no imports, typed JSON I/O, and 1-5ms budgets.",
       "Per-store registry rows expose `enabled`, `disabled`, and `revoked` lifecycle state.",
     ],
@@ -365,6 +382,7 @@ export const themeBundleExample = `{
     "hero": {
       "type": "hero",
       "name": "Hero",
+      "liquid_template": "<section>{{ section.settings.heading }}</section>",
       "renderer_key": "hero",
       "settings_schema": {},
       "block_types": []

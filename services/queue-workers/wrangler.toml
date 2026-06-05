@@ -9,11 +9,11 @@ command = "pnpm build"
 
 [observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [vars]
@@ -27,6 +27,11 @@ TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Queue Workers"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
+PLATFORM_QUEUE_CLAIM_LIMIT = "25"
+PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH = "25"
+PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD = "3"
+PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS = "60"
+PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT = "off"
 
 [[queues.consumers]]
 queue = "letbuyy-events-staging"
@@ -98,11 +103,11 @@ workers_dev = false
 
 [env.staging.observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [env.staging.observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.staging.vars]
@@ -116,6 +121,11 @@ TELEMETRY_ENV = "staging"
 RUNTIME_NAME = "Queue Workers"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
+PLATFORM_QUEUE_CLAIM_LIMIT = "25"
+PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH = "25"
+PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD = "3"
+PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS = "60"
+PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT = "off"
 
 [[env.staging.queues.consumers]]
 queue = "letbuyy-events-staging"
@@ -195,11 +205,11 @@ workers_dev = false
 
 [env.production.observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [env.production.observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.production.vars]
@@ -213,12 +223,17 @@ TELEMETRY_ENV = "production"
 RUNTIME_NAME = "Queue Workers"
 PRIMARY_REGION = "ap-south-1"
 FAILOVER_REGION = "ap-southeast-1"
+PLATFORM_QUEUE_CLAIM_LIMIT = "25"
+PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH = "25"
+PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD = "3"
+PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS = "60"
+PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT = "off"
 
 [[env.production.queues.consumers]]
 queue = "letbuyy-events-production"
 max_batch_size = 50
 max_batch_timeout = 10
-max_concurrency = 25
+max_concurrency = 10
 max_retries = 10
 retry_delay = 30
 dead_letter_queue = "letbuyy-dead-letters-production"
@@ -227,7 +242,7 @@ dead_letter_queue = "letbuyy-dead-letters-production"
 queue = "letbuyy-analytics-queue-production"
 max_batch_size = 50
 max_batch_timeout = 10
-max_concurrency = 20
+max_concurrency = 10
 max_retries = 8
 retry_delay = 30
 dead_letter_queue = "letbuyy-dead-letters-production"
@@ -236,7 +251,7 @@ dead_letter_queue = "letbuyy-dead-letters-production"
 queue = "letbuyy-search-queue-production"
 max_batch_size = 25
 max_batch_timeout = 10
-max_concurrency = 20
+max_concurrency = 10
 max_retries = 8
 retry_delay = 45
 dead_letter_queue = "letbuyy-dead-letters-production"
@@ -245,7 +260,7 @@ dead_letter_queue = "letbuyy-dead-letters-production"
 queue = "letbuyy-notifications-queue-production"
 max_batch_size = 25
 max_batch_timeout = 10
-max_concurrency = 10
+max_concurrency = 5
 max_retries = 6
 retry_delay = 60
 dead_letter_queue = "letbuyy-dead-letters-production"
@@ -254,7 +269,7 @@ dead_letter_queue = "letbuyy-dead-letters-production"
 queue = "letbuyy-dead-letters-production"
 max_batch_size = 25
 max_batch_timeout = 30
-max_concurrency = 5
+max_concurrency = 3
 max_retries = 3
 retry_delay = 300
 
@@ -262,7 +277,7 @@ retry_delay = 300
 queue = "letbuyy-production-queue"
 max_batch_size = 50
 max_batch_timeout = 10
-max_concurrency = 20
+max_concurrency = 10
 max_retries = 10
 retry_delay = 30
 dead_letter_queue = "letbuyy-production-dead-letter-queue"
@@ -271,7 +286,7 @@ dead_letter_queue = "letbuyy-production-dead-letter-queue"
 queue = "letbuyy-production-dead-letter-queue"
 max_batch_size = 25
 max_batch_timeout = 30
-max_concurrency = 5
+max_concurrency = 3
 max_retries = 3
 retry_delay = 300
 

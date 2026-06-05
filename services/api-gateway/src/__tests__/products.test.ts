@@ -21,7 +21,8 @@ test('product creation validates input, verifies store ownership, and returns 20
     const adapterSource = source('execution/product-execution.adapter.ts');
 
     assert.match(routeSource, /router\.post\('\/',\s*validate\('json',\s*CreateProductSchema\)/);
-    assert.match(routeSource, /new ProductExecutionAdapter\(db\)/);
+    assert.match(routeSource, /createProductExecutionAdapter\(db,\s*c\.env\)/);
+    assert.match(routeSource, /isProductVariantDiffEnabled\(env\)/);
     assert.match(routeSource, /service\.createProduct\(body,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /c\.json\(success\(data\),\s*201\)/);
     assert.match(adapterSource, /await this\.assertStoreOwnership\(input\.store_id,\s*userId,\s*sessionStoreId/);
@@ -36,8 +37,8 @@ test('product reads are scoped to owned sites and cross-site access is hidden', 
     assert.match(routeSource, /\.from\('products'\)\s*[\s\S]*\.eq\('id',\s*productId\)/);
     assert.match(routeSource, /verifyStoreOwnership\(db,\s*data\.store_id,\s*customUser\.id,\s*auth\.user\.storeId\)/);
     assert.match(routeSource, /code:\s*'NOT_FOUND',\s*message:\s*'Product not found'/);
-    assert.match(routeSource, /status:\s*'active'\)[\s\S]*dbQuery\.eq\('is_active',\s*true\)/);
-    assert.match(routeSource, /status:\s*'inactive'\)[\s\S]*dbQuery\.eq\('is_active',\s*false\)/);
+    assert.match(routeSource, /query\.status === 'active'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*true\)/);
+    assert.match(routeSource, /query\.status === 'inactive'[\s\S]*dbQuery = dbQuery\.eq\('is_active',\s*false\)/);
 });
 
 test('product updates and deletes use owned-product lookup before mutation', () => {
@@ -60,9 +61,9 @@ test('merchant product proxies resolve the URL store to sites.id before worker c
 
     assert.match(listRoute, /resolveOwnedStoreId\(decodeURIComponent\(store\)\)/);
     assert.match(listRoute, /store_id:\s*resolved\.storeId/);
-    assert.match(listRoute, /workerFetch\(`\/products\?\$\{query\.toString\(\)\}`,\s*\{\s*requireSession:\s*true/);
-    assert.match(listRoute, /workerFetch\('\/products',\s*\{\s*method:\s*'POST',\s*requireSession:\s*true/);
-    assert.match(itemRoute, /payload\.data\.store_id !== resolved\.storeId/);
+    assert.match(listRoute, /createMerchantApiClient\(\)\.products\.list\(query\)/);
+    assert.match(listRoute, /createMerchantApiClient\(\)\.products\.create\(\{\s*[\s\S]*\.\.\.body,\s*[\s\S]*store_id:\s*resolved\.storeId/);
+    assert.match(itemRoute, /product\.store_id !== resolved\.storeId/);
     assert.match(itemRoute, /return NextResponse\.json\(\{ error:\s*'Product not found' \},\s*\{ status:\s*404 \}\)/);
 });
 

@@ -163,26 +163,6 @@ export async function verifyCustomerPassword(
 }
 
 // ============================================================
-// UPDATE CUSTOMER STATS (After order completion)
-// ============================================================
-
-export async function updateCustomerStats(
-    storeId: string,
-    email: string,
-    orderTotal: number,
-    orderId: string
-): Promise<void> {
-    await createStorefrontApiClient()
-        .storefront
-        .updateCustomerStats({
-            store_id: storeId,
-            email,
-            order_total: orderTotal,
-            order_id: orderId,
-        });
-}
-
-// ============================================================
 // WISHLIST OPERATIONS
 // ============================================================
 
@@ -287,7 +267,7 @@ function mapRow(row: Record<string, unknown>): StoreCustomer {
         fullName: (row.full_name as string) || null,
         phone: (row.phone as string) || null,
         status: (row.status as 'active' | 'disabled' | 'guest') || 'active',
-        hasPassword: !!(row.password_hash),
+        hasPassword: Boolean(row.has_password),
         totalOrders: (row.total_orders as number) || 0,
         totalSpent: Number(row.total_spent) || 0,
         addresses: (row.addresses as StoreCustomerAddress[]) || [],

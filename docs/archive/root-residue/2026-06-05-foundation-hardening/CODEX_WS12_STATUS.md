@@ -27,7 +27,7 @@ Status: BLOCKED - AWAITING HUMAN STAGING PROOF, with local unblocked work comple
 - Deployed staging GraphQL and bulk proof requires staging gateway deployment credentials, seeded staging merchant/store/catalog/order/theme/app data, and R2/queue bindings for bulk JSONL result proof.
 
 ## SKIPPED - NEEDS BACKEND
-- Persisted Storefront GraphQL cart reads require a governed server-side cart persistence/read endpoint. Current gateway checkout/order creation endpoints do not provide a cart read delegate, so `StorefrontQuery.cart(id:)` remains `null` instead of fabricating state.
+- Persisted Storefront GraphQL cart reads require a governed server-side cart persistence/read endpoint. Current gateway checkout/order creation endpoints do not provide a cart read delegate, so `StorefrontQuery.cart(id:)` now fails loudly with `CART_NOT_SUPPORTED` instead of fabricating state.
 
 ## NEXT
 - Advance to WS13 Extension Platform X0 under `CODEX_EXTENSION_PLATFORM_MISSION.md`.

@@ -126,6 +126,8 @@ export interface GatewayPaginationMeta {
   total_pages: number;
   has_next: boolean;
   has_prev: boolean;
+  next_cursor?: string | null;
+  total_is_exact?: boolean;
 }
 
 export interface GatewaySuccess<T> {
@@ -155,6 +157,8 @@ export interface HealthResponse {
 export interface ListQuery extends QueryParams {
   page?: number;
   limit?: number;
+  cursor?: string;
+  withCount?: boolean;
   sort?: string;
   order?: 'asc' | 'desc';
   search?: string;
@@ -350,7 +354,14 @@ export type ThemeCatalogItem = Theme & {
   active?: boolean;
 };
 
-export interface ThemeCatalogResponse extends PaginatedResponse<ThemeCatalogItem> {
+export interface ThemeCatalogResponse {
+  data: ThemeCatalogItem[];
+  total: number;
+  page: number;
+  limit: number;
+  has_more: boolean;
+  next_cursor?: string | null;
+  total_is_exact?: boolean;
   current_theme: string | null;
   store_status: string | null;
 }
@@ -643,9 +654,19 @@ export type ProductImportInput = {
   store_id: string;
   csv: string;
 };
+export interface ExportJobSummary extends JsonRecord {
+  id: string;
+  type: 'products' | 'orders' | 'product_import';
+  status: 'queued' | 'running' | 'completed' | 'failed';
+  row_count: number;
+  filename: string;
+  download_url: string;
+  created_at: string;
+  updated_at: string;
+  expires_at: string;
+}
 export type ProductImportResult = {
-  imported: number;
-  products: Array<{ id: string; name: string }>;
+  job: ExportJobSummary;
 };
 export type ThemeInstallInput = {
   store_id: string;
@@ -681,12 +702,14 @@ export type ThemePackageUploadResult = {
 };
 export type SaveThemeDraftInput = {
   store_id: string;
+  template_key?: string;
   template_config: JsonRecord;
   base_version?: number;
   client?: 'admin-web' | 'flutter-builder' | 'api';
 };
 export type PublishThemeInput = {
   store_id: string;
+  template_key?: string;
   base_version?: number;
   make_store_live?: boolean;
   publish_message?: string;
@@ -1257,11 +1280,11 @@ export class LetbuyyApiClient {
     uploadPackage: (input: ThemePackageUploadInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemePackageUploadResult>('/themes/packages/upload', { ...options, method: 'POST', body: input }),
     editor: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { store_id: storeId } }),
+      this.requestData<ThemeEditorPayload>(`/themes/${encodePathSegment(slug)}/editor`, { ...options, query: { ...(options?.query || {}), store_id: storeId } }),
     saveDraft: (slug: string, input: SaveThemeDraftInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemeDraftSaveResult>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'PUT', body: input }),
     deleteDraft: (slug: string, storeId: string, options?: LetbuyyRequestOptions) =>
-      this.requestData<{ deleted: boolean }>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'DELETE', query: { store_id: storeId } }),
+      this.requestData<{ deleted: boolean }>(`/themes/${encodePathSegment(slug)}/editor/draft`, { ...options, method: 'DELETE', query: { ...(options?.query || {}), store_id: storeId } }),
     publish: (slug: string, input: PublishThemeInput, options?: LetbuyyRequestOptions) =>
       this.requestData<ThemePublishResult>(`/themes/${encodePathSegment(slug)}/publish`, { ...options, method: 'POST', body: input }),
     previewSession: (slug: string, input: ThemePreviewSessionInput, options?: LetbuyyRequestOptions) =>
@@ -1421,6 +1444,8 @@ export class LetbuyyApiClient {
       page: numberValue(meta.page, 1),
       limit: numberValue(meta.per_page, data.length),
       has_more: Boolean(meta.has_next),
+      next_cursor: typeof meta.next_cursor === 'string' ? meta.next_cursor : null,
+      total_is_exact: Boolean(meta.total_is_exact),
     };
   }
 

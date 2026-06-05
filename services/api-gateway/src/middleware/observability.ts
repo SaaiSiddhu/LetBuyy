@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { getSupabaseAdmin } from '../lib/supabase';
 import { ObservabilityExecutionAdapter } from '../execution/observability-execution.adapter';
+import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from '../graphql/rest-shim';
 
 type AppContext = Context<{ Bindings: Env }>;
 
@@ -149,6 +150,10 @@ export const observability = createMiddleware<{ Bindings: Env }>(async (c, next)
     c.header('X-Trace-ID', traceId);
 
     await next();
+
+    if (isGraphQLRestShimSubrequest(c.req.header(LETBUYY_INTERNAL_SUBREQUEST_HEADER))) {
+        return;
+    }
 
     const latencyMs = Date.now() - startedAt;
     const tenant = getTenant(c);

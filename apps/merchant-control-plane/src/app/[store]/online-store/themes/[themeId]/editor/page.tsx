@@ -98,6 +98,8 @@ type ApiEditorResponse = {
         schema_manifest_version?: string
         renderer_key?: string
     }
+    templateKey?: string
+    templates?: unknown
     templateConfig?: unknown
     draftConfig?: unknown
     draftSavedAt?: string | null
@@ -127,6 +129,21 @@ type ReleaseEntry = {
     is_current?: boolean
     published_at?: string
 }
+
+type TemplateOption = {
+    key: string
+    label: string
+    type: string
+}
+
+const DEFAULT_TEMPLATE_OPTIONS: TemplateOption[] = [
+    { key: 'index', label: 'Home page', type: 'home' },
+    { key: 'product', label: 'Product page', type: 'product' },
+    { key: 'collection', label: 'Collection page', type: 'collection' },
+    { key: 'page', label: 'Content page', type: 'page' },
+    { key: 'cart', label: 'Cart page', type: 'cart' },
+    { key: 'blog', label: 'Blog post', type: 'blog' },
+]
 
 const EMPTY_SETTINGS_SCHEMA: ThemeSettingsSchema = {
     schema_version: '2026-05-json-contract',
@@ -212,6 +229,47 @@ function labelFromKey(key: string): string {
         .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
         .replace(/[-_]/g, ' ')
         .replace(/\b\w/g, (letter) => letter.toUpperCase())
+}
+
+function normalizeTemplateKey(value: unknown): string {
+    const normalized = typeof value === 'string' ? value.trim() : ''
+    return /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(normalized) ? normalized : 'index'
+}
+
+function templateLabel(key: string, template?: JsonRecord): string {
+    const name = stringValue(template?.name)
+    if (name) return name
+    return DEFAULT_TEMPLATE_OPTIONS.find((option) => option.key === key)?.label || labelFromKey(key)
+}
+
+function normalizeTemplateOptions(value: unknown, templateConfig: JsonRecord): TemplateOption[] {
+    const fromApi = Array.isArray(value)
+        ? value.flatMap((entry) => {
+            const record = asRecord(entry)
+            const key = normalizeTemplateKey(record.key)
+            return key ? [{
+                key,
+                label: stringValue(record.label, templateLabel(key, record)),
+                type: stringValue(record.type, key),
+            }] : []
+        })
+        : []
+    const options = new Map<string, TemplateOption>()
+
+    for (const option of [...DEFAULT_TEMPLATE_OPTIONS, ...fromApi]) {
+        options.set(option.key, option)
+    }
+
+    for (const [key, template] of Object.entries(asRecord(templateConfig.templates))) {
+        const normalizedKey = normalizeTemplateKey(key)
+        options.set(normalizedKey, {
+            key: normalizedKey,
+            label: templateLabel(normalizedKey, asRecord(template)),
+            type: stringValue(asRecord(template).type, normalizedKey),
+        })
+    }
+
+    return Array.from(options.values())
 }
 
 function normalizeFieldType(value: unknown): SchemaField['type'] {
@@ -324,18 +382,73 @@ function defaultThemeSettings(schema: ThemeSettingsSchema): JsonRecord {
     }, {})
 }
 
-function getSectionRoot(templateConfig: JsonRecord): JsonRecord {
+function portableBlocksToArray(section: JsonRecord): unknown[] {
+    const blocks = section.blocks
+    if (Array.isArray(blocks)) return blocks
+
+    const blockRecords = asRecord(blocks)
+    const blockOrder = Array.isArray(section.block_order)
+        ? section.block_order.filter((blockId): blockId is string => typeof blockId === 'string')
+        : Object.keys(blockRecords)
+
+    return blockOrder
+        .filter((blockId) => Object.prototype.hasOwnProperty.call(blockRecords, blockId))
+        .map((blockId, index) => ({
+            id: blockId,
+            order: index * 10,
+            ...asRecord(blockRecords[blockId]),
+        }))
+}
+
+function portableTemplateSectionsToArray(template: JsonRecord): unknown[] | null {
+    const sections = asRecord(template.sections)
+    if (Object.keys(sections).length === 0) return null
+
+    const order = Array.isArray(template.order)
+        ? template.order.filter((sectionId): sectionId is string => typeof sectionId === 'string')
+        : Object.keys(sections)
+
+    return order
+        .filter((sectionId) => Object.prototype.hasOwnProperty.call(sections, sectionId))
+        .map((sectionId, index) => {
+            const section = asRecord(sections[sectionId])
+            return {
+                id: sectionId,
+                order: index * 10,
+                ...section,
+                blocks: portableBlocksToArray(section),
+            }
+        })
+}
+
+function getSectionRoot(templateConfig: JsonRecord, templateKey = 'index'): JsonRecord {
     const rootSections = templateConfig.sections
-    if (Array.isArray(rootSections)) return { template: rootSections }
-    if (Object.keys(asRecord(rootSections)).length > 0) return asRecord(rootSections)
+    const legacyRoot = Array.isArray(rootSections)
+        ? { template: rootSections }
+        : Object.keys(asRecord(rootSections)).length > 0
+            ? asRecord(rootSections)
+            : {}
+
+    const templates = asRecord(templateConfig.templates)
+    const selectedTemplate = asRecord(templates[templateKey] || templates.index || templates.home || Object.values(templates)[0])
+    const selectedSections = portableTemplateSectionsToArray(selectedTemplate)
+    if (selectedSections) {
+        return {
+            ...legacyRoot,
+            template: selectedSections,
+        }
+    }
+
+    if (Object.keys(legacyRoot).length > 0) return legacyRoot
 
     const configSections = asRecord(asRecord(templateConfig.config).sections)
     if (Object.keys(configSections).length > 0) return configSections
 
-    const templates = asRecord(templateConfig.templates)
     const homeTemplate = asRecord(templates.home || templates.index || Object.values(templates)[0])
     const homeSections = homeTemplate.sections
     if (Array.isArray(homeSections)) return { template: homeSections }
+    const homeTemplateSections = portableTemplateSectionsToArray(homeTemplate)
+    if (homeTemplateSections) return { template: homeTemplateSections }
     return asRecord(homeSections)
 }
 
@@ -435,14 +548,15 @@ function createBlockFromSchema(blockType: string, blockSchema: BlockSchema | und
 function normalizeEditorState(
     templateConfig: unknown,
     themeId: string,
+    templateKey: string,
     sectionSchemas: Record<string, SectionSchema>,
     settingsSchema: ThemeSettingsSchema,
 ): EditorState {
     const fallback = getDefaultStorefrontThemeTemplate(themeId)
     const fallbackConfig = fallback as unknown as JsonRecord
     const candidate = hasRenderableThemeTemplate(templateConfig) ? asRecord(templateConfig) : fallbackConfig
-    const root = getSectionRoot(candidate)
-    const fallbackRoot = getSectionRoot(fallbackConfig)
+    const root = getSectionRoot(candidate, templateKey)
+    const fallbackRoot = getSectionRoot(fallbackConfig, templateKey)
     const templateEntries = Array.isArray(root.template) ? root.template : []
     const fallbackTemplateEntries = Array.isArray(fallbackRoot.template) ? fallbackRoot.template : []
 
@@ -484,10 +598,38 @@ function normalizeEditorState(
     }
 }
 
-function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: EditorState): JsonRecord {
+function blockToPortableRecord(block: BlockEntry): JsonRecord {
+    return {
+        type: block.type,
+        visible: block.visible,
+        settings: block.settings,
+    }
+}
+
+function sectionToPortableRecord(section: SectionEntry): JsonRecord {
+    const blockEntries = section.blocks.map((block) => [block.id, blockToPortableRecord(block)])
+    return {
+        type: section.type,
+        visible: section.visible,
+        settings: section.settings,
+        blocks: Object.fromEntries(blockEntries),
+        block_order: section.blocks.map((block) => block.id),
+    }
+}
+
+function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: EditorState, templateKey = 'index'): JsonRecord {
     const config = asRecord(baseConfig.config)
     const configSettingsData = asRecord(config.settings_data)
     const rootSettingsData = asRecord(baseConfig.settings_data)
+    const templates = asRecord(baseConfig.templates)
+    const fallbackTemplate = asRecord(templates.index || templates.home || Object.values(templates)[0])
+    const existingTemplate = asRecord(templates[templateKey] || fallbackTemplate)
+    const nextTemplate = {
+        ...existingTemplate,
+        name: stringValue(existingTemplate.name, templateLabel(templateKey, existingTemplate)),
+        sections: Object.fromEntries(state.sections.template.map((section) => [section.id, sectionToPortableRecord(section)])),
+        order: state.sections.template.map((section) => section.id),
+    }
     const nextSettingsData = {
         ...rootSettingsData,
         current: state.themeSettings,
@@ -502,6 +644,10 @@ function buildDraftConfig(baseConfig: JsonRecord, themeId: string, state: Editor
         themeId: stringValue(baseConfig.themeId, themeId),
         themeSettings: state.themeSettings,
         sections: state.sections,
+        templates: {
+            ...templates,
+            [templateKey]: nextTemplate,
+        },
         settings_data: nextSettingsData,
         config: {
             ...config,
@@ -594,6 +740,8 @@ function ThemeEditorInner() {
     const [editorState, setEditorState] = useState<EditorState>(EMPTY_STATE)
     const [savedState, setSavedState] = useState<EditorState>(EMPTY_STATE)
     const [baseConfig, setBaseConfig] = useState<JsonRecord>({})
+    const [templateOptions, setTemplateOptions] = useState<TemplateOption[]>(DEFAULT_TEMPLATE_OPTIONS)
+    const [selectedTemplateKey, setSelectedTemplateKey] = useState('index')
     const [history, setHistory] = useState<EditorHistory>({ past: [], future: [] })
     const [selection, setSelection] = useState<EditorSelection>({ kind: 'section', sectionId: 'header' })
     const [panelMode, setPanelMode] = useState<PanelMode>('sections')
@@ -651,6 +799,7 @@ function ThemeEditorInner() {
     }, [availableSections, sectionSchemas])
     const activeAddSectionType = addSectionType || addableSections[0]?.type || ''
     const activeDevice = PREVIEW_DEVICES.find((device) => device.value === previewDevice) || PREVIEW_DEVICES[0]
+    const selectedTemplate = templateOptions.find((option) => option.key === selectedTemplateKey) || templateOptions[0] || DEFAULT_TEMPLATE_OPTIONS[0]
 
     const applyChange = useCallback((updater: (current: EditorState) => EditorState) => {
         setEditorState((current) => {
@@ -694,7 +843,7 @@ function ThemeEditorInner() {
             const fallbackSectionSchemas = getSectionSchemas(themeId)
             const [sectionsRes, editorRes] = await Promise.all([
                 fetch(`/api/themes/${themeId}/sections`, { cache: 'no-store' }).catch(() => null),
-                fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`, { cache: 'no-store' }),
+                fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, { cache: 'no-store' }),
             ])
 
             const sectionsPayload = sectionsRes ? await sectionsRes.json().catch(() => ({})) : {}
@@ -711,9 +860,13 @@ function ThemeEditorInner() {
                 ...asRecord(editorPayload.sectionSchemas),
             } as Record<string, SectionSchema>
             const nextSettingsSchema = normalizeSettingsSchema(editorPayload.themeSettingsSchema || getThemeSettingsSchema(themeId))
+            const loadedBaseConfig = asRecord(editorPayload.draftConfig || editorPayload.templateConfig)
+            const nextTemplateOptions = normalizeTemplateOptions(editorPayload.templates, loadedBaseConfig)
+            const nextTemplateKey = normalizeTemplateKey(editorPayload.templateKey || selectedTemplateKey)
             const nextState = normalizeEditorState(
                 editorPayload.draftConfig || editorPayload.templateConfig,
                 themeId,
+                nextTemplateKey,
                 apiSectionSchemas,
                 nextSettingsSchema,
             )
@@ -729,10 +882,12 @@ function ThemeEditorInner() {
 
             setSectionSchemas(apiSectionSchemas)
             setAvailableSections(sectionCatalog)
+            setTemplateOptions(nextTemplateOptions)
+            setSelectedTemplateKey(nextTemplateKey)
             setSettingsSchema(nextSettingsSchema)
             setEditorState(nextState)
             setSavedState(nextState)
-            setBaseConfig(asRecord(editorPayload.draftConfig || editorPayload.templateConfig))
+            setBaseConfig(loadedBaseConfig)
             setSelection(firstSelection(nextState, nextSettingsSchema))
             setHistory({ past: [], future: [] })
             setIsDirty(false)
@@ -753,7 +908,7 @@ function ThemeEditorInner() {
         } finally {
             setIsLoading(false)
         }
-    }, [loadReleases, notify, store, themeId])
+    }, [loadReleases, notify, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         void loadEditor()
@@ -809,11 +964,11 @@ function ThemeEditorInner() {
     }, [editorState])
 
     const saveDraft = useCallback(async () => {
-        const draftConfig = buildDraftConfig(baseConfig, themeId, editorState)
-        const res = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}`, {
+        const draftConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
+        const res = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ draftConfig }),
+            body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey }),
         })
         const payload = await res.json().catch(() => ({}))
         if (!res.ok) {
@@ -826,7 +981,7 @@ function ThemeEditorInner() {
         setSavedAt(stringValue(asRecord(payload).savedAt, new Date().toISOString()))
         setHistory({ past: [], future: [] })
         setIsDirty(false)
-    }, [baseConfig, draftVersion, editorState, store, themeId])
+    }, [baseConfig, draftVersion, editorState, selectedTemplateKey, store, themeId])
 
     const handleSave = useCallback(async () => {
         if (!store || !themeId || isSaving) return
@@ -835,7 +990,7 @@ function ThemeEditorInner() {
             await saveDraft()
             notify({
                 title: 'Draft saved',
-                description: 'The theme draft and local preview are in sync.',
+                description: `${selectedTemplate.label} draft and local preview are in sync.`,
                 variant: 'success',
             })
         } catch (err) {
@@ -847,17 +1002,17 @@ function ThemeEditorInner() {
         } finally {
             setIsSaving(false)
         }
-    }, [isSaving, notify, saveDraft, store, themeId])
+    }, [isSaving, notify, saveDraft, selectedTemplate.label, store, themeId])
 
     const handlePublish = useCallback(async () => {
         if (!store || !themeId || isPublishing) return
         setIsPublishing(true)
         try {
-            const templateConfig = buildDraftConfig(baseConfig, themeId, editorState)
-            const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}`, {
+            const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
+            const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ templateConfig }),
+                body: JSON.stringify({ templateConfig, templateKey: selectedTemplateKey }),
             })
             const payload = await res.json().catch(() => ({}))
             if (!res.ok) {
@@ -874,7 +1029,7 @@ function ThemeEditorInner() {
             void loadReleases()
             notify({
                 title: 'Theme published',
-                description: 'The current UrbanKicks draft is now the live storefront version.',
+                description: `${selectedTemplate.label} is now included in the live storefront version.`,
                 variant: 'success',
             })
         } catch (err) {
@@ -886,7 +1041,21 @@ function ThemeEditorInner() {
         } finally {
             setIsPublishing(false)
         }
-    }, [baseConfig, currentReleaseVersion, editorState, isPublishing, loadReleases, notify, store, themeId])
+    }, [baseConfig, currentReleaseVersion, editorState, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
+
+    const handleTemplateChange = useCallback((nextTemplateKey: string) => {
+        const normalized = normalizeTemplateKey(nextTemplateKey)
+        if (normalized === selectedTemplateKey) return
+        if (isDirty) {
+            notify({
+                title: 'Save draft before switching',
+                description: 'Template drafts are saved separately, so save or discard the current draft before changing templates.',
+                variant: 'warning',
+            })
+            return
+        }
+        setSelectedTemplateKey(normalized)
+    }, [isDirty, notify, selectedTemplateKey])
 
     const discardChanges = useCallback(() => {
         setEditorState(savedState)
@@ -1126,11 +1295,19 @@ function ThemeEditorInner() {
                         <span>{themeName}</span>
                         <Badge label={isDirty ? 'Draft' : 'Saved'} variant={isDirty ? 'warning' : 'success'} />
                     </div>
-                    <div className="theme-os-page-pill">
+                    <label className="theme-os-page-pill" aria-label="Template">
                         <Laptop size={15} aria-hidden="true" />
-                        <span>Home page</span>
+                        <select
+                            value={selectedTemplateKey}
+                            onChange={(event) => handleTemplateChange(event.target.value)}
+                            disabled={isLoading || isSaving || isPublishing}
+                        >
+                            {templateOptions.map((template) => (
+                                <option key={template.key} value={template.key}>{template.label}</option>
+                            ))}
+                        </select>
                         <ChevronDown size={14} aria-hidden="true" />
-                    </div>
+                    </label>
                 </div>
 
                 <div className="theme-os-topbar__right">

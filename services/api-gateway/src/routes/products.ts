@@ -1,9 +1,9 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
-import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
+import { ProductExecutionAdapter, isProductVariantDiffEnabled } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
 import {
     CreateProductSchema,
@@ -28,11 +28,82 @@ const router = new Hono<{ Bindings: Env }>();
 type ListProductsQueryInput = ListProductsInput;
 type ProductEventType = 'product.created' | 'product.updated' | 'product.deleted';
 
+const PRODUCT_LIST_COLUMNS = [
+    'id',
+    'store_id',
+    'site_id',
+    'name',
+    'description',
+    'price',
+    'compare_price',
+    'images',
+    'thumbnail_url',
+    'category',
+    'tags',
+    'variants',
+    'stock',
+    'track_inventory',
+    'allow_backorder',
+    'is_active',
+    'is_featured',
+    'display_order',
+    'created_at',
+    'updated_at',
+    'slug',
+    'cost_price',
+    'sku',
+    'barcode',
+    'seo_title',
+    'seo_description',
+    'status',
+    'product_type',
+    'vendor',
+    'url_handle',
+    'cost_per_item',
+    'charge_tax',
+    'sell_when_oos',
+    'is_physical',
+    'weight',
+    'weight_unit',
+    'country_of_origin',
+    'hs_code',
+    'hsn_code',
+    'version',
+].join(',');
+const PRODUCT_LIST_COLUMNS_RELATIONAL = PRODUCT_LIST_COLUMNS
+    .split(',')
+    .filter((column) => column !== 'variants')
+    .join(',');
+
+type ProductVariantRelationRow = {
+    id: string;
+    product_id: string;
+    title?: string | null;
+    price?: number | string | null;
+    compare_price?: number | string | null;
+    sku?: string | null;
+    barcode?: string | null;
+    inventory_qty?: number | string | null;
+    weight?: number | string | null;
+    weight_unit?: string | null;
+    option1?: string | null;
+    option2?: string | null;
+    option3?: string | null;
+    image_url?: string | null;
+    position?: number | string | null;
+};
+
 type DatabaseErrorLike = {
     message?: string;
     details?: string;
     hint?: string;
 } | null | undefined;
+
+function createProductExecutionAdapter(db: ReturnType<typeof getSupabaseAdmin>, env: Env): ProductExecutionAdapter {
+    return new ProductExecutionAdapter(db, {
+        variantDiffEnabled: isProductVariantDiffEnabled(env),
+    });
+}
 
 function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
@@ -64,14 +135,86 @@ function isMissingTableError(error: DatabaseErrorLike, tableName: string): boole
     );
 }
 
+function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>): boolean {
+    return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
 function stringOrNull(value: unknown): string | null {
     return typeof value === 'string' && value.trim().length > 0 ? value.trim() : null;
+}
+
+function numberOrNull(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
 }
 
 function objectRecord(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)
         ? value as Record<string, unknown>
         : {};
+}
+
+function productVariantView(row: ProductVariantRelationRow): Record<string, unknown> {
+    return {
+        id: row.id,
+        product_id: row.product_id,
+        title: row.title || '',
+        price: numberOrNull(row.price) ?? 0,
+        compare_price: numberOrNull(row.compare_price),
+        sku: stringOrNull(row.sku),
+        barcode: stringOrNull(row.barcode),
+        stock: numberOrNull(row.inventory_qty) ?? 0,
+        inventory_qty: numberOrNull(row.inventory_qty) ?? 0,
+        weight: numberOrNull(row.weight),
+        weight_unit: stringOrNull(row.weight_unit) || 'kg',
+        option1: stringOrNull(row.option1),
+        option2: stringOrNull(row.option2),
+        option3: stringOrNull(row.option3),
+        image_url: stringOrNull(row.image_url),
+        position: numberOrNull(row.position) ?? 0,
+    };
+}
+
+async function hydrateProductVariants(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    products: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+    const productIds = products
+        .map((product) => stringOrNull(product.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (productIds.length === 0) return products;
+
+    const { data, error } = await db
+        .from('product_variants')
+        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+        .in('product_id', Array.from(new Set(productIds)))
+        .order('position', { ascending: true });
+
+    if (isMissingTableError(error, 'product_variants')) return products;
+    if (error) throw new Error(`Product variant hydration failed: ${error.message}`);
+
+    const variantsByProduct = new Map<string, Record<string, unknown>[]>();
+    for (const row of (data || []) as ProductVariantRelationRow[]) {
+        variantsByProduct.set(row.product_id, [
+            ...(variantsByProduct.get(row.product_id) || []),
+            productVariantView(row),
+        ]);
+    }
+
+    return products.map((product) => {
+        const productId = stringOrNull(product.id);
+        if (!productId) return product;
+        return {
+            ...product,
+            variants: variantsByProduct.get(productId) || [],
+            product_variants: variantsByProduct.get(productId) || [],
+        };
+    });
 }
 
 function productStatus(record: Record<string, unknown>, deleted = false): 'draft' | 'active' | 'archived' | 'deleted' | undefined {
@@ -120,6 +263,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const auth = c.get('auth');
     const query = c.get('validatedQuery') as ListProductsQueryInput;
     const offset = (query.page - 1) * query.limit;
+    const decodedCursor = decodeListCursor(query.cursor);
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -145,7 +289,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('products')
-            .select('*', { count: 'exact' })
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : PRODUCT_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -153,10 +297,18 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         if (query.status === 'active') dbQuery = dbQuery.eq('is_active', true);
         if (query.status === 'inactive') dbQuery = dbQuery.eq('is_active', false);
         if (query.search) dbQuery = dbQuery.ilike('name', `%${query.search}%`);
+        if (decodedCursor) {
+            dbQuery = query.order === 'asc'
+                ? dbQuery.gt(query.sort, decodedCursor.value)
+                : dbQuery.lt(query.sort, decodedCursor.value);
+        }
 
-        return dbQuery
+        dbQuery = dbQuery
             .order(query.sort, { ascending: query.order === 'asc' })
-            .range(offset, offset + query.limit - 1);
+            .order('id', { ascending: query.order === 'asc' });
+
+        if (query.cursor || query.page === 1) return dbQuery.limit(query.limit + 1);
+        return dbQuery.range(offset, offset + query.limit);
     };
 
     let { data, error, count } = await buildProductsQuery(true);
@@ -169,7 +321,21 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated(data || [], count || 0, query.page, query.limit));
+    const rows = (data || []) as unknown as Array<Record<string, unknown>>;
+    const pageRows = rows.slice(0, query.limit) as Array<Record<string, unknown>>;
+    const nextCursor = rows.length > query.limit
+        ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
+        : null;
+    const responseRows = productVariantRelationalReadsEnabled(c.env)
+        ? await hydrateProductVariants(db, pageRows)
+        : pageRows;
+
+    return c.json(cursorPaginated(responseRows, {
+        page: query.page,
+        limit: query.limit,
+        total: query.withCount ? count || 0 : undefined,
+        nextCursor,
+    }));
 });
 
 // GET /products/collections — List collections for a store
@@ -364,7 +530,7 @@ router.get('/:id', async (c) => {
     const buildProductQuery = (includeDeletedAtFilter: boolean) => {
         const query = db
             .from('products')
-            .select('*')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_LIST_COLUMNS_RELATIONAL : '*')
             .eq('id', productId);
 
         return includeDeletedAtFilter ? query.is('deleted_at', null).single() : query.single();
@@ -376,11 +542,17 @@ router.get('/:id', async (c) => {
         ({ data, error } = await buildProductQuery(false));
     }
 
-    if (error || !data || !(await verifyStoreOwnership(db, data.store_id, customUser.id, auth.user.storeId))) {
+    const product = data as unknown as Record<string, unknown> | null;
+
+    if (error || !product || !(await verifyStoreOwnership(db, String(product.store_id), customUser.id, auth.user.storeId))) {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
     }
 
-    return c.json(success(data));
+    const rows = productVariantRelationalReadsEnabled(c.env)
+        ? await hydrateProductVariants(db, [product])
+        : [product];
+
+    return c.json(success(rows[0]));
 });
 
 // POST /products — Create a product
@@ -394,7 +566,7 @@ router.post('/', validate('json', CreateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductExecutionAdapter(db);
+    const service = createProductExecutionAdapter(db, c.env);
     const data = await service.createProduct(body, customUser.id, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.created',
@@ -419,7 +591,7 @@ router.patch('/:id', validate('json', UpdateProductSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductExecutionAdapter(db);
+    const service = createProductExecutionAdapter(db, c.env);
     const data = await service.updateProduct(productId, customUser.id, body as Record<string, unknown>, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.updated',
@@ -442,7 +614,7 @@ router.post('/bulk', validate('json', BulkProductActionSchema), async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductExecutionAdapter(db);
+    const service = createProductExecutionAdapter(db, c.env);
     const result = await service.bulkAction(body.store_id, body.product_ids, body.action, customUser.id, auth.user.storeId);
     const eventType = body.action === 'delete' ? 'product.deleted' : 'product.updated';
     const requestId = c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || null;
@@ -470,7 +642,7 @@ router.delete('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const service = new ProductExecutionAdapter(db);
+    const service = createProductExecutionAdapter(db, c.env);
     const result = await service.softDelete(productId, customUser.id, auth.user.storeId);
     await emitProductEvent(db, {
         eventType: 'product.deleted',

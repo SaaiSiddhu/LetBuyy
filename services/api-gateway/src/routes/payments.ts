@@ -9,6 +9,7 @@ import { validate } from '../middleware/validation';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
+import { SubscriptionExecutionAdapter } from '../execution/subscription-execution.adapter';
 import { createRazorpayOrder, createRazorpaySubscription } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripeCheckoutSessionWithFetch } from '@letbuyy/infrastructure/stripe-adapter';
 import {
@@ -52,15 +53,6 @@ type RazorpayOrderCreateResponse = {
     amount?: number;
     currency?: string;
     error?: { description?: string };
-};
-
-type SubscriptionPlanRow = {
-    id: string;
-    slug: string;
-    name: string;
-    products_limit?: number | null;
-    promo_price_inr?: number | null;
-    promo_months?: number | null;
 };
 
 type ClientAmountFields = {
@@ -149,114 +141,6 @@ async function emitOrderPaidEvent(
         requestId: input.requestId,
         actorId: input.actorId || null,
     });
-}
-
-function subscriptionPeriodEnd(now: Date, billingPeriod: 'monthly' | 'yearly'): Date {
-    const periodEnd = new Date(now);
-    if (billingPeriod === 'yearly') {
-        periodEnd.setFullYear(periodEnd.getFullYear() + 1);
-    } else {
-        periodEnd.setMonth(periodEnd.getMonth() + 1);
-    }
-    return periodEnd;
-}
-
-function subscriptionPromoEnd(now: Date, plan: SubscriptionPlanRow, billingPeriod: 'monthly' | 'yearly'): string | null {
-    if (Number(plan.promo_price_inr || 0) <= 0 || Number(plan.promo_months || 0) <= 0 || billingPeriod !== 'monthly') {
-        return null;
-    }
-
-    const promoEnd = new Date(now);
-    promoEnd.setMonth(promoEnd.getMonth() + Number(plan.promo_months || 0));
-    return promoEnd.toISOString();
-}
-
-async function activateMerchantSubscription(input: {
-    db: ReturnType<typeof getSupabaseAdmin>;
-    userId: string;
-    storeId: string;
-    plan: SubscriptionPlanRow;
-    billingPeriod: 'monthly' | 'yearly';
-    amountPaid: number;
-    paymentGateway?: 'razorpay' | null;
-    externalSubscriptionId?: string | null;
-    razorpayOrderId?: string | null;
-    razorpayPaymentId?: string | null;
-    now?: Date;
-}) {
-    const now = input.now || new Date();
-    const periodEnd = subscriptionPeriodEnd(now, input.billingPeriod);
-    const promoEndsAt = subscriptionPromoEnd(now, input.plan, input.billingPeriod);
-
-    await input.db
-        .from('subscriptions')
-        .update({ status: 'cancelled', cancelled_at: now.toISOString() })
-        .eq('store_id', input.storeId)
-        .eq('status', 'active');
-
-    const { data: subscription, error: subError } = await input.db
-        .from('subscriptions')
-        .insert({
-            user_id: input.userId,
-            store_id: input.storeId,
-            plan: input.plan.slug,
-            plan_id: input.plan.id,
-            status: 'active',
-            billing_period: input.billingPeriod,
-            current_period_start: now.toISOString(),
-            current_period_end: periodEnd.toISOString(),
-            promo_ends_at: promoEndsAt,
-            payment_gateway: input.paymentGateway || null,
-            external_subscription_id: input.externalSubscriptionId || null,
-            razorpay_order_id: input.razorpayOrderId || null,
-            razorpay_payment_id: input.razorpayPaymentId || null,
-            amount_paid: input.amountPaid,
-            currency: 'INR',
-            products_limit: input.plan.products_limit,
-            stores_limit: 1,
-        })
-        .select()
-        .single();
-
-    if (subError || !subscription) {
-        throw new Error('Failed to create subscription');
-    }
-
-    await input.db
-        .from('sites')
-        .update({ trial_status: input.amountPaid > 0 ? 'paid' : 'active', updated_at: now.toISOString() })
-        .eq('id', input.storeId);
-
-    const invoiceNumber = `INV-${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
-    await input.db
-        .from('billing_history')
-        .insert({
-            user_id: input.userId,
-            store_id: input.storeId,
-            subscription_id: subscription.id,
-            invoice_number: invoiceNumber,
-            description: `${input.plan.name} plan - ${input.billingPeriod === 'yearly' ? 'Annual' : 'Monthly'}`,
-            amount: input.amountPaid,
-            currency: 'INR',
-            tax_amount: Math.round(input.amountPaid * 0.18),
-            total_amount: input.amountPaid + Math.round(input.amountPaid * 0.18),
-            payment_gateway: input.paymentGateway || null,
-            payment_id: input.razorpayPaymentId || null,
-            payment_status: 'paid',
-            period_start: now.toISOString(),
-            period_end: periodEnd.toISOString(),
-        });
-
-    return {
-        id: subscription.id,
-        plan: input.plan.slug,
-        plan_name: input.plan.name,
-        status: 'active',
-        billing_period: input.billingPeriod,
-        current_period_end: periodEnd.toISOString(),
-        promo_ends_at: promoEndsAt,
-        external_subscription_id: input.externalSubscriptionId || null,
-    };
 }
 
 // GET /payments/plans — Fetch active subscription plans through the worker boundary
@@ -453,7 +337,7 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
         throw new NotFoundError('Plan not found');
     }
 
-    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as SubscriptionPlanRow & Record<string, unknown>;
+    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
 
     if (plan.requires_contact) {
         return c.json({ error: { code: 'PLAN_REQUIRES_SALES', message: 'This plan requires contacting sales' } }, 400);
@@ -468,8 +352,7 @@ router.post('/subscription/order', validate('json', CreateSubscriptionOrderSchem
     });
 
     if (checkout.mode === 'free_activation') {
-        const subscription = await activateMerchantSubscription({
-            db,
+        const subscription = await new SubscriptionExecutionAdapter(db).activateMerchantSubscription({
             userId: customUser.id,
             storeId: body.store_id,
             plan,
@@ -617,14 +500,13 @@ router.post('/subscription/verify', validate('json', VerifySubscriptionSchema), 
         throw new NotFoundError('Plan not found');
     }
 
-    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as SubscriptionPlanRow & Record<string, unknown>;
+    const plan = applyStorePlanTierDefaults(rawPlan as BillingPlanCatalogRecord) as BillingPlanCatalogRecord & Record<string, unknown>;
 
     const amountPaid = planBillingAmountMinor(plan, body.billing_period).amountMinor;
 
     let subscription;
     try {
-        subscription = await activateMerchantSubscription({
-            db,
+        subscription = await new SubscriptionExecutionAdapter(db).activateMerchantSubscription({
             userId: customUser.id,
             storeId: body.store_id,
             plan,

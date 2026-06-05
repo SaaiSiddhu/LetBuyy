@@ -10,7 +10,7 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 - Primary entity mapping: database tables use `sites`; URLs and merchant UI use `store`.
 - Business scope: e-commerce stores, portfolios, resumes, blogs, landing pages, app marketplace, theme marketplace, internal platform governance, Flutter builder surfaces, and Cloudflare Workers APIs.
 - Target market: India-first merchants, creators, job seekers, freelancers, small businesses, then global expansion.
-- Current source scan: 1511 source/config/docs files across 30 main roots, 34 package manifests, 65 Supabase migrations, 271 Next app route files, and 30 Hono route modules.
+- Current hardening baseline: 21 canonical runtime roots, 38 package manifests, 18 active Supabase migration files (`000_baseline.sql` plus `073_*.sql` through `089_*.sql`), 274 Next app route files, and 31 Hono route modules.
 
 ## Repository Applications
 
@@ -19,6 +19,7 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 - Storefront Runtime: `apps/storefront-runtime` (136 scanned files). Wildcard tenant storefronts, public product catalog, customer accounts, cart, checkout, policy pages, and theme previews.
 - Marketing Site: `apps/marketing-site` (33 scanned files). Public marketing site, pricing, and conversion flow. Must not host auth pages.
 - App Marketplace: `apps/app-marketplace` (39 scanned files). Extension marketplace, developer app submission, app search, install routes and app review APIs.
+- Developer Portal: `apps/developer-portal`. Developer documentation, API reference, SDK quick-starts, and partner dashboard shell.
 - Theme Marketplace: `apps/theme-marketplace` (35 scanned files). Theme catalog, theme detail pages, checkout, Supabase-backed theme service, and theme acquisition workflow.
 - Platform Console: `apps/platform-console` (23 scanned files). Super admin scaffold for platform operations, users, stores, subscriptions, analytics, employees, audit logs, and MFA.
 - Platform Operations Portal: `apps/platform-operations-portal` (20 scanned files). Employee portal scaffold for support, operations, users, stores, marketing and invite flows.
@@ -83,7 +84,7 @@ This AGENTS.md is the root operating contract for future Codex, human, and autom
 
 - Web app runtimes: `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/identity-platform`, `apps/app-marketplace`, `apps/theme-marketplace`, `apps/marketing-site`, `apps/platform-console`, `apps/platform-operations-portal`.
 - Mobile runtimes: `apps/mobile/shopper-app`, `apps/mobile/merchant-app`, `apps/mobile/operator-app`.
-- Service runtimes: `services/api-gateway`, `services/webhook-service`, plus reserved service roots documented in `docs/governance/runtime-boundaries.md`.
+- Service runtimes: implemented `services/api-gateway`, `services/webhook-service`, and `services/queue-workers`; reserved/not-implemented service roots `services/checkout-runtime`, `services/search-service`, `services/media-service`, `services/notification-service`, `services/event-bus`, and `services/analytics-pipeline`.
 - Every canonical runtime root must include `runtime.manifest.json`; manifests are machine-readable runtime authority and are enforced by `scripts/validators/runtime-manifest-validator.mjs`.
 - Deprecated app aliases are forbidden: `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.
 - `apps/mobile/operator-team-app` and `apps/storefront-runtime/consumer-storefront` are retired topology paths and must not be recreated.
@@ -313,7 +314,8 @@ flowchart TB
 ## Database Governance
 
 - Migration root: `database/supabase/migrations`.
-- Tables detected: 228.
+- Active replay chain: `000_baseline.sql` plus additive forward migrations `073_*.sql` through `089_*.sql`.
+- Baseline public tables detected: 233 `CREATE TABLE public.*` statements in `000_baseline.sql`.
 - Indexes detected: 376.
 - RLS-enabled table statements detected: 227.
 - Duplicate/non-standard migration numeric prefixes detected: none.
@@ -358,7 +360,7 @@ flowchart TB
 
 - Enterprise SDLC authority lives in `config/runtime/environment-lifecycle.json`, `config/runtime/rollout-lifecycle.json`, and `config/runtime/operational-certification-policy.json`.
 - Staging development lifecycle authority lives in `scripts/staging/seed.mjs`, `config/env/staging.env.example`, and the staging entries in `config/runtime/environment-lifecycle.json`.
-- Feature flag evaluation authority lives in `packages/shared-types/src/index.ts`; persisted operational control evidence lives in migration `065_enterprise_sdlc_lifecycle.sql`.
+- Feature flag evaluation authority lives in `packages/shared-types/src/index.ts`; persisted operational control evidence lives in the active `database/supabase/migrations/000_baseline.sql` operational lifecycle tables.
 - Governance validation must run `scripts/validators/operational-lifecycle-validator.mjs`; stale live certification evidence is a hard failure.
 - Plan mode means executable workflows and evidence contracts only. Do not claim live deployment, live failover, live chaos, live load, or live certification until execute-mode provider evidence is recorded and fresh.
 
@@ -374,11 +376,11 @@ flowchart TB
 | Surface | Count | Notes |
 |---|---:|---|
 | Source/config/docs files scanned | 1511 | Generated artifacts excluded from source intelligence where possible |
-| Package manifests | 34 | pnpm workspace plus worker packages |
-| Next app route files | 271 | Includes pages, layouts, route handlers, loading/error files |
+| Package manifests | 38 | pnpm workspace plus worker packages |
+| Next app route files | 274 | Includes pages, layouts, route handlers, loading/error files |
 | Next API route handlers | 118 | App-local API surface still exists |
-| Hono route modules | 30 | Worker route modules under services/api-gateway/src/routes |
-| Supabase migrations | 65 | Numeric prefix conflicts: 0 |
+| Hono route modules | 31 | Worker route modules under services/api-gateway/src/routes |
+| Supabase migrations | 18 | `000_baseline.sql` plus additive `073_*.sql` through `089_*.sql`; numeric prefix conflicts: 0 |
 | Environment variable names referenced | 149 | Names only, no values printed |
 
 ## Security

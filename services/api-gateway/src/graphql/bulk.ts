@@ -187,10 +187,6 @@ async function writeOperation(c: GatewayContext, operation: GraphQLBulkOperation
         updatedAt: nowIso(),
     };
     await writeJsonObject(bucket, operationKey(operation.id), updated as unknown as JsonObject);
-
-    const index = await readIndex(c);
-    const remaining = index.operations.filter((entry) => entry.id !== updated.id);
-    await writeIndex(c, [updated, ...remaining]);
     return updated;
 }
 
@@ -215,7 +211,12 @@ export async function getGraphQLBulkOperation(c: GatewayContext, operationId: st
 }
 
 export async function listGraphQLBulkOperations(c: GatewayContext): Promise<GraphQLBulkOperationRecord[]> {
-    return (await readIndex(c)).operations;
+    const bucket = assertBulkStorage(c);
+    const index = await readIndex(c);
+    const operations = await Promise.all(index.operations.map((entry) => (
+        readJsonObject<GraphQLBulkOperationRecord>(bucket, operationKey(entry.id), entry)
+    )));
+    return operations.filter((operation) => operation.id && canAccessOperation(c, operation));
 }
 
 export async function currentGraphQLBulkOperation(
@@ -352,26 +353,12 @@ async function executeBulkMutation(
     operation: GraphQLBulkOperationRecord,
 ): Promise<BulkExecutionResult> {
     const rows = await mutationInputRows(c, operation);
-    const jsonLines: string[] = [];
-
-    for (const [index, row] of rows.entries()) {
-        const rowRecord = recordValue(row) || {};
-        const explicitVariables = recordValue(rowRecord.variables);
-        const explicitInput = recordValue(rowRecord.input);
-        const rowVariables = explicitVariables
-            ? { ...operation.variables, ...explicitVariables }
-            : { ...operation.variables, input: explicitInput || rowRecord };
-        const payload = await executeGraphQLDocument(c, delegate, operation.query, rowVariables, operation.id);
-        jsonLines.push(JSON.stringify({
-            index,
-            ...payload,
-        }));
-    }
-
-    return {
-        jsonl: jsonLines.join('\n'),
-        objectCount: jsonLines.length,
-    };
+    void delegate;
+    throw new GraphQLBulkOperationError(
+        `Bulk GraphQL mutations require direct execution adapters before processing ${rows.length} input rows.`,
+        'BULK_MUTATION_DIRECT_EXECUTION_REQUIRED',
+        'bulkOperationRunMutation',
+    );
 }
 
 async function processGraphQLBulkOperation(
@@ -420,27 +407,6 @@ async function processGraphQLBulkOperation(
             completedAt: nowIso(),
         });
     }
-}
-
-async function enqueueBulkOperation(c: GatewayContext, operation: GraphQLBulkOperationRecord): Promise<boolean> {
-    if (!c.env.RUNTIME_QUEUE) return false;
-    await c.env.RUNTIME_QUEUE.send({
-        messageId: operation.id,
-        queueName: GRAPHQL_BULK_OPERATION_QUEUE_NAME,
-        jobType: GRAPHQL_BULK_OPERATION_QUEUE_JOB_TYPE,
-        payload: {
-            operationId: operation.id,
-            statusKey: operationKey(operation.id),
-            resultKey: resultKey(operation.id),
-            apiSurface: operation.apiSurface,
-            operationType: operation.operationType,
-        },
-        siteId: operation.storeId,
-        idempotencyKey: operation.idempotencyKey || operation.id,
-        requestId: c.req.header('X-Request-ID') || operation.id,
-        traceId: c.req.header('X-Trace-ID') || null,
-    });
-    return true;
 }
 
 export async function createGraphQLBulkOperation(
@@ -492,9 +458,7 @@ export async function createGraphQLBulkOperation(
         metadata: {
             actorId: actorId(c),
             processor: 'api-gateway.waitUntil',
-            queueBinding: 'RUNTIME_QUEUE',
-            queueName: GRAPHQL_BULK_OPERATION_QUEUE_NAME,
-            queueJobType: GRAPHQL_BULK_OPERATION_QUEUE_JOB_TYPE,
+            processingPath: 'api-gateway.waitUntil',
             statusKey: operationKey('pending'),
             resultKey: resultKey('pending'),
             stagedUploadPath: input.stagedUploadPath || null,
@@ -510,12 +474,6 @@ export async function createGraphQLBulkOperation(
 
     await writeJsonObject(bucket, operationKey(operation.id), operation as unknown as JsonObject);
     await writeIndex(c, [operation, ...index.operations]);
-    const queued = await enqueueBulkOperation(c, operation);
-    operation.metadata = {
-        ...operation.metadata,
-        queueEnqueued: queued,
-    };
-    await writeOperation(c, operation);
 
     c.executionCtx.waitUntil(processGraphQLBulkOperation(c, delegate, operation.id));
     return operation;

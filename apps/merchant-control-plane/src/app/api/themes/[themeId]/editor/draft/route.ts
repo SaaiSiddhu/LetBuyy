@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createMerchantApiClient, merchantApiErrorResponse } from '@/lib/api/client'
 import { resolveOwnedStoreId } from '@/lib/stores/resolve-owned-store'
 
+function readTemplateKey(value: unknown): string {
+    return typeof value === 'string' && /^[a-z0-9][a-z0-9_-]{0,79}$/i.test(value.trim())
+        ? value.trim()
+        : 'index'
+}
+
 /**
- * POST /api/themes/[themeId]/editor/draft?store_name=xxx
+ * POST /api/themes/[themeId]/editor/draft?store_name=xxx&template=product
  *
  * Auto-save draft every N seconds when the editor is dirty.
- * Body: { draftConfig }
+ * Body: { draftConfig, templateKey? }
  */
 export async function POST(
     request: NextRequest,
@@ -16,6 +22,7 @@ export async function POST(
         const { themeId } = await params
         const { searchParams } = new URL(request.url)
         const storeName = searchParams.get('store_name')
+        const queryTemplateKey = readTemplateKey(searchParams.get('template') || searchParams.get('template_key'))
 
         if (!storeName) {
             return NextResponse.json(
@@ -26,6 +33,7 @@ export async function POST(
 
         const body = await request.json()
         const { draftConfig } = body
+        const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
 
         if (!draftConfig) {
             return NextResponse.json(
@@ -39,6 +47,7 @@ export async function POST(
 
         const payload = await createMerchantApiClient().themes.saveDraft(themeId, {
             store_id: resolved.storeId,
+            template_key: templateKey,
             template_config: draftConfig,
             client: 'admin-web',
         })
@@ -47,6 +56,7 @@ export async function POST(
             success: true,
             savedAt: payload.saved_at || new Date().toISOString(),
             version: payload.version,
+            templateKey,
         })
     } catch (err) {
         return merchantApiErrorResponse(err)
@@ -66,6 +76,7 @@ export async function DELETE(
         const { themeId } = await params
         const { searchParams } = new URL(request.url)
         const storeName = searchParams.get('store_name')
+        const templateKey = readTemplateKey(searchParams.get('template') || searchParams.get('template_key'))
 
         if (!storeName) {
             return NextResponse.json(
@@ -77,9 +88,11 @@ export async function DELETE(
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
-        await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId)
+        await createMerchantApiClient().themes.deleteDraft(themeId, resolved.storeId, {
+            query: { template_key: templateKey },
+        })
 
-        return NextResponse.json({ success: true })
+        return NextResponse.json({ success: true, templateKey })
     } catch (err) {
         return merchantApiErrorResponse(err)
     }

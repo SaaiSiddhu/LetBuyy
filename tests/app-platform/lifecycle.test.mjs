@@ -68,9 +68,11 @@ function loadTypeScriptModule(sourcePath, requireMap) {
 }
 
 const { z, zChain } = createZodStub();
+const customerSessionCore = loadTypeScriptModule('packages/auth-core/src/customer-session.ts', {});
 const authCore = loadTypeScriptModule(AUTH_CORE_SOURCE, {
   zod: { z },
   '@letbuyy/shared-types': { EmailSchema: zChain },
+  './customer-session': customerSessionCore,
 });
 const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
   zod: { z },

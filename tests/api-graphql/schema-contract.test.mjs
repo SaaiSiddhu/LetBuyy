@@ -151,13 +151,19 @@ test('WS12 G2 mounts Admin GraphQL behind gateway auth with cost limiting', () =
     "api.route('/graphql/admin', adminGraphQLRouter)",
     "api.use('/*', authMiddleware)",
     "api.use('/*', csrfProtection)",
-    "api.use('/*', rateLimit({ max: 300 }))",
+    'shouldSkipGatewayQueryCostLimit',
   ], 'Admin GraphQL gateway mount');
 
   assert.ok(
     gatewayIndexSource.indexOf("api.use('/*', authMiddleware)") <
       gatewayIndexSource.indexOf("api.route('/admin/graphql', adminGraphQLRouter)"),
     'Admin GraphQL must be mounted after gateway auth middleware',
+  );
+
+  assert.doesNotMatch(
+    gatewayIndexSource,
+    /api\.use\('\/\*', rateLimit\(\{ max: 300 \}\)\)/,
+    'Admin GraphQL must not pay a second fixed-window gateway limiter',
   );
 });
 
@@ -167,11 +173,13 @@ test('WS12 G2 Admin GraphQL resolvers delegate through existing REST handlers', 
     'restDelegate: AdminGraphQLRestDelegate',
     'createRestShimRequest',
     'readRestShimEnvelope',
-    "resolveConnection(c, delegate, document, variables, 'products', '/products'",
-    "resolveConnection(c, delegate, document, variables, 'orders', '/orders'",
-    "resolveConnection(c, delegate, document, variables, 'customers', '/customers'",
-    "resolveConnection(c, delegate, document, variables, 'themes', '/themes'",
-    "resolveConnection(c, delegate, document, variables, 'marketplaceApps', '/app-store/apps'",
+    'ADMIN_CONNECTION_FIELDS',
+    "fieldName: 'products', restPath: '/products'",
+    "fieldName: 'orders', restPath: '/orders'",
+    "fieldName: 'customers', restPath: '/customers'",
+    "fieldName: 'themes', restPath: '/themes'",
+    "fieldName: 'marketplaceApps', restPath: '/app-store/apps'",
+    'Promise.all(ADMIN_CONNECTION_FIELDS.map',
     "restGet(c, delegate, '/payments/subscription'",
     "restGet(c, delegate, '/analytics/dashboard'",
     'connectionFromEnvelope',
@@ -248,24 +256,29 @@ test('WS12 G3 Storefront GraphQL delegates reads through existing storefront RES
     "'/storefront/customer/orders'",
     "requireCustomerGraphQLSession(c, 'customer')",
     "requireCustomerGraphQLSession(c, 'order')",
-    'data.cart = null',
+    'CART_NOT_SUPPORTED',
   ], 'Storefront GraphQL REST delegation');
   assert.doesNotMatch(storefrontGraphQLSource, /\/storefront\/customer\/by-email/);
+  assert.doesNotMatch(storefrontGraphQLSource, /data\.cart\s*=\s*null/);
 });
 
-test('WS12 G4 implements R2-backed GraphQL bulk operations with queue handoff', () => {
+test('WS12 G4 implements R2-backed GraphQL bulk operations with single-path waitUntil processing', () => {
   assertIncludesAll(bulkGraphQLSource, [
     "GRAPHQL_BULK_OPERATION_R2_PREFIX = 'graphql-bulk'",
     "GRAPHQL_BULK_OPERATION_QUEUE_NAME = 'graphql-bulk'",
     "GRAPHQL_BULK_OPERATION_QUEUE_JOB_TYPE = 'graphql.bulk.operation'",
     'GRAPHQL_BULK_OPERATION_CONCURRENCY_CAP = 2',
     'c.env.R2_BUCKET',
-    'c.env.RUNTIME_QUEUE.send',
+    "processingPath: 'api-gateway.waitUntil'",
     'c.executionCtx.waitUntil',
     'processGraphQLBulkOperation',
+    'BULK_MUTATION_DIRECT_EXECUTION_REQUIRED',
     "contentType: 'application/x-ndjson; charset=utf-8'",
     "'Content-Type': 'application/x-ndjson; charset=utf-8'",
-  ], 'GraphQL bulk operation R2 and queue implementation');
+  ], 'GraphQL bulk operation R2 and single-path implementation');
+
+  assert.doesNotMatch(bulkGraphQLSource, /c\.env\.RUNTIME_QUEUE\.send/);
+  assert.doesNotMatch(bulkGraphQLSource, /queueEnqueued/);
 
   assertIncludesAll(adminGraphQLSource, [
     'createGraphQLBulkOperation',

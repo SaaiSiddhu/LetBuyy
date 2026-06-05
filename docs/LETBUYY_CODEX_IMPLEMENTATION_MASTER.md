@@ -145,6 +145,7 @@ Strict order; each is its own migration file, additive-first, staging-proven bef
 | 077 | `customer_reset_tokens` (cols on `customer_credentials`) | additive | yes | Phase 1.5 |
 | 078 | `password_set_intents` (new table) | additive | yes | Phase 1.8 |
 | 087 | `theme_template_drafts` (col on `theme_editor_drafts`) | additive | yes | Phase 6 |
+| 088 | `inventory_available_batch` (batch wrapper for existing inventory RPC) | additive | yes | Phase 4.7 |
 | 084 | `analytics_rollups` (+ projection state) | additive | yes | Phase 5.3 |
 | 079 | partition `worker_request_logs` | online schema change | yes (legacy kept) | Phase 5.4, maintenance window |
 | 080 | partition `runtime_telemetry_metrics` | online schema change | yes | Phase 5.4 |
@@ -155,7 +156,7 @@ Strict order; each is its own migration file, additive-first, staging-proven bef
 | 086 | `products_variants_reconcile` | data migration | reader-flag | Phase 5.5 |
 
 Rules:
-- 077/078/087/084 are safe anytime (additive, nullable).
+- 077/078/087/088/084 are safe anytime (additive, nullable).
 - 079–083: create-new → backfill-copy → rename-swap; keep `*_legacy` one retention cycle; add `pg_cron` partition lifecycle job; verify all existing `(…, created_at)` indexes still serve queries via `EXPLAIN`.
 - 085/086: produce a divergence report first; migrate readers to relational source behind a flag; only drop JSONB columns after one clean release.
 

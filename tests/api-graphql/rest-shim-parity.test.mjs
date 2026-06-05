@@ -76,15 +76,15 @@ test('WS12 G6 Admin and Storefront GraphQL use the shared REST shim request/enve
 test('WS12 G6 migrated REST endpoints remain the external source of truth for parity reads', () => {
   assertIncludesAll(productsRouteSource, [
     "router.get('/', validate('query', ListProductsQuery)",
-    "return c.json(paginated(data || [], count || 0, query.page, query.limit))",
+    "return c.json(cursorPaginated(responseRows, {",
     "router.get('/:id'",
   ], 'products REST parity routes');
 
   assertIncludesAll(ordersRouteSource, [
     "router.get('/', validate('query', ListOrdersQuery)",
-    "return c.json(paginated(rows, count || 0, query.page, query.limit))",
+    "return c.json(cursorPaginated(rows, {",
     "router.get('/:id'",
-    "return c.json(success(normalizeOrderRecord(order)))",
+    "return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)))",
   ], 'orders REST parity routes');
 
   assertIncludesAll(pagesRouteSource, [
@@ -94,19 +94,20 @@ test('WS12 G6 migrated REST endpoints remain the external source of truth for pa
 
   assertIncludesAll(storefrontRouteSource, [
     "router.get('/:subdomain/products'",
-    "return c.json(paginated(data || [], count || 0, page, limit))",
+    "body: paginated(data || [], count || 0, page, limit)",
     "router.get('/:subdomain/products/:slug'",
-    "return c.json(success(data))",
+    "body: success(product)",
     "router.get('/:subdomain/pages'",
-    "return c.json(success(pages))",
+    "body: success(pages)",
     "router.get('/customer/orders'",
-    "return c.json(success({ orders: data || [] }))",
+    "return c.json(success({ orders }))",
   ], 'storefront REST parity routes');
 
   assertIncludesAll(adminGraphQLSource, [
-    "resolveConnection(c, delegate, document, variables, 'products', '/products'",
-    "resolveConnection(c, delegate, document, variables, 'orders', '/orders'",
-    "resolveConnection(c, delegate, document, variables, 'pages', '/pages'",
+    "fieldName: 'products', restPath: '/products'",
+    "fieldName: 'orders', restPath: '/orders'",
+    "fieldName: 'pages', restPath: '/pages'",
+    'Promise.all(ADMIN_CONNECTION_FIELDS.map',
     "restGet(c, delegate, `/products/${id}`",
     "restGet(c, delegate, `/orders/${id}`",
   ], 'Admin GraphQL parity delegation paths');

@@ -8,6 +8,7 @@ import {
 import {
     normalizeQueueEnvelope,
     planAnalyticsEventStreamRecord,
+    planOrderItemAnalyticsRollupIncrements,
     planAnalyticsRollupIncrements,
     planDeletedSearchProjectionDocument,
     planOrderSearchProjectionDocument,
@@ -88,6 +89,14 @@ interface OrderSearchRow {
     status?: string | null;
     total?: number | string | null;
     deleted_at?: string | null;
+}
+
+interface OrderItemAnalyticsRow {
+    product_id?: string | null;
+    name?: string | null;
+    sku?: string | null;
+    quantity?: number | string | null;
+    total?: number | string | null;
 }
 
 interface SiteNotificationOwner {
@@ -282,8 +291,13 @@ export class QueueExecutionAdapter {
             eventType,
             occurredAt,
             aggregateType,
+            payload: envelope.payload || {},
         })) {
             await this.incrementRollup(rollup);
+        }
+
+        if (eventType === 'order.created') {
+            await this.incrementOrderItemRollups(siteId, eventId, occurredAt);
         }
 
         await this.processNotificationSideEffect(job, this.toRuntimeEventEnvelope(job, envelope, {
@@ -296,6 +310,31 @@ export class QueueExecutionAdapter {
         }));
 
         return true;
+    }
+
+    private async incrementOrderItemRollups(siteId: string, orderId: string, occurredAt: string): Promise<void> {
+        const { data, error } = await this.db
+            .from('order_items')
+            .select('product_id, name, sku, quantity, total')
+            .eq('order_id', orderId)
+            .is('deleted_at', null);
+
+        if (error) throw new Error(`Order item analytics rollup source lookup failed: ${error.message}`);
+
+        const items = Array.isArray(data) ? data as OrderItemAnalyticsRow[] : [];
+        for (const rollup of planOrderItemAnalyticsRollupIncrements({
+            siteId,
+            occurredAt,
+            items: items.map((item) => ({
+                productId: item.product_id,
+                name: item.name,
+                sku: item.sku,
+                quantity: item.quantity,
+                total: item.total,
+            })),
+        })) {
+            await this.incrementRollup(rollup);
+        }
     }
 
     private async processNotificationSideEffect(job: PlatformQueueJob, event: RuntimeEventEnvelope<JsonObject>): Promise<void> {

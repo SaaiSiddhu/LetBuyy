@@ -363,6 +363,19 @@ async function resolveConnection(
     return connectionFromEnvelope(envelope, pagination, cost);
 }
 
+const ADMIN_CONNECTION_FIELDS = [
+    { key: 'products', fieldName: 'products', restPath: '/products' },
+    { key: 'collections', fieldName: 'collections', restPath: '/products/collections' },
+    { key: 'inventoryLevels', fieldName: 'inventoryLevels', restPath: '/inventory/levels' },
+    { key: 'customers', fieldName: 'customers', restPath: '/customers' },
+    { key: 'orders', fieldName: 'orders', restPath: '/orders' },
+    { key: 'pages', fieldName: 'pages', restPath: '/pages' },
+    { key: 'policies', fieldName: 'policies', restPath: '/pages/policies' },
+    { key: 'themes', fieldName: 'themes', restPath: '/themes' },
+    { key: 'marketplaceApps', fieldName: 'marketplaceApps', restPath: '/app-store/apps' },
+    { key: 'installedApps', fieldName: 'installedApps', restPath: '/app-store/installations' },
+] as const;
+
 async function resolveArrayField(
     c: GatewayContext,
     delegate: AdminGraphQLRestDelegate,
@@ -552,16 +565,13 @@ async function resolveAdminData(
         data.product = id ? (await restGet(c, delegate, `/products/${id}`, undefined, 'product')).data : null;
     }
 
-    data.products = await resolveConnection(c, delegate, document, variables, 'products', '/products', cost) ?? data.products;
-    data.collections = await resolveConnection(c, delegate, document, variables, 'collections', '/products/collections', cost) ?? data.collections;
-    data.inventoryLevels = await resolveConnection(c, delegate, document, variables, 'inventoryLevels', '/inventory/levels', cost) ?? data.inventoryLevels;
-    data.customers = await resolveConnection(c, delegate, document, variables, 'customers', '/customers', cost) ?? data.customers;
-    data.orders = await resolveConnection(c, delegate, document, variables, 'orders', '/orders', cost) ?? data.orders;
-    data.pages = await resolveConnection(c, delegate, document, variables, 'pages', '/pages', cost) ?? data.pages;
-    data.policies = await resolveConnection(c, delegate, document, variables, 'policies', '/pages/policies', cost) ?? data.policies;
-    data.themes = await resolveConnection(c, delegate, document, variables, 'themes', '/themes', cost) ?? data.themes;
-    data.marketplaceApps = await resolveConnection(c, delegate, document, variables, 'marketplaceApps', '/app-store/apps', cost) ?? data.marketplaceApps;
-    data.installedApps = await resolveConnection(c, delegate, document, variables, 'installedApps', '/app-store/installations', cost) ?? data.installedApps;
+    const connectionResults = await Promise.all(ADMIN_CONNECTION_FIELDS.map(async ({ key, fieldName, restPath }) => ({
+        key,
+        value: await resolveConnection(c, delegate, document, variables, fieldName, restPath, cost),
+    })));
+    for (const { key, value } of connectionResults) {
+        if (value !== undefined) data[key] = value;
+    }
 
     if (hasField(document, 'order') && !hasField(document, 'orders')) {
         const id = singleId(document, variables, 'order');

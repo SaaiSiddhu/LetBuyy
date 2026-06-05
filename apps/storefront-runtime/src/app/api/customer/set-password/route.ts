@@ -1,7 +1,11 @@
 // POST /api/customer/set-password — Set first password (guest → registered)
 import { NextRequest, NextResponse } from 'next/server';
-import { confirmCustomerPasswordReset, requestCustomerPasswordReset } from '@/lib/customer-service';
+import { createStorefrontApiClient } from '@/lib/api/client';
 import { createSession } from '@/lib/session';
+
+function stringValue(value: unknown): string {
+    return typeof value === 'string' ? value : '';
+}
 
 export async function POST(request: NextRequest) {
     try {
@@ -15,7 +19,13 @@ export async function POST(request: NextRequest) {
                 );
             }
 
-            await requestCustomerPasswordReset(storeId, email, resetUrl);
+            await createStorefrontApiClient()
+                .storefront
+                .requestCustomerPasswordReset({
+                    store_id: storeId,
+                    email,
+                    reset_url: resetUrl || null,
+                });
             return NextResponse.json({
                 success: true,
                 accepted: true,
@@ -36,7 +46,14 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const customer = await confirmCustomerPasswordReset(storeId, email, resetToken, password);
+        const { customer } = await createStorefrontApiClient()
+            .storefront
+            .confirmCustomerPasswordReset({
+                store_id: storeId,
+                email,
+                token: resetToken,
+                password,
+            });
         if (!customer) {
             return NextResponse.json(
                 { error: 'Reset token is invalid or expired' },
@@ -44,20 +61,29 @@ export async function POST(request: NextRequest) {
             );
         }
 
+        const customerId = stringValue(customer.id);
+        const customerStoreId = stringValue(customer.store_id || storeId);
+        const customerEmail = stringValue(customer.email || email);
+        const fullName = stringValue(customer.full_name) || null;
+
+        if (!customerId || !customerStoreId || !customerEmail) {
+            return NextResponse.json({ error: 'Invalid customer session response' }, { status: 502 });
+        }
+
         await createSession({
-            id: customer.id,
-            storeId: customer.storeId,
-            email: customer.email,
-            fullName: customer.fullName,
+            id: customerId,
+            storeId: customerStoreId,
+            email: customerEmail,
+            fullName,
         });
 
         return NextResponse.json({
             success: true,
             customer: {
-                id: customer.id,
-                email: customer.email,
-                fullName: customer.fullName,
-                storeId: customer.storeId,
+                id: customerId,
+                email: customerEmail,
+                fullName,
+                storeId: customerStoreId,
             },
         });
     } catch (error) {

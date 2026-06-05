@@ -876,6 +876,7 @@ export const ThemeSlugParamSchema = z.object({
 
 export const ThemeStoreQuerySchema = z.object({
   store_id: UuidSchema,
+  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
 });
 
 export const InstallThemeSchema = z.object({
@@ -885,6 +886,7 @@ export const InstallThemeSchema = z.object({
 
 export const SaveThemeDraftSchema = z.object({
   store_id: UuidSchema,
+  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
   template_config: z.record(z.string(), z.unknown()),
   base_version: z.number().int().positive().optional(),
   client: z.enum(['admin-web', 'flutter-builder', 'api']).default('api'),
@@ -892,6 +894,7 @@ export const SaveThemeDraftSchema = z.object({
 
 export const PublishThemeSchema = z.object({
   store_id: UuidSchema,
+  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
   base_version: z.number().int().positive().optional(),
   make_store_live: z.boolean().default(true),
   publish_message: z.string().max(500).optional(),

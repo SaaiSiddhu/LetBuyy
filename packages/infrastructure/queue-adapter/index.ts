@@ -1,6 +1,7 @@
 export interface QueueMessage<TPayload = Record<string, unknown>> {
   id: string;
   queueName: string;
+  jobType?: string;
   payload: TPayload;
   attempts: number;
   availableAt?: string;
@@ -34,6 +35,7 @@ export function createCloudflareQueueProducer(
       return binding.send({
         messageId: message.id,
         queueName: message.queueName,
+        jobType: message.jobType || undefined,
         payload: message.payload as Record<string, unknown>,
         attempts: message.attempts,
         availableAt: message.availableAt || null,

@@ -9,15 +9,15 @@ command = "pnpm build"
 
 [observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [triggers]
-crons = ["*/1 * * * *"]
+crons = ["*/5 * * * *"]
 
 [[migrations]]
 tag = "v1-runtime-coordinator"
@@ -34,6 +34,15 @@ TELEMETRY_ENV = "staging"
 FEATURE_GRAPHQL = "true"
 FEATURE_EXTENSIONS = "true"
 FEATURE_LIQUID = "true"
+STOREFRONT_CACHE = "on"
+STOREFRONT_POOLED_SQL = "on"
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
+STOREFRONT_SEARCH_PROJECTION = "on"
+ANALYTICS_PROJECTION_READS = "on"
+PRODUCT_VARIANT_DIFF = "on"
+CHECKOUT_POSTCOMMIT_DEFERRAL = "on"
+ORDER_ITEMS_RELATIONAL_READS = "on"
+PRODUCT_VARIANTS_RELATIONAL_READS = "on"
 REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
@@ -83,15 +92,15 @@ routes = [
 
 [env.staging.observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [env.staging.observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.staging.triggers]
-crons = ["*/1 * * * *"]
+crons = ["*/5 * * * *"]
 
 [env.staging.vars]
 ENVIRONMENT = "staging"
@@ -104,6 +113,15 @@ TELEMETRY_ENV = "staging"
 FEATURE_GRAPHQL = "true"
 FEATURE_EXTENSIONS = "true"
 FEATURE_LIQUID = "true"
+STOREFRONT_CACHE = "on"
+STOREFRONT_POOLED_SQL = "on"
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
+STOREFRONT_SEARCH_PROJECTION = "on"
+ANALYTICS_PROJECTION_READS = "on"
+PRODUCT_VARIANT_DIFF = "on"
+CHECKOUT_POSTCOMMIT_DEFERRAL = "on"
+ORDER_ITEMS_RELATIONAL_READS = "on"
+PRODUCT_VARIANTS_RELATIONAL_READS = "on"
 REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API Staging"
 PRIMARY_REGION = "ap-south-1"
@@ -178,11 +196,11 @@ routes = [
 
 [env.production.observability]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 
 [env.production.observability.logs]
 enabled = true
-head_sampling_rate = 1
+head_sampling_rate = 0.1
 invocation_logs = true
 
 [env.production.triggers]
@@ -199,6 +217,15 @@ TELEMETRY_ENV = "production"
 FEATURE_GRAPHQL = "false"
 FEATURE_EXTENSIONS = "false"
 FEATURE_LIQUID = "false"
+STOREFRONT_CACHE = "on"
+STOREFRONT_POOLED_SQL = "on"
+STOREFRONT_VIEW_SAMPLE_RATE = "0.1"
+STOREFRONT_SEARCH_PROJECTION = "on"
+ANALYTICS_PROJECTION_READS = "on"
+PRODUCT_VARIANT_DIFF = "on"
+CHECKOUT_POSTCOMMIT_DEFERRAL = "on"
+ORDER_ITEMS_RELATIONAL_READS = "on"
+PRODUCT_VARIANTS_RELATIONAL_READS = "on"
 REQUEST_LOG_SAMPLE_RATE = "0.02"
 RUNTIME_NAME = "LetBuyy API"
 PRIMARY_REGION = "ap-south-1"

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { authMiddleware } from './middleware/auth';
-import { rateLimit, authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
+import { authRateLimit, queryCostRateLimit } from './middleware/rateLimit';
 import { apiVersioning } from './middleware/apiVersion';
 import { securityHeaders, inputValidation, requestId, errorResponseSanitizer, csrfProtection } from './middleware/security';
 import { featureGate } from './middleware/featureFlags';
@@ -39,10 +39,18 @@ import formSubmissionsRouter from './routes/form-submissions';
 import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import internalConsoleRouter from './routes/internal-console';
+import internalBillingRouter from './routes/internal-billing';
+import internalEventsRouter from './routes/internal-events';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
+import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
 import { OutboxExecutionAdapter } from './execution/outbox-execution.adapter';
 import { QueueExecutionAdapter } from './execution/queue-execution.adapter';
+import {
+    planScheduledDispatchQueueTriggers,
+    type CloudflareQueueTriggerPlan,
+    type ScheduledDispatchQueueTriggerInput,
+} from './execution/cloudflare-queue-triggers';
 import { createCloudflareQueueProducer } from '@letbuyy/infrastructure/queue-adapter';
 export { LetbuyyRuntimeDurableObject } from './durable/runtime-coordinator';
 
@@ -51,6 +59,9 @@ export interface Env {
     SUPABASE_URL: string;
     SUPABASE_ANON_KEY: string;
     SUPABASE_SERVICE_ROLE_KEY: string;
+    HYPERDRIVE?: Hyperdrive;
+    DATABASE_URL?: string;
+    SUPABASE_DB_URL?: string;
     RAZORPAY_KEY_ID: string;
     RAZORPAY_KEY_SECRET: string;
     PAYMENT_CONFIG_ENCRYPTION_KEY?: string;
@@ -95,6 +106,15 @@ export interface Env {
     FEATURE_GRAPHQL?: string;
     FEATURE_EXTENSIONS?: string;
     FEATURE_LIQUID?: string;
+    STOREFRONT_CACHE?: string;
+    STOREFRONT_POOLED_SQL?: string;
+    STOREFRONT_VIEW_SAMPLE_RATE?: string;
+    STOREFRONT_SEARCH_PROJECTION?: string;
+    ANALYTICS_PROJECTION_READS?: string;
+    PRODUCT_VARIANT_DIFF?: string;
+    CHECKOUT_POSTCOMMIT_DEFERRAL?: string;
+    ORDER_ITEMS_RELATIONAL_READS?: string;
+    PRODUCT_VARIANTS_RELATIONAL_READS?: string;
     REQUEST_LOG_SAMPLE_RATE?: string;
     RUNTIME_NAME?: string;
     PRIMARY_REGION?: string;
@@ -150,6 +170,188 @@ function queueHealthResponse(env: Env) {
         environment: env.ENVIRONMENT,
         queues,
     };
+}
+
+function normalizedApiPath(path: string): string {
+    return path.replace(/^\/v1(?=\/|$)/, '') || '/';
+}
+
+function shouldSkipGatewayQueryCostLimit(c: { req: { path: string; header?: (name: string) => string | undefined } }): boolean {
+    const header = c.req.header?.(LETBUYY_INTERNAL_SUBREQUEST_HEADER);
+    if (isGraphQLRestShimSubrequest(header)) return true;
+
+    const path = normalizedApiPath(c.req.path);
+
+    return path.startsWith('/auth/')
+        || path === '/storefront/graphql'
+        || path === '/graphql/storefront'
+        || path === '/admin/graphql'
+        || path === '/graphql/admin'
+        || path === '/storefront/customer/login'
+        || path === '/storefront/customer/password/request-reset'
+        || path === '/storefront/customer/password/confirm-reset'
+        || /^\/storefront\/[^/]+\/orders\/contact$/.test(path);
+}
+
+type ScheduledQueueName = 'analytics-events' | 'search-indexing' | 'payment-events';
+
+interface ScheduledDispatchPreflightResult {
+    hasWork: boolean;
+    outbox: boolean;
+    queues: boolean;
+    webhookDeliveries: boolean;
+}
+
+type ScheduledDispatchQueueResult = Array<{
+    claimed?: number;
+    succeeded?: number;
+    failed?: number;
+    skipped?: number;
+}>;
+
+type CloudflareQueueTriggerResult = Array<{
+    binding: CloudflareQueueTriggerPlan['binding'];
+    queue_name: string;
+    status: 'enqueued' | 'missing-binding' | 'failed';
+    error?: string;
+}>;
+
+function numberField(value: unknown, key: string): number {
+    return value && typeof value === 'object' && typeof (value as Record<string, unknown>)[key] === 'number'
+        ? (value as Record<string, number>)[key]
+        : 0;
+}
+
+function hasCount(result: { count?: number | null; error?: { message?: string } | null }, label: string): boolean {
+    if (result.error) throw new Error(`${label} pending work check failed: ${result.error.message}`);
+    return Number(result.count || 0) > 0;
+}
+
+async function hasPendingScheduledDispatchWork(
+    db: ReturnType<typeof getSupabaseAdminFromEnv>,
+    queueNames: ScheduledQueueName[],
+    includeWebhookDeliveries: boolean,
+): Promise<ScheduledDispatchPreflightResult> {
+    const now = new Date().toISOString();
+    const [outboxResult, queueResult, webhookResult] = await Promise.all([
+        db.from('outbox_events')
+            .select('id', { count: 'exact', head: true })
+            .in('status', ['queued', 'failed'])
+            .lte('available_at', now)
+            .lte('next_attempt_at', now),
+        db.from('platform_queue_jobs')
+            .select('id', { count: 'exact', head: true })
+            .in('queue_name', queueNames)
+            .in('status', ['queued', 'failed'])
+            .lte('available_at', now)
+            .is('deleted_at', null),
+        includeWebhookDeliveries
+            ? db.from('webhook_deliveries')
+                .select('id', { count: 'exact', head: true })
+                .in('status', ['pending', 'failed'])
+                .lte('next_attempt_at', now)
+                .is('deleted_at', null)
+            : Promise.resolve({ count: 0, error: null }),
+    ]);
+
+    const outbox = hasCount(outboxResult, 'Outbox');
+    const queues = hasCount(queueResult, 'Platform queue');
+    const webhookDeliveries = hasCount(webhookResult, 'Webhook delivery');
+
+    return {
+        hasWork: outbox || queues || webhookDeliveries,
+        outbox,
+        queues,
+        webhookDeliveries,
+    };
+}
+
+function scheduledDispatchHadWork(
+    outboxResult: {
+        claimed?: number;
+        processed?: number;
+        failed?: number;
+        queued_jobs?: number;
+        webhook_deliveries?: number;
+    },
+    queueResult: ScheduledDispatchQueueResult,
+    webhookResult: unknown,
+): boolean {
+    const webhookPayload = webhookResult && typeof webhookResult === 'object' && 'data' in webhookResult
+        ? (webhookResult as { data?: unknown }).data
+        : webhookResult;
+
+    return numberField(outboxResult, 'claimed') > 0
+        || numberField(outboxResult, 'processed') > 0
+        || numberField(outboxResult, 'failed') > 0
+        || numberField(outboxResult, 'queued_jobs') > 0
+        || numberField(outboxResult, 'webhook_deliveries') > 0
+        || queueResult.some((result) => (
+            Number(result.claimed || 0) > 0
+            || Number(result.succeeded || 0) > 0
+            || Number(result.failed || 0) > 0
+            || Number(result.skipped || 0) > 0
+        ))
+        || numberField(webhookPayload, 'claimed') > 0
+        || numberField(webhookPayload, 'succeeded') > 0
+        || numberField(webhookPayload, 'failed') > 0;
+}
+
+function sumScheduledQueueResult(queueResult: ScheduledDispatchQueueResult, key: keyof ScheduledDispatchQueueResult[number]): number {
+    return queueResult.reduce((sum, result) => sum + numberField(result, key), 0);
+}
+
+async function enqueueCloudflareQueueTriggers(
+    env: Env,
+    plans: CloudflareQueueTriggerPlan[],
+): Promise<CloudflareQueueTriggerResult> {
+    const results: CloudflareQueueTriggerResult = [];
+
+    for (const plan of plans) {
+        const binding = env[plan.binding];
+        const queueName = env[plan.nameVar] || plan.fallbackName;
+
+        if (!binding) {
+            results.push({
+                binding: plan.binding,
+                queue_name: queueName,
+                status: 'missing-binding',
+            });
+            continue;
+        }
+
+        try {
+            await createCloudflareQueueProducer(binding).enqueue({
+                id: plan.messageId,
+                queueName,
+                jobType: plan.jobType,
+                payload: plan.payload,
+                attempts: 0,
+                correlationId: plan.correlationId,
+            });
+            results.push({
+                binding: plan.binding,
+                queue_name: queueName,
+                status: 'enqueued',
+            });
+        } catch (error) {
+            results.push({
+                binding: plan.binding,
+                queue_name: queueName,
+                status: 'failed',
+                error: error instanceof Error ? error.message : 'Cloudflare queue enqueue failed',
+            });
+        }
+    }
+
+    return results;
+}
+
+async function enqueueScheduledDispatchTriggers(
+    env: Env,
+    input: ScheduledDispatchQueueTriggerInput,
+): Promise<CloudflareQueueTriggerResult> {
+    return enqueueCloudflareQueueTriggers(env, planScheduledDispatchQueueTriggers(input));
 }
 
 // Global middleware
@@ -212,7 +414,11 @@ api.get('/health/queues', (c) => {
     const body = queueHealthResponse(c.env);
     return c.json(body, body.status === 'healthy' ? 200 : 503);
 });
-api.use('/*', queryCostRateLimit({ pointsPerSecond: 20, capacity: 200 }));
+api.use('/*', queryCostRateLimit({
+    pointsPerSecond: 20,
+    capacity: 200,
+    skip: shouldSkipGatewayQueryCostLimit,
+}));
 
 const storefrontGraphQLRouter = createStorefrontGraphQLRouter({
     restDelegate: async (c, request) => app.fetch(request, c.env),
@@ -250,11 +456,12 @@ api.route('/storefront', storefrontRouter);
 api.route('/themes', themesRouter);
 api.route('/app-store', appStoreRouter);
 api.route('/internal/console', internalConsoleRouter);
+api.route('/internal/billing', internalBillingRouter);
+api.route('/internal/events', internalEventsRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
 api.use('/*', csrfProtection);
-api.use('/*', rateLimit({ max: 300 }));
 
 const adminGraphQLRouter = createAdminGraphQLRouter({
     restDelegate: async (c, request) => app.fetch(request, c.env),
@@ -336,80 +543,116 @@ app.onError((err, c) => {
     );
 });
 
-function runScheduledDispatch(controller: ScheduledController, env: Env): Promise<void> {
+async function runScheduledDispatch(controller: ScheduledController, env: Env): Promise<void> {
     const dispatcherId = `cron:${controller.cron || 'manual'}:${crypto.randomUUID()}`;
     const workerId = `cron-queue:${controller.cron || 'manual'}:${crypto.randomUUID()}`;
     const db = getSupabaseAdminFromEnv(env);
     const outbox = new OutboxExecutionAdapter(db);
     const queue = new QueueExecutionAdapter(db);
-    const eventQueue = env.EVENT_QUEUE ? createCloudflareQueueProducer(env.EVENT_QUEUE) : null;
+    const queueNames: ScheduledQueueName[] = ['analytics-events', 'search-indexing', 'payment-events'];
 
-    return outbox
-        .dispatchBatch({
-            dispatcherId,
-            outboxLimit: 50,
-            webhookLimit: 50,
-        })
-        .then(async (outboxResult) => {
-            let webhookResult: unknown = null;
-            if (env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET) {
-                const response = await env.WEBHOOK_SERVICE.fetch('https://webhook-service/webhook-deliveries/dispatch', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-LetBuyy-Internal-Secret': env.INTERNAL_API_SECRET,
-                    },
-                    body: JSON.stringify({
-                        dispatcher_id: `cron-webhooks:${controller.cron || 'manual'}:${crypto.randomUUID()}`,
-                        limit: 50,
-                    }),
-                });
-                webhookResult = await response.json().catch(() => ({ ok: response.ok, status: response.status }));
-            }
-            const queueResult = await queue.consumeQueues(workerId, ['analytics-events', 'search-indexing', 'payment-events'], 50);
-            const eventQueueName = env.EVENT_QUEUE_NAME || 'letbuyy-events';
-            await eventQueue?.enqueue({
-                id: crypto.randomUUID(),
-                queueName: eventQueueName,
-                payload: {
-                    event_type: 'runtime.scheduled_dispatch.completed',
-                    dispatcher_id: dispatcherId,
-                    worker_id: workerId,
-                    outbox_result: outboxResult,
-                    webhook_result: webhookResult,
-                    queue_result: queueResult,
-                    environment: env.ENVIRONMENT,
-                    deployment_env: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
-                    telemetry_env: env.TELEMETRY_ENV || env.ENVIRONMENT,
-                },
-                attempts: 0,
-                correlationId: dispatcherId,
-            });
+    try {
+        const pending = await hasPendingScheduledDispatchWork(
+            db,
+            queueNames,
+            Boolean(env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET),
+        );
+
+        if (!pending.hasWork) {
             console.info(JSON.stringify({
                 level: 'info',
                 service: 'letbuyy-api',
                 route: 'scheduled.outbox_dispatch',
                 method: 'CRON',
-                status_code: 200,
+                status_code: 204,
                 latency_ms: 0,
                 dispatcher_id: dispatcherId,
                 worker_id: workerId,
-                outbox_result: outboxResult,
-                queue_result: queueResult,
+                skipped: true,
+                reason: 'no_pending_work',
+                preflight: pending,
             }));
-        })
-        .catch((error: unknown) => {
-            console.error(JSON.stringify({
-                level: 'error',
-                service: 'letbuyy-api',
-                route: 'scheduled.outbox_dispatch',
-                method: 'CRON',
-                status_code: 500,
-                latency_ms: 0,
-                dispatcher_id: dispatcherId,
-                error: error instanceof Error ? error.message : 'Scheduled outbox dispatch failed',
-            }));
+            return;
+        }
+
+        const outboxResult = await outbox.dispatchBatch({
+            dispatcherId,
+            outboxLimit: 50,
+            webhookLimit: 50,
         });
+
+        let webhookResult: unknown = null;
+        if (env.WEBHOOK_SERVICE && env.INTERNAL_API_SECRET) {
+            const response = await env.WEBHOOK_SERVICE.fetch('https://webhook-service/webhook-deliveries/dispatch', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-LetBuyy-Internal-Secret': env.INTERNAL_API_SECRET,
+                },
+                body: JSON.stringify({
+                    dispatcher_id: `cron-webhooks:${controller.cron || 'manual'}:${crypto.randomUUID()}`,
+                    limit: 50,
+                }),
+            });
+            webhookResult = await response.json().catch(() => ({ ok: response.ok, status: response.status }));
+        }
+        const queueResult = await queue.consumeQueues(workerId, queueNames, 50);
+        const hadWork = scheduledDispatchHadWork(outboxResult, queueResult, webhookResult);
+        const cloudflareQueueTriggers = hadWork
+            ? await enqueueScheduledDispatchTriggers(env, {
+                status: 'completed',
+                dispatcherId,
+                workerId,
+                eventId: crypto.randomUUID(),
+                environment: env.ENVIRONMENT,
+                deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+                telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
+                outboxQueuedJobs: numberField(outboxResult, 'queued_jobs'),
+                queueClaimedJobs: sumScheduledQueueResult(queueResult, 'claimed'),
+                queueSucceededJobs: sumScheduledQueueResult(queueResult, 'succeeded'),
+                webhookDeliveries: numberField(outboxResult, 'webhook_deliveries'),
+            })
+            : [];
+
+        console.info(JSON.stringify({
+            level: 'info',
+            service: 'letbuyy-api',
+            route: 'scheduled.outbox_dispatch',
+            method: 'CRON',
+            status_code: hadWork ? 200 : 204,
+            latency_ms: 0,
+            dispatcher_id: dispatcherId,
+            worker_id: workerId,
+            outbox_result: outboxResult,
+            queue_result: queueResult,
+            cloudflare_queue_triggers: cloudflareQueueTriggers,
+            preflight: pending,
+        }));
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Scheduled outbox dispatch failed';
+        const cloudflareQueueTriggers = await enqueueScheduledDispatchTriggers(env, {
+            status: 'failed',
+            dispatcherId,
+            workerId,
+            eventId: crypto.randomUUID(),
+            environment: env.ENVIRONMENT,
+            deploymentEnv: env.DEPLOYMENT_ENV || env.ENVIRONMENT,
+            telemetryEnv: env.TELEMETRY_ENV || env.ENVIRONMENT,
+            error: message,
+        });
+
+        console.error(JSON.stringify({
+            level: 'error',
+            service: 'letbuyy-api',
+            route: 'scheduled.outbox_dispatch',
+            method: 'CRON',
+            status_code: 500,
+            latency_ms: 0,
+            dispatcher_id: dispatcherId,
+            error: message,
+            cloudflare_queue_triggers: cloudflareQueueTriggers,
+        }));
+    }
 }
 
 export default {

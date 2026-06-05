@@ -12,6 +12,7 @@ apps/
   merchant-control-plane/
   identity-platform/
   app-marketplace/
+  developer-portal/
   theme-marketplace/
   marketing-site/
   platform-console/
@@ -23,9 +24,9 @@ apps/
 
 services/
   api-gateway/
-  checkout-runtime/
   webhook-service/
   queue-workers/
+  checkout-runtime/        # reserved, not implemented
   notification-service/
   search-service/
   media-service/
@@ -33,25 +34,33 @@ services/
   event-bus/
 
 packages/
+  shared-types/
+  tenant-core/
   commerce-core/
   checkout-core/
+  payments/
   auth-core/
-  tenant-core/
   cms-core/
   theme-engine/
   app-engine/
-  analytics-core/
   event-core/
   search-core/
   notification-core/
   billing-core/
-  ui-system/
-  shared-types/
-  shared-utils/
-  mobile-core/
-  mobile-models/
-  mobile-services/
-  mobile-ui-kit/
+  application-services/
+  distributed-runtime/
+  infrastructure/
+  orchestration/
+  projection-runtime/
+  runtime-composition/
+  typescript/api-client/
+  typescript/api-types/
+  typescript/ui/
+  typescript/utils/
+  dart/core/
+  dart/models/
+  dart/services/
+  dart/ui_kit/
 
 database/
   supabase/
@@ -115,6 +124,13 @@ docs/
 | Mobile operator app | Platform operators | `apps/mobile/operator-app` | Reserved native operator companion |
 | API gateway | All actors through contracts | `services/api-gateway` | Hono `/v1` API, auth, tenant context, domain services |
 | Webhook service | Providers | `services/webhook-service` | Provider callbacks and reconciliation |
+| Queue workers | Platform async jobs | `services/queue-workers` | Implemented Cloudflare Queue consumers for event, notification, search, analytics, outbox, and dead-letter work |
+| Checkout runtime | Reserved | `services/checkout-runtime` | Manifest-only placeholder; active checkout execution remains in `services/api-gateway` |
+| Notification service | Reserved | `services/notification-service` | Manifest-only placeholder; active notification APIs/queue work remain in `services/api-gateway` and `services/queue-workers` |
+| Search service | Reserved | `services/search-service` | Manifest-only placeholder; active search APIs/queue work remain in `services/api-gateway` and `services/queue-workers` |
+| Media service | Reserved | `services/media-service` | Manifest-only placeholder; active media APIs remain in `services/api-gateway` |
+| Analytics pipeline | Reserved | `services/analytics-pipeline` | Manifest-only placeholder; active analytics APIs/queue work remain in `services/api-gateway` and `services/queue-workers` |
+| Event bus | Reserved | `services/event-bus` | Manifest-only placeholder; active event execution uses package-owned contracts through implemented runtimes |
 | Supabase database | Platform-owned data layer | `database/supabase` | Migrations, seeds, verification, RLS policies |
 | Firebase legacy | Deprecated | `legacy/firebase` | Historical Cloud Functions and Firebase rules only |
 

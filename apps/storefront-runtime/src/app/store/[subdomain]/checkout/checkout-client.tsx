@@ -256,7 +256,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
     };
 
     // Auto-create customer record after order
-    const autoCreateCustomer = async (order?: CreateOrderResult['order']) => {
+    const autoCreateCustomer = async () => {
         try {
             await fetch('/api/customer/auto-create', {
                 method: 'POST',
@@ -266,8 +266,6 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                     fullName: formData.name,
                     phone: formData.phone,
                     storeId,
-                    orderId: order?.id,
-                    orderTotal: order?.total,
                 }),
             });
         } catch {
@@ -393,7 +391,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                 setOrderNumber(result.order.orderNumber);
                 setIsSuccess(true);
                 clearCart();
-                autoCreateCustomer(result.order);
+                autoCreateCustomer();
             } else {
                 showCheckoutError('Order creation failed. Please try again.');
             }
@@ -470,7 +468,7 @@ export default function CheckoutClient({ storeId, sellerId, subdomain, storeName
                             setOrderNumber(orderResult.order!.orderNumber);
                             setIsSuccess(true);
                             clearCart();
-                            autoCreateCustomer(orderResult.order);
+                            autoCreateCustomer();
                         } else {
                             showCheckoutError(storefrontApiErrorMessage(verifyResult, 'Payment verification failed. Please contact support.'));
                         }

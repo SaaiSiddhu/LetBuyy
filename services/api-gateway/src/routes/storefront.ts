@@ -7,6 +7,12 @@ import * as bcrypt from 'bcryptjs';
 import type { Env } from '../index';
 import { dbFailureBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { verifyInternalAppRequest } from '../lib/internal-auth';
+import {
+    cachedJson,
+    storefrontRequestCacheKey,
+    STOREFRONT_CACHE_SWR_SECONDS,
+    STOREFRONT_CACHE_TTL_SECONDS,
+} from '../lib/storefront-cache';
 import { validate } from '../middleware/validation';
 import {
     StorefrontCreateOrderSchema,
@@ -24,6 +30,7 @@ import {
     type CreateStorefrontProductReviewInput,
     type StorefrontProductReviewsQueryInput,
 } from '../schemas/review.schema';
+import { registerStorefrontInternalPaymentRoutes } from './storefront/internal-payment-routes';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { PaymentExecutionAdapter } from '../execution/payment-execution.adapter';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
@@ -44,9 +51,11 @@ import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
 import { createStripePaymentProvider } from '@letbuyy/infrastructure/stripe-adapter';
 import { sendResendEmail } from '@letbuyy/infrastructure/resend-adapter';
+import { getPooledSql } from '@letbuyy/infrastructure/pooled-sql-adapter';
 import {
     planCouponValidation,
     storefrontCouponValidationError,
+    type CreateCheckoutOrderCommand,
     type CouponRecord,
 } from '@letbuyy/checkout-core';
 import {
@@ -83,6 +92,15 @@ type AppContext = Context<{ Bindings: Env }>;
 type StorefrontJsonValue = null | boolean | number | string | StorefrontJsonValue[] | { [key: string]: StorefrontJsonValue };
 const CUSTOMER_PASSWORD_RESET_TTL_SECONDS = 60 * 60;
 const CUSTOMER_PASSWORD_RESET_TOKEN_BYTES = 32;
+const DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE = 0.1;
+
+function isCheckoutPostCommitDeferralEnabled(env: Pick<Env, 'CHECKOUT_POSTCOMMIT_DEFERRAL'>): boolean {
+    return (env.CHECKOUT_POSTCOMMIT_DEFERRAL || 'on').trim().toLowerCase() !== 'off';
+}
+
+function storefrontCacheTags(storeId: string, handle: string, ...tags: string[]): string[] {
+    return [`storefront:${storeId}`, `storefront:${handle}`, ...tags];
+}
 
 router.use('/customer/wishlist', requireCustomerSession);
 router.use('/customer/wishlist/*', requireCustomerSession);
@@ -229,7 +247,7 @@ type ThemeEditorDraftRow = {
 
 type StorefrontProductDetail = {
     id: string;
-    view_count?: number | null;
+    slug?: string | null;
 };
 
 type RazorpayOrderResponse = {
@@ -324,34 +342,6 @@ type CustomerAddressBody = {
 
 type StorefrontReviewBody = CreateStorefrontProductReviewInput;
 
-type InternalPaymentReferenceBody = {
-    orderId?: string;
-    storeId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
-    paymentReference?: string;
-    idempotencyKey?: string | null;
-};
-
-type InternalPaymentConfirmBody = {
-    orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
-    paymentId?: string;
-    providerOrderId?: string | null;
-    providerEventId?: string | null;
-    idempotencyKey?: string | null;
-};
-
-type InternalPaymentFailureBody = {
-    orderId?: string;
-    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
-    providerEventId?: string;
-    paymentStatus?: 'failed' | 'refunded';
-    orderStatus?: 'cancelled' | 'refunded';
-    reason?: string | null;
-    releaseInventory?: boolean;
-    idempotencyKey?: string | null;
-};
-
 type NavigationMenuRow = {
     id: string;
     handle: string;
@@ -444,6 +434,70 @@ async function listPublicProductReviews(c: AppContext) {
 
 function getRequestId(c: AppContext): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+function storefrontViewSampleRate(value: string | undefined): number {
+    const parsed = Number(value ?? DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE);
+    if (!Number.isFinite(parsed)) return DEFAULT_STOREFRONT_VIEW_SAMPLE_RATE;
+    return Math.min(1, Math.max(0, parsed));
+}
+
+function shouldSampleStorefrontView(rate: number): boolean {
+    if (rate <= 0) return false;
+    if (rate >= 1) return true;
+    const random = new Uint32Array(1);
+    crypto.getRandomValues(random);
+    return (random[0] || 0) / 0xffffffff < rate;
+}
+
+function emitProductViewedEvent(
+    c: AppContext,
+    input: {
+        storeId: string;
+        product: StorefrontProductDetail;
+    },
+): void {
+    const queue = c.env.ANALYTICS_QUEUE;
+    if (!queue) return;
+
+    const sampleRate = storefrontViewSampleRate(c.env.STOREFRONT_VIEW_SAMPLE_RATE);
+    if (!shouldSampleStorefrontView(sampleRate)) return;
+
+    const requestId = getRequestId(c);
+    const occurredAt = new Date().toISOString();
+    const eventId = `product.viewed:${input.storeId}:${input.product.id}:${crypto.randomUUID()}`;
+    const sampleWeight = sampleRate > 0 ? Math.round(1 / sampleRate) : 0;
+
+    c.executionCtx.waitUntil(queue.send({
+        messageId: eventId,
+        queueName: 'analytics-events',
+        jobType: 'product.viewed',
+        siteId: input.storeId,
+        idempotencyKey: eventId,
+        requestId,
+        correlationId: requestId,
+        payload: {
+            id: eventId,
+            type: 'product.viewed',
+            site_id: input.storeId,
+            aggregate: {
+                type: 'product',
+                id: input.product.id,
+            },
+            occurred_at: occurredAt,
+            request_id: requestId,
+            idempotency_key: eventId,
+            schema_version: 1,
+            payload: {
+                product_id: input.product.id,
+                product_slug: input.product.slug || undefined,
+                sample_rate: sampleRate,
+                sample_weight: sampleWeight,
+                source: 'storefront-runtime',
+            },
+        },
+        attempts: 0,
+    }).then(() => undefined, () => undefined));
 }
 
 function requestedAmountMinorUnits(input: { amount?: number; amountMinorUnits?: number }): number | null {
@@ -577,6 +631,8 @@ const PRODUCT_SELECT_COMPAT: string =
     'id,store_id,name,slug,description,images,price,compare_price,currency,stock,quantity,is_active,is_featured,status,category,tags,variants,display_order,created_at,updated_at,seo_title,seo_description';
 const PRODUCT_SELECT_MINIMAL: string =
     'id,store_id,name,description,images,price,category,tags,created_at,updated_at,seo_title,seo_description';
+const PRODUCT_SELECT_FULL_RELATIONAL: string = PRODUCT_SELECT_FULL.replace(',variants', '');
+const PRODUCT_SELECT_COMPAT_RELATIONAL: string = PRODUCT_SELECT_COMPAT.replace(',variants', '');
 
 type DatabaseErrorLike = {
     message?: string;
@@ -593,6 +649,67 @@ type PublicProductQueryOptions = {
     paginated?: boolean;
 };
 
+type SqlRecord = Record<string, unknown>;
+type SqlParameter = null | boolean | number | string | Date | Uint8Array | readonly SqlParameter[];
+type ProductSqlRow = SqlRecord & { __total_count?: number | string | null };
+type PublicProductRow = SqlRecord;
+type PublicProductQueryResult = {
+    data: PublicProductRow[];
+    count: number;
+    error: DatabaseErrorLike;
+};
+
+type SearchDocumentProductResult = {
+    ids: string[];
+    count: number;
+};
+
+type PublicProductVariantRow = {
+    id: string;
+    product_id: string;
+    title?: string | null;
+    price?: number | string | null;
+    compare_price?: number | string | null;
+    sku?: string | null;
+    barcode?: string | null;
+    inventory_qty?: number | string | null;
+    weight?: number | string | null;
+    weight_unit?: string | null;
+    option1?: string | null;
+    option2?: string | null;
+    option3?: string | null;
+    image_url?: string | null;
+    position?: number | string | null;
+};
+
+type StorefrontOrderItemRow = {
+    id: string;
+    order_id: string;
+    product_id?: string | null;
+    variant_id?: string | null;
+    title?: string | null;
+    name?: string | null;
+    sku?: string | null;
+    quantity?: number | string | null;
+    unit_price?: number | string | null;
+    price?: number | string | null;
+    total?: number | string | null;
+    variant_title?: string | null;
+    product_snapshot?: Record<string, unknown> | string | null;
+};
+
+function storefrontSearchIndexReadsEnabled(env: Pick<Env, 'STOREFRONT_SEARCH_PROJECTION'>): boolean {
+    return (env.STOREFRONT_SEARCH_PROJECTION || 'on').trim().toLowerCase() !== 'off';
+}
+
+function productVariantRelationalReadsEnabled(env: Pick<Env, 'PRODUCT_VARIANTS_RELATIONAL_READS'>): boolean {
+    return (env.PRODUCT_VARIANTS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
+function orderItemsRelationalReadsEnabled(env: Pick<Env, 'ORDER_ITEMS_RELATIONAL_READS'>): boolean {
+    return (env.ORDER_ITEMS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
 function databaseErrorText(error: DatabaseErrorLike): string {
     return [error?.message, error?.details, error?.hint].filter(Boolean).join(' ').toLowerCase();
 }
@@ -602,10 +719,303 @@ function isSchemaMismatchError(error: DatabaseErrorLike): boolean {
     return text.includes('does not exist') || text.includes('schema cache') || text.includes('could not find');
 }
 
+function normalizeSqlValue(value: unknown): unknown {
+    return value instanceof Date ? value.toISOString() : value;
+}
+
+function normalizeSqlRecord<T extends object>(row: T): T {
+    const normalized: SqlRecord = {};
+    for (const [key, value] of Object.entries(row as SqlRecord)) {
+        normalized[key] = normalizeSqlValue(value);
+    }
+    return normalized as T;
+}
+
+function normalizeSqlRecords<T extends object>(rows: T[]): T[] {
+    return rows.map((row) => normalizeSqlRecord(row));
+}
+
+function storefrontNumber(value: unknown): number | null {
+    if (typeof value === 'number' && Number.isFinite(value)) return value;
+    if (typeof value === 'string' && value.trim().length > 0) {
+        const parsed = Number(value);
+        return Number.isFinite(parsed) ? parsed : null;
+    }
+    return null;
+}
+
+function publicProductVariantView(row: PublicProductVariantRow): Record<string, unknown> {
+    return {
+        id: row.id,
+        product_id: row.product_id,
+        title: row.title || '',
+        price: storefrontNumber(row.price) ?? 0,
+        compare_price: storefrontNumber(row.compare_price),
+        sku: storefrontString(row.sku),
+        barcode: storefrontString(row.barcode),
+        stock: storefrontNumber(row.inventory_qty) ?? 0,
+        inventory_qty: storefrontNumber(row.inventory_qty) ?? 0,
+        weight: storefrontNumber(row.weight),
+        weight_unit: storefrontString(row.weight_unit) || 'kg',
+        option1: storefrontString(row.option1),
+        option2: storefrontString(row.option2),
+        option3: storefrontString(row.option3),
+        image_url: storefrontString(row.image_url),
+        position: storefrontNumber(row.position) ?? 0,
+    };
+}
+
+async function hydratePublicProductVariants(c: AppContext, products: PublicProductRow[]): Promise<PublicProductRow[]> {
+    if (!productVariantRelationalReadsEnabled(c.env)) return products;
+
+    const productIds = products
+        .map((product) => storefrontString(product.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (productIds.length === 0) return products;
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('product_variants')
+        .select('id, product_id, title, price, compare_price, sku, barcode, inventory_qty, weight, weight_unit, option1, option2, option3, image_url, position')
+        .in('product_id', Array.from(new Set(productIds)))
+        .order('position', { ascending: true });
+
+    if (isMissingTableError(error, 'product_variants')) return products;
+    if (error) throw new Error(`Storefront product variant hydration failed: ${error.message}`);
+
+    const variantsByProduct = new Map<string, Record<string, unknown>[]>();
+    for (const row of (data || []) as PublicProductVariantRow[]) {
+        variantsByProduct.set(row.product_id, [
+            ...(variantsByProduct.get(row.product_id) || []),
+            publicProductVariantView(row),
+        ]);
+    }
+
+    return products.map((product) => {
+        const productId = storefrontString(product.id);
+        if (!productId) return product;
+        const variants = variantsByProduct.get(productId) || [];
+        return {
+            ...product,
+            variants,
+            product_variants: variants,
+        };
+    });
+}
+
+async function hydrateStorefrontOrderItems(c: AppContext, orders: SqlRecord[]): Promise<SqlRecord[]> {
+    if (!orderItemsRelationalReadsEnabled(c.env)) return orders;
+
+    const orderIds = orders
+        .map((order) => storefrontString(order.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (orderIds.length === 0) return orders;
+
+    const db = getSupabaseAdmin(c);
+    const { data, error } = await db
+        .from('order_items')
+        .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
+        .in('order_id', Array.from(new Set(orderIds)))
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+
+    if (isMissingTableError(error, 'order_items')) return orders;
+    if (error) throw new Error(`Storefront order item hydration failed: ${error.message}`);
+
+    const itemsByOrder = new Map<string, StorefrontOrderItemRow[]>();
+    for (const row of (data || []) as StorefrontOrderItemRow[]) {
+        itemsByOrder.set(row.order_id, [
+            ...(itemsByOrder.get(row.order_id) || []),
+            row,
+        ]);
+    }
+
+    return orders.map((order) => {
+        const orderId = storefrontString(order.id);
+        if (!orderId) return order;
+        const items = itemsByOrder.get(orderId) || [];
+        return {
+            ...order,
+            items,
+            order_items: items,
+        };
+    });
+}
+
+function productRowWithoutCount(row: ProductSqlRow): SqlRecord {
+    const normalized = normalizeSqlRecord(row);
+    delete normalized.__total_count;
+    return normalized;
+}
+
+function publicProductRows(value: unknown): PublicProductRow[] {
+    if (!Array.isArray(value)) return [];
+    return value.filter((row): row is PublicProductRow => {
+        return Boolean(row) && typeof row === 'object' && !Array.isArray(row);
+    });
+}
+
+function searchDocumentTerm(value: string | undefined): string | null {
+    const term = value?.trim().replace(/\s+/g, ' ').slice(0, 120);
+    return term && term.length >= 2 ? term : null;
+}
+
+function sortProductsBySearchDocumentIds(products: PublicProductRow[], ids: string[]): PublicProductRow[] {
+    const rank = new Map(ids.map((id, index) => [id, index]));
+    return [...products].sort((left, right) => {
+        const leftRank = typeof left.id === 'string' ? rank.get(left.id) ?? Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+        const rightRank = typeof right.id === 'string' ? rank.get(right.id) ?? Number.MAX_SAFE_INTEGER : Number.MAX_SAFE_INTEGER;
+        return leftRank - rightRank;
+    });
+}
+
+async function querySearchDocumentProductIds(
+    c: AppContext,
+    storeId: string,
+    options: PublicProductQueryOptions,
+): Promise<SearchDocumentProductResult | null> {
+    const term = searchDocumentTerm(options.search);
+    if (!term) return null;
+
+    const db = getSupabaseAdmin(c);
+    const offset = ((options.page || 1) - 1) * options.limit;
+    let query = db
+        .from('search_documents')
+        .select('object_id', { count: options.paginated ? 'exact' : undefined })
+        .eq('site_id', storeId)
+        .eq('object_type', 'product')
+        .eq('status', 'active')
+        .is('deleted_at', null)
+        .textSearch('search_vector', term, { config: 'simple', type: 'websearch' })
+        .order('indexed_at', { ascending: false });
+
+    if (options.category) {
+        query = query.contains('attributes', { category: options.category });
+    }
+
+    const result = options.paginated
+        ? await query.range(offset, offset + options.limit - 1)
+        : await query.limit(options.limit);
+
+    if (result.error) return null;
+
+    const ids = Array.isArray(result.data)
+        ? result.data
+            .map((row) => typeof row.object_id === 'string' ? row.object_id : null)
+            .filter((id): id is string => Boolean(id))
+        : [];
+
+    return {
+        ids,
+        count: result.count || ids.length,
+    };
+}
+
+async function loadPublishedStoreFromPooledSql(c: AppContext, handle: string): Promise<PublishedStoreRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<PublishedStoreRecord[]>(
+        'select id from sites where (subdomain = $1 or store_name = $1) and status = $2 and deleted_at is null limit 1',
+        [handle, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function loadSiteByHandleFromPooledSql(c: AppContext, handle: string): Promise<StorefrontSiteRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<StorefrontSiteRecord[]>(
+        `select ${STOREFRONT_SITE_RELEASE_SELECT}
+         from sites
+         where (subdomain = $1 or store_name = $1)
+           and status = $2
+           and deleted_at is null
+         limit 1`,
+        [handle, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function loadCurrentThemeReleaseFromPooledSql(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+    const rows = await sql.unsafe<StorefrontThemeReleaseRecord[]>(
+        `select id, theme_id, theme_instance_id, theme_package_version_id, release_version, release_config, release_manifest,
+                template_snapshot, settings_snapshot, asset_manifest, cache_manifest, data_binding_manifest,
+                schema_manifest_version, engine_version, published_at
+         from theme_releases
+         where store_id = $1
+           and is_current = true
+           and release_status = $2
+           and deleted_at is null
+         order by release_version desc
+         limit 1`,
+        [storeId, 'published'],
+    ).catch(() => []);
+    return normalizeSqlRecords(rows)[0] || null;
+}
+
+async function queryPublicProductsFromPooledSql(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult | null> {
+    const sql = getPooledSql(c.env);
+    if (!sql) return null;
+
+    const params: SqlParameter[] = [storeId];
+    const filters = ['store_id = $1', 'is_active = true', 'deleted_at is null'];
+
+    if (options.ids?.length) {
+        params.push(options.ids);
+        filters.push(`id::text = any($${params.length}::text[])`);
+    }
+
+    if (options.category) {
+        params.push(options.category);
+        filters.push(`category = $${params.length}`);
+    }
+
+    if (options.search) {
+        params.push(`%${options.search}%`);
+        filters.push(`name ilike $${params.length}`);
+    }
+
+    const offset = ((options.page || 1) - 1) * options.limit;
+    params.push(options.limit);
+    const limitParam = params.length;
+    params.push(offset);
+    const offsetParam = params.length;
+
+    const countSelect = options.paginated ? ', count(*) over() as __total_count' : '';
+    const selectColumns = productVariantRelationalReadsEnabled(c.env)
+        ? PRODUCT_SELECT_FULL_RELATIONAL
+        : PRODUCT_SELECT_FULL;
+    const rows = await sql.unsafe<ProductSqlRow[]>(
+        `select ${selectColumns}${countSelect}
+         from products
+         where ${filters.join(' and ')}
+         order by display_order asc
+         limit $${limitParam} offset $${offsetParam}`,
+        params,
+    ).catch(() => null);
+
+    if (!rows) return null;
+    const count = options.paginated
+        ? Number(rows[0]?.__total_count || 0)
+        : rows.length;
+    return {
+        data: rows.map(productRowWithoutCount),
+        count,
+        error: null,
+    };
+}
+
 async function loadPublishedStore(c: AppContext, subdomain: string): Promise<PublishedStoreRecord | null> {
     const db = getSupabaseAdmin(c);
     const handle = normalizeStorefrontHandle(subdomain);
     if (!handle) return null;
+
+    const pooledStore = await loadPublishedStoreFromPooledSql(c, handle);
+    if (pooledStore) return pooledStore;
 
     const selectStore = (includeDeletedAtFilter: boolean) => {
         const query = db
@@ -656,6 +1066,11 @@ async function loadSiteByHandle(
     if (!normalized) return null;
 
     const db = getSupabaseAdmin(c);
+    if (options.publishedOnly) {
+        const pooledSite = await loadSiteByHandleFromPooledSql(c, normalized);
+        if (pooledSite) return pooledSite;
+    }
+
     const selectSite = (selectFields: string, includeDeletedAtFilter: boolean) => {
         let query = db
             .from('sites')
@@ -692,6 +1107,9 @@ async function loadSiteByHandle(
 
 async function loadCurrentThemeRelease(c: AppContext, storeId: string): Promise<StorefrontThemeReleaseRecord | null> {
     const db = getSupabaseAdmin(c);
+    const pooledRelease = await loadCurrentThemeReleaseFromPooledSql(c, storeId);
+    if (pooledRelease) return pooledRelease;
+
     const baseQuery = (select: string, includeDeletedAtFilter: boolean) => {
         let query = db
             .from('theme_releases')
@@ -881,12 +1299,42 @@ async function loadLegacyStorefrontAppBlocks(c: AppContext, storeId: string): Pr
     return blocks;
 }
 
-async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions) {
+async function queryPublicProducts(c: AppContext, storeId: string, options: PublicProductQueryOptions): Promise<PublicProductQueryResult> {
     const db = getSupabaseAdmin(c);
+    if (options.search && storefrontSearchIndexReadsEnabled(c.env)) {
+        const projected = await querySearchDocumentProductIds(c, storeId, options);
+        if (projected) {
+            if (projected.ids.length === 0) return { data: [], count: 0, error: null };
+
+            const hydrated = await queryPublicProducts(c, storeId, {
+                ...options,
+                ids: projected.ids,
+                limit: projected.ids.length,
+                paginated: false,
+                search: undefined,
+            });
+
+            return {
+                data: sortProductsBySearchDocumentIds(hydrated.data, projected.ids),
+                count: projected.count,
+                error: hydrated.error,
+            };
+        }
+    }
+
+    const pooledResult = await queryPublicProductsFromPooledSql(c, storeId, options);
+    if (pooledResult) {
+        return {
+            ...pooledResult,
+            data: await hydratePublicProductVariants(c, pooledResult.data),
+        };
+    }
+
+    const relationalProductVariants = productVariantRelationalReadsEnabled(c.env);
     const attempts = [
-        { select: PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
-        { select: PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
-        { select: PRODUCT_SELECT_COMPAT, useDeletedAt: false, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_FULL_RELATIONAL : PRODUCT_SELECT_FULL, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: true, useActive: true, orderBy: 'display_order' },
+        { select: relationalProductVariants ? PRODUCT_SELECT_COMPAT_RELATIONAL : PRODUCT_SELECT_COMPAT, useDeletedAt: false, useActive: true, orderBy: 'display_order' },
         { select: PRODUCT_SELECT_MINIMAL, useDeletedAt: false, useActive: false, orderBy: 'created_at' },
     ];
     let lastError: DatabaseErrorLike = null;
@@ -910,9 +1358,10 @@ async function queryPublicProducts(c: AppContext, storeId: string, options: Publ
             : await query.limit(options.limit);
 
         if (!result.error) {
+            const data = publicProductRows(result.data);
             return {
-                data: result.data || [],
-                count: result.count || (result.data?.length ?? 0),
+                data: await hydratePublicProductVariants(c, data),
+                count: result.count || data.length,
                 error: null,
             };
         }
@@ -1374,142 +1823,9 @@ async function sha256Hex(input: string): Promise<string> {
         .join('');
 }
 
-function isInternalRequest(c: AppContext): boolean {
-    const configuredSecret = c.env.INTERNAL_API_SECRET;
-    if (!configuredSecret && c.env.ENVIRONMENT !== 'production') return true;
-    if (!configuredSecret) return false;
-    return c.req.header('X-Internal-API-Secret') === configuredSecret;
-}
-
-function assertProvider(value: unknown): value is 'razorpay' | 'stripe' | 'paypal' | 'cashfree' {
-    return value === 'razorpay' || value === 'stripe' || value === 'paypal' || value === 'cashfree';
-}
-
-async function loadInternalPayableOrder(c: AppContext, orderId: string, storeId?: string) {
-    const db = getSupabaseAdmin(c);
-
-    if (storeId) {
-        return new PaymentExecutionAdapter(db).loadStorefrontPayableOrder(orderId, storeId);
-    }
-
-    const { data: order } = await db
-        .from('orders')
-        .select('id, store_id, total, currency, items, customer_email, payment_id, payment_method, payment_status, status, inventory_reserved_at')
-        .eq('id', orderId)
-        .is('deleted_at', null)
-        .single();
-
-    if (!order) throw new Error('Order not found');
-    if (order.payment_status === 'paid') throw new Error('Order is already paid');
-    if (order.status === 'cancelled' || order.status === 'refunded') throw new Error('Order is not payable');
-
-    const total = Number(order.total);
-    if (!Number.isFinite(total) || total <= 0) throw new Error('Order has no payable total');
-
-    return { ...order, total, currency: order.currency || 'INR' };
-}
-
-// GET /storefront/internal/orders/:orderId/payable — Internal server-to-worker payable order read
-router.get('/internal/orders/:orderId/payable', async (c) => {
-    if (!isInternalRequest(c)) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
-    }
-
-    const orderId = c.req.param('orderId');
-    const storeId = c.req.query('store_id') || undefined;
-    if (!/^[0-9a-f-]{36}$/i.test(orderId) || (storeId && !/^[0-9a-f-]{36}$/i.test(storeId))) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid order or store id' } }, 400);
-    }
-
-    try {
-        const order = await loadInternalPayableOrder(c, orderId, storeId);
-        return c.json(success({ order }));
-    } catch {
-        return c.json({ success: false, error: { code: 'PAYMENT_ORDER_NOT_PAYABLE', message: 'Order is not payable' } }, 409);
-    }
-});
-
-// POST /storefront/internal/payments/reference — Internal provider reference attach
-router.post('/internal/payments/reference', async (c) => {
-    if (!isInternalRequest(c)) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
-    }
-
-    const body = await c.req.json() as InternalPaymentReferenceBody;
-    if (!body.orderId || !assertProvider(body.provider) || !body.paymentReference) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider and paymentReference are required' } }, 400);
-    }
-
-    if (body.storeId) await loadInternalPayableOrder(c, body.orderId, body.storeId);
-
-    const db = getSupabaseAdmin(c);
-    await new PaymentExecutionAdapter(db).attachPaymentReference({
-        orderId: body.orderId,
-        provider: body.provider,
-        providerOrderId: body.paymentReference,
-        requestId: getRequestId(c),
-        idempotencyKey: body.idempotencyKey || null,
-    });
-
-    return c.json(success({ attached: true }));
-});
-
-// POST /storefront/internal/payments/confirm — Internal provider payment confirmation
-router.post('/internal/payments/confirm', async (c) => {
-    if (!isInternalRequest(c)) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
-    }
-
-    const body = await c.req.json() as InternalPaymentConfirmBody;
-    if (!body.orderId || !assertProvider(body.provider) || !body.paymentId) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider and paymentId are required' } }, 400);
-    }
-
-    const db = getSupabaseAdmin(c);
-    const order = await new PaymentExecutionAdapter(db).confirmPayment({
-        orderId: body.orderId,
-        provider: body.provider,
-        providerPaymentId: body.paymentId,
-        providerOrderId: body.providerOrderId || null,
-        providerEventId: body.providerEventId || `${body.provider}:storefront:${body.paymentId}`,
-        requestId: getRequestId(c),
-        idempotencyKey: body.idempotencyKey || null,
-    });
-    await emitStorefrontOrderPaidEvent(db, {
-        orderId: body.orderId,
-        order: order as StorefrontPaidOrderSnapshot,
-        requestId: getRequestId(c),
-        idempotencyKey: body.idempotencyKey || body.providerEventId || body.paymentId,
-    });
-
-    return c.json(success({ order }));
-});
-
-// POST /storefront/internal/payments/failure — Internal provider payment failure/refund state
-router.post('/internal/payments/failure', async (c) => {
-    if (!isInternalRequest(c)) {
-        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
-    }
-
-    const body = await c.req.json() as InternalPaymentFailureBody;
-    if (!body.orderId || !assertProvider(body.provider) || !body.providerEventId || !body.paymentStatus || !body.orderStatus) {
-        return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider, providerEventId, paymentStatus and orderStatus are required' } }, 400);
-    }
-
-    const db = getSupabaseAdmin(c);
-    const order = await new PaymentExecutionAdapter(db).recordPaymentFailure({
-        orderId: body.orderId,
-        provider: body.provider,
-        providerEventId: body.providerEventId,
-        paymentStatus: body.paymentStatus,
-        orderStatus: body.orderStatus,
-        reason: body.reason || null,
-        releaseInventory: Boolean(body.releaseInventory),
-        requestId: getRequestId(c),
-        idempotencyKey: body.idempotencyKey || null,
-    });
-
-    return c.json(success({ order }));
+registerStorefrontInternalPaymentRoutes(router, {
+    getRequestId,
+    emitStorefrontOrderPaidEvent,
 });
 
 // GET /storefront/lookup?q=handle — Public store lookup for routing/search surfaces
@@ -1881,17 +2197,28 @@ router.get('/:subdomain/theme-preview', async (c) => {
 
 // GET /storefront/:subdomain — Public published store data and immutable current release
 router.get('/:subdomain', async (c) => {
-    const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'bootstrap', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadSiteByHandle(c, c.req.param('subdomain'), { publishedOnly: true });
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    const [release, appBlocks] = await Promise.all([
-        loadCurrentThemeRelease(c, store.id),
-        loadPublicStorefrontAppBlocks(c, store.id),
-    ]);
-    return c.json(success({
-        ...mapPublicStorePayload(store, release),
-        app_blocks: appBlocks,
-    }));
+        const [release, appBlocks] = await Promise.all([
+            loadCurrentThemeRelease(c, store.id),
+            loadPublicStorefrontAppBlocks(c, store.id),
+        ]);
+        return {
+            body: success({
+                ...mapPublicStorePayload(store, release),
+                app_blocks: appBlocks,
+            }),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:bootstrap', 'storefront:theme'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/status — Public limited status data for coming-soon routing.
@@ -2006,27 +2333,40 @@ router.post('/:subdomain/orders', validate('json', StorefrontCreateOrderSchema),
             );
         }
 
-        const order = await service.createOrder(
-            {
-                customer_name: body.customer.name,
-                customer_email: body.customer.email,
-                customer_phone: body.customer.phone,
-                shipping_address: shippingAddress,
-                customer_gstin: body.customer.gstin,
-                items: body.items.map((item) => ({
-                    product_id: item.productId,
-                    variant_id: item.variantId || null,
-                    quantity: item.quantity,
-                })),
-                payment_method: checkoutDecision.paymentMethod,
-                shipping_method: checkoutDecision.shippingMethod,
-                notes: body.notes,
-                coupon_code: checkoutDecision.couponCode,
-                gift_card_code: body.giftCardCode,
-                idempotency_key: body.idempotencyKey,
-            },
-            tenant
-        ) as OrderRpcResult;
+        const orderCommand: CreateCheckoutOrderCommand = {
+            customer_name: body.customer.name,
+            customer_email: body.customer.email,
+            customer_phone: body.customer.phone,
+            shipping_address: shippingAddress,
+            customer_gstin: body.customer.gstin,
+            items: body.items.map((item) => ({
+                product_id: item.productId,
+                variant_id: item.variantId || null,
+                quantity: item.quantity,
+            })),
+            payment_method: checkoutDecision.paymentMethod,
+            shipping_method: checkoutDecision.shippingMethod,
+            notes: body.notes,
+            coupon_code: checkoutDecision.couponCode,
+            gift_card_code: body.giftCardCode,
+            idempotency_key: body.idempotencyKey,
+        };
+        const deferPostCommit = isCheckoutPostCommitDeferralEnabled(c.env);
+        const order = await service.createOrder(orderCommand, tenant, { deferPostCommit }) as OrderRpcResult;
+        if (deferPostCommit) {
+            c.executionCtx.waitUntil(
+                service.completeOrderPostCommitWork(orderCommand, tenant, order).catch((error) => {
+                    console.error(JSON.stringify({
+                        level: 'error',
+                        event: 'storefront.checkout.post_commit_failed',
+                        site_id: store.id,
+                        order_id: order.id || null,
+                        request_id: tenant.requestId,
+                        error: error instanceof Error ? error.message : 'Unknown checkout post-commit failure',
+                    }));
+                }),
+            );
+        }
 
         await emitStorefrontOrderCreatedEvent(db, {
             storeId: store.id,
@@ -2888,24 +3228,32 @@ router.post(
 router.get('/:subdomain/products', async (c) => {
     const page = parseInt(c.req.query('page') || '1');
     const limit = Math.min(parseInt(c.req.query('limit') || '20'), 100);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data, count, error } = await queryPublicProducts(c, store.id, {
-        page,
-        limit,
-        paginated: true,
-        category: c.req.query('category') || undefined,
-        search: c.req.query('search') || undefined,
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'products', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data, count, error } = await queryPublicProducts(c, store.id, {
+            page,
+            limit,
+            paginated: true,
+            category: c.req.query('category') || undefined,
+            search: c.req.query('search') || undefined,
+        });
+        if (error) return { status: 500, body: dbFailureBody() };
+        return {
+            body: paginated(data || [], count || 0, page, limit),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
+        };
     });
-    if (error) return c.json(dbFailureBody(), 500);
-    return c.json(paginated(data || [], count || 0, page, limit));
 });
 
 // GET /storefront/:subdomain/products/by-ids?ids=a,b — Public product subset scoped by store
 router.get('/:subdomain/products/by-ids', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const ids = (c.req.query('ids') || '')
         .split(',')
         .map((id) => id.trim())
@@ -2914,31 +3262,65 @@ router.get('/:subdomain/products/by-ids', async (c) => {
 
     if (!ids.length) return c.json(success([]));
 
-    const { data, error } = await queryPublicProducts(c, store.id, { limit: 100, ids });
-    if (error) return c.json(dbFailureBody(), 500);
-    return c.json(success(data || []));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'products-by-ids', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        const { data, error } = await queryPublicProducts(c, store.id, { limit: 100, ids });
+        if (error) return { status: 500, body: dbFailureBody() };
+        return {
+            body: success(data || []),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/products/:slug — Single product scoped by store.
 // Accepts either a product slug or UUID to preserve existing storefront URLs.
 router.get('/:subdomain/products/:slug', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     const identifier = c.req.param('slug');
     if (!/^[a-z0-9-]{1,120}$/i.test(identifier)) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid product identifier' } }, 400);
     }
-    const { data } = await db
-        .from('products')
-        .select('*, product_variants(*)')
-        .eq('store_id', store.id)
-        .or(`slug.eq.${identifier},id.eq.${identifier}`)
-        .eq('is_active', true)
-        .single();
-    if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } }, 404);
-    await new ProductExecutionAdapter(db).recordStorefrontView(data as StorefrontProductDetail);
-    return c.json(success(data));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'product-detail', handle, identifier), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data } = await db
+            .from('products')
+            .select(productVariantRelationalReadsEnabled(c.env) ? PRODUCT_SELECT_FULL_RELATIONAL : '*')
+            .eq('store_id', store.id)
+            .or(`slug.eq.${identifier},id.eq.${identifier}`)
+            .eq('is_active', true)
+            .single();
+        if (!data) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Product not found' } },
+            };
+        }
+        const [product] = await hydratePublicProductVariants(c, [data as unknown as PublicProductRow]);
+        emitProductViewedEvent(c, {
+            storeId: store.id,
+            product: product as StorefrontProductDetail,
+        });
+        return {
+            body: success(product),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products', `storefront:product:${identifier}`),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/coupons/validate — Public checkout coupon validation
@@ -2999,108 +3381,199 @@ async function validateCouponForStore(c: AppContext, storeId: string) {
 
 // GET /storefront/:subdomain/categories
 router.get('/:subdomain/categories', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data } = await db.from('product_categories').select('id,name,slug,image_url,parent_id,product_count').eq('store_id', store.id).eq('is_visible', true).order('display_order');
-    return c.json(success(data || []));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'categories', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data } = await db.from('product_categories').select('id,name,slug,image_url,parent_id,product_count').eq('store_id', store.id).eq('is_visible', true).order('display_order');
+        return {
+            body: success(data || []),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:products', 'storefront:categories'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/navigation?location=main
 router.get('/:subdomain/navigation', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const location = normalizePublicRouteToken(c.req.query('location') || 'main');
     if (!location) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid menu location' } }, 400);
     }
 
-    try {
-        const navigation = await loadNavigationMenu(c, store.id, location);
-        return c.json(success(navigation));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load navigation' },
-        }, 500);
-    }
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'navigation', handle, location), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        try {
+            const navigation = await loadNavigationMenu(c, store.id, location);
+            return {
+                body: success(navigation),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:navigation', `storefront:navigation:${location}`),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load navigation' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/pages
 router.get('/:subdomain/pages', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'pages', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    try {
-        const pages = await listStorefrontPages(c, store.id);
-        return c.json(success(pages));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load pages' },
-        }, 500);
-    }
+        try {
+            const pages = await listStorefrontPages(c, store.id);
+            return {
+                body: success(pages),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:pages'),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load pages' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/policies
 router.get('/:subdomain/policies', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'policies', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    try {
-        const policies = await listStorefrontPolicies(c, store.id);
-        return c.json(success(policies));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load policies' },
-        }, 500);
-    }
+        try {
+            const policies = await listStorefrontPolicies(c, store.id);
+            return {
+                body: success(policies),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:policies'),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load policies' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/policies/:policyType
 router.get('/:subdomain/policies/:policyType', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const policyToken = normalizePublicRouteToken(c.req.param('policyType'));
     if (!policyToken) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid policy type' } }, 400);
     }
 
-    try {
-        const policy = await loadStorefrontPolicy(c, store.id, policyToken);
-        if (!policy) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Policy not found' } }, 404);
-        return c.json(success(policy));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load policy' },
-        }, 500);
-    }
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'policy', handle, policyToken), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        try {
+            const policy = await loadStorefrontPolicy(c, store.id, policyToken);
+            if (!policy) {
+                return {
+                    status: 404,
+                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Policy not found' } },
+                };
+            }
+            return {
+                body: success(policy),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:policies', `storefront:policy:${policyToken}`),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load policy' },
+                },
+            };
+        }
+    });
 });
 
 // GET /storefront/:subdomain/pages/:slug
 router.get('/:subdomain/pages/:slug', async (c) => {
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const slug = normalizePublicRouteToken(c.req.param('slug'));
     if (!slug) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid page slug' } }, 400);
     }
 
-    try {
-        const page = await loadStorefrontPageBySlug(c, store.id, slug);
-        if (!page) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Page not found' } }, 404);
-        return c.json(success(page));
-    } catch {
-        return c.json({
-            success: false,
-            error: { code: 'DB_ERROR', message: 'Failed to load page' },
-        }, 500);
-    }
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'page', handle, slug), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+
+        try {
+            const page = await loadStorefrontPageBySlug(c, store.id, slug);
+            if (!page) {
+                return {
+                    status: 404,
+                    body: { success: false, error: { code: 'NOT_FOUND', message: 'Page not found' } },
+                };
+            }
+            return {
+                body: success(page),
+                tags: storefrontCacheTags(store.id, handle, 'storefront:pages', `storefront:page:${slug}`),
+            };
+        } catch {
+            return {
+                status: 500,
+                body: {
+                    success: false,
+                    error: { code: 'DB_ERROR', message: 'Failed to load page' },
+                },
+            };
+        }
+    });
 });
 
 // POST /storefront/customer/find-or-create — Sessionless checkout customer bootstrap
@@ -3785,14 +4258,15 @@ router.get('/customer/orders', async (c) => {
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
         .from('orders')
-        .select('id, order_number, status, total, created_at, items')
+        .select(orderItemsRelationalReadsEnabled(c.env) ? 'id, order_number, status, total, created_at' : 'id, order_number, status, total, created_at, items')
         .eq('store_id', storeId)
         .eq('customer_email', normalizeEmail(customer.email))
         .order('created_at', { ascending: false })
         .limit(50);
 
     if (error) return c.json(dbFailureBody(), 500);
-    return c.json(success({ orders: data || [] }));
+    const orders = await hydrateStorefrontOrderItems(c, (data || []) as unknown as SqlRecord[]);
+    return c.json(success({ orders }));
 });
 
 // GET /storefront/:subdomain/orders/contact — Public order tracking lookup by contact
@@ -3818,7 +4292,9 @@ router.get('/:subdomain/orders/contact', async (c) => {
     const db = getSupabaseAdmin(c);
     let query = db
         .from('orders')
-        .select('*')
+        .select(orderItemsRelationalReadsEnabled(c.env)
+            ? 'id, store_id, order_number, customer_email, customer_phone, status, payment_status, fulfillment_status, total, currency, created_at, updated_at'
+            : '*')
         .eq('store_id', store.id)
         .order('created_at', { ascending: false });
 
@@ -3837,10 +4313,11 @@ router.get('/:subdomain/orders/contact', async (c) => {
     ]);
 
     if (error) return c.json(dbFailureBody(), 500);
+    const hydratedOrders = await hydrateStorefrontOrderItems(c, (orders || []) as unknown as SqlRecord[]);
 
     return c.json(success({
-        orders: orders || [],
-        hasOrders: Boolean(orders?.length),
+        orders: hydratedOrders,
+        hasOrders: hydratedOrders.length > 0,
         hasPassword: Boolean(credential),
         store_id: store.id,
     }));
@@ -4260,57 +4737,84 @@ router.delete('/customer/addresses/:id', async (c) => {
 
 // GET /storefront/:subdomain/blog
 router.get('/:subdomain/blog', async (c) => {
-    const db = getSupabaseAdmin(c);
     const page = parseInt(c.req.query('page') || '1');
     const limit = Math.min(parseInt(c.req.query('limit') || '10'), 50);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-    const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
-        .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
-    return c.json(paginated(data || [], count || 0, page, limit));
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'blog', handle), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
+        const { data, count } = await db.from('blog_posts').select('id,title,slug,excerpt,featured_image,published_at,created_at,updated_at,is_pinned,seo_title,seo_description,og_image_url', { count: 'exact' })
+            .eq('store_id', store.id).eq('status', 'published').order('is_pinned', { ascending: false }).order('created_at', { ascending: false }).range((page - 1) * limit, page * limit - 1);
+        return {
+            body: paginated(data || [], count || 0, page, limit),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:blog'),
+        };
+    });
 });
 
 // GET /storefront/:subdomain/blog/:slug
 router.get('/:subdomain/blog/:slug', async (c) => {
-    const db = getSupabaseAdmin(c);
-    const store = await loadPublishedStore(c, c.req.param('subdomain'));
-    if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
-
     const slug = normalizePublicRouteToken(c.req.param('slug'));
     if (!slug) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Invalid blog post slug' } }, 400);
     }
 
-    const { data, error } = await db.from('blog_posts')
-        .select('id,title,slug,excerpt,content,content_html,featured_image,published_at,updated_at,seo_title,seo_description,og_image_url,canonical_url')
-        .eq('store_id', store.id)
-        .eq('status', 'published')
-        .eq('slug', slug)
-        .maybeSingle();
+    const handle = normalizeStorefrontHandle(c.req.param('subdomain')) || c.req.param('subdomain');
+    return cachedJson(c, await storefrontRequestCacheKey(c, 'blog-detail', handle, slug), STOREFRONT_CACHE_TTL_SECONDS, STOREFRONT_CACHE_SWR_SECONDS, async () => {
+        const db = getSupabaseAdmin(c);
+        const store = await loadPublishedStore(c, c.req.param('subdomain'));
+        if (!store) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } },
+            };
+        }
 
-    if (error) return c.json(dbFailureBody(), 500);
-    if (!data) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Blog post not found' } }, 404);
+        const { data, error } = await db.from('blog_posts')
+            .select('id,title,slug,excerpt,content,content_html,featured_image,published_at,updated_at,seo_title,seo_description,og_image_url,canonical_url')
+            .eq('store_id', store.id)
+            .eq('status', 'published')
+            .eq('slug', slug)
+            .maybeSingle();
 
-    return c.json(success({
-        id: data.id,
-        title: data.title,
-        slug: data.slug,
-        page_type: 'blog_post',
-        content: {
-            body: data.content || '',
-            html: data.content_html || '',
-            image: data.featured_image || '',
-            excerpt: data.excerpt || '',
-        },
-        seo: {
-            title: data.seo_title || data.title,
-            description: data.seo_description || data.excerpt || '',
-            ogImage: data.og_image_url || data.featured_image || '',
-            canonicalUrl: data.canonical_url || '',
-        },
-        published_at: data.published_at,
-        updated_at: data.updated_at,
-    }));
+        if (error) return { status: 500, body: dbFailureBody() };
+        if (!data) {
+            return {
+                status: 404,
+                body: { success: false, error: { code: 'NOT_FOUND', message: 'Blog post not found' } },
+            };
+        }
+
+        return {
+            body: success({
+                id: data.id,
+                title: data.title,
+                slug: data.slug,
+                page_type: 'blog_post',
+                content: {
+                    body: data.content || '',
+                    html: data.content_html || '',
+                    image: data.featured_image || '',
+                    excerpt: data.excerpt || '',
+                },
+                seo: {
+                    title: data.seo_title || data.title,
+                    description: data.seo_description || data.excerpt || '',
+                    ogImage: data.og_image_url || data.featured_image || '',
+                    canonicalUrl: data.canonical_url || '',
+                },
+                published_at: data.published_at,
+                updated_at: data.updated_at,
+            }),
+            tags: storefrontCacheTags(store.id, handle, 'storefront:blog', `storefront:blog:${slug}`),
+        };
+    });
 });
 
 // POST /storefront/:subdomain/contact — Public contact form

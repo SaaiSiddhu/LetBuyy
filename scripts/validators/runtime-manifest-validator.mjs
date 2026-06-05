@@ -11,6 +11,15 @@ import {
 
 const reporter = createReporter("Runtime manifest validator");
 
+const reservedNotImplementedServiceRoots = new Set([
+  "services/analytics-pipeline",
+  "services/checkout-runtime",
+  "services/event-bus",
+  "services/media-service",
+  "services/notification-service",
+  "services/search-service",
+]);
+
 const requiredStringFields = [
   "runtimeName",
   "runtimeRoot",
@@ -276,6 +285,44 @@ for (const runtimeRoot of canonicalRuntimeRoots) {
   }
 
   if (runtimeRoot.startsWith("services/")) {
+    if (reservedNotImplementedServiceRoots.has(runtimeRoot)) {
+      reporter.assert(
+        manifest.runtimeCategory === "reserved-service",
+        `Reserved service manifest must use reserved-service category: ${manifestPath}`,
+      );
+      reporter.assert(
+        manifest.implementationStatus?.status === "reserved-not-implemented",
+        `Reserved service manifest must declare reserved-not-implemented status: ${manifestPath}`,
+      );
+      reporter.assert(
+        manifest.implementationStatus?.sourceState === "manifest-and-agents-only",
+        `Reserved service manifest must describe manifest-only source state: ${manifestPath}`,
+      );
+      reporter.assert(
+        !exists(`${runtimeRoot}/package.json`) && !exists(`${runtimeRoot}/src`) && !exists(`${runtimeRoot}/wrangler.toml`),
+        `Reserved service root must not contain deployable source or worker config without updating implementation status: ${runtimeRoot}`,
+      );
+      reporter.assert(
+        /services\/api-gateway|services\/queue-workers/.test(manifest.implementationStatus?.currentActiveOwner || ""),
+        `Reserved service manifest must name the current active owner runtime: ${manifestPath}`,
+      );
+      reporter.assert(
+        /Reserved\/not-implemented|does not own active/.test(manifest.ownership?.businessAuthority || ""),
+        `Reserved service manifest businessAuthority must be explicit about inactive ownership: ${manifestPath}`,
+      );
+    }
+
+    if (runtimeRoot === "services/queue-workers") {
+      reporter.assert(
+        manifest.runtimeCategory !== "reserved-service",
+        "Queue Workers manifest must not be categorized as reserved-service because it has deployable source",
+      );
+      reporter.assert(
+        exists("services/queue-workers/package.json") && exists("services/queue-workers/src") && exists("services/queue-workers/wrangler.toml"),
+        "Queue Workers must remain categorized as implemented only while package.json, src, and wrangler.toml exist",
+      );
+    }
+
     reporter.assert(
       /execution|transport|worker|webhook|queue|scheduler|handler/i.test(manifest.executionOwnership),
       `Service manifest executionOwnership must describe execution-container authority: ${manifestPath}`,

@@ -787,7 +787,7 @@ Overall launch readiness: `NO GO`, score `57/100`.
 - Per-request OLTP logging is not acceptable at commerce scale.
 - Dynamic storefront reads without an edge cache are not acceptable.
 - JSONB/relational dual models for products and orders would be considered migration debt.
-- Source-light services and unsupported Liquid renderer types would be treated as confusing product signals.
+- Source-light services and stale Liquid capability messaging would be treated as confusing product signals now that the LiquidJS renderer is implemented.
 - Production deployment workflows that skip critical jobs based on missing credentials would not pass release engineering review.
 - Full-sampling logs and always-on cron in staging/production would be challenged immediately.
 

@@ -39,7 +39,7 @@ test('query-cost limiter uses a leaky bucket and throttles over-cost requests', 
   assert.match(rateLimit, /QUERY_COST_RATE_LIMITED/);
   assert.match(rateLimit, /429/);
   assert.match(rateLimit, /X-RateLimit-Cost/);
-  assert.match(index, /queryCostRateLimit\(\{ pointsPerSecond: 20, capacity: 200 \}\)/);
+  assert.match(index, /queryCostRateLimit\(\{\s+pointsPerSecond: 20,\s+capacity: 200,\s+skip: shouldSkipGatewayQueryCostLimit,/);
 });
 
 test('query-cost calculation accounts for pagination, expansions, and heavy routes', () => {

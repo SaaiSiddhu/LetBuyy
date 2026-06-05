@@ -36,7 +36,7 @@ The editor page selector is a hardcoded, non-interactive "Home page" pill (`apps
 ## P4-2 — Resolve Storefront GraphQL `cart` Stub (MISSED-14)
 
 ### Problem
-`graphql/storefront.ts:524` unconditionally returns `data.cart = null`; documented as skipped in `CODEX_WS12_STATUS.md`. Cart-dependent GraphQL clients silently get null.
+Original finding: `graphql/storefront.ts:524` returned `data.cart = null`, documented as skipped in `CODEX_WS12_STATUS.md`, so cart-dependent GraphQL clients failed silently. Remediation now returns `CART_NOT_SUPPORTED` until server-side cart persistence exists.
 
 ### Tasks
 Implement the `cart` resolver against the existing cart storage, or — until then — return an explicit `CART_NOT_SUPPORTED` error rather than `null`, so clients fail loudly. Gate storefront GraphQL `cart` behind the WS12 feature flag (P3-7) until implemented.

@@ -383,6 +383,14 @@ async function resolveStorefrontData(
         throw new StorefrontGraphQLError('Storefront GraphQL mutations are reserved for G4/G6 resolver wiring in this stage.', 'GRAPHQL_MUTATION_NOT_READY');
     }
 
+    if (hasField(document, 'cart')) {
+        throw new StorefrontGraphQLError(
+            'Storefront GraphQL cart reads are not supported until server-side cart persistence is enabled.',
+            'CART_NOT_SUPPORTED',
+            'cart',
+        );
+    }
+
     if (hasField(document, 'store')) {
         const storeId = storeIdFromVariables(variables);
         const handle = storefrontHandle(document, variables);
@@ -515,10 +523,6 @@ async function resolveStorefrontData(
         data.order = orderId
             ? arrayValue(recordValue(envelope?.data)?.orders).find((node) => recordValue(node)?.id === orderId) || null
             : null;
-    }
-
-    if (hasField(document, 'cart')) {
-        data.cart = null;
     }
 
     if (Object.keys(data).length === 0) {

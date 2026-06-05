@@ -52,6 +52,64 @@ export function paginated<T>(data: T[], total: number, page: number, limit: numb
     };
 }
 
+export function encodeListCursor(row: Record<string, unknown>, sortColumn: string): string | null {
+    const id = row.id;
+    const value = row[sortColumn];
+
+    if (typeof id !== 'string' || id.length === 0) return null;
+    if (value === undefined || value === null) return null;
+
+    return btoa(JSON.stringify({ id, value }));
+}
+
+export function decodeListCursor(cursor?: string): { id: string; value: string | number | boolean } | null {
+    if (!cursor) return null;
+
+    try {
+        const parsed = JSON.parse(atob(cursor)) as Record<string, unknown>;
+        const id = parsed.id;
+        const value = parsed.value;
+
+        if (typeof id !== 'string' || id.length === 0) return null;
+        if (typeof value !== 'string' && typeof value !== 'number' && typeof value !== 'boolean') return null;
+
+        return { id, value };
+    } catch {
+        return null;
+    }
+}
+
+export function cursorPaginated<T>(
+    data: T[],
+    input: {
+        page: number;
+        limit: number;
+        total?: number | null;
+        nextCursor?: string | null;
+    },
+) {
+    const hasExactTotal = typeof input.total === 'number';
+    const visibleTotal = hasExactTotal ? input.total as number : data.length;
+    const totalPages = hasExactTotal
+        ? Math.ceil(visibleTotal / input.limit)
+        : input.nextCursor ? input.page + 1 : input.page;
+
+    return {
+        success: true as const,
+        data,
+        meta: {
+            page: input.page,
+            per_page: input.limit,
+            total: visibleTotal,
+            total_pages: totalPages,
+            has_next: Boolean(input.nextCursor),
+            has_prev: input.page > 1 || Boolean(input.nextCursor && input.page > 1),
+            next_cursor: input.nextCursor || null,
+            total_is_exact: hasExactTotal,
+        },
+    };
+}
+
 /**
  * Standard error response factory.
  */

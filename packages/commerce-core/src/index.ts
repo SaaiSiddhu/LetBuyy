@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+import { EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -100,6 +100,8 @@ export const ListProductsQuery = z.object({
   search: z.string().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  cursor: z.string().max(512).optional(),
+  withCount: QueryBooleanSchema,
   sort: z.enum(['created_at', 'price', 'name', 'stock', 'display_order']).default('display_order'),
   order: z.enum(['asc', 'desc']).default('asc'),
 });
@@ -507,7 +509,6 @@ export const PRODUCT_UPDATE_FIELDS = [
   'is_active',
   'is_featured',
   'tags',
-  'variants',
   'display_order',
 ] as const;
 
@@ -1035,7 +1036,7 @@ export function planProductCreate(input: CreateProductCommand): ProductCreatePla
       is_active: input.is_active ?? true,
       is_featured: input.is_featured ?? false,
       tags: input.tags || [],
-      variants: input.variants || [],
+      variants: [],
       display_order: input.display_order ?? 0,
     },
   };

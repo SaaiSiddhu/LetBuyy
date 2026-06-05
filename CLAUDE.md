@@ -8,6 +8,7 @@
 - `apps/merchant-control-plane`
 - `apps/identity-platform`
 - `apps/app-marketplace`
+- `apps/developer-portal`
 - `apps/theme-marketplace`
 - `apps/marketing-site`
 - `apps/platform-console`
@@ -17,8 +18,15 @@
 - `apps/mobile/operator-app`
 - `services/api-gateway`
 - `services/webhook-service`
+- `services/queue-workers`
+- `services/checkout-runtime` (reserved, not implemented)
+- `services/search-service` (reserved, not implemented)
+- `services/media-service` (reserved, not implemented)
+- `services/notification-service` (reserved, not implemented)
+- `services/event-bus` (reserved, not implemented)
+- `services/analytics-pipeline` (reserved, not implemented)
 
-Reserved service roots are governed in `docs/governance/runtime-boundaries.md`.
+Reserved service roots are manifest-only placeholders. Their current active capability owners are `services/api-gateway` and/or `services/queue-workers` until a human-approved extraction adds deployable source, tests, and deployment config.
 
 ## Deprecated Runtime Policy
 

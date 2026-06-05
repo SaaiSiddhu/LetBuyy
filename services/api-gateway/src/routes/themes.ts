@@ -3,6 +3,7 @@ import type { Context } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser } from '../lib/auth-user';
 import { hmacSha256Hex, timingSafeEqualHex } from '../lib/crypto';
+import { bumpStorefrontCacheVersion, purgeStorefrontCache, storefrontCacheKey } from '../lib/storefront-cache';
 import { dbErrorBody, errorBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { authMiddleware, optionalAuth } from '../middleware/auth';
 import { validate } from '../middleware/validation';
@@ -70,6 +71,23 @@ type ThemePurchaseRecord = {
 
 function getRequestId(c: Context<{ Bindings: Env }>): string {
     return c.res.headers.get('X-Request-ID') || c.req.header('X-Request-ID') || crypto.randomUUID();
+}
+
+async function purgeThemeStorefrontCache(c: Context<{ Bindings: Env }>, storeId: string): Promise<void> {
+    const { data } = await getSupabaseAdmin(c)
+        .from('sites')
+        .select('subdomain,store_name,custom_domain')
+        .eq('id', storeId)
+        .maybeSingle();
+    const record = data as { subdomain?: string | null; store_name?: string | null; custom_domain?: string | null } | null;
+    const handles = [
+        record?.subdomain,
+        record?.store_name,
+        record?.custom_domain,
+    ].filter((handle): handle is string => Boolean(handle));
+    if (handles.length === 0) return;
+    await bumpStorefrontCacheVersion(c, handles);
+    await purgeStorefrontCache(c, handles.map((handle) => storefrontCacheKey('storefront-rest', 'bootstrap', '0', handle)));
 }
 
 function recordValue(value: unknown): Record<string, unknown> {
@@ -340,6 +358,7 @@ router.get('/:slug/editor', async (c) => {
     const slug = c.req.param('slug');
     const parsed = ThemeStoreQuerySchema.safeParse({
         store_id: c.req.query('store_id'),
+        template_key: c.req.query('template_key') || c.req.query('template') || 'index',
     });
 
     if (!parsed.success) {
@@ -355,7 +374,7 @@ router.get('/:slug/editor', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.loadEditor(slug, parsed.data.store_id, customUser.id)));
+    return c.json(success(await service.loadEditor(slug, parsed.data.store_id, customUser.id, parsed.data.template_key)));
 });
 
 // PUT /themes/:slug/editor/draft — Save a store-scoped theme draft
@@ -378,6 +397,7 @@ router.delete('/:slug/editor/draft', async (c) => {
     const slug = c.req.param('slug');
     const parsed = ThemeStoreQuerySchema.safeParse({
         store_id: c.req.query('store_id'),
+        template_key: c.req.query('template_key') || c.req.query('template') || 'index',
     });
 
     if (!parsed.success) {
@@ -393,7 +413,7 @@ router.delete('/:slug/editor/draft', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c))));
+    return c.json(success(await service.deleteDraft(slug, parsed.data.store_id, customUser.id, getRequestId(c), parsed.data.template_key)));
 });
 
 // POST /themes/:slug/publish — Publish a saved draft to the live store config
@@ -407,7 +427,9 @@ router.post('/:slug/publish', validate('json', PublishThemeSchema), async (c) =>
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.publish(slug, body, customUser.id, getRequestId(c))));
+    const published = await service.publish(slug, body, customUser.id, getRequestId(c));
+    await purgeThemeStorefrontCache(c, body.store_id);
+    return c.json(success(published));
 });
 
 // POST /themes/:slug/preview-session — Create a signed draft preview token
@@ -460,7 +482,9 @@ router.post('/:slug/releases/:releaseId/rollback', validate('json', RollbackThem
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
     const service = new ThemeExecutionAdapter(db);
-    return c.json(success(await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c))));
+    const rollback = await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c));
+    await purgeThemeStorefrontCache(c, body.store_id);
+    return c.json(success(rollback));
 });
 
 // POST /themes/packages/upload — Validate and persist a portable theme bundle

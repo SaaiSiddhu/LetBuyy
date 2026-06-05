@@ -92,6 +92,10 @@ export const DOMAIN_EVENT_TYPES = [
   'theme.approved',
   'theme.rejected',
   'theme.installed',
+  'theme.purchase.payment_order_created',
+  'theme.purchase.completed',
+  'theme.draft.saved',
+  'theme.draft.discarded',
   'payout.ledger_entry.created',
   'payout.released',
   'payout.failed',
@@ -122,8 +126,10 @@ export interface DomainEventContract {
   schemaVersion: 1;
   producer: DomainEventProducer;
   consumers: readonly DomainEventConsumer[];
-  aggregateType: 'store' | 'product' | 'order' | 'app' | 'app_charge' | 'theme' | 'payout';
+  aggregateType: 'store' | 'product' | 'order' | 'app' | 'app_charge' | 'theme' | 'theme_purchase' | 'theme_draft' | 'payout';
   payloadSchema: z.ZodType<unknown>;
+  implementationStatus?: 'active' | 'reserved-human-gated';
+  reservedReason?: string;
 }
 
 const StoreCreatedPayloadSchema = z.object({
@@ -191,6 +197,35 @@ const ThemeInstalledPayloadSchema = z.object({
   installation_id: UuidSchema,
 });
 
+const ThemePurchaseOrderCreatedPayloadSchema = z.object({
+  theme_id: UuidSchema,
+  theme_slug: z.string().trim().min(1).max(160),
+  provider: z.literal('razorpay'),
+  provider_order_id: z.string().trim().min(1).max(200),
+  amount: z.number().int().nonnegative(),
+  currency: z.literal('INR').default('INR'),
+});
+
+const ThemePurchaseCompletedPayloadSchema = z.object({
+  theme_id: UuidSchema,
+  theme_slug: z.string().trim().min(1).max(160),
+  provider: z.literal('razorpay'),
+  provider_order_id: z.string().trim().min(1).max(200),
+  provider_payment_id: z.string().trim().min(1).max(200),
+});
+
+const ThemeDraftPayloadSchema = z.object({
+  store_id: UuidSchema,
+  theme_id: z.string().trim().min(1).max(160),
+  template_key: z.string().trim().min(1).max(160),
+  draft_id: UuidSchema,
+  version: z.number().int().positive(),
+  theme_instance_id: UuidSchema.nullable().optional(),
+  theme_package_version_id: UuidSchema.nullable().optional(),
+  theme_instance_draft_id: UuidSchema.nullable().optional(),
+  client: z.string().trim().min(1).max(80).optional(),
+});
+
 const PayoutPayloadSchema = z.object({
   partner_id: UuidSchema,
   payout_id: UuidSchema,
@@ -199,7 +234,7 @@ const PayoutPayloadSchema = z.object({
   rail: z.enum(['razorpay_route', 'razorpayx', 'upi', 'manual']).default('manual'),
 });
 
-export const DOMAIN_EVENT_CONTRACTS = {
+export const DOMAIN_EVENT_CONTRACTS: Record<DomainEventType, DomainEventContract> = {
   'store.created': {
     eventType: 'store.created',
     schemaVersion: 1,
@@ -360,6 +395,38 @@ export const DOMAIN_EVENT_CONTRACTS = {
     aggregateType: 'theme',
     payloadSchema: ThemeInstalledPayloadSchema,
   },
+  'theme.purchase.payment_order_created': {
+    eventType: 'theme.purchase.payment_order_created',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'theme_purchase',
+    payloadSchema: ThemePurchaseOrderCreatedPayloadSchema,
+  },
+  'theme.purchase.completed': {
+    eventType: 'theme.purchase.completed',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'notifications', 'webhook-service'],
+    aggregateType: 'theme_purchase',
+    payloadSchema: ThemePurchaseCompletedPayloadSchema,
+  },
+  'theme.draft.saved': {
+    eventType: 'theme.draft.saved',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'webhook-service'],
+    aggregateType: 'theme_draft',
+    payloadSchema: ThemeDraftPayloadSchema,
+  },
+  'theme.draft.discarded': {
+    eventType: 'theme.draft.discarded',
+    schemaVersion: 1,
+    producer: 'api-gateway',
+    consumers: ['analytics', 'webhook-service'],
+    aggregateType: 'theme_draft',
+    payloadSchema: ThemeDraftPayloadSchema,
+  },
   'payout.ledger_entry.created': {
     eventType: 'payout.ledger_entry.created',
     schemaVersion: 1,
@@ -375,6 +442,8 @@ export const DOMAIN_EVENT_CONTRACTS = {
     consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'payout',
     payloadSchema: PayoutPayloadSchema,
+    implementationStatus: 'reserved-human-gated',
+    reservedReason: 'No payout release rail or operations approval transition is implemented; live payout credentials and payout policy are human-gated.',
   },
   'payout.failed': {
     eventType: 'payout.failed',
@@ -383,8 +452,10 @@ export const DOMAIN_EVENT_CONTRACTS = {
     consumers: ['analytics', 'notifications', 'webhook-service'],
     aggregateType: 'payout',
     payloadSchema: PayoutPayloadSchema,
+    implementationStatus: 'reserved-human-gated',
+    reservedReason: 'No payout failure reconciliation transition is implemented; live payout credentials and payout policy are human-gated.',
   },
-} satisfies Record<DomainEventType, DomainEventContract>;
+};
 
 export const DOMAIN_EVENT_PRODUCER_CONSUMER_CONTRACTS = DOMAIN_EVENT_TYPES.map((eventType) => {
   const contract = DOMAIN_EVENT_CONTRACTS[eventType];
@@ -394,6 +465,8 @@ export const DOMAIN_EVENT_PRODUCER_CONSUMER_CONTRACTS = DOMAIN_EVENT_TYPES.map((
     producer: contract.producer,
     consumers: contract.consumers,
     aggregate_type: contract.aggregateType,
+    implementation_status: contract.implementationStatus || 'active',
+    reserved_reason: contract.reservedReason,
   };
 });
 

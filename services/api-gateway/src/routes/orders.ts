@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { dbErrorBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
@@ -35,6 +35,55 @@ import {
 const router = new Hono<{ Bindings: Env }>();
 type OrderEventType = 'order.created' | 'order.paid' | 'order.fulfilled' | 'order.cancelled' | 'order.refunded';
 
+const ORDER_LIST_COLUMNS = [
+    'id',
+    'store_id',
+    'site_id',
+    'order_number',
+    'customer_email',
+    'customer_name',
+    'customer_phone',
+    'shipping_address',
+    'billing_address',
+    'items',
+    'subtotal',
+    'shipping_cost',
+    'tax',
+    'discount',
+    'total',
+    'coupon_code',
+    'coupon_discount',
+    'status',
+    'payment_status',
+    'payment_method',
+    'payment_id',
+    'tracking_number',
+    'carrier',
+    'created_at',
+    'updated_at',
+    'fulfillment_status',
+    'payment_gateway',
+    'shipping_method',
+    'notes',
+    'version',
+    'payment_processed_at',
+    'inventory_reserved_at',
+    'inventory_released_at',
+    'payment_failure_reason',
+    'last_payment_event_id',
+    'currency',
+    'return_status',
+    'refund_status',
+    'customer_gstin',
+    'place_of_supply_state',
+    'gst_invoice_number',
+    'gst_invoice',
+].join(',');
+const ORDER_LIST_COLUMNS_RELATIONAL = ORDER_LIST_COLUMNS
+    .split(',')
+    .filter((column) => column !== 'items')
+    .join(',');
+
 type DatabaseErrorLike = {
     message?: string;
     details?: string;
@@ -47,6 +96,23 @@ type FulfillmentOrderSnapshot = {
     customer_phone?: string | null;
     customer_email?: string | null;
     shipping_address?: unknown;
+};
+
+type OrderItemRelationRow = {
+    id: string;
+    order_id: string;
+    product_id?: string | null;
+    variant_id?: string | null;
+    title?: string | null;
+    name?: string | null;
+    sku?: string | null;
+    quantity?: number | string | null;
+    unit_price?: number | string | null;
+    price?: number | string | null;
+    total?: number | string | null;
+    image_url?: string | null;
+    variant_title?: string | null;
+    product_snapshot?: Record<string, unknown> | string | null;
 };
 
 function databaseErrorText(error: DatabaseErrorLike): string {
@@ -72,10 +138,53 @@ function isMissingOrderItemsRelation(error: DatabaseErrorLike): boolean {
     );
 }
 
+function orderItemsRelationalReadsEnabled(env: Pick<Env, 'ORDER_ITEMS_RELATIONAL_READS'>): boolean {
+    return (env.ORDER_ITEMS_RELATIONAL_READS || 'on').trim().toLowerCase() !== 'off';
+}
+
 function recordValue(value: unknown): Record<string, unknown> {
     return value && typeof value === 'object' && !Array.isArray(value)
         ? value as Record<string, unknown>
         : {};
+}
+
+async function hydrateOrderItems(
+    db: ReturnType<typeof getSupabaseAdmin>,
+    orders: Array<Record<string, unknown>>,
+): Promise<Array<Record<string, unknown>>> {
+    const orderIds = orders
+        .map((order) => textValue(order.id))
+        .filter((id): id is string => Boolean(id));
+
+    if (orderIds.length === 0) return orders;
+
+    const { data, error } = await db
+        .from('order_items')
+        .select('id, order_id, product_id, variant_id, title, name, sku, quantity, unit_price, price, total, variant_title, product_snapshot')
+        .in('order_id', Array.from(new Set(orderIds)))
+        .is('deleted_at', null)
+        .order('created_at', { ascending: true });
+
+    if (isMissingOrderItemsRelation(error)) return orders;
+    if (error) throw new Error(`Order item hydration failed: ${error.message}`);
+
+    const itemsByOrder = new Map<string, OrderItemRelationRow[]>();
+    for (const row of (data || []) as OrderItemRelationRow[]) {
+        itemsByOrder.set(row.order_id, [
+            ...(itemsByOrder.get(row.order_id) || []),
+            row,
+        ]);
+    }
+
+    return orders.map((order) => {
+        const orderId = textValue(order.id);
+        if (!orderId) return order;
+        const orderItems = itemsByOrder.get(orderId) || [];
+        return {
+            ...order,
+            order_items: orderItems,
+        };
+    });
 }
 
 function textValue(value: unknown): string | null {
@@ -231,6 +340,7 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
     const auth = c.get('auth');
     const query = c.get('validatedQuery') as ListOrdersQueryInput;
     const offset = (query.page - 1) * query.limit;
+    const decodedCursor = decodeListCursor(query.cursor);
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -251,17 +361,22 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
         return c.json(paginated([], 0, query.page, query.limit));
     }
 
-    const buildOrdersQuery = (includeOrderItems: boolean, includeDeletedAtFilter: boolean) => {
+    const buildOrdersQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
-            .select(includeOrderItems ? '*,order_items(*)' : '*', { count: 'exact' })
+            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : ORDER_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds)
             .order(query.sort, { ascending: query.order === 'asc' })
-            .range(offset, offset + query.limit - 1);
+            .order('id', { ascending: query.order === 'asc' });
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
         if (query.status !== 'all') dbQuery = dbQuery.eq('status', query.status);
         if (query.payment_status !== 'all') dbQuery = dbQuery.eq('payment_status', query.payment_status);
+        if (decodedCursor) {
+            dbQuery = query.order === 'asc'
+                ? dbQuery.gt(query.sort, decodedCursor.value)
+                : dbQuery.lt(query.sort, decodedCursor.value);
+        }
         if (query.search) {
             const search = query.search.replace(/[%(),]/g, '').trim();
             if (search) {
@@ -269,28 +384,36 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
             }
         }
 
-        return dbQuery;
+        if (query.cursor || query.page === 1) return dbQuery.limit(query.limit + 1);
+        return dbQuery.range(offset, offset + query.limit);
     };
 
-    let { data, error, count } = await buildOrdersQuery(true, true);
+    let { data, error, count } = await buildOrdersQuery(true);
 
     if (isMissingColumnError(error, 'deleted_at')) {
-        ({ data, error, count } = await buildOrdersQuery(true, false));
-    }
-
-    if (isMissingOrderItemsRelation(error)) {
-        ({ data, error, count } = await buildOrdersQuery(false, true));
-        if (isMissingColumnError(error, 'deleted_at')) {
-            ({ data, error, count } = await buildOrdersQuery(false, false));
-        }
+        ({ data, error, count } = await buildOrdersQuery(false));
     }
 
     if (error) {
         return c.json(dbErrorBody(), 500);
     }
 
-    const rows = ((data || []) as unknown as OrderSourceRow[]).map(normalizeOrderRecord);
-    return c.json(paginated(rows, count || 0, query.page, query.limit));
+    const rawRows = (data || []) as unknown as Array<Record<string, unknown>>;
+    const pageRows = rawRows.slice(0, query.limit);
+    const nextCursor = rawRows.length > query.limit
+        ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
+        : null;
+    const hydratedRows = orderItemsRelationalReadsEnabled(c.env)
+        ? await hydrateOrderItems(db, pageRows)
+        : pageRows;
+    const rows = (hydratedRows as unknown as OrderSourceRow[]).map(normalizeOrderRecord);
+
+    return c.json(cursorPaginated(rows, {
+        page: query.page,
+        limit: query.limit,
+        total: query.withCount ? count || 0 : undefined,
+        nextCursor,
+    }));
 });
 
 // GET /orders/:id
@@ -304,27 +427,20 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'FORBIDDEN', message: 'User profile not found' } }, 403);
     }
 
-    const buildOrderQuery = (includeOrderItems: boolean, includeDeletedAtFilter: boolean) => {
+    const buildOrderQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
-            .select(includeOrderItems ? '*,order_items(*)' : '*')
+            .select(orderItemsRelationalReadsEnabled(c.env) ? ORDER_LIST_COLUMNS_RELATIONAL : '*')
             .eq('id', orderId);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
         return dbQuery.single();
     };
 
-    let { data, error } = await buildOrderQuery(true, true);
+    let { data, error } = await buildOrderQuery(true);
 
     if (isMissingColumnError(error, 'deleted_at')) {
-        ({ data, error } = await buildOrderQuery(true, false));
-    }
-
-    if (isMissingOrderItemsRelation(error)) {
-        ({ data, error } = await buildOrderQuery(false, true));
-        if (isMissingColumnError(error, 'deleted_at')) {
-            ({ data, error } = await buildOrderQuery(false, false));
-        }
+        ({ data, error } = await buildOrderQuery(false));
     }
 
     const order = data as unknown as OrderSourceRow | null;
@@ -333,7 +449,11 @@ router.get('/:id', async (c) => {
         return c.json({ error: { code: 'NOT_FOUND', message: 'Order not found' } }, 404);
     }
 
-    return c.json(success(normalizeOrderRecord(order)));
+    const rows = orderItemsRelationalReadsEnabled(c.env)
+        ? await hydrateOrderItems(db, [order as unknown as Record<string, unknown>])
+        : [order as unknown as Record<string, unknown>];
+
+    return c.json(success(normalizeOrderRecord(rows[0] as unknown as OrderSourceRow)));
 });
 
 // PATCH /orders/:id — Update order status (with state machine)
