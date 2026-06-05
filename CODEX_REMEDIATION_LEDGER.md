@@ -2,8 +2,8 @@
 
 ## CURRENT PHASE
 
-- Phase: PHASE 2 — Release Safety.
-- Current work item: P0-E WS11-13 production feature gates and smoke suite.
+- Phase: PHASE 3 — P1 Cost.
+- Current work item: P1-1 request-log sampling.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -165,6 +165,21 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P1-1 — Request-log sampling
+
+- Added deterministic request-log sampling for `worker_request_logs` writes while keeping structured runtime console logs unchanged.
+- Always records errors, auth routes, admin/operations/internal-console routes, payment routes, checkout order creation, and authenticated requests.
+- Samples anonymous successful storefront GET/HEAD requests through `REQUEST_LOG_SAMPLE_RATE`, defaulting to `0.02` and rollbackable to full logging with `REQUEST_LOG_SAMPLE_RATE=1`.
+- Adds request-log sample reason/rate metadata to recorded rows for observability audits.
+- Added a batched `recordRequestLogs` adapter path for future producers that need to avoid one-row insert loops.
+- Added `REQUEST_LOG_SAMPLE_RATE` to api-gateway Worker vars for default, staging, and production environments.
+
+Evidence:
+- `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/observability.test.ts services/api-gateway/src/__tests__/security.test.ts'` — PASS, 13/13 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -204,6 +219,10 @@ Evidence:
 - `pnpm exec playwright test --project=chromium tests/e2e/smoke/release-gates.spec.ts` — PASS in local-safe mode with 5 expected skips after sandbox-escalated Chromium launch.
 - `git diff --check` — PASS after release smoke suite.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after release smoke suite.
+- `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/observability.test.ts services/api-gateway/src/__tests__/security.test.ts'` — PASS, 13/13 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after request-log sampling.
+- `git diff --check` — PASS after request-log sampling.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after request-log sampling.
 
 ## SKIPPED — NEEDS HUMAN
 

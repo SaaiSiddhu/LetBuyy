@@ -36,6 +36,27 @@ function isMissingOptionalOperationalTable(error: { message?: string } | null | 
     return Boolean(error?.message?.includes(tableName) && error.message.includes('schema cache'));
 }
 
+function requestLogRow(input: WorkerRequestLogInput) {
+    return {
+        site_id: input.siteId || null,
+        request_id: input.requestId,
+        trace_id: input.traceId || null,
+        method: input.method,
+        path: input.path,
+        route: input.route || null,
+        status_code: input.statusCode,
+        latency_ms: input.latencyMs,
+        user_id: input.userId || null,
+        auth_source: input.authSource || null,
+        ip_address: input.ipAddress || null,
+        user_agent: input.userAgent || null,
+        error_code: input.errorCode || null,
+        metadata: input.metadata || {},
+        created_by: input.userId || null,
+        updated_by: input.userId || null,
+    };
+}
+
 export class ObservabilityExecutionAdapter {
     static readonly correlationContract: Array<keyof CorrelationContext> = ['requestId', 'correlationId'];
     static readonly runtimeBridge = defineRuntimeBridge({
@@ -51,27 +72,22 @@ export class ObservabilityExecutionAdapter {
     async recordRequestLog(input: WorkerRequestLogInput): Promise<void> {
         const { error } = await this.db
             .from('worker_request_logs')
-            .insert({
-                site_id: input.siteId || null,
-                request_id: input.requestId,
-                trace_id: input.traceId || null,
-                method: input.method,
-                path: input.path,
-                route: input.route || null,
-                status_code: input.statusCode,
-                latency_ms: input.latencyMs,
-                user_id: input.userId || null,
-                auth_source: input.authSource || null,
-                ip_address: input.ipAddress || null,
-                user_agent: input.userAgent || null,
-                error_code: input.errorCode || null,
-                metadata: input.metadata || {},
-                created_by: input.userId || null,
-                updated_by: input.userId || null,
-            });
+            .insert(requestLogRow(input));
 
         if (error && !isMissingOptionalOperationalTable(error, 'worker_request_logs')) {
             throw new Error(`Request log insert failed: ${error.message}`);
+        }
+    }
+
+    async recordRequestLogs(inputs: WorkerRequestLogInput[]): Promise<void> {
+        if (!inputs.length) return;
+
+        const { error } = await this.db
+            .from('worker_request_logs')
+            .insert(inputs.map(requestLogRow));
+
+        if (error && !isMissingOptionalOperationalTable(error, 'worker_request_logs')) {
+            throw new Error(`Request log batch insert failed: ${error.message}`);
         }
     }
 
