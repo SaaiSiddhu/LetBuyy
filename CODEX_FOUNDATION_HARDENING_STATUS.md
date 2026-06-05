@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.1 real web theme-editor preview complete; continue F3.2 publish separation, base-version concurrency, and template-scoped preview sessions.
-- Findings resolved: 15/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.1 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.2 publish separation, base-version concurrency, and template-scoped preview sessions complete; continue F3.3 data-driven section registry.
+- Findings resolved: 16/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-8`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.2 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -257,6 +257,27 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 - Staging proof remains SKIPPED -- NEEDS HUMAN until staging merchant/session/store/theme credentials are provided.
 
+## F3.2 publish separation and template-scoped preview evidence
+
+- `apps/merchant-control-plane/src/app/api/themes/[themeId]/editor/route.ts` now publishes an already-saved draft through `api.themes.publish`; it no longer saves inline `templateConfig` during publish.
+- Draft saves and preview syncs forward `baseVersion` from the editor `draftVersion`, and the editor blocks publish while the current template has unsaved changes.
+- `apps/merchant-control-plane/src/app/api/themes/[themeId]/preview-session/route.ts` forwards `template_key`, and `packages/theme-engine`, `packages/shared-types`, and `packages/typescript/api-client` expose the same template-key preview-session contract.
+- `services/api-gateway/src/execution/theme-execution.adapter.ts` now scopes preview-session draft lookup through `loadEditorDraft(store, theme, templateKey)`, returns/records `template_key`, and no longer uses an unscoped `.maybeSingle()` on `theme_editor_drafts` in `createPreviewSession`.
+- Theme-instance draft snapshots merge all template-scoped editor drafts before writing the release-engine draft so saving one template no longer overwrites the other template draft.
+- `pnpm run test:contracts`: PASS - 58/58, including `tests/contracts/theme-editor-publish-separation.test.ts`.
+- `pnpm --filter @letbuyy/shared-types build`: PASS after generated declarations had been cleaned.
+- `pnpm --filter @letbuyy/theme-engine typecheck`: PASS.
+- `pnpm --filter @letbuyy/shared-types typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-client typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck`: PASS.
+- `pnpm --filter @letbuyy/merchant-control-plane lint`: PASS with existing warnings outside this slice.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+- Staging proof remains SKIPPED -- NEEDS HUMAN until staging merchant/session/store/theme credentials are provided.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -282,8 +303,9 @@ Started: 2026-06-05T13:54:14Z
 - C-5 live app-charge payout release requires the same payout rail/policy/credentials; provider-verified app charge activation is implemented, but fund release remains human-gated.
 - H-13 staging proof that a developer registers an app, receives credentials, installs/exchanges for an app access token, and calls the SDK requires staging merchant/developer credentials plus staging gateway/session access. Exact proof path once supplied: authenticate a staging merchant/developer, `POST /v1/app-store/developers/register`, `POST /v1/app-store/developers/apps/manifest/validate`, `POST /v1/app-store/developers/apps`, complete the app install/OAuth token flow, then call `createLetbuyyAppSdk({ baseUrl: "https://api.staging.letbuyy.store", accessToken }).products()`.
 - C-6 staging proof that the web theme editor iframe renders edited sections through the real staging storefront preview route requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: authenticate to staging merchant, open `/[store]/online-store/themes/[themeId]/editor`, edit a section, confirm the iframe URL includes `theme_preview_token`, and verify the storefront preview route renders the edited section.
+- C-8/B-6 staging proof that stale editor saves conflict and preview sessions are template-scoped requires staging merchant/session/store/theme credentials and staging gateway/storefront URLs. Exact proof path once supplied: open two editor sessions for the same theme/template, save one draft, verify the stale `base_version` save conflicts in the second, publish only the clean saved draft, and mint preview sessions for two templates to verify each returns the requested `template_key` and renders the matching draft.
 
 ## Next work
 
-- Continue to F3.2 publish separation, base-version concurrency, and template-scoped preview sessions.
+- Continue to F3.3 data-driven section registry.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

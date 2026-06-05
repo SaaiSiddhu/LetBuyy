@@ -947,7 +947,7 @@ function ThemeEditorInner() {
         const res = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey }),
+            body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
         })
         const payload = await res.json().catch(() => ({}))
         if (!res.ok) {
@@ -975,7 +975,7 @@ function ThemeEditorInner() {
             const draftRes = await fetch(`/api/themes/${themeId}/editor/draft?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey }),
+                body: JSON.stringify({ draftConfig, templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
             })
             const draftPayload = await draftRes.json().catch(() => ({}))
             if (!draftRes.ok) {
@@ -1018,7 +1018,7 @@ function ThemeEditorInner() {
                 setIsPreviewRefreshing(false)
             }
         }
-    }, [baseConfig, editorState, selectedTemplateKey, store, themeId])
+    }, [baseConfig, draftVersion, editorState, selectedTemplateKey, store, themeId])
 
     useEffect(() => {
         if (isLoading || loadError || !store || !themeId) return
@@ -1053,13 +1053,20 @@ function ThemeEditorInner() {
 
     const handlePublish = useCallback(async () => {
         if (!store || !themeId || isPublishing) return
+        if (isDirty) {
+            notify({
+                title: 'Save draft before publishing',
+                description: 'Publishing uses the last saved draft so concurrent edits cannot be overwritten.',
+                variant: 'warning',
+            })
+            return
+        }
         setIsPublishing(true)
         try {
-            const templateConfig = buildDraftConfig(baseConfig, themeId, editorState, selectedTemplateKey)
             const res = await fetch(`/api/themes/${themeId}/editor?store_name=${encodeURIComponent(store)}&template=${encodeURIComponent(selectedTemplateKey)}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ templateConfig, templateKey: selectedTemplateKey }),
+                body: JSON.stringify({ templateKey: selectedTemplateKey, baseVersion: draftVersion ?? undefined }),
             })
             const payload = await res.json().catch(() => ({}))
             if (!res.ok) {
@@ -1067,7 +1074,6 @@ function ThemeEditorInner() {
                 throw new Error(stringValue(errorRecord.message, stringValue(asRecord(payload).error, res.statusText)))
             }
             const release = asRecord(payload.release)
-            setBaseConfig(templateConfig)
             setSavedState(editorState)
             setCurrentReleaseVersion(typeof release.release_version === 'number' ? release.release_version : currentReleaseVersion)
             setSavedAt(new Date().toISOString())
@@ -1088,7 +1094,7 @@ function ThemeEditorInner() {
         } finally {
             setIsPublishing(false)
         }
-    }, [baseConfig, currentReleaseVersion, editorState, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
+    }, [currentReleaseVersion, draftVersion, editorState, isDirty, isPublishing, loadReleases, notify, selectedTemplate.label, selectedTemplateKey, store, themeId])
 
     const handleTemplateChange = useCallback((nextTemplateKey: string) => {
         const normalized = normalizeTemplateKey(nextTemplateKey)
@@ -1368,7 +1374,7 @@ function ThemeEditorInner() {
                         {isSaving ? <Loader2 className="theme-os-spin" size={15} aria-hidden="true" /> : <Save size={15} aria-hidden="true" />}
                         Save
                     </button>
-                    <button className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void handlePublish()} disabled={isSaving || isPublishing}>
+                    <button className="theme-os-btn theme-os-btn--primary" type="button" onClick={() => void handlePublish()} disabled={isSaving || isPublishing || isDirty}>
                         {isPublishing ? <Loader2 className="theme-os-spin" size={15} aria-hidden="true" /> : <Rocket size={15} aria-hidden="true" />}
                         Publish
                     </button>

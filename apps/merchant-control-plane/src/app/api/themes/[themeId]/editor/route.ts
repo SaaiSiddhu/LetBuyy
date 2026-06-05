@@ -8,6 +8,14 @@ function readTemplateKey(value: unknown): string {
         : 'index'
 }
 
+function readPositiveInt(value: unknown): number | undefined {
+    const numeric = typeof value === 'number'
+        ? value
+        : typeof value === 'string' ? Number(value) : Number.NaN
+
+    return Number.isInteger(numeric) && numeric > 0 ? numeric : undefined
+}
+
 /**
  * GET /api/themes/[themeId]/editor?store_name=xxx&template=product
  *
@@ -58,8 +66,8 @@ export async function GET(
 /**
  * PUT /api/themes/[themeId]/editor?store_name=xxx
  *
- * Save editor changes to the live store (publish).
- * Body: { templateConfig, templateKey? }
+ * Publish the already-saved editor draft to the live store.
+ * Body: { templateKey?, baseVersion?, publishMessage? }
  */
 export async function PUT(
     request: NextRequest,
@@ -78,32 +86,23 @@ export async function PUT(
             )
         }
 
-        const body = await request.json()
-        const { templateConfig } = body
+        const body = await request.json().catch(() => ({}))
         const templateKey = readTemplateKey(body?.templateKey || body?.template_key || queryTemplateKey)
-
-        if (!templateConfig) {
-            return NextResponse.json(
-                { error: 'templateConfig is required in body' },
-                { status: 400 }
-            )
-        }
+        const baseVersion = readPositiveInt(body?.baseVersion || body?.base_version)
+        const publishMessage = typeof body?.publishMessage === 'string'
+            ? body.publishMessage
+            : typeof body?.publish_message === 'string' ? body.publish_message : undefined
 
         const resolved = await resolveOwnedStoreId(storeName)
         if (resolved.error) return resolved.error
 
         const api = createMerchantApiClient()
-        await api.themes.saveDraft(themeId, {
-            store_id: resolved.storeId,
-            template_key: templateKey,
-            template_config: templateConfig,
-            client: 'admin-web',
-        })
-
         const publishPayload = await api.themes.publish(themeId, {
             store_id: resolved.storeId,
             template_key: templateKey,
+            base_version: baseVersion,
             make_store_live: true,
+            publish_message: publishMessage,
         })
 
         const savedAt = new Date().toISOString()

@@ -765,6 +765,7 @@ export type PublishThemeInput = {
 };
 export type ThemePreviewSessionInput = {
   store_id: string;
+  template_key?: string;
   ttl_seconds?: number;
 };
 export type RollbackThemeReleaseInput = {

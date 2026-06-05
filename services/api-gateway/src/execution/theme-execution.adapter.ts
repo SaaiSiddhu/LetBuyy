@@ -1023,6 +1023,49 @@ export class ThemeExecutionAdapter {
         return data as DraftRecord;
     }
 
+    private async buildTemplateScopedInstanceDraftConfig(input: {
+        storeId: string;
+        themeSlug: string;
+        templateKey: string;
+        templateConfig: DbRecord;
+    }): Promise<DbRecord> {
+        const mergedTemplates: DbRecord = { ...asRecord(input.templateConfig.templates) };
+        const applyTemplateFromConfig = (templateKey: string, candidateConfig: unknown) => {
+            const candidateTemplate = asRecord(asRecord(candidateConfig).templates)[templateKey];
+            if (Object.keys(asRecord(candidateTemplate)).length > 0) {
+                mergedTemplates[templateKey] = candidateTemplate;
+            }
+        };
+
+        const { data, error } = await this.db
+            .from('theme_editor_drafts')
+            .select('template_key, draft_config')
+            .eq('store_id', input.storeId)
+            .eq('theme_id', input.themeSlug)
+            .is('deleted_at', null);
+
+        if (isMissingColumnError(error, 'template_key')) {
+            return input.templateConfig;
+        }
+
+        if (error) {
+            throw new Error(`Theme draft merge failed: ${error.message}`);
+        }
+
+        for (const draft of (data || []) as DraftRecord[]) {
+            const templateKey = normalizeThemeTemplateKey(draft.template_key);
+            if (templateKey === input.templateKey) continue;
+            applyTemplateFromConfig(templateKey, draft.draft_config);
+        }
+
+        applyTemplateFromConfig(input.templateKey, input.templateConfig);
+
+        return {
+            ...input.templateConfig,
+            templates: mergedTemplates,
+        };
+    }
+
     async loadEditor(slug: string, storeId: string, userId: string, templateKeyInput = 'index') {
         const templateKey = normalizeThemeTemplateKey(templateKeyInput);
         const store = await this.verifyStoreOwner(storeId, userId);
@@ -1150,10 +1193,17 @@ export class ThemeExecutionAdapter {
             actorId: userId,
         });
 
+        const instanceDraftConfig = await this.buildTemplateScopedInstanceDraftConfig({
+            storeId: input.store_id,
+            themeSlug: theme.slug,
+            templateKey,
+            templateConfig,
+        });
+
         const instanceDraftId = await this.saveInstanceDraftSnapshot({
             storeId: input.store_id,
             themeInstanceId: themeInstance?.id || null,
-            templateConfig,
+            templateConfig: instanceDraftConfig,
             runtime,
             version,
             actorId: userId,
@@ -1447,20 +1497,9 @@ export class ThemeExecutionAdapter {
     ) {
         await this.verifyStoreOwner(input.store_id, userId);
         const theme = await this.getTheme(slug);
-
-        const { data: legacyDraft, error: legacyDraftError } = await this.db
-            .from('theme_editor_drafts')
-            .select('id, version')
-            .eq('store_id', input.store_id)
-            .eq('theme_id', theme.slug)
-            .maybeSingle();
-
-        if (legacyDraftError && !isThemeEngineSchemaUnavailable(legacyDraftError)) {
-            throw new Error(`Theme editor draft lookup failed: ${legacyDraftError.message}`);
-        }
-
-        const instanceDraft = await this.loadActiveInstanceDraft(input.store_id, theme);
-        const legacyDraftRecord = legacyDraft as DbRecord | null;
+        const templateKey = normalizeThemeTemplateKey(input.template_key);
+        const legacyDraftRecord = await this.loadEditorDraft(input.store_id, theme.slug, templateKey);
+        const instanceDraft = legacyDraftRecord?.id ? null : await this.loadActiveInstanceDraft(input.store_id, theme);
 
         if (!legacyDraftRecord?.id && !instanceDraft?.id) {
             throw new NotFoundError('No saved draft exists for preview');
@@ -1473,7 +1512,7 @@ export class ThemeExecutionAdapter {
             store_id: input.store_id,
             theme_id: theme.slug,
             draft_id: legacyDraftRecord?.id || null,
-            theme_instance_draft_id: instanceDraft?.id || null,
+            theme_instance_draft_id: legacyDraftRecord?.id ? null : instanceDraft?.id || null,
             draft_version: legacyDraftRecord?.version || instanceDraft?.draft_version || 1,
             token_hash: tokenHash,
             expires_at: expiresAt,
@@ -1510,8 +1549,9 @@ export class ThemeExecutionAdapter {
             requestId,
             afterState: {
                 theme_id: theme.slug,
+                template_key: templateKey,
                 draft_id: legacyDraftRecord?.id || null,
-                theme_instance_draft_id: instanceDraft?.id || null,
+                theme_instance_draft_id: legacyDraftRecord?.id ? null : instanceDraft?.id || null,
                 draft_version: data.draft_version,
                 expires_at: data.expires_at,
             },
@@ -1522,6 +1562,7 @@ export class ThemeExecutionAdapter {
             preview_token: token,
             expires_at: data.expires_at,
             draft_version: data.draft_version,
+            template_key: templateKey,
         };
     }
 }

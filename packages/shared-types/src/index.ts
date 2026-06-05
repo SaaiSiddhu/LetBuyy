@@ -1249,6 +1249,7 @@ export const ThemePreviewSessionResultSchema = z.object({
   preview_token: z.string().min(1),
   expires_at: z.string().datetime(),
   draft_version: z.number().int().positive(),
+  template_key: z.string().min(1).max(80).default('index'),
 });
 
 export const ThemeReleaseSchema = z.object({

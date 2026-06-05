@@ -211,6 +211,7 @@ export interface ThemePreviewSessionResult {
   preview_token: string;
   expires_at: string;
   draft_version: number;
+  template_key: string;
 }
 
 export type ThemeTemplateRecord = Record<string, unknown>;
@@ -902,6 +903,7 @@ export const PublishThemeSchema = z.object({
 
 export const PreviewTokenSchema = z.object({
   store_id: UuidSchema,
+  template_key: z.string().trim().regex(/^[a-z0-9][a-z0-9_-]{0,79}$/i).default('index'),
   ttl_seconds: z.number().int().min(60).max(3600).default(900),
 });
 
