@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 4 — P2 Performance.
-- Current work item: P2-4 keyset pagination / drop exact counts.
+- Current work item: P2-5 pg_trgm search indexes.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -291,6 +291,24 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P2-4 — Keyset pagination and default exact-count removal
+
+- Added shared cursor pagination/query contracts: `cursor`, `withCount`, `next_cursor`, and `total_is_exact`.
+- Added gateway cursor helpers and a cursor-compatible response envelope that preserves existing `meta.page`, `per_page`, and `has_next` fields.
+- Replaced default exact-count list reads on products, orders, and media with explicit column projections, overfetch-by-one pagination, and exact counts only when `withCount=1`.
+- Stopped expanding `order_items(*)` on the orders list path; order item fan-out remains on the order detail path.
+- Preserved page-based fallback without running default `COUNT(*)`, while exposing cursor continuation for hot list paths.
+
+Evidence:
+- `node --test tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 15/15 tests.
+- `pnpm --filter @letbuyy/shared-types typecheck` — PASS.
+- `pnpm --filter @letbuyy/commerce-core typecheck` — PASS after rebuilding referenced declarations.
+- `pnpm --filter @letbuyy/checkout-core typecheck` — PASS after rebuilding referenced declarations.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after rebuilding referenced declarations.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -369,6 +387,14 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after product view-counter de-hot.
 - `git diff --check` — PASS after product view-counter de-hot.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after product view-counter de-hot.
+- `node --test tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 15/15 tests.
+- `pnpm --filter @letbuyy/shared-types typecheck` — PASS after cursor pagination contract changes.
+- `pnpm --filter @letbuyy/commerce-core typecheck` — PASS after cursor query contract changes and referenced declaration rebuild.
+- `pnpm --filter @letbuyy/checkout-core typecheck` — PASS after cursor query contract changes and referenced declaration rebuild.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after cursor metadata mapping and referenced declaration rebuild.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after product/order/media keyset list changes.
+- `git diff --check` — PASS after keyset pagination and default exact-count removal.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after keyset pagination and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 

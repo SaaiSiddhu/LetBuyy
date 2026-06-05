@@ -2,9 +2,17 @@ import { z } from 'zod';
 
 export const UuidSchema = z.string().uuid('Must be a valid UUID');
 
+export const QueryBooleanSchema = z.preprocess((value) => {
+  if (value === undefined || value === null || value === '') return false;
+  if (typeof value === 'string') return ['1', 'true', 'yes'].includes(value.toLowerCase());
+  return value;
+}, z.boolean()).default(false);
+
 export const PaginationQuery = z.object({
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  cursor: z.string().max(512).optional(),
+  withCount: QueryBooleanSchema,
   sort: z.string().max(50).optional(),
   order: z.enum(['asc', 'desc']).default('desc'),
 });
@@ -107,6 +115,8 @@ export interface PaginatedResponse<T> {
   page: number;
   limit: number;
   has_more: boolean;
+  next_cursor?: string | null;
+  total_is_exact?: boolean;
 }
 
 export type EntityId = string;

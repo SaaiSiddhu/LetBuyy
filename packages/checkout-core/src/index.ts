@@ -8,6 +8,7 @@ import {
   IndianStateCodeSchema,
   MoneySchema,
   PaginationQuery,
+  QueryBooleanSchema,
   UuidSchema,
 } from '@letbuyy/shared-types';
 import type { Address } from '@letbuyy/shared-types';
@@ -490,6 +491,8 @@ export const ListOrdersQuery = z.object({
   search: z.string().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  cursor: z.string().max(512).optional(),
+  withCount: QueryBooleanSchema,
   sort: z.enum(['created_at', 'total', 'status']).default('created_at'),
   order: z.enum(['asc', 'desc']).default('desc'),
 });

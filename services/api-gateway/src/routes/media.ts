@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { ListMediaQuery } from '../schemas/media.schema';
 import type { z } from 'zod';
@@ -9,6 +9,28 @@ import type { z } from 'zod';
 const router = new Hono<{ Bindings: Env }>();
 
 type ListMediaQueryInput = z.infer<typeof ListMediaQuery>;
+
+const MEDIA_LIST_COLUMNS = [
+    'id',
+    'store_id',
+    'uploaded_by',
+    'filename',
+    'original_name',
+    'url',
+    'thumbnail_url',
+    'mime_type',
+    'size_bytes',
+    'width',
+    'height',
+    'alt_text',
+    'caption',
+    'folder',
+    'media_type',
+    'tags',
+    'usage_count',
+    'created_at',
+    'updated_at',
+].join(',');
 
 interface MediaOwnerRow {
     store_id?: string | null;
@@ -20,6 +42,7 @@ router.get('/', validate('query', ListMediaQuery), async (c) => {
     const auth = c.get('auth');
     const q = c.get('validatedQuery') as ListMediaQueryInput;
     const offset = (q.page - 1) * q.limit;
+    const decodedCursor = decodeListCursor(q.cursor);
     const storeId = q.store_id;
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
@@ -36,13 +59,21 @@ router.get('/', validate('query', ListMediaQuery), async (c) => {
 
     let query = db
         .from('media')
-        .select('*', { count: 'exact' })
+        .select(MEDIA_LIST_COLUMNS, q.withCount ? { count: 'exact' } : undefined)
         .eq('store_id', storeId)
         .order('created_at', { ascending: false })
-        .range(offset, offset + q.limit - 1);
+        .order('id', { ascending: false });
 
     if (q.folder) query = query.eq('folder', q.folder);
     if (q.type && q.type !== 'all') query = query.eq('media_type', q.type);
+    if (q.search) {
+        const search = q.search.replace(/[%(),]/g, '').trim();
+        if (search) query = query.or(`filename.ilike.%${search}%,original_name.ilike.%${search}%`);
+    }
+    if (decodedCursor) query = query.lt('created_at', decodedCursor.value);
+    query = q.cursor || q.page === 1
+        ? query.limit(q.limit + 1)
+        : query.range(offset, offset + q.limit);
 
     const { data, error, count } = await query;
 
@@ -50,7 +81,18 @@ router.get('/', validate('query', ListMediaQuery), async (c) => {
         return c.json({ success: false, error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated(data || [], count || 0, q.page, q.limit));
+    const rows = data || [];
+    const pageRows = rows.slice(0, q.limit);
+    const nextCursor = rows.length > q.limit
+        ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, 'created_at')
+        : null;
+
+    return c.json(cursorPaginated(pageRows, {
+        page: q.page,
+        limit: q.limit,
+        total: q.withCount ? count || 0 : undefined,
+        nextCursor,
+    }));
 });
 
 // POST /media — Create media record (metadata registration after upload via R2)

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { dbErrorBody, getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, dbErrorBody, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { OrderExecutionAdapter } from '../execution/order-execution.adapter';
 import { IdempotencyExecutionAdapter } from '../execution/idempotency-execution.adapter';
@@ -34,6 +34,51 @@ import {
 
 const router = new Hono<{ Bindings: Env }>();
 type OrderEventType = 'order.created' | 'order.paid' | 'order.fulfilled' | 'order.cancelled' | 'order.refunded';
+
+const ORDER_LIST_COLUMNS = [
+    'id',
+    'store_id',
+    'site_id',
+    'order_number',
+    'customer_email',
+    'customer_name',
+    'customer_phone',
+    'shipping_address',
+    'billing_address',
+    'items',
+    'subtotal',
+    'shipping_cost',
+    'tax',
+    'discount',
+    'total',
+    'coupon_code',
+    'coupon_discount',
+    'status',
+    'payment_status',
+    'payment_method',
+    'payment_id',
+    'tracking_number',
+    'carrier',
+    'created_at',
+    'updated_at',
+    'fulfillment_status',
+    'payment_gateway',
+    'shipping_method',
+    'notes',
+    'version',
+    'payment_processed_at',
+    'inventory_reserved_at',
+    'inventory_released_at',
+    'payment_failure_reason',
+    'last_payment_event_id',
+    'currency',
+    'return_status',
+    'refund_status',
+    'customer_gstin',
+    'place_of_supply_state',
+    'gst_invoice_number',
+    'gst_invoice',
+].join(',');
 
 type DatabaseErrorLike = {
     message?: string;
@@ -231,6 +276,7 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
     const auth = c.get('auth');
     const query = c.get('validatedQuery') as ListOrdersQueryInput;
     const offset = (query.page - 1) * query.limit;
+    const decodedCursor = decodeListCursor(query.cursor);
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -251,17 +297,22 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
         return c.json(paginated([], 0, query.page, query.limit));
     }
 
-    const buildOrdersQuery = (includeOrderItems: boolean, includeDeletedAtFilter: boolean) => {
+    const buildOrdersQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('orders')
-            .select(includeOrderItems ? '*,order_items(*)' : '*', { count: 'exact' })
+            .select(ORDER_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds)
             .order(query.sort, { ascending: query.order === 'asc' })
-            .range(offset, offset + query.limit - 1);
+            .order('id', { ascending: query.order === 'asc' });
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
         if (query.status !== 'all') dbQuery = dbQuery.eq('status', query.status);
         if (query.payment_status !== 'all') dbQuery = dbQuery.eq('payment_status', query.payment_status);
+        if (decodedCursor) {
+            dbQuery = query.order === 'asc'
+                ? dbQuery.gt(query.sort, decodedCursor.value)
+                : dbQuery.lt(query.sort, decodedCursor.value);
+        }
         if (query.search) {
             const search = query.search.replace(/[%(),]/g, '').trim();
             if (search) {
@@ -269,28 +320,33 @@ router.get('/', validate('query', ListOrdersQuery), async (c) => {
             }
         }
 
-        return dbQuery;
+        if (query.cursor || query.page === 1) return dbQuery.limit(query.limit + 1);
+        return dbQuery.range(offset, offset + query.limit);
     };
 
-    let { data, error, count } = await buildOrdersQuery(true, true);
+    let { data, error, count } = await buildOrdersQuery(true);
 
     if (isMissingColumnError(error, 'deleted_at')) {
-        ({ data, error, count } = await buildOrdersQuery(true, false));
-    }
-
-    if (isMissingOrderItemsRelation(error)) {
-        ({ data, error, count } = await buildOrdersQuery(false, true));
-        if (isMissingColumnError(error, 'deleted_at')) {
-            ({ data, error, count } = await buildOrdersQuery(false, false));
-        }
+        ({ data, error, count } = await buildOrdersQuery(false));
     }
 
     if (error) {
         return c.json(dbErrorBody(), 500);
     }
 
-    const rows = ((data || []) as unknown as OrderSourceRow[]).map(normalizeOrderRecord);
-    return c.json(paginated(rows, count || 0, query.page, query.limit));
+    const rawRows = (data || []) as unknown as OrderSourceRow[];
+    const pageRows = rawRows.slice(0, query.limit);
+    const nextCursor = rawRows.length > query.limit
+        ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
+        : null;
+    const rows = pageRows.map(normalizeOrderRecord);
+
+    return c.json(cursorPaginated(rows, {
+        page: query.page,
+        limit: query.limit,
+        total: query.withCount ? count || 0 : undefined,
+        nextCursor,
+    }));
 });
 
 // GET /orders/:id

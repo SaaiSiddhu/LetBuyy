@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import type { Env } from '../index';
 import { resolveCustomUser, verifySiteOwnership } from '../lib/auth-user';
-import { getSupabaseAdmin, paginated, success } from '../lib/supabase';
+import { cursorPaginated, decodeListCursor, encodeListCursor, getSupabaseAdmin, paginated, success } from '../lib/supabase';
 import { validate } from '../middleware/validation';
 import { ProductExecutionAdapter } from '../execution/product-execution.adapter';
 import { EventExecutionAdapter } from '../execution/event-execution.adapter';
@@ -27,6 +27,49 @@ import {
 const router = new Hono<{ Bindings: Env }>();
 type ListProductsQueryInput = ListProductsInput;
 type ProductEventType = 'product.created' | 'product.updated' | 'product.deleted';
+
+const PRODUCT_LIST_COLUMNS = [
+    'id',
+    'store_id',
+    'site_id',
+    'name',
+    'description',
+    'price',
+    'compare_price',
+    'images',
+    'thumbnail_url',
+    'category',
+    'tags',
+    'variants',
+    'stock',
+    'track_inventory',
+    'allow_backorder',
+    'is_active',
+    'is_featured',
+    'display_order',
+    'created_at',
+    'updated_at',
+    'slug',
+    'cost_price',
+    'sku',
+    'barcode',
+    'seo_title',
+    'seo_description',
+    'status',
+    'product_type',
+    'vendor',
+    'url_handle',
+    'cost_per_item',
+    'charge_tax',
+    'sell_when_oos',
+    'is_physical',
+    'weight',
+    'weight_unit',
+    'country_of_origin',
+    'hs_code',
+    'hsn_code',
+    'version',
+].join(',');
 
 type DatabaseErrorLike = {
     message?: string;
@@ -120,6 +163,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const auth = c.get('auth');
     const query = c.get('validatedQuery') as ListProductsQueryInput;
     const offset = (query.page - 1) * query.limit;
+    const decodedCursor = decodeListCursor(query.cursor);
     const db = getSupabaseAdmin(c);
     const customUser = await resolveCustomUser(db, auth.user);
 
@@ -145,7 +189,7 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
     const buildProductsQuery = (includeDeletedAtFilter: boolean) => {
         let dbQuery = db
             .from('products')
-            .select('*', { count: 'exact' })
+            .select(PRODUCT_LIST_COLUMNS, query.withCount ? { count: 'exact' } : undefined)
             .in('store_id', ownedStoreIds);
 
         if (includeDeletedAtFilter) dbQuery = dbQuery.is('deleted_at', null);
@@ -153,10 +197,18 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         if (query.status === 'active') dbQuery = dbQuery.eq('is_active', true);
         if (query.status === 'inactive') dbQuery = dbQuery.eq('is_active', false);
         if (query.search) dbQuery = dbQuery.ilike('name', `%${query.search}%`);
+        if (decodedCursor) {
+            dbQuery = query.order === 'asc'
+                ? dbQuery.gt(query.sort, decodedCursor.value)
+                : dbQuery.lt(query.sort, decodedCursor.value);
+        }
 
-        return dbQuery
+        dbQuery = dbQuery
             .order(query.sort, { ascending: query.order === 'asc' })
-            .range(offset, offset + query.limit - 1);
+            .order('id', { ascending: query.order === 'asc' });
+
+        if (query.cursor || query.page === 1) return dbQuery.limit(query.limit + 1);
+        return dbQuery.range(offset, offset + query.limit);
     };
 
     let { data, error, count } = await buildProductsQuery(true);
@@ -169,7 +221,18 @@ router.get('/', validate('query', ListProductsQuery), async (c) => {
         return c.json({ error: { code: 'DB_ERROR', message: error.message } }, 500);
     }
 
-    return c.json(paginated(data || [], count || 0, query.page, query.limit));
+    const rows = data || [];
+    const pageRows = rows.slice(0, query.limit);
+    const nextCursor = rows.length > query.limit
+        ? encodeListCursor(pageRows[pageRows.length - 1] as unknown as Record<string, unknown>, query.sort)
+        : null;
+
+    return c.json(cursorPaginated(pageRows, {
+        page: query.page,
+        limit: query.limit,
+        total: query.withCount ? count || 0 : undefined,
+        nextCursor,
+    }));
 });
 
 // GET /products/collections — List collections for a store

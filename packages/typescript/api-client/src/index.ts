@@ -126,6 +126,8 @@ export interface GatewayPaginationMeta {
   total_pages: number;
   has_next: boolean;
   has_prev: boolean;
+  next_cursor?: string | null;
+  total_is_exact?: boolean;
 }
 
 export interface GatewaySuccess<T> {
@@ -155,6 +157,8 @@ export interface HealthResponse {
 export interface ListQuery extends QueryParams {
   page?: number;
   limit?: number;
+  cursor?: string;
+  withCount?: boolean;
   sort?: string;
   order?: 'asc' | 'desc';
   search?: string;
@@ -1421,6 +1425,8 @@ export class LetbuyyApiClient {
       page: numberValue(meta.page, 1),
       limit: numberValue(meta.per_page, data.length),
       has_more: Boolean(meta.has_next),
+      next_cursor: typeof meta.next_cursor === 'string' ? meta.next_cursor : null,
+      total_is_exact: Boolean(meta.total_is_exact),
     };
   }
 

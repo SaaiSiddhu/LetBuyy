@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
+import { EmailSchema, HsnCodeSchema, MoneySchema, PaginationQuery, QueryBooleanSchema, SlugSchema, UrlSchema, UuidSchema } from '@letbuyy/shared-types';
 
 export type ProductStatus = 'draft' | 'active' | 'archived';
 
@@ -100,6 +100,8 @@ export const ListProductsQuery = z.object({
   search: z.string().max(200).optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(100).default(20),
+  cursor: z.string().max(512).optional(),
+  withCount: QueryBooleanSchema,
   sort: z.enum(['created_at', 'price', 'name', 'stock', 'display_order']).default('display_order'),
   order: z.enum(['asc', 'desc']).default('asc'),
 });
