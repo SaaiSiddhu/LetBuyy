@@ -19,6 +19,7 @@
 
 ## PROGRESS LOG
 
+- 2026-06-05T20:05:55Z [F1.6] H-9 storefront checkout/payment route split - IN PROGRESS - evidence: pre-split `pnpm run test:contracts` -> 22/22 PASS with new `tests/contracts/storefront-checkout-payment-routes.test.ts`; extracted checkout order creation and Razorpay/Cashfree/Stripe/PayPal storefront payment routes to `services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`; post-split `pnpm run test:contracts` -> 22/22 PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts` -> `storefront.ts` 2,206 lines, extracted module 1,223 lines. H-9 remains IN PROGRESS because `storefront.ts` and `app-store.ts` remain above 1,500 lines.
 - 2026-06-05T20:02:06Z [F1.6] H-9 storefront customer engagement route split - IN PROGRESS - evidence: pre-split `pnpm run test:contracts` -> 19/19 PASS with new `tests/contracts/storefront-customer-engagement-routes.test.ts`; extracted customer/password/login/order-credential/wishlist/order-contact/review/address routes to `services/api-gateway/src/routes/storefront/customer-engagement-routes.ts`; post-split `pnpm run test:contracts` -> 19/19 PASS; `pnpm --filter @letbuyy/api-gateway typecheck` -> PASS; `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts` -> `storefront.ts` 3,372 lines, extracted module 1,500 lines. H-9 remains IN PROGRESS because `storefront.ts` and `app-store.ts` remain above 1,500 lines.
 - 2026-06-05T19:51:04Z [P-1-GATE] V2 regression gate - DONE - evidence: `pnpm turbo test --filter @letbuyy/api-gateway` -> 41/41 Turbo tasks PASS and api-gateway contract suite 16/16 PASS; `pnpm turbo typecheck` -> 60/60 PASS; `pnpm lint` -> 9/9 PASS with warnings only; generated workspace artifacts cleaned; `pnpm run validate:governance` -> 135/135 PASS. P-1 is green before resuming F1.6.
 - 2026-06-05T19:51:04Z [P1.6] N-6 source ledger residue and orphan webhook-deliveries queue - DONE - evidence: historical root/workspace `CODEX*.md` files moved under `docs/archive/root-residue/2026-06-06-foundation-v2/`; `find apps services packages -name 'CODEX*.md'` -> no runtime/package residue; `services/api-gateway/src/execution/outbox-execution.adapter.ts` no longer upserts permanent `platform_queue_jobs.queue_name='webhook-deliveries'`; `node scripts/validators/source-ledger-residue-validator.mjs` -> PASS; `node scripts/validators/no-orphan-webhook-delivery-queue-validator.mjs` -> PASS.
@@ -90,7 +91,7 @@
 | H-6 | PENDING | F2.2 |
 | H-7 | PENDING | F4.1 |
 | H-8 | PENDING | F7.2 |
-| H-9 | IN PROGRESS - internal payment and customer engagement routes split; `storefront.ts` 3,372 lines and `app-store.ts` 2,797 lines remain above target | F1.6 |
+| H-9 | IN PROGRESS - internal payment, customer engagement, and checkout/payment routes split; `storefront.ts` 2,206 lines and `app-store.ts` 2,797 lines remain above target | F1.6 |
 | H-10 | DONE | F1.3 |
 | H-11 | SKIPPED -- NEEDS HUMAN: payout rail/policy/credentials required for release or failure emitter | F1.4 |
 | H-12 | DONE | F1.5 |

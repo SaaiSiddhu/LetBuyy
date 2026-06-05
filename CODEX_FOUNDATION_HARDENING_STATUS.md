@@ -106,6 +106,12 @@ Started: 2026-06-05T13:54:14Z
 - Post-split `pnpm run test:contracts`: PASS - 19/19.
 - `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
 - `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/customer-engagement-routes.ts`: `storefront.ts` 3,372 lines; extracted module 1,500 lines.
+- Checkout order creation and Razorpay/Cashfree/Stripe/PayPal storefront payment routes moved from `services/api-gateway/src/routes/storefront.ts` into `services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`.
+- `tests/contracts/storefront-checkout-payment-routes.test.ts`: added before extraction and kept green after extraction; it verifies the route list, route order, and insertion point before catalog routes.
+- Pre-split `pnpm run test:contracts`: PASS - 22/22.
+- Post-split `pnpm run test:contracts`: PASS - 22/22.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `wc -l services/api-gateway/src/routes/storefront.ts services/api-gateway/src/routes/storefront/checkout-payment-routes.ts`: `storefront.ts` 2,206 lines; extracted module 1,223 lines.
 - H-9 remains in progress because `storefront.ts` and `app-store.ts` are still above the 1,500-line target.
 
 ## V2 P-1 gate evidence
@@ -133,6 +139,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the F1.6 customer engagement route split.
-- Continue F1.6 by extracting the next cohesive storefront route group, likely checkout/payment routes or catalog/search routes, under characterization coverage.
+- Commit the F1.6 checkout/payment route split.
+- Continue F1.6 by extracting the next cohesive storefront route group, likely catalog/search or CMS/content routes, under characterization coverage.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.
