@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 6 — P4 Product.
-- Current work item: P4-5 developer-portal deployment decision.
+- Current work item: P4-3 docs and messaging alignment.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -496,6 +496,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and `tsconfig.tsbuildinfo` were removed.
 
+### P4-5 — Developer portal deployment decision
+
+- Chose to ship `apps/developer-portal` as a production Vercel app because production topology, Vercel project config, and developer-facing GraphQL/extension docs already declare it as a public runtime.
+- Added `developer-portal` to the main fail-closed `.github/workflows/production-deploy.yml` app matrix with `PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID`.
+- Added `PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID` to release credential preflight so the main production workflow fails before deploy if the developer portal project id is absent.
+- Added `developer-portal` to the legacy `.github/workflows/deploy-production.yml` Vercel matrix and production health URL list to keep all production pipeline surfaces consistent.
+- Updated `scripts/github/set-secrets.mjs` so staging and production developer-portal Vercel project ids are synchronized with the other app project secrets.
+- Extended production workflow tests to compare `config/runtime/production-topology.json` non-mobile app runtimes against `config/vercel/projects.json` and both production app matrices.
+
+Evidence:
+- `node --test tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 7/7 tests.
+- `node --check scripts/github/set-secrets.mjs` — PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck` — PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/developer-portal lint` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated workspace links and `tsconfig.tsbuildinfo` were removed.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -652,6 +669,12 @@ Evidence:
 - `pnpm --filter @letbuyy/storefront-runtime lint` — PASS, warnings only.
 - `git diff --check` — PASS after P4-4 API ownership consolidation.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-4 API ownership consolidation and generated artifact cleanup.
+- `node --test tests/operations/production-deploy-workflow.test.mjs tests/operations/deployment-safety.test.mjs` — PASS, 7/7 tests after developer-portal deploy matrix alignment.
+- `node --check scripts/github/set-secrets.mjs` — PASS.
+- `pnpm --filter @letbuyy/developer-portal typecheck` — PASS after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/developer-portal lint` — PASS.
+- `git diff --check` — PASS after P4-5 developer-portal deployment decision.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after P4-5 developer-portal deployment decision and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 

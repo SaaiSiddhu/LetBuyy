@@ -88,6 +88,7 @@ jobs:
           - { name: storefront-runtime, project_secret: PRODUCTION_STOREFRONT_PROJECT_ID }
           - { name: marketing-site, project_secret: PRODUCTION_MARKETING_PROJECT_ID }
           - { name: app-marketplace, project_secret: PRODUCTION_APP_MARKETPLACE_PROJECT_ID }
+          - { name: developer-portal, project_secret: PRODUCTION_DEVELOPER_PORTAL_PROJECT_ID }
           - { name: theme-marketplace, project_secret: PRODUCTION_THEME_MARKETPLACE_PROJECT_ID }
           - { name: platform-console, project_secret: PRODUCTION_PLATFORM_CONSOLE_PROJECT_ID }
           - { name: platform-operations-portal, project_secret: PRODUCTION_PLATFORM_OPERATIONS_PORTAL_PROJECT_ID }
@@ -155,6 +156,7 @@ jobs:
             "https://admin.letbuyy.store" \
             "https://www.letbuyy.store" \
             "https://apps.letbuyy.store" \
+            "https://developers.letbuyy.store" \
             "https://themes.letbuyy.store" \
             "https://console.letbuyy.store" \
             "https://ops.letbuyy.store"; do

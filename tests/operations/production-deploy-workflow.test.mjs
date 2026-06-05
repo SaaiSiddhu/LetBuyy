@@ -3,11 +3,26 @@ import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 const workflow = readFileSync('.github/workflows/production-deploy.yml', 'utf8');
+const legacyWorkflow = readFileSync('.github/workflows/deploy-production.yml', 'utf8');
+const vercelProjects = JSON.parse(readFileSync('config/vercel/projects.json', 'utf8'));
+const productionTopology = JSON.parse(readFileSync('config/runtime/production-topology.json', 'utf8'));
 
 function indexOf(fragment) {
   const index = workflow.indexOf(fragment);
   assert.notEqual(index, -1, `${fragment} exists`);
   return index;
+}
+
+function regexEscape(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function productionVercelApps() {
+  return vercelProjects.apps.map((app) => ({
+    appName: app.directory.replace(/^apps\//, ''),
+    directory: app.directory,
+    projectId: app.production.project_id,
+  }));
 }
 
 test('production deploy workflow fails closed on missing release credentials', () => {
@@ -51,4 +66,33 @@ test('production smoke runs only after explicit required-job success gate', () =
   assert.match(workflow, /deploy-workers-production=\$\{WORKERS_RESULT\}/);
   assert.match(workflow, /deploy-apps-production=\$\{APPS_RESULT\}/);
   assert.match(workflow, /needs: release-required-jobs-succeeded/);
+});
+
+test('production app deployment matrices match production Vercel topology', () => {
+  const topologyAppRoots = productionTopology.runtimes
+    .map((runtime) => runtime.runtimeRoot)
+    .filter((runtimeRoot) => runtimeRoot.startsWith('apps/') && !runtimeRoot.startsWith('apps/mobile/'))
+    .sort();
+  const vercelAppRoots = productionVercelApps()
+    .map((app) => app.directory)
+    .sort();
+
+  assert.deepEqual(vercelAppRoots, topologyAppRoots);
+
+  for (const app of productionVercelApps()) {
+    assert.match(
+      workflow,
+      new RegExp(`- app: ${regexEscape(app.appName)}\\s+project_id: ${regexEscape(app.projectId)}`),
+      `${app.appName} is in production-deploy.yml`,
+    );
+    assert.ok(workflow.includes(`HAS_${app.projectId}:`), `${app.projectId} is required by release preflight`);
+    assert.ok(workflow.includes(`missing+=("${app.projectId}")`), `${app.projectId} fails closed when missing`);
+    assert.match(
+      legacyWorkflow,
+      new RegExp(`name: ${regexEscape(app.appName)}, project_secret: ${regexEscape(app.projectId)}`),
+      `${app.appName} is in deploy-production.yml`,
+    );
+  }
+
+  assert.match(legacyWorkflow, /https:\/\/developers\.letbuyy\.store/);
 });
