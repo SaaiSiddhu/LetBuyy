@@ -85,6 +85,21 @@ interface QueryCostRateLimitOptions {
     keyGenerator?: (c: Context<{ Bindings: Env }>) => string;
 }
 
+export interface CustomerAuthRateLimitIdentity {
+    storeId?: string | null;
+    email?: string | null;
+    contact?: string | null;
+    operation?: string | null;
+}
+
+export interface CustomerAuthRateLimitOptions {
+    windowMs?: number;
+    maxPerIdentity?: number;
+    maxPerIp?: number;
+    prefix?: string;
+    identityGenerator?: (c: Context<{ Bindings: Env }>) => CustomerAuthRateLimitIdentity | Promise<CustomerAuthRateLimitIdentity>;
+}
+
 export interface DirectRateLimitOptions {
     key: string;
     windowMs?: number;
@@ -237,6 +252,119 @@ function countCsvQueryParam(queryString: string | undefined, key: string): numbe
     const value = new URLSearchParams(queryString).get(key);
     if (!value) return 0;
     return value.split(',').map((item) => item.trim()).filter(Boolean).length;
+}
+
+function normalizeRateLimitPart(value: string | null | undefined): string | null {
+    const normalized = value?.trim().toLowerCase();
+    return normalized || null;
+}
+
+function customerAuthClientIp(c: Context<{ Bindings: Env }>): string {
+    return c.req.header('CF-Connecting-IP')
+        || c.req.header('X-Forwarded-For')?.split(',')[0]?.trim()
+        || 'anonymous';
+}
+
+function customerAuthIdentityKey(identity: CustomerAuthRateLimitIdentity): string | null {
+    const storeId = normalizeRateLimitPart(identity.storeId);
+    const identifier = normalizeRateLimitPart(identity.email) || normalizeRateLimitPart(identity.contact);
+    if (!storeId || !identifier) return null;
+    return `identity:${storeId}:${identifier}`;
+}
+
+function defaultCustomerAuthIdentity(c: Context<{ Bindings: Env }>): CustomerAuthRateLimitIdentity {
+    const url = new URL(c.req.url);
+    return {
+        storeId: url.searchParams.get('store_id'),
+        email: url.searchParams.get('email'),
+        contact: url.searchParams.get('contact'),
+        operation: c.req.path,
+    };
+}
+
+export async function enforceCustomerAuthRateLimit(
+    c: Context<{ Bindings: Env }>,
+    identity: CustomerAuthRateLimitIdentity,
+    options: Omit<CustomerAuthRateLimitOptions, 'identityGenerator'> = {},
+): Promise<Response | null> {
+    const {
+        windowMs = 15 * 60_000,
+        maxPerIdentity = 5,
+        maxPerIp = 30,
+        prefix = 'rl:customer-auth',
+    } = options;
+    const operation = normalizeRateLimitPart(identity.operation) || 'customer-auth';
+    const checks = [
+        {
+            key: `${operation}:ip:${customerAuthClientIp(c)}`,
+            max: maxPerIp,
+            scope: 'ip',
+        },
+    ];
+    const identityKey = customerAuthIdentityKey(identity);
+    if (identityKey) {
+        checks.push({
+            key: `${operation}:${identityKey}`,
+            max: maxPerIdentity,
+            scope: 'identity',
+        });
+    }
+
+    let tightestRemaining = Number.POSITIVE_INFINITY;
+    let latestResetAt = 0;
+
+    for (const check of checks) {
+        const result = await checkRateLimitKey(c.env, {
+            key: check.key,
+            windowMs,
+            max: check.max,
+            prefix,
+        });
+        tightestRemaining = Math.min(tightestRemaining, result.remaining);
+        latestResetAt = Math.max(latestResetAt, result.resetAt);
+
+        if (result.unavailable && c.env.ENVIRONMENT === 'production') {
+            c.header('X-RateLimit-Limit', check.max.toString());
+            c.header('X-RateLimit-Remaining', '0');
+            c.header('X-RateLimit-Reset', Math.ceil(result.resetAt / 1000).toString());
+            return c.json(
+                {
+                    success: false,
+                    error: {
+                        code: 'RATE_LIMIT_UNAVAILABLE',
+                        message: 'Rate limiting infrastructure is unavailable',
+                    },
+                },
+                503,
+            );
+        }
+
+        if (!result.allowed) {
+            const retryAfterSeconds = Math.max(1, Math.ceil((result.resetAt - Date.now()) / 1000));
+            c.header('X-RateLimit-Limit', check.max.toString());
+            c.header('X-RateLimit-Remaining', result.remaining.toString());
+            c.header('X-RateLimit-Reset', Math.ceil(result.resetAt / 1000).toString());
+            c.header('Retry-After', retryAfterSeconds.toString());
+            return c.json(
+                {
+                    success: false,
+                    error: {
+                        code: 'CUSTOMER_AUTH_RATE_LIMITED',
+                        message: 'Too many attempts. Please try again later.',
+                        scope: check.scope,
+                    },
+                },
+                429,
+            );
+        }
+    }
+
+    c.header('X-Customer-Auth-RateLimit-Remaining', Number.isFinite(tightestRemaining) ? tightestRemaining.toString() : '0');
+    if (latestResetAt > 0) {
+        c.header('X-Customer-Auth-RateLimit-Reset', Math.ceil(latestResetAt / 1000).toString());
+    }
+
+    return null;
 }
 
 export function calculateQueryCost(input: {
@@ -666,6 +794,19 @@ export function queryCostRateLimit(options: QueryCostRateLimitOptions = {}) {
             );
         }
 
+        await next();
+    });
+}
+
+export function customerAuthRateLimit(options: CustomerAuthRateLimitOptions = {}) {
+    const {
+        identityGenerator = defaultCustomerAuthIdentity,
+        ...limitOptions
+    } = options;
+
+    return createMiddleware<{ Bindings: Env }>(async (c, next) => {
+        const blocked = await enforceCustomerAuthRateLimit(c, await identityGenerator(c), limitOptions);
+        if (blocked) return blocked;
         await next();
     });
 }

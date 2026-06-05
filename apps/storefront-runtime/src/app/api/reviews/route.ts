@@ -93,6 +93,7 @@ export async function POST(request: NextRequest) {
             title: title || null,
             body: reviewBody || null,
             is_verified: !!session,
+            turnstile_token: body.turnstileToken || body.turnstile_token || null,
         });
 
         return NextResponse.json(payload, { status: 201 });

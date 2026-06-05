@@ -14,6 +14,7 @@ import {
     ArrowLeft, Loader2, ShoppingBag,
 } from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
+import TurnstileWidget, { type TurnstileHandle } from '@/components/security/turnstile-widget';
 import Link from 'next/link';
 
 interface Props {
@@ -36,8 +37,10 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
+    const turnstileRef = useRef<TurnstileHandle>(null);
 
     // Set initial state based on auth
     useEffect(() => {
@@ -49,6 +52,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                 setEmail('');
                 setPasswordValue('');
                 setConfirmPassword('');
+                setTurnstileToken(null);
                 setError('');
             }
         }
@@ -95,12 +99,14 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         setLoading(true);
         setError('');
 
-        const result = await login(email, password, storeId);
+        const result = await login(email, password, storeId, turnstileToken);
 
         if (result.success) {
             setState('logged_in');
         } else {
             setError(result.error || 'Invalid password');
+            setTurnstileToken(null);
+            turnstileRef.current?.reset();
         }
         setLoading(false);
     };
@@ -141,6 +147,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
         setState('email_entry');
         setPasswordValue('');
         setConfirmPassword('');
+        setTurnstileToken(null);
         setError('');
     };
 
@@ -256,6 +263,7 @@ export default function AccountBottomSheet({ isOpen, onClose, storeId, subdomain
                                         <p className="text-sm" style={{ color: 'var(--text-secondary, #6B7280)' }}>
                                             Welcome back! Enter your password for <strong>{email}</strong>.
                                         </p>
+                                        <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
                                         <div className="relative">
                                             <Lock size={18} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--text-secondary, #9CA3AF)' }} />
                                             <input

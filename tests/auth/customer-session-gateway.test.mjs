@@ -58,7 +58,7 @@ test('legacy enumeration routes are internal-signed and do not return password_h
   assert.match(byEmailBlock, /publicCustomerProfile/);
 
   const loginIndex = storefrontRouteSource.indexOf("router.post('/customer/login'");
-  const loginBlock = storefrontRouteSource.slice(loginIndex, loginIndex + 2_500);
+  const loginBlock = storefrontRouteSource.slice(loginIndex, loginIndex + 3_500);
   assert.match(loginBlock, /issueCustomerSession/);
   assert.match(loginBlock, /Set-Cookie/);
   assert.doesNotMatch(loginBlock, /success\(\{ customer: data \}\)/);

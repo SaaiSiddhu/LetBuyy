@@ -148,7 +148,8 @@ export async function setCustomerPassword(
 export async function verifyCustomerPassword(
     storeId: string,
     email: string,
-    password: string
+    password: string,
+    turnstileToken?: string | null
 ): Promise<StoreCustomer | null> {
     const { customer } = await createStorefrontApiClient()
         .storefront
@@ -156,6 +157,7 @@ export async function verifyCustomerPassword(
             store_id: storeId,
             email,
             password,
+            turnstile_token: turnstileToken || null,
         });
     return customer ? mapRow(customer) : null;
 }

@@ -465,6 +465,8 @@ export type StorefrontCustomerFindOrCreateInput = StorefrontCustomerLookupQuery 
 
 export type StorefrontCustomerPasswordInput = StorefrontCustomerLookupQuery & {
   password: string;
+  turnstile_token?: string | null;
+  turnstileToken?: string | null;
 };
 
 export type StorefrontCustomerPasswordResetRequestInput = StorefrontCustomerLookupQuery & {
@@ -585,6 +587,8 @@ export type StorefrontProductReviewInput = {
   customer_name?: string | null;
   customer_email?: string | null;
   is_verified?: boolean;
+  turnstile_token?: string | null;
+  turnstileToken?: string | null;
 };
 
 export type StorefrontProductReviewSummary = {

@@ -25,7 +25,7 @@ interface CustomerAuthContextType {
     isLoading: boolean;
 
     // Actions
-    login: (email: string, password: string, storeId: string) => Promise<LoginResult>;
+    login: (email: string, password: string, storeId: string, turnstileToken?: string | null) => Promise<LoginResult>;
     setPassword: (email: string, password: string, storeId: string, resetToken?: string) => Promise<LoginResult>;
     checkEmail: (email: string, storeId: string) => Promise<EmailCheckResult>;
     logout: () => Promise<void>;
@@ -108,13 +108,14 @@ export function CustomerAuthProvider({ children }: Props) {
     const login = useCallback(async (
         email: string,
         password: string,
-        sid: string
+        sid: string,
+        turnstileToken?: string | null
     ): Promise<LoginResult> => {
         try {
             const res = await fetch('/api/customer/login', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password, storeId: sid }),
+                body: JSON.stringify({ email, password, storeId: sid, turnstileToken }),
             });
 
             const data = await res.json();

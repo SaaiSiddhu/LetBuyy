@@ -36,7 +36,8 @@ import {
     isCustomerLegacyAuthEnabled,
     requireCustomerSession,
 } from '../middleware/customer-session';
-import { csrfProtection } from '../middleware/security';
+import { enforceCustomerAuthRateLimit } from '../middleware/rateLimit';
+import { csrfProtection, extractTurnstileToken, verifyTurnstileToken } from '../middleware/security';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
@@ -270,6 +271,8 @@ type CustomerLifecycleBody = {
     token?: string;
     reset_token?: string;
     reset_url?: string | null;
+    turnstile_token?: string | null;
+    turnstileToken?: string | null;
     order_total?: number | string;
     order_id?: string;
 };
@@ -1139,6 +1142,24 @@ function normalizeEmail(email: string): string {
 
 function normalizeContact(value: string): string {
     return value.toLowerCase().trim();
+}
+
+async function requireValidTurnstile(c: AppContext, body: unknown): Promise<Response | null> {
+    const token = extractTurnstileToken(body);
+    const ip = c.req.header('CF-Connecting-IP') || c.req.header('X-Forwarded-For')?.split(',')[0]?.trim();
+    const isHuman = await verifyTurnstileToken(c.env, token, ip);
+    if (isHuman) return null;
+
+    return c.json(
+        {
+            success: false,
+            error: {
+                code: 'TURNSTILE_REQUIRED',
+                message: 'Bot verification failed',
+            },
+        },
+        403,
+    );
 }
 
 async function requireStorefrontInternal(c: AppContext): Promise<Response | null> {
@@ -3182,6 +3203,13 @@ router.post('/customer/password/request-reset', async (c) => {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id and email are required' } }, 400);
     }
 
+    const rateLimited = await enforceCustomerAuthRateLimit(c, {
+        storeId: body.store_id,
+        email: body.email,
+        operation: 'customer-password-request-reset',
+    });
+    if (rateLimited) return rateLimited;
+
     if (!c.env.CUSTOMER_SESSION_SECRET) {
         return c.json(
             {
@@ -3252,6 +3280,13 @@ router.post('/customer/password/confirm-reset', async (c) => {
     if (!body.store_id || !body.email || !body.password || !resetToken) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id, email, reset token and password are required' } }, 400);
     }
+
+    const rateLimited = await enforceCustomerAuthRateLimit(c, {
+        storeId: body.store_id,
+        email: body.email,
+        operation: 'customer-password-confirm-reset',
+    });
+    if (rateLimited) return rateLimited;
 
     if (body.password.length < 8 || body.password.length > 128) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'Password must be 8 to 128 characters' } }, 400);
@@ -3414,6 +3449,16 @@ router.post('/customer/login', async (c) => {
     if (!body.store_id || !body.email || !body.password) {
         return c.json({ success: false, error: { code: 'VALIDATION', message: 'store_id, email and password are required' } }, 400);
     }
+
+    const rateLimited = await enforceCustomerAuthRateLimit(c, {
+        storeId: body.store_id,
+        email: body.email,
+        operation: 'customer-login',
+    });
+    if (rateLimited) return rateLimited;
+
+    const turnstileRejected = await requireValidTurnstile(c, body);
+    if (turnstileRejected) return turnstileRejected;
 
     const db = getSupabaseAdmin(c);
     const { data, error } = await db
@@ -3753,6 +3798,13 @@ router.get('/:subdomain/orders/contact', async (c) => {
         return c.json(success({ orders: [], hasOrders: false, hasPassword: false }));
     }
 
+    const rateLimited = await enforceCustomerAuthRateLimit(c, {
+        storeId: store.id,
+        contact,
+        operation: 'guest-order-tracking',
+    });
+    if (rateLimited) return rateLimited;
+
     const normalizedContact = normalizeContact(contact);
     const db = getSupabaseAdmin(c);
     let query = db
@@ -3941,6 +3993,9 @@ router.patch('/customer/profile', async (c) => {
 // POST /storefront/reviews — Public review submission; defaults to pending moderation
 router.post('/reviews', validate('json', CreateStorefrontProductReviewSchema), async (c) => {
     const body = c.get('validatedBody') as StorefrontReviewBody;
+    const turnstileRejected = await requireValidTurnstile(c, body);
+    if (turnstileRejected) return turnstileRejected;
+
     const db = getSupabaseAdmin(c);
 
     const { data: product, error: productError } = await db
@@ -4253,6 +4308,9 @@ router.get('/:subdomain/blog/:slug', async (c) => {
 router.post('/:subdomain/contact', async (c) => {
     const db = getSupabaseAdmin(c);
     const body = await c.req.json();
+    const turnstileRejected = await requireValidTurnstile(c, body);
+    if (turnstileRejected) return turnstileRejected;
+
     const store = await loadPublishedStore(c, c.req.param('subdomain'));
     if (!store) return c.json({ success: false, error: { code: 'NOT_FOUND', message: 'Store not found' } }, 404);
     await db.from('form_submissions').insert({ store_id: store.id, type: 'contact', name: body.name || '', email: body.email || '', message: body.message || '' });

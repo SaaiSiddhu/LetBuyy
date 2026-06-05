@@ -4,9 +4,10 @@
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Star, ThumbsUp, CheckCircle, Send, Loader2, ChevronDown } from '@letbuyy/ui';
 import { useCustomerAuth } from '@/context/customer-auth-context';
+import TurnstileWidget, { type TurnstileHandle } from '@/components/security/turnstile-widget';
 
 interface Review {
     id: string;
@@ -88,6 +89,8 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
     const [submitting, setSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [error, setError] = useState('');
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const turnstileRef = useRef<TurnstileHandle>(null);
 
     const fetchReviews = useCallback(async () => {
         setLoading(true);
@@ -136,12 +139,15 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
                     title: formTitle || undefined,
                     reviewBody: formBody || undefined,
                     customerName: isAuthenticated ? customer?.fullName || undefined : formName || undefined,
+                    turnstileToken,
                 }),
             });
             const data = await res.json().catch(() => null);
 
             if (!res.ok) {
                 setError(getApiError(data, res.status === 409 ? 'You have already reviewed this product' : 'Unable to submit review'));
+                setTurnstileToken(null);
+                turnstileRef.current?.reset();
                 return;
             }
 
@@ -151,6 +157,8 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
             setFormTitle('');
             setFormBody('');
             setFormName('');
+            setTurnstileToken(null);
+            turnstileRef.current?.reset();
         } finally {
             setSubmitting(false);
         }
@@ -254,6 +262,7 @@ export default function ProductReviews({ productId, storeId, primaryColor = '#00
             {/* ── Review Form ──────────────────────────── */}
             {showForm && (
                 <form onSubmit={handleSubmit} className="rounded-2xl border p-4 space-y-4" style={{ borderColor: 'var(--border, #E5E7EB)' }}>
+                    <TurnstileWidget ref={turnstileRef} onVerify={setTurnstileToken} onExpire={() => setTurnstileToken(null)} />
                     <h3 className="font-semibold text-sm">Write Your Review</h3>
 
                     <div>

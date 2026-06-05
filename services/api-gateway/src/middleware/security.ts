@@ -241,6 +241,64 @@ function timingSafeEqualText(left: string, right: string): boolean {
     return mismatch === 0;
 }
 
+type TurnstileEnv = Pick<Env, 'TURNSTILE_SECRET_KEY' | 'ENVIRONMENT' | 'APP_ENV' | 'NODE_ENV'>;
+
+type TurnstileVerificationResponse = {
+    success?: boolean;
+};
+
+function isLocalTurnstileRuntime(env: TurnstileEnv): boolean {
+    const values = [env.ENVIRONMENT, env.APP_ENV, env.NODE_ENV]
+        .filter((value): value is string => typeof value === 'string')
+        .map((value) => value.toLowerCase());
+
+    return values.includes('local') || values.includes('development');
+}
+
+export function extractTurnstileToken(input: unknown): string | null {
+    if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
+
+    const body = input as Record<string, unknown>;
+    const token = body.turnstile_token
+        ?? body.turnstileToken
+        ?? body.cf_turnstile_response
+        ?? body['cf-turnstile-response'];
+
+    return typeof token === 'string' && token.trim() ? token.trim() : null;
+}
+
+export async function verifyTurnstileToken(env: TurnstileEnv, token: string | null, ip?: string): Promise<boolean> {
+    if (!token) return false;
+
+    if (token === 'dev-bypass-token') {
+        return isLocalTurnstileRuntime(env);
+    }
+
+    if (!env.TURNSTILE_SECRET_KEY) {
+        return false;
+    }
+
+    try {
+        const body = new URLSearchParams({
+            secret: env.TURNSTILE_SECRET_KEY,
+            response: token,
+        });
+        if (ip) body.set('remoteip', ip);
+
+        const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+            method: 'POST',
+            body,
+        });
+
+        if (!response.ok) return false;
+
+        const data = await response.json() as TurnstileVerificationResponse;
+        return data.success === true;
+    } catch {
+        return false;
+    }
+}
+
 export const csrfProtection = createMiddleware<{ Bindings: Env }>(
     async (c, next) => {
         if (!['POST', 'PUT', 'PATCH', 'DELETE'].includes(c.req.method)) {

@@ -5,7 +5,7 @@ import { createSession } from '@/lib/session';
 
 export async function POST(request: NextRequest) {
     try {
-        const { email, password, storeId } = await request.json();
+        const { email, password, storeId, turnstileToken } = await request.json();
 
         if (!email || !password || !storeId) {
             return NextResponse.json(
@@ -14,7 +14,7 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        const customer = await verifyCustomerPassword(storeId, email, password);
+        const customer = await verifyCustomerPassword(storeId, email, password, turnstileToken);
 
         if (!customer) {
             return NextResponse.json(

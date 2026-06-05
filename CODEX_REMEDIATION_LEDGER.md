@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 1 — P0 Security.
-- Current work item: P0-C CSRF cookie contract and public storefront mutation coverage.
+- Current work item: P0-D customer-auth rate limit and Turnstile abuse controls.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -97,6 +97,27 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated Dart artifacts were removed.
 
+### P0-D — Customer-auth rate limit and Turnstile abuse controls
+
+- Added gateway `verifyTurnstileToken` and `extractTurnstileToken` helpers with fail-closed production behavior.
+- Added a dedicated `customerAuthRateLimit`/`enforceCustomerAuthRateLimit` path with per-IP and per-`store_id`+email/contact counters.
+- Applied the limiter to customer login, customer password reset request/confirm, and guest order tracking lookup before credential/order reads.
+- Added Turnstile checks to customer login before `bcrypt.compare`, public product review submission, and public contact submission.
+- Extended the storefront review/API-client payload contracts with optional `turnstile_token`.
+- Added a storefront-local invisible Turnstile widget and threaded tokens through customer login and product review submissions.
+- Added regression coverage for the sixth login attempt throttle, fail-closed Turnstile verification, and route-order/source contracts.
+
+Evidence:
+- `node --test tests/auth/customer-abuse-controls.test.mjs tests/auth/csrf-contract.test.mjs tests/auth/identity-password-intent.test.mjs tests/auth/customer-session-gateway.test.mjs tests/auth/session-verifier.test.mjs` — PASS, 25/25 tests.
+- `npx tsx --test services/api-gateway/src/__tests__/security.test.ts apps/identity-platform/src/__tests__/auth-flow.test.ts` — PASS, 13/13 tests after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck` — PASS.
+- `pnpm --filter @letbuyy/commerce-core typecheck` — PASS after rebuilding `@letbuyy/shared-types` declarations.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS after rebuilding `@letbuyy/shared-types` declarations.
+- `pnpm --filter @letbuyy/storefront-runtime lint` — PASS with 21 pre-existing warnings, 0 errors.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated `packages/commerce-core/dist` was removed.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -116,9 +137,18 @@ Evidence:
 - `flutter analyze` from `apps/mobile/merchant-app` — PASS, no issues found.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated install artifacts were removed.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated Dart artifacts were removed.
+- `node --test tests/auth/customer-abuse-controls.test.mjs tests/auth/csrf-contract.test.mjs tests/auth/identity-password-intent.test.mjs tests/auth/customer-session-gateway.test.mjs tests/auth/session-verifier.test.mjs` — PASS, 25/25 tests.
+- `npx tsx --test services/api-gateway/src/__tests__/security.test.ts apps/identity-platform/src/__tests__/auth-flow.test.ts` — PASS, 13/13 tests after restoring workspace dependency links.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck` — PASS.
+- `pnpm --filter @letbuyy/commerce-core typecheck` — PASS.
+- `pnpm --filter @letbuyy/api-client typecheck` — PASS.
+- `pnpm --filter @letbuyy/storefront-runtime lint` — PASS, warnings only.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated `packages/commerce-core/dist` was removed.
 
 ## SKIPPED — NEEDS HUMAN
 
 - SKIP: Live `CUSTOMER_SESSION_SECRET` provisioning and deployed-cookie verification — Reason: production/staging secret-store access is not available in this local environment. Resume point: Phase 2 release safety, before Worker deploy and smoke tests.
 - SKIP: Apply migration `077_customer_reset_tokens.sql` and verify deployed reset-email delivery — Reason: live Supabase migration apply and Resend/provider credentials require human-controlled staging/prod access. Resume point: Phase 2 release safety migration gate and P0 customer-auth smoke suite.
 - SKIP: Apply migration `078_password_set_intents.sql` and run deployed OTP→intent→set-password smoke — Reason: live Supabase migration apply and staging identity secrets require human-controlled access. Resume point: Phase 2 release safety migration gate and P0 identity auth smoke suite.
+- SKIP: Provision and verify live `TURNSTILE_SECRET_KEY` / `NEXT_PUBLIC_TURNSTILE_SITE_KEY` for storefront-runtime and api-gateway — Reason: Cloudflare Turnstile site/secret keys and deployment secret-store access require human-controlled staging/prod access. Resume point: Phase 2 secrets-before-deploy gate and P0 storefront auth/contact/review smoke suite.

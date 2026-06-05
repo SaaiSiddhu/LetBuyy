@@ -315,6 +315,7 @@ export const CreateStorefrontProductReviewSchema = z.object({
   customer_name: z.string().trim().max(120).optional().nullable(),
   customer_email: EmailSchema.optional().nullable(),
   is_verified: z.boolean().default(false),
+  turnstile_token: z.string().trim().min(1).max(4096).optional().nullable(),
 });
 
 export interface Product {

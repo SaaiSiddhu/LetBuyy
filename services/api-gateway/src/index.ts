@@ -69,6 +69,7 @@ export interface Env {
     CUSTOMER_PASSWORD_RESET_URL?: string;
     STOREFRONT_BASE_URL?: string;
     NEXT_PUBLIC_STOREFRONT_URL?: string;
+    TURNSTILE_SECRET_KEY?: string;
     INTERNAL_API_SECRET?: string;
     PLATFORM_CONSOLE_API_TOKEN?: string;
     ASSET_PUBLIC_BASE_URL?: string;
