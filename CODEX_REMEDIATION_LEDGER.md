@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 4 — P2 Performance.
-- Current work item: P2-5 pg_trgm search indexes.
+- Current work item: P2-6 async R2 export.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -309,6 +309,19 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated artifact cleanup.
 
+### P2-5 — Trigram search indexes
+
+- Added additive migration `084_trigram_search_indexes.sql`.
+- Enabled `pg_trgm` and added GIN trigram indexes for leading-wildcard search columns used by products, orders, marketplace apps, themes, store lookup/internal store search, users, subscriptions, employees, audit logs, and media.
+- Preserved the implementation runbook reservation for partition migrations `079-083`; this migration intentionally uses `084`.
+- Added static regression coverage that verifies the extension, all expected `gin_trgm_ops` indexes, and additive-only SQL.
+
+Evidence:
+- `node --test tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 18/18 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS, Supabase migration history checked for destructive replay hazards.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -395,6 +408,10 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after product/order/media keyset list changes.
 - `git diff --check` — PASS after keyset pagination and default exact-count removal.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after keyset pagination and generated artifact cleanup.
+- `node --test tests/performance/trigram-search-indexes.test.mjs tests/performance/keyset-pagination.test.mjs tests/performance/storefront-cache.test.mjs tests/performance/storefront-pooled-sql.test.mjs tests/performance/product-view-counter.test.mjs` — PASS, 18/18 tests.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after `084_trigram_search_indexes.sql`.
+- `git diff --check` — PASS after trigram search index migration.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after trigram search index migration.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -406,3 +423,4 @@ Evidence:
 - SKIP: Provision `PRODUCTION_BACKUP_ARTIFACT_PASSPHRASE` and validate encrypted production backup artifact restore in GitHub Actions — Reason: production backup encryption secret and database access are human-controlled. Resume point: Phase 2 migration safety proof before enabling production migrations.
 - SKIP: Run the full release smoke suite with `LETBUYY_E2E_REQUIRE_REAL_STACK=1` on deployed staging and production — Reason: seeded smoke merchant credentials, smoke store/subdomain, live Worker redeploy with webhook secrets, and protected staging/production environments are human-controlled. Local-safe smoke currently skips the live checks; the reachable staging webhook returned 500 for bad Razorpay signature until secrets/redeploy are fixed. Resume point: Phase 2 release smoke proof; expected result is identity login, product read, checkout create, bad-signature 400, and queue health all green.
 - SKIP: Configure and prove full-fidelity Cloudflare Logpush/error export for api-gateway, queue-workers, and webhook-service — Reason: Cloudflare account log destination, dataset selection, and provider credentials are human-controlled. Resume point: P1-5 observability cost proof; expected result is Worker head sampling at 10% plus provider-backed error/full-fidelity export evidence.
+- SKIP: Apply `084_trigram_search_indexes.sql` to staging and capture `EXPLAIN (ANALYZE, BUFFERS)` proof for merchant search paths — Reason: live Supabase staging credentials and representative seeded datasets are human-controlled. Resume point: P2-5 search proof; expected result is Bitmap Index Scan/BitmapOr over trigram indexes for product/order/app/theme/internal-console search queries.
