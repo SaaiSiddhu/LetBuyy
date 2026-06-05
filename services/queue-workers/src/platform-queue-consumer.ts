@@ -116,10 +116,19 @@ export interface PlatformQueueConsumeResult {
   succeeded: number;
   failed: number;
   skipped: number;
+  deterministic_failed?: number;
+  transient_failed?: number;
+  circuit_open?: boolean;
+  skipped_reason?: 'budget_exhausted' | 'circuit_open' | 'queue_drain_failed';
+  error?: string;
 }
 
 export interface PlatformQueueConsumerEnv extends SupabaseServiceEnv {
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
+  PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH?: string;
+  PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
+  PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS?: string;
+  PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT?: string;
 }
 
 export interface PlatformQueueConsumeInput {
@@ -128,6 +137,25 @@ export interface PlatformQueueConsumeInput {
   workerId?: string;
   limit?: number;
 }
+
+interface QueueCircuitState {
+  failures: number;
+  openedUntil: number;
+}
+
+class DeterministicQueueJobError extends Error {
+  readonly deterministic = true;
+
+  constructor(message: string, options?: { cause?: unknown }) {
+    super(message);
+    this.name = 'DeterministicQueueJobError';
+    if (options?.cause !== undefined) {
+      this.cause = options.cause;
+    }
+  }
+}
+
+const queueCircuitBreakers = new Map<PlatformQueueName, QueueCircuitState>();
 
 function clampBps(value: unknown, fallback: number): number {
   const numberValue = Math.trunc(Number(value));
@@ -153,43 +181,154 @@ function claimLimit(env: PlatformQueueConsumerEnv, requested?: number): number {
   return Math.min(Math.max(Math.trunc(configured), 1), 100);
 }
 
+function drainBudget(env: PlatformQueueConsumerEnv, requested?: number): number {
+  const configured = requested ?? Number(env.PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH || env.PLATFORM_QUEUE_CLAIM_LIMIT || 25);
+  if (!Number.isFinite(configured)) return 25;
+  return Math.min(Math.max(Math.trunc(configured), 1), 100);
+}
+
+function circuitFailureThreshold(env: PlatformQueueConsumerEnv): number {
+  const configured = Number(env.PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD || 3);
+  if (!Number.isFinite(configured)) return 3;
+  return Math.min(Math.max(Math.trunc(configured), 1), 25);
+}
+
+function circuitOpenMilliseconds(env: PlatformQueueConsumerEnv): number {
+  const configured = Number(env.PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS || 60);
+  if (!Number.isFinite(configured)) return 60_000;
+  return Math.min(Math.max(Math.trunc(configured), 5), 3600) * 1000;
+}
+
+function genericFanoutEnabled(env: PlatformQueueConsumerEnv): boolean {
+  return ['1', 'true', 'yes', 'on'].includes(String(env.PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT || '').trim().toLowerCase());
+}
+
+function isCircuitOpen(queueName: PlatformQueueName): boolean {
+  const state = queueCircuitBreakers.get(queueName);
+  if (!state) return false;
+  if (state.openedUntil > Date.now()) return true;
+
+  if (state.openedUntil > 0) {
+    queueCircuitBreakers.delete(queueName);
+  }
+
+  return false;
+}
+
+function recordQueueDrainSuccess(queueName: PlatformQueueName): void {
+  queueCircuitBreakers.delete(queueName);
+}
+
+function recordQueueDrainFailure(env: PlatformQueueConsumerEnv, queueName: PlatformQueueName): void {
+  const current = queueCircuitBreakers.get(queueName) || { failures: 0, openedUntil: 0 };
+  const failures = current.failures + 1;
+  const openedUntil = failures >= circuitFailureThreshold(env)
+    ? Date.now() + circuitOpenMilliseconds(env)
+    : current.openedUntil;
+
+  queueCircuitBreakers.set(queueName, { failures, openedUntil });
+}
+
+function deterministicQueueJobError(message: string, cause?: unknown): DeterministicQueueJobError {
+  return new DeterministicQueueJobError(message, { cause });
+}
+
+function isDeterministicQueueJobError(error: unknown): boolean {
+  return error instanceof DeterministicQueueJobError;
+}
+
+function isJsonObject(value: unknown): value is JsonObject {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function queueResult(input: {
+  workerId: string;
+  queueName: PlatformQueueName;
+  skippedReason?: PlatformQueueConsumeResult['skipped_reason'];
+  circuitOpen?: boolean;
+  error?: unknown;
+}): PlatformQueueConsumeResult {
+  return {
+    worker_id: input.workerId,
+    queue_name: input.queueName,
+    claimed: 0,
+    succeeded: 0,
+    failed: 0,
+    skipped: 0,
+    circuit_open: input.circuitOpen,
+    skipped_reason: input.skippedReason,
+    error: input.error instanceof Error ? input.error.message : typeof input.error === 'string' ? input.error : undefined,
+  };
+}
+
 export function platformQueueNamesForCloudflareQueue(
   cloudflareQueueName: string,
   bodyQueueName?: string | null,
+  options: { allowGenericFanout?: boolean } = {},
 ): PlatformQueueName[] {
   const queueName = `${cloudflareQueueName} ${bodyQueueName || ''}`.toLowerCase();
   if (queueName.includes('dead-letter')) return [];
   if (queueName.includes('search')) return ['search-indexing'];
   if (queueName.includes('payment')) return ['payment-events'];
   if (queueName.includes('analytics') || queueName.includes('notification')) return ['analytics-events'];
-  return ['analytics-events', 'search-indexing', 'payment-events'];
+  return options.allowGenericFanout ? ['analytics-events', 'search-indexing', 'payment-events'] : [];
 }
 
 export async function consumePlatformQueuesForCloudflareQueue(
   env: PlatformQueueConsumerEnv,
   input: PlatformQueueConsumeInput,
 ): Promise<PlatformQueueConsumeResult[]> {
-  const queueNames = platformQueueNamesForCloudflareQueue(input.cloudflareQueueName, input.bodyQueueName);
+  const queueNames = platformQueueNamesForCloudflareQueue(input.cloudflareQueueName, input.bodyQueueName, {
+    allowGenericFanout: genericFanoutEnabled(env),
+  });
   if (queueNames.length === 0) return [];
 
   const db = createSupabaseServiceClient(env);
-  const consumer = new PlatformQueueConsumer(db);
+  const consumer = new PlatformQueueConsumer(db, env);
   const workerId = input.workerId || `queue-workers:${input.cloudflareQueueName}:${crypto.randomUUID()}`;
-  return consumer.consumeQueues(workerId, queueNames, claimLimit(env, input.limit));
+  return consumer.consumeQueues(workerId, queueNames, drainBudget(env, input.limit));
 }
 
 class PlatformQueueConsumer {
-  constructor(private db: SupabaseClient) {}
+  constructor(
+    private db: SupabaseClient,
+    private env: PlatformQueueConsumerEnv,
+  ) {}
 
   async consumeQueues(
     workerId: string,
     queueNames: PlatformQueueName[],
-    limit: number,
+    totalBudget: number,
   ): Promise<PlatformQueueConsumeResult[]> {
     const results: PlatformQueueConsumeResult[] = [];
+    let remainingBudget = totalBudget;
 
     for (const queueName of queueNames) {
-      results.push(await this.consumeQueue(workerId, queueName, limit));
+      if (remainingBudget <= 0) {
+        results.push(queueResult({ workerId, queueName, skippedReason: 'budget_exhausted' }));
+        continue;
+      }
+
+      if (isCircuitOpen(queueName)) {
+        results.push(queueResult({
+          workerId,
+          queueName,
+          circuitOpen: true,
+          skippedReason: 'circuit_open',
+          error: `Circuit open for ${queueName}`,
+        }));
+        continue;
+      }
+
+      try {
+        const result = await this.consumeQueue(workerId, queueName, Math.min(remainingBudget, claimLimit(this.env)));
+        remainingBudget -= result.claimed;
+        recordQueueDrainSuccess(queueName);
+        results.push(result);
+      } catch (error) {
+        recordQueueDrainFailure(this.env, queueName);
+        results.push(queueResult({ workerId, queueName, skippedReason: 'queue_drain_failed', error }));
+      }
     }
 
     return results;
@@ -204,6 +343,8 @@ class PlatformQueueConsumer {
       succeeded: 0,
       failed: 0,
       skipped: 0,
+      deterministic_failed: 0,
+      transient_failed: 0,
     };
 
     for (const job of jobs) {
@@ -222,7 +363,13 @@ class PlatformQueueConsumer {
         }
       } catch (error) {
         result.failed += 1;
-        await this.failJob(workerId, job, error);
+        if (isDeterministicQueueJobError(error)) {
+          result.deterministic_failed = (result.deterministic_failed || 0) + 1;
+          await this.quarantineJob(workerId, job, error);
+        } else {
+          result.transient_failed = (result.transient_failed || 0) + 1;
+          await this.failJob(workerId, job, error);
+        }
       }
     }
 
@@ -271,6 +418,10 @@ class PlatformQueueConsumer {
   }
 
   private async processAnalyticsJob(job: PlatformQueueJob): Promise<boolean> {
+    if (!isJsonObject(job.payload)) {
+      throw deterministicQueueJobError(`Queue job ${job.id} payload must be a JSON object`);
+    }
+
     const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
     const siteId = job.site_id || envelope.site_id;
     if (!siteId) return false;
@@ -379,6 +530,10 @@ class PlatformQueueConsumer {
   }
 
   private async processSearchJob(job: PlatformQueueJob): Promise<boolean> {
+    if (!isJsonObject(job.payload)) {
+      throw deterministicQueueJobError(`Queue job ${job.id} payload must be a JSON object`);
+    }
+
     const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
     const aggregateType = envelope.aggregate?.type || '';
     const aggregateId = envelope.aggregate?.id || '';
@@ -397,6 +552,10 @@ class PlatformQueueConsumer {
   }
 
   private async processPaymentJob(job: PlatformQueueJob): Promise<boolean> {
+    if (!isJsonObject(job.payload)) {
+      throw deterministicQueueJobError(`Queue job ${job.id} payload must be a JSON object`);
+    }
+
     const envelope = normalizeQueueEnvelope<EventEnvelope>(job.payload);
     const eventType = envelope.type || job.job_type;
 
@@ -511,12 +670,18 @@ class PlatformQueueConsumer {
   }): Promise<void> {
     const contract = getDomainEventContract(input.eventType);
     if (contract && input.aggregateType !== contract.aggregateType) {
-      throw new Error(`Event ${input.eventType} must use aggregate type ${contract.aggregateType}`);
+      throw deterministicQueueJobError(`Event ${input.eventType} must use aggregate type ${contract.aggregateType}`);
     }
 
-    const payload = contract
-      ? parseDomainEventPayload(contract.eventType as DomainEventType, input.payload || {})
-      : input.payload || {};
+    let payload: JsonObject;
+
+    try {
+      payload = contract
+        ? parseDomainEventPayload(contract.eventType as DomainEventType, input.payload || {})
+        : input.payload || {};
+    } catch (error) {
+      throw deterministicQueueJobError(`Invalid payload for event ${input.eventType}`, error);
+    }
 
     const { error } = await this.db
       .from('outbox_events')
@@ -631,5 +796,19 @@ class PlatformQueueConsumer {
     });
 
     if (failError) throw new Error(`Queue job failure recording failed: ${failError.message}`);
+  }
+
+  private async quarantineJob(workerId: string, job: PlatformQueueJob, error: unknown): Promise<void> {
+    const { error: quarantineError } = await this.db.rpc('quarantine_platform_queue_job', {
+      p_job_id: job.id,
+      p_worker_id: workerId,
+      p_error_message: error instanceof Error ? error.message : 'Queue job failed deterministic validation',
+      p_result: {
+        consumer_runtime: 'services/queue-workers',
+        deterministic_failure: true,
+      },
+    });
+
+    if (quarantineError) throw new Error(`Queue job quarantine failed: ${quarantineError.message}`);
   }
 }

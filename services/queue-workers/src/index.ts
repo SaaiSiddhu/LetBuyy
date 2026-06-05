@@ -33,6 +33,44 @@ export interface Env extends SupabaseServiceEnv {
   PRIMARY_REGION?: string;
   FAILOVER_REGION?: string;
   PLATFORM_QUEUE_CLAIM_LIMIT?: string;
+  PLATFORM_QUEUE_DRAIN_BUDGET_PER_BATCH?: string;
+  PLATFORM_QUEUE_CIRCUIT_FAILURE_THRESHOLD?: string;
+  PLATFORM_QUEUE_CIRCUIT_OPEN_SECONDS?: string;
+  PLATFORM_QUEUE_DRAIN_GENERIC_FANOUT?: string;
+}
+
+class QueueProcessingError extends Error {
+  readonly deterministic: boolean;
+
+  constructor(message: string, options: { deterministic: boolean; cause?: unknown }) {
+    super(message);
+    this.name = 'QueueProcessingError';
+    this.deterministic = options.deterministic;
+    if (options.cause !== undefined) {
+      this.cause = options.cause;
+    }
+  }
+}
+
+function isDeterministicQueueError(error: unknown): boolean {
+  return error instanceof QueueProcessingError && error.deterministic;
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function redactedRawPayload(value: unknown): Record<string, unknown> {
+  if (isRecord(value)) {
+    return {
+      keys: Object.keys(value).slice(0, 25),
+      rejected_type: 'object',
+    };
+  }
+
+  return {
+    rejected_type: value === null ? 'null' : typeof value,
+  };
 }
 
 function stringValue(value: unknown, fallback: string): string {
@@ -44,6 +82,10 @@ function queueNameFromBatch(batch: MessageBatch<QueuePayload | Record<string, un
 }
 
 function normalizePayload(message: QueueBatchMessage, batch: MessageBatch<QueuePayload | Record<string, unknown>>): Required<QueuePayload> {
+  if (!isRecord(message.body)) {
+    throw new QueueProcessingError('Queue message body must be a JSON object', { deterministic: true });
+  }
+
   const body = message.body as QueuePayload;
   const queueName = queueNameFromBatch(batch, body);
   const messageId = stringValue(body.messageId, message.id);
@@ -56,7 +98,7 @@ function normalizePayload(message: QueueBatchMessage, batch: MessageBatch<QueueP
     messageId,
     queueName,
     jobType,
-    payload: typeof body.payload === 'object' && body.payload !== null ? body.payload : { raw: body },
+    payload: isRecord(body.payload) ? body.payload : { raw: redactedRawPayload(body.payload ?? body) },
     siteId: typeof body.siteId === 'string' ? body.siteId : null,
     idempotencyKey,
     requestId,
@@ -146,6 +188,52 @@ function normalizeDelivery(batch: MessageBatch<QueuePayload | Record<string, unk
   };
 }
 
+function quarantinedDelivery(
+  batch: MessageBatch<QueuePayload | Record<string, unknown>>,
+  message: QueueBatchMessage,
+  error: unknown,
+): NormalizedQueueDelivery {
+  const messageId = message.id;
+  const queueName = batch.queue;
+  const requestId = messageId;
+  const errorMessage = error instanceof Error ? error.message : 'Queue message failed deterministic validation';
+
+  return {
+    message,
+    status: 'dead-lettered',
+    lagMilliseconds: Math.max(0, Date.now() - message.timestamp.getTime()),
+    input: {
+      messageId,
+      queueName,
+      jobType: 'runtime.queue.delivery.invalid',
+      payload: {
+        quarantine_reason: errorMessage,
+        raw: redactedRawPayload(message.body),
+      },
+      siteId: null,
+      idempotencyKey: `${queueName}:${messageId}:quarantined`,
+      requestId,
+      correlationId: requestId,
+      traceId: null,
+      traceparent: null,
+    },
+  };
+}
+
+function normalizeDeliveries(batch: MessageBatch<QueuePayload | Record<string, unknown>>): NormalizedQueueDelivery[] {
+  return batch.messages.map((message) => {
+    try {
+      return normalizeDelivery(batch, message);
+    } catch (error) {
+      if (isDeterministicQueueError(error)) {
+        return quarantinedDelivery(batch, message, error);
+      }
+
+      throw error;
+    }
+  });
+}
+
 function sharedBodyQueueName(deliveries: NormalizedQueueDelivery[]): string | null {
   const names = new Set(deliveries.map((delivery) => delivery.input.queueName));
   return names.size === 1 ? deliveries[0]?.input.queueName || null : null;
@@ -168,22 +256,38 @@ function writeQueueLog(level: 'info' | 'error', fields: Record<string, unknown>)
 
 export default {
   async queue(batch, env) {
-    const deliveries = batch.messages.map((message) => normalizeDelivery(batch, message));
+    const deliveries = normalizeDeliveries(batch);
 
     try {
       await persistQueueBatch(env, deliveries);
       await recordQueueBatchMetric(env, batch, deliveries);
-      const platformQueueResult = await consumePlatformQueuesForCloudflareQueue(env, {
-        cloudflareQueueName: batch.queue,
-        bodyQueueName: sharedBodyQueueName(deliveries),
-        workerId: `cloudflare:${batch.queue}:batch:${deliveries[0]?.input.messageId || crypto.randomUUID()}:${deliveries.length}`,
-      });
+      let platformQueueResult: unknown = [];
+
+      try {
+        platformQueueResult = await consumePlatformQueuesForCloudflareQueue(env, {
+          cloudflareQueueName: batch.queue,
+          bodyQueueName: sharedBodyQueueName(deliveries),
+          workerId: `cloudflare:${batch.queue}:batch:${deliveries[0]?.input.messageId || crypto.randomUUID()}:${deliveries.length}`,
+        });
+      } catch (error) {
+        platformQueueResult = {
+          status: 'drain_failed',
+          error: error instanceof Error ? error.message : 'platform queue drain failed',
+        };
+        writeQueueLog('error', {
+          queue_name: batch.queue,
+          message_count: deliveries.length,
+          status: 'platform-drain-failed',
+          error: platformQueueResult,
+        });
+      }
 
       for (const delivery of deliveries) delivery.message.ack();
       writeQueueLog('info', {
         queue_name: batch.queue,
         message_count: deliveries.length,
         status: 'acked',
+        quarantined: deliveries.filter((delivery) => delivery.status === 'dead-lettered').length,
         platform_queue_result: platformQueueResult,
       });
     } catch (error) {

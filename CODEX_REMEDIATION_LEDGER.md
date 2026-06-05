@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 5 — P3 Scalability.
-- Current work item: P3-5 queue storm controls.
+- Current work item: P3-3 analytics/search projections.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -369,6 +369,22 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### Phase 5.2 — Queue storm controls
+
+- Added deterministic Cloudflare queue poison handling: malformed queue message bodies are persisted as `dead-lettered`, redacted, and acked instead of replayed through Cloudflare retries.
+- Added additive migration `089_quarantine_platform_queue_job.sql` with `quarantine_platform_queue_job(...)` so deterministic platform queue job failures can move directly to `dead`.
+- Added platform DB-drain controls: generic trigger queue fan-out is off by default, each Cloudflare batch has a total platform queue drain budget, and each DB-backed queue has an in-process circuit breaker that opens after sustained drain failures.
+- Split Cloudflare batch persistence from opportunistic platform queue draining so platform drain errors are logged/counted but do not retry already persisted Cloudflare deliveries.
+- Added explicit queue worker vars for drain budget, claim limit, circuit threshold/open seconds, and generic fan-out rollback; capped production queue consumer concurrency at 10 or lower.
+- Added static regression coverage for poison-message quarantine, fan-out opt-in, drain budgets, circuit breakers, immediate deterministic job quarantine, and production concurrency caps.
+
+Evidence:
+- `node --test tests/operations/queue-storm-controls.test.mjs tests/operations/queue-bulk-cost.test.mjs` — PASS, 9/9 tests.
+- `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after restoring pnpm workspace links; generated nested `node_modules` removed before governance.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated nested `node_modules` cleanup.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -476,6 +492,11 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after GraphQL fan-out/N+1 mitigation.
 - `git diff --check` — PASS after GraphQL fan-out/N+1 mitigation.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after GraphQL fan-out/N+1 mitigation.
+- `node --test tests/operations/queue-storm-controls.test.mjs tests/operations/queue-bulk-cost.test.mjs` — PASS, 9/9 tests.
+- `pnpm --filter @letbuyy/queue-workers typecheck` — PASS after queue storm controls, with pnpm workspace links restored temporarily and nested generated `node_modules` removed afterward.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after `089_quarantine_platform_queue_job.sql`.
+- `git diff --check` — PASS after queue storm controls.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after queue storm controls and generated artifact cleanup.
 
 ## SKIPPED — NEEDS HUMAN
 
@@ -490,3 +511,4 @@ Evidence:
 - SKIP: Apply `084_trigram_search_indexes.sql` to staging and capture `EXPLAIN (ANALYZE, BUFFERS)` proof for merchant search paths — Reason: live Supabase staging credentials and representative seeded datasets are human-controlled. Resume point: P2-5 search proof; expected result is Bitmap Index Scan/BitmapOr over trigram indexes for product/order/app/theme/internal-console search queries.
 - SKIP: Run 100k-row products/orders export and capped product import against deployed staging R2 — Reason: representative staging dataset, live R2 bucket, and deployed Worker credentials are human-controlled. Resume point: P2-6 export proof; expected result is queued job completion, streamed R2 CSV download, no request-path memory spike, and import jobs capped at 500 rows.
 - SKIP: Apply `088_inventory_available_batch.sql` to staging and run timed variant update plus checkout latency proof — Reason: live Supabase staging credentials, representative product variants, and deployed Worker timing telemetry are human-controlled. Resume point: P2-7 performance proof; expected result is one batched inventory RPC for changed variants, no delete/reinsert churn on unchanged variants, and storefront checkout response before usage/GST post-commit completion.
+- SKIP: Apply `089_quarantine_platform_queue_job.sql` to staging and run live poison-message plus DB-outage queue storm proof — Reason: live Supabase staging credentials, Cloudflare queue producer access, and controlled DB outage/failure injection are human-controlled. Resume point: P3-5 queue storm controls proof; expected result is deterministic poison jobs marked `dead`, generic trigger queues not draining unrelated DB queues, and sustained DB drain failure opening the circuit without multiplying Cloudflare retries.
