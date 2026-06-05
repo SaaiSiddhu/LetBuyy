@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.6 theme-marketplace checkout complete locally; continue F3.7 demo-store isolation and theme table honesty.
-- Findings resolved: 20/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.6 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F3.7 demo-store isolation and theme table honesty complete locally; continue F4 security/auth hardening.
+- Findings resolved: 21/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F3.7 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -356,6 +356,25 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 - Staging Razorpay test checkout proof remains SKIPPED -- NEEDS HUMAN until staging merchant session, gateway Razorpay test credentials, a purchasable staging theme, and browser access to Razorpay checkout are provided.
 
+## F3.7 demo-store isolation and theme table honesty evidence
+
+- Real storefront `StoreService` reads no longer short-circuit `urban-kicks-demo` into tenant lookup paths; the Urban Kicks store fixture is available only through explicit demo helpers.
+- Real storefront `ProductService` reads no longer load demo product fixtures by product id, store id, or subdomain.
+- `/demo/urban-kicks` now redirects to `/preview?demo=urban-kicks&subdomain=urban-kicks-demo`; `apps/storefront-runtime/src/app/preview/page.tsx` loads demo store/products only when `demo=urban-kicks` is explicitly requested and no longer defaults missing preview subdomains to the demo tenant.
+- The merchant theme editor no longer force-injects `REQUIRED_URBAN_KICKS_SECTIONS` into every theme.
+- `docs/governance/theme-engine-governance.md` now records inactive normalized theme tables as schema-reserved, `theme_draft_patches` as a write-only audit trail, and `theme_reviews` as a catalog read model with no live submission surface.
+- Pre-change `pnpm run test:contracts`: FAIL - 72/77 at new `tests/contracts/demo-store-isolation.test.ts`.
+- Post-change `pnpm run test:contracts`: PASS - 77/77.
+- `pnpm install --frozen-lockfile --force`: PASS to restore workspace dependency links after generated-artifact cleanup.
+- `pnpm --filter @letbuyy/storefront-runtime typecheck`: PASS.
+- `pnpm --filter @letbuyy/merchant-control-plane typecheck`: PASS.
+- `pnpm --filter @letbuyy/storefront-runtime lint`: PASS with existing warnings only.
+- `pnpm --filter @letbuyy/merchant-control-plane lint`: PASS with existing warnings only.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -387,5 +406,5 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Continue to F3.7 demo-store isolation and theme table honesty.
+- Continue to F4.1 single merchant credential authority.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

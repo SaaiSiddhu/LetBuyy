@@ -36,6 +36,7 @@ const SUBDOMAIN_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
 const MAX_SETTINGS_DATA_LENGTH = 12000;
 
 type PreviewSearchParams = {
+    demo?: string | string[];
     subdomain?: string | string[];
     store?: string | string[];
     storeName?: string | string[];
@@ -59,10 +60,14 @@ function singleParam(value: string | string[] | undefined): string | undefined {
     return value;
 }
 
-function normalizeSubdomain(value: string | undefined): string {
+function normalizeSubdomain(value: string | undefined): string | undefined {
     const normalized = value?.trim().toLowerCase();
-    if (!normalized || !SUBDOMAIN_PATTERN.test(normalized)) return URBAN_KICKS_DEMO_SUBDOMAIN;
+    if (!normalized || !SUBDOMAIN_PATTERN.test(normalized)) return undefined;
     return normalized;
+}
+
+function isUrbanKicksDemoPreview(query: PreviewSearchParams | undefined): boolean {
+    return singleParam(query?.demo) === 'urban-kicks';
 }
 
 function normalizeViewport(value: string | undefined): PreviewViewport {
@@ -257,7 +262,13 @@ function buildThemeCss(themeSettings: ThemeSettings): string {
     `;
 }
 
-async function loadPreviewStore(subdomain: string, previewToken: string): Promise<StoreModel | null> {
+async function loadPreviewStore(subdomain: string | undefined, previewToken: string, useDemoStore: boolean): Promise<StoreModel | null> {
+    if (useDemoStore) {
+        return StoreService.getUrbanKicksDemoStore();
+    }
+
+    if (!subdomain) return null;
+
     if (previewToken) {
         const previewStore = await StoreService.getPreviewStoreBySubdomain(subdomain, previewToken);
         if (previewStore) return previewStore;
@@ -266,8 +277,16 @@ async function loadPreviewStore(subdomain: string, previewToken: string): Promis
     return StoreService.getStoreBySubdomainAnyStatus(subdomain);
 }
 
-async function loadProductsForStore(store: StoreModel, subdomain: string): Promise<ProductModel[]> {
+async function loadProductsForStore(store: StoreModel, subdomain: string | undefined, useDemoStore: boolean): Promise<ProductModel[]> {
     if (store.siteType !== 'store') return [];
+
+    if (useDemoStore) {
+        return store.selectedProductIds.length > 0
+            ? ProductService.getUrbanKicksDemoProducts(store.selectedProductIds)
+            : ProductService.getUrbanKicksDemoProducts();
+    }
+
+    if (!subdomain) return [];
 
     return store.selectedProductIds.length > 0
         ? ProductService.getProductsByIds(store.selectedProductIds, subdomain)
@@ -288,7 +307,7 @@ function PreviewUnavailable() {
                     title="Storefront preview is not available"
                     body="Use a valid preview token, store subdomain, or the Urban Kicks demo preview."
                 />
-                <a className="storefront-preview-empty__link" href={`/preview?subdomain=${URBAN_KICKS_DEMO_SUBDOMAIN}`}>
+                <a className="storefront-preview-empty__link" href={`/preview?demo=urban-kicks&subdomain=${URBAN_KICKS_DEMO_SUBDOMAIN}`}>
                     Open Urban Kicks demo
                 </a>
             </div>
@@ -302,12 +321,16 @@ export default async function PreviewPage({
     searchParams?: Promise<PreviewSearchParams>;
 }) {
     const query = await searchParams;
-    const subdomain = normalizeSubdomain(
+    const isDemoPreview = isUrbanKicksDemoPreview(query);
+    const requestedSubdomain = normalizeSubdomain(
         singleParam(query?.subdomain) || singleParam(query?.store) || singleParam(query?.storeName),
     );
+    const subdomain = isDemoPreview ? (requestedSubdomain || URBAN_KICKS_DEMO_SUBDOMAIN) : requestedSubdomain;
     const viewport = normalizeViewport(singleParam(query?.viewport));
-    const previewToken = await resolveThemePreviewToken(subdomain, singleParam(query?.theme_preview_token));
-    const store = await loadPreviewStore(subdomain, previewToken);
+    const previewToken = subdomain
+        ? await resolveThemePreviewToken(subdomain, singleParam(query?.theme_preview_token))
+        : '';
+    const store = await loadPreviewStore(subdomain, previewToken, isDemoPreview);
 
     if (!store) return <PreviewUnavailable />;
 
@@ -316,14 +339,14 @@ export default async function PreviewPage({
     const renderPlan = resolveStorefrontTemplate(previewStore, {
         type: 'index',
         path: '/preview',
-        subdomain,
+        subdomain: subdomain || '',
     });
     const sectionData = await buildSectionDataPlan({
         store: previewStore,
         sections: renderPlan.template.sections,
         route: renderPlan.route,
     });
-    const products = await loadProductsForStore(previewStore, subdomain);
+    const products = await loadProductsForStore(previewStore, subdomain, isDemoPreview);
     const headerSections = renderPlan.sectionGroups.header;
     const footerSections = renderPlan.sectionGroups.footer;
     const sectionGroupData = buildSectionGroupData([...headerSections, ...footerSections], products);
@@ -368,7 +391,7 @@ export default async function PreviewPage({
             <div
                 className={`storefront-preview-route storefront-preview-route--${viewport}`}
                 data-letbuyy-preview-route="true"
-                data-letbuyy-preview-subdomain={subdomain}
+                data-letbuyy-preview-subdomain={subdomain || ''}
                 data-letbuyy-preview-viewport={viewport}
             >
                 {previewStore.siteType === 'store' ? (

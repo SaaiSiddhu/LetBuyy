@@ -157,15 +157,6 @@ const EMPTY_STATE: EditorState = {
     },
 }
 
-const REQUIRED_URBAN_KICKS_SECTIONS = [
-    'announcementBar',
-    'heroBanner',
-    'categoryGrid',
-    'featuredProducts',
-    'productGrid',
-    'newsletter',
-]
-
 const PREVIEW_DEVICES: Array<{ value: PreviewDevice; label: string; icon: typeof Monitor; width: number }> = [
     { value: 'desktop', label: 'Desktop', icon: Monitor, width: 1440 },
     { value: 'tablet', label: 'Tablet', icon: Tablet, width: 820 },
@@ -541,7 +532,6 @@ function normalizeEditorState(
     const root = getSectionRoot(candidate, templateKey)
     const fallbackRoot = getSectionRoot(fallbackConfig, templateKey)
     const templateEntries = Array.isArray(root.template) ? root.template : []
-    const fallbackTemplateEntries = Array.isArray(fallbackRoot.template) ? fallbackRoot.template : []
 
     const header = normalizeSection(root.header || fallbackRoot.header, 'header', 'header', 0, sectionSchemas)
     const footer = normalizeSection(root.footer || fallbackRoot.footer, 'footer', 'footer', 100, sectionSchemas)
@@ -549,18 +539,6 @@ function normalizeEditorState(
         const normalized = normalizeSection(section, `section_${index + 1}`, `section-${index + 1}`, index + 1, sectionSchemas)
         return normalized ? [normalized] : []
     })
-
-    const existingTypes = new Set(template.map((section) => section.type))
-    for (const fallbackSection of fallbackTemplateEntries) {
-        const fallbackRecord = asRecord(fallbackSection)
-        const fallbackType = stringValue(fallbackRecord.type)
-        if (!REQUIRED_URBAN_KICKS_SECTIONS.includes(fallbackType) || existingTypes.has(fallbackType)) continue
-        const normalized = normalizeSection(fallbackSection, fallbackType, `${fallbackType}-default`, template.length + 1, sectionSchemas)
-        if (normalized) {
-            template.push(normalized)
-            existingTypes.add(normalized.type)
-        }
-    }
 
     const configSettingsData = asRecord(asRecord(asRecord(candidate.config).settings_data).current)
     const rootSettingsData = asRecord(asRecord(candidate.settings_data).current)

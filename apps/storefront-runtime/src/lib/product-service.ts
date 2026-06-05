@@ -2,23 +2,27 @@ import type { ProductModel } from '@letbuyy/commerce-core';
 import type { Product as SharedProduct } from '@letbuyy/shared-types';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
-    getUrbanKicksDemoProduct,
-    getUrbanKicksDemoProducts,
-    isUrbanKicksDemoSubdomain,
+    getUrbanKicksDemoProduct as getUrbanKicksDemoProductFixture,
+    getUrbanKicksDemoProducts as getUrbanKicksDemoProductsFixture,
 } from './demo/urban-kicks-demo';
 
 const PRODUCT_LIST_REVALIDATE_SECONDS = 60;
 const PRODUCT_DETAIL_REVALIDATE_SECONDS = 30;
 
 export const ProductService = {
+    async getUrbanKicksDemoProducts(productIds?: string[]): Promise<ProductModel[]> {
+        return getUrbanKicksDemoProductsFixture(productIds);
+    },
+
+    async getUrbanKicksDemoProduct(productId: string): Promise<ProductModel | null> {
+        return getUrbanKicksDemoProductFixture(productId);
+    },
+
     // Get products by store's selected product IDs
     async getProductsByIds(productIds: string[], subdomain?: string): Promise<ProductModel[]> {
         if (!productIds || productIds.length === 0) return [];
 
         if (!subdomain) return [];
-        if (isUrbanKicksDemoSubdomain(subdomain)) {
-            return getUrbanKicksDemoProducts(productIds);
-        }
 
         try {
             const products = await createStorefrontApiClient(
@@ -35,10 +39,6 @@ export const ProductService = {
     },
 
     async getProductsByStoreSubdomain(subdomain: string): Promise<ProductModel[]> {
-        if (isUrbanKicksDemoSubdomain(subdomain)) {
-            return getUrbanKicksDemoProducts();
-        }
-
         try {
             const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:${subdomain}:products`]),
@@ -52,10 +52,6 @@ export const ProductService = {
 
     // Get all products for a store
     async getProductsByStoreId(storeId: string): Promise<ProductModel[]> {
-        if (storeId === 'demo-urban-kicks-store') {
-            return getUrbanKicksDemoProducts();
-        }
-
         try {
             const products = await createStorefrontApiClient(
                 storefrontReadInit(PRODUCT_LIST_REVALIDATE_SECONDS, [`storefront:store:${storeId}:products`]),
@@ -70,9 +66,6 @@ export const ProductService = {
     // Get a single product by ID
     async getProductById(productId: string, subdomain?: string): Promise<ProductModel | null> {
         if (!subdomain) return null;
-        if (isUrbanKicksDemoSubdomain(subdomain)) {
-            return getUrbanKicksDemoProduct(productId);
-        }
 
         try {
             const product = await createStorefrontApiClient(

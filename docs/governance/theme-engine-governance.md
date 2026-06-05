@@ -29,6 +29,23 @@ theme-engine contracts
 - Hydration contracts must declare section id, renderer key, data dependencies, and client requirements.
 - Theme marketplace may own pages, data fetching, and checkout composition, but it must not define reusable theme DTOs locally.
 
+## Reserved Theme Tables
+
+The active theme runtime is JSON package/release based. These normalized tables exist in the baseline schema but are schema-reserved until a migration wires them into package upload, publish, preview, and storefront read paths:
+
+- `theme_assets`
+- `theme_layouts`
+- `theme_templates`
+- `theme_section_definitions`
+- `theme_block_definitions`
+- `theme_template_assignments`
+- `theme_migrations`
+- `theme_presets`
+
+`theme_draft_patches` is a write-only audit trail for editor snapshot compatibility, not a read-side source of truth. It must not be documented as powering undo, replay, or live preview until a reader exists.
+
+`theme_reviews` is a catalog read model only. Theme detail pages may read published review aggregates, but the review submission surface is not implemented; do not claim buyer theme reviews are live until a governed write/moderation path exists.
+
 ## Migration Direction
 
 Move pure template resolution, renderer contract validation, and schema lifecycle logic into `packages/theme-engine` only after behavior is covered by tests or deterministic type checks. Live customer-facing rendering remains in storefront runtime until the migration is explicit.
