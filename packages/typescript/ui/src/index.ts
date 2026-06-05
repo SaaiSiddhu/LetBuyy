@@ -11,8 +11,11 @@ export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
 
 export {
+    BlockStack,
+    Box,
     Card,
     getPageIconName,
+    InlineStack,
     letbuyyPageHeaderDefaults,
     Page,
     PageActions,
@@ -21,9 +24,13 @@ export {
     PageHeaderActions,
     PageShell,
     Section,
+    Text,
 } from './layout';
 export type {
+    BlockStackProps,
+    BoxProps,
     CardProps,
+    InlineStackProps,
     PageContentProps,
     PageHeaderAction,
     PageHeaderActionsProps,
@@ -32,6 +39,7 @@ export type {
     PageProps,
     PageShellProps,
     SectionProps,
+    TextProps,
 } from './layout';
 
 export {
@@ -58,8 +66,18 @@ export type {
 export { ConfirmDialog, Modal, Tooltip } from './overlays';
 export type { ConfirmDialogProps, ModalProps, TooltipProps } from './overlays';
 
-export { Combobox, Select, Tabs } from './controls';
-export type { ComboboxProps, SelectOption, SelectProps, TabItem, TabsProps } from './controls';
+export { Checkbox, ChoiceList, Combobox, Radio, Select, Tabs } from './controls';
+export type {
+    CheckboxProps,
+    ChoiceListOption,
+    ChoiceListProps,
+    ComboboxProps,
+    RadioProps,
+    SelectOption,
+    SelectProps,
+    TabItem,
+    TabsProps,
+} from './controls';
 
 export { Avatar, CommandPalette, FilterBar, IndexTable, MetricCard, Pagination, TableFilterBar } from './productivity';
 export type {

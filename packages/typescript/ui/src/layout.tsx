@@ -2,6 +2,252 @@ import React from 'react';
 import { MaterialIcon, type MaterialIconName } from './icons';
 import { cx } from './utils';
 
+type LayoutElement = 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'nav' | 'main' | 'span';
+type TextElement = 'p' | 'span' | 'div' | 'strong' | 'em' | 'h1' | 'h2' | 'h3' | 'h4';
+type SpaceScale = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
+
+const spaceStyles: Record<SpaceScale, string> = {
+    0: 'gap-0',
+    1: 'gap-[var(--lb-space-1)]',
+    2: 'gap-[var(--lb-space-2)]',
+    3: 'gap-[var(--lb-space-3)]',
+    4: 'gap-[var(--lb-space-4)]',
+    5: 'gap-[var(--lb-space-5)]',
+    6: 'gap-[var(--lb-space-6)]',
+    7: 'gap-[var(--lb-space-7)]',
+};
+
+const paddingStyles: Record<SpaceScale, string> = {
+    0: 'p-0',
+    1: 'p-[var(--lb-space-1)]',
+    2: 'p-[var(--lb-space-2)]',
+    3: 'p-[var(--lb-space-3)]',
+    4: 'p-[var(--lb-space-4)]',
+    5: 'p-[var(--lb-space-5)]',
+    6: 'p-[var(--lb-space-6)]',
+    7: 'p-[var(--lb-space-7)]',
+};
+
+const paddingBlockStyles: Record<SpaceScale, string> = {
+    0: 'py-0',
+    1: 'py-[var(--lb-space-1)]',
+    2: 'py-[var(--lb-space-2)]',
+    3: 'py-[var(--lb-space-3)]',
+    4: 'py-[var(--lb-space-4)]',
+    5: 'py-[var(--lb-space-5)]',
+    6: 'py-[var(--lb-space-6)]',
+    7: 'py-[var(--lb-space-7)]',
+};
+
+const paddingInlineStyles: Record<SpaceScale, string> = {
+    0: 'px-0',
+    1: 'px-[var(--lb-space-1)]',
+    2: 'px-[var(--lb-space-2)]',
+    3: 'px-[var(--lb-space-3)]',
+    4: 'px-[var(--lb-space-4)]',
+    5: 'px-[var(--lb-space-5)]',
+    6: 'px-[var(--lb-space-6)]',
+    7: 'px-[var(--lb-space-7)]',
+};
+
+const stackAlignStyles = {
+    start: 'items-start',
+    center: 'items-center',
+    end: 'items-end',
+    stretch: 'items-stretch',
+} as const;
+
+const stackJustifyStyles = {
+    start: 'justify-start',
+    center: 'justify-center',
+    end: 'justify-end',
+    between: 'justify-between',
+} as const;
+
+export interface BoxProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    padding?: SpaceScale;
+    paddingBlock?: SpaceScale;
+    paddingInline?: SpaceScale;
+    tone?: 'default' | 'subdued' | 'raised' | 'info' | 'success' | 'warning' | 'critical';
+    border?: boolean;
+    radius?: 'none' | 'sm' | 'md' | 'lg';
+    shadow?: 'none' | 'sm' | 'md' | 'lg';
+}
+
+const boxToneStyles: Record<NonNullable<BoxProps['tone']>, string> = {
+    default: 'bg-transparent text-[color:var(--lb-color-text)]',
+    subdued: 'bg-[var(--lb-color-surface-subdued)] text-[color:var(--lb-color-text)]',
+    raised: 'bg-[var(--lb-color-surface-raised)] text-[color:var(--lb-color-text)]',
+    info: 'bg-[var(--lb-color-info-soft)] text-[color:var(--lb-color-text)]',
+    success: 'bg-[var(--lb-color-success-soft)] text-[color:var(--lb-color-text)]',
+    warning: 'bg-[var(--lb-color-warning-soft)] text-[color:var(--lb-color-text)]',
+    critical: 'bg-[var(--lb-color-critical-soft)] text-[color:var(--lb-color-text)]',
+};
+
+const boxRadiusStyles: Record<NonNullable<BoxProps['radius']>, string> = {
+    none: 'rounded-none',
+    sm: 'rounded-[var(--lb-radius-sm)]',
+    md: 'rounded-[var(--lb-radius-md)]',
+    lg: 'rounded-[var(--lb-radius-lg)]',
+};
+
+const boxShadowStyles: Record<NonNullable<BoxProps['shadow']>, string> = {
+    none: 'shadow-none',
+    sm: 'shadow-[var(--lb-shadow-sm)]',
+    md: 'shadow-[var(--lb-shadow-md)]',
+    lg: 'shadow-[var(--lb-shadow-lg)]',
+};
+
+export function Box({
+    as: Element = 'div',
+    children,
+    padding,
+    paddingBlock,
+    paddingInline,
+    tone = 'default',
+    border = false,
+    radius = 'none',
+    shadow = 'none',
+    className = '',
+    ...props
+}: BoxProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx(
+                padding && paddingStyles[padding],
+                paddingBlock && paddingBlockStyles[paddingBlock],
+                paddingInline && paddingInlineStyles[paddingInline],
+                boxToneStyles[tone],
+                border && 'border border-[var(--lb-color-border)]',
+                boxRadiusStyles[radius],
+                boxShadowStyles[shadow],
+                className,
+            ),
+            ...props,
+        },
+        children,
+    );
+}
+
+export interface BlockStackProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    gap?: SpaceScale;
+    align?: keyof typeof stackAlignStyles;
+    justify?: keyof typeof stackJustifyStyles;
+}
+
+export function BlockStack({
+    as: Element = 'div',
+    children,
+    gap = '4',
+    align = 'stretch',
+    justify = 'start',
+    className = '',
+    ...props
+}: BlockStackProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('flex min-w-0 flex-col', spaceStyles[gap], stackAlignStyles[align], stackJustifyStyles[justify], className),
+            ...props,
+        },
+        children,
+    );
+}
+
+export interface InlineStackProps extends React.HTMLAttributes<HTMLElement> {
+    as?: LayoutElement;
+    children: React.ReactNode;
+    gap?: SpaceScale;
+    align?: keyof typeof stackAlignStyles;
+    justify?: keyof typeof stackJustifyStyles;
+    wrap?: boolean;
+}
+
+export function InlineStack({
+    as: Element = 'div',
+    children,
+    gap = '3',
+    align = 'center',
+    justify = 'start',
+    wrap = true,
+    className = '',
+    ...props
+}: InlineStackProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('flex min-w-0', wrap ? 'flex-wrap' : 'flex-nowrap', spaceStyles[gap], stackAlignStyles[align], stackJustifyStyles[justify], className),
+            ...props,
+        },
+        children,
+    );
+}
+
+export interface TextProps extends React.HTMLAttributes<HTMLElement> {
+    as?: TextElement;
+    children: React.ReactNode;
+    variant?: 'display' | 'heading' | 'body' | 'caption';
+    tone?: 'default' | 'subdued' | 'critical' | 'success' | 'warning' | 'info' | 'inverse';
+    weight?: 'regular' | 'medium' | 'semibold';
+    align?: 'start' | 'center' | 'end';
+    truncate?: boolean;
+}
+
+const textVariantStyles: Record<NonNullable<TextProps['variant']>, string> = {
+    display: 'text-[length:var(--lb-font-size-display)] leading-[var(--lb-line-height-display)]',
+    heading: 'text-[length:var(--lb-font-size-heading)] leading-[var(--lb-line-height-heading)]',
+    body: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]',
+    caption: 'text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]',
+};
+
+const textToneStyles: Record<NonNullable<TextProps['tone']>, string> = {
+    default: 'text-[color:var(--lb-color-text)]',
+    subdued: 'text-[color:var(--lb-color-text-subdued)]',
+    critical: 'text-[color:var(--lb-color-critical)]',
+    success: 'text-[color:var(--lb-color-success)]',
+    warning: 'text-[color:var(--lb-color-warning)]',
+    info: 'text-[color:var(--lb-color-info)]',
+    inverse: 'text-[color:var(--lb-color-text-inverse)]',
+};
+
+const textWeightStyles: Record<NonNullable<TextProps['weight']>, string> = {
+    regular: 'font-[var(--lb-font-weight-regular)]',
+    medium: 'font-[var(--lb-font-weight-medium)]',
+    semibold: 'font-[var(--lb-font-weight-semibold)]',
+};
+
+const textAlignStyles: Record<NonNullable<TextProps['align']>, string> = {
+    start: 'text-left',
+    center: 'text-center',
+    end: 'text-right',
+};
+
+export function Text({
+    as: Element = 'p',
+    children,
+    variant = 'body',
+    tone = 'default',
+    weight = 'regular',
+    align = 'start',
+    truncate = false,
+    className = '',
+    ...props
+}: TextProps) {
+    return React.createElement(
+        Element,
+        {
+            className: cx('m-0 min-w-0', textVariantStyles[variant], textToneStyles[tone], textWeightStyles[weight], textAlignStyles[align], truncate && 'truncate', className),
+            ...props,
+        },
+        children,
+    );
+}
+
 export interface PageProps extends React.HTMLAttributes<HTMLElement> {
     children: React.ReactNode;
 }
