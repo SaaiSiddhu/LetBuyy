@@ -3,6 +3,17 @@ import 'server-only';
 import { createAppMarketplaceApiClient } from '@/lib/api/client';
 import type { MarketplaceApp, MarketplaceAppCategory, MarketplaceAppReview } from '@letbuyy/shared-types';
 
+export class MarketplaceUnavailableError extends Error {
+    constructor(message = 'The app catalog is temporarily unavailable. Please try again.') {
+        super(message);
+        this.name = 'MarketplaceUnavailableError';
+    }
+}
+
+export type MarketplaceResult<T> =
+    | { ok: true; value: T }
+    | { ok: false; error: MarketplaceUnavailableError };
+
 export interface AppFilters {
     category?: string;
     sort?: 'popular' | 'rating' | 'recent' | 'name';
@@ -34,12 +45,12 @@ function appendIfPresent(params: URLSearchParams, key: string, value: string | n
 }
 
 export const AppService = {
-    async listApps(filters: AppFilters = {}): Promise<AppSearchResult> {
+    async listApps(filters: AppFilters = {}): Promise<MarketplaceResult<AppSearchResult>> {
         const limit = filters.limit ?? 20;
         const offset = filters.offset ?? 0;
         const page = Math.floor(offset / limit) + 1;
         const api = await getAppStoreApi();
-        if (!api) return { apps: [], total: 0, limit, offset };
+        if (!api) return { ok: false, error: new MarketplaceUnavailableError() };
 
         const params = new URLSearchParams({
             page: String(page),
@@ -51,20 +62,20 @@ export const AppService = {
         appendIfPresent(params, 'pricing', filters.pricingModel);
         appendIfPresent(params, 'site_type', filters.siteType);
 
-        const catalog = await api.appStore.apps(Object.fromEntries(params.entries())).catch(() => null);
-        if (!catalog) return { apps: [], total: 0, limit, offset };
-
-        return {
-            apps: catalog.data,
-            total: catalog.total,
-            limit: catalog.limit,
-            offset,
-        };
+        try {
+            const catalog = await api.appStore.apps(Object.fromEntries(params.entries()));
+            return {
+                ok: true,
+                value: { apps: catalog.data, total: catalog.total, limit: catalog.limit, offset },
+            };
+        } catch {
+            return { ok: false, error: new MarketplaceUnavailableError() };
+        }
     },
 
-    async searchApps(query: string, category?: string, limit = 20): Promise<AppSearchResult> {
+    async searchApps(query: string, category?: string, limit = 20): Promise<MarketplaceResult<AppSearchResult>> {
         const api = await getAppStoreApi();
-        if (!api) return { apps: [], total: 0, limit, offset: 0 };
+        if (!api) return { ok: false, error: new MarketplaceUnavailableError() };
 
         const params = new URLSearchParams({
             search: query,
@@ -73,15 +84,15 @@ export const AppService = {
         });
         appendIfPresent(params, 'category', category);
 
-        const catalog = await api.appStore.apps(Object.fromEntries(params.entries())).catch(() => null);
-        if (!catalog) return { apps: [], total: 0, limit, offset: 0 };
-
-        return {
-            apps: catalog.data,
-            total: catalog.total,
-            limit: catalog.limit,
-            offset: 0,
-        };
+        try {
+            const catalog = await api.appStore.apps(Object.fromEntries(params.entries()));
+            return {
+                ok: true,
+                value: { apps: catalog.data, total: catalog.total, limit: catalog.limit, offset: 0 },
+            };
+        } catch {
+            return { ok: false, error: new MarketplaceUnavailableError() };
+        }
     },
 
     async getAppBySlug(slug: string): Promise<MarketplaceApp | null> {

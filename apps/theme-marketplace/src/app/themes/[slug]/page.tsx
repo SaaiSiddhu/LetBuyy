@@ -277,10 +277,11 @@ export default async function ThemeDetailPage({ params }: Props) {
     const categoryLabel = CATEGORY_LABELS[theme.category]?.label ?? theme.category;
     const standaloneDownloads = standaloneRows(theme);
 
-    const { themes: similarRecords } = await ThemeService.listThemes({
+    const similarResult = await ThemeService.listThemes({
         category: theme.category,
         limit: 4,
     });
+    const similarRecords = similarResult.ok ? similarResult.value.themes : [];
     const similarThemes = similarRecords
         .map(normalizeThemeRecord)
         .filter((item) => item.id !== theme.id)

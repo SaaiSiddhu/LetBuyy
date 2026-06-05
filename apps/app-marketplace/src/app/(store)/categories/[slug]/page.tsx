@@ -3,6 +3,7 @@ import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import { AppService } from '@/lib/app-service';
+import { MarketplaceUnavailable } from '@/components/MarketplaceUnavailable';
 import { Package } from '@letbuyy/ui';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -26,7 +27,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     const category = APP_CATEGORIES.find(c => c.slug === slug);
     if (!category) notFound();
 
-    const { apps: displayApps, total } = await AppService.listApps({ category: slug, limit: 20 });
+    const listResult = await AppService.listApps({ category: slug, limit: 20 });
+    const unavailable = !listResult.ok;
+    const displayApps = listResult.ok ? listResult.value.apps : [];
+    const total = listResult.ok ? listResult.value.total : 0;
 
     return (
         <>
@@ -71,7 +75,9 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                         ))}
                     </div>
 
-                    {displayApps.length === 0 && (
+                    {unavailable ? (
+                        <MarketplaceUnavailable />
+                    ) : displayApps.length === 0 ? (
                         <div className="empty-state">
                             <div className="empty-state-icon">
                                 <Package size={32} aria-hidden="true" />
@@ -79,7 +85,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                             <h3>No apps yet</h3>
                             <p>There are no apps in this category yet. Check back soon!</p>
                         </div>
-                    )}
+                    ) : null}
                 </section>
             </main>
             <Footer />

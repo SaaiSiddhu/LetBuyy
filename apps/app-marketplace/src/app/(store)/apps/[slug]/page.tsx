@@ -164,7 +164,8 @@ export default async function AppDetailPage({ params }: AppDetailPageProps) {
     const { reviews } = await AppService.getAppReviews(app.id, 10);
     const category = APP_CATEGORIES.find((item) => item.slug === app.app_categories?.slug) || app.app_categories;
     const price = getAppPriceDisplay(app);
-    const { apps: relatedApps } = await AppService.listApps({ category: app.app_categories?.slug, limit: 4 });
+    const relatedResult = await AppService.listApps({ category: app.app_categories?.slug, limit: 4 });
+    const relatedApps = relatedResult.ok ? relatedResult.value.apps : [];
     const filteredRelated = relatedApps.filter((item) => item.id !== app.id).slice(0, 3);
     const screenshots = getAppScreenshots(app);
     const scopes = getAppScopes(app);

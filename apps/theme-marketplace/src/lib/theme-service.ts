@@ -2,6 +2,17 @@ import 'server-only';
 import { createThemeMarketplaceApiClient } from '@/lib/api/client';
 import type { ThemeSearchFilters, ThemeSearchResult } from '@letbuyy/theme-engine';
 
+export class MarketplaceUnavailableError extends Error {
+    constructor(message = 'The theme catalog is temporarily unavailable. Please try again.') {
+        super(message);
+        this.name = 'MarketplaceUnavailableError';
+    }
+}
+
+export type MarketplaceResult<T> =
+    | { ok: true; value: T }
+    | { ok: false; error: MarketplaceUnavailableError };
+
 function appendIfPresent(params: URLSearchParams, key: string, value: string | number | undefined) {
     if (value !== undefined && value !== '') {
         params.set(key, String(value));
@@ -17,14 +28,14 @@ async function getThemeApi(requireSession = false) {
 }
 
 export const ThemeService = {
-    async listThemes(filters: ThemeSearchFilters = {}): Promise<ThemeSearchResult> {
+    async listThemes(filters: ThemeSearchFilters = {}): Promise<MarketplaceResult<ThemeSearchResult>> {
         const limit = filters.limit ?? 20;
         const offset = filters.offset ?? 0;
         const page = Math.floor(offset / limit) + 1;
         const api = await getThemeApi();
 
         if (!api) {
-            return { themes: [], total: 0, limit, offset };
+            return { ok: false, error: new MarketplaceUnavailableError() };
         }
 
         const query = new URLSearchParams({
@@ -39,17 +50,20 @@ export const ThemeService = {
         appendIfPresent(query, 'industry', filters.industry);
         appendIfPresent(query, 'search', filters.search);
 
-        const catalog = await api.themes.listCatalog(Object.fromEntries(query.entries())).catch(() => null);
-        if (!catalog) {
-            return { themes: [], total: 0, limit, offset };
+        try {
+            const catalog = await api.themes.listCatalog(Object.fromEntries(query.entries()));
+            return {
+                ok: true,
+                value: {
+                    themes: catalog.data as Record<string, unknown>[],
+                    total: catalog.total,
+                    limit: catalog.limit,
+                    offset,
+                },
+            };
+        } catch {
+            return { ok: false, error: new MarketplaceUnavailableError() };
         }
-
-        return {
-            themes: catalog.data as Record<string, unknown>[],
-            total: catalog.total,
-            limit: catalog.limit,
-            offset,
-        };
     },
 
     async getThemeBySlug(slug: string): Promise<Record<string, unknown> | null> {

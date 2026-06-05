@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ArrowRight, Sparkles, Zap, Smartphone, Lock, Globe, Code, ShoppingBag, Palette, FileText, Rocket, Star, Check, ChevronRight } from '@letbuyy/ui';
 import ThemeCard from '@/components/theme-card';
 import { ThemeService } from '@/lib/theme-service';
+import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 
 const STATS = [
     { label: 'Premium Themes', value: '50+', icon: Palette },
@@ -34,14 +35,16 @@ const TRUST_BADGES = [
 ];
 
 export default async function HomePage() {
-    const { themes: featuredThemes } = await ThemeService.listThemes({
+    const featuredResult = await ThemeService.listThemes({
         sort: 'rating',
         limit: 4,
     });
+    const featuredThemes = featuredResult.ok ? featuredResult.value.themes : [];
+    const themesUnavailable = !featuredResult.ok;
 
     const categoryCountPromises = CATEGORIES.map(async (cat) => {
-        const { total } = await ThemeService.listThemes({ category: cat.slug, limit: 1 });
-        return { slug: cat.slug, count: total };
+        const result = await ThemeService.listThemes({ category: cat.slug, limit: 1 });
+        return { slug: cat.slug, count: result.ok ? result.value.total : 0 };
     });
     const categoryCounts = await Promise.all(categoryCountPromises);
     const countMap = Object.fromEntries(categoryCounts.map(c => [c.slug, c.count]));
@@ -246,11 +249,15 @@ export default async function HomePage() {
                         </Link>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                        {featuredThemes.map((theme: any) => (
-                            <ThemeCard key={theme.id} theme={theme} featured />
-                        ))}
-                    </div>
+                    {themesUnavailable ? (
+                        <MarketplaceUnavailable />
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                            {featuredThemes.map((theme: any) => (
+                                <ThemeCard key={theme.id} theme={theme} featured />
+                            ))}
+                        </div>
+                    )}
 
                     {/* Mobile "View all" link */}
                     <div className="sm:hidden mt-8 text-center">

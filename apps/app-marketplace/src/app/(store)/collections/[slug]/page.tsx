@@ -2,6 +2,7 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
 import { AppService } from '@/lib/app-service';
+import { MarketplaceUnavailable } from '@/components/MarketplaceUnavailable';
 import { Flame, MapPin, Star, type LucideIcon } from '@letbuyy/ui';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -47,10 +48,12 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
     if (!collection) notFound();
     const CollectionIcon = collection.icon;
 
-    const { apps: displayApps } = await AppService.listApps({
+    const listResult = await AppService.listApps({
         sort: collection.sort || 'popular',
         limit: 12,
     });
+    const unavailable = !listResult.ok;
+    const displayApps = listResult.ok ? listResult.value.apps : [];
 
     return (
         <>
@@ -73,11 +76,15 @@ export default async function CollectionPage({ params }: CollectionPageProps) {
                         {collection.description}
                     </p>
 
-                    <div className="app-card-grid">
-                        {displayApps.map((app) => (
-                            <AppCard key={app.id} app={app} />
-                        ))}
-                    </div>
+                    {unavailable ? (
+                        <MarketplaceUnavailable />
+                    ) : (
+                        <div className="app-card-grid">
+                            {displayApps.map((app) => (
+                                <AppCard key={app.id} app={app} />
+                            ))}
+                        </div>
+                    )}
                 </section>
             </main>
             <Footer />

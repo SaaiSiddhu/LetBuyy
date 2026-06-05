@@ -22,7 +22,14 @@ export async function GET(req: NextRequest) {
 
         const result = await ThemeService.listThemes(filters);
 
-        return NextResponse.json(result);
+        if (!result.ok) {
+            return NextResponse.json(
+                { error: { code: 'MARKETPLACE_UNAVAILABLE', message: result.error.message }, themes: [], total: 0 },
+                { status: 503 }
+            );
+        }
+
+        return NextResponse.json(result.value);
     } catch (error) {
         console.error('[API] /api/themes error:', error);
         return NextResponse.json(

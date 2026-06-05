@@ -17,7 +17,15 @@ export async function GET(request: NextRequest) {
 
     try {
         const result = await AppService.searchApps(q, category, limit);
-        return NextResponse.json(result);
+
+        if (!result.ok) {
+            return NextResponse.json(
+                { error: { code: 'MARKETPLACE_UNAVAILABLE', message: result.error.message } },
+                { status: 503 }
+            );
+        }
+
+        return NextResponse.json(result.value);
     } catch (error) {
         console.error('[API /apps/search] Error:', error);
         return NextResponse.json(

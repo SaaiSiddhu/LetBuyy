@@ -4,6 +4,7 @@ import { Card, EmptyState, Page, PageContent, PageHeader, Search, Section, X } f
 import ThemeCard from '@/components/theme-card';
 import ThemeUploadPanel from '@/components/theme-upload-panel';
 import { ThemeService } from '@/lib/theme-service';
+import MarketplaceUnavailable from '@/components/marketplace-unavailable';
 import { CATEGORY_LABELS } from '@/lib/utils';
 
 type SearchParamValue = string | string[] | undefined;
@@ -282,7 +283,9 @@ export default async function ThemesPage({
         sort,
         limit: 30,
     });
-    const themes = result.themes.map(normalizeThemeRecord);
+    const themesUnavailable = !result.ok;
+    const themeTotal = result.ok ? result.value.total : 0;
+    const themes = result.ok ? result.value.themes.map(normalizeThemeRecord) : [];
     const activeFilterCount = [
         category !== 'all',
         pricing !== 'all',
@@ -564,9 +567,11 @@ export default async function ThemesPage({
 
                     <Section
                         title={activeFilterCount > 0 ? 'Filtered theme results' : 'Theme directory'}
-                        description={`${result.total} theme${result.total === 1 ? '' : 's'} found. ${getActiveFilterSummary(filters)}.`}
+                        description={`${themeTotal} theme${themeTotal === 1 ? '' : 's'} found. ${getActiveFilterSummary(filters)}.`}
                     >
-                        {themes.length > 0 ? (
+                        {themesUnavailable ? (
+                            <MarketplaceUnavailable />
+                        ) : themes.length > 0 ? (
                             <div className="grid grid-cols-1 gap-[var(--lb-space-4)] md:grid-cols-2 xl:grid-cols-3">
                                 {themes.map((theme) => (
                                     <ThemeCard key={theme.id} theme={theme} />

@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { AppCard } from '@/components/AppCard';
+import { MarketplaceUnavailable } from '@/components/MarketplaceUnavailable';
 import { AppService, type AppFilters } from '@/lib/app-service';
 import { APP_CATEGORIES } from '@/lib/constants/categories';
 import {
@@ -86,11 +87,12 @@ export default async function MarketplacePage({
     const sort = normalizeSort(params?.sort);
     const hasActiveFilters = Boolean(query || category || sort !== 'popular');
 
-    const catalog = query
+    const catalogResult = query
         ? await AppService.searchApps(query, category, 24)
         : await AppService.listApps({ category, sort, limit: 24 });
 
-    const resultCount = catalog.total || catalog.apps.length;
+    const catalog = catalogResult.ok ? catalogResult.value : null;
+    const resultCount = catalog ? (catalog.total || catalog.apps.length) : 0;
     const activeCategoryLabel = getCategoryName(category);
     const resultSummary = `${resultCount.toLocaleString('en-IN')} ${resultCount === 1 ? 'app' : 'apps'}`;
 
@@ -232,7 +234,9 @@ export default async function MarketplacePage({
                                 )
                             }
                         >
-                            {catalog.apps.length > 0 ? (
+                            {!catalog ? (
+                                <MarketplaceUnavailable />
+                            ) : catalog.apps.length > 0 ? (
                                 <div className="grid gap-[var(--lb-density-card-gap)] md:grid-cols-2 xl:grid-cols-3">
                                     {catalog.apps.map((app) => (
                                         <AppCard key={app.id} app={app} />
