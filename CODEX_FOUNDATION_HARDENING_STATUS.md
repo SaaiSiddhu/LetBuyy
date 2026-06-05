@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F1 - Backend integrity; F1.1 orders/products Single-Writer increment complete.
-- Findings resolved: 3/31 Critical/High complete (`C-2`, `C-12`, `C-13`); H-1 is in progress with the orders/products webhook second-writer removed and the remaining dual-writer sweep pending in F1.2.
-- Current governance gate state: green after F1.1 (`pnpm run validate:governance` -> 129/129 PASS).
+- Phase: F1 - Backend integrity; F1.2 core commerce/billing Single-Writer increment complete.
+- Findings resolved: 3/31 Critical/High complete (`C-2`, `C-12`, `C-13`); H-1 is in progress with `orders`, `products`, `subscriptions`, `sites`, and `billing_history` webhook second-writers removed. Event infrastructure tables still need classification in F1.3/F1.5.
+- Current governance gate state: green after F1.2 (`pnpm run validate:governance` -> 129/129 PASS).
 
 ## Baseline gates
 
@@ -36,6 +36,18 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, warnings only.
 - `pnpm run validate:governance`: PASS - 129/129 validators.
 
+## F1.2 gate evidence
+
+- `services/webhook-service` no longer writes `subscriptions`, `sites`, or `billing_history` directly; subscription activation/status/invoice outcomes call gateway-owned internal billing endpoints.
+- `services/api-gateway` now owns `SubscriptionExecutionAdapter` plus `/v1/internal/billing/subscriptions/{activate,sync,invoice}`.
+- `node scripts/validators/single-writer-ownership-validator.mjs`: PASS with `orders`, `products`, `subscriptions`, `sites`, and `billing_history`.
+- `pnpm --filter @letbuyy/webhook-service test`: PASS - 9/9 behavior tests for order and billing transition clients.
+- `pnpm --filter @letbuyy/webhook-service typecheck`: PASS.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm turbo typecheck`: PASS - 60/60 tasks.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- `pnpm run validate:governance`: PASS - 129/129 validators.
+
 ## Human-gated remainder
 
 - C-1 extraction of six service roots from the modular monolith requires an architecture decision.
@@ -43,6 +55,6 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Continue F1.2 by sweeping remaining dual-writer tables such as `subscriptions` and `sites`.
-- Continue F1.3-F1.5 queue producer and event contract checks after the dual-writer sweep.
+- Commit F1.2.
+- Continue F1.3-F1.5 queue producer and event contract checks, including classification of event infrastructure tables (`outbox_events`, `payment_webhook_events`) before declaring H-1 fully done.
 - Keep inherited root `node --test tests/*/*.test.mjs` failure separate until F5 unless it blocks a phase gate.

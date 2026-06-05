@@ -9,7 +9,6 @@ import { createCashfreePaymentProvider } from "@letbuyy/infrastructure/cashfree-
 import { createPayPalPaymentProvider } from "@letbuyy/infrastructure/paypal-adapter";
 import { createStripePaymentProvider } from "@letbuyy/infrastructure/stripe-adapter";
 import {
-    insertSupabaseRows,
     patchSupabaseRows,
     selectSupabaseRows,
     supabaseServiceHeaders,
@@ -22,6 +21,11 @@ import {
     recordGatewayOrderPaymentFailure,
     type GatewayServiceBinding,
 } from "./gateway-order-transitions";
+import {
+    activateGatewayStoreSubscription,
+    recordGatewaySubscriptionInvoice,
+    syncGatewayStoreSubscription,
+} from "./gateway-billing-transitions";
 
 // ============================================================
 // WEBHOOK HANDLER — Payment Provider Signature Verification
@@ -127,33 +131,6 @@ interface WebhookOrderRow {
     inventory_released_at?: string | null;
 }
 
-interface SiteRow {
-    id: string;
-    user_id?: string | null;
-    custom_user_id?: string | null;
-    site_type?: string | null;
-    name?: string | null;
-    store_name?: string | null;
-}
-
-interface PlanRow {
-    id: string;
-    name: string;
-    slug: string;
-    price_monthly_inr?: number | null;
-    price_yearly_inr?: number | null;
-    promo_price_inr?: number | null;
-    promo_months?: number | null;
-    products_limit?: number | null;
-}
-
-interface SubscriptionRow {
-    id: string;
-    user_id: string;
-    store_id?: string | null;
-    external_subscription_id?: string | null;
-}
-
 interface WebhookDeliveryClaim {
     id: string;
     site_id: string;
@@ -200,24 +177,6 @@ async function selectRows<T>(
     params: Record<string, string>
 ): Promise<T[]> {
     return selectSupabaseRows<T>(env, table, params);
-}
-
-async function patchRows<T>(
-    env: Env,
-    table: string,
-    params: Record<string, string>,
-    body: Record<string, unknown>,
-    prefer = "return=representation"
-): Promise<T[]> {
-    return patchSupabaseRows<T>(env, table, params, body, prefer);
-}
-
-async function insertRows<T>(
-    env: Env,
-    table: string,
-    rows: Record<string, unknown> | Array<Record<string, unknown>>
-): Promise<T[]> {
-    return insertSupabaseRows<T>(env, table, rows);
 }
 
 async function callSupabaseRpc<T>(
@@ -488,22 +447,6 @@ async function resolveRazorpayNotes(env: Env, payment: JsonObject): Promise<Json
     return orderId ? getRazorpayOrderNotes(env, orderId) : {};
 }
 
-function periodEndFromBillingPeriod(billingPeriod: string): string {
-    const end = new Date();
-    if (billingPeriod === "yearly") {
-        end.setFullYear(end.getFullYear() + 1);
-    } else {
-        end.setMonth(end.getMonth() + 1);
-    }
-    return end.toISOString();
-}
-
-function invoiceNumber(prefix: string): string {
-    const now = new Date();
-    const date = now.toISOString().slice(0, 10).replace(/-/g, "");
-    return `${prefix}-${date}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
-}
-
 function normalizeSubscriptionStatus(status: string): "active" | "cancelled" | "past_due" | "trialing" {
     if (status === "active") return "active";
     if (status === "trialing") return "trialing";
@@ -527,108 +470,34 @@ async function activateStoreSubscription(
         amountPaid?: number;
     }
 ): Promise<void> {
-    const [store] = await selectRows<SiteRow>(env, "sites", {
-        select: "id,user_id,custom_user_id,site_type,name,store_name",
-        id: `eq.${params.storeId}`,
-        limit: "1",
-    });
-
-    if (!store) throw new Error("Subscription store not found");
-
-    const userId = params.userId || store.custom_user_id || store.user_id;
-    if (!userId) throw new Error("Subscription store has no owner user");
-
     const billingPeriod = params.billingPeriod === "yearly" ? "yearly" : "monthly";
-    const siteType = store.site_type || "store";
-    const [plan] = await selectRows<PlanRow>(env, "plans", {
-        select: "*",
-        site_type: `eq.${siteType}`,
-        slug: `eq.${params.planSlug}`,
-        is_active: "eq.true",
-        limit: "1",
-    });
-
-    if (!plan) throw new Error("Subscription plan not found");
-
-    const now = new Date().toISOString();
-    const periodEnd = periodEndFromBillingPeriod(billingPeriod);
-    const promoEndsAt = billingPeriod === "monthly" && Number(plan.promo_price_inr || 0) > 0 && Number(plan.promo_months || 0) > 0
-        ? (() => {
-            const date = new Date();
-            date.setMonth(date.getMonth() + Number(plan.promo_months || 0));
-            return date.toISOString();
-        })()
-        : null;
-
-    const amountPaid = params.amountPaid ?? (
-        billingPeriod === "yearly"
-            ? Number(plan.price_yearly_inr || 0) * 12
-            : promoEndsAt
-                ? Number(plan.promo_price_inr || 0)
-                : Number(plan.price_monthly_inr || 0)
-    );
-
-    await patchRows(env, "subscriptions", {
-        store_id: `eq.${params.storeId}`,
-        status: "eq.active",
-    }, {
-        status: "cancelled",
-        cancelled_at: now,
-    }, "return=minimal");
-
-    const [subscription] = await insertRows<SubscriptionRow>(env, "subscriptions", {
-        user_id: userId,
-        store_id: params.storeId,
-        plan: plan.slug,
-        plan_id: plan.id,
-        status: "active",
-        billing_period: billingPeriod,
-        current_period_start: now,
-        current_period_end: periodEnd,
-        promo_ends_at: promoEndsAt,
-        payment_gateway: params.provider,
-        external_subscription_id: params.externalSubscriptionId || params.providerOrderId || null,
-        razorpay_order_id: params.provider === "razorpay" ? params.providerOrderId || null : null,
-        razorpay_payment_id: params.provider === "razorpay" ? params.providerPaymentId || null : null,
-        amount_paid: amountPaid,
-        currency: "INR",
-        products_limit: plan.products_limit,
-        stores_limit: 1,
-    });
-
-    await patchRows(env, "sites", { id: `eq.${params.storeId}` }, {
-        trial_status: "paid",
-        updated_at: now,
-    }, "return=minimal");
-
-    await insertRows(env, "billing_history", {
-        user_id: userId,
-        store_id: params.storeId,
-        subscription_id: subscription?.id || null,
-        invoice_number: invoiceNumber("INV"),
-        description: `${plan.name} plan - ${billingPeriod === "yearly" ? "Annual" : "Monthly"}`,
-        amount: amountPaid,
-        currency: "INR",
-        tax_amount: Math.round(amountPaid * 0.18),
-        total_amount: amountPaid + Math.round(amountPaid * 0.18),
-        payment_gateway: params.provider,
-        payment_id: params.providerPaymentId || params.externalSubscriptionId || params.providerOrderId || null,
-        payment_status: "paid",
-        period_start: now,
-        period_end: periodEnd,
-    });
+    const activation = asObject(await activateGatewayStoreSubscription(env, {
+        storeId: params.storeId,
+        planSlug: params.planSlug,
+        billingPeriod,
+        provider: params.provider,
+        providerOrderId: params.providerOrderId || null,
+        providerPaymentId: params.providerPaymentId || null,
+        externalSubscriptionId: params.externalSubscriptionId || null,
+        userId: params.userId || null,
+        amountPaid: params.amountPaid ?? null,
+    }));
+    const responseData = asObject(activation.data);
+    const subscription = asObject(responseData.subscription);
+    const subscriptionId = textValue(subscription.id);
+    const planSlug = textValue(subscription.plan) || params.planSlug;
 
     await emitPaymentDomainEvent(env, {
         provider: params.provider,
-        providerEventId: params.providerEventId || params.providerPaymentId || params.externalSubscriptionId || params.providerOrderId || subscription?.id || params.storeId,
+        providerEventId: params.providerEventId || params.providerPaymentId || params.externalSubscriptionId || params.providerOrderId || subscriptionId || params.storeId,
         eventType: params.eventType || "payment.subscription.activated",
         aggregateType: "subscription",
-        aggregateId: subscription?.id || params.storeId,
+        aggregateId: subscriptionId || params.storeId,
         storeId: params.storeId,
         payload: {
             store_id: params.storeId,
-            subscription_id: subscription?.id || null,
-            plan_slug: plan.slug,
+            subscription_id: subscriptionId || null,
+            plan_slug: planSlug,
             billing_period: billingPeriod,
             payment_id: params.providerPaymentId || null,
         },
@@ -648,14 +517,12 @@ async function syncStripeSubscription(
     const currentPeriodStart = numberValue(subscription.current_period_start);
     const currentPeriodEnd = numberValue(subscription.current_period_end);
 
-    await patchRows(env, "subscriptions", {
-        external_subscription_id: `eq.${subscriptionId}`,
-    }, {
+    await syncGatewayStoreSubscription(env, {
+        externalSubscriptionId: subscriptionId,
         status: mappedStatus,
-        current_period_start: currentPeriodStart ? new Date(currentPeriodStart * 1000).toISOString() : undefined,
-        current_period_end: currentPeriodEnd ? new Date(currentPeriodEnd * 1000).toISOString() : undefined,
-        cancelled_at: mappedStatus === "cancelled" ? new Date().toISOString() : null,
-    }, "return=minimal");
+        currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000).toISOString() : null,
+        currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000).toISOString() : null,
+    });
 }
 
 // ─── Health Check ───────────────────────────────────────────────────
@@ -1117,31 +984,21 @@ app.post("/stripe", async (c) => {
                     amount: invoice?.amount_paid,
                 });
                 if (subscriptionId) {
-                    const [subscription] = await selectRows<SubscriptionRow>(c.env, "subscriptions", {
-                        select: "id,user_id,store_id,external_subscription_id",
-                        external_subscription_id: `eq.${subscriptionId}`,
-                        limit: "1",
+                    const now = new Date().toISOString();
+                    await recordGatewaySubscriptionInvoice(c.env, {
+                        externalSubscriptionId: subscriptionId,
+                        provider: "stripe",
+                        invoiceNumber: textValue(invoice?.number) || `STRIPE-${providerEventId}`,
+                        description: "Stripe subscription invoice",
+                        amount: numberValue(invoice?.amount_paid) || 0,
+                        currency: String(invoice?.currency || "INR").toUpperCase(),
+                        taxAmount: numberValue(invoice?.tax) || 0,
+                        totalAmount: numberValue(invoice?.amount_paid) || 0,
+                        paymentId: textValue(invoice?.payment_intent) || textValue(invoice?.id) || providerEventId,
+                        paymentStatus: "paid",
+                        periodStart: now,
+                        periodEnd: now,
                     });
-
-                    if (subscription?.store_id) {
-                        const now = new Date().toISOString();
-                        await insertRows(c.env, "billing_history", {
-                            user_id: subscription.user_id,
-                            store_id: subscription.store_id,
-                            subscription_id: subscription.id,
-                            invoice_number: textValue(invoice?.number) || invoiceNumber("STRIPE"),
-                            description: "Stripe subscription invoice",
-                            amount: numberValue(invoice?.amount_paid) || 0,
-                            currency: String(invoice?.currency || "INR").toUpperCase(),
-                            tax_amount: numberValue(invoice?.tax) || 0,
-                            total_amount: numberValue(invoice?.amount_paid) || 0,
-                            payment_gateway: "stripe",
-                            payment_id: textValue(invoice?.payment_intent) || textValue(invoice?.id) || providerEventId,
-                            payment_status: "paid",
-                            period_start: now,
-                            period_end: now,
-                        });
-                    }
                 }
                 break;
             }
@@ -1154,11 +1011,10 @@ app.post("/stripe", async (c) => {
                     attemptCount: invoice?.attempt_count,
                 });
                 if (subscriptionId) {
-                    await patchRows(c.env, "subscriptions", {
-                        external_subscription_id: `eq.${subscriptionId}`,
-                    }, {
+                    await syncGatewayStoreSubscription(c.env, {
+                        externalSubscriptionId: subscriptionId,
                         status: "past_due",
-                    }, "return=minimal");
+                    });
                 }
                 break;
             }

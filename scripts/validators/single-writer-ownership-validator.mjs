@@ -11,7 +11,7 @@ const reporter = createReporter("Single-writer ownership validator");
 const webhookSourceFiles = listWorkspaceFiles(["services/webhook-service/src"])
   .filter((file) => sourceExtensions.has(path.extname(file)) && !file.endsWith(".d.ts"));
 
-const forbiddenOwnedTables = ["orders", "products"];
+const forbiddenOwnedTables = ["orders", "products", "subscriptions", "sites", "billing_history"];
 const forbiddenWriteHelpers = [
   "patchRows",
   "patchSupabaseRows",
@@ -61,4 +61,4 @@ for (const file of webhookSourceFiles) {
   }
 }
 
-reporter.finish(`${webhookSourceFiles.length} webhook-service source files checked for gateway-owned order/product writes`);
+reporter.finish(`${webhookSourceFiles.length} webhook-service source files checked for gateway-owned table writes`);

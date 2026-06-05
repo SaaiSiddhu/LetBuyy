@@ -39,6 +39,7 @@ import formSubmissionsRouter from './routes/form-submissions';
 import pagesRouter from './routes/pages';
 import operationsRouter from './routes/operations';
 import internalConsoleRouter from './routes/internal-console';
+import internalBillingRouter from './routes/internal-billing';
 import { createAdminGraphQLRouter } from './graphql/admin';
 import { createStorefrontGraphQLRouter } from './graphql/storefront';
 import { LETBUYY_INTERNAL_SUBREQUEST_HEADER, isGraphQLRestShimSubrequest } from './graphql/rest-shim';
@@ -385,6 +386,7 @@ api.route('/storefront', storefrontRouter);
 api.route('/themes', themesRouter);
 api.route('/app-store', appStoreRouter);
 api.route('/internal/console', internalConsoleRouter);
+api.route('/internal/billing', internalBillingRouter);
 
 // Protected routes (auth required)
 api.use('/*', authMiddleware);
