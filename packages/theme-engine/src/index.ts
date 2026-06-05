@@ -121,6 +121,7 @@ export interface StoreTemplateConfig {
   sectionGroups?: Record<string, StorefrontSectionGroupConfig>;
   templates?: Record<string, StorefrontTemplateConfig>;
   liquidBundle?: LiquidThemePackageBundle;
+  appBlocks?: unknown;
   releaseManifest?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;

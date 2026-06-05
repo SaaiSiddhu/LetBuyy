@@ -378,6 +378,7 @@ function resolveLiquidAppBlockHtml(
     blockId,
     block.type,
     typeof block.settings.extension_handle === 'string' ? block.settings.extension_handle : '',
+    typeof block.settings.slot === 'string' ? block.settings.slot : '',
   ].filter(Boolean);
 
   for (const key of candidates) {

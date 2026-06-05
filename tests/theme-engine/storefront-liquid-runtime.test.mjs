@@ -39,3 +39,14 @@ test('storefront composition engine renders Liquid plans without the React secti
   assert.match(source, /data-theme-renderer="liquid"/);
   assert.match(source, /dangerouslySetInnerHTML=\{\{ __html: html \}\}/);
 });
+
+test('storefront composition engine maps installed app blocks into Liquid app slots', () => {
+  const source = read(COMPOSITION_ENGINE_SOURCE);
+
+  assert.match(source, /normalizeAppBlockInstances\(input\)/);
+  assert.match(source, /function buildLiquidAppBlocks/);
+  assert.match(source, /\[block\.slot, source\]/);
+  assert.match(source, /\[`app:\$\{block\.extension_id\}`, source\]/);
+  assert.match(source, /liquidAppBlocks: buildLiquidAppBlocks\(store\.templateConfig\.appBlocks\)/);
+  assert.match(source, /data-app-block-slot/);
+});

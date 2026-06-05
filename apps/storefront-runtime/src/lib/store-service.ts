@@ -655,6 +655,7 @@ function mapSupabaseToStore(
     }
 
     const appBlocks = data.app_blocks;
+    const normalizedAppBlocks = normalizeAppBlockInstances(appBlocks);
     const sections = injectAppBlocksIntoSections(sectionArray, appBlocks);
     templates = injectAppBlocksIntoTemplates(templates, appBlocks);
 
@@ -699,6 +700,7 @@ function mapSupabaseToStore(
             sections,
             sectionGroups: Object.keys(sectionGroups).length > 0 ? sectionGroups : undefined,
             templates,
+            appBlocks: normalizedAppBlocks,
             releaseManifest,
         },
     };

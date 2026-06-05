@@ -1,5 +1,9 @@
+import {
+    normalizeAppBlockInstances,
+    type AppBlockInstance,
+} from '@letbuyy/app-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
-import { createThemeRenderer } from '@letbuyy/theme-engine';
+import { createThemeRenderer, type LiquidAppBlockRenderSource } from '@letbuyy/theme-engine';
 import type { SectionRenderData, StorefrontRenderPlan } from './types';
 import EditorPreviewSectionFrame from './editor-preview-section-frame';
 import { renderRegisteredSection } from './renderer-registry';
@@ -71,6 +75,72 @@ function LiquidRenderedHtml({
     );
 }
 
+function escapeHtml(value: unknown): string {
+    return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+}
+
+function renderLiquidAppBlockHtml(block: AppBlockInstance): string {
+    const appId = escapeHtml(block.app_id);
+    const extensionId = escapeHtml(block.extension_id);
+    const slot = escapeHtml(block.slot);
+    const title = escapeHtml(block.title);
+
+    if (block.render_mode === 'iframe' && block.iframe_url) {
+        return [
+            `<div data-app-block-slot="${slot}" data-app-block-app-id="${appId}" data-app-block-extension-id="${extensionId}" class="lb-app-block lb-app-block--iframe">`,
+            `<iframe src="${escapeHtml(block.iframe_url)}" title="${title}" sandbox="allow-forms allow-popups allow-scripts allow-same-origin" loading="lazy"></iframe>`,
+            '</div>',
+        ].join('');
+    }
+
+    const heading = escapeHtml(block.content.heading || block.title);
+    const body = escapeHtml(block.content.body || '');
+    const ctaLabel = escapeHtml(block.content.cta_label || '');
+    const ctaHref = escapeHtml(block.content.cta_href || '');
+
+    return [
+        `<article data-app-block-slot="${slot}" data-app-block-app-id="${appId}" data-app-block-extension-id="${extensionId}" class="lb-app-block lb-app-block--inline">`,
+        `<p class="lb-app-block__eyebrow">${title}</p>`,
+        `<h3 class="lb-app-block__heading">${heading}</h3>`,
+        body ? `<p class="lb-app-block__body">${body}</p>` : '',
+        ctaLabel && ctaHref ? `<a class="lb-app-block__cta" href="${ctaHref}">${ctaLabel}</a>` : '',
+        '</article>',
+    ].join('');
+}
+
+function buildLiquidAppBlocks(input: unknown): Record<string, LiquidAppBlockRenderSource> {
+    const blocks = normalizeAppBlockInstances(input);
+    const entries: Array<[string, LiquidAppBlockRenderSource]> = [];
+
+    for (const block of blocks) {
+        const source = {
+            html: renderLiquidAppBlockHtml(block),
+            settings: {
+                id: block.id,
+                app_id: block.app_id,
+                extension_id: block.extension_id,
+                slot: block.slot,
+                render_mode: block.render_mode,
+                ...block.settings,
+            },
+        };
+
+        entries.push(
+            [block.id, source],
+            [block.extension_id, source],
+            [block.slot, source],
+            [`app:${block.extension_id}`, source],
+        );
+    }
+
+    return Object.fromEntries(entries);
+}
+
 async function renderLiquidPlan({
     store,
     plan,
@@ -103,6 +173,7 @@ async function renderLiquidPlan({
         },
         liquidBundle: plan.liquidBundle,
         liquidTemplateKey: plan.liquidTemplateKey || plan.template.id,
+        liquidAppBlocks: buildLiquidAppBlocks(store.templateConfig.appBlocks),
     });
 
     if (result.status !== 'rendered' || !result.liquid) return null;

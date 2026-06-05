@@ -31,6 +31,7 @@ test('LiquidRenderer keeps app blocks as explicit injectable slots', () => {
 
   assert.match(source, /isLiquidAppBlockType\(block\.type\)/);
   assert.match(source, /resolveLiquidAppBlockHtml/);
+  assert.match(source, /typeof block\.settings\.slot === 'string' \? block\.settings\.slot : ''/);
   assert.match(source, /data-letbuyy-app-block/);
   assert.match(source, /rendererKey: isLiquidAppBlockType\(block\.type\) \? 'liquid\.app-block'/);
 });
