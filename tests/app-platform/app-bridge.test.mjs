@@ -303,14 +303,23 @@ test('WS13 X5 checkout Functions execute as tenant-scoped sandboxed Wasm decisio
   assert.match(appEngineSource, /applyAppFunctionRuntimeOutput/);
 
   assert.match(functionRuntimeSource, /LETBUYY_APP_FUNCTION_RUNTIME_VERSION/);
+  assert.match(functionRuntimeSource, /validateWasmModuleLimits\(bytes, registration\)/);
+  assert.match(functionRuntimeSource, /MAX_APP_FUNCTION_WASM_BYTES/);
+  assert.match(functionRuntimeSource, /MAX_APP_FUNCTION_CODE_BODY_BYTES/);
   assert.match(functionRuntimeSource, /compiler\.compile\(bytes\)/);
   assert.match(functionRuntimeSource, /WebAssembly\.instantiate\(module, \{\}\)/);
   assert.match(functionRuntimeSource, /crypto\.subtle\.digest\('SHA-256'/);
+  assert.match(functionRuntimeSource, /may not import host capabilities/);
+  assert.match(functionRuntimeSource, /loop or branch control flow/);
+  assert.match(functionRuntimeSource, /memory\.grow/);
   assert.match(functionRuntimeSource, /\.from\('app_function_registrations'\)/);
   assert.match(functionRuntimeSource, /\.eq\('site_id', siteId\)/);
   assert.match(functionRuntimeSource, /\.eq\('status', 'enabled'\)/);
   assert.match(functionRuntimeSource, /\.contains\('hooks', \[hook\]\)/);
   assert.match(functionRuntimeSource, /timeout_ms, 5, 1, 5/);
+  assert.match(functionRuntimeSource, /appFunctionMemoryLimitBytes\(registration\)/);
+  assert.match(functionRuntimeSource, /enforceWasmRuntimeMemoryLimit\(exports, registration, 'execution'\)/);
+  assert.match(functionRuntimeSource, /Date\.now\(\) - started > timeoutMs/);
   assert.match(functionRuntimeSource, /memory and alloc\(size\)/);
   assert.match(functionRuntimeSource, /result_len\(\)/);
   assert.match(functionRuntimeSource, /recordAppFunctionExecutionMetric/);

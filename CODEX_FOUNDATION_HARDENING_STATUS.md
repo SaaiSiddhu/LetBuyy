@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F2.4 app billing honest provider activation complete and committed next; continue F2.5 Wasm limits.
-- Findings resolved: 12/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-12`, `C-13`, `H-1`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F2.4 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F2.5 app function Wasm limits complete; continue F2.6 developer tooling no-credential parts.
+- Findings resolved: 13/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-12`, `C-13`, `H-1`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F2.5 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -204,6 +204,21 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F2.5 app function Wasm limits evidence
+
+- `services/api-gateway/src/extensions/app-functions-runtime.ts` now validates app-function Wasm modules before compilation for module byte size, host import sections, declared memory min/max pages against `memory_limit_kb`, per-function code body size, and loop/branch/call/`memory.grow`-capable opcodes.
+- Runtime execution checks exported memory bounds at instantiate, input allocation, execution, and output read phases, keeping checkout functions inside the registered memory budget even if module metadata is misleading.
+- The accepted Wasm subset remains deliberately bounded and host-import-free; synchronous loop-capable control flow is rejected statically because a same-thread Wasm loop cannot be preempted by a JavaScript `Promise.race` timeout.
+- `tests/contracts/app-function-wasm-limits.test.ts` covers declared memory overrun rejection, host import rejection, loop-capable body rejection, memory-budget math, and source guards for size, opcode, runtime memory, and timeout checks.
+- `pnpm run test:contracts`: PASS - 44/44.
+- `node --test tests/app-platform/*.test.mjs`: PASS - 16/16.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `node --test tests/app-platform/*.test.mjs tests/federation/*.test.mjs`: PASS - 108/108.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -230,6 +245,5 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Commit the completed F2.4 app billing provider-proof increment.
-- Continue to F2.5 Wasm limits.
+- Continue to F2.6 developer tooling no-credential parts.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

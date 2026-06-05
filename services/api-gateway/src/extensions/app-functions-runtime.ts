@@ -89,6 +89,9 @@ type WebAssemblyCompiler = typeof WebAssembly & {
     compile(bytes: BufferSource): Promise<WebAssembly.Module>;
 };
 
+const WASM_PAGE_BYTES = 64 * 1024;
+const MAX_APP_FUNCTION_WASM_BYTES = 128 * 1024;
+const MAX_APP_FUNCTION_CODE_BODY_BYTES = 4 * 1024;
 const wasmModuleCache = new Map<string, Promise<WebAssembly.Module>>();
 
 function isMissingTableError(error: { message?: string; details?: string; hint?: string } | null | undefined, tableName: string): boolean {
@@ -109,6 +112,12 @@ function positiveInt(value: unknown, fallback: number, min: number, max: number)
 function timeoutError(message: string): Error {
     const error = new Error(message);
     error.name = 'APP_FUNCTION_TIMEOUT';
+    return error;
+}
+
+function resourceLimitError(message: string): Error {
+    const error = new Error(message);
+    error.name = 'APP_FUNCTION_RESOURCE_LIMIT';
     return error;
 }
 
@@ -134,6 +143,217 @@ async function sha256Hex(bytes: Uint8Array): Promise<string> {
     return bytesToHex(new Uint8Array(digest));
 }
 
+function readVarUint32(bytes: Uint8Array, offset: number): { value: number; offset: number } {
+    let value = 0;
+    let shift = 0;
+    let cursor = offset;
+    while (cursor < bytes.length) {
+        const byte = bytes[cursor];
+        cursor += 1;
+        value |= (byte & 0x7f) << shift;
+        if ((byte & 0x80) === 0) return { value, offset: cursor };
+        shift += 7;
+        if (shift > 35) break;
+    }
+    throw resourceLimitError('Function module has invalid LEB128 encoding');
+}
+
+function skipVarInt(bytes: Uint8Array, offset: number): number {
+    return readVarUint32(bytes, offset).offset;
+}
+
+function skipBlockType(bytes: Uint8Array, offset: number): number {
+    const byte = bytes[offset];
+    if (byte === undefined) throw resourceLimitError('Function module has invalid block type');
+    if (byte === 0x40 || (byte >= 0x7b && byte <= 0x7f)) return offset + 1;
+    return skipVarInt(bytes, offset);
+}
+
+function scanWasmInstructionBudget(bytes: Uint8Array, start: number, end: number, handle: string): void {
+    let cursor = start;
+    while (cursor < end) {
+        const opcode = bytes[cursor];
+        cursor += 1;
+
+        switch (opcode) {
+            case 0x02:
+            case 0x04:
+                cursor = skipBlockType(bytes, cursor);
+                break;
+            case 0x03:
+            case 0x0c:
+            case 0x0d:
+            case 0x0e:
+                throw resourceLimitError(`Function ${handle} uses loop or branch control flow outside the checkout instruction budget`);
+            case 0x10:
+            case 0x11:
+            case 0x12:
+            case 0x13:
+            case 0x14:
+            case 0x15:
+                throw resourceLimitError(`Function ${handle} uses Wasm calls outside the checkout instruction budget`);
+            case 0x20:
+            case 0x21:
+            case 0x22:
+            case 0x23:
+            case 0x24:
+            case 0x41:
+                cursor = skipVarInt(bytes, cursor);
+                break;
+            case 0x42:
+                cursor = skipVarInt(bytes, cursor);
+                break;
+            case 0x43:
+                cursor += 4;
+                break;
+            case 0x44:
+                cursor += 8;
+                break;
+            case 0x28:
+            case 0x29:
+            case 0x2a:
+            case 0x2b:
+            case 0x2c:
+            case 0x2d:
+            case 0x2e:
+            case 0x2f:
+            case 0x30:
+            case 0x31:
+            case 0x32:
+            case 0x33:
+            case 0x34:
+            case 0x35:
+            case 0x36:
+            case 0x37:
+            case 0x38:
+            case 0x39:
+            case 0x3a:
+            case 0x3b:
+            case 0x3c:
+            case 0x3d:
+            case 0x3e:
+                cursor = skipVarInt(bytes, skipVarInt(bytes, cursor));
+                break;
+            case 0x3f:
+                cursor += 1;
+                break;
+            case 0x40:
+                throw resourceLimitError(`Function ${handle} may not use memory.grow during checkout`);
+            case 0xfb:
+            case 0xfc:
+            case 0xfd:
+            case 0xfe:
+                throw resourceLimitError(`Function ${handle} uses prefixed Wasm instructions outside the checkout instruction budget`);
+            default:
+                break;
+        }
+
+        if (cursor > end) {
+            throw resourceLimitError(`Function ${handle} has invalid Wasm instruction immediates`);
+        }
+    }
+}
+
+export function appFunctionMemoryLimitBytes(registration: { memory_limit_kb?: number | string | null }): number {
+    return positiveInt(registration.memory_limit_kb, 512, 64, 1024) * 1024;
+}
+
+export function validateWasmModuleLimits(
+    bytes: Uint8Array,
+    registration: { function_handle?: string | null; memory_limit_kb?: number | string | null },
+): void {
+    const handle = registration.function_handle || 'unknown';
+    const memoryLimitBytes = appFunctionMemoryLimitBytes(registration);
+    const memoryLimitPages = Math.floor(memoryLimitBytes / WASM_PAGE_BYTES);
+
+    if (bytes.byteLength > MAX_APP_FUNCTION_WASM_BYTES) {
+        throw resourceLimitError(`Function ${handle} module exceeds ${MAX_APP_FUNCTION_WASM_BYTES} bytes`);
+    }
+    if (
+        bytes[0] !== 0x00 ||
+        bytes[1] !== 0x61 ||
+        bytes[2] !== 0x73 ||
+        bytes[3] !== 0x6d ||
+        bytes[4] !== 0x01 ||
+        bytes[5] !== 0x00 ||
+        bytes[6] !== 0x00 ||
+        bytes[7] !== 0x00
+    ) {
+        throw resourceLimitError(`Function ${handle} is not a valid Wasm module`);
+    }
+
+    let offset = 8;
+    while (offset < bytes.length) {
+        const sectionId = bytes[offset];
+        offset += 1;
+        const size = readVarUint32(bytes, offset);
+        offset = size.offset;
+        const sectionEnd = offset + size.value;
+        if (sectionEnd > bytes.length) throw resourceLimitError(`Function ${handle} has an invalid Wasm section`);
+
+        if (sectionId === 2) {
+            const imports = readVarUint32(bytes, offset);
+            if (imports.value > 0) throw resourceLimitError(`Function ${handle} may not import host capabilities`);
+        }
+
+        if (sectionId === 5) {
+            let cursor = offset;
+            const memories = readVarUint32(bytes, cursor);
+            cursor = memories.offset;
+            if (memories.value > 1) throw resourceLimitError(`Function ${handle} may export at most one memory`);
+            for (let index = 0; index < memories.value; index += 1) {
+                const flags = bytes[cursor];
+                cursor += 1;
+                const min = readVarUint32(bytes, cursor);
+                cursor = min.offset;
+                const hasMax = (flags & 0x01) === 0x01;
+                const max = hasMax ? readVarUint32(bytes, cursor) : null;
+                if (max) cursor = max.offset;
+                if (min.value > memoryLimitPages || (max && max.value > memoryLimitPages)) {
+                    throw resourceLimitError(`Function ${handle} memory declaration exceeds ${memoryLimitBytes} bytes`);
+                }
+            }
+        }
+
+        if (sectionId === 10) {
+            let cursor = offset;
+            const functionCount = readVarUint32(bytes, cursor);
+            cursor = functionCount.offset;
+            for (let index = 0; index < functionCount.value; index += 1) {
+                const bodySize = readVarUint32(bytes, cursor);
+                cursor = bodySize.offset;
+                const bodyEnd = cursor + bodySize.value;
+                if (bodyEnd > sectionEnd) throw resourceLimitError(`Function ${handle} has an invalid Wasm code body`);
+                if (bodySize.value > MAX_APP_FUNCTION_CODE_BODY_BYTES) {
+                    throw resourceLimitError(`Function ${handle} code body exceeds ${MAX_APP_FUNCTION_CODE_BODY_BYTES} bytes`);
+                }
+                const localCount = readVarUint32(bytes, cursor);
+                cursor = localCount.offset;
+                for (let localIndex = 0; localIndex < localCount.value; localIndex += 1) {
+                    const count = readVarUint32(bytes, cursor);
+                    cursor = count.offset + 1;
+                }
+                scanWasmInstructionBudget(bytes, cursor, bodyEnd, handle);
+                cursor = bodyEnd;
+            }
+        }
+
+        offset = sectionEnd;
+    }
+}
+
+function enforceWasmRuntimeMemoryLimit(
+    exports: WasmJsonExports,
+    registration: { function_handle?: string | null; memory_limit_kb?: number | string | null },
+    phase: string,
+): void {
+    if (!(exports.memory instanceof WebAssembly.Memory)) return;
+    const limit = appFunctionMemoryLimitBytes(registration);
+    if (exports.memory.buffer.byteLength > limit) {
+        throw resourceLimitError(`Function ${registration.function_handle || 'unknown'} memory exceeded ${limit} bytes during ${phase}`);
+    }
+}
+
 async function verifiedWasmBytes(registration: AppFunctionRegistrationRow, timeoutMs: number): Promise<Uint8Array> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -145,6 +365,7 @@ async function verifiedWasmBytes(registration: AppFunctionRegistrationRow, timeo
         if (digest !== registration.wasm_sha256.toLowerCase()) {
             throw new Error('Function module SHA-256 verification failed');
         }
+        validateWasmModuleLimits(bytes, registration);
         return bytes;
     } finally {
         clearTimeout(timeout);
@@ -153,7 +374,7 @@ async function verifiedWasmBytes(registration: AppFunctionRegistrationRow, timeo
 
 async function compileVerifiedWasmModule(registration: AppFunctionRegistrationRow): Promise<WebAssembly.Module> {
     const timeoutMs = positiveInt(registration.timeout_ms, 5, 1, 5);
-    const cacheKey = `${registration.wasm_module_url}:${registration.wasm_sha256}`;
+    const cacheKey = `${registration.wasm_module_url}:${registration.wasm_sha256}:mem${appFunctionMemoryLimitBytes(registration)}`;
     const cached = wasmModuleCache.get(cacheKey);
     if (cached) return cached;
 
@@ -167,26 +388,39 @@ async function compileVerifiedWasmModule(registration: AppFunctionRegistrationRo
     return compiled;
 }
 
-function writeJsonInput(exports: WasmJsonExports, input: AppFunctionRuntimeInput): { ptr: number; len: number } {
+function writeJsonInput(
+    exports: WasmJsonExports,
+    registration: AppFunctionRegistrationRow,
+    input: AppFunctionRuntimeInput,
+): { ptr: number; len: number } {
     if (!(exports.memory instanceof WebAssembly.Memory) || typeof exports.alloc !== 'function') {
         throw new Error('Function module must export memory and alloc(size)');
     }
+    enforceWasmRuntimeMemoryLimit(exports, registration, 'input allocation');
 
     const encoded = new TextEncoder().encode(JSON.stringify(input));
     const ptr = exports.alloc(encoded.length);
     if (!Number.isSafeInteger(ptr) || ptr < 0) throw new Error('Function alloc(size) returned an invalid pointer');
+    if (ptr + encoded.length > exports.memory.buffer.byteLength) {
+        throw resourceLimitError(`Function ${registration.function_handle} input allocation exceeds exported memory`);
+    }
     new Uint8Array(exports.memory.buffer, ptr, encoded.length).set(encoded);
+    enforceWasmRuntimeMemoryLimit(exports, registration, 'input write');
     return { ptr, len: encoded.length };
 }
 
-function readJsonOutput(exports: WasmJsonExports, ptr: number): unknown {
+function readJsonOutput(exports: WasmJsonExports, registration: AppFunctionRegistrationRow, ptr: number): unknown {
     if (!(exports.memory instanceof WebAssembly.Memory) || typeof exports.result_len !== 'function') {
         throw new Error('Function module must export memory and result_len()');
     }
+    enforceWasmRuntimeMemoryLimit(exports, registration, 'output read');
 
     const len = exports.result_len();
     if (!Number.isSafeInteger(ptr) || ptr < 0 || !Number.isSafeInteger(len) || len < 0 || len > 64 * 1024) {
         throw new Error('Function returned an invalid JSON output pointer or length');
+    }
+    if (ptr + len > exports.memory.buffer.byteLength) {
+        throw resourceLimitError(`Function ${registration.function_handle} output pointer exceeds exported memory`);
     }
 
     const output = new TextDecoder().decode(new Uint8Array(exports.memory.buffer, ptr, len));
@@ -205,17 +439,23 @@ async function executeWasmJsonFunction(
         `app function ${registration.function_handle} instantiate`,
     );
     const exports = instance.exports as WasmJsonExports;
+    enforceWasmRuntimeMemoryLimit(exports, registration, 'instantiate');
     const entrypoint = registration.wasm_entrypoint || 'run';
     const run = exports[entrypoint];
     if (typeof run !== 'function') throw new Error(`Function module must export ${entrypoint}(ptr, len)`);
 
-    const { ptr, len } = writeJsonInput(exports, input);
+    const { ptr, len } = writeJsonInput(exports, registration, input);
+    const started = Date.now();
     const outputPtr = await withTimeout(
         Promise.resolve((run as (ptr: number, len: number) => number)(ptr, len)),
         timeoutMs,
         `app function ${registration.function_handle} execution`,
     );
-    const output = readJsonOutput(exports, outputPtr);
+    if (Date.now() - started > timeoutMs) {
+        throw timeoutError(`app function ${registration.function_handle} execution exceeded ${timeoutMs}ms`);
+    }
+    enforceWasmRuntimeMemoryLimit(exports, registration, 'execution');
+    const output = readJsonOutput(exports, registration, outputPtr);
     if (typeof exports.dealloc === 'function') exports.dealloc(ptr, len);
 
     const normalized = normalizeAppFunctionRuntimeOutput(output);
