@@ -16,6 +16,12 @@ import {
     upsertSupabaseRows,
 } from "@letbuyy/infrastructure/supabase-adapter";
 import { dispatchLetBuyyWebhook } from "./app-lifecycle-dispatch";
+import {
+    confirmGatewayOrderPayment,
+    recordGatewayOrderPaymentEvent,
+    recordGatewayOrderPaymentFailure,
+    type GatewayServiceBinding,
+} from "./gateway-order-transitions";
 
 // ============================================================
 // WEBHOOK HANDLER — Payment Provider Signature Verification
@@ -39,6 +45,7 @@ interface Env {
     STRIPE_WEBHOOK_SECRET: string;
     STRIPE_SECRET_KEY?: string;
     INTERNAL_API_SECRET?: string;
+    API_GATEWAY_SERVICE?: GatewayServiceBinding;
     AUTH_SECRET?: string;
     ENVIRONMENT: string;
     APP_ENV?: string;
@@ -118,17 +125,6 @@ interface WebhookOrderRow {
     status?: string | null;
     inventory_reserved_at?: string | null;
     inventory_released_at?: string | null;
-}
-
-interface OrderInventoryItem {
-    product_id?: string | null;
-    quantity?: number | string | null;
-}
-
-interface ProductInventoryRow {
-    id: string;
-    stock?: number | string | null;
-    track_inventory?: boolean | null;
 }
 
 interface SiteRow {
@@ -366,76 +362,25 @@ async function findOrderByPaymentCandidates(
     return rows[0] || null;
 }
 
-function orderItemsFromJson(order: WebhookOrderRow): OrderInventoryItem[] {
-    if (!Array.isArray(order.items)) return [];
-
-    return order.items.map((item) => {
-        const record = asObject(item);
-        return {
-            product_id: textValue(record.product_id) || textValue(record.productId),
-            quantity: numberValue(record.quantity) || 0,
-        };
-    });
-}
-
-async function loadOrderInventoryItems(env: Env, order: WebhookOrderRow): Promise<OrderInventoryItem[]> {
-    const rows = await selectRows<OrderInventoryItem>(env, "order_items", {
-        select: "product_id,quantity",
-        order_id: `eq.${order.id}`,
-    }).catch(() => []);
-
-    const normalizedRows = rows.filter((item) => item.product_id && Number(item.quantity) > 0);
-    return normalizedRows.length > 0 ? normalizedRows : orderItemsFromJson(order);
-}
-
-async function adjustInventory(env: Env, order: WebhookOrderRow, direction: "reserve" | "release"): Promise<void> {
-    const items = await loadOrderInventoryItems(env, order);
-
-    for (const item of items) {
-        const productId = textValue(item.product_id);
-        const quantity = numberValue(item.quantity) || 0;
-        if (!productId || quantity <= 0) continue;
-
-        const [product] = await selectRows<ProductInventoryRow>(env, "products", {
-            select: "id,stock,track_inventory",
-            id: `eq.${productId}`,
-            limit: "1",
-        });
-
-        if (!product || product.track_inventory === false) continue;
-
-        const currentStock = numberValue(product.stock) || 0;
-        const nextStock = direction === "reserve"
-            ? Math.max(0, currentStock - quantity)
-            : currentStock + quantity;
-
-        await patchRows(env, "products", { id: `eq.${productId}` }, { stock: nextStock }, "return=minimal");
-    }
-}
-
 async function markOrderPaid(
     env: Env,
     order: WebhookOrderRow,
     params: {
         provider: PaymentProvider;
         paymentId: string;
+        providerOrderId?: string | null;
         providerEventId: string;
         eventType?: string;
     }
 ): Promise<void> {
-    if (!order.inventory_reserved_at) {
-        await adjustInventory(env, order, "reserve");
-    }
-
-    await patchRows(env, "orders", { id: `eq.${order.id}` }, {
-        payment_status: "paid",
-        status: "confirmed",
-        payment_id: params.paymentId,
-        payment_gateway: params.provider,
-        payment_processed_at: new Date().toISOString(),
-        inventory_reserved_at: order.inventory_reserved_at || new Date().toISOString(),
-        last_payment_event_id: params.providerEventId,
-    }, "return=minimal");
+    await confirmGatewayOrderPayment(env, {
+        orderId: order.id,
+        provider: params.provider,
+        paymentId: params.paymentId,
+        providerOrderId: params.providerOrderId || order.payment_id || null,
+        providerEventId: params.providerEventId,
+        idempotencyKey: `payment-webhook:${params.provider}:${params.providerEventId}:paid`,
+    });
 
     await emitPaymentDomainEvent(env, {
         provider: params.provider,
@@ -465,16 +410,20 @@ async function markOrderFailed(
 ): Promise<void> {
     if (order.payment_status === "paid") return;
 
-    await patchRows(env, "orders", { id: `eq.${order.id}` }, {
-        payment_status: "failed",
-        status: "cancelled",
-        payment_id: params.paymentId || order.payment_id || null,
-        payment_failure_reason: params.reason || null,
-        last_payment_event_id: params.providerEventId,
-    }, "return=minimal");
+    const provider = params.provider || "razorpay";
+    await recordGatewayOrderPaymentFailure(env, {
+        orderId: order.id,
+        provider,
+        providerEventId: params.providerEventId,
+        paymentStatus: "failed",
+        orderStatus: "cancelled",
+        reason: params.reason || null,
+        releaseInventory: false,
+        idempotencyKey: `payment-webhook:${provider}:${params.providerEventId}:failed`,
+    });
 
     await emitPaymentDomainEvent(env, {
-        provider: params.provider || "razorpay",
+        provider,
         providerEventId: params.providerEventId,
         eventType: params.eventType || "payment.failed",
         aggregateType: "order",
@@ -496,16 +445,16 @@ async function markOrderRefunded(
     provider: PaymentProvider = "razorpay",
     eventType = "refund.created"
 ): Promise<void> {
-    if (order.inventory_reserved_at && !order.inventory_released_at) {
-        await adjustInventory(env, order, "release");
-    }
-
-    await patchRows(env, "orders", { id: `eq.${order.id}` }, {
-        payment_status: "refunded",
-        status: "refunded",
-        inventory_released_at: order.inventory_released_at || new Date().toISOString(),
-        last_payment_event_id: providerEventId,
-    }, "return=minimal");
+    await recordGatewayOrderPaymentFailure(env, {
+        orderId: order.id,
+        provider,
+        providerEventId,
+        paymentStatus: "refunded",
+        orderStatus: "refunded",
+        reason: "refund_created",
+        releaseInventory: Boolean(order.inventory_reserved_at && !order.inventory_released_at),
+        idempotencyKey: `payment-webhook:${provider}:${providerEventId}:refunded`,
+    });
 
     await emitPaymentDomainEvent(env, {
         provider,
@@ -938,6 +887,7 @@ app.post("/razorpay", async (c) => {
                     await markOrderPaid(c.env, order, {
                         provider: "razorpay",
                         paymentId: paymentId || providerEventId,
+                        providerOrderId: textValue(paymentRecord.order_id),
                         providerEventId,
                         eventType,
                     });
@@ -1007,9 +957,13 @@ app.post("/razorpay", async (c) => {
                     if (!refundAmount || refundAmount >= orderTotalMinor) {
                         await markOrderRefunded(c.env, order, providerEventId, "razorpay", eventType);
                     } else {
-                        await patchRows(c.env, "orders", { id: `eq.${order.id}` }, {
-                            last_payment_event_id: providerEventId,
-                        }, "return=minimal");
+                        await recordGatewayOrderPaymentEvent(c.env, {
+                            orderId: order.id,
+                            provider: "razorpay",
+                            providerEventId,
+                            eventType,
+                            idempotencyKey: `payment-webhook:razorpay:${providerEventId}:partial-refund`,
+                        });
                     }
                 }
                 break;
@@ -1320,6 +1274,7 @@ app.post("/paypal", async (c) => {
                     await markOrderPaid(c.env, order, {
                         provider: "paypal",
                         paymentId: textValue(resource.id) || verification.event?.references.providerPaymentId || providerEventId,
+                        providerOrderId: textValue(relatedIds.order_id) || verification.event?.references.providerOrderId,
                         providerEventId,
                         eventType,
                     });
@@ -1467,6 +1422,7 @@ app.post("/cashfree", async (c) => {
                 await markOrderPaid(c.env, order, {
                     provider: "cashfree",
                     paymentId: paymentId || providerEventId,
+                    providerOrderId,
                     providerEventId,
                     eventType,
                 });

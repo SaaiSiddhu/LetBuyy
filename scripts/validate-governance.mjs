@@ -126,6 +126,7 @@ const validators = [
   "operational-proof-validator.mjs",
   "ci-simulation-validator.mjs",
   "domain-boundary-validator.mjs",
+  "single-writer-ownership-validator.mjs",
   "environment-validator.mjs",
   "generated-artifact-validator.mjs",
   "stale-artifact-validator.mjs",

@@ -369,6 +369,14 @@ type InternalPaymentFailureBody = {
     idempotencyKey?: string | null;
 };
 
+type InternalPaymentEventBody = {
+    orderId?: string;
+    provider?: 'razorpay' | 'stripe' | 'paypal' | 'cashfree';
+    providerEventId?: string;
+    eventType?: string;
+    idempotencyKey?: string | null;
+};
+
 type NavigationMenuRow = {
     id: string;
     handle: string;
@@ -1986,6 +1994,30 @@ router.post('/internal/payments/failure', async (c) => {
     });
 
     return c.json(success({ order }));
+});
+
+// POST /storefront/internal/payments/event — Internal provider event marker
+router.post('/internal/payments/event', async (c) => {
+    if (!isInternalRequest(c)) {
+        return c.json({ success: false, error: { code: 'FORBIDDEN', message: 'Internal API secret required' } }, 403);
+    }
+
+    const body = await c.req.json() as InternalPaymentEventBody;
+    if (!body.orderId || !assertProvider(body.provider) || !body.providerEventId || !body.eventType) {
+        return c.json({ success: false, error: { code: 'VALIDATION', message: 'orderId, provider, providerEventId and eventType are required' } }, 400);
+    }
+
+    const db = getSupabaseAdmin(c);
+    const result = await new PaymentExecutionAdapter(db).recordPaymentEvent({
+        orderId: body.orderId,
+        provider: body.provider,
+        providerEventId: body.providerEventId,
+        eventType: body.eventType,
+        requestId: getRequestId(c),
+        idempotencyKey: body.idempotencyKey || null,
+    });
+
+    return c.json(success(result));
 });
 
 // GET /storefront/lookup?q=handle — Public store lookup for routing/search surfaces
