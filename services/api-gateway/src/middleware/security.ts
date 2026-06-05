@@ -258,7 +258,8 @@ export const csrfProtection = createMiddleware<{ Bindings: Env }>(
             return;
         }
 
-        const cookieToken = parseCookie(c.req.header('cookie'), 'letbuyy_csrf');
+        const cookieToken = parseCookie(c.req.header('cookie'), 'letbuyy_csrf')
+            || parseCookie(c.req.header('cookie'), 'lb_csrf');
         const headerToken = c.req.header('X-CSRF-Token') || c.req.header('X-LetBuyy-CSRF-Token');
 
         if (!cookieToken || !headerToken || !timingSafeEqualText(cookieToken, headerToken)) {

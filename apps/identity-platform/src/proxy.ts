@@ -40,14 +40,14 @@ export function proxy(request: NextRequest) {
     }
 
     const response = NextResponse.next()
-    const existingCsrf = request.cookies.get('lb_csrf')?.value
+    const existingCsrf = request.cookies.get('letbuyy_csrf')?.value || request.cookies.get('lb_csrf')?.value
 
     if (!existingCsrf) {
         const array = new Uint8Array(32)
         crypto.getRandomValues(array)
         const csrfToken = Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('')
 
-        response.cookies.set('lb_csrf', csrfToken, {
+        response.cookies.set('letbuyy_csrf', csrfToken, {
             httpOnly: false,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'strict',

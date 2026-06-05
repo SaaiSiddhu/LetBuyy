@@ -10,7 +10,7 @@ const PASSWORD_SET_INTENT_TTL_SECONDS = 15 * 60
 // Cookie names
 export const COOKIE_NAMES = {
     session: LETBUYY_MERCHANT_SESSION_COOKIE,
-    csrf: 'lb_csrf',
+    csrf: 'letbuyy_csrf',
     accounts: 'lb_accounts',
     device: 'lb_device',
     passwordSetIntent: PASSWORD_SET_INTENT_COOKIE,

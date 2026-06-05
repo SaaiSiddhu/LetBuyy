@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 /**
  * Validate a CSRF token by comparing the cookie value with the header value.
  * 
- * Security model: The lb_csrf cookie is set with SameSite=strict,
+ * Security model: The letbuyy_csrf cookie is set with SameSite=strict,
  * so it's only sent on same-origin requests. The client reads it via JS
  * and sends it in the X-CSRF-Token header. An attacker on a different
  * origin cannot read the cookie, so they can't forge the header.
@@ -16,10 +16,10 @@ export function validateCsrfToken(cookieToken: string, headerToken: string): boo
 
 /**
  * Convenience: validate CSRF from a NextRequest.
- * Reads the lb_csrf cookie and the X-CSRF-Token header.
+ * Reads the letbuyy_csrf cookie and the X-CSRF-Token header.
  */
 export function validateCsrf(request: NextRequest): boolean {
-    const cookieToken = request.cookies.get('lb_csrf')?.value || ''
+    const cookieToken = request.cookies.get('letbuyy_csrf')?.value || request.cookies.get('lb_csrf')?.value || ''
     const headerToken = request.headers.get('X-CSRF-Token') || ''
     return validateCsrfToken(cookieToken, headerToken)
 }

@@ -36,6 +36,7 @@ import {
     isCustomerLegacyAuthEnabled,
     requireCustomerSession,
 } from '../middleware/customer-session';
+import { csrfProtection } from '../middleware/security';
 import { createPayPalPaymentProvider } from '@letbuyy/infrastructure/paypal-adapter';
 import { createCashfreePaymentProvider } from '@letbuyy/infrastructure/cashfree-adapter';
 import { createRazorpayPaymentProvider } from '@letbuyy/infrastructure/razorpay-adapter';
@@ -88,6 +89,14 @@ router.use('/customer/activity', requireCustomerSession);
 router.use('/customer/profile', requireCustomerSession);
 router.use('/customer/addresses', requireCustomerSession);
 router.use('/customer/addresses/*', requireCustomerSession);
+router.use('/customer/wishlist', csrfProtection);
+router.use('/customer/wishlist/*', csrfProtection);
+router.use('/customer/activity', csrfProtection);
+router.use('/customer/profile', csrfProtection);
+router.use('/customer/addresses', csrfProtection);
+router.use('/customer/addresses/*', csrfProtection);
+router.use('/reviews', csrfProtection);
+router.use('/:subdomain/contact', csrfProtection);
 
 type StorefrontCreateOrderBody = {
     customer: {

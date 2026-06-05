@@ -83,7 +83,7 @@ class StoreAuthService extends ChangeNotifier {
   static const _sessionTokenKey = 'lb_session';
   static const _sessionUserKey = 'lb_session_user';
   static const _sessionExpiresAtKey = 'lb_session_expires_at';
-  static const _csrfCookieName = 'lb_csrf';
+  static const _csrfCookieName = 'letbuyy_csrf';
   static const _sessionCookieName = 'lb_session';
 
   final ApiClient _api;

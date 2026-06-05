@@ -3,7 +3,7 @@
 ## CURRENT PHASE
 
 - Phase: PHASE 1 — P0 Security.
-- Current work item: P0-B identity set-password OTP-intent binding.
+- Current work item: P0-C CSRF cookie contract and public storefront mutation coverage.
 - Branch: `stream/letbuyy-remediation`.
 
 ## DONE
@@ -80,6 +80,23 @@ Evidence:
 - `git diff --check` — PASS.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators.
 
+### P0-C — CSRF cookie contract and public storefront mutation coverage
+
+- Renamed identity and mobile CSRF cookie writers to `letbuyy_csrf`.
+- Kept one-release fallback reads for `lb_csrf` in identity and gateway CSRF validators.
+- Added explicit CSRF middleware to public storefront review/contact mutations and session-backed customer wishlist/activity/profile/address mutations.
+- Added regression coverage for the cookie-name contract and public storefront CSRF middleware.
+
+Evidence:
+- `node --test tests/auth/csrf-contract.test.mjs tests/auth/identity-password-intent.test.mjs tests/auth/customer-session-gateway.test.mjs tests/auth/session-verifier.test.mjs` — PASS, 20/20 tests.
+- `npx tsx --test services/api-gateway/src/__tests__/security.test.ts apps/identity-platform/src/__tests__/auth-flow.test.ts` — PASS, 10/10 tests.
+- `pnpm --filter @letbuyy/api-gateway typecheck` — PASS.
+- `pnpm --filter @letbuyy/identity-platform typecheck` — PASS.
+- `pnpm --filter @letbuyy/identity-platform lint` — PASS with 12 pre-existing warnings, 0 errors.
+- `flutter analyze` from `apps/mobile/merchant-app` — PASS, no issues found.
+- `git diff --check` — PASS.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated Dart artifacts were removed.
+
 ## VALIDATOR LEDGER
 
 - `node --test tests/auth/session-verifier.test.mjs tests/auth/customer-session-gateway.test.mjs` — PASS, 13/13 tests.
@@ -94,7 +111,11 @@ Evidence:
 - `pnpm --filter @letbuyy/identity-platform lint` — PASS, warnings only.
 - `pnpm --filter @letbuyy/storefront-runtime typecheck` — PASS.
 - `pnpm --filter @letbuyy/storefront-runtime lint` — PASS, warnings only.
+- `node --test tests/auth/csrf-contract.test.mjs tests/auth/identity-password-intent.test.mjs tests/auth/customer-session-gateway.test.mjs tests/auth/session-verifier.test.mjs` — PASS, 20/20 tests.
+- `npx tsx --test services/api-gateway/src/__tests__/security.test.ts apps/identity-platform/src/__tests__/auth-flow.test.ts` — PASS, 10/10 tests.
+- `flutter analyze` from `apps/mobile/merchant-app` — PASS, no issues found.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated install artifacts were removed.
+- `node scripts/validate-governance.mjs` — PASS, 128/128 validators after generated Dart artifacts were removed.
 
 ## SKIPPED — NEEDS HUMAN
 

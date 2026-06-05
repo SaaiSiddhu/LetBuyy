@@ -55,6 +55,18 @@ test('CSRF middleware allows mutation with matching double-submit token', async 
     assert.equal(response.status, 200)
 })
 
+test('CSRF middleware accepts legacy lb_csrf cookie during coordinated rename', async () => {
+    const response = await createCsrfTestApp().request('/mutate', {
+        method: 'POST',
+        headers: {
+            Cookie: 'lb_csrf=test-token',
+            'X-CSRF-Token': 'test-token',
+        },
+    })
+
+    assert.equal(response.status, 200)
+})
+
 test('CSRF middleware still allows safe methods and preflight', async () => {
     const app = createCsrfTestApp()
     assert.equal((await app.request('/mutate', { method: 'GET' })).status, 200)
