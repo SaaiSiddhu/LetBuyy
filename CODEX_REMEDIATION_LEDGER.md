@@ -341,7 +341,7 @@ Evidence:
 ### P2-7 — Variant diff and checkout post-commit deferral
 
 - Replaced the default product variant update path with a diff-based writer behind `PRODUCT_VARIANT_DIFF`, preserving the legacy delete/reinsert path as an explicit rollback switch.
-- Added additive migration `087_inventory_available_batch.sql`, which wraps the existing `set_inventory_level_available` semantics in one batched RPC for variant inventory sync.
+- Added additive migration `088_inventory_available_batch.sql`, which wraps the existing `set_inventory_level_available` semantics in one batched RPC for variant inventory sync while keeping `087` reserved for Phase 6 theme template drafts.
 - Split order post-commit work into `completeOrderPostCommitWork` and enabled storefront checkout to defer usage metering plus GST invoice persistence through `waitUntil` behind `CHECKOUT_POSTCOMMIT_DEFERRAL`.
 - Kept admin order creation synchronous; only the public storefront checkout path defers post-commit work.
 - Added static regression coverage for variant diffing, batched inventory sync, rollback flags, and checkout deferral.
@@ -456,7 +456,7 @@ Evidence:
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after variant diff and checkout deferral changes.
 - `bash -c 'NODE_PATH="$PWD/node_modules/.pnpm/node_modules:$PWD/node_modules" npx tsx --test services/api-gateway/src/__tests__/products.test.ts services/api-gateway/src/__tests__/security.test.ts'` — PASS, 14/14 tests.
 - `pnpm --filter @letbuyy/api-gateway typecheck` — PASS after source test assertion refresh.
-- `node scripts/validators/migration-safety-validator.mjs` — PASS after `087_inventory_available_batch.sql`.
+- `node scripts/validators/migration-safety-validator.mjs` — PASS after `088_inventory_available_batch.sql`.
 - `git diff --check` — PASS after variant diff and checkout deferral changes.
 - `node scripts/validate-governance.mjs` — PASS, 128/128 validators after variant diff and checkout deferral changes.
 
@@ -472,4 +472,4 @@ Evidence:
 - SKIP: Configure and prove full-fidelity Cloudflare Logpush/error export for api-gateway, queue-workers, and webhook-service — Reason: Cloudflare account log destination, dataset selection, and provider credentials are human-controlled. Resume point: P1-5 observability cost proof; expected result is Worker head sampling at 10% plus provider-backed error/full-fidelity export evidence.
 - SKIP: Apply `084_trigram_search_indexes.sql` to staging and capture `EXPLAIN (ANALYZE, BUFFERS)` proof for merchant search paths — Reason: live Supabase staging credentials and representative seeded datasets are human-controlled. Resume point: P2-5 search proof; expected result is Bitmap Index Scan/BitmapOr over trigram indexes for product/order/app/theme/internal-console search queries.
 - SKIP: Run 100k-row products/orders export and capped product import against deployed staging R2 — Reason: representative staging dataset, live R2 bucket, and deployed Worker credentials are human-controlled. Resume point: P2-6 export proof; expected result is queued job completion, streamed R2 CSV download, no request-path memory spike, and import jobs capped at 500 rows.
-- SKIP: Apply `087_inventory_available_batch.sql` to staging and run timed variant update plus checkout latency proof — Reason: live Supabase staging credentials, representative product variants, and deployed Worker timing telemetry are human-controlled. Resume point: P2-7 performance proof; expected result is one batched inventory RPC for changed variants, no delete/reinsert churn on unchanged variants, and storefront checkout response before usage/GST post-commit completion.
+- SKIP: Apply `088_inventory_available_batch.sql` to staging and run timed variant update plus checkout latency proof — Reason: live Supabase staging credentials, representative product variants, and deployed Worker timing telemetry are human-controlled. Resume point: P2-7 performance proof; expected result is one batched inventory RPC for changed variants, no delete/reinsert churn on unchanged variants, and storefront checkout response before usage/GST post-commit completion.
