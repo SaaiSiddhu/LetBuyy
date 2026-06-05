@@ -7,6 +7,7 @@ import {
   type SectionSchema,
   type ThemeSettingsSchema,
 } from './theme-registry';
+import type { LiquidThemePackageBundle } from './theme-bundle';
 
 export * from './theme-registry';
 export * from './execution-runtime';
@@ -119,6 +120,7 @@ export interface StoreTemplateConfig {
   sections: SectionModel[];
   sectionGroups?: Record<string, StorefrontSectionGroupConfig>;
   templates?: Record<string, StorefrontTemplateConfig>;
+  liquidBundle?: LiquidThemePackageBundle;
   releaseManifest?: Record<string, unknown>;
   createdAt?: string;
   updatedAt?: string;

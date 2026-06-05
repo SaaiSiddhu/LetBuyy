@@ -1,5 +1,5 @@
 import type { ProductModel } from '@letbuyy/commerce-core';
-import type { SectionModel, ThemeSettings } from '@letbuyy/theme-engine';
+import type { LiquidThemePackageBundle, SectionModel, ThemeRendererEngine, ThemeSettings } from '@letbuyy/theme-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
 
 export type StorefrontRouteType =
@@ -44,6 +44,9 @@ export interface StorefrontSectionGroups {
 export interface StorefrontRenderPlan {
     route: StorefrontRouteContext;
     layoutKey: string;
+    rendererEngine?: ThemeRendererEngine;
+    liquidBundle?: LiquidThemePackageBundle;
+    liquidTemplateKey?: string;
     sectionGroups: StorefrontSectionGroups;
     template: StorefrontTemplate;
     themeSettings: ThemeSettings;

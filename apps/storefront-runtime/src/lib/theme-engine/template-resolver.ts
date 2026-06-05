@@ -1,4 +1,11 @@
-import type { SectionModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
+import {
+    LiquidThemePackageBundleSchema,
+    isLiquidAppBlockType,
+    type LiquidThemePackageBundle,
+    type SectionModel,
+    type StorefrontSectionGroupConfig,
+    type StorefrontTemplateConfig,
+} from '@letbuyy/theme-engine';
 import type { StoreModel } from '@letbuyy/tenant-core';
 import type {
     StorefrontRenderPlan,
@@ -86,11 +93,131 @@ function resolveLegacyTemplate(store: StoreModel, routeType: StorefrontRouteType
     };
 }
 
+function orderedKeys<T>(records: Record<string, T>, order: string[]): string[] {
+    const ordered = order.filter((key) => Object.prototype.hasOwnProperty.call(records, key));
+    const remaining = Object.keys(records).filter((key) => !ordered.includes(key));
+    return [...ordered, ...remaining];
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === 'object' && !Array.isArray(value)
+        ? value as Record<string, unknown>
+        : {};
+}
+
+function resolveLiquidBundle(store: StoreModel): LiquidThemePackageBundle | undefined {
+    const releaseManifest = asRecord(store.templateConfig.releaseManifest);
+    const candidates = [
+        store.templateConfig.liquidBundle,
+        releaseManifest.liquidBundle,
+        releaseManifest.themeBundle,
+        releaseManifest.bundle,
+    ];
+
+    for (const candidate of candidates) {
+        const result = LiquidThemePackageBundleSchema.safeParse(candidate);
+        if (result.success) return result.data;
+    }
+
+    return undefined;
+}
+
+function resolveLiquidTemplateKey(
+    bundle: LiquidThemePackageBundle,
+    route: StorefrontRouteContext,
+    routeType: StorefrontRouteType,
+): string {
+    const routeTemplateKey = route.templateKey || resolveTemplateKey(routeType);
+    if (bundle.templates[routeTemplateKey]) return routeTemplateKey;
+    if (bundle.templates.index) return 'index';
+
+    return Object.keys(bundle.templates)[0] || routeTemplateKey;
+}
+
+function coerceLiquidTemplate(
+    bundle: LiquidThemePackageBundle,
+    templateKey: string,
+    routeType: StorefrontRouteType,
+): StorefrontTemplate | null {
+    const template = bundle.templates[templateKey];
+    if (!template) return null;
+
+    const sections = orderedKeys(template.sections, template.order)
+        .map((sectionId, order): SectionModel | null => {
+            const section = template.sections[sectionId];
+            if (!section || section.disabled) return null;
+
+            return {
+                id: sectionId,
+                type: section.type,
+                order,
+                rendererKey: `liquid.section.${section.type}`,
+                schemaVersion: bundle.schema_version,
+                settings: section.settings,
+                blocks: orderedKeys(section.blocks, section.block_order)
+                    .map((blockId, blockOrder) => {
+                        const block = section.blocks[blockId];
+                        if (!block || block.disabled) return null;
+
+                        return {
+                            id: blockId,
+                            type: block.type,
+                            order: blockOrder,
+                            rendererKey: isLiquidAppBlockType(block.type) ? 'liquid.app-block' : `liquid.block.${block.type}`,
+                            schemaVersion: bundle.schema_version,
+                            settings: block.settings,
+                            isVisible: true,
+                        };
+                    })
+                    .filter((block): block is NonNullable<typeof block> => block !== null),
+                isVisible: true,
+            };
+        })
+        .filter((section): section is SectionModel => section !== null);
+
+    return {
+        id: templateKey,
+        type: routeType,
+        layoutKey: template.layout || 'theme',
+        sections,
+    };
+}
+
 export function resolveStorefrontTemplate(
     store: StoreModel,
     route: StorefrontRouteContext,
 ): StorefrontRenderPlan {
     const templateKey = resolveTemplateKey(route.type);
+    const liquidBundle = resolveLiquidBundle(store);
+    if (liquidBundle) {
+        const liquidTemplateKey = resolveLiquidTemplateKey(liquidBundle, route, route.type);
+        const liquidTemplate = coerceLiquidTemplate(liquidBundle, liquidTemplateKey, route.type);
+        if (liquidTemplate) {
+            return {
+                route,
+                layoutKey: liquidTemplate.layoutKey,
+                rendererEngine: 'liquid',
+                liquidBundle,
+                liquidTemplateKey,
+                sectionGroups: {
+                    header: [],
+                    footer: [],
+                },
+                template: liquidTemplate,
+                themeSettings: store.templateConfig.themeSettings,
+                releaseId: store.templateConfig.releaseId,
+                releaseVersion: store.templateConfig.releaseVersion,
+                cacheTags: [
+                    `store:${store.id}`,
+                    `theme:${liquidBundle.package.slug}`,
+                    `release:${store.templateConfig.releaseId || 'liquid-preview'}`,
+                    `route:${route.type}:${route.resourceId || route.resourceSlug || route.path}`,
+                    `template:${liquidTemplate.id}`,
+                ],
+            };
+        }
+    }
+
     const assignedTemplate = route.templateKey
         ? coerceTemplate(route.type, store.templateConfig.templates?.[route.templateKey])
         : null;
