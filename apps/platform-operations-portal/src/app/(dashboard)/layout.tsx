@@ -6,30 +6,28 @@ export default function TeamDashboardLayout({
     children: React.ReactNode;
 }) {
     return (
-        <div className="flex min-h-screen">
-            {/* Sidebar */}
-            <aside className="hidden w-64 border-r border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950 lg:block">
-                <div className="flex h-16 items-center border-b border-zinc-200 px-6 dark:border-zinc-800">
-                    <h1 className="text-lg font-bold text-zinc-900 dark:text-zinc-50">LetBuyy</h1>
-                    <span className="ml-2 rounded bg-[var(--lb-color-primary-subtle)] px-2 py-0.5 text-xs font-medium text-[var(--lb-color-primary)]">
-                        Team
+        <div className="flex min-h-screen bg-[var(--lb-color-bg)]">
+            <aside className="hidden w-72 border-r border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] lg:block">
+                <div className="flex h-16 items-center border-b border-[var(--lb-color-border)] px-[var(--lb-space-5)]">
+                    <h1 className="text-lg font-bold text-[var(--lb-color-text)]">LetBuyy</h1>
+                    <span className="ml-2 rounded-[var(--lb-radius-md)] bg-[var(--lb-color-primary-soft)] px-[var(--lb-space-2)] py-[var(--lb-space-1)] text-xs font-medium text-[var(--lb-color-primary)]">
+                        Ops
                     </span>
                 </div>
-                <nav className="space-y-1 p-4">
-                    {/* Items shown based on employee role — TODO: role-based filtering */}
+                <nav className="space-y-1 p-[var(--lb-space-4)]">
                     <TeamNavLink href="/" label="Dashboard" icon="dashboard" />
-                    <TeamNavLink href="/support" label="Support" icon="support" />
-                    <TeamNavLink href="/merchant-health" label="Merchant Health" icon="monitoring" />
-                    <TeamNavLink href="/crm" label="CRM" icon="users" />
-                    <TeamNavLink href="/users" label="Users" icon="users" />
-                    <TeamNavLink href="/stores" label="Stores" icon="store" />
-                    <TeamNavLink href="/marketing" label="Marketing" icon="marketing" />
-                    <TeamNavLink href="/operations" label="Operations" icon="analytics" />
+                    <TeamNavLink href="/crm" label="CRM" icon="customers" />
+                    <TeamNavLink href="/tickets" label="Tickets" icon="support" />
+                    <TeamNavLink href="/merchant-health" label="Merchant Health" icon="store" />
+                    <TeamNavLink href="/retention" label="Retention" icon="trending_up" />
+                    <TeamNavLink href="/campaigns" label="Campaigns" icon="marketing" />
+                    <TeamNavLink href="/communications" label="Communications" icon="chat" />
+                    <TeamNavLink href="/onboarding" label="Onboarding" icon="steps" />
+                    <TeamNavLink href="/operations" label="Review Queue" icon="rate_review" />
                 </nav>
             </aside>
 
-            {/* Main Content */}
-            <main className="flex-1 bg-zinc-50 dark:bg-zinc-900">
+            <main className="flex-1">
                 {children}
             </main>
         </div>
@@ -40,7 +38,7 @@ function TeamNavLink({ href, label, icon }: { href: string; label: string; icon:
     return (
         <a
             href={href}
-            className="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800"
+            className="flex items-center gap-3 rounded-[var(--lb-radius-lg)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm font-medium text-[var(--lb-color-text-subdued)] transition-colors hover:bg-[var(--lb-color-surface-subdued)] hover:text-[var(--lb-color-text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
         >
             <MaterialIcon name={icon} size={16} aria-hidden="true" />
             {label}

@@ -1,6 +1,15 @@
 import type { MarketplaceReviewRecord } from '@letbuyy/shared-types';
 import { revalidatePath } from 'next/cache';
-import { createPlatformOperationsApiClient } from '../../../lib/api/client';
+import {
+    EmptyDataState,
+    MetricGrid,
+    OpsMetric,
+    OpsWorkspace,
+    Panel,
+    SkipBackendPanel,
+    StatusPill,
+} from '@/components/_local-ui/ops-workspace';
+import { createPlatformOperationsApiClient } from '@/lib/api/client';
 
 async function submitMarketplaceReviewDecision(formData: FormData) {
     'use server';
@@ -31,35 +40,11 @@ function checkSummary(review: MarketplaceReviewRecord) {
     };
 }
 
-function jsonRecord(value: unknown): Record<string, unknown> {
-    return value && typeof value === 'object' && !Array.isArray(value) ? value as Record<string, unknown> : {};
-}
-
-function lifecycleReviewItems(review: MarketplaceReviewRecord): Array<{ key: string; label: string }> {
-    const automatedChecks = jsonRecord(review.automated_checks);
-    const metadata = jsonRecord(automatedChecks.metadata);
-    const rawItems = Array.isArray(metadata.extension_lifecycle_review) ? metadata.extension_lifecycle_review : [];
-
-    return rawItems
-        .map((item) => jsonRecord(item))
-        .map((item) => ({
-            key: String(item.key || item.label || 'extension-lifecycle'),
-            label: String(item.label || item.key || 'Extension lifecycle'),
-        }))
-        .slice(0, 3);
-}
-
 function formatSubmittedAt(value: string): string {
     return new Intl.DateTimeFormat('en-IN', {
         dateStyle: 'medium',
         timeStyle: 'short',
     }).format(new Date(value));
-}
-
-function badgeClass(status: string): string {
-    if (status === 'passed') return 'border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-900/70 dark:bg-emerald-950/40 dark:text-emerald-300';
-    if (status === 'failed') return 'border-red-200 bg-red-50 text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300';
-    return 'border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-900/70 dark:bg-amber-950/40 dark:text-amber-300';
 }
 
 export default async function OperationsPage() {
@@ -74,122 +59,120 @@ export default async function OperationsPage() {
         loadError = error instanceof Error ? error.message : 'Unable to load marketplace reviews';
     }
 
+    const appReviews = reviews.filter((review) => review.submission_type === 'app').length;
+    const themeReviews = reviews.filter((review) => review.submission_type === 'theme').length;
+    const failedChecks = reviews.reduce((total, review) => total + checkSummary(review).failed, 0);
+    const warnings = reviews.reduce((total, review) => total + checkSummary(review).warnings, 0);
+
     return (
-        <div className="p-8">
-            <div className="mb-8 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <h1 className="text-2xl font-bold text-zinc-900 dark:text-zinc-50">Operations</h1>
-                    <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Marketplace review queue and platform controls</p>
-                </div>
-                <div className="rounded-lg border border-zinc-200 bg-white px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-900">
-                    <span className="font-semibold text-zinc-900 dark:text-zinc-50">{reviews.length}</span>
-                    <span className="ml-2 text-zinc-600 dark:text-zinc-400">pending reviews</span>
-                </div>
-            </div>
+        <OpsWorkspace
+            eyebrow="Review queue"
+            title="Marketplace Review Queue"
+            description="Employee review surface for pending marketplace app and theme submissions using the existing operations API contract."
+        >
+            <MetricGrid>
+                <OpsMetric label="Pending reviews" value={String(reviews.length)} detail="/v1/operations/marketplace-reviews" />
+                <OpsMetric label="Apps" value={String(appReviews)} />
+                <OpsMetric label="Themes" value={String(themeReviews)} />
+                <OpsMetric label="Failed checks" value={String(failedChecks)} tone={failedChecks > 0 ? 'critical' : 'success'} />
+                <OpsMetric label="Warnings" value={String(warnings)} tone={warnings > 0 ? 'warning' : 'success'} />
+            </MetricGrid>
 
             {loadError ? (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
-                    {loadError}
-                </div>
-            ) : null}
+                <Panel title="Review API unavailable" description={loadError}>
+                    <EmptyDataState message="Marketplace review queue could not be loaded with the current employee session." />
+                </Panel>
+            ) : (
+                <Panel
+                    title="Pending Submissions"
+                    description="Approve, reject, or request changes. Decisions call the existing audited operations endpoint."
+                >
+                    {reviews.length === 0 ? (
+                        <EmptyDataState message="No pending marketplace reviews." />
+                    ) : (
+                        <div className="grid gap-[var(--lb-space-4)]">
+                            {reviews.map((review) => {
+                                const summary = checkSummary(review);
 
-            <div className="overflow-hidden rounded-lg border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
-                <div className="grid grid-cols-[1.1fr_0.8fr_0.8fr_1.4fr] gap-4 border-b border-zinc-200 px-5 py-3 text-xs font-semibold uppercase tracking-wide text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                    <div>Submission</div>
-                    <div>Status</div>
-                    <div>Checks</div>
-                    <div>Decision</div>
-                </div>
-
-                {reviews.length === 0 ? (
-                    <div className="px-5 py-8 text-sm text-zinc-600 dark:text-zinc-400">No pending marketplace reviews.</div>
-                ) : reviews.map((review) => {
-                    const summary = checkSummary(review);
-                    const lifecycleItems = lifecycleReviewItems(review);
-
-                    return (
-                        <div
-                            key={review.id}
-                            className="grid grid-cols-[1.1fr_0.8fr_0.8fr_1.4fr] gap-4 border-b border-zinc-100 px-5 py-4 last:border-b-0 dark:border-zinc-800"
-                        >
-                            <div className="min-w-0">
-                                <div className="flex items-center gap-2">
-                                    <span className="rounded-md bg-zinc-100 px-2 py-1 text-xs font-medium uppercase text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300">
-                                        {review.submission_type}
-                                    </span>
-                                    <span className="truncate font-medium text-zinc-900 dark:text-zinc-50">{review.resource_name}</span>
-                                </div>
-                                <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                                    {review.resource_slug || review.resource_id} · {formatSubmittedAt(review.submitted_at)}
-                                </div>
-                                {lifecycleItems.length > 0 ? (
-                                    <div className="mt-3 flex flex-wrap gap-1.5">
-                                        {lifecycleItems.map((item) => (
-                                            <span
-                                                key={item.key}
-                                                className="rounded-md border border-blue-200 bg-blue-50 px-2 py-1 text-[11px] font-medium text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/40 dark:text-blue-300"
-                                            >
-                                                {item.label}
-                                            </span>
-                                        ))}
-                                    </div>
-                                ) : null}
-                            </div>
-
-                            <div>
-                                <span className="rounded-md border border-zinc-200 px-2 py-1 text-xs font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300">
-                                    {review.status.replace('_', ' ')}
-                                </span>
-                            </div>
-
-                            <div>
-                                <span className={`rounded-md border px-2 py-1 text-xs font-medium ${badgeClass(summary.status)}`}>
-                                    {summary.status}
-                                </span>
-                                <div className="mt-2 text-xs text-zinc-500 dark:text-zinc-400">
-                                    {summary.failed} failed · {summary.warnings} warnings
-                                </div>
-                            </div>
-
-                            <form action={submitMarketplaceReviewDecision} className="space-y-3">
-                                <input type="hidden" name="review_id" value={review.id} />
-                                <textarea
-                                    name="reason"
-                                    rows={2}
-                                    className="w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-500 dark:border-zinc-700 dark:bg-zinc-950 dark:text-zinc-50"
-                                    placeholder="Reason"
-                                />
-                                <div className="flex flex-wrap gap-2">
-                                    <button
-                                        type="submit"
-                                        name="decision"
-                                        value="approved"
-                                        className="rounded-md bg-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
+                                return (
+                                    <article
+                                        key={review.id}
+                                        className="grid gap-[var(--lb-space-4)] rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] p-[var(--lb-space-4)] xl:grid-cols-[1.2fr_0.7fr_1.3fr]"
                                     >
-                                        Approve
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        name="decision"
-                                        value="changes_requested"
-                                        className="rounded-md border border-amber-300 px-3 py-2 text-sm font-medium text-amber-700 hover:bg-amber-50 dark:border-amber-800 dark:text-amber-300 dark:hover:bg-amber-950/40"
-                                    >
-                                        Changes
-                                    </button>
-                                    <button
-                                        type="submit"
-                                        name="decision"
-                                        value="rejected"
-                                        className="rounded-md border border-red-300 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-950/40"
-                                    >
-                                        Reject
-                                    </button>
-                                </div>
-                            </form>
+                                        <div className="min-w-0">
+                                            <div className="flex flex-wrap items-center gap-[var(--lb-space-2)]">
+                                                <StatusPill value={review.submission_type} />
+                                                <h2 className="m-0 truncate text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-semibold)] leading-[var(--lb-line-height-body)] text-[var(--lb-color-text)]">
+                                                    {review.resource_name}
+                                                </h2>
+                                            </div>
+                                            <p className="m-0 mt-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {review.resource_slug || review.resource_id} · {formatSubmittedAt(review.submitted_at)}
+                                            </p>
+                                            <p className="m-0 mt-[var(--lb-space-2)] text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                Review ID: {review.id}
+                                            </p>
+                                        </div>
+
+                                        <div className="grid content-start gap-[var(--lb-space-2)]">
+                                            <StatusPill value={review.status.replace('_', ' ')} />
+                                            <StatusPill value={summary.status} />
+                                            <p className="m-0 text-[var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                {summary.failed} failed · {summary.warnings} warnings
+                                            </p>
+                                        </div>
+
+                                        <form action={submitMarketplaceReviewDecision} className="grid gap-[var(--lb-space-3)]">
+                                            <input type="hidden" name="review_id" value={review.id} />
+                                            <label className="grid gap-[var(--lb-space-2)]">
+                                                <span className="text-[var(--lb-font-size-caption)] font-[var(--lb-font-weight-medium)] leading-[var(--lb-line-height-caption)] text-[var(--lb-color-text-subdued)]">
+                                                    Decision reason
+                                                </span>
+                                                <textarea
+                                                    name="reason"
+                                                    rows={3}
+                                                    className="w-full rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm text-[var(--lb-color-text)] outline-none transition-colors placeholder:text-[var(--lb-color-text-subdued)] focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                    placeholder="Reason"
+                                                />
+                                            </label>
+                                            <div className="flex flex-wrap gap-[var(--lb-space-2)]">
+                                                <button
+                                                    type="submit"
+                                                    name="decision"
+                                                    value="approved"
+                                                    className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-success)] bg-[var(--lb-color-success)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm font-medium text-[var(--lb-color-text-inverse)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                >
+                                                    Approve
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    name="decision"
+                                                    value="changes_requested"
+                                                    className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-warning)] bg-[var(--lb-color-warning-soft)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm font-medium text-[var(--lb-color-warning)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                >
+                                                    Changes
+                                                </button>
+                                                <button
+                                                    type="submit"
+                                                    name="decision"
+                                                    value="rejected"
+                                                    className="min-h-11 rounded-[var(--lb-radius-lg)] border border-[var(--lb-color-critical)] bg-[var(--lb-color-critical-soft)] px-[var(--lb-space-3)] py-[var(--lb-space-2)] text-sm font-medium text-[var(--lb-color-critical)] transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)]"
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </article>
+                                );
+                            })}
                         </div>
-                    );
-                })}
-            </div>
-        </div>
+                    )}
+                </Panel>
+            )}
+
+            <SkipBackendPanel title="Reviewer saved views and assignment routing" contract="/v1/operations/marketplace-reviews/assignments">
+                The current contract supports list and decision. Queue ownership, saved reviewer views, SLA aging, and assignment routing need backend state before this can become a full review workstation.
+            </SkipBackendPanel>
+        </OpsWorkspace>
     );
 }
