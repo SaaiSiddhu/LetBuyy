@@ -9,6 +9,9 @@ import type {
   AppBillingChargeCreate,
   AppBillingChargeResult,
   AppBridgeApiFetchResult,
+  AppExtensionRegistration,
+  AppExtensionRegistryResponse,
+  AppFunctionRegistration,
   AppOAuthAuthorizationResult,
   AppOAuthTokenResult,
   AnalyticsDashboard,
@@ -161,6 +164,9 @@ export interface StoreScopedQuery extends ListQuery {
 }
 
 export interface AppInstallationListQuery extends Pick<StoreScopedQuery, 'store_id'> {}
+export interface AppExtensionRegistrationUpdateInput extends JsonRecord {
+  status: 'enabled' | 'disabled';
+}
 export interface AppStoreListQuery extends ListQuery {
   category?: string;
   pricing?: string;
@@ -872,6 +878,21 @@ export class LetbuyyApiClient {
       this.requestData<MarketplaceAppCategory[]>('/app-store/categories', options),
     installations: (query?: AppInstallationListQuery, options?: LetbuyyRequestOptions) =>
       this.requestData<InstalledApp[]>('/app-store/installations', { ...options, query }),
+    extensionRegistry: (installationId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppExtensionRegistryResponse>(
+        `/app-store/installations/${encodePathSegment(installationId)}/extensions`,
+        { ...options, query },
+      ),
+    updateExtensionRegistration: (installationId: string, registrationId: string, input: AppExtensionRegistrationUpdateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppExtensionRegistration>(
+        `/app-store/installations/${encodePathSegment(installationId)}/extensions/${encodePathSegment(registrationId)}`,
+        { ...options, method: 'PATCH', body: input },
+      ),
+    updateFunctionRegistration: (installationId: string, registrationId: string, input: AppExtensionRegistrationUpdateInput, options?: LetbuyyRequestOptions) =>
+      this.requestData<AppFunctionRegistration>(
+        `/app-store/installations/${encodePathSegment(installationId)}/functions/${encodePathSegment(registrationId)}`,
+        { ...options, method: 'PATCH', body: input },
+      ),
     embedSession: (installationId: string, query?: Pick<StoreScopedQuery, 'store_id'>, options?: LetbuyyRequestOptions) =>
       this.requestData<AdminAppBridgeSession>(
         `/app-store/installations/${encodePathSegment(installationId)}/embed-session`,

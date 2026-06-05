@@ -8,6 +8,7 @@ packages:
   - "packages/payments"
   - "packages/auth-core"
   - "packages/app-engine"
+  - "packages/extension-host"
   - "packages/theme-engine"
   - "packages/cms-core"
   - "packages/event-core"

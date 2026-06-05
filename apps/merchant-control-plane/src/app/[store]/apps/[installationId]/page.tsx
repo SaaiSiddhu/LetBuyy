@@ -18,7 +18,11 @@ export default async function EmbeddedAppPage({ params }: EmbeddedAppPageProps) 
     const storeData = await getStoreForUser(store, user.id)
     if (!storeData) notFound()
 
-    const session = await createMerchantApiClient().appStore.embedSession(installationId, { store_id: storeData.id })
+    const apiClient = createMerchantApiClient()
+    const [session, registry] = await Promise.all([
+        apiClient.appStore.embedSession(installationId, { store_id: storeData.id }),
+        apiClient.appStore.extensionRegistry(installationId, { store_id: storeData.id }).catch(() => null),
+    ])
 
-    return <EmbeddedAppBridgeClient session={session} store={store} />
+    return <EmbeddedAppBridgeClient session={session} store={store} adminExtensions={registry?.extensions || []} />
 }

@@ -1475,6 +1475,68 @@ export const AppBridgeApiFetchResultSchema = z.object({
   error: z.string().optional().nullable(),
 }).strict();
 
+export const AppExtensionRegistrationStatusSchema = z.enum(['enabled', 'disabled', 'revoked']);
+export const AppExtensionRegistrationSchema = z.object({
+  id: z.string().min(1),
+  site_id: z.string().min(1),
+  app_id: z.string().min(1),
+  installation_id: z.string().min(1),
+  extension_handle: z.string().min(1),
+  extension_type: z.string().min(1),
+  surface: z.enum(['admin.ui', 'checkout.ui', 'theme.app_block']).or(z.string().min(1)),
+  target: z.string().min(1),
+  renderer: z.enum(['iframe', 'web_component', 'liquid_app_block']).or(z.string().min(1)),
+  source_url: UrlSchema.optional().nullable(),
+  source_entrypoint: z.string().optional().nullable(),
+  scopes: z.array(z.string().min(1)).default([]),
+  capabilities: z.array(AppBridgeCapabilitySchema).default([]),
+  settings: MetadataSchema.default({}),
+  manifest_schema_version: z.string().min(1),
+  app_version: z.string().optional().nullable(),
+  status: AppExtensionRegistrationStatusSchema.or(z.string().min(1)),
+  enabled_at: z.string().datetime().optional().nullable(),
+  disabled_at: z.string().datetime().optional().nullable(),
+  revoked_at: z.string().datetime().optional().nullable(),
+  sort_order: z.number().int().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppFunctionRegistrationSchema = z.object({
+  id: z.string().min(1),
+  site_id: z.string().min(1),
+  app_id: z.string().min(1),
+  installation_id: z.string().min(1),
+  function_handle: z.string().min(1),
+  name: z.string().min(1),
+  hooks: z.array(z.string().min(1)).default([]),
+  runtime: z.literal('wasm').or(z.string().min(1)),
+  wasm_module_url: UrlSchema,
+  wasm_sha256: z.string().regex(/^[A-Fa-f0-9]{64}$/),
+  wasm_entrypoint: z.string().min(1),
+  timeout_ms: z.number().int().min(1).max(5),
+  memory_limit_kb: z.number().int().min(64).max(1024),
+  input_schema: MetadataSchema.default({}),
+  output_schema: MetadataSchema.default({}),
+  config: MetadataSchema.default({}),
+  manifest_schema_version: z.string().min(1),
+  app_version: z.string().optional().nullable(),
+  status: AppExtensionRegistrationStatusSchema.or(z.string().min(1)),
+  enabled_at: z.string().datetime().optional().nullable(),
+  disabled_at: z.string().datetime().optional().nullable(),
+  revoked_at: z.string().datetime().optional().nullable(),
+  created_at: z.string().datetime().optional().nullable(),
+  updated_at: z.string().datetime().optional().nullable(),
+}).passthrough();
+
+export const AppExtensionRegistryResponseSchema = z.object({
+  installation_id: z.string().min(1),
+  app_id: z.string().min(1),
+  store_id: z.string().min(1),
+  extensions: z.array(AppExtensionRegistrationSchema).default([]),
+  functions: z.array(AppFunctionRegistrationSchema).default([]),
+}).strict();
+
 export const AppBillingChargeModeSchema = z.enum(['recurring', 'usage']);
 export const AppBillingChargeStatusSchema = z.enum([
   'pending_merchant_approval',
@@ -1811,6 +1873,10 @@ export type InstalledApp = z.infer<typeof InstalledAppSchema>;
 export type AdminAppEmbedSurface = z.infer<typeof AdminAppEmbedSurfaceSchema>;
 export type AdminAppBridgeSession = z.infer<typeof AdminAppBridgeSessionSchema>;
 export type AppBridgeApiFetchResult = z.infer<typeof AppBridgeApiFetchResultSchema>;
+export type AppExtensionRegistrationStatus = z.infer<typeof AppExtensionRegistrationStatusSchema>;
+export type AppExtensionRegistration = z.infer<typeof AppExtensionRegistrationSchema>;
+export type AppFunctionRegistration = z.infer<typeof AppFunctionRegistrationSchema>;
+export type AppExtensionRegistryResponse = z.infer<typeof AppExtensionRegistryResponseSchema>;
 export type AppBillingChargeMode = z.infer<typeof AppBillingChargeModeSchema>;
 export type AppBillingChargeStatus = z.infer<typeof AppBillingChargeStatusSchema>;
 export type AppBillingIndiaPayoutRail = z.infer<typeof AppBillingIndiaPayoutRailSchema>;

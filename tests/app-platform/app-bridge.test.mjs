@@ -6,7 +6,9 @@ import ts from 'typescript';
 
 const APP_ENGINE_SOURCE = 'packages/app-engine/src/index.ts';
 const APP_STORE_ROUTE_SOURCE = 'services/api-gateway/src/routes/app-store.ts';
+const EXTENSION_HOST_SOURCE = 'packages/extension-host/src/index.ts';
 const EMBEDDED_BRIDGE_CLIENT_SOURCE = 'apps/merchant-control-plane/src/components/apps/EmbeddedAppBridgeClient.tsx';
+const EMBEDDED_APP_PAGE_SOURCE = 'apps/merchant-control-plane/src/app/[store]/apps/[installationId]/page.tsx';
 const SHARED_TYPES_SOURCE = 'packages/shared-types/src/index.ts';
 
 function createZodStub() {
@@ -59,6 +61,7 @@ const appEngine = loadTypeScriptModule(APP_ENGINE_SOURCE, {
   zod: { z },
   '@letbuyy/shared-types': { UuidSchema: zChain },
 });
+const extensionHost = loadTypeScriptModule(EXTENSION_HOST_SOURCE, {});
 
 test('admin app bridge resolves installed app embed surfaces safely', () => {
   const stagingUrl = 'https://merchant.staging.letbuyy.store/example-app-bridge.html';
@@ -115,4 +118,69 @@ test('admin app bridge sends iframe API calls through the gateway with the app s
   assert.match(appStoreRoute, /verifyAppScopedAccessToken/);
   assert.match(appStoreRoute, /createLetbuyyInternalIdentityHeaders/);
   assert.match(appStoreRoute, /Bridge request path is not allowed/);
+});
+
+test('WS13 X2 admin UI extension host normalizes registered extensions and enforces sandbox policy', () => {
+  const extensionHostSource = readFileSync(EXTENSION_HOST_SOURCE, 'utf8');
+  const bridgeClient = readFileSync(EMBEDDED_BRIDGE_CLIENT_SOURCE, 'utf8');
+  const embeddedAppPage = readFileSync(EMBEDDED_APP_PAGE_SOURCE, 'utf8');
+
+  for (const marker of [
+    'LETBUYY_EXTENSION_HOST_VERSION',
+    'ADMIN_EXTENSION_IFRAME_SANDBOX',
+    'listEnabledAdminUiExtensions',
+    'createAdminUiExtensionFramePolicy',
+    'createAdminUiExtensionBridgeContext',
+  ]) {
+    assert.ok(extensionHostSource.includes(marker), `extension-host package is missing ${marker}`);
+  }
+
+  const normalized = extensionHost.normalizeAdminUiExtensionRegistration({
+    id: 'reg_admin_001',
+    site_id: 'site_001',
+    app_id: 'app_001',
+    installation_id: 'install_001',
+    extension_handle: 'rewards-panel',
+    extension_type: 'dashboard_widget',
+    surface: 'admin.ui',
+    target: 'admin.dashboard.widget',
+    renderer: 'iframe',
+    source_url: 'https://apps.example.com/admin/rewards',
+    scopes: ['read_products'],
+    capabilities: ['api.fetch', 'toast', 'unsafe.scope'],
+    settings: { title: 'Rewards panel' },
+    manifest_schema_version: '2026-06-05.ws13',
+    status: 'enabled',
+    sort_order: 2,
+  });
+
+  assert.equal(normalized.title, 'Rewards panel');
+  assert.equal(normalized.origin, 'https://apps.example.com');
+  assert.equal(normalized.target, 'admin.dashboard.widget');
+  assert.deepEqual(Array.from(normalized.capabilities), ['api.fetch', 'toast']);
+
+  const rejectedSurface = extensionHost.normalizeAdminUiExtensionRegistration({
+    ...normalized,
+    id: 'reg_checkout',
+    surface: 'checkout.ui',
+  });
+  assert.equal(rejectedSurface, null);
+
+  const rejectedUrl = extensionHost.normalizeAdminUiExtensionRegistration({
+    ...normalized,
+    id: 'reg_http',
+    source_url: 'http://apps.example.com/admin/rewards',
+  });
+  assert.equal(rejectedUrl, null);
+
+  const policy = extensionHost.createAdminUiExtensionFramePolicy();
+  assert.equal(policy.sandbox, 'allow-forms allow-popups allow-same-origin allow-scripts');
+  assert.equal(policy.referrerPolicy, 'no-referrer');
+
+  assert.match(bridgeClient, /@letbuyy\/extension-host/);
+  assert.match(bridgeClient, /listEnabledAdminUiExtensions\(adminExtensions\)/);
+  assert.match(bridgeClient, /sandbox=\{framePolicy\.sandbox\}/);
+  assert.match(bridgeClient, /referrerPolicy=\{framePolicy\.referrerPolicy\}/);
+  assert.match(embeddedAppPage, /appStore\.extensionRegistry/);
+  assert.match(embeddedAppPage, /adminExtensions=\{registry\?\.extensions \|\| \[\]\}/);
 });

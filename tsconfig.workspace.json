@@ -9,6 +9,7 @@
     { "path": "./packages/cms-core" },
     { "path": "./packages/search-core" },
     { "path": "./packages/app-engine" },
+    { "path": "./packages/extension-host" },
     { "path": "./packages/checkout-core" },
     { "path": "./packages/payments" },
     { "path": "./packages/billing-core" },

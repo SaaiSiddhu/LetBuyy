@@ -1,12 +1,19 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { AdminAppBridgeSession } from '@letbuyy/shared-types'
+import {
+    createAdminUiExtensionBridgeContext,
+    createAdminUiExtensionFramePolicy,
+    listEnabledAdminUiExtensions,
+} from '@letbuyy/extension-host'
+import type { AdminUiExtensionHostRegistration } from '@letbuyy/extension-host'
+import type { AdminAppBridgeSession, AppExtensionRegistration } from '@letbuyy/shared-types'
 import { MaterialIcon, useToast } from '@letbuyy/ui'
 
 interface EmbeddedAppBridgeClientProps {
     session: AdminAppBridgeSession
     store: string
+    adminExtensions?: AppExtensionRegistration[]
 }
 
 type BridgeApiRequest = {
@@ -62,23 +69,48 @@ function toastVariant(tone: unknown) {
     return 'info'
 }
 
-export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppBridgeClientProps) {
+export default function EmbeddedAppBridgeClient({ session, store, adminExtensions = [] }: EmbeddedAppBridgeClientProps) {
     const iframeRef = useRef<HTMLIFrameElement>(null)
     const { notify } = useToast()
     const [height, setHeight] = useState(720)
     const [isReady, setReady] = useState(false)
-    const context = useMemo(() => ({
-        store,
-        store_id: session.bridge.store_id,
-        installation_id: session.bridge.installation_id,
-        app_id: session.bridge.app_id,
-        api_base_url: session.bridge.api_base_url,
-        capabilities: session.bridge.capabilities,
-    }), [session.bridge.api_base_url, session.bridge.app_id, session.bridge.capabilities, session.bridge.installation_id, session.bridge.store_id, store])
+    const [selectedExtensionId, setSelectedExtensionId] = useState<string | null>(null)
+    const registeredAdminExtensions = useMemo(
+        () => listEnabledAdminUiExtensions(adminExtensions),
+        [adminExtensions],
+    )
+    const activeExtension = useMemo<AdminUiExtensionHostRegistration | null>(() => {
+        if (registeredAdminExtensions.length === 0) return null
+        return registeredAdminExtensions.find((extension) => extension.id === selectedExtensionId)
+            || registeredAdminExtensions[0]
+    }, [registeredAdminExtensions, selectedExtensionId])
+    const activeEmbed = activeExtension
+        ? {
+            title: activeExtension.title,
+            label: activeExtension.title,
+            url: activeExtension.url,
+            origin: activeExtension.origin,
+            target: activeExtension.target,
+            capabilities: activeExtension.capabilities,
+        }
+        : session.embed
+    const framePolicy = createAdminUiExtensionFramePolicy()
+    const context = useMemo(() => (
+        activeExtension
+            ? createAdminUiExtensionBridgeContext({ session, extension: activeExtension, store })
+            : {
+                store,
+                store_id: session.bridge.store_id,
+                installation_id: session.bridge.installation_id,
+                app_id: session.bridge.app_id,
+                api_base_url: session.bridge.api_base_url,
+                capabilities: session.bridge.capabilities,
+            }
+    ), [activeExtension, session, store])
 
     useEffect(() => {
         function postToApp(message: Record<string, unknown>) {
-            iframeRef.current?.contentWindow?.postMessage(message, session.embed.origin)
+            iframeRef.current?.contentWindow?.postMessage(message, activeEmbed.origin)
         }
 
         async function handleApiRequest(requestId: string | undefined, payload: unknown) {
@@ -141,7 +173,7 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
         }
 
         function onMessage(event: MessageEvent<BridgeMessage>) {
-            if (event.origin !== session.embed.origin) return
+            if (event.origin !== activeEmbed.origin) return
             if (event.source !== iframeRef.current?.contentWindow) return
 
             const message = event.data
@@ -179,14 +211,14 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
 
         window.addEventListener('message', onMessage)
         return () => window.removeEventListener('message', onMessage)
-    }, [context, notify, session.bridge.access_token, session.bridge.api_base_url, session.bridge.store_id, session.bridge.token_type, session.embed.origin, store])
+    }, [activeEmbed.origin, context, notify, session.bridge.access_token, session.bridge.api_base_url, session.bridge.store_id, session.bridge.token_type])
 
     return (
-        <section className="admin-app-embed" aria-label={session.embed.title}>
+        <section className="admin-app-embed" aria-label={activeEmbed.title}>
             <header className="admin-app-embed__header">
                 <div>
-                    <p className="admin-app-embed__eyebrow">Installed app</p>
-                    <h1>{session.embed.title}</h1>
+                    <p className="admin-app-embed__eyebrow">{activeExtension ? 'Admin UI extension' : 'Installed app'}</p>
+                    <h1>{activeEmbed.title}</h1>
                 </div>
                 <div className={`admin-app-embed__status ${isReady ? 'ready' : ''}`}>
                     <MaterialIcon name={isReady ? 'verified' : 'sync'} />
@@ -194,13 +226,39 @@ export default function EmbeddedAppBridgeClient({ session, store }: EmbeddedAppB
                 </div>
             </header>
 
+            {registeredAdminExtensions.length > 0 ? (
+                <div className="mb-[var(--lb-space-4)] flex flex-wrap gap-[var(--lb-space-2)]" role="tablist" aria-label="Admin app extensions">
+                    {registeredAdminExtensions.map((extension) => {
+                        const selected = activeExtension?.id === extension.id
+                        return (
+                            <button
+                                key={extension.id}
+                                type="button"
+                                role="tab"
+                                aria-selected={selected}
+                                className={`inline-flex h-[var(--lb-size-control-md)] items-center gap-[var(--lb-space-2)] rounded-[var(--lb-radius-lg)] border px-[var(--lb-space-3)] text-[var(--lb-font-size-body)] font-[var(--lb-font-weight-medium)] transition-colors duration-[var(--lb-motion-fast)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--lb-color-focus-ring)] ${selected ? 'border-[var(--lb-color-primary)] bg-[var(--lb-color-primary-soft)] text-[var(--lb-color-primary)]' : 'border-[var(--lb-color-border)] bg-[var(--lb-color-surface)] text-[var(--lb-color-text-subdued)] hover:text-[var(--lb-color-text)]'}`}
+                                onClick={() => {
+                                    setReady(false)
+                                    setSelectedExtensionId(extension.id)
+                                }}
+                            >
+                                <MaterialIcon name="view_in_ar" className="h-[var(--lb-size-icon-inline)] w-[var(--lb-size-icon-inline)]" />
+                                {extension.title}
+                            </button>
+                        )
+                    })}
+                </div>
+            ) : null}
+
             <div className="admin-app-embed__frame-shell">
                 <iframe
                     ref={iframeRef}
-                    src={session.embed.url}
-                    title={session.embed.title}
+                    src={activeEmbed.url}
+                    title={activeEmbed.title}
                     className="admin-app-embed__frame"
-                    sandbox="allow-forms allow-popups allow-same-origin allow-scripts"
+                    sandbox={framePolicy.sandbox}
+                    allow={framePolicy.allow}
+                    referrerPolicy={framePolicy.referrerPolicy}
                     height={height}
                 />
             </div>

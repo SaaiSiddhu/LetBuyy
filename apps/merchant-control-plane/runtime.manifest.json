@@ -34,6 +34,7 @@
     "workspacePackages": [
       "@letbuyy/api-client",
       "@letbuyy/auth-core",
+      "@letbuyy/extension-host",
       "@letbuyy/shared-types",
       "@letbuyy/theme-engine",
       "@letbuyy/ui",

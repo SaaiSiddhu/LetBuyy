@@ -12,6 +12,7 @@
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
     "@letbuyy/auth-core": "workspace:*",
+    "@letbuyy/extension-host": "workspace:*",
     "@letbuyy/shared-types": "workspace:*",
     "@letbuyy/theme-engine": "workspace:*",
     "@letbuyy/ui": "workspace:*",
