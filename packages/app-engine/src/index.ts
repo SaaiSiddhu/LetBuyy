@@ -187,6 +187,132 @@ export type AppEnginePlanResult<T> =
   | { ok: true; value: T }
   | { ok: false; message: string };
 
+export const LETBUYY_APP_MANIFEST_SCHEMA_VERSION = '2026-06-05.ws13' as const;
+
+export const LETBUYY_APP_MANIFEST_EXTENSION_SURFACES = [
+  'admin.ui',
+  'checkout.ui',
+  'theme.app_block',
+] as const;
+
+export const LETBUYY_APP_MANIFEST_ADMIN_TARGETS = [
+  'admin.dashboard.widget',
+  'admin.settings.page',
+  'admin.product.action',
+  'admin.order.action',
+] as const;
+
+export const LETBUYY_APP_MANIFEST_CHECKOUT_TARGETS = [
+  'checkout.contact.render-after',
+  'checkout.shipping-options.render-after',
+  'checkout.payment-options.render-after',
+  'checkout.order-summary.render-after',
+  'checkout.thank-you.render-after',
+] as const;
+
+export const LETBUYY_APP_MANIFEST_THEME_TARGETS = [
+  'storefront.home.after-hero',
+  'storefront.product.after-form',
+  'storefront.collection.after-grid',
+  'storefront.footer.before',
+] as const;
+
+export const LETBUYY_APP_FUNCTION_HOOKS = [
+  'cart.discount.calculate',
+  'checkout.shipping.rate',
+  'checkout.payment.customize',
+  'checkout.validation.run',
+] as const;
+
+export const AppManifestExtensionSurfaceSchema = z.enum(LETBUYY_APP_MANIFEST_EXTENSION_SURFACES);
+export const AppManifestAdminTargetSchema = z.enum(LETBUYY_APP_MANIFEST_ADMIN_TARGETS);
+export const AppManifestCheckoutTargetSchema = z.enum(LETBUYY_APP_MANIFEST_CHECKOUT_TARGETS);
+export const AppManifestThemeTargetSchema = z.enum(LETBUYY_APP_MANIFEST_THEME_TARGETS);
+export const AppManifestExtensionRendererSchema = z.enum(['iframe', 'web_component', 'liquid_app_block']);
+export const AppManifestFunctionHookSchema = z.enum(LETBUYY_APP_FUNCTION_HOOKS);
+
+export const AppManifestExtensionSchema = z.object({
+  handle: z.string().min(1).max(80),
+  name: z.string().min(1).max(120),
+  surface: AppManifestExtensionSurfaceSchema,
+  target: z.union([
+    AppManifestAdminTargetSchema,
+    AppManifestCheckoutTargetSchema,
+    AppManifestThemeTargetSchema,
+  ]),
+  renderer: AppManifestExtensionRendererSchema,
+  source: z.object({
+    url: z.string().url().optional(),
+    entrypoint: z.string().min(1).max(200).optional(),
+  }).default({}),
+  scopes: z.array(z.string().min(1).max(80)).max(50).default([]),
+  capabilities: z.array(z.enum(['api.fetch', 'toast', 'resize', 'navigation.redirect'])).max(10).default([]),
+  settings: z.record(z.string(), z.unknown()).default({}),
+}).strict();
+
+export const AppManifestFunctionSchema = z.object({
+  handle: z.string().min(1).max(80),
+  name: z.string().min(1).max(120),
+  hooks: z.array(AppManifestFunctionHookSchema).min(1).max(8),
+  runtime: z.literal('wasm'),
+  wasm: z.object({
+    module_url: z.string().url(),
+    sha256: z.string().regex(/^[a-f0-9]{64}$/i),
+    entrypoint: z.string().min(1).max(120).default('run'),
+  }),
+  timeout_ms: z.number().int().min(1).max(5).default(5),
+  memory_limit_kb: z.number().int().min(64).max(1024).default(512),
+  input_schema: z.record(z.string(), z.unknown()).default({}),
+  output_schema: z.record(z.string(), z.unknown()).default({}),
+  deterministic: z.literal(true).default(true),
+}).strict();
+
+export const LetbuyyAppManifestSchema = z.object({
+  schema_version: z.literal(LETBUYY_APP_MANIFEST_SCHEMA_VERSION),
+  app: z.object({
+    slug: z.string().min(1).max(120),
+    name: z.string().min(1).max(160),
+    version: z.string().min(1).max(60),
+  }).strict(),
+  scopes: z.array(z.string().min(1).max(80)).min(1).max(80),
+  extensions: z.array(AppManifestExtensionSchema).max(100).default([]),
+  functions: z.array(AppManifestFunctionSchema).max(50).default([]),
+}).strict();
+
+export type LetbuyyAppManifestExtensionSurface = z.infer<typeof AppManifestExtensionSurfaceSchema>;
+export type LetbuyyAppManifestExtensionRenderer = z.infer<typeof AppManifestExtensionRendererSchema>;
+export type LetbuyyAppFunctionHook = z.infer<typeof AppManifestFunctionHookSchema>;
+export type LetbuyyAppManifestExtension = z.infer<typeof AppManifestExtensionSchema>;
+export type LetbuyyAppManifestFunction = z.infer<typeof AppManifestFunctionSchema>;
+export type LetbuyyAppManifest = z.infer<typeof LetbuyyAppManifestSchema>;
+
+export interface AppManifestExtensionRegistrationRecord {
+  app_id: string;
+  type: 'settings_page' | 'dashboard_widget' | 'product_action' | 'order_action' | 'checkout_extension' | 'storefront_block';
+  target: string;
+  label: string;
+  config: Record<string, unknown>;
+  sort_order: number;
+}
+
+export interface AppManifestFunctionRegistrationRecord {
+  app_id: string;
+  handle: string;
+  name: string;
+  hooks: LetbuyyAppFunctionHook[];
+  wasm_module_url: string;
+  wasm_sha256: string;
+  timeout_ms: number;
+  memory_limit_kb: number;
+  config: Record<string, unknown>;
+}
+
+export interface AppManifestRegistrationPlan {
+  manifest: LetbuyyAppManifest;
+  extensionRecords: AppManifestExtensionRegistrationRecord[];
+  functionRecords: AppManifestFunctionRegistrationRecord[];
+}
+
 export const DEFAULT_APP_BRIDGE_CAPABILITIES: AppBridgeCapability[] = ['api.fetch', 'toast', 'resize'];
 
 export function appStoreSlugify(value: string): string {
@@ -228,6 +354,387 @@ function parseAppStoreJsonRecordArray(value: unknown): AppEngineJsonRecord[] {
 
 function firstRelatedAppRecord(value: unknown): MarketplaceAppAdminEmbedRecord {
   return parseAppStoreJsonRecordArray(value)[0] || parseAppStoreJsonRecord(value);
+}
+
+function uniqueManifestStrings(values: unknown, fallback: string[] = []): string[] {
+  const normalized = appStoreStringArray(values)
+    .map((value) => value.trim())
+    .filter(Boolean);
+  return [...new Set(normalized.length > 0 ? normalized : fallback)].sort();
+}
+
+function normalizeManifestSurface(value: unknown): LetbuyyAppManifestExtensionSurface | null {
+  const surface = appStoreStringOrNull(value);
+  switch (surface) {
+    case 'admin.ui':
+    case 'admin_ui':
+    case 'settings_page':
+    case 'dashboard_widget':
+    case 'product_action':
+    case 'order_action':
+      return 'admin.ui';
+    case 'checkout.ui':
+    case 'checkout_ui':
+    case 'checkout_extension':
+      return 'checkout.ui';
+    case 'theme.app_block':
+    case 'theme_app_block':
+    case 'storefront_block':
+    case 'app-block':
+    case 'app_block':
+      return 'theme.app_block';
+    default:
+      return null;
+  }
+}
+
+function manifestTargetSet(surface: LetbuyyAppManifestExtensionSurface): Set<string> {
+  switch (surface) {
+    case 'admin.ui':
+      return new Set(LETBUYY_APP_MANIFEST_ADMIN_TARGETS);
+    case 'checkout.ui':
+      return new Set(LETBUYY_APP_MANIFEST_CHECKOUT_TARGETS);
+    case 'theme.app_block':
+      return new Set(LETBUYY_APP_MANIFEST_THEME_TARGETS);
+    default:
+      return new Set();
+  }
+}
+
+function manifestDefaultTarget(surface: LetbuyyAppManifestExtensionSurface): string {
+  switch (surface) {
+    case 'admin.ui':
+      return 'admin.settings.page';
+    case 'checkout.ui':
+      return 'checkout.order-summary.render-after';
+    case 'theme.app_block':
+      return 'storefront.home.after-hero';
+    default:
+      return 'admin.settings.page';
+  }
+}
+
+function normalizeManifestRenderer(
+  value: unknown,
+  surface: LetbuyyAppManifestExtensionSurface,
+): LetbuyyAppManifestExtensionRenderer {
+  const renderer = appStoreStringOrNull(value);
+  if (renderer === 'web_component') return 'web_component';
+  if (renderer === 'liquid_app_block') return 'liquid_app_block';
+  return surface === 'theme.app_block' ? 'liquid_app_block' : 'iframe';
+}
+
+function safeManifestHttpsUrl(value: unknown): string | null {
+  const href = appStoreStringOrNull(value);
+  if (!href) return null;
+
+  try {
+    const parsed = new URL(href);
+    return parsed.protocol === 'https:' ? parsed.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function normalizeManifestExtension(
+  value: unknown,
+  inheritedScopes: string[],
+  index: number,
+): AppEnginePlanResult<LetbuyyAppManifestExtension> {
+  const raw = parseAppStoreJsonRecord(value);
+  const surface = normalizeManifestSurface(raw.surface || raw.type);
+  if (!surface) return { ok: false, message: `extensions[${index}].surface is unsupported` };
+
+  const handle = appStoreSlugify(appStoreStringOrNull(raw.handle || raw.uid || raw.id) || '');
+  if (!handle) return { ok: false, message: `extensions[${index}].handle is required` };
+
+  const source = parseAppStoreJsonRecord(raw.source);
+  const sourceUrl = safeManifestHttpsUrl(source.url || raw.url || raw.embed_url || raw.iframe_url || raw.target);
+  const renderer = normalizeManifestRenderer(raw.renderer || raw.render_mode || raw.renderMode, surface);
+  const requiresSourceUrl = surface !== 'theme.app_block' || renderer === 'iframe' || renderer === 'web_component';
+  if (requiresSourceUrl && !sourceUrl) {
+    return { ok: false, message: `extensions[${index}].source.url must be HTTPS` };
+  }
+
+  const rawTarget = appStoreStringOrNull(raw.target) || manifestDefaultTarget(surface);
+  const target = manifestTargetSet(surface).has(rawTarget) ? rawTarget : manifestDefaultTarget(surface);
+  const capabilities = normalizeAppBridgeCapabilities(raw.capabilities);
+
+  return {
+    ok: true,
+    value: {
+      handle,
+      name: appStoreStringOrNull(raw.name || raw.label || raw.title) || handle,
+      surface,
+      target: target as LetbuyyAppManifestExtension['target'],
+      renderer,
+      source: {
+        ...(sourceUrl ? { url: sourceUrl } : {}),
+        ...(appStoreStringOrNull(source.entrypoint || raw.entrypoint) ? {
+          entrypoint: appStoreStringOrNull(source.entrypoint || raw.entrypoint) || undefined,
+        } : {}),
+      },
+      scopes: uniqueManifestStrings(raw.scopes, inheritedScopes),
+      capabilities,
+      settings: parseAppStoreJsonRecord(raw.settings || raw.config),
+    },
+  };
+}
+
+function normalizeFunctionHooks(value: unknown): LetbuyyAppFunctionHook[] {
+  const rawHooks = Array.isArray(value) ? value : [value];
+  const allowed = new Set<string>(LETBUYY_APP_FUNCTION_HOOKS);
+  return [...new Set(rawHooks
+    .map((hook) => appStoreStringOrNull(hook))
+    .filter((hook): hook is string => typeof hook === 'string' && allowed.has(hook)))] as LetbuyyAppFunctionHook[];
+}
+
+function normalizeManifestFunction(
+  value: unknown,
+  index: number,
+): AppEnginePlanResult<LetbuyyAppManifestFunction> {
+  const raw = parseAppStoreJsonRecord(value);
+  const wasm = parseAppStoreJsonRecord(raw.wasm || raw.module);
+  const handle = appStoreSlugify(appStoreStringOrNull(raw.handle || raw.uid || raw.id) || '');
+  if (!handle) return { ok: false, message: `functions[${index}].handle is required` };
+
+  const hooks = normalizeFunctionHooks(raw.hooks || raw.hook);
+  if (hooks.length === 0) return { ok: false, message: `functions[${index}].hooks must include a supported hook` };
+
+  const moduleUrl = safeManifestHttpsUrl(wasm.module_url || wasm.moduleUrl || wasm.url || raw.module_url || raw.moduleUrl);
+  if (!moduleUrl) return { ok: false, message: `functions[${index}].wasm.module_url must be HTTPS` };
+
+  const sha256 = appStoreStringOrNull(wasm.sha256 || raw.sha256);
+  if (!sha256 || !/^[a-f0-9]{64}$/i.test(sha256)) {
+    return { ok: false, message: `functions[${index}].wasm.sha256 must be a 64-character hex digest` };
+  }
+
+  const timeout = Math.trunc(Number(raw.timeout_ms || raw.timeoutMs || 5));
+  const memory = Math.trunc(Number(raw.memory_limit_kb || raw.memoryLimitKb || 512));
+
+  return {
+    ok: true,
+    value: {
+      handle,
+      name: appStoreStringOrNull(raw.name || raw.title) || handle,
+      hooks,
+      runtime: 'wasm',
+      wasm: {
+        module_url: moduleUrl,
+        sha256: sha256.toLowerCase(),
+        entrypoint: appStoreStringOrNull(wasm.entrypoint || raw.entrypoint) || 'run',
+      },
+      timeout_ms: Math.min(Math.max(Number.isFinite(timeout) ? timeout : 5, 1), 5),
+      memory_limit_kb: Math.min(Math.max(Number.isFinite(memory) ? memory : 512, 64), 1024),
+      input_schema: parseAppStoreJsonRecord(raw.input_schema || raw.inputSchema),
+      output_schema: parseAppStoreJsonRecord(raw.output_schema || raw.outputSchema),
+      deterministic: true,
+    },
+  };
+}
+
+export function normalizeLetbuyyAppManifest(input: unknown): AppEnginePlanResult<LetbuyyAppManifest> {
+  const raw = parseAppStoreJsonRecord(input);
+  const app = parseAppStoreJsonRecord(raw.app);
+  const schemaVersion = appStoreStringOrNull(raw.schema_version || raw.schemaVersion);
+  const errors: string[] = [];
+
+  if (schemaVersion !== LETBUYY_APP_MANIFEST_SCHEMA_VERSION) {
+    errors.push(`schema_version must be ${LETBUYY_APP_MANIFEST_SCHEMA_VERSION}`);
+  }
+
+  const slug = appStoreSlugify(appStoreStringOrNull(app.slug || raw.slug) || '');
+  const name = appStoreStringOrNull(app.name || raw.name);
+  const version = appStoreStringOrNull(app.version || raw.version);
+  if (!slug) errors.push('app.slug is required');
+  if (!name) errors.push('app.name is required');
+  if (!version) errors.push('app.version is required');
+
+  const scopes = uniqueManifestStrings(raw.scopes || app.scopes);
+  if (scopes.length === 0) errors.push('scopes must declare at least one API scope');
+
+  const extensionValues = Array.isArray(raw.extensions)
+    ? raw.extensions
+    : Object.values(parseAppStoreJsonRecord(raw.extensions));
+  const extensions: LetbuyyAppManifestExtension[] = [];
+  extensionValues.forEach((extension, index) => {
+    const normalized = normalizeManifestExtension(extension, scopes, index);
+    if (normalized.ok) extensions.push(normalized.value);
+    else errors.push(normalized.message);
+  });
+
+  const functionValues = Array.isArray(raw.functions)
+    ? raw.functions
+    : Object.values(parseAppStoreJsonRecord(raw.functions));
+  const functions: LetbuyyAppManifestFunction[] = [];
+  functionValues.forEach((fn, index) => {
+    const normalized = normalizeManifestFunction(fn, index);
+    if (normalized.ok) functions.push(normalized.value);
+    else errors.push(normalized.message);
+  });
+
+  if (extensions.length === 0 && functions.length === 0) {
+    errors.push('manifest must declare at least one extension or function');
+  }
+
+  if (errors.length > 0) {
+    return { ok: false, message: errors.join('; ') };
+  }
+
+  return {
+    ok: true,
+    value: {
+      schema_version: LETBUYY_APP_MANIFEST_SCHEMA_VERSION,
+      app: {
+        slug,
+        name: name || slug,
+        version: version || '0.0.0',
+      },
+      scopes,
+      extensions,
+      functions,
+    },
+  };
+}
+
+function appExtensionTypeForManifestExtension(
+  extension: LetbuyyAppManifestExtension,
+): AppManifestExtensionRegistrationRecord['type'] {
+  if (extension.surface === 'checkout.ui') return 'checkout_extension';
+  if (extension.surface === 'theme.app_block') return 'storefront_block';
+
+  switch (extension.target) {
+    case 'admin.dashboard.widget':
+      return 'dashboard_widget';
+    case 'admin.product.action':
+      return 'product_action';
+    case 'admin.order.action':
+      return 'order_action';
+    case 'admin.settings.page':
+    default:
+      return 'settings_page';
+  }
+}
+
+export function planAppManifestRegistration(
+  appId: string,
+  manifestInput: unknown,
+): AppEnginePlanResult<AppManifestRegistrationPlan> {
+  const manifest = normalizeLetbuyyAppManifest(manifestInput);
+  if (!manifest.ok) return { ok: false, message: manifest.message };
+
+  return {
+    ok: true,
+    value: {
+      manifest: manifest.value,
+      extensionRecords: manifest.value.extensions.map((extension: LetbuyyAppManifestExtension, index: number) => ({
+        app_id: appId,
+        type: appExtensionTypeForManifestExtension(extension),
+        target: extension.source.url || extension.target,
+        label: extension.name,
+        sort_order: index,
+        config: {
+          manifest_schema_version: manifest.value.schema_version,
+          manifest_app_slug: manifest.value.app.slug,
+          handle: extension.handle,
+          surface: extension.surface,
+          target: extension.target,
+          renderer: extension.renderer,
+          source: extension.source,
+          scopes: extension.scopes,
+          capabilities: extension.capabilities,
+          settings: extension.settings,
+        },
+      })),
+      functionRecords: manifest.value.functions.map((fn: LetbuyyAppManifestFunction) => ({
+        app_id: appId,
+        handle: fn.handle,
+        name: fn.name,
+        hooks: fn.hooks,
+        wasm_module_url: fn.wasm.module_url,
+        wasm_sha256: fn.wasm.sha256,
+        timeout_ms: fn.timeout_ms,
+        memory_limit_kb: fn.memory_limit_kb,
+        config: {
+          manifest_schema_version: manifest.value.schema_version,
+          manifest_app_slug: manifest.value.app.slug,
+          runtime: fn.runtime,
+          wasm: fn.wasm,
+          input_schema: fn.input_schema,
+          output_schema: fn.output_schema,
+          deterministic: fn.deterministic,
+        },
+      })),
+    },
+  };
+}
+
+export function createExampleLetbuyyAppManifest(): LetbuyyAppManifest {
+  return {
+    schema_version: LETBUYY_APP_MANIFEST_SCHEMA_VERSION,
+    app: {
+      slug: 'letbuyy-loyalty',
+      name: 'LetBuyy Loyalty',
+      version: '1.0.0',
+    },
+    scopes: ['read_products', 'read_orders', 'write_discounts'],
+    extensions: [
+      {
+        handle: 'admin-rewards-panel',
+        name: 'Rewards panel',
+        surface: 'admin.ui',
+        target: 'admin.dashboard.widget',
+        renderer: 'iframe',
+        source: { url: 'https://apps.example.com/letbuyy-loyalty/admin' },
+        scopes: ['read_products', 'read_orders'],
+        capabilities: ['api.fetch', 'toast', 'resize'],
+        settings: {},
+      },
+      {
+        handle: 'checkout-rewards-banner',
+        name: 'Checkout rewards banner',
+        surface: 'checkout.ui',
+        target: 'checkout.order-summary.render-after',
+        renderer: 'iframe',
+        source: { url: 'https://apps.example.com/letbuyy-loyalty/checkout' },
+        scopes: ['read_orders'],
+        capabilities: ['api.fetch', 'resize'],
+        settings: {},
+      },
+      {
+        handle: 'loyalty-rewards-card',
+        name: 'Loyalty rewards card',
+        surface: 'theme.app_block',
+        target: 'storefront.home.after-hero',
+        renderer: 'liquid_app_block',
+        source: { entrypoint: 'blocks/loyalty-rewards-card.liquid' },
+        scopes: ['read_products'],
+        capabilities: [],
+        settings: {
+          heading: 'Earn rewards on every order',
+          body: 'Logged-in shoppers can see their points from the loyalty app block.',
+        },
+      },
+    ],
+    functions: [
+      {
+        handle: 'loyalty-discount',
+        name: 'Loyalty discount',
+        hooks: ['cart.discount.calculate'],
+        runtime: 'wasm',
+        wasm: {
+          module_url: 'https://apps.example.com/letbuyy-loyalty/functions/discount.wasm',
+          sha256: '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+          entrypoint: 'run',
+        },
+        timeout_ms: 5,
+        memory_limit_kb: 512,
+        input_schema: { version: '2026-06-05.ws13.discount-input' },
+        output_schema: { version: '2026-06-05.ws13.discount-output' },
+        deterministic: true,
+      },
+    ],
+  };
 }
 
 function safeAppAdminEmbedUrl(value: unknown): URL | null {
