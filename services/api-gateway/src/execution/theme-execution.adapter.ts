@@ -4,6 +4,7 @@ import {
     asThemeRecord as asRecord,
     collectThemeTemplateValidationIssues,
     hasRenderableThemeTemplate,
+    LiquidThemePackageBundleSchema,
     mergeThemeIdentity,
     resolveRenderableThemeTemplateConfig,
 } from '@letbuyy/theme-engine';
@@ -171,6 +172,12 @@ async function sha256Hex(input: string): Promise<string> {
     return Array.from(new Uint8Array(digest))
         .map((byte) => byte.toString(16).padStart(2, '0'))
         .join('');
+}
+
+function resolveLiquidBundleArtifact(releaseConfig: DbRecord): DbRecord | null {
+    const candidate = asRecord(releaseConfig).liquidBundle;
+    const result = LiquidThemePackageBundleSchema.safeParse(candidate);
+    return result.success ? result.data as unknown as DbRecord : null;
 }
 
 export class ThemeExecutionAdapter {
@@ -545,6 +552,13 @@ export class ThemeExecutionAdapter {
         releaseVersion: number
     ): DbRecord {
         const runtime = input.runtime || null;
+        const liquidBundle = resolveLiquidBundleArtifact(input.releaseConfig);
+        const rendererManifest = asRecord(runtime?.rendererManifest);
+        const rendererEngine = liquidBundle
+            ? 'liquid'
+            : typeof rendererManifest.engine === 'string'
+                ? rendererManifest.engine
+                : 'json-contract';
         const cacheTags = [
             `store:${input.storeId}`,
             `theme:${input.themeId}`,
@@ -563,7 +577,13 @@ export class ThemeExecutionAdapter {
                 theme_package_version_id: runtime?.themePackageVersionId || null,
                 schema_manifest_version: runtime?.schemaManifestVersion || '1.0.0',
                 renderer_version: runtime?.rendererVersion || '1.0.0',
+                renderer_engine: rendererEngine,
+                liquid_ready: Boolean(liquidBundle) || rendererManifest.liquid_ready === true,
                 approved_renderer_keys: runtime?.approvedRendererKeys || [],
+                ...(liquidBundle ? {
+                    liquidBundle,
+                    themeBundle: liquidBundle,
+                } : {}),
             },
             template_snapshot: input.releaseConfig,
             settings_snapshot: asRecord(input.releaseConfig.themeSettings),

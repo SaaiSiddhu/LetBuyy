@@ -463,7 +463,7 @@ router.post('/:slug/releases/:releaseId/rollback', validate('json', RollbackThem
     return c.json(success(await service.rollbackRelease(slug, releaseId, body, customUser.id, getRequestId(c))));
 });
 
-// POST /themes/packages/upload — Validate and persist a portable JSON-contract theme bundle
+// POST /themes/packages/upload — Validate and persist a portable theme bundle
 router.post('/packages/upload', validate('json', UploadThemePackageSchema), async (c) => {
     const auth = c.get('auth');
     const body = c.get('validatedBody') as UploadThemePackageInput;
@@ -505,7 +505,7 @@ router.post('/packages/upload', validate('json', UploadThemePackageSchema), asyn
                 {
                     name: 'bundle_schema_validation',
                     status: 'passed',
-                    message: 'Theme bundle validated against the JSON-contract schema registry.',
+                    message: 'Theme bundle validated against the portable JSON-contract/Liquid schema registry.',
                 },
                 {
                     name: 'theme_package_persistence',

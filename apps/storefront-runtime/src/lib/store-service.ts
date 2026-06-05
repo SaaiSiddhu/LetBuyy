@@ -1,6 +1,6 @@
 import type { StoreModel, SiteType, PaymentGateway, NavPage, StoreNavigation } from '@letbuyy/tenant-core';
 import { normalizeAppBlockInstances, type AppBlockInstance } from '@letbuyy/app-engine';
-import { DEFAULT_THEME_SETTINGS } from '@letbuyy/theme-engine';
+import { DEFAULT_THEME_SETTINGS, LiquidThemePackageBundleSchema } from '@letbuyy/theme-engine';
 import type { ThemeSettings, SectionModel, SectionType, BlockModel, StorefrontSectionGroupConfig, StorefrontTemplateConfig } from '@letbuyy/theme-engine';
 import { createStorefrontApiClient, storefrontReadInit } from './api/client';
 import {
@@ -658,6 +658,8 @@ function mapSupabaseToStore(
     const normalizedAppBlocks = normalizeAppBlockInstances(appBlocks);
     const sections = injectAppBlocksIntoSections(sectionArray, appBlocks);
     templates = injectAppBlocksIntoTemplates(templates, appBlocks);
+    const liquidBundleResult = LiquidThemePackageBundleSchema.safeParse(templateConfig.liquidBundle);
+    const liquidBundle = liquidBundleResult.success ? liquidBundleResult.data : undefined;
 
     // Parse payment gateways from store settings
     const paymentSettings = asRecord(data.payment_settings);
@@ -701,6 +703,7 @@ function mapSupabaseToStore(
             sectionGroups: Object.keys(sectionGroups).length > 0 ? sectionGroups : undefined,
             templates,
             appBlocks: normalizedAppBlocks,
+            liquidBundle,
             releaseManifest,
         },
     };

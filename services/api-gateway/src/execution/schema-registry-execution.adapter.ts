@@ -8,9 +8,10 @@ import {
     type ThemeSettingsSchema,
 } from '@letbuyy/api-types';
 import {
-    buildThemePackagePersistencePayload,
-    parseThemePackageBundle,
-    type ThemePackageBundle,
+    buildPortableThemePackagePersistencePayload,
+    parsePortableThemePackageBundle,
+    type LiquidThemePackageBundle,
+    type PortableThemePackageBundle,
 } from '@letbuyy/theme-engine';
 
 type DbRecord = Record<string, unknown>;
@@ -156,14 +157,20 @@ function readStringSetting(settings: DbRecord, keys: string[], fallback: string)
     return fallback;
 }
 
-function buildBundleTemplateConfig(bundle: ThemePackageBundle): DbRecord {
+function isLiquidBundle(bundle: PortableThemePackageBundle): bundle is LiquidThemePackageBundle {
+    return bundle.renderer.engine === 'liquid';
+}
+
+function buildBundleTemplateConfig(bundle: PortableThemePackageBundle): DbRecord {
     const settingsData = asRecord(bundle.config.settings_data);
     const currentSettings = asRecord(settingsData.current);
+    const liquid = isLiquidBundle(bundle);
 
     return {
         themeId: bundle.package.slug,
         schema_version: bundle.schema_version,
         engineVersion: bundle.renderer.renderer_version,
+        rendererEngine: liquid ? 'liquid' : 'json-contract',
         config: bundle.config,
         settings_data: bundle.config.settings_data,
         themeSettings: currentSettings,
@@ -172,14 +179,21 @@ function buildBundleTemplateConfig(bundle: ThemePackageBundle): DbRecord {
         templates: bundle.templates,
         locales: bundle.locales,
         renderer: bundle.renderer,
+        ...(liquid ? {
+            layout: bundle.layout,
+            liquidBundle: bundle,
+        } : {}),
     };
 }
 
-function buildBundleCatalogConfig(bundle: ThemePackageBundle): DbRecord {
+function buildBundleCatalogConfig(bundle: PortableThemePackageBundle): DbRecord {
     const settings = asRecord(bundle.config.settings_data.current);
+    const liquid = isLiquidBundle(bundle);
 
     return {
         theme_bundle: true,
+        theme_bundle_engine: liquid ? 'liquid' : 'json-contract',
+        liquid_ready: liquid,
         colors: {
             primary: readStringSetting(settings, ['primaryColor', 'primary_color', 'primary'], '#00B3B3'),
             secondary: readStringSetting(settings, ['secondaryColor', 'secondary_color', 'secondary'], '#008080'),
@@ -205,10 +219,11 @@ function buildBundleCatalogConfig(bundle: ThemePackageBundle): DbRecord {
         default_template: buildBundleTemplateConfig(bundle),
         renderer_manifest: bundle.renderer,
         locales: bundle.locales,
+        ...(liquid ? { liquidBundle: bundle } : {}),
     };
 }
 
-function themePricingType(pricingType: ThemePackageBundle['package']['pricing_type']): 'free' | 'one_time' | 'subscription' {
+function themePricingType(pricingType: PortableThemePackageBundle['package']['pricing_type']): 'free' | 'one_time' | 'subscription' {
     if (pricingType === 'subscription') return 'subscription';
     if (pricingType === 'paid') return 'one_time';
     return 'free';
@@ -232,8 +247,8 @@ export class SchemaRegistryExecutionAdapter {
         actorId: string,
         options: { publicationMode?: 'marketplace' | 'private_install' } = {}
     ) {
-        const bundle = parseThemePackageBundle(input);
-        const payload = buildThemePackagePersistencePayload(bundle);
+        const bundle = parsePortableThemePackageBundle(input);
+        const payload = buildPortableThemePackagePersistencePayload(bundle);
         const now = new Date().toISOString();
         const templateConfig = buildBundleTemplateConfig(bundle);
         const catalogConfig = buildBundleCatalogConfig(bundle);
@@ -278,12 +293,18 @@ export class SchemaRegistryExecutionAdapter {
                     industry: payload.themePackage.site_types,
                     supported_site_types: payload.themePackage.site_types,
                     supported_platforms: ['letbuyy'],
-                    tags: Array.from(new Set(['json-contract', 'uploaded', ...payload.themePackage.site_types])),
-                    features: [
-                        `${Object.keys(bundle.sections).length} sections`,
-                        'Schema-driven settings',
-                        'Portable theme bundle',
-                    ],
+                    tags: Array.from(new Set([bundle.renderer.engine, 'uploaded', ...payload.themePackage.site_types])),
+                    features: isLiquidBundle(bundle)
+                        ? [
+                            `${Object.keys(bundle.sections).length} Liquid section files`,
+                            'Liquid sections and blocks',
+                            'Portable theme bundle',
+                        ]
+                        : [
+                            `${Object.keys(bundle.sections).length} sections`,
+                            'Schema-driven settings',
+                            'Portable theme bundle',
+                        ],
                     updated_at: now,
                 },
                 { onConflict: 'slug' }

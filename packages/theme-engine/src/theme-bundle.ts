@@ -507,14 +507,11 @@ export const PortableThemePackageBundleSchema = z.union([
 ]);
 
 export const UploadThemePackageSchema = z.object({
-  bundle: ThemePackageBundleSchema,
-  submission_mode: z.enum(['marketplace', 'private_install']).default('marketplace'),
-}).strict();
-
-export const UploadPortableThemePackageSchema = z.object({
   bundle: PortableThemePackageBundleSchema,
   submission_mode: z.enum(['marketplace', 'private_install']).default('marketplace'),
 }).strict();
+
+export const UploadPortableThemePackageSchema = UploadThemePackageSchema;
 
 export type ThemeBundle = z.infer<typeof ThemePackageBundleSchema>;
 export type ThemePackageBundle = z.infer<typeof ThemePackageBundleSchema>;
@@ -705,6 +702,125 @@ export interface ThemeBundleValidationResult {
   issues: string[];
 }
 
+type LiquidSettingField = z.infer<typeof ThemeLiquidSchemaSettingFieldSchema>;
+type LiquidSectionBlockDefinition = z.infer<typeof ThemeLiquidSectionInlineBlockSchema> | z.infer<typeof ThemeLiquidAppBlockSchema>;
+
+function isLiquidThemePackageBundle(input: PortableThemePackageBundle): input is LiquidThemePackageBundle {
+  return input.renderer.engine === 'liquid';
+}
+
+function liquidSettingsToFieldRecord(settings: LiquidSettingField[]): Record<string, Record<string, unknown>> {
+  return settings.reduce<Record<string, Record<string, unknown>>>((fields, setting) => {
+    const { id, ...field } = setting;
+    fields[id] = field;
+    return fields;
+  }, {});
+}
+
+function liquidInlineBlockDefinitionToSchema(
+  block: LiquidSectionBlockDefinition,
+): { name: string; fields: Record<string, Record<string, unknown>> } {
+  if (!('settings' in block)) {
+    return {
+      name: block.name,
+      fields: {
+        extension_handle: {
+          type: 'text',
+          label: 'Extension handle',
+          maxLength: 120,
+        },
+        slot: {
+          type: 'text',
+          label: 'Slot',
+          maxLength: 160,
+        },
+      },
+    };
+  }
+
+  return {
+    name: block.name,
+    fields: liquidSettingsToFieldRecord(block.settings),
+  };
+}
+
+function liquidReusableBlockDefinitionToSchema(
+  block: ThemeLiquidBlockDefinition,
+): { name: string; fields: Record<string, Record<string, unknown>> } {
+  return {
+    name: block.name,
+    fields: liquidSettingsToFieldRecord(block.settings),
+  };
+}
+
+function buildLiquidRuntimeSectionSchemas(bundle: LiquidThemePackageBundle): Record<string, Record<string, unknown>> {
+  const reusableBlockSchemas = Object.entries(bundle.blocks).reduce<Record<string, { name: string; fields: Record<string, Record<string, unknown>> }>>(
+      (schemas, [blockType, block]) => {
+      schemas[blockType] = liquidReusableBlockDefinitionToSchema(block.schema);
+      return schemas;
+    },
+    {},
+  );
+
+  return Object.entries(bundle.sections).reduce<Record<string, Record<string, unknown>>>((schemas, [sectionType, sectionFile]) => {
+    const inlineBlockSchemas = sectionFile.schema.blocks.reduce<Record<string, { name: string; fields: Record<string, Record<string, unknown>> }>>(
+      (blocks, block) => {
+        blocks[block.type] = liquidInlineBlockDefinitionToSchema(block);
+        return blocks;
+      },
+      {},
+    );
+
+    schemas[sectionType] = {
+      name: sectionFile.schema.name,
+      type: sectionType,
+      description: `Liquid section file ${sectionFile.path}`,
+      defaults: sectionFile.schema.presets[0]?.settings || {},
+      presets: sectionFile.schema.presets.map((preset) => ({
+        name: preset.name,
+        settings: preset.settings,
+      })),
+      renderer_key: `liquid.section.${sectionType}`,
+      settings_schema: liquidSettingsToFieldRecord(sectionFile.schema.settings),
+      blocks_schema: {
+        ...reusableBlockSchemas,
+        ...inlineBlockSchemas,
+      },
+      source_path: sectionFile.path,
+    };
+    return schemas;
+  }, {});
+}
+
+function buildLiquidRuntimeBlockSchemas(bundle: LiquidThemePackageBundle): Record<string, Record<string, unknown>> {
+  const blockSchemas = Object.entries(bundle.blocks).reduce<Record<string, Record<string, unknown>>>((schemas, [blockType, blockFile]) => {
+    schemas[blockType] = {
+      name: blockFile.schema.name,
+      fields: liquidSettingsToFieldRecord(blockFile.schema.settings),
+      source_path: blockFile.path,
+    };
+    return schemas;
+  }, {});
+
+  blockSchemas['@app'] = {
+    name: 'App block',
+    fields: {
+      extension_handle: {
+        type: 'text',
+        label: 'Extension handle',
+        maxLength: 120,
+      },
+      slot: {
+        type: 'text',
+        label: 'Slot',
+        maxLength: 160,
+      },
+    },
+  };
+
+  return blockSchemas;
+}
+
 export function parseThemeBundle(input: unknown): ThemeBundle {
   return ThemePackageBundleSchema.parse(input);
 }
@@ -848,6 +964,98 @@ export function buildThemePackagePersistencePayload(input: ThemePackageBundle): 
       performance_budget: {},
     },
   };
+}
+
+export function buildLiquidThemePackagePersistencePayload(input: LiquidThemePackageBundle): ThemePackagePersistencePayload {
+  const bundle = parseLiquidThemePackageBundle(input);
+  const runtimeSectionSchemas = buildLiquidRuntimeSectionSchemas(bundle);
+  const runtimeBlockSchemas = buildLiquidRuntimeBlockSchemas(bundle);
+
+  return {
+    themePackage: {
+      slug: bundle.package.slug,
+      name: bundle.package.name,
+      description: bundle.package.description,
+      author_name: bundle.package.author_name,
+      site_types: bundle.package.site_types,
+      status: bundle.package.status,
+      pricing_type: bundle.package.pricing_type,
+      price: bundle.package.price,
+      currency: bundle.package.currency,
+      marketplace_metadata: {
+        bundle_schema_version: bundle.schema_version,
+        bundle_paths: LIQUID_THEME_BUNDLE_PATHS,
+        engine: bundle.renderer.engine,
+        liquid_ready: true,
+      },
+    },
+    themePackageVersion: {
+      version: bundle.package.version,
+      version_number: bundle.package.version_number,
+      release_status: bundle.package.release_status,
+      renderer_version: bundle.renderer.renderer_version,
+      schema_version: bundle.schema_version,
+      compatibility_range: bundle.package.compatibility_range,
+      package_manifest: {
+        bundle_schema_version: bundle.schema_version,
+        package: bundle.package,
+        layout: bundle.layout,
+        config: bundle.config,
+        templates: bundle.templates,
+        sections: bundle.sections,
+        blocks: bundle.blocks,
+        locales: bundle.locales,
+        renderer: bundle.renderer,
+        liquidBundle: bundle,
+        themeBundle: bundle,
+        bundle_paths: LIQUID_THEME_BUNDLE_PATHS,
+      },
+      checksum: bundle.package.checksum,
+    },
+    schemaManifest: {
+      manifest_version: bundle.schema_version,
+      schema_manifest: {
+        bundle_schema_version: bundle.schema_version,
+        engine: bundle.renderer.engine,
+        layout_path: LIQUID_THEME_BUNDLE_PATHS.layout,
+        settings_path: LIQUID_THEME_BUNDLE_PATHS.settingsSchema,
+        settings_data_path: LIQUID_THEME_BUNDLE_PATHS.settingsData,
+        templates_path: LIQUID_THEME_BUNDLE_PATHS.templates,
+        sections_path: LIQUID_THEME_BUNDLE_PATHS.sections,
+        blocks_path: LIQUID_THEME_BUNDLE_PATHS.blocks,
+        locales_path: LIQUID_THEME_BUNDLE_PATHS.locales,
+      },
+      section_schemas: runtimeSectionSchemas,
+      block_schemas: runtimeBlockSchemas,
+      settings_schema: bundle.config.settings_schema,
+      template_schema: bundle.templates,
+      layout_schema: bundle.layout,
+      validation_rules: {
+        liquid_sections_require_schema_tags: true,
+        template_sections_require_liquid_files: true,
+        template_blocks_require_allowed_liquid_blocks: true,
+        app_blocks_require_section_app_block_support: true,
+      },
+    },
+    rendererManifest: {
+      renderer_manifest: bundle.renderer,
+      approved_renderer_keys: [
+        'liquid',
+        ...Object.keys(bundle.sections).map((sectionType) => `liquid.section.${sectionType}`),
+        ...Object.keys(bundle.blocks).map((blockType) => `liquid.block.${blockType}`),
+        'liquid.app-block',
+      ],
+      asset_manifest: bundle.renderer.assets,
+      performance_budget: {},
+    },
+  };
+}
+
+export function buildPortableThemePackagePersistencePayload(input: PortableThemePackageBundle): ThemePackagePersistencePayload {
+  const bundle = parsePortableThemePackageBundle(input);
+  return isLiquidThemePackageBundle(bundle)
+    ? buildLiquidThemePackagePersistencePayload(bundle)
+    : buildThemePackagePersistencePayload(bundle);
 }
 
 export function createMinimalThemeBundleFixture(): ThemeBundle {
