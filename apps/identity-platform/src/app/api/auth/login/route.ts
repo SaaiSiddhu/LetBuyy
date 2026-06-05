@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest, getIdentityApiFailureMessage } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { verifyTurnstileToken } from '@/lib/turnstile'
-import { verifyPassword } from '@/lib/auth/password'
 import { createSession } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice, parseDeviceName } from '@/lib/auth/device'
@@ -47,15 +46,14 @@ export async function POST(request: NextRequest) {
 
         const normalizedEmail = email.toLowerCase().trim()
 
-        const userResponse = await identityApiRequest('/auth/custom/users/by-email', {
+        const userResponse = await identityApiRequest('/auth/custom/users/authenticate', {
             method: 'POST',
-            body: JSON.stringify({ email: normalizedEmail }),
+            body: JSON.stringify({ email: normalizedEmail, password }),
         })
         const userPayload = await userResponse.json().catch(() => null) as {
             data?: {
                 id: string
                 email: string
-                password_hash: string | null
                 email_verified: boolean
                 full_name: string | null
                 avatar_url: string | null
@@ -67,23 +65,18 @@ export async function POST(request: NextRequest) {
         } | null
 
         if (!userResponse.ok) {
-            const message = getIdentityApiFailureMessage(userPayload, 'Auth service is unavailable. Please try again.')
+            const fallback = userResponse.status === 401
+                ? 'Invalid email or password'
+                : userResponse.status === 403
+                    ? 'Please verify your email first'
+                    : 'Auth service is unavailable. Please try again.'
+            const message = getIdentityApiFailureMessage(userPayload, fallback)
             return NextResponse.json({ error: message }, { status: userResponse.status >= 500 ? 503 : userResponse.status })
         }
 
         const user = userPayload?.data || null
 
-        if (!user || !user.password_hash) {
-            return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
-        }
-
-        if (!user.email_verified) {
-            return NextResponse.json({ error: 'Please verify your email first' }, { status: 403 })
-        }
-
-        // Verify password
-        const isValid = await verifyPassword(password, user.password_hash)
-        if (!isValid) {
+        if (!user) {
             return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
         }
 

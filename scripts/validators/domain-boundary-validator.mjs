@@ -237,7 +237,7 @@ for (const file of appApiAndLibFiles) {
   const content = readFile(file);
   reporter.assert(!directDbOrProviderMutationPattern.test(content), `App-local API/lib file must not access databases or provider mutation SDKs directly: ${file}`);
   reporter.assert(!appLocalCommerceLogicPattern.test(content), `App-local API/lib file must not own commerce/payment/customer mutation logic: ${file}`);
-  reporter.assert(!appLocalCredentialStoragePattern.test(content) || isAuthOwnedLocalFile(file), `App-local API/lib file must not handle password hashes outside auth-owned routes: ${file}`);
+  reporter.assert(!appLocalCredentialStoragePattern.test(content), `App-local API/lib file must not handle password hashes in app-local API/lib files: ${file}`);
   reporter.assert(!appLocalProviderSignaturePattern.test(content) || isAuthOwnedLocalFile(file), `App-local API/lib file must not verify provider signatures outside auth-owned routes: ${file}`);
 }
 

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { identityApiRequest } from '@/lib/api/client'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { validateToken } from '@/lib/auth/tokens'
-import { hashPassword, validatePasswordStrength } from '@/lib/auth/password'
+import { validatePasswordStrength } from '@/lib/auth/password'
 import { createSession, destroyAllUserSessions } from '@/lib/auth/session'
 import { setSessionCookie, addAccount } from '@/lib/auth/cookies'
 import { generateDeviceFingerprint, getOrCreateDevice } from '@/lib/auth/device'
@@ -70,14 +70,12 @@ export async function POST(request: NextRequest) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 })
         }
 
-        // Hash and update password
-        const passwordHash = await hashPassword(password)
         const passwordResponse = await identityApiRequest('/auth/custom/users/set-password', {
             method: 'POST',
             body: JSON.stringify({
                 user_id: user.id,
                 email: user.email,
-                password_hash: passwordHash,
+                password,
             }),
         })
         if (!passwordResponse.ok) {

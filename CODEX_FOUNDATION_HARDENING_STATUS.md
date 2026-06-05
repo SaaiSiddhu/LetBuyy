@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F3.7 demo-store isolation and theme table honesty complete locally; continue F4 security/auth hardening.
-- Findings resolved: 21/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
-- Current governance gate state: green after F3.7 (`pnpm run validate:governance` -> 136/136 PASS).
+- Phase: F4.1 single merchant credential authority complete locally; continue F4.2 ops-plane identity and timing-safe compares.
+- Findings resolved: 22/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials.
+- Current governance gate state: green after F4.1 (`pnpm run validate:governance` -> 136/136 PASS).
 
 ## Baseline gates
 
@@ -375,6 +375,26 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 136/136 validators.
 
+## F4.1 single merchant credential authority evidence
+
+- `services/api-gateway/src/lib/merchant-password.ts` is the single merchant password hash/compare module and owns `MERCHANT_PASSWORD_BCRYPT_ROUNDS = 12`.
+- `services/api-gateway/src/routes/auth.ts` adds signed-internal `/auth/custom/users/authenticate`, compares the password in the gateway, hashes plaintext passwords in `/auth/custom/users/set-password`, and changes `/auth/custom/users/by-email` to return `has_password` without returning the hash.
+- Identity login now calls `/auth/custom/users/authenticate`; lookup consumes `has_password`; set/reset-password send plaintext only over the signed internal worker request; `apps/identity-platform/src/lib/auth/password.ts` only validates strength.
+- `scripts/validators/domain-boundary-validator.mjs` now forbids password-hash handling in every app-local API/lib TS file, with no auth-owned whitelist.
+- Pre-change `pnpm run test:contracts`: FAIL - 77/80 at new `tests/contracts/merchant-password-authority.test.ts`.
+- Post-change `pnpm run test:contracts`: PASS - 80/80.
+- `pnpm --filter @letbuyy/api-gateway typecheck`: PASS.
+- `pnpm install --frozen-lockfile --force`: PASS to restore workspace dependency links after generated-artifact cleanup.
+- `pnpm --filter @letbuyy/identity-platform typecheck`: PASS.
+- `pnpm --filter @letbuyy/identity-platform lint`: PASS with existing warnings only.
+- `node scripts/validators/domain-boundary-validator.mjs`: PASS.
+- `pnpm exec tsx --test apps/identity-platform/src/__tests__/*.test.ts`: PASS - 6/6 after rerun with host IPC.
+- `node --test tests/auth/identity-password-intent.test.mjs`: PASS - 3/3.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 136/136 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -406,5 +426,5 @@ Started: 2026-06-05T13:54:14Z
 
 ## Next work
 
-- Continue to F4.1 single merchant credential authority.
+- Continue to F4.2 ops-plane identity and timing-safe compares.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.
