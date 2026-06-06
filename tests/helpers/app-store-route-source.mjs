@@ -1,4 +1,12 @@
 import { existsSync, readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '../..');
+
+function repoPath(path) {
+  return join(repoRoot, path);
+}
 
 const APP_STORE_ROUTE_SOURCES = [
   'services/api-gateway/src/routes/app-store.ts',
@@ -12,13 +20,14 @@ const APP_STORE_ROUTE_SOURCES = [
 
 export function readAppStoreRouteSource() {
   return APP_STORE_ROUTE_SOURCES
+    .map(repoPath)
     .filter((path) => existsSync(path))
     .map((path) => readFileSync(path, 'utf8'))
     .join('\n');
 }
 
 export function readAppStoreRootSource() {
-  return readFileSync('services/api-gateway/src/routes/app-store.ts', 'utf8');
+  return readFileSync(repoPath('services/api-gateway/src/routes/app-store.ts'), 'utf8');
 }
 
 const STOREFRONT_ROUTE_SOURCES = [
@@ -31,11 +40,12 @@ const STOREFRONT_ROUTE_SOURCES = [
 
 export function readStorefrontRouteSource() {
   return STOREFRONT_ROUTE_SOURCES
+    .map(repoPath)
     .filter((path) => existsSync(path))
     .map((path) => readFileSync(path, 'utf8'))
     .join('\n');
 }
 
 export function readStorefrontRootSource() {
-  return readFileSync('services/api-gateway/src/routes/storefront.ts', 'utf8');
+  return readFileSync(repoPath('services/api-gateway/src/routes/storefront.ts'), 'utf8');
 }

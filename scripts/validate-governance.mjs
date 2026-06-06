@@ -136,6 +136,7 @@ const validators = [
   "route-line-count-validator.mjs",
   "raw-error-message-validator.mjs",
   "dev-auth-bypass-validator.mjs",
+  "no-noop-test-script-validator.mjs",
   "environment-validator.mjs",
   "generated-artifact-validator.mjs",
   "stale-artifact-validator.mjs",

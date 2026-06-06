@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "cd ../.. && node --test tests/federation/web-app-contract-boundary.test.mjs tests/localization/theme-localization.test.mjs tests/app-platform/app-bridge.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

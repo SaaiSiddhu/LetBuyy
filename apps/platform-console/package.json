@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "cd ../.. && node --test tests/federation/platform-console-thin-client.test.mjs tests/auth/session-verifier.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",

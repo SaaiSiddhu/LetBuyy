@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F4 security/auth hardening complete locally; continue F5 testing reality.
+- Phase: F5.1 deployable workspace no-op test scripts complete locally; continue F5.2 security-critical package/unit coverage.
 - Findings resolved: 23/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
-- Current governance gate state: green after F4.6 (`pnpm run validate:governance` -> 138/138 PASS).
+- Current governance gate state: green after F5.1 (`pnpm run validate:governance` -> 139/139 PASS).
 
 ## Baseline gates
 
@@ -475,6 +475,27 @@ Started: 2026-06-05T13:54:14Z
 - `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 138/138 validators.
+
+## F5.1 real deployable workspace test scripts evidence
+
+- Nine deployable web app workspaces no longer use `echo "No tests yet"` as their `test` script; app-marketplace, developer-portal, identity-platform, marketing-site, merchant-control-plane, platform-console, platform-operations-portal, storefront-runtime, and theme-marketplace now run real root/app-local `node --test` or `tsx --test` suites.
+- The three deployable service workspaces remain real-test runners, so all 12 deployable workspaces are covered by the no-op script invariant.
+- `tests/federation/marketing-site-auth-boundary.test.mjs` locks marketing-site as redirect-only for auth/signup creation and forbids local credential/session/auth-core ownership.
+- `tests/contracts/workspace-test-runner.test.ts` verifies the 12 deployable workspace scripts, root `test:contracts`, and Turbo workspace test wiring.
+- `tests/helpers/app-store-route-source.mjs` and the new workspace-runner contract resolve repository paths from their own file locations so root contract tests pass when invoked from workspace cwd by Turbo.
+- `scripts/validators/no-noop-test-script-validator.mjs` is wired into `scripts/validate-governance.mjs`.
+- `node scripts/validators/no-noop-test-script-validator.mjs`: PASS - 12 deployable workspace test scripts checked.
+- `node --test tests/federation/marketing-site-auth-boundary.test.mjs`: PASS - 2/2.
+- `pnpm run test:contracts`: PASS - 99/99.
+- `pnpm --filter @letbuyy/storefront-runtime test`: PASS - 17/17.
+- `pnpm --filter @letbuyy/merchant-control-plane test`: PASS - 15/15.
+- `pnpm --filter @letbuyy/platform-console test`: PASS - 10/10.
+- `pnpm --filter @letbuyy/identity-platform test`: PASS - 12/12 across app-local TS and root federation/auth tests.
+- `pnpm turbo test --output-logs=errors-only --log-order=grouped`: PASS - 60/60 tasks.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 139/139 validators.
 
 ## V2 P-1 gate evidence
 

@@ -7,7 +7,7 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "echo 'No tests yet' && exit 0"
+    "test": "cd ../.. && pnpm exec tsx --test apps/identity-platform/src/__tests__/*.test.ts && node --test tests/federation/identity-platform-supabase-boundary.test.mjs tests/auth/identity-password-intent.test.mjs"
   },
   "dependencies": {
     "@letbuyy/api-client": "workspace:*",
