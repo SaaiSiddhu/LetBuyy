@@ -6,6 +6,7 @@ import 'package:http/testing.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
+import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
@@ -18,6 +19,8 @@ import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
+import 'package:letbuyy_store/screens/content/page_editor_screen.dart';
+import 'package:letbuyy_store/screens/content/pages_screen.dart';
 import 'package:letbuyy_store/screens/customize/theme_versions_screen.dart';
 import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
 import 'package:letbuyy_store/screens/customers/customers_screen.dart';
@@ -193,6 +196,48 @@ void main() {
       expect(api.paths, contains('/coupons'));
       expect(api.paths, contains('/coupons/coupon_1'));
       expect(api.paths, contains('/coupons/validate'));
+    });
+
+    test('CmsService handles page CRUD through the gateway', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/pages': [_pageJson()],
+        },
+        json: {
+          '/pages': _pageJson(id: 'page_2', title: 'About LetBuyy'),
+          '/pages/page_1': _pageJson(status: 'published'),
+        },
+      );
+      final service = CmsService(api: api);
+
+      final pages = await service.fetchPages('store_1');
+      final created = await service.createPage(
+        const CmsPageInput(
+          storeId: 'store_1',
+          title: 'About LetBuyy',
+          body: 'Built from a phone.',
+          slug: 'about-letbuyy',
+          status: 'draft',
+        ),
+      );
+      final updated = await service.updatePage(
+        'page_1',
+        const CmsPageInput(
+          storeId: 'store_1',
+          title: 'About us',
+          body: 'Updated from mobile.',
+          slug: 'about-us',
+          status: 'published',
+        ),
+      );
+      await service.updatePageStatus(pages.single, 'published');
+      await service.deletePage('page_1');
+
+      expect(pages.single.title, 'About us');
+      expect(created.id, 'page_2');
+      expect(updated.status, 'published');
+      expect(api.paths, contains('/pages'));
+      expect(api.paths, contains('/pages/page_1'));
     });
 
     test('NotificationSettingsService persists preferences', () async {
@@ -653,6 +698,48 @@ void main() {
     expect(find.text('Low stock'), findsOneWidget);
   });
 
+  testWidgets('PagesScreen renders CMS pages from gateway service', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/pages': [_pageJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => CmsService(api: api)),
+        ],
+        child: const MaterialApp(home: PagesScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Pages'), findsOneWidget);
+    expect(find.text('About us'), findsOneWidget);
+    expect(find.text('/about-us'), findsOneWidget);
+    expect(find.text('Published'), findsWidgets);
+    expect(find.text('New page'), findsOneWidget);
+  });
+
+  testWidgets('PageEditorScreen renders create form fields', (tester) async {
+    await tester.pumpWidget(
+      ChangeNotifierProvider(
+        create: (_) => CmsService(api: _FakeApiClient()),
+        child: const MaterialApp(home: PageEditorScreen(storeId: 'store_1')),
+      ),
+    );
+
+    expect(find.text('New page'), findsOneWidget);
+    expect(find.text('Title'), findsOneWidget);
+    expect(find.text('Body'), findsOneWidget);
+    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -829,6 +916,27 @@ Map<String, dynamic> _couponJson({
   'per_customer_limit': 1,
   'expires_at': '2026-12-31T23:59:59.000Z',
   'is_active': isActive,
+};
+
+Map<String, dynamic> _pageJson({
+  String id = 'page_1',
+  String title = 'About us',
+  String status = 'published',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'title': title,
+  'slug': 'about-us',
+  'body': 'We build storefronts from a phone.',
+  'content': {'body': 'We build storefronts from a phone.'},
+  'page_type': 'custom',
+  'status': status,
+  'show_in_nav': true,
+  'display_order': 0,
+  'seo_title': title,
+  'seo_description': 'Mobile storefront content',
+  'published_at': '2026-06-01T10:00:00.000Z',
+  'updated_at': '2026-06-01T10:30:00.000Z',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

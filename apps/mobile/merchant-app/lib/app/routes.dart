@@ -24,6 +24,7 @@ import '../screens/customers/customer_detail_screen.dart';
 import '../screens/customers/customers_screen.dart';
 import '../screens/discounts/coupon_form_screen.dart';
 import '../screens/discounts/coupons_screen.dart';
+import '../screens/content/pages_screen.dart';
 import '../screens/inventory/inventory_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
@@ -68,6 +69,7 @@ class AppRoutes {
   static const String customerDetail = '/customers/detail';
   static const String coupons = '/coupons';
   static const String couponForm = '/coupons/form';
+  static const String pages = '/pages';
   static const String inventory = '/inventory';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
@@ -87,6 +89,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/coupons') {
       return _buildRoute(const CouponsScreen(), settings);
+    }
+    if (settings.name == '/features/pages') {
+      return _buildRoute(const PagesScreen(), settings);
     }
     if (settings.name == '/features/notifications') {
       return _buildRoute(const NotificationsScreen(), settings);
@@ -211,6 +216,9 @@ class AppRoutes {
           ),
           settings,
         );
+
+      case pages:
+        return _buildRoute(const PagesScreen(), settings);
 
       case inventory:
         return _buildRoute(const InventoryScreen(), settings);
