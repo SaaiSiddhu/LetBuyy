@@ -459,7 +459,25 @@ const materialIconMap = {
     work: Briefcase,
 } as const satisfies Record<string, LucideIcon>;
 
-export type MaterialIconName = keyof typeof materialIconMap | (string & {});
+export type StrictMaterialIconName = keyof typeof materialIconMap;
+
+/**
+ * @deprecated since 0.0.2. Prefer `StrictMaterialIconName`, `materialIconName()`,
+ * or `isMaterialIconName()` when accepting user-provided icon names.
+ */
+export type LooseMaterialIconName = string & {};
+
+export type MaterialIconName = StrictMaterialIconName | LooseMaterialIconName;
+
+export const materialIconNames = Object.freeze(Object.keys(materialIconMap)) as readonly StrictMaterialIconName[];
+
+export function isMaterialIconName(name: string): name is StrictMaterialIconName {
+    return Object.prototype.hasOwnProperty.call(materialIconMap, name);
+}
+
+export function materialIconName(name: StrictMaterialIconName): StrictMaterialIconName {
+    return name;
+}
 
 export interface MaterialIconProps extends Omit<LucideProps, 'name'> {
     name: MaterialIconName;

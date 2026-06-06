@@ -26,8 +26,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 16 | zero unit tests | U0 | DONE | `pnpm --filter @letbuyy/ui test` PASS: 10 RTL/jest-axe tests; `pnpm turbo test` PASS: 61 tasks. |
 | 17 | raw src distribution/no dist | U0.5 | DONE | `pnpm --filter @letbuyy/ui build` PASS; `dist/` emitted; `main` and `types` remain `./src/index.ts`. |
 | 18 | version 0.0.1/no semver/changelog | U8.3 | TODO |  |
-| 19 | duplicate DataTable and IndexTable | U4.1 | TODO |  |
-| 20 | DataTable desktop-only | U4.1 | TODO |  |
+| 19 | duplicate DataTable and IndexTable | U4.1 | DONE | Added new unified `Table` with selection, saved views, chips, bulk actions, sorting, and responsive cards; kept `DataTable`/`IndexTable` exported and deprecated; `pnpm --filter @letbuyy/ui test` PASS: 23 tests. |
+| 20 | DataTable desktop-only | U4.1 | DONE | New `Table` includes mobile card rendering plus desktop table rendering; Storybook visual baseline added; `pnpm --filter @letbuyy/ui test:visual` PASS: 306 baselines. |
 | 21 | no Drawer | U3.1 | DONE | Added focus-trapped `Drawer` with side/size variants and dismiss behavior; RTL + axe coverage in `pnpm --filter @letbuyy/ui test` PASS: 20 tests. |
 | 22 | no Dropdown/Menu | U3.1 | DONE | Added keyboard-roving `Dropdown` and `DropdownMenu` menu primitives; root `Menu` stays the existing icon export for back-compat; `pnpm turbo typecheck` PASS after collision check. |
 | 23 | no Popover | U3.1 | DONE | Added anchored `Popover` with trigger render prop, Escape/outside dismiss, and axe-clean coverage; `pnpm --filter @letbuyy/ui test` PASS. |
@@ -55,7 +55,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 45 | no NumberField | U3.2 | DONE | Added `NumberField` on top of the existing Input a11y contract; U3 form primitive test PASS. |
 | 46 | no CI cross-app build gate on UI change | U0 | DONE | Local repo-wide gates PASS: `pnpm turbo typecheck`, `pnpm turbo build`, and `pnpm turbo test`. |
 | 47 | Storybook screenshots not CI-gated | U0.3 | DONE | `pnpm --filter @letbuyy/ui test:visual:update` captured 276 baselines; `pnpm --filter @letbuyy/ui test:visual` PASS. |
-| 48 | MaterialIconName accepts any string | U4.5 | TODO |  |
+| 48 | MaterialIconName accepts any string | U4.5 | DONE | Added `StrictMaterialIconName`, `materialIconNames`, `isMaterialIconName()`, and `materialIconName()` while keeping loose `MaterialIconName` compatibility; `pnpm --filter @letbuyy/ui test` PASS. |
 | 49 | no theme contract docs | U4/U8 | TODO |  |
 | 50 | no contrast guardrail for custom brand | U4/U8 | TODO |  |
 | 51 | storefront-runtime empty ui dir | U8.4 | TODO |  |
@@ -66,11 +66,11 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 56 | inconsistent change-handler conventions | U4/U7 | TODO |  |
 | 57 | inconsistent size prop names | U4/U7 | TODO |  |
 | 58 | helperText vs description duplication | U4/U7 | TODO |  |
-| 59 | danger vs critical vocab | U4.4 | TODO |  |
-| 60 | Text vs TextStyle overlap | U4.2 | TODO |  |
-| 61 | PageShell dead alias | U4.3 | TODO |  |
-| 62 | PageActions alias | U4.3 | TODO |  |
-| 63 | TableFilterBar alias | U4.3 | TODO |  |
+| 59 | danger vs critical vocab | U4.4 | DONE | `Badge variant="danger"` still normalizes to `critical`; canonical `critical` vocabulary documented in `BadgeProps` and `DEPRECATIONS.md`; RTL/axe test PASS. |
+| 60 | Text vs TextStyle overlap | U4.2 | DONE | `Text` now covers TextStyle variants; `TextStyle` delegates to `Text`, keeps old output, and is deprecated; RTL test verifies wrapper class/element compatibility. |
+| 61 | PageShell dead alias | U4.3 | DONE | `PageShell` remains exported and working with `@deprecated` tag pointing to `Page`; removal recorded as human-gated. |
+| 62 | PageActions alias | U4.3 | DONE | `PageActions` remains exported and working with `@deprecated` tag pointing to `PageHeaderActions`; removal recorded as human-gated. |
+| 63 | TableFilterBar alias | U4.3 | DONE | `TableFilterBar` remains exported and working with `@deprecated` tag pointing to `FilterBar`; removal recorded as human-gated. |
 | 64 | color alias sprawl | U2.3 | DONE | Added `ui-no-new-token-alias-validator.mjs` and `token-aliases.json`; `validate:aliases` PASS with 108 protected duplicate-value groups; alias removal recorded as human-gated. |
 | 65 | dual spacing names | U2.4 | DONE | Canonical numeric `--lb-space-*` scale documented in source while named spacing aliases keep emitting; token snapshot PASS with no removals. |
 | 66 | dual type scale | U2.4 | DONE | Canonical role-based type variables documented in source while heading aliases keep emitting; token snapshot PASS with no removals. |
@@ -92,7 +92,7 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 | 82 | visual preview helpers shipped in main bundle | U8.4 | TODO |  |
 | 83 | Tooltip not associated to trigger | U7.1 | TODO |  |
 | 84 | Tooltip hover-only | U7.1 | TODO |  |
-| 85 | Badge provenance confusing | U4.4 | TODO |  |
+| 85 | Badge provenance confusing | U4.4 | DONE | Canonical `Badge` remains sourced from `feedback`; `data-table` re-export preserved for back-compat and canonical vocabulary documented; `pnpm --filter @letbuyy/ui validate:ui` PASS. |
 | 86 | PageIdentity parallels EmptyStateKind | U7/U8 | TODO |  |
 | 87 | getPageIconName brittle regex | U7/U8 | TODO |  |
 | 88 | no RTL/dir consideration | U7.1 | TODO |  |
@@ -115,6 +115,8 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - [SKIP — NEEDS HUMAN] Issue #9 app-scope fix: wrap `apps/marketing-site` in `DesignSystemRoot` so UI tokens are present. Exact handoff: app stream updates the marketing-site root layout with `<DesignSystemRoot surface="storefront" theme="auto">{children}</DesignSystemRoot>`, then runs `pnpm --filter @letbuyy/marketing-site typecheck`, `pnpm --filter @letbuyy/marketing-site build`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issues #64, #65, #66 follow-up: collapse existing duplicate token aliases only after cross-app codemods and visual verification are coordinated. Exact handoff: run the U8 token-alias codemod across app/service consumers, remove deprecated aliases in `packages/typescript/ui/src/tokens.ts`, update snapshots with `pnpm --filter @letbuyy/ui snapshot:tokens:update` and `pnpm --filter @letbuyy/ui snapshot:aliases:update`, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Issue #22 optional root `Menu` component alias: `Menu` is already a public icon export and is consumed by apps through `@letbuyy/ui`. This stream shipped the menu primitive as `Dropdown`/`DropdownMenu`; exposing a root component named `Menu` requires coordinated icon rename/import migration first. Exact handoff: choose the public symbol strategy, run a codemod for existing `Menu` icon imports if needed, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issues #19, #20, #59, #60, #61, #62, #63, #85 follow-up: remove deprecated duplicate/alias surfaces only after U8 codemods are authored and app/service migrations are coordinated. Exact handoff: run the table, text, badge, and page-alias codemods across consumers, remove deprecated exports in `packages/typescript/ui`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Issue #48 follow-up: remove loose arbitrary `MaterialIconName` strings only after auditing unknown icon names. Exact handoff: replace user-provided strings with `isMaterialIconName()` guards or strict `materialIconName()` calls, remove `LooseMaterialIconName`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## NEW PUBLIC API
 
@@ -128,17 +130,30 @@ Branch-point governance baseline: `node scripts/validate-governance.mjs` PASS, `
 - New exports: `Drawer`, `Dropdown`, `DropdownMenu`, `Popover`, `Grid`, `Columns`, `Container`, `InlineError`, `NumberField`, `Switch`, `AppFrame`, `Navigation`, `Sidebar`, `Accordion`, `DatePicker`, `Disclosure`, `SegmentedControl`.
 - New exported types: `DrawerProps`, `DropdownItem`, `DropdownProps`, `OverlayTrigger`, `OverlayTriggerProps`, `PopoverProps`, `GridProps`, `ColumnsProps`, `ContainerProps`, `SpaceScale`, `InlineErrorProps`, `NumberFieldProps`, `SwitchProps`, `AppFrameProps`, `NavigationItem`, `NavigationProps`, `SidebarProps`, `AccordionItem`, `AccordionProps`, `DatePickerProps`, `DisclosureProps`, `SegmentedControlOption`, `SegmentedControlProps`.
 - New additive `Button` props: `as`, `asChild`, `href`, `target`, `rel`.
+- New exports: `Table`, `materialIconName`, `isMaterialIconName`, `materialIconNames`.
+- New exported types: `TableBulkAction`, `TableColumn`, `TableFilterChip`, `TableProps`, `TableSavedView`, `StrictMaterialIconName`, `LooseMaterialIconName`.
+- New additive `Text` variants: `subdued`, `strong`, `positive`, `negative`, `code`; new additive `Text` tones: `positive`, `negative`; new additive `Text` prop: `reset`.
 
 ## DEPRECATIONS
 
-None yet.
+| Symbol | Since | Replacement | Codemod | Removal |
+|---|---|---|---|---|
+| `DataTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/data-table-to-table.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `IndexTable` | `0.0.2` | `Table` | `packages/typescript/ui/codemods/index-table-to-table.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `TextStyle` | `0.0.2` | `Text` | `packages/typescript/ui/codemods/text-style-to-text.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `PageShell` | `0.0.2` | `Page` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `PageActions` | `0.0.2` | `PageHeaderActions` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `TableFilterBar` | `0.0.2` | `FilterBar` | `packages/typescript/ui/codemods/page-aliases-to-canonical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `Badge variant="danger"` | `0.0.2` | `Badge variant="critical"` | `packages/typescript/ui/codemods/badge-danger-to-critical.cjs` (U8) | SKIP - breaking, needs cross-app migration |
+| `LooseMaterialIconName` / arbitrary icon-name strings | `0.0.2` | `StrictMaterialIconName`, `materialIconName()`, `isMaterialIconName()` | Not planned; human review needed for unknown icon names | SKIP - breaking, needs icon-name audit |
 
 ## VISUAL-REGRESSION BASELINES
 
 - Baseline captured 2026-06-06 with `pnpm --filter @letbuyy/ui test:visual:update`.
 - U0/U1/U2 scope: every Storybook story in `packages/typescript/ui/src/**/*.stories.tsx`, 2 themes (`light`, `dark`) x 3 densities (`compact`, `comfortable`, `spacious`), 276 PNG baselines under `packages/typescript/ui/storybook-screenshots/baseline/`.
 - U3 baseline expansion: `foundation-primitives.stories.tsx` added 24 primitive screenshots; `pnpm --filter @letbuyy/ui test:visual:update` captured 300 baselines total.
-- Verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 300 baselines checked.
+- U4 baseline expansion: `table.stories.tsx` added 6 table screenshots; `pnpm --filter @letbuyy/ui test:visual:update` captured 306 baselines total.
+- Verification: `pnpm --filter @letbuyy/ui test:visual` PASS with 306 baselines checked.
 
 ## VALIDATOR LEDGER
 

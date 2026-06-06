@@ -2,6 +2,7 @@
 
 import React, { useId } from 'react';
 import { Calendar, Check, ChevronDown, ChevronRight, Loader2, X } from './icons';
+import { Text, type TextProps } from './layout';
 import { type LetbuyyDensity } from './tokens';
 import { cx } from './utils';
 
@@ -680,24 +681,23 @@ export interface TextStyleProps extends React.HTMLAttributes<HTMLElement> {
     variant?: 'body' | 'subdued' | 'strong' | 'positive' | 'negative' | 'code';
 }
 
-const textStyleClasses: Record<NonNullable<TextStyleProps['variant']>, string> = {
-    body: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text)]',
-    subdued: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]',
-    strong: 'font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]',
-    positive: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-success)]',
-    negative: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-critical)]',
-    code: 'rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-1)] py-[var(--lb-space-0)] font-mono text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]',
-};
-
+/**
+ * @deprecated since 0.0.2. Use `Text` with `variant`, `tone`, and `weight` instead.
+ */
 export function TextStyle({ children, as, variant = 'body', className = '', ...props }: TextStyleProps) {
-    const Element = as ?? (variant === 'code' ? 'code' : 'span');
+    const textVariant = variant === 'body' ? 'body' : variant;
+    const tone: TextProps['tone'] | undefined = variant === 'body' ? 'default' : undefined;
 
-    return React.createElement(
-        Element,
-        {
-            className: cx(textStyleClasses[variant], className),
-            ...props,
-        },
-        children,
+    return (
+        <Text
+            as={as ?? (variant === 'code' ? 'code' : 'span')}
+            variant={textVariant}
+            tone={tone}
+            reset={false}
+            className={className}
+            {...props}
+        >
+            {children}
+        </Text>
     );
 }

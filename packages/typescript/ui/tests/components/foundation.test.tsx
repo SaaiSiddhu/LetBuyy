@@ -35,12 +35,17 @@ import {
     Skeleton,
     Switch,
     Tabs,
+    Table,
+    Text,
+    TextStyle,
     Textarea,
+    isMaterialIconName,
     letbuyyBreakpointTokens,
     letbuyyShadowTokens,
     letbuyyTailwindScreens,
     letbuyyTokenCss,
     letbuyyTokenCssVariables,
+    materialIconName,
 } from '../../src';
 
 function renderInSystem(ui: React.ReactElement) {
@@ -504,6 +509,72 @@ describe('@letbuyy/ui foundation smoke coverage', () => {
         fireEvent.click(screen.getByRole('radio', { name: 'Live' }));
         expect(onSegmentChange).toHaveBeenCalledWith('live');
         await expectAxeClean(container);
+    });
+
+    it('renders the unified Table with sorting, selection, and responsive cards', async () => {
+        const onSort = vi.fn();
+        const onSelectionChange = vi.fn();
+        const onBulkAction = vi.fn();
+        const rows = [
+            { id: 'prod-1', title: 'Kurta', status: 'Active', inventory: 42 },
+            { id: 'prod-2', title: 'Notebook', status: 'Draft', inventory: 12 },
+        ];
+
+        const { container } = renderInSystem(
+            <Table
+                rows={rows}
+                savedViews={[{ label: 'All', value: 'all', count: 2 }]}
+                activeView="all"
+                filterChips={[{ label: 'Status: Active' }]}
+                bulkActions={[{ label: 'Archive', onAction: onBulkAction }]}
+                sortKey="title"
+                sortDirection="asc"
+                onSort={onSort}
+                onSelectionChange={onSelectionChange}
+                columns={[
+                    { key: 'title', header: 'Product', sortable: true, render: (row) => <Text as="span" variant="strong" reset={false}>{row.title}</Text> },
+                    { key: 'status', header: 'Status', render: (row) => <Badge label={row.status} variant={row.status === 'Active' ? 'success' : 'info'} /> },
+                    { key: 'inventory', header: 'Inventory', sortable: true },
+                ]}
+            />,
+        );
+
+        fireEvent.click(screen.getAllByRole('button', { name: /Product/ })[0]);
+        fireEvent.click(screen.getAllByLabelText('Select row 1')[0]);
+
+        expect(onSort).toHaveBeenCalledWith('title');
+        expect(onSelectionChange).toHaveBeenCalledWith(['prod-1'], [rows[0]]);
+        expect(screen.getAllByText('Kurta').length).toBeGreaterThan(0);
+        expect(screen.getAllByText('Status: Active').length).toBeGreaterThan(0);
+        await expectAxeClean(container);
+    });
+
+    it('keeps TextStyle output compatible while Text covers its variants', async () => {
+        const { container } = renderInSystem(
+            <>
+                <TextStyle variant="strong">Legacy strong</TextStyle>
+                <TextStyle variant="code">legacy.code</TextStyle>
+                <Text as="span" variant="positive" reset={false}>Positive text</Text>
+                <Badge label="Legacy danger" variant="danger" />
+            </>,
+        );
+
+        const legacyStrong = screen.getByText('Legacy strong');
+        expect(legacyStrong.tagName.toLowerCase()).toBe('span');
+        expect(legacyStrong.className).toContain('font-[var(--lb-font-weight-semibold)]');
+        expect(legacyStrong.className).not.toContain('m-0');
+        expect(screen.getByText('legacy.code').tagName.toLowerCase()).toBe('code');
+        expect(screen.getByText('Positive text').className).toContain('text-[color:var(--lb-color-success)]');
+        expect(screen.getByText('Legacy danger')).toBeTruthy();
+        await expectAxeClean(container);
+    });
+
+    it('exports strict material icon helpers while loose names still compile', () => {
+        const strictName = materialIconName('store');
+
+        expect(strictName).toBe('store');
+        expect(isMaterialIconName(strictName)).toBe(true);
+        expect(isMaterialIconName('not_a_registered_icon')).toBe(false);
     });
 
     it('emits z-index tokens and an auto-theme dark media block', () => {

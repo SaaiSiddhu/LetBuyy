@@ -17,6 +17,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - U1 P0 correctness is implemented except the app-scope marketing-site wrapper, which is recorded as a human/app-stream skip.
 - U2 token system completion is implemented additively.
 - U3 missing primitives are implemented additively.
+- U4 consolidation shims are implemented additively.
 - Required ledger and deprecation register have been created.
 - `@letbuyy/ui` now has a Vitest + React Testing Library + jest-axe suite covering the load-bearing components: Card, Section, Button, Badge, Input, Banner, Skeleton, EmptyState, Select, Checkbox, Radio, Combobox, and Tabs.
 - Storybook visual regression is wired through `packages/typescript/ui/tests/visual/storybook-visual-regression.mjs`; 276 baselines were captured across light/dark and compact/comfortable/spacious density modes.
@@ -34,6 +35,11 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `Button` now supports additive `as` and `asChild` rendering while default button rendering remains unchanged.
 - `DensityToggle` now delegates to `SegmentedControl` without changing its public props.
 - The bare root `Menu` symbol remains the existing icon export for consumer compatibility. The menu primitive is exported as `Dropdown`/`DropdownMenu`.
+- A new unified `Table` export exists with saved views, filter chips, bulk selection/actions, sorting, mobile cards, and desktop table rendering. `DataTable` and `IndexTable` stay exported and are deprecated, not removed.
+- `Text` now absorbs the `TextStyle` variants. `TextStyle` delegates to `Text` and preserves its old default element/class output.
+- `PageShell`, `PageActions`, and `TableFilterBar` remain exported with deprecation tags and replacement pointers.
+- `Badge variant="danger"` remains accepted and normalized, with `critical` documented as the canonical vocabulary.
+- Strict material icon helpers now exist through `StrictMaterialIconName`, `materialIconNames`, `isMaterialIconName()`, and `materialIconName()` while the loose `MaterialIconName` path stays compiling.
 
 ## Human-Gated Remainders
 
@@ -41,6 +47,8 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - [SKIP — NEEDS HUMAN] Marketing-site token root fix is app-scope. Exact follow-up for the app stream: wrap the marketing-site root layout with `DesignSystemRoot`, for example `<DesignSystemRoot surface="storefront" theme="auto">{children}</DesignSystemRoot>`, then run `pnpm --filter @letbuyy/marketing-site typecheck`, `pnpm --filter @letbuyy/marketing-site build`, `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Existing token alias collapse is breaking until coordinated with app/service codemods and visual verification. Exact follow-up after U8 codemods exist: run the token-alias codemod across consumers, remove deprecated aliases from `packages/typescript/ui/src/tokens.ts`, refresh UI snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 - [SKIP — NEEDS HUMAN] Optional root `Menu` component alias requires a public symbol decision because `Menu` is already an icon export used by current consumers. This stream ships the primitive as `Dropdown`/`DropdownMenu`. Exact follow-up: decide whether to rename the icon export or keep the primitive name, run a consumer codemod if a rename is chosen, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Deprecated table/text/page-alias/badge surfaces cannot be removed in this stream. Exact follow-up after U8 codemods are available: run the table, text, badge, and alias codemods across app/service consumers, remove deprecated UI exports, refresh snapshots, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
+- [SKIP — NEEDS HUMAN] Arbitrary loose `MaterialIconName` strings cannot be removed until unknown icon names are audited. Exact follow-up: guard user-provided strings with `isMaterialIconName()` or replace known names with `materialIconName()`, remove `LooseMaterialIconName`, refresh the API snapshot, then run `pnpm turbo typecheck`, `pnpm turbo build`, `pnpm lint`, and `node scripts/validate-governance.mjs`.
 
 ## Behavior Changes To Re-Check
 
@@ -50,6 +58,7 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - Light-mode text contrast changed intentionally: `--lb-color-text-muted` is darker; `--lb-color-primary-text` is new for primary text; soft status text tokens now use AA-safe text values.
 - U2 token additions are additive and should not change rendered output. Existing spacing/type/color aliases still emit; the new alias validator only blocks new duplicate-value aliases.
 - U3 primitive additions are additive. Existing consumers keep the current `Menu` icon export; use `Dropdown` or `DropdownMenu` for the new menu primitive.
+- U4 consolidation is additive. Existing `DataTable`, `IndexTable`, `TextStyle`, `PageShell`, `PageActions`, `TableFilterBar`, `Badge variant="danger"`, and loose `MaterialIconName` usages still compile and render.
 
 ## Verification Evidence
 
@@ -109,3 +118,19 @@ Scope: `packages/typescript/ui/**`, `CODEX_UI_FOUNDATION_LEDGER.md`, `CODEX_UI_F
 - `pnpm lint` PASS after U3: repo lint completed with existing warnings outside UI scope and 0 errors.
 - Generated build/install artifacts from U3 verification were removed before governance.
 - `node scripts/validate-governance.mjs` PASS after U3 cleanup; final line: `Governance validation passed (129 validators).`
+- `pnpm --filter @letbuyy/ui typecheck` PASS after U4 source changes.
+- `pnpm --filter @letbuyy/ui test` PASS after U4: 1 file, 23 tests.
+- `pnpm --filter @letbuyy/ui build` PASS after U4.
+- `pnpm --filter @letbuyy/ui snapshot:api:update` PASS after U4: 321 public exports captured.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after U4: 23 tests, API snapshot, token snapshot, alias snapshot.
+- `pnpm --filter @letbuyy/ui test:visual:update` PASS after U4 under escalated browser permission: 306 baselines captured.
+- `pnpm --filter @letbuyy/ui test:visual` PASS after U4 under escalated browser permission: 306 baselines checked.
+- `pnpm turbo test` PASS after U4: 61 successful tasks.
+- `pnpm turbo typecheck` PASS after U4: 60 successful tasks.
+- `pnpm lint` PASS after U4: repo lint completed with existing warnings outside UI scope and 0 errors.
+- `pnpm turbo build` PASS after U4 under escalated Turbopack permission: 60 successful tasks. The first sandboxed attempt failed because Turbopack could not create a helper process/bind a local port; rerun with escalation passed.
+- Initial U4 governance caught an undeclared `@storybook/react` type import in the new table story; the story was changed to match existing UI story patterns with no external Storybook type import.
+- `pnpm --filter @letbuyy/ui typecheck` PASS after that story import fix.
+- `pnpm --filter @letbuyy/ui validate:ui` PASS after that story import fix.
+- Generated build/install artifacts from U4 verification were removed with a depth that includes `packages/typescript/ui/dist`.
+- `node scripts/validate-governance.mjs` PASS after U4 cleanup; final line: `Governance validation passed (129 validators).`

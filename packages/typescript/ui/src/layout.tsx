@@ -3,7 +3,7 @@ import { MaterialIcon, type MaterialIconName } from './icons';
 import { cx } from './utils';
 
 type LayoutElement = 'div' | 'section' | 'article' | 'aside' | 'header' | 'footer' | 'nav' | 'main' | 'span';
-type TextElement = 'p' | 'span' | 'div' | 'strong' | 'em' | 'h1' | 'h2' | 'h3' | 'h4';
+type TextElement = 'p' | 'span' | 'div' | 'strong' | 'em' | 'code' | 'h1' | 'h2' | 'h3' | 'h4';
 export type SpaceScale = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8';
 
 const spaceStyles: Record<SpaceScale, string> = {
@@ -313,11 +313,12 @@ export function Container({ as: Element = 'div', children, width = 'page', paddi
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
     as?: TextElement;
     children: React.ReactNode;
-    variant?: 'display' | 'heading' | 'body' | 'caption';
-    tone?: 'default' | 'subdued' | 'critical' | 'success' | 'warning' | 'info' | 'inverse';
+    variant?: 'display' | 'heading' | 'body' | 'caption' | 'subdued' | 'strong' | 'positive' | 'negative' | 'code';
+    tone?: 'default' | 'subdued' | 'critical' | 'success' | 'warning' | 'info' | 'inverse' | 'positive' | 'negative';
     weight?: 'regular' | 'medium' | 'semibold';
     align?: 'start' | 'center' | 'end';
     truncate?: boolean;
+    reset?: boolean;
 }
 
 const textVariantStyles: Record<NonNullable<TextProps['variant']>, string> = {
@@ -325,6 +326,11 @@ const textVariantStyles: Record<NonNullable<TextProps['variant']>, string> = {
     heading: 'text-[length:var(--lb-font-size-heading)] leading-[var(--lb-line-height-heading)]',
     body: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)]',
     caption: 'text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)]',
+    subdued: 'text-[length:var(--lb-font-size-body)] leading-[var(--lb-line-height-body)] text-[color:var(--lb-color-text-subdued)]',
+    strong: 'font-[var(--lb-font-weight-semibold)] text-[color:var(--lb-color-text)]',
+    positive: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-success)]',
+    negative: 'font-[var(--lb-font-weight-medium)] text-[color:var(--lb-color-critical)]',
+    code: 'rounded-[var(--lb-radius-sm)] border border-[var(--lb-color-border)] bg-[var(--lb-color-surface-subdued)] px-[var(--lb-space-1)] py-[var(--lb-space-0)] font-mono text-[length:var(--lb-font-size-caption)] leading-[var(--lb-line-height-caption)] text-[color:var(--lb-color-text)]',
 };
 
 const textToneStyles: Record<NonNullable<TextProps['tone']>, string> = {
@@ -335,6 +341,8 @@ const textToneStyles: Record<NonNullable<TextProps['tone']>, string> = {
     warning: 'text-[color:var(--lb-color-warning)]',
     info: 'text-[color:var(--lb-color-info)]',
     inverse: 'text-[color:var(--lb-color-text-inverse)]',
+    positive: 'text-[color:var(--lb-color-success)]',
+    negative: 'text-[color:var(--lb-color-critical)]',
 };
 
 const textWeightStyles: Record<NonNullable<TextProps['weight']>, string> = {
@@ -350,20 +358,35 @@ const textAlignStyles: Record<NonNullable<TextProps['align']>, string> = {
 };
 
 export function Text({
-    as: Element = 'p',
+    as,
     children,
     variant = 'body',
-    tone = 'default',
-    weight = 'regular',
-    align = 'start',
+    tone,
+    weight,
+    align,
     truncate = false,
+    reset = true,
     className = '',
     ...props
 }: TextProps) {
+    const textStyleVariant = variant === 'subdued' || variant === 'strong' || variant === 'positive' || variant === 'negative' || variant === 'code';
+    const Element = as ?? (variant === 'code' ? 'code' : 'p');
+    const effectiveTone = tone ?? (reset && !textStyleVariant ? 'default' : undefined);
+    const effectiveWeight = weight ?? (reset && !textStyleVariant ? 'regular' : undefined);
+    const effectiveAlign = align ?? (reset ? 'start' : undefined);
+
     return React.createElement(
         Element,
         {
-            className: cx('m-0 min-w-0', textVariantStyles[variant], textToneStyles[tone], textWeightStyles[weight], textAlignStyles[align], truncate && 'truncate', className),
+            className: cx(
+                reset && 'm-0 min-w-0',
+                textVariantStyles[variant],
+                effectiveTone && textToneStyles[effectiveTone],
+                effectiveWeight && textWeightStyles[effectiveWeight],
+                effectiveAlign && textAlignStyles[effectiveAlign],
+                truncate && 'truncate',
+                className,
+            ),
             ...props,
         },
         children,
@@ -454,6 +477,9 @@ export function getPageIconName(title: string, identity?: PageIdentity): Materia
 
 export interface PageShellProps extends PageProps {}
 
+/**
+ * @deprecated since 0.0.2. Use `Page` instead. This alias remains for backward compatibility.
+ */
 export function PageShell(props: PageShellProps) {
     return <Page {...props} />;
 }
@@ -509,6 +535,9 @@ export function PageHeaderActions({ children, className = '', ...props }: PageHe
     );
 }
 
+/**
+ * @deprecated since 0.0.2. Use `PageHeaderActions` instead. This alias remains for backward compatibility.
+ */
 export const PageActions = PageHeaderActions;
 
 export function PageHeader({

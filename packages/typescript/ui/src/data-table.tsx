@@ -28,6 +28,9 @@ export interface DataTableProps<T extends Record<string, unknown>> {
 
 // ============= COMPONENT =============
 
+/**
+ * @deprecated since 0.0.2. Use `Table` from `@letbuyy/ui` instead. This component remains for backward compatibility.
+ */
 export function DataTable<T extends Record<string, unknown>>({
     columns,
     data,

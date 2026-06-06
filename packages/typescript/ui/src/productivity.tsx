@@ -199,6 +199,9 @@ export function FilterBar({
     );
 }
 
+/**
+ * @deprecated since 0.0.2. Use `FilterBar` instead. This alias remains for backward compatibility.
+ */
 export const TableFilterBar = FilterBar;
 
 export interface IndexTableProps<T extends { id: string }> {
@@ -218,6 +221,9 @@ export interface IndexTableProps<T extends { id: string }> {
     className?: string;
 }
 
+/**
+ * @deprecated since 0.0.2. Use `Table` from `@letbuyy/ui` instead. This component remains for backward compatibility.
+ */
 export function IndexTable<T extends { id: string }>({
     columns,
     rows,

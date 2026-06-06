@@ -10,6 +10,9 @@ export type { InlineErrorProps, InputProps, NumberFieldProps, TextareaProps } fr
 export { DataTable, Badge } from './data-table';
 export type { DataTableProps, Column, BadgeProps } from './data-table';
 
+export { Table } from './table';
+export type { TableBulkAction, TableColumn, TableFilterChip, TableProps, TableSavedView } from './table';
+
 export {
     BlockStack,
     Box,

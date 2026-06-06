@@ -62,6 +62,10 @@ const statusStyles: Record<StatusVariant, { surface: string; text: string; borde
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
     label: string;
+    /**
+     * `critical` is the canonical danger/error vocabulary. `danger` remains accepted
+     * for compatibility with existing consumers and is normalized to `critical`.
+     */
     variant?: StatusVariant | 'danger';
 }
 
