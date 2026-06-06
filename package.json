@@ -39,7 +39,7 @@
         "validate:ci": "node scripts/validators/ci-simulation-validator.mjs",
         "certify:production": "node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=production --mode=auto",
         "certify:production:provider": "node infrastructure/scripts/operations/run-provider-production-certification.mjs --environment=production --mode=auto",
-        "certify:production:report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
+        "certify:production:plan-report": "node infrastructure/scripts/operations/generate-certification-report.mjs --environment=production --mode=plan",
         "test": "node --test tests/*/*.test.mjs && pnpm run test:contracts",
         "test:governance": "pnpm run test:behavioral && pnpm run test:contracts",
         "test:behavioral": "node --test tests/*/*.test.mjs",

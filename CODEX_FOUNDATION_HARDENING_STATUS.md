@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F5.3 behavioral CI gate and inherited RBAC regression fix complete locally; continue F5.4 plan/live evidence naming honesty.
-- Findings resolved: 23/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials and `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening.
-- Current governance gate state: green after F5.3 (`pnpm run validate:governance` -> 139/139 PASS).
+- Phase: F5 test reality complete locally; continue F6.1 observability producer/reconciliation.
+- Findings resolved: 24/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `H-1`, `H-4`, `H-5`, `H-6`, `H-7`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, and C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets.
+- Current governance gate state: green after F5.4 (`pnpm run validate:governance` -> 139/139 PASS).
 
 ## Baseline gates
 
@@ -531,6 +531,25 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 139/139 validators.
 - Live/staging execution of the J1-J5 Playwright suite and the new app/theme/cart paths remains SKIPPED -- NEEDS HUMAN until staging URLs, seeded data, internal/customer session secrets, merchant/developer/operator/customer credentials, and a CI approval to run mutating real-stack journeys are available.
+
+## F5.4 plan/live evidence naming evidence
+
+- Root plan-mode operational scripts now name plan surfaces explicitly: `load:plan`, `chaos:plan`, `survivability:plan`, and `certify:production:plan-report`.
+- The retired ambiguous `certify:production:report` root script was removed; the production plan report command still runs `generate-certification-report.mjs --environment=production --mode=plan`.
+- Staging and survivability runbooks now point to plan-only proof surfaces and no longer reference the removed `proof:local` / `run-local-operational-proof` path.
+- `docs/governance/operational-resilience-governance.md` now describes plan-mode operational certification as non-recording and staging executable certification as `certification: false`.
+- `docs/architecture/master-system-intelligence.md` script inventory was reconciled to the renamed `certify:production:plan-report` script.
+- `tests/survivability/operational-proof-surface.test.mjs` now asserts plan-mode script names, absence of the retired script/local-proof alias in active runbooks/governance docs, and that the production plan report emits `requested_mode: "plan"`, `status: "credential-gated"`, `live_certified: false`, zero evidence records, and an unclaimed conclusion.
+- `node --test tests/survivability/operational-proof-surface.test.mjs`: PASS - 6/6.
+- `node scripts/validators/operational-proof-validator.mjs`: PASS - 9 load scenarios and 9 chaos experiments checked.
+- `node scripts/validators/survivability-governance-validator.mjs`: PASS - survivability contracts, evidence policy, observability, multi-region, and CI gates checked.
+- `node --test tests/production-certification/provider-production-certification.test.mjs tests/survivability/survivability-governance.test.mjs tests/survivability/operational-certification-harness.test.mjs tests/survivability/operational-evidence-governance.test.mjs`: PASS - 18/18.
+- `pnpm run test:behavioral`: PASS - 449/449.
+- `pnpm turbo test --output-logs=errors-only --log-order=grouped`: PASS - 67/67.
+- `pnpm turbo typecheck`: PASS - 60/60.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 139/139 validators.
 
 ## V2 P-1 gate evidence
 

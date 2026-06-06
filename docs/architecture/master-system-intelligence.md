@@ -120,7 +120,7 @@ flowchart LR
 
 - Package: letbuyy-store
 - File: package.json
-- Scripts: preinstall, build, dev, local:bootstrap, local:up, local:health, local:reset, local:seed, lint, validate:architecture, validate:governance, validate:lifecycle, validate:production, certify:production, certify:production:report, typecheck
+- Scripts: preinstall, build, dev, local:bootstrap, local:up, local:health, local:reset, local:seed, lint, validate:architecture, validate:governance, validate:lifecycle, validate:production, certify:production, certify:production:plan-report, typecheck
 - Runtime dependencies: none declared
 - Dev dependencies: turbo
 - Peer dependencies: none declared

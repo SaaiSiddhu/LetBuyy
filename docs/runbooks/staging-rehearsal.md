@@ -19,4 +19,4 @@ Validate a production-equivalent release without using production traffic, data,
 
 ## Command Pattern
 
-Use `pnpm run certify:production:report` for local report generation and `node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=staging --mode=plan` for staging contract validation. Execute mode requires staging credentials and provider tools.
+Use `pnpm run certify:production:plan-report` for local plan report generation and `node infrastructure/scripts/operations/phase4-live-certify.mjs --environment=staging --mode=plan` for staging contract validation. Execute mode requires staging credentials and provider tools.
