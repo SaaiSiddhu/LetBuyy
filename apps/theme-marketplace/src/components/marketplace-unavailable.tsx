@@ -20,6 +20,7 @@ export default function MarketplaceUnavailable({
         <SharedMarketplaceUnavailable
             title={title}
             body={body}
+            buttonLabel="Try again"
             onRetry={() => router.refresh()}
             className="text-center py-16"
             headingClassName="text-lg font-bold text-text-heading mb-2"

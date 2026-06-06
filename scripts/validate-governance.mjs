@@ -146,6 +146,7 @@ const validators = [
   "api-client-runtime-base-validator.mjs",
   "marketing-dead-twin-validator.mjs",
   "theme-editor-dead-shell-validator.mjs",
+  "typescript-dead-source-validator.mjs",
   "settings-apps-dead-twin-validator.mjs",
   "raw-error-message-validator.mjs",
   "dev-auth-bypass-validator.mjs",

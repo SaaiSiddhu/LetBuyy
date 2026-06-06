@@ -23,6 +23,7 @@ export function MarketplaceUnavailable({
         <SharedMarketplaceUnavailable
             title={title}
             body={body}
+            buttonLabel="Try again"
             onRetry={handleRetry}
             style={{ textAlign: 'center', padding: '48px 16px' }}
             headingStyle={{ fontSize: 18, fontWeight: 700, marginBottom: 8, color: 'var(--text-primary)' }}
