@@ -10,6 +10,7 @@ import 'services/language_service.dart';
 import 'services/storage_service.dart';
 import 'services/product_service.dart';
 import 'services/order_service.dart';
+import 'services/customer_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
 import 'services/theme_provider.dart';
@@ -61,6 +62,9 @@ void main() async {
         ),
         ChangeNotifierProvider<OrderService>(
           create: (_) => OrderService(api: apiClient),
+        ),
+        ChangeNotifierProvider<CustomerService>(
+          create: (_) => CustomerService(api: apiClient),
         ),
         ChangeNotifierProvider<AnalyticsService>(
           create: (_) => AnalyticsService(api: apiClient),

@@ -6,12 +6,15 @@ import 'package:http/testing.dart';
 import 'package:letbuyy_models/letbuyy_models.dart' hide JsonMap;
 import 'package:letbuyy_store/services/analytics_service.dart';
 import 'package:letbuyy_store/services/api_client.dart';
+import 'package:letbuyy_store/services/customer_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
 import 'package:letbuyy_store/services/subscription_service.dart';
 import 'package:letbuyy_store/services/theme_service.dart';
+import 'package:letbuyy_store/screens/customers/customer_detail_screen.dart';
+import 'package:letbuyy_store/screens/customers/customers_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:provider/provider.dart';
 
@@ -90,6 +93,41 @@ void main() {
       expect(api.paths, contains('/orders/order_1'));
       expect(api.paths, contains('/orders/order_1/refund'));
       expect(api.paths, contains('/orders/order_1/refund/complete'));
+    });
+
+    test('CustomerService manages customers and addresses', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/customers': [_customerJson()],
+        },
+        json: {
+          '/customers/meera%40example.com': _customerJson(),
+          '/customers/meera%40example.com/addresses': [_addressJson()],
+          '/customers/meera%40example.com/addresses/address_1': _addressJson(),
+        },
+      );
+      final service = CustomerService(api: api);
+
+      final customers = await service.fetchCustomers('store_1');
+      final detail = await service.fetchCustomerByEmail('meera@example.com');
+      final addresses = await service.fetchAddresses('meera@example.com');
+      await service.createAddress('meera@example.com', _addressJson());
+      await service.updateAddress(
+        'meera@example.com',
+        'address_1',
+        _addressJson(),
+      );
+      await service.deleteAddress('meera@example.com', 'address_1');
+
+      expect(customers.single.email, 'meera@example.com');
+      expect(detail.displayName, 'Meera Merchant');
+      expect(addresses.single.city, 'Bengaluru');
+      expect(api.paths, contains('/customers'));
+      expect(api.paths, contains('/customers/meera%40example.com'));
+      expect(
+        api.paths,
+        contains('/customers/meera%40example.com/addresses/address_1'),
+      );
     });
 
     test('AnalyticsService assembles dashboard metrics', () async {
@@ -300,6 +338,70 @@ void main() {
     expect(find.text('Cotton Tee'), findsOneWidget);
     expect(find.text('Refund'), findsOneWidget);
   });
+
+  testWidgets('CustomersScreen renders customer list from gateway service', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/customers': [_customerJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
+        ],
+        child: const MaterialApp(home: CustomersScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Customers'), findsWidgets);
+    expect(find.text('Meera Merchant'), findsOneWidget);
+    expect(find.text('meera@example.com'), findsOneWidget);
+  });
+
+  testWidgets('CustomerDetailScreen renders addresses and recent orders', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      json: {
+        '/customers/meera%40example.com': _customerJson(),
+        '/customers/meera%40example.com/addresses': [_addressJson()],
+      },
+      paginated: {
+        '/orders': [_orderJson()],
+      },
+    );
+    final customer = CustomerContract.fromJson(_customerJson());
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => CustomerService(api: api)),
+          ChangeNotifierProvider(create: (_) => OrderService(api: api)),
+        ],
+        child: MaterialApp(
+          home: CustomerDetailScreen(
+            email: 'meera@example.com',
+            initialCustomer: customer,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Meera Merchant'), findsWidgets);
+    expect(find.text('Addresses'), findsOneWidget);
+    await tester.drag(find.byType(ListView), const Offset(0, -500));
+    await tester.pumpAndSettle();
+    expect(find.text('Recent orders'), findsOneWidget);
+    expect(find.text('order_1'), findsOneWidget);
+  });
 }
 
 class _FakeApiClient extends ApiClient {
@@ -327,6 +429,9 @@ class _FakeApiClient extends ApiClient {
   Future<JsonMap> requestJson(String path, {ApiRequestOptions? options}) async {
     paths.add(path);
     final value = _json[path] ?? {};
+    if (value is List && value.isNotEmpty) {
+      return Map<String, dynamic>.from(value.first as Map);
+    }
     return Map<String, dynamic>.from(value as Map);
   }
 
@@ -378,6 +483,38 @@ Map<String, dynamic> _productJson() => {
   'currency': 'INR',
   'stock': 8,
   'is_active': true,
+};
+
+Map<String, dynamic> _customerJson() => {
+  'id': 'customer_1',
+  'store_id': 'store_1',
+  'email': 'meera@example.com',
+  'phone': '+919999999999',
+  'first_name': 'Meera',
+  'last_name': 'Merchant',
+  'display_name': 'Meera Merchant',
+  'status': 'active',
+  'accepts_marketing': true,
+  'order_count': 1,
+  'total_spent': 499,
+  'last_order_at': '2026-06-01T10:00:00.000Z',
+  'addresses': [_addressJson()],
+};
+
+Map<String, dynamic> _addressJson() => {
+  'id': 'address_1',
+  'store_id': 'store_1',
+  'customer_id': 'customer_1',
+  'full_name': 'Meera Merchant',
+  'phone': '+919999999999',
+  'address_line1': '12 Market Road',
+  'address_line2': '',
+  'city': 'Bengaluru',
+  'state': 'Karnataka',
+  'postal_code': '560001',
+  'country': 'IN',
+  'label': 'Home',
+  'is_default': true,
 };
 
 Map<String, dynamic> _orderJson({

@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `fb35fc56aa89d9ece2e34292d33cab88ccc0c8d1`
-- Status timestamp: `2026-06-06T13:18:14+05:30`
+- Current HEAD: `5dd288b0c7bb216f9499fa5cab2d9660d286bec0`
+- Status timestamp: `2026-06-06T13:27:54+05:30`
 
 ## Feature Checklist
 
@@ -21,8 +21,8 @@
 | P0 | Service tests | DONE | `test/mobile_services_test.dart` covers store, product, order, analytics, theme, subscription, and auth services; existing contract tests remain |
 | P0 | CI workflow/docs refresh | DONE | `.github/workflows/ci.yml`, `docs/mobile/README.md`, `docs/design-system/README.md` from prior V1 foundation work |
 | P1 | Order detail + refunds | DONE | `lib/screens/orders/order_detail_screen.dart`, `lib/screens/orders/orders_screen.dart`, `lib/services/order_service.dart`, `packages/dart/api_client/lib/src/api_client.dart`; list tap opens typed detail screen, renders line items/customer/totals/timeline, calls `/orders/:id/refund` and `/orders/:id/refund/complete`; covered by `test/mobile_services_test.dart` service + widget tests |
-| P1 | Customers + detail + addresses | TODO | Next resume point |
-| P1 | Inventory adjust | TODO | Not started |
+| P1 | Customers + detail + addresses | DONE | `lib/services/customer_service.dart`, `lib/screens/customers/customers_screen.dart`, `lib/screens/customers/customer_detail_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/customers` opens the real customer list, detail loads `/customers/:email`, address CRUD uses `/customers/:email/addresses*`, and recent orders link to the order detail screen; covered by `test/mobile_services_test.dart` service + widget tests |
+| P1 | Inventory adjust | TODO | Next resume point |
 | P1 | Coupons CRUD | TODO | Not started |
 | P1 | Notifications settings | TODO | Not started |
 | P1 | Push notifications | TODO | Not started |
@@ -44,6 +44,9 @@
 - P1 `Order detail + refunds` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 5.7s)`.
 - P1 `Order detail + refunds` feature check: `flutter test` PASS. Output: `00:01 +12: All tests passed!`.
 - P1 `Order detail + refunds` feature governance: `node scripts/validate-governance.mjs` PASS. Output: `Governance validation passed (157 validators)`.
+- P1 `Customers + detail + addresses` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 4.1s)`.
+- P1 `Customers + detail + addresses` feature check: `flutter test` PASS. Output: `00:01 +15: All tests passed!`.
+- P1 `Customers + detail + addresses` feature governance: `node scripts/validate-governance.mjs` PASS. Output: `Governance validation passed (157 validators)`.
 
 ## Notes
 
@@ -52,6 +55,6 @@
 
 ## RESUME HINT
 
-Next feature: P1 `Customers + detail + addresses`.
+Next feature: P1 `Inventory adjust`.
 
-Start with `apps/mobile/merchant-app/lib/screens/parity/merchant_feature_definitions.dart`, create `apps/mobile/merchant-app/lib/services/customer_service.dart`, `apps/mobile/merchant-app/lib/screens/customers/customers_screen.dart`, and `apps/mobile/merchant-app/lib/screens/customers/customer_detail_screen.dart`. Keep all customer and address traffic through `services/mobile-bff` to gateway `/v1/customers`, `/v1/customers/:email`, and the address CRUD endpoints.
+Start with `packages/dart/api_client/lib/src/api_client.dart`, create `apps/mobile/merchant-app/lib/services/inventory_service.dart`, and add `apps/mobile/merchant-app/lib/screens/inventory/inventory_screen.dart`. Route `/features/inventory` to the real screen and keep traffic through gateway `/v1/inventory/levels` and `/v1/inventory/adjust`.

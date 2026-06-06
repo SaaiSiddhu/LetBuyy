@@ -19,6 +19,8 @@ import '../screens/settings/seo_settings_screen.dart';
 import '../screens/settings/store_details_screen.dart';
 import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
+import '../screens/customers/customer_detail_screen.dart';
+import '../screens/customers/customers_screen.dart';
 import '../screens/orders/order_detail_screen.dart';
 import '../screens/orders/orders_screen.dart';
 import '../screens/subscription/pricing_screen.dart';
@@ -57,6 +59,8 @@ class AppRoutes {
   static const String storeDetails = '/store-details';
   static const String help = '/help';
   static const String analytics = '/analytics';
+  static const String customers = '/customers';
+  static const String customerDetail = '/customers/detail';
   static const String orders = '/orders';
   static const String orderDetail = '/orders/detail';
   static const String pricing = '/pricing';
@@ -66,6 +70,9 @@ class AppRoutes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
     if (settings.name == '/features/order-detail') {
       return _buildRoute(const OrdersScreen(), settings);
+    }
+    if (settings.name == '/features/customers') {
+      return _buildRoute(const CustomersScreen(), settings);
     }
 
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];
@@ -156,6 +163,20 @@ class AppRoutes {
 
       case analytics:
         return _buildRoute(const AnalyticsScreen(), settings);
+
+      case customers:
+        return _buildRoute(const CustomersScreen(), settings);
+
+      case customerDetail:
+        final args = settings.arguments as Map<String, dynamic>? ?? {};
+        final customer = args['customer'];
+        return _buildRoute(
+          CustomerDetailScreen(
+            email: args['email'] as String? ?? '',
+            initialCustomer: customer is CustomerContract ? customer : null,
+          ),
+          settings,
+        );
 
       case orders:
         return _buildRoute(const OrdersScreen(), settings);

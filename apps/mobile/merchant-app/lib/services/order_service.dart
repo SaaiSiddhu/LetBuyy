@@ -25,6 +25,7 @@ class OrderService extends ChangeNotifier {
   Future<List<OrderContract>> fetchOrders(
     String storeId, {
     String? status,
+    String? customerEmail,
     int page = 1,
     int limit = 20,
   }) async {
@@ -38,6 +39,8 @@ class OrderService extends ChangeNotifier {
           'page': page,
           'limit': limit,
           if (status != null) 'status': status,
+          if (customerEmail != null && customerEmail.trim().isNotEmpty)
+            'customer_email': customerEmail.trim(),
         },
       );
       _orders = pageResult.data
