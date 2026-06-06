@@ -16,6 +16,7 @@ import '../screens/premium/upgrade_screen.dart';
 import '../screens/preview/live_preview_screen.dart';
 import '../screens/settings/domain_settings_screen.dart';
 import '../screens/settings/seo_settings_screen.dart';
+import '../screens/settings/shipping_screen.dart';
 import '../screens/settings/store_details_screen.dart';
 import '../screens/settings/notifications_screen.dart';
 import '../screens/settings/help_screen.dart';
@@ -66,6 +67,7 @@ class AppRoutes {
   static const String seoSettings = '/seo-settings';
   static const String storeDetails = '/store-details';
   static const String notifications = '/notifications';
+  static const String shipping = '/shipping';
   static const String help = '/help';
   static const String analytics = '/analytics';
   static const String customers = '/customers';
@@ -110,6 +112,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/notifications') {
       return _buildRoute(const NotificationsScreen(), settings);
+    }
+    if (settings.name == '/features/shipping') {
+      return _buildRoute(const ShippingScreen(), settings);
     }
 
     final feature = MerchantFeatureDefinitions.byRoute[settings.name];
@@ -197,6 +202,9 @@ class AppRoutes {
 
       case notifications:
         return _buildRoute(const NotificationsScreen(), settings);
+
+      case shipping:
+        return _buildRoute(const ShippingScreen(), settings);
 
       case help:
         return _buildRoute(const HelpScreen(), settings);

@@ -17,6 +17,7 @@ import 'package:letbuyy_store/services/notification_settings_service.dart';
 import 'package:letbuyy_store/services/order_service.dart';
 import 'package:letbuyy_store/services/product_service.dart';
 import 'package:letbuyy_store/services/push_service.dart';
+import 'package:letbuyy_store/services/shipping_tax_service.dart';
 import 'package:letbuyy_store/services/skip_needs_backend_exception.dart';
 import 'package:letbuyy_store/services/store_auth_service.dart';
 import 'package:letbuyy_store/services/store_service.dart';
@@ -36,6 +37,7 @@ import 'package:letbuyy_store/screens/discounts/coupons_screen.dart';
 import 'package:letbuyy_store/screens/inventory/inventory_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/settings/notifications_screen.dart';
+import 'package:letbuyy_store/screens/settings/shipping_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
@@ -369,6 +371,70 @@ void main() {
       expect(api.paths, contains('/upload'));
       expect(api.paths, contains('/media/media_1'));
       expect(api.paths, contains('/upload/media%2Fstore_1%2Fhero.png'));
+    });
+
+    test('ShippingTaxService manages zones and rates', () async {
+      final api = _FakeApiClient(
+        json: {
+          '/shipping-tax/shipping/zones': [_shippingZoneJson()],
+          '/shipping-tax/shipping': [_shippingRateJson()],
+          '/shipping-tax/shipping/zones/zone_1': _shippingZoneJson(
+            name: 'South India',
+          ),
+          '/shipping-tax/shipping/rate_1': _shippingRateJson(price: 80),
+        },
+      );
+      final service = ShippingTaxService(api: api);
+
+      final summary = await service.fetchShipping('store_1');
+      final createdZone = await service.createZone(
+        const ShippingZoneInput(
+          storeId: 'store_1',
+          name: 'Domestic',
+          countries: ['IN'],
+        ),
+      );
+      final updatedZone = await service.updateZone(
+        'zone_1',
+        const ShippingZoneInput(
+          storeId: 'store_1',
+          name: 'South India',
+          countries: ['IN'],
+          states: ['Karnataka'],
+        ),
+      );
+      final createdRate = await service.createRate(
+        const ShippingRateInput(
+          zoneId: 'zone_1',
+          name: 'Standard',
+          type: 'flat',
+          price: 49,
+          estimatedDaysMin: 2,
+          estimatedDaysMax: 5,
+        ),
+      );
+      final updatedRate = await service.updateRate(
+        'rate_1',
+        const ShippingRateInput(
+          zoneId: 'zone_1',
+          name: 'Standard',
+          type: 'flat',
+          price: 80,
+        ),
+      );
+      await service.deleteRate('rate_1');
+      await service.deleteZone('zone_1');
+
+      expect(summary.zones.single.name, 'Domestic');
+      expect(summary.rates.single.name, 'Standard');
+      expect(createdZone.countries, ['IN']);
+      expect(updatedZone.states, ['Karnataka']);
+      expect(createdRate.price, 49);
+      expect(updatedRate.price, 80);
+      expect(api.paths, contains('/shipping-tax/shipping/zones'));
+      expect(api.paths, contains('/shipping-tax/shipping'));
+      expect(api.paths, contains('/shipping-tax/shipping/zones/zone_1'));
+      expect(api.paths, contains('/shipping-tax/shipping/rate_1'));
     });
 
     test('NotificationSettingsService persists preferences', () async {
@@ -979,6 +1045,41 @@ void main() {
     expect(find.text('Search media'), findsOneWidget);
   });
 
+  testWidgets('ShippingScreen renders zones and rates from gateway service', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+      },
+      json: {
+        '/shipping-tax/shipping/zones': [_shippingZoneJson()],
+        '/shipping-tax/shipping': [_shippingRateJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(create: (_) => ShippingTaxService(api: api)),
+        ],
+        child: const MaterialApp(home: ShippingScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Shipping'), findsOneWidget);
+    expect(find.text('Domestic'), findsOneWidget);
+    expect(find.text('IN'), findsOneWidget);
+    expect(find.text('1 rates'), findsOneWidget);
+
+    await tester.tap(find.text('Rates'));
+    await tester.pumpAndSettle();
+    expect(find.text('Standard'), findsOneWidget);
+    expect(find.text('₹49'), findsOneWidget);
+  });
+
   testWidgets('ThemeVersionsScreen renders releases for rollback', (
     tester,
   ) async {
@@ -1278,6 +1379,39 @@ Map<String, dynamic> _uploadJson() => {
   'key': 'media/store_1/hero.png',
   'size': 2,
   'content_type': 'image/png',
+};
+
+Map<String, dynamic> _shippingZoneJson({
+  String id = 'zone_1',
+  String name = 'Domestic',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'name': name,
+  'countries': ['IN'],
+  'states': ['Karnataka'],
+  'zip_codes': ['560001'],
+  'created_at': '2026-06-01T11:00:00.000Z',
+  'updated_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _shippingRateJson({
+  String id = 'rate_1',
+  String name = 'Standard',
+  double price = 49,
+}) => {
+  'id': id,
+  'zone_id': 'zone_1',
+  'name': name,
+  'type': 'flat',
+  'price': price,
+  'min_order_amount': 0,
+  'max_order_amount': null,
+  'estimated_days_min': 2,
+  'estimated_days_max': 5,
+  'is_active': true,
+  'created_at': '2026-06-01T11:00:00.000Z',
+  'updated_at': '2026-06-01T11:00:00.000Z',
 };
 
 Map<String, dynamic> _themeReleaseJson() => {

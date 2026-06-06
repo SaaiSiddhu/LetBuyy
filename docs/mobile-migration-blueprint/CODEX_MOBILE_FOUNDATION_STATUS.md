@@ -2,8 +2,8 @@
 
 - Branch: `stream/letbuyy-foundation-v2`
 - Start HEAD: `62b2915218daa716b075b02d909c08e053bfce25`
-- Current HEAD: `8394d2205ae871c780b4cd0e3dbdc6802b82786e`
-- Status timestamp: `2026-06-06T15:01:01+05:30`
+- Current HEAD: `e2b77e864ebc1663801087df1c2c4126eabcef3b`
+- Status timestamp: `2026-06-06T15:08:13+05:30`
 
 ## Feature Checklist
 
@@ -31,7 +31,7 @@
 | P2 | Blog | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/cms_service.dart`, `lib/screens/content/blog_screen.dart`, `lib/screens/content/post_editor_screen.dart`, `lib/app/routes.dart`; `/features/blog` opens the real blog screen, lists and edits `/blog/posts*`, creates/updates post content/slug/excerpt/status/SEO/comment flags, archives posts, and moderates comments through `/blog/comments*`; covered by service + widget tests |
 | P2 | Navigation builder | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/cms_service.dart`, `lib/screens/content/navigation_screen.dart`, `lib/app/routes.dart`; `/features/navigation` opens the real builder, loads `/pages/navigation` by store/location, edits visible/new-tab URL/page/product/collection/blog targets, reorders items with `ReorderableListView`, and saves full ordered replacements through `/pages/navigation/:location`; covered by service + widget tests |
 | P2 | Media library | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/media_service.dart`, `lib/screens/content/media_library_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/media` opens the real media library, lists/searches/filters `/media` assets, uploads image/video files through `/upload` then registers metadata through `/media`, edits alt/caption/folder/tags, deletes media records, and deletes R2 objects through `/upload/:key` when the key is available; covered by service + widget tests |
-| P2 | Shipping | TODO | Not started |
+| P2 | Shipping | DONE | `packages/dart/api_client/lib/src/api_client.dart`, `lib/services/shipping_tax_service.dart`, `lib/screens/settings/shipping_screen.dart`, `lib/app/routes.dart`, `lib/main.dart`; `/features/shipping` opens the real shipping settings screen, lists `/shipping-tax/shipping/zones` and `/shipping-tax/shipping`, creates/edits/deletes zones and rates, supports active rates, delivery estimates, and order-range fields; covered by service + widget tests |
 | P2 | Taxes | TODO | Not started |
 | P2 | Domains lifecycle | TODO | Not started |
 | P2 | Collections CRUD | TODO | Not started |
@@ -95,6 +95,10 @@
 - P2 `Media library` feature check: `flutter test` PASS. Output: `00:03 +35: All tests passed!`.
 - P2 `Media library` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
 - P2 `Media library` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
+- P2 `Shipping` feature check: `flutter analyze` PASS. Output: `No issues found! (ran in 8.4s)`.
+- P2 `Shipping` feature check: `flutter test` PASS. Output: `00:03 +37: All tests passed!`.
+- P2 `Shipping` grep audit for removed provider artifacts/raw brand residue: PASS. No raw `0xFF8B5CF6` appears in `lib/screens` or `lib/widgets`, and no live `firebase`, `google-services`, or `GoogleService` residue appears in mobile app or queue-worker push source/tests.
+- P2 `Shipping` governance: BLOCKED by unrelated operator-owned untracked root files. Output: `Source ledger residue validator failed: CODEX_APPS_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_THEME_MARKETPLACE_FOUNDATION_MISSION.md must be archived; CODEX_UI_FOUNDATION_HARDENING_MISSION.md must be archived; only active V2 ledger/status/mission files may remain at root`.
 
 ## Notes
 
@@ -103,6 +107,6 @@
 
 ## RESUME HINT
 
-Next feature: P2 `Shipping`.
+Next feature: P2 `Taxes`.
 
-Start by adding a shipping/tax service over `/v1/shipping-tax/shipping*`, then create `apps/mobile/merchant-app/lib/screens/settings/shipping_screen.dart`. Replace `/features/shipping` with the real screen, support zones/rates CRUD, and add service + widget tests before committing.
+Extend `apps/mobile/merchant-app/lib/services/shipping_tax_service.dart` and `packages/dart/api_client/lib/src/api_client.dart` for `/v1/shipping-tax/taxes*`, then create `apps/mobile/merchant-app/lib/screens/settings/taxes_screen.dart`. Replace `/features/taxes` with the real screen, support rate CRUD plus active/shipping/inclusive settings where the gateway contract allows, and add service + widget tests before committing.

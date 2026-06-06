@@ -16,6 +16,7 @@ import 'services/coupon_service.dart';
 import 'services/cms_service.dart';
 import 'services/media_service.dart';
 import 'services/notification_settings_service.dart';
+import 'services/shipping_tax_service.dart';
 import 'services/push_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
@@ -83,6 +84,9 @@ void main() async {
         ),
         ChangeNotifierProvider<MediaService>(
           create: (_) => MediaService(api: apiClient),
+        ),
+        ChangeNotifierProvider<ShippingTaxService>(
+          create: (_) => ShippingTaxService(api: apiClient),
         ),
         ChangeNotifierProvider<NotificationSettingsService>(
           create: (_) => NotificationSettingsService(api: apiClient),

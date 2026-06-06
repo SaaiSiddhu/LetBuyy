@@ -80,6 +80,7 @@ class ApiClient {
   late final BlogApi blog = BlogApi(this);
   late final MediaApi media = MediaApi(this);
   late final UploadApi upload = UploadApi(this);
+  late final ShippingApi shipping = ShippingApi(this);
   late final CouponsApi coupons = CouponsApi(this);
   late final NotificationsApi notifications = NotificationsApi(this);
   late final GraphQLClient graphql = GraphQLClient(
@@ -1341,6 +1342,85 @@ class UploadApi {
   Future<JsonMap> remove(String key, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/upload/${_encodePathSegment(key)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+}
+
+class ShippingApi {
+  ShippingApi(ApiClient client)
+    : zones = ShippingZonesApi(client),
+      rates = ShippingRatesApi(client);
+
+  final ShippingZonesApi zones;
+  final ShippingRatesApi rates;
+}
+
+class ShippingZonesApi {
+  const ShippingZonesApi(this._client);
+
+  final ApiClient _client;
+
+  Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
+      _client.requestData(
+        '/shipping-tax/shipping/zones',
+        options: _mergeOptions(options, query: {'store_id': storeId}),
+        decoder: (value) =>
+            asJsonList(value).map(asJsonMap).toList(growable: false),
+      );
+
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/shipping-tax/shipping/zones',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/shipping-tax/shipping/zones/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/shipping-tax/shipping/zones/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+}
+
+class ShippingRatesApi {
+  const ShippingRatesApi(this._client);
+
+  final ApiClient _client;
+
+  Future<List<JsonMap>> list(String storeId, {ApiRequestOptions? options}) =>
+      _client.requestData(
+        '/shipping-tax/shipping',
+        options: _mergeOptions(options, query: {'store_id': storeId}),
+        decoder: (value) =>
+            asJsonList(value).map(asJsonMap).toList(growable: false),
+      );
+
+  Future<JsonMap> create(JsonMap input, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/shipping-tax/shipping',
+        options: _mergeOptions(options, method: HttpMethod.post, body: input),
+      );
+
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/shipping-tax/shipping/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/shipping-tax/shipping/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
 }
