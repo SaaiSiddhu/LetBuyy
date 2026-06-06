@@ -8,6 +8,7 @@ import {
   forbiddenRuntimeRoots,
   forbiddenRuntimeSubtrees,
   getTrackedFiles,
+  reservedMobileRuntimeRoots,
   root,
   startsWithPrefix,
 } from "./governance-common.mjs";
@@ -15,7 +16,7 @@ import {
 const reporter = createReporter("Runtime validator");
 const trackedFiles = getTrackedFiles();
 
-const allowedAppRoots = new Set(canonicalAppRoots);
+const allowedAppRoots = new Set([...canonicalAppRoots, ...reservedMobileRuntimeRoots]);
 const appEntries = fs.readdirSync(path.join(root, "apps"), { withFileTypes: true });
 const forbiddenRuntimePrefixes = [...forbiddenRuntimeRoots, ...forbiddenRuntimeSubtrees];
 
@@ -49,6 +50,22 @@ for (const appRoot of canonicalAppRoots) {
   reporter.assert(exists(appRoot), `Missing app runtime root: ${appRoot}`);
   reporter.assert(exists(`${appRoot}/AGENTS.md`), `Missing app runtime AGENTS.md: ${appRoot}`);
   reporter.assert(exists(`${appRoot}/runtime.manifest.json`), `Missing app runtime manifest: ${appRoot}/runtime.manifest.json`);
+}
+
+for (const runtimeRoot of reservedMobileRuntimeRoots) {
+  reporter.assert(exists(runtimeRoot), `Missing reserved mobile runtime root: ${runtimeRoot}`);
+  reporter.assert(exists(`${runtimeRoot}/AGENTS.md`), `Missing reserved mobile runtime AGENTS.md: ${runtimeRoot}`);
+  reporter.assert(exists(`${runtimeRoot}/runtime.manifest.json`), `Missing reserved mobile runtime manifest: ${runtimeRoot}/runtime.manifest.json`);
+
+  const allowedFiles = new Set([
+    `${runtimeRoot}/AGENTS.md`,
+    `${runtimeRoot}/runtime.manifest.json`,
+  ]);
+  const sourceFiles = trackedFiles.filter((file) => startsWithPrefix(file, runtimeRoot) && !allowedFiles.has(file));
+  reporter.assert(
+    sourceFiles.length === 0,
+    `Reserved mobile runtime root must remain manifest-and-AGENTS-only: ${runtimeRoot} (${sourceFiles.slice(0, 5).join(", ")})`,
+  );
 }
 
 for (const serviceRoot of canonicalServiceRoots) {

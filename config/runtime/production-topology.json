@@ -529,54 +529,8 @@
       "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
     },
     {
-      "runtimeName": "Mobile Shopper App",
-      "runtimeRoot": "apps/mobile/shopper-app",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/monitoring/slo-catalog.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
       "runtimeName": "Mobile Merchant App",
       "runtimeRoot": "apps/mobile/merchant-app",
-      "environment": "production",
-      "deploymentManifests": [
-        "infrastructure/deployment/release-promotion.yaml",
-        "infrastructure/monitoring/slo-catalog.yaml"
-      ],
-      "observability": "OpenTelemetry collector plus runtime telemetry tables",
-      "queueProvider": "Cloudflare Queues through services/api-gateway and services/queue-workers",
-      "eventStore": "Supabase append-only distributed_event_store via packages/distributed-runtime",
-      "failover": "Active/passive regional failover governed by runtime_control_commands and failover_drill_runs",
-      "incident": "Incident metadata in production_incidents and production_incident_events",
-      "security": "RBAC, audit, secret rotation, deployment signing, and SBOM controls",
-      "chaos": "Chaos validation recorded in chaos_experiment_runs",
-      "loadTesting": "k6/Gatling/Locust results recorded in load_test_runs",
-      "controlPlane": "/v1/operations/runtime control-plane and runtime_control_commands",
-      "regionalRouting": "Tenant affinity, global-edge routing, primary/failover region metadata",
-      "deploymentPipeline": "Production rollout workflow, deployment scripts, health gates, and rollback runbooks.",
-      "operationalDashboard": "Platform console operations page and Grafana dashboards backed by runtime projections.",
-      "sre": "SLO catalog, error budget snapshots, SRE runbooks, and incident escalation policy.",
-      "replayOperations": "Replay scheduling, authorization, dry-run, event-store integrity, and archive controls."
-    },
-    {
-      "runtimeName": "Mobile Operator App",
-      "runtimeRoot": "apps/mobile/operator-app",
       "environment": "production",
       "deploymentManifests": [
         "infrastructure/deployment/release-promotion.yaml",

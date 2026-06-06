@@ -17,8 +17,11 @@ Active app runtimes are:
 - `apps/marketing-site`
 - `apps/platform-console`
 - `apps/platform-operations-portal`
-- `apps/mobile/shopper-app`
 - `apps/mobile/merchant-app`
+
+Reserved mobile roots are not active app runtimes and must remain manifest-and-AGENTS-only until human-approved activation governance adds real gateway-wired source, tests, and deployment config:
+
+- `apps/mobile/shopper-app`
 - `apps/mobile/operator-app`
 
 Active service runtime authority is documented in `docs/governance/runtime-boundaries.md` and enforced by `scripts/validators/runtime-validator.mjs`.
@@ -55,7 +58,7 @@ Nested `consumer-storefront` trees are forbidden because they create duplicate s
 
 ## Platform Operations Policy
 
-`apps/platform-console` owns privileged super-admin governance. `apps/platform-operations-portal` owns employee support and operations workflows. `apps/mobile/operator-app` is the only native operator companion root.
+`apps/platform-console` owns privileged super-admin governance. `apps/platform-operations-portal` owns employee support and operations workflows. `apps/mobile/operator-app` is the only reserved native operator companion root and is not active until activation governance lands.
 
 Employee mobile scaffolds must not be added unless a new canonical runtime is approved and validators are updated before source is committed.
 

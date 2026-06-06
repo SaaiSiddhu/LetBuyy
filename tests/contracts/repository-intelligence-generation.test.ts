@@ -32,6 +32,7 @@ test('generated root AGENTS keeps current runtime and non-negotiable governance 
     assert.match(agents, /`services\/api-gateway` is the sole Commerce API backend/);
     assert.match(agents, /`@letbuyy\/shared-types` is the canonical cross-runtime domain contract/);
     assert.match(agents, /apps\/developer-portal`, `apps\/theme-marketplace`/);
+    assert.match(agents, /Mobile runtimes: active `apps\/mobile\/merchant-app`; reserved\/not-implemented mobile roots `apps\/mobile\/shopper-app` and `apps\/mobile\/operator-app`/);
     assert.match(agents, /implemented `services\/api-gateway`, `services\/webhook-service`, and `services\/queue-workers`/);
     assert.match(agents, /reserved\/not-implemented service roots `services\/checkout-runtime`/);
     assert.match(agents, /Active replay chain: `000_baseline\.sql` plus additive forward migrations `073_\*\.sql` through `089_\*\.sql`/);

@@ -204,7 +204,7 @@ const appTargets = [
     output: "apps/mobile/shopper-app/AGENTS.md",
     name: "Mobile Shopper App",
     actual: "apps/mobile/shopper-app",
-    purpose: "Reserved native shopper runtime for customer browsing, cart, checkout, account, orders, and notifications.",
+    purpose: "Reserved/not-implemented native shopper root; no deployable mobile source is active until a human-approved shopper app scope is built.",
   },
   {
     output: "apps/mobile/merchant-app/AGENTS.md",
@@ -216,7 +216,7 @@ const appTargets = [
     output: "apps/mobile/operator-app/AGENTS.md",
     name: "Mobile Operator App",
     actual: "apps/mobile/operator-app",
-    purpose: "Native operator scaffold for production operations workflows that complement the platform console.",
+    purpose: "Reserved/not-implemented native operator companion root; the generated Flutter counter starter is archived and no deployable mobile source is active.",
   },
 ];
 
@@ -451,7 +451,6 @@ function appRootForFile(file) {
     "apps/platform-console",
     "apps/platform-operations-portal",
     "apps/mobile/merchant-app",
-    "apps/mobile/operator-app",
     "services/api-gateway",
     "services/webhook-service",
     "packages/typescript/ui",
@@ -841,7 +840,7 @@ function buildRootAgents() {
   lines.push("## Canonical Active Runtimes");
   lines.push("");
   lines.push("- Web app runtimes: `apps/storefront-runtime`, `apps/merchant-control-plane`, `apps/identity-platform`, `apps/app-marketplace`, `apps/developer-portal`, `apps/theme-marketplace`, `apps/marketing-site`, `apps/platform-console`, `apps/platform-operations-portal`.");
-  lines.push("- Mobile runtimes: `apps/mobile/shopper-app`, `apps/mobile/merchant-app`, `apps/mobile/operator-app`.");
+  lines.push("- Mobile runtimes: active `apps/mobile/merchant-app`; reserved/not-implemented mobile roots `apps/mobile/shopper-app` and `apps/mobile/operator-app` remain manifest-and-AGENTS-only until a human-approved mobile build scope adds source, tests, deployment config, and governance approval.");
   lines.push("- Service runtimes: implemented `services/api-gateway`, `services/webhook-service`, and `services/queue-workers`; reserved/not-implemented service roots `services/checkout-runtime`, `services/search-service`, `services/media-service`, `services/notification-service`, `services/event-bus`, and `services/analytics-pipeline`.");
   lines.push("- Every canonical runtime root must include `runtime.manifest.json`; manifests are machine-readable runtime authority and are enforced by `scripts/validators/runtime-manifest-validator.mjs`.");
   lines.push("- Deprecated app aliases are forbidden: `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.");
@@ -1035,7 +1034,7 @@ function buildRootAgents() {
   lines.push('  Console["Platform Console - super admin"] --> API');
   lines.push('  Operations["Platform Operations Portal - employee workflows"] --> API');
   lines.push('  MobileMerchant["Mobile Merchant App"] --> API');
-  lines.push('  MobileOperator["Mobile Operator App"] --> API');
+  lines.push('  ReservedMobile["Reserved mobile roots - shopper/operator manifest-only"] -. future scope .-> API');
   lines.push('  API --> Supabase["Supabase Postgres + Auth + Storage"]');
   lines.push('  API --> R2["Cloudflare R2 binding"]');
   lines.push('  API --> Redis["Upstash Redis rate/cache intent"]');

@@ -119,9 +119,9 @@ docs/
 | Marketing site | Public visitors | `apps/marketing-site` | Public marketing and pricing surface |
 | Platform console | Platform operators | `apps/platform-console` | Super admin platform operations |
 | Platform operations portal | Platform employees | `apps/platform-operations-portal` | Employee support, moderation, marketing operations, and invite workflows |
-| Mobile shopper app | Shoppers | `apps/mobile/shopper-app` | Reserved native shopper runtime |
 | Mobile merchant app | Merchants | `apps/mobile/merchant-app` | Flutter merchant builder and store management |
-| Mobile operator app | Platform operators | `apps/mobile/operator-app` | Reserved native operator companion |
+| Mobile shopper app | Reserved | `apps/mobile/shopper-app` | Reserved/not-implemented native shopper root; manifest-and-AGENTS only |
+| Mobile operator app | Reserved | `apps/mobile/operator-app` | Reserved/not-implemented native operator companion; manifest-and-AGENTS only |
 | API gateway | All actors through contracts | `services/api-gateway` | Hono `/v1` API, auth, tenant context, domain services |
 | Webhook service | Providers | `services/webhook-service` | Provider callbacks and reconciliation |
 | Queue workers | Platform async jobs | `services/queue-workers` | Implemented Cloudflare Queue consumers for event, notification, search, analytics, outbox, and dead-letter work |
@@ -147,7 +147,7 @@ docs/
 - Generated or lifecycle-owned docs live under explicit `docs/` lifecycle directories.
 - Deprecated runtime aliases are forbidden and must not coexist with canonical runtimes.
 - The forbidden app alias roots are `apps/admin`, `apps/auth`, `apps/checkout`, `apps/internal`, `apps/merchant`, `apps/storefront`, and `apps/analytics`.
-- `apps/mobile/operator-team-app` is retired; employee operations belong in `apps/platform-operations-portal`, and native operator work belongs in `apps/mobile/operator-app`.
+- `apps/mobile/operator-team-app` is retired; employee operations belong in `apps/platform-operations-portal`, and future native operator work belongs in reserved `apps/mobile/operator-app` only after activation governance.
 - `apps/storefront-runtime/consumer-storefront` is retired; storefront source authority belongs under `apps/storefront-runtime/src`.
 - Every app/service runtime must include `runtime.manifest.json`.
 - Runtime-local `node_modules`, generated output, and local build caches are not topology and must not survive governance validation.

@@ -50,7 +50,7 @@
       "path": "config/runtime/deployment-topology.json",
       "owner": "runtime-topology",
       "compatibility": "startup-order-compatible",
-      "checksum": "3712bf07d46c456e478332c809c03bd20df76422289bedc16cae8e0328d09419"
+      "checksum": "f630f113937e3ababded1fe3a6874e956879831a9ee9e3dc0dcf581222c9b0ba"
     },
     {
       "path": "config/runtime/distributed-execution-contract.json",

@@ -4,9 +4,9 @@ Started: 2026-06-05T13:54:14Z
 
 ## Current phase
 
-- Phase: F7.4 AGENTS/repository-intelligence regeneration complete; continue F8.1 mobile topology honesty.
-- Findings resolved: 28/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
-- Current governance gate state: green after F7.4 AGENTS/repository-intelligence regeneration (`pnpm run validate:governance` -> 156/156 PASS).
+- Phase: F8.1 mobile topology honesty complete; continue final gate sweep.
+- Findings resolved: 29/31 original Critical/High complete (`C-1`, `C-2`, `C-3`, `C-4`, `C-5`, `C-6`, `C-7`, `C-8`, `C-9`, `C-10`, `C-11`, `C-12`, `C-13`, `C-14`, `H-1`, `H-2`, `H-3`, `H-4`, `H-5`, `H-6`, `H-7`, `H-8`, `H-9`, `H-10`, `H-12`, `H-13`, `H-14`, `H-15`, `H-17`) plus 6/6 V2 regressions complete (`N-1` through `N-6`); `H-11` is SKIPPED -- NEEDS HUMAN for payout rail/policy/credentials, `H-16` is SKIPPED -- NEEDS HUMAN for ops SSO/IdP or a platform-session trust decision beyond the timing-safe static-token hardening, C-11 live real-stack journey execution is SKIPPED -- NEEDS HUMAN pending staging credentials/secrets, C-14 live observability rollout verification is SKIPPED -- NEEDS HUMAN pending deployed telemetry endpoints/credentials, H-15 live production deploy execution is SKIPPED -- NEEDS HUMAN pending protected environment approvals plus provider credentials, future native shopper/operator mobile implementation is SKIPPED -- NEEDS HUMAN pending product scope/release ownership, and legacy portfolio/resume reactivation is human-gated for named cohorts only.
+- Current governance gate state: green after F8.1 mobile topology honesty (`pnpm run validate:governance` -> 157/157 PASS).
 
 ## Baseline gates
 
@@ -874,6 +874,24 @@ Started: 2026-06-05T13:54:14Z
 - Generated workspace artifacts were removed after verification.
 - `pnpm run validate:governance`: PASS - 156/156 validators.
 
+## F8.1 Mobile topology honesty evidence
+
+- Archived the generated Flutter counter/starter tree from `apps/mobile/operator-app` to `docs/archive/mobile-topology/operator-app-starter/...`.
+- `apps/mobile/operator-app` and `apps/mobile/shopper-app` now contain only `AGENTS.md` and `runtime.manifest.json`, and both manifests declare `implementationStatus.status="reserved-not-implemented"` with `sourceState="manifest-and-agents-only"`.
+- `apps/mobile/merchant-app` remains the only active canonical mobile app runtime; shopper/operator roots are reserved and absent from `config/runtime/deployment-topology.json` and `config/runtime/production-topology.json`.
+- `CLAUDE.md`, `docs/governance/mobile-governance.md`, `docs/governance/runtime-boundaries.md`, `docs/governance/repository-topology.md`, `docs/governance/topology-purification.md`, generated `AGENTS.md`, and generated architecture intelligence now distinguish active mobile runtime authority from reserved mobile roots.
+- Added `scripts/validators/mobile-topology-honesty-validator.mjs`, wired it into governance, and added `tests/contracts/mobile-topology-honesty.test.ts`.
+- Updated `scripts/validators/runtime-validator.mjs` to allow reserved mobile roots only as manifest-and-AGENTS roots, and updated `scripts/validators/package-ownership-validator.mjs` to ignore package manifests under `docs/archive/`.
+- `node scripts/validators/mobile-topology-honesty-validator.mjs`: PASS.
+- `npx tsx --test tests/contracts/mobile-topology-honesty.test.ts`: PASS - 4/4.
+- Adjacent validators: `runtime-validator.mjs`, `runtime-topology-validator.mjs`, `production-readiness-validator.mjs`, `manifest-lineage-validator.mjs`, and `repository-intelligence-validator.mjs`: PASS.
+- `pnpm run test:contracts`: failed once on TSX IPC sandbox permissions, then PASS - 157/157 with escalation.
+- `pnpm install --frozen-lockfile --force`: failed once on sandbox DNS after generated-artifact cleanup removed workspace links, then PASS with escalation.
+- Full `pnpm turbo typecheck --output-logs=errors-only --log-order=grouped`: PASS - 58/58.
+- `pnpm lint`: PASS - 9/9 tasks, existing warnings only.
+- Generated workspace artifacts were removed after verification.
+- `pnpm run validate:governance`: PASS - 157/157 validators.
+
 ## V2 P-1 gate evidence
 
 - N-1: internal API secret guard now fails closed whenever `INTERNAL_API_SECRET` is unset in every environment; internal payment, billing, and events routes share `services/api-gateway/src/lib/internal-secret.ts`.
@@ -909,6 +927,7 @@ Started: 2026-06-05T13:54:14Z
 - F6.3 live hot-table partition maintenance proof requires staging/production Supabase DB connection strings and protected environment approvals. Exact proof path once supplied: `gh workflow run hot-table-partition-maintenance.yml --ref main -f environment=staging -f execute=true`, verify JSON output from `ensure_next_hot_table_partitions` and `detach_expired_hot_table_partitions`, then approve the production `production-migrations` run.
 - F6.4 live environment value rollout requires Vercel project env access, Cloudflare Worker env/secret access, CDN/R2 public asset-domain decision, and provider-restricted mobile Gemini credentials. Exact proof path once supplied: configure `NEXT_PUBLIC_MARKETING_URL`, `NEXT_PUBLIC_ACCOUNTS_URL`, `NEXT_PUBLIC_ADMIN_URL`, `NEXT_PUBLIC_STOREFRONT_URL`, `NEXT_PUBLIC_THEME_MARKETPLACE_URL`, API base URLs, and `STOREFRONT_FRAME_ANCESTORS` in Vercel; configure `CORS_CREDENTIAL_ORIGINS` and `ASSET_PUBLIC_BASE_URL` in Cloudflare; configure mobile release builds with `--dart-define=GEMINI_API_KEY=... --dart-define=GEMINI_BASE_URL=... --dart-define=GEMINI_MODEL=...`; then run `pnpm run validate:governance`, affected deploy smoke tests, and mobile release smoke.
 - F7.1 portfolio/resume acquisition reactivation requires human product approval for a named legacy cohort plus matching gateway/public env rollout: `LETBUYY_ENABLE_LEGACY_SITE_TYPES=true` and `NEXT_PUBLIC_LETBUYY_ENABLE_LEGACY_SITE_TYPES=true`. Default acquisition remains off and validator-guarded.
+- H-3 future native shopper/operator apps require human product scope, app-store/release ownership, mobile UX/security requirements, seeded staging credentials, and gateway-wired source/tests before the reserved roots can become active runtimes.
 
-- Continue to F8.1 mobile topology honesty.
+- Continue to final gate sweep.
 - Keep inherited broader test-realism work for F5 unless it blocks a phase gate.

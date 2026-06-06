@@ -12,8 +12,13 @@
 - `apps/platform-console`: platform super admin.
 - `apps/platform-operations-portal`: employee support and operations.
 - `apps/mobile/merchant-app`: Flutter merchant builder and store management.
-- `apps/mobile/operator-app`: Flutter operator companion scaffold.
+
+## Reserved Mobile Roots
+
+These roots are reserved but not implemented. Each contains only `AGENTS.md` and `runtime.manifest.json`; none owns active runtime behavior, deployment topology, production topology, app-store release artifacts, package manifests, tests, or source until a human-approved mobile scope adds real gateway-wired functionality and governance approval.
+
 - `apps/mobile/shopper-app`: reserved shopper mobile runtime.
+- `apps/mobile/operator-app`: reserved operator companion runtime.
 
 ## Service Boundaries
 

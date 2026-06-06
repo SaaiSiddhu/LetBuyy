@@ -13,12 +13,12 @@
 - `apps/marketing-site`
 - `apps/platform-console`
 - `apps/platform-operations-portal`
-- `apps/mobile/shopper-app`
 - `apps/mobile/merchant-app`
-- `apps/mobile/operator-app`
 - `services/api-gateway`
 - `services/webhook-service`
 - `services/queue-workers`
+- `apps/mobile/shopper-app` (reserved, not implemented)
+- `apps/mobile/operator-app` (reserved, not implemented)
 - `services/checkout-runtime` (reserved, not implemented)
 - `services/search-service` (reserved, not implemented)
 - `services/media-service` (reserved, not implemented)
@@ -26,7 +26,7 @@
 - `services/event-bus` (reserved, not implemented)
 - `services/analytics-pipeline` (reserved, not implemented)
 
-Reserved service roots are manifest-only placeholders. Their current active capability owners are `services/api-gateway` and/or `services/queue-workers` until a human-approved extraction adds deployable source, tests, and deployment config.
+Reserved service and mobile roots are manifest-only placeholders. Their current active capability owners are implemented web/service runtimes until a human-approved scope adds real source, tests, and deployment config.
 
 ## Deprecated Runtime Policy
 

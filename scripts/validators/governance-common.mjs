@@ -64,8 +64,11 @@ export const canonicalAppRoots = [
   "apps/marketing-site",
   "apps/platform-console",
   "apps/platform-operations-portal",
-  "apps/mobile/shopper-app",
   "apps/mobile/merchant-app",
+];
+
+export const reservedMobileRuntimeRoots = [
+  "apps/mobile/shopper-app",
   "apps/mobile/operator-app",
 ];
 
