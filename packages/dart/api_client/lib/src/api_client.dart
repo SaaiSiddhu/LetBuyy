@@ -86,6 +86,7 @@ class ApiClient {
   late final NotificationsApi notifications = NotificationsApi(this);
   late final EmployeesApi employees = EmployeesApi(this);
   late final ReviewsApi reviews = ReviewsApi(this);
+  late final FormSubmissionsApi formSubmissions = FormSubmissionsApi(this);
   late final GraphQLClient graphql = GraphQLClient(
     (path, {options}) => request(path, options: options),
   );
@@ -1707,6 +1708,48 @@ class ReviewsApi {
   Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
       _client.requestJson(
         '/reviews/${_encodePathSegment(id)}',
+        options: _mergeOptions(options, method: HttpMethod.delete),
+      );
+}
+
+class FormSubmissionsApi {
+  const FormSubmissionsApi(this._client);
+
+  final ApiClient _client;
+
+  Future<PaginatedResponse<JsonMap>> list({
+    required String storeId,
+    String type = 'all',
+    String status = 'all',
+    int page = 1,
+    int limit = 50,
+    ApiRequestOptions? options,
+  }) => _client.requestPaginatedJson(
+    '/form-submissions',
+    options: _mergeOptions(
+      options,
+      query: {
+        'store_id': storeId,
+        'type': type,
+        'status': status,
+        'page': page,
+        'limit': limit,
+      },
+    ),
+  );
+
+  Future<JsonMap> update(
+    String id,
+    JsonMap input, {
+    ApiRequestOptions? options,
+  }) => _client.requestJson(
+    '/form-submissions/${_encodePathSegment(id)}',
+    options: _mergeOptions(options, method: HttpMethod.patch, body: input),
+  );
+
+  Future<JsonMap> remove(String id, {ApiRequestOptions? options}) =>
+      _client.requestJson(
+        '/form-submissions/${_encodePathSegment(id)}',
         options: _mergeOptions(options, method: HttpMethod.delete),
       );
 }

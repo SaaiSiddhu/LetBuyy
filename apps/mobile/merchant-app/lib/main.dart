@@ -20,6 +20,7 @@ import 'services/notification_settings_service.dart';
 import 'services/shipping_tax_service.dart';
 import 'services/staff_service.dart';
 import 'services/review_service.dart';
+import 'services/form_submission_service.dart';
 import 'services/push_service.dart';
 import 'services/analytics_service.dart';
 import 'services/theme_service.dart';
@@ -99,6 +100,9 @@ void main() async {
         ),
         ChangeNotifierProvider<ReviewService>(
           create: (_) => ReviewService(api: apiClient),
+        ),
+        ChangeNotifierProvider<FormSubmissionService>(
+          create: (_) => FormSubmissionService(api: apiClient),
         ),
         ChangeNotifierProvider<NotificationSettingsService>(
           create: (_) => NotificationSettingsService(api: apiClient),

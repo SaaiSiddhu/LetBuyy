@@ -13,6 +13,7 @@ import 'package:letbuyy_store/services/cms_service.dart';
 import 'package:letbuyy_store/services/coupon_service.dart';
 import 'package:letbuyy_store/services/customer_service.dart';
 import 'package:letbuyy_store/services/domain_service.dart';
+import 'package:letbuyy_store/services/form_submission_service.dart';
 import 'package:letbuyy_store/services/inventory_service.dart';
 import 'package:letbuyy_store/services/media_service.dart';
 import 'package:letbuyy_store/services/notification_settings_service.dart';
@@ -43,6 +44,7 @@ import 'package:letbuyy_store/screens/inventory/locations_screen.dart';
 import 'package:letbuyy_store/screens/inventory/purchase_orders_screen.dart';
 import 'package:letbuyy_store/screens/inventory/suppliers_screen.dart';
 import 'package:letbuyy_store/screens/inventory/transfers_screen.dart';
+import 'package:letbuyy_store/screens/marketing/leads_screen.dart';
 import 'package:letbuyy_store/screens/marketing/reviews_screen.dart';
 import 'package:letbuyy_store/screens/orders/order_detail_screen.dart';
 import 'package:letbuyy_store/screens/products/collections_screen.dart';
@@ -847,6 +849,45 @@ void main() {
       );
     });
 
+    test('FormSubmissionService manages leads and follow-up status', () async {
+      final api = _FakeApiClient(
+        paginated: {
+          '/form-submissions': [_formSubmissionJson()],
+        },
+        json: {
+          '/form-submissions/submission_1': _formSubmissionJson(
+            status: 'contacted',
+          ),
+        },
+      );
+      final service = FormSubmissionService(api: api);
+
+      final submissions = await service.fetchSubmissions(
+        'store_1',
+        type: 'lead',
+        status: 'new',
+      );
+      final contacted = await service.updateStatus(
+        submissions.single,
+        'contacted',
+      );
+      await service.deleteSubmission(contacted);
+
+      expect(submissions.single.fullName, 'Meera Merchant');
+      expect(
+        submissions.single.contactLine,
+        'meera@example.com / +919999999999',
+      );
+      expect(contacted.status, 'contacted');
+      expect(service.submissions, isEmpty);
+      expect(api.paths, contains('/form-submissions'));
+      expect(api.paths, contains('/form-submissions/submission_1'));
+      expect(
+        api.bodies['/form-submissions/submission_1'],
+        containsPair('status', 'contacted'),
+      );
+    });
+
     test(
       'PushService fails closed until device token backend exists',
       () async {
@@ -1564,6 +1605,38 @@ void main() {
     expect(find.text('Approve'), findsOneWidget);
     expect(find.text('Reply'), findsOneWidget);
     expect(find.text('Delete'), findsOneWidget);
+  });
+
+  testWidgets('LeadsScreen renders form submissions and status actions', (
+    tester,
+  ) async {
+    final api = _FakeApiClient(
+      paginated: {
+        '/stores': [_storeJson()],
+        '/form-submissions': [_formSubmissionJson()],
+      },
+    );
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (_) => StoreService(api: api)),
+          ChangeNotifierProvider(
+            create: (_) => FormSubmissionService(api: api),
+          ),
+        ],
+        child: const MaterialApp(home: LeadsScreen()),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Leads'), findsOneWidget);
+    expect(find.text('Meera Merchant'), findsOneWidget);
+    expect(find.text('meera@example.com / +919999999999'), findsOneWidget);
+    expect(find.text('Wholesale inquiry'), findsOneWidget);
+    expect(find.text('Mark read'), findsOneWidget);
+    expect(find.text('Contacted'), findsOneWidget);
+    expect(find.text('Converted'), findsOneWidget);
   });
 
   testWidgets('PagesScreen renders CMS pages from gateway service', (
@@ -2336,6 +2409,26 @@ Map<String, dynamic> _reviewJson({
   'is_approved': status == 'approved',
   'is_verified': true,
   'helpful_count': 2,
+  'created_at': '2026-06-01T11:00:00.000Z',
+};
+
+Map<String, dynamic> _formSubmissionJson({
+  String id = 'submission_1',
+  String status = 'new',
+}) => {
+  'id': id,
+  'store_id': 'store_1',
+  'form_type': 'lead',
+  'form_name': 'Wholesale form',
+  'data': {'company': 'Meera Retail', 'source': 'homepage'},
+  'source_url': 'https://demo.letbuyy.store/pages/wholesale',
+  'status': status,
+  'full_name': 'Meera Merchant',
+  'email': 'meera@example.com',
+  'phone': '+919999999999',
+  'subject': 'Wholesale inquiry',
+  'message': 'We want to buy 50 cotton tees.',
+  'source': 'homepage',
   'created_at': '2026-06-01T11:00:00.000Z',
 };
 

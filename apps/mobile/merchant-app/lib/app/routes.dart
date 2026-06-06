@@ -23,6 +23,7 @@ import '../screens/settings/notifications_screen.dart';
 import '../screens/settings/staff_screen.dart';
 import '../screens/settings/billing_screen.dart';
 import '../screens/marketing/reviews_screen.dart';
+import '../screens/marketing/leads_screen.dart';
 import '../screens/settings/help_screen.dart';
 import '../screens/analytics/analytics_screen.dart';
 import '../screens/customers/customer_detail_screen.dart';
@@ -79,6 +80,7 @@ class AppRoutes {
   static const String staff = '/staff';
   static const String billing = '/billing';
   static const String reviews = '/reviews';
+  static const String leads = '/leads';
   static const String shipping = '/shipping';
   static const String taxes = '/taxes';
   static const String help = '/help';
@@ -154,6 +156,9 @@ class AppRoutes {
     }
     if (settings.name == '/features/reviews') {
       return _buildRoute(const ReviewsScreen(), settings);
+    }
+    if (settings.name == '/features/form-submissions') {
+      return _buildRoute(const LeadsScreen(), settings);
     }
     if (settings.name == '/features/shipping') {
       return _buildRoute(const ShippingScreen(), settings);
@@ -256,6 +261,9 @@ class AppRoutes {
 
       case reviews:
         return _buildRoute(const ReviewsScreen(), settings);
+
+      case leads:
+        return _buildRoute(const LeadsScreen(), settings);
 
       case shipping:
         return _buildRoute(const ShippingScreen(), settings);
